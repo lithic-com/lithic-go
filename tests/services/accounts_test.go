@@ -9,7 +9,6 @@ import (
 
 	"github.com/lithic-com/lithic-go"
 	"github.com/lithic-com/lithic-go/core"
-	"github.com/lithic-com/lithic-go/fields"
 	"github.com/lithic-com/lithic-go/options"
 	"github.com/lithic-com/lithic-go/requests"
 )
@@ -36,7 +35,7 @@ func TestAccountsUpdateWithOptionalParams(t *testing.T) {
 	_, err := c.Accounts.Update(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-		&requests.AccountUpdateParams{DailySpendLimit: fields.F(int64(0)), LifetimeSpendLimit: fields.F(int64(0)), MonthlySpendLimit: fields.F(int64(0)), VerificationAddress: fields.F(requests.AccountUpdateParamsVerificationAddress{Address1: fields.F("string"), Address2: fields.F("string"), City: fields.F("string"), State: fields.F("string"), PostalCode: fields.F("string"), Country: fields.F("string")}), State: fields.F(requests.AccountUpdateParamsStateActive)},
+		&requests.AccountUpdateParams{DailySpendLimit: lithic.F(int64(0)), LifetimeSpendLimit: lithic.F(int64(0)), MonthlySpendLimit: lithic.F(int64(0)), VerificationAddress: lithic.F(requests.AccountUpdateParamsVerificationAddress{Address1: lithic.F("string"), Address2: lithic.F("string"), City: lithic.F("string"), State: lithic.F("string"), PostalCode: lithic.F("string"), Country: lithic.F("string")}), State: lithic.F(requests.AccountUpdateParamsStateActive)},
 	)
 	if err != nil {
 		var apiError core.APIError
@@ -50,7 +49,7 @@ func TestAccountsUpdateWithOptionalParams(t *testing.T) {
 
 func TestAccountsListWithOptionalParams(t *testing.T) {
 	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Accounts.List(context.TODO(), &requests.AccountListParams{Begin: fields.F(time.Now()), End: fields.F(time.Now()), Page: fields.F(int64(0)), PageSize: fields.F(int64(1))})
+	_, err := c.Accounts.List(context.TODO(), &requests.AccountListParams{Begin: lithic.F(time.Now()), End: lithic.F(time.Now()), Page: lithic.F(int64(0)), PageSize: lithic.F(int64(1))})
 	if err != nil {
 		var apiError core.APIError
 		if errors.As(err, &apiError) {

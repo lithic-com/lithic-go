@@ -3,8 +3,8 @@ package requests
 import (
 	"fmt"
 
+	"github.com/lithic-com/lithic-go/core/fields"
 	pjson "github.com/lithic-com/lithic-go/core/json"
-	"github.com/lithic-com/lithic-go/fields"
 )
 
 type AuthStreamEnrollmentEnrollParams struct {

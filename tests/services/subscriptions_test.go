@@ -9,14 +9,13 @@ import (
 
 	"github.com/lithic-com/lithic-go"
 	"github.com/lithic-com/lithic-go/core"
-	"github.com/lithic-com/lithic-go/fields"
 	"github.com/lithic-com/lithic-go/options"
 	"github.com/lithic-com/lithic-go/requests"
 )
 
 func TestSubscriptionsNewWithOptionalParams(t *testing.T) {
 	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Events.Subscriptions.New(context.TODO(), &requests.SubscriptionNewParams{Description: fields.F("string"), Disabled: fields.F(true), EventTypes: fields.F([]requests.SubscriptionNewParamsEventTypes{requests.SubscriptionNewParamsEventTypesDisputeUpdated, requests.SubscriptionNewParamsEventTypesDisputeUpdated, requests.SubscriptionNewParamsEventTypesDisputeUpdated}), URL: fields.F("https://example.com")})
+	_, err := c.Events.Subscriptions.New(context.TODO(), &requests.SubscriptionNewParams{Description: lithic.F("string"), Disabled: lithic.F(true), EventTypes: lithic.F([]requests.SubscriptionNewParamsEventTypes{requests.SubscriptionNewParamsEventTypesDisputeUpdated, requests.SubscriptionNewParamsEventTypesDisputeUpdated, requests.SubscriptionNewParamsEventTypesDisputeUpdated}), URL: lithic.F("https://example.com")})
 	if err != nil {
 		var apiError core.APIError
 		if errors.As(err, &apiError) {
@@ -48,7 +47,7 @@ func TestSubscriptionsUpdateWithOptionalParams(t *testing.T) {
 	_, err := c.Events.Subscriptions.Update(
 		context.TODO(),
 		"string",
-		&requests.SubscriptionUpdateParams{Description: fields.F("string"), Disabled: fields.F(true), EventTypes: fields.F([]requests.SubscriptionUpdateParamsEventTypes{requests.SubscriptionUpdateParamsEventTypesDisputeUpdated, requests.SubscriptionUpdateParamsEventTypesDisputeUpdated, requests.SubscriptionUpdateParamsEventTypesDisputeUpdated}), URL: fields.F("https://example.com")},
+		&requests.SubscriptionUpdateParams{Description: lithic.F("string"), Disabled: lithic.F(true), EventTypes: lithic.F([]requests.SubscriptionUpdateParamsEventTypes{requests.SubscriptionUpdateParamsEventTypesDisputeUpdated, requests.SubscriptionUpdateParamsEventTypesDisputeUpdated, requests.SubscriptionUpdateParamsEventTypesDisputeUpdated}), URL: lithic.F("https://example.com")},
 	)
 	if err != nil {
 		var apiError core.APIError
@@ -62,7 +61,7 @@ func TestSubscriptionsUpdateWithOptionalParams(t *testing.T) {
 
 func TestSubscriptionsListWithOptionalParams(t *testing.T) {
 	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Events.Subscriptions.List(context.TODO(), &requests.SubscriptionListParams{PageSize: fields.F(int64(1)), StartingAfter: fields.F("string"), EndingBefore: fields.F("string")})
+	_, err := c.Events.Subscriptions.List(context.TODO(), &requests.SubscriptionListParams{PageSize: lithic.F(int64(1)), StartingAfter: lithic.F("string"), EndingBefore: lithic.F("string")})
 	if err != nil {
 		var apiError core.APIError
 		if errors.As(err, &apiError) {
@@ -96,7 +95,7 @@ func TestSubscriptionsRecover(t *testing.T) {
 	err := c.Events.Subscriptions.Recover(
 		context.TODO(),
 		"string",
-		&requests.SubscriptionRecoverParams{Begin: fields.F(time.Now()), End: fields.F(time.Now())},
+		&requests.SubscriptionRecoverParams{Begin: lithic.F(time.Now()), End: lithic.F(time.Now())},
 	)
 	if err != nil {
 		var apiError core.APIError
@@ -114,7 +113,7 @@ func TestSubscriptionsReplayMissing(t *testing.T) {
 	err := c.Events.Subscriptions.ReplayMissing(
 		context.TODO(),
 		"string",
-		&requests.SubscriptionReplayMissingParams{Begin: fields.F(time.Now()), End: fields.F(time.Now())},
+		&requests.SubscriptionReplayMissingParams{Begin: lithic.F(time.Now()), End: lithic.F(time.Now())},
 	)
 	if err != nil {
 		var apiError core.APIError

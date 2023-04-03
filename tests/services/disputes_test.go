@@ -9,14 +9,13 @@ import (
 
 	"github.com/lithic-com/lithic-go"
 	"github.com/lithic-com/lithic-go/core"
-	"github.com/lithic-com/lithic-go/fields"
 	"github.com/lithic-com/lithic-go/options"
 	"github.com/lithic-com/lithic-go/requests"
 )
 
 func TestDisputesNewWithOptionalParams(t *testing.T) {
 	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Disputes.New(context.TODO(), &requests.DisputeNewParams{Amount: fields.F(int64(0)), CustomerFiledDate: fields.F(time.Now()), Reason: fields.F(requests.DisputeNewParamsReasonAtmCashMisdispense), TransactionToken: fields.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"), CustomerNote: fields.F("string")})
+	_, err := c.Disputes.New(context.TODO(), &requests.DisputeNewParams{Amount: lithic.F(int64(0)), CustomerFiledDate: lithic.F(time.Now()), Reason: lithic.F(requests.DisputeNewParamsReasonAtmCashMisdispense), TransactionToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"), CustomerNote: lithic.F("string")})
 	if err != nil {
 		var apiError core.APIError
 		if errors.As(err, &apiError) {
@@ -48,7 +47,7 @@ func TestDisputesUpdateWithOptionalParams(t *testing.T) {
 	_, err := c.Disputes.Update(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-		&requests.DisputeUpdateParams{Amount: fields.F(int64(0)), CustomerFiledDate: fields.F(time.Now()), CustomerNote: fields.F("string"), Reason: fields.F(requests.DisputeUpdateParamsReasonAtmCashMisdispense)},
+		&requests.DisputeUpdateParams{Amount: lithic.F(int64(0)), CustomerFiledDate: lithic.F(time.Now()), CustomerNote: lithic.F("string"), Reason: lithic.F(requests.DisputeUpdateParamsReasonAtmCashMisdispense)},
 	)
 	if err != nil {
 		var apiError core.APIError
@@ -62,7 +61,7 @@ func TestDisputesUpdateWithOptionalParams(t *testing.T) {
 
 func TestDisputesListWithOptionalParams(t *testing.T) {
 	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Disputes.List(context.TODO(), &requests.DisputeListParams{TransactionToken: fields.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"), Status: fields.F(requests.DisputeListParamsStatusNew), PageSize: fields.F(int64(1)), Begin: fields.F(time.Now()), End: fields.F(time.Now()), StartingAfter: fields.F("string"), EndingBefore: fields.F("string")})
+	_, err := c.Disputes.List(context.TODO(), &requests.DisputeListParams{TransactionToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"), Status: lithic.F(requests.DisputeListParamsStatusNew), PageSize: lithic.F(int64(1)), Begin: lithic.F(time.Now()), End: lithic.F(time.Now()), StartingAfter: lithic.F("string"), EndingBefore: lithic.F("string")})
 	if err != nil {
 		var apiError core.APIError
 		if errors.As(err, &apiError) {
@@ -127,7 +126,7 @@ func TestDisputesListEvidencesWithOptionalParams(t *testing.T) {
 	_, err := c.Disputes.ListEvidences(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-		&requests.DisputeListEvidencesParams{PageSize: fields.F(int64(1)), Begin: fields.F(time.Now()), End: fields.F(time.Now()), StartingAfter: fields.F("string"), EndingBefore: fields.F("string")},
+		&requests.DisputeListEvidencesParams{PageSize: lithic.F(int64(1)), Begin: lithic.F(time.Now()), End: lithic.F(time.Now()), StartingAfter: lithic.F("string"), EndingBefore: lithic.F("string")},
 	)
 	if err != nil {
 		var apiError core.APIError

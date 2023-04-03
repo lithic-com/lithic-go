@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/lithic-com/lithic-go/fields"
+	"github.com/lithic-com/lithic-go/core/fields"
 )
 
 var encoders sync.Map // map[reflect.Type]encoderFunc

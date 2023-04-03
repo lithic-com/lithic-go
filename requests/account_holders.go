@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/lithic-com/lithic-go/core"
+	"github.com/lithic-com/lithic-go/core/fields"
 	pjson "github.com/lithic-com/lithic-go/core/json"
-	"github.com/lithic-com/lithic-go/fields"
 )
 
 // 🚧 Undiscriminated unions are still being implemented.

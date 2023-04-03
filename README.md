@@ -35,14 +35,14 @@ import (
 	"context"
 	"fmt"
 	"github.com/lithic-com/lithic-go"
-	"github.com/lithic-com/lithic-go/fields"
+	"github.com/lithic-com/lithic-go/core/fields"
 	"github.com/lithic-com/lithic-go/requests"
 )
 
 func main() {
 	client := lithic.NewLithic()
 	res, err := client.Cards.New(context.TODO(), &requests.CardNewParams{
-		Type: fields.F(requests.CardNewParamsTypeVirtual),
+		Type: lithic.F(requests.CardNewParamsTypeVirtual),
 	})
 	if err != nil {
 		panic(err)
@@ -70,24 +70,26 @@ type Bar struct {
 }
 ```
 
-For each field, you can either supply a value field with `fields.F(...)`, a
-`null` value with `fields.NullField()`, or some raw JSON value with
-`fields.RawField(...)` that you specify as a byte slice. If you do not supply a
-value, then we do not populate the field. An example request may look like
+For each field, you can either supply a value field with
+`lithic.F(...)`, a `null` value with `lithic.NullField()`, or
+some raw JSON value with `lithic.RawField(...)` that you specify as a
+byte slice. We also provide convenient helpers `lithic.Int(...)` and
+`lithic.Str(...)`. If you do not supply a value, then we do not
+populate the field. An example request may look like
 
 ```go
 params := &FooParams{
 	// Normally populates this field as `"id": "food_id"`
-	ID: fields.F("foo_id"),
+	ID: lithic.F("foo_id"),
 
 	// Integer helper casts integer values and literals to fields.Field[int64]
-	Number: fields.Int(12),
+	Number: lithic.Int(12),
 
 	// Explicitly sends this field as null, e.g., `"name": null`
-	Name: fields.NullField[string](),
+	Name: lithic.NullField[string](),
 
 	// Overrides this field as `"other": "ovveride_this_field"`
-	Other: fields.RawField[Bar]("override_this_field")
+	Other: lithic.RawField[Bar]("override_this_field")
 }
 ```
 

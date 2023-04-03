@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/lithic-com/lithic-go"
-	"github.com/lithic-com/lithic-go/fields"
 	"github.com/lithic-com/lithic-go/options"
 	"github.com/lithic-com/lithic-go/requests"
 	"github.com/lithic-com/lithic-go/responses"
@@ -13,7 +12,7 @@ import (
 func main() {
 	client := lithic.NewLithic(options.WithEnvironmentSandbox())
 
-	cards, err := client.Cards.List(context.TODO(), &requests.CardListParams{PageSize: fields.F(int64(2))})
+	cards, err := client.Cards.List(context.TODO(), &requests.CardListParams{PageSize: lithic.Int(2)})
 	println("Listing Cards")
 	var card *responses.Card
 	for cards.Next() {
@@ -24,7 +23,7 @@ func main() {
 		panic(cards.Err().Error())
 	}
 
-	result, err := client.Cards.GetEmbedHTML(context.TODO(), &requests.EmbedRequestParams{Token: fields.F(card.Token)})
+	result, err := client.Cards.GetEmbedHTML(context.TODO(), &requests.EmbedRequestParams{Token: lithic.F(card.Token)})
 	if err != nil {
 		panic(err.Error())
 	}

@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/lithic-com/lithic-go/core"
+	"github.com/lithic-com/lithic-go/core/fields"
 	pjson "github.com/lithic-com/lithic-go/core/json"
 	"github.com/lithic-com/lithic-go/core/query"
-	"github.com/lithic-com/lithic-go/fields"
 )
 
 type SubscriptionNewParams struct {

@@ -8,7 +8,6 @@ import (
 
 	"github.com/lithic-com/lithic-go"
 	"github.com/lithic-com/lithic-go/core"
-	"github.com/lithic-com/lithic-go/fields"
 	"github.com/lithic-com/lithic-go/options"
 	"github.com/lithic-com/lithic-go/requests"
 )
@@ -43,7 +42,7 @@ func TestAuthStreamEnrollmentDisenroll(t *testing.T) {
 func TestAuthStreamEnrollmentEnrollWithOptionalParams(t *testing.T) {
 	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
-	err := c.AuthStreamEnrollment.Enroll(context.TODO(), &requests.AuthStreamEnrollmentEnrollParams{WebhookURL: fields.F("https://example.com")})
+	err := c.AuthStreamEnrollment.Enroll(context.TODO(), &requests.AuthStreamEnrollmentEnrollParams{WebhookURL: lithic.F("https://example.com")})
 	if err != nil {
 		var apiError core.APIError
 		if errors.As(err, &apiError) {

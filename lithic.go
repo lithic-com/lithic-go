@@ -4,10 +4,26 @@ import (
 	"context"
 	"os"
 
+	"github.com/lithic-com/lithic-go/core/fields"
 	"github.com/lithic-com/lithic-go/options"
 	"github.com/lithic-com/lithic-go/responses"
 	"github.com/lithic-com/lithic-go/services"
 )
+
+func F[T any](value T) fields.Field[T]          { return fields.Field[T]{Value: value, Present: true} }
+func NullField[T any]() fields.Field[T]         { return fields.Field[T]{Null: true, Present: true} }
+func RawField[T any](value any) fields.Field[T] { return fields.Field[T]{Raw: value, Present: true} }
+
+func Float[T float32 | float64](value T) fields.Field[float64] {
+	return fields.Field[float64]{Value: float64(value), Present: true}
+}
+func Int[T int | int8 | int16 | int32 | int64](value T) fields.Field[int64] {
+	return fields.Field[int64]{Value: int64(value), Present: true}
+}
+func UInt[T uint | uint8 | uint16 | uint32 | uint64](value T) fields.Field[uint64] {
+	return fields.Field[uint64]{Value: uint64(value), Present: true}
+}
+func Str(str string) fields.Field[string] { return F(str) }
 
 type Lithic struct {
 	Options              []options.RequestOption

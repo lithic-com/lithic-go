@@ -10,9 +10,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/lithic-com/lithic-go/fields"
-
 	"github.com/tidwall/sjson"
+
+	"github.com/lithic-com/lithic-go/core/fields"
 )
 
 var encoders sync.Map // map[encoderEntry]encoderFunc
