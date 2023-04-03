@@ -62,7 +62,7 @@ func TestCardsUpdateWithOptionalParams(t *testing.T) {
 
 func TestCardsListWithOptionalParams(t *testing.T) {
 	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Cards.List(context.TODO(), &requests.CardListParams{AccountToken: fields.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"), Begin: fields.F(time.Now()), End: fields.F(time.Now()), Page: fields.F(int64(0)), PageSize: fields.F(int64(1))})
+	res, err := c.Cards.List(context.TODO(), &requests.CardListParams{AccountToken: fields.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"), Begin: fields.F(time.Now()), End: fields.F(time.Now()), Page: fields.F(int64(0)), PageSize: fields.F(int64(1))})
 	if err != nil {
 		var apiError core.APIError
 		if errors.As(err, &apiError) {
@@ -70,6 +70,13 @@ func TestCardsListWithOptionalParams(t *testing.T) {
 			println(string(body))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
+	}
+
+	for res.Next() {
+		items := res.Current()
+		if items == nil || len(*items) == 0 {
+			t.Fatalf("there should be at least one item")
+		}
 	}
 }
 

@@ -62,7 +62,7 @@ func (r *CardService) List(ctx context.Context, query *requests.CardListParams, 
 		return
 	}
 	res = &responses.CardsPage{
-		Page: &pagination.Page[responses.Card]{
+		Page: &pagination.Page[[]responses.Card]{
 			Config:  *cfg,
 			Options: opts,
 		},

@@ -231,10 +231,10 @@ func (r *CardListResponse) UnmarshalJSON(data []byte) (err error) {
 }
 
 type CardsPage struct {
-	*pagination.Page[Card]
+	*pagination.Page[[]Card]
 }
 
-func (r *CardsPage) Card() *Card {
+func (r *CardsPage) Cards() *[]Card {
 	return r.Current()
 }
 
