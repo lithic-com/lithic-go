@@ -15,7 +15,7 @@ import (
 
 func TestCardsNewWithOptionalParams(t *testing.T) {
 	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Cards.New(context.TODO(), &requests.CardNewParams{AccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"), CardProgramToken: lithic.F("00000000-0000-0000-1000-000000000000"), ExpMonth: lithic.F("06"), ExpYear: lithic.F("2027"), FundingToken: lithic.F("ecbd1d58-0299-48b3-84da-6ed7f5bf9ec1"), Memo: lithic.F("New Card"), SpendLimit: lithic.F(int64(0)), SpendLimitDuration: lithic.F(requests.SpendLimitDurationAnnually), State: lithic.F(requests.CardNewParamsStateOpen), Type: lithic.F(requests.CardNewParamsTypeVirtual), Pin: lithic.F("string"), DigitalCardArtToken: lithic.F("00000000-0000-0000-1000-000000000000"), ProductID: lithic.F("1"), ShippingAddress: lithic.F(requests.ShippingAddress{FirstName: lithic.F("Michael"), LastName: lithic.F("Bluth"), Line2Text: lithic.F("The Bluth Company"), Address1: lithic.F("5 Broad Street"), Address2: lithic.F("Unit 25A"), City: lithic.F("NEW YORK"), State: lithic.F("NY"), PostalCode: lithic.F("10001-1809"), Country: lithic.F("USA"), Email: lithic.F("johnny@appleseed.com"), PhoneNumber: lithic.F("+12124007676")}), ShippingMethod: lithic.F(requests.CardNewParamsShippingMethodStandard)})
+	_, err := c.Cards.New(context.TODO(), &requests.CardNewParams{AccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"), CardProgramToken: lithic.F("00000000-0000-0000-1000-000000000000"), ExpMonth: lithic.F("06"), ExpYear: lithic.F("2027"), Memo: lithic.F("New Card"), SpendLimit: lithic.F(int64(0)), SpendLimitDuration: lithic.F(requests.SpendLimitDurationAnnually), State: lithic.F(requests.CardNewParamsStateOpen), Type: lithic.F(requests.CardNewParamsTypeVirtual), Pin: lithic.F("string"), DigitalCardArtToken: lithic.F("00000000-0000-0000-1000-000000000000"), ProductID: lithic.F("1"), ShippingAddress: lithic.F(requests.ShippingAddress{FirstName: lithic.F("Michael"), LastName: lithic.F("Bluth"), Line2Text: lithic.F("The Bluth Company"), Address1: lithic.F("5 Broad Street"), Address2: lithic.F("Unit 25A"), City: lithic.F("NEW YORK"), State: lithic.F("NY"), PostalCode: lithic.F("10001-1809"), Country: lithic.F("USA"), Email: lithic.F("johnny@appleseed.com"), PhoneNumber: lithic.F("+12124007676")}), ShippingMethod: lithic.F(requests.CardNewParamsShippingMethodStandard)})
 	if err != nil {
 		var apiError core.APIError
 		if errors.As(err, &apiError) {
@@ -47,7 +47,7 @@ func TestCardsUpdateWithOptionalParams(t *testing.T) {
 	_, err := c.Cards.Update(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-		&requests.CardUpdateParams{FundingToken: lithic.F("ecbd1d58-0299-48b3-84da-6ed7f5bf9ec1"), Memo: lithic.F("New Card"), SpendLimit: lithic.F(int64(0)), SpendLimitDuration: lithic.F(requests.SpendLimitDurationAnnually), AuthRuleToken: lithic.F("string"), State: lithic.F(requests.CardUpdateParamsStateClosed), Pin: lithic.F("string"), DigitalCardArtToken: lithic.F("00000000-0000-0000-1000-000000000000")},
+		&requests.CardUpdateParams{Memo: lithic.F("New Card"), SpendLimit: lithic.F(int64(0)), SpendLimitDuration: lithic.F(requests.SpendLimitDurationAnnually), AuthRuleToken: lithic.F("string"), State: lithic.F(requests.CardUpdateParamsStateClosed), Pin: lithic.F("string"), DigitalCardArtToken: lithic.F("00000000-0000-0000-1000-000000000000")},
 	)
 	if err != nil {
 		var apiError core.APIError

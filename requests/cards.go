@@ -72,9 +72,6 @@ type CardNewParams struct {
 	// Four digit (yyyy) expiry year. If neither `exp_month` nor `exp_year` is
 	// provided, an expiration date will be generated.
 	ExpYear fields.Field[string] `json:"exp_year"`
-	// The token for the desired `FundingAccount` to use when making transactions with
-	// this card.
-	FundingToken fields.Field[string] `json:"funding_token" format:"uuid"`
 	// Friendly name to identify the card. We recommend against using this field to
 	// store JSON data as it can cause unexpected behavior.
 	Memo fields.Field[string] `json:"memo"`
@@ -150,7 +147,7 @@ func (r *CardNewParams) MarshalJSON() (data []byte, err error) {
 }
 
 func (r CardNewParams) String() (result string) {
-	return fmt.Sprintf("&CardNewParams{AccountToken:%s CardProgramToken:%s ExpMonth:%s ExpYear:%s FundingToken:%s Memo:%s SpendLimit:%s SpendLimitDuration:%s State:%s Type:%s Pin:%s DigitalCardArtToken:%s ProductID:%s ShippingAddress:%s ShippingMethod:%s}", r.AccountToken, r.CardProgramToken, r.ExpMonth, r.ExpYear, r.FundingToken, r.Memo, r.SpendLimit, r.SpendLimitDuration, r.State, r.Type, r.Pin, r.DigitalCardArtToken, r.ProductID, r.ShippingAddress, r.ShippingMethod)
+	return fmt.Sprintf("&CardNewParams{AccountToken:%s CardProgramToken:%s ExpMonth:%s ExpYear:%s Memo:%s SpendLimit:%s SpendLimitDuration:%s State:%s Type:%s Pin:%s DigitalCardArtToken:%s ProductID:%s ShippingAddress:%s ShippingMethod:%s}", r.AccountToken, r.CardProgramToken, r.ExpMonth, r.ExpYear, r.Memo, r.SpendLimit, r.SpendLimitDuration, r.State, r.Type, r.Pin, r.DigitalCardArtToken, r.ProductID, r.ShippingAddress, r.ShippingMethod)
 }
 
 type CardNewParamsState string
@@ -178,9 +175,6 @@ const (
 )
 
 type CardUpdateParams struct {
-	// The token for the desired `FundingAccount` to use when making transactions with
-	// this card.
-	FundingToken fields.Field[string] `json:"funding_token" format:"uuid"`
 	// Friendly name to identify the card. We recommend against using this field to
 	// store JSON data as it can cause unexpected behavior.
 	Memo fields.Field[string] `json:"memo"`
@@ -232,7 +226,7 @@ func (r *CardUpdateParams) MarshalJSON() (data []byte, err error) {
 }
 
 func (r CardUpdateParams) String() (result string) {
-	return fmt.Sprintf("&CardUpdateParams{FundingToken:%s Memo:%s SpendLimit:%s SpendLimitDuration:%s AuthRuleToken:%s State:%s Pin:%s DigitalCardArtToken:%s}", r.FundingToken, r.Memo, r.SpendLimit, r.SpendLimitDuration, r.AuthRuleToken, r.State, r.Pin, r.DigitalCardArtToken)
+	return fmt.Sprintf("&CardUpdateParams{Memo:%s SpendLimit:%s SpendLimitDuration:%s AuthRuleToken:%s State:%s Pin:%s DigitalCardArtToken:%s}", r.Memo, r.SpendLimit, r.SpendLimitDuration, r.AuthRuleToken, r.State, r.Pin, r.DigitalCardArtToken)
 }
 
 type CardUpdateParamsState string

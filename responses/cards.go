@@ -11,8 +11,8 @@ type Card struct {
 	// An RFC 3339 timestamp for when the card was created. UTC time zone.
 	Created time.Time `json:"created,required" format:"date-time"`
 	// Three digit cvv printed on the back of the card.
-	Cvv     string        `json:"cvv"`
-	Funding FundingSource `json:"funding,required"`
+	Cvv     string         `json:"cvv"`
+	Funding FundingAccount `json:"funding,required"`
 	// Two digit (MM) expiry month.
 	ExpMonth string `json:"exp_month"`
 	// Four digit (yyyy) expiry year.
@@ -116,6 +116,71 @@ type CardJSON struct {
 func (r *Card) UnmarshalJSON(data []byte) (err error) {
 	return pjson.UnmarshalRoot(data, r)
 }
+
+type FundingAccount struct {
+	// Account name identifying the funding source. This may be `null`.
+	AccountName string `json:"account_name"`
+	// An RFC 3339 string representing when this funding source was added to the Lithic
+	// account. This may be `null`. UTC time zone.
+	Created time.Time `json:"created,required" format:"date-time"`
+	// The last 4 digits of the account (e.g. bank account, debit card) associated with
+	// this FundingAccount. This may be null.
+	LastFour string `json:"last_four,required"`
+	// The nickname given to the `FundingAccount` or `null` if it has no nickname.
+	Nickname string `json:"nickname"`
+	// State of funding source.
+	//
+	// Funding source states:
+	//
+	//   - `ENABLED` - The funding account is available to use for card creation and
+	//     transactions.
+	//   - `PENDING` - The funding account is still being verified e.g. bank
+	//     micro-deposits verification.
+	//   - `DELETED` - The founding account has been deleted.
+	State FundingAccountState `json:"state,required"`
+	// A globally unique identifier for this FundingAccount.
+	Token string `json:"token,required" format:"uuid"`
+	// Types of funding source:
+	//
+	// - `DEPOSITORY_CHECKING` - Bank checking account.
+	// - `DEPOSITORY_SAVINGS` - Bank savings account.
+	Type FundingAccountType `json:"type,required"`
+	JSON FundingAccountJSON
+}
+
+type FundingAccountJSON struct {
+	AccountName pjson.Metadata
+	Created     pjson.Metadata
+	LastFour    pjson.Metadata
+	Nickname    pjson.Metadata
+	State       pjson.Metadata
+	Token       pjson.Metadata
+	Type        pjson.Metadata
+	Raw         []byte
+	Extras      map[string]pjson.Metadata
+}
+
+// UnmarshalJSON deserializes the provided bytes into FundingAccount using the
+// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// property.
+func (r *FundingAccount) UnmarshalJSON(data []byte) (err error) {
+	return pjson.UnmarshalRoot(data, r)
+}
+
+type FundingAccountState string
+
+const (
+	FundingAccountStateEnabled FundingAccountState = "ENABLED"
+	FundingAccountStatePending FundingAccountState = "PENDING"
+	FundingAccountStateDeleted FundingAccountState = "DELETED"
+)
+
+type FundingAccountType string
+
+const (
+	FundingAccountTypeDepositoryChecking FundingAccountType = "DEPOSITORY_CHECKING"
+	FundingAccountTypeDepositorySavings  FundingAccountType = "DEPOSITORY_SAVINGS"
+)
 
 type SpendLimitDuration string
 

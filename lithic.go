@@ -26,17 +26,17 @@ func UInt[T uint | uint8 | uint16 | uint32 | uint64](value T) fields.Field[uint6
 func Str(str string) fields.Field[string] { return F(str) }
 
 type Lithic struct {
-	Options              []options.RequestOption
-	Accounts             *services.AccountService
-	AccountHolders       *services.AccountHolderService
-	AuthRules            *services.AuthRuleService
-	AuthStreamEnrollment *services.AuthStreamEnrollmentService
-	Cards                *services.CardService
-	Disputes             *services.DisputeService
-	Events               *services.EventService
-	FundingSources       *services.FundingSourceService
-	Transactions         *services.TransactionService
-	Webhooks             *services.WebhookService
+	Options                 []options.RequestOption
+	Accounts                *services.AccountService
+	AccountHolders          *services.AccountHolderService
+	AuthRules               *services.AuthRuleService
+	AuthStreamEnrollment    *services.AuthStreamEnrollmentService
+	TokenizationDecisioning *services.TokenizationDecisioningService
+	Cards                   *services.CardService
+	Disputes                *services.DisputeService
+	Events                  *services.EventService
+	Transactions            *services.TransactionService
+	Webhooks                *services.WebhookService
 }
 
 // NewLithic generates a new client with the default options read from the
@@ -59,10 +59,10 @@ func NewLithic(opts ...options.RequestOption) (r *Lithic) {
 	r.AccountHolders = services.NewAccountHolderService(opts...)
 	r.AuthRules = services.NewAuthRuleService(opts...)
 	r.AuthStreamEnrollment = services.NewAuthStreamEnrollmentService(opts...)
+	r.TokenizationDecisioning = services.NewTokenizationDecisioningService(opts...)
 	r.Cards = services.NewCardService(opts...)
 	r.Disputes = services.NewDisputeService(opts...)
 	r.Events = services.NewEventService(opts...)
-	r.FundingSources = services.NewFundingSourceService(opts...)
 	r.Transactions = services.NewTransactionService(opts...)
 	r.Webhooks = services.NewWebhookService(opts...)
 
