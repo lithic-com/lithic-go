@@ -9,12 +9,12 @@ import (
 
 	"github.com/lithic-com/lithic-go"
 	"github.com/lithic-com/lithic-go/core"
-	"github.com/lithic-com/lithic-go/options"
+	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/requests"
 )
 
 func TestDisputesNewWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Disputes.New(context.TODO(), &requests.DisputeNewParams{Amount: lithic.F(int64(0)), CustomerFiledDate: lithic.F(time.Now()), Reason: lithic.F(requests.DisputeNewParamsReasonAtmCashMisdispense), TransactionToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"), CustomerNote: lithic.F("string")})
 	if err != nil {
 		var apiError core.APIError
@@ -27,7 +27,7 @@ func TestDisputesNewWithOptionalParams(t *testing.T) {
 }
 
 func TestDisputesGet(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Disputes.Get(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
@@ -43,7 +43,7 @@ func TestDisputesGet(t *testing.T) {
 }
 
 func TestDisputesUpdateWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Disputes.Update(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
@@ -60,7 +60,7 @@ func TestDisputesUpdateWithOptionalParams(t *testing.T) {
 }
 
 func TestDisputesListWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Disputes.List(context.TODO(), &requests.DisputeListParams{TransactionToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"), Status: lithic.F(requests.DisputeListParamsStatusNew), PageSize: lithic.F(int64(1)), Begin: lithic.F(time.Now()), End: lithic.F(time.Now()), StartingAfter: lithic.F("string"), EndingBefore: lithic.F("string")})
 	if err != nil {
 		var apiError core.APIError
@@ -73,7 +73,7 @@ func TestDisputesListWithOptionalParams(t *testing.T) {
 }
 
 func TestDisputesDelete(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Disputes.Delete(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
@@ -89,11 +89,11 @@ func TestDisputesDelete(t *testing.T) {
 }
 
 func TestDisputesDeleteEvidence(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Disputes.DeleteEvidence(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-		&requests.DisputesDeleteEvidenceParams{DisputeToken: "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"},
+		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 	)
 	if err != nil {
 		var apiError core.APIError
@@ -106,7 +106,7 @@ func TestDisputesDeleteEvidence(t *testing.T) {
 }
 
 func TestDisputesInitiateEvidenceUpload(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Disputes.InitiateEvidenceUpload(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
@@ -122,7 +122,7 @@ func TestDisputesInitiateEvidenceUpload(t *testing.T) {
 }
 
 func TestDisputesListEvidencesWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Disputes.ListEvidences(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
@@ -139,11 +139,11 @@ func TestDisputesListEvidencesWithOptionalParams(t *testing.T) {
 }
 
 func TestDisputesGetEvidence(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Disputes.GetEvidence(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-		&requests.DisputesGetEvidenceParams{DisputeToken: "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"},
+		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 	)
 	if err != nil {
 		var apiError core.APIError

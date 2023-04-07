@@ -4,15 +4,14 @@ import (
 	"time"
 
 	pjson "github.com/lithic-com/lithic-go/core/json"
-	"github.com/lithic-com/lithic-go/pagination"
 )
 
 type Card struct {
 	// An RFC 3339 timestamp for when the card was created. UTC time zone.
 	Created time.Time `json:"created,required" format:"date-time"`
 	// Three digit cvv printed on the back of the card.
-	Cvv     string         `json:"cvv"`
-	Funding FundingAccount `json:"funding,required"`
+	Cvv     string      `json:"cvv"`
+	Funding CardFunding `json:"funding,required"`
 	// Two digit (MM) expiry month.
 	ExpMonth string `json:"exp_month"`
 	// Four digit (yyyy) expiry year.
@@ -117,7 +116,7 @@ func (r *Card) UnmarshalJSON(data []byte) (err error) {
 	return pjson.UnmarshalRoot(data, r)
 }
 
-type FundingAccount struct {
+type CardFunding struct {
 	// Account name identifying the funding source. This may be `null`.
 	AccountName string `json:"account_name"`
 	// An RFC 3339 string representing when this funding source was added to the Lithic
@@ -137,18 +136,18 @@ type FundingAccount struct {
 	//   - `PENDING` - The funding account is still being verified e.g. bank
 	//     micro-deposits verification.
 	//   - `DELETED` - The founding account has been deleted.
-	State FundingAccountState `json:"state,required"`
+	State CardFundingState `json:"state,required"`
 	// A globally unique identifier for this FundingAccount.
 	Token string `json:"token,required" format:"uuid"`
 	// Types of funding source:
 	//
 	// - `DEPOSITORY_CHECKING` - Bank checking account.
 	// - `DEPOSITORY_SAVINGS` - Bank savings account.
-	Type FundingAccountType `json:"type,required"`
-	JSON FundingAccountJSON
+	Type CardFundingType `json:"type,required"`
+	JSON CardFundingJSON
 }
 
-type FundingAccountJSON struct {
+type CardFundingJSON struct {
 	AccountName pjson.Metadata
 	Created     pjson.Metadata
 	LastFour    pjson.Metadata
@@ -160,26 +159,26 @@ type FundingAccountJSON struct {
 	Extras      map[string]pjson.Metadata
 }
 
-// UnmarshalJSON deserializes the provided bytes into FundingAccount using the
+// UnmarshalJSON deserializes the provided bytes into CardFunding using the
 // internal pjson library. Unrecognized fields are stored in the `jsonFields`
 // property.
-func (r *FundingAccount) UnmarshalJSON(data []byte) (err error) {
+func (r *CardFunding) UnmarshalJSON(data []byte) (err error) {
 	return pjson.UnmarshalRoot(data, r)
 }
 
-type FundingAccountState string
+type CardFundingState string
 
 const (
-	FundingAccountStateEnabled FundingAccountState = "ENABLED"
-	FundingAccountStatePending FundingAccountState = "PENDING"
-	FundingAccountStateDeleted FundingAccountState = "DELETED"
+	CardFundingStateEnabled CardFundingState = "ENABLED"
+	CardFundingStatePending CardFundingState = "PENDING"
+	CardFundingStateDeleted CardFundingState = "DELETED"
 )
 
-type FundingAccountType string
+type CardFundingType string
 
 const (
-	FundingAccountTypeDepositoryChecking FundingAccountType = "DEPOSITORY_CHECKING"
-	FundingAccountTypeDepositorySavings  FundingAccountType = "DEPOSITORY_SAVINGS"
+	CardFundingTypeDepositoryChecking CardFundingType = "DEPOSITORY_CHECKING"
+	CardFundingTypeDepositorySavings  CardFundingType = "DEPOSITORY_SAVINGS"
 )
 
 type SpendLimitDuration string
@@ -293,20 +292,4 @@ type CardListResponseJSON struct {
 // property.
 func (r *CardListResponse) UnmarshalJSON(data []byte) (err error) {
 	return pjson.UnmarshalRoot(data, r)
-}
-
-type CardsPage struct {
-	*pagination.Page[Card]
-}
-
-func (r *CardsPage) Card() *Card {
-	return r.Current()
-}
-
-func (r *CardsPage) NextPage() (*CardsPage, error) {
-	if page, err := r.Page.NextPage(); err != nil {
-		return nil, err
-	} else {
-		return &CardsPage{page}, nil
-	}
 }

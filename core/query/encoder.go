@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/lithic-com/lithic-go/core/fields"
+	"github.com/lithic-com/lithic-go/core/field"
 )
 
 var encoders sync.Map // map[reflect.Type]encoderFunc
@@ -119,7 +119,7 @@ func (e *encoder) newTypeEncoder(t reflect.Type) encoderFunc {
 }
 
 func (e *encoder) newStructTypeEncoder(t reflect.Type) encoderFunc {
-	if t.Implements(reflect.TypeOf((*fields.FieldLike)(nil)).Elem()) {
+	if t.Implements(reflect.TypeOf((*field.FieldLike)(nil)).Elem()) {
 		return e.newFieldTypeEncoder(t)
 	}
 
@@ -130,11 +130,11 @@ func (e *encoder) newStructTypeEncoder(t reflect.Type) encoderFunc {
 		if field.Anonymous {
 			t := field.Type
 			if !field.IsExported() && t.Kind() != reflect.Struct {
-				// Ignore embedded fields of unexported non-struct types.
+				// Ignore embedded field of unexported non-struct types.
 				continue
 			}
-			// Do not ignore embedded fields of unexported struct types
-			// since they may have exported fields.
+			// Do not ignore embedded field of unexported struct types
+			// since they may have exported field.
 		}
 		if !field.IsExported() {
 			continue

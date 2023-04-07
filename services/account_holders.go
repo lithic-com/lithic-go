@@ -4,16 +4,16 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/lithic-com/lithic-go/options"
+	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/requests"
 	"github.com/lithic-com/lithic-go/responses"
 )
 
 type AccountHolderService struct {
-	Options []options.RequestOption
+	Options []option.RequestOption
 }
 
-func NewAccountHolderService(opts ...options.RequestOption) (r *AccountHolderService) {
+func NewAccountHolderService(opts ...option.RequestOption) (r *AccountHolderService) {
 	r = &AccountHolderService{}
 	r.Options = opts
 	return
@@ -26,27 +26,27 @@ func NewAccountHolderService(opts ...options.RequestOption) (r *AccountHolderSer
 // workflow is under review or further action will be needed to complete the
 // account creation process. This endpoint can only be used on accounts that are
 // part of the program the calling API key manages.
-func (r *AccountHolderService) New(ctx context.Context, body *requests.AccountHolderNewParams, opts ...options.RequestOption) (res *responses.AccountHolder, err error) {
+func (r *AccountHolderService) New(ctx context.Context, opts ...option.RequestOption) (res *responses.AccountHolder, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "account_holders"
-	err = options.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, "POST", path, nil, &res, opts...)
 	return
 }
 
 // Get an Individual or Business Account Holder and/or their KYC or KYB evaluation
 // status.
-func (r *AccountHolderService) Get(ctx context.Context, account_holder_token string, opts ...options.RequestOption) (res *responses.AccountHolder, err error) {
+func (r *AccountHolderService) Get(ctx context.Context, account_holder_token string, opts ...option.RequestOption) (res *responses.AccountHolder, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("account_holders/%s", account_holder_token)
-	err = options.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
 	return
 }
 
 // Update the information associated with a particular account holder.
-func (r *AccountHolderService) Update(ctx context.Context, account_holder_token string, body *requests.AccountHolderUpdateParams, opts ...options.RequestOption) (res *responses.AccountHolderUpdateResponse, err error) {
+func (r *AccountHolderService) Update(ctx context.Context, account_holder_token string, body *requests.AccountHolderUpdateParams, opts ...option.RequestOption) (res *responses.AccountHolderUpdateResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("account_holders/%s", account_holder_token)
-	err = options.ExecuteNewRequest(ctx, "PATCH", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, "PATCH", path, body, &res, opts...)
 	return
 }
 
@@ -64,10 +64,10 @@ func (r *AccountHolderService) Update(ctx context.Context, account_holder_token 
 // HMAC token or modify the registered URL. Only a single webhook is allowed per
 // program. Since HMAC verification is available, the IP addresses from which
 // KYC/KYB webhooks are sent are subject to change.
-func (r *AccountHolderService) NewWebhook(ctx context.Context, body *requests.AccountHolderNewWebhookParams, opts ...options.RequestOption) (res *responses.AccountHolderCreateWebhookResponse, err error) {
+func (r *AccountHolderService) NewWebhook(ctx context.Context, body *requests.AccountHolderNewWebhookParams, opts ...option.RequestOption) (res *responses.AccountHolderCreateWebhookResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "webhooks/account_holders"
-	err = options.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
 	return
 }
 
@@ -86,10 +86,10 @@ func (r *AccountHolderService) NewWebhook(ctx context.Context, body *requests.Ac
 // When a new document upload is generated for a failed attempt, the response will
 // show an additional entry in the `required_document_uploads` list in a `PENDING`
 // state for the corresponding `image_type`.
-func (r *AccountHolderService) ListDocuments(ctx context.Context, account_holder_token string, opts ...options.RequestOption) (res *responses.AccountHolderListDocumentsResponse, err error) {
+func (r *AccountHolderService) ListDocuments(ctx context.Context, account_holder_token string, opts ...option.RequestOption) (res *responses.AccountHolderListDocumentsResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("account_holders/%s/documents", account_holder_token)
-	err = options.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
 	return
 }
 
@@ -101,10 +101,10 @@ func (r *AccountHolderService) ListDocuments(ctx context.Context, account_holder
 //
 // Two resubmission attempts are permitted via this endpoint before a `REJECTED`
 // status is returned and the account creation process is ended.
-func (r *AccountHolderService) Resubmit(ctx context.Context, account_holder_token string, body *requests.AccountHolderResubmitParams, opts ...options.RequestOption) (res *responses.AccountHolder, err error) {
+func (r *AccountHolderService) Resubmit(ctx context.Context, account_holder_token string, body *requests.AccountHolderResubmitParams, opts ...option.RequestOption) (res *responses.AccountHolder, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("account_holders/%s/resubmit", account_holder_token)
-	err = options.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
 	return
 }
 
@@ -122,10 +122,10 @@ func (r *AccountHolderService) Resubmit(ctx context.Context, account_holder_toke
 // When a new account holder document upload is generated for a failed attempt, the
 // response will show an additional entry in the `required_document_uploads` array
 // in a `PENDING` state for the corresponding `image_type`.
-func (r *AccountHolderService) GetDocument(ctx context.Context, document_token string, params *requests.AccountHoldersGetDocumentParams, opts ...options.RequestOption) (res *responses.AccountHolderDocument, err error) {
+func (r *AccountHolderService) GetDocument(ctx context.Context, account_holder_token string, document_token string, opts ...option.RequestOption) (res *responses.AccountHolderDocument, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("account_holders/%s/documents/%s", params.AccountHolderToken, document_token)
-	err = options.ExecuteNewRequest(ctx, "GET", path, params, &res, opts...)
+	path := fmt.Sprintf("account_holders/%s/documents/%s", account_holder_token, document_token)
+	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
 	return
 }
 
@@ -147,9 +147,9 @@ func (r *AccountHolderService) GetDocument(ctx context.Context, document_token s
 // `REJECTED` status is returned and the account creation process is ended.
 // Currently only one type of account holder document is supported per KYC
 // verification.
-func (r *AccountHolderService) UploadDocument(ctx context.Context, account_holder_token string, body *requests.AccountHolderUploadDocumentParams, opts ...options.RequestOption) (res *responses.AccountHolderDocument, err error) {
+func (r *AccountHolderService) UploadDocument(ctx context.Context, account_holder_token string, body *requests.AccountHolderUploadDocumentParams, opts ...option.RequestOption) (res *responses.AccountHolderDocument, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("account_holders/%s/documents", account_holder_token)
-	err = options.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
 	return
 }

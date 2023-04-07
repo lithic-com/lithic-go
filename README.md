@@ -35,7 +35,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/lithic-com/lithic-go"
-	"github.com/lithic-com/lithic-go/core/fields"
+	"github.com/lithic-com/lithic-go/core/field"
+	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/requests"
 )
 
@@ -175,32 +176,45 @@ client.Cards.New(
 
 ### Pagination
 
-List methods in the Lithic API are paginated.
-
 In addition to exposing standard response values, this library provides an
-auto-paginating iterator with each list response, so you do not have to request
-successive pages manually:
+auto-paginating iterator for each paginated response, so you do not have to
+request successive pages manually:
 
-To iterate over all elements in a paginated list, we call the paginated
-endpoint which returns a `Page`, then iterate while there is a `Next()`
-element. When `Next()` is called, it will load the next element into
-`Current()`, which is also aliased to the endpoint-specific name. If we are at
-the end of the current page, `Next()` will fetch the next page.
+To iterate over all elements in a paginated list, we call the iterated
+endpoint, then iterate while there is an element to be read. When `Next()` is
+called, it will load the next element into `Current()` or return `false`. If we
+are at the end of the current page, `Next()` will attempt to fetch the next
+page.
 
 ```go
-page, err := client.Cards.List(
+iter := client.Cards.ListAutoPager(
 	context.TODO(),
 	...,
 )
-if err != nil {
+for iter.Next() {
+	item := iter.Current()
+	print(item.ID)
+}
+if err := iter.Err(); err != nil {
 	panic(err.Error())
 }
-for page.Next() {
-	item := page.Current()
-	// ...
+```
+
+If you want to make a simple request and handle paging yourself, you can do
+that! We provide a `GetNextPage()` function which uses the same arguments and
+request options as the original request, except for the arguments responsible
+for the paging.
+
+```go
+page, err := client.Cards.List(context.TODO(), ...)
+for page != nil {
+	for _, item := range page.Data {
+		print(item.ID)
+	}
+	page, err = page.GetNextPage()
 }
-if page.Err() != nil {
-	panic(page.Err().Error())
+if err != nil {
+	panic(err.Error())
 }
 ```
 

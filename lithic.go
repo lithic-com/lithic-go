@@ -4,29 +4,13 @@ import (
 	"context"
 	"os"
 
-	"github.com/lithic-com/lithic-go/core/fields"
-	"github.com/lithic-com/lithic-go/options"
+	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/responses"
 	"github.com/lithic-com/lithic-go/services"
 )
 
-func F[T any](value T) fields.Field[T]          { return fields.Field[T]{Value: value, Present: true} }
-func NullField[T any]() fields.Field[T]         { return fields.Field[T]{Null: true, Present: true} }
-func RawField[T any](value any) fields.Field[T] { return fields.Field[T]{Raw: value, Present: true} }
-
-func Float[T float32 | float64](value T) fields.Field[float64] {
-	return fields.Field[float64]{Value: float64(value), Present: true}
-}
-func Int[T int | int8 | int16 | int32 | int64](value T) fields.Field[int64] {
-	return fields.Field[int64]{Value: int64(value), Present: true}
-}
-func UInt[T uint | uint8 | uint16 | uint32 | uint64](value T) fields.Field[uint64] {
-	return fields.Field[uint64]{Value: uint64(value), Present: true}
-}
-func Str(str string) fields.Field[string] { return F(str) }
-
 type Lithic struct {
-	Options                 []options.RequestOption
+	Options                 []option.RequestOption
 	Accounts                *services.AccountService
 	AccountHolders          *services.AccountHolderService
 	AuthRules               *services.AuthRuleService
@@ -39,17 +23,17 @@ type Lithic struct {
 	Webhooks                *services.WebhookService
 }
 
-// NewLithic generates a new client with the default options read from the
-// environment ("LITHIC_API_KEY", "LITHIC_WEBHOOK_SECRET"). The options passed in
-// as arguments are applied after these default arguments, and all options will be
+// NewLithic generates a new client with the default option read from the
+// environment ("LITHIC_API_KEY", "LITHIC_WEBHOOK_SECRET"). The option passed in as
+// arguments are applied after these default arguments, and all option will be
 // passed down to the services and requests that this client makes.
-func NewLithic(opts ...options.RequestOption) (r *Lithic) {
-	defaults := []options.RequestOption{options.WithEnvironmentProduction()}
+func NewLithic(opts ...option.RequestOption) (r *Lithic) {
+	defaults := []option.RequestOption{option.WithEnvironmentProduction()}
 	if o, ok := os.LookupEnv("LITHIC_API_KEY"); ok {
-		defaults = append(defaults, options.WithAPIKey(o))
+		defaults = append(defaults, option.WithAPIKey(o))
 	}
 	if o, ok := os.LookupEnv("LITHIC_WEBHOOK_SECRET"); ok {
-		defaults = append(defaults, options.WithWebhookSecret(o))
+		defaults = append(defaults, option.WithWebhookSecret(o))
 	}
 	opts = append(defaults, opts...)
 
@@ -70,9 +54,9 @@ func NewLithic(opts ...options.RequestOption) (r *Lithic) {
 }
 
 // API status check
-func (r *Lithic) APIStatus(ctx context.Context, opts ...options.RequestOption) (res *responses.APIStatus, err error) {
+func (r *Lithic) APIStatus(ctx context.Context, opts ...option.RequestOption) (res *responses.APIStatus, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "status"
-	err = options.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
 	return
 }

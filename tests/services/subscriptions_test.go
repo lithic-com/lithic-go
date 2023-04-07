@@ -9,12 +9,12 @@ import (
 
 	"github.com/lithic-com/lithic-go"
 	"github.com/lithic-com/lithic-go/core"
-	"github.com/lithic-com/lithic-go/options"
+	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/requests"
 )
 
 func TestSubscriptionsNewWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Events.Subscriptions.New(context.TODO(), &requests.SubscriptionNewParams{Description: lithic.F("string"), Disabled: lithic.F(true), EventTypes: lithic.F([]requests.SubscriptionNewParamsEventTypes{requests.SubscriptionNewParamsEventTypesDisputeUpdated, requests.SubscriptionNewParamsEventTypesDisputeUpdated, requests.SubscriptionNewParamsEventTypesDisputeUpdated}), URL: lithic.F("https://example.com")})
 	if err != nil {
 		var apiError core.APIError
@@ -27,7 +27,7 @@ func TestSubscriptionsNewWithOptionalParams(t *testing.T) {
 }
 
 func TestSubscriptionsGet(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Events.Subscriptions.Get(
 		context.TODO(),
 		"string",
@@ -43,7 +43,7 @@ func TestSubscriptionsGet(t *testing.T) {
 }
 
 func TestSubscriptionsUpdateWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Events.Subscriptions.Update(
 		context.TODO(),
 		"string",
@@ -60,7 +60,7 @@ func TestSubscriptionsUpdateWithOptionalParams(t *testing.T) {
 }
 
 func TestSubscriptionsListWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Events.Subscriptions.List(context.TODO(), &requests.SubscriptionListParams{PageSize: lithic.F(int64(1)), StartingAfter: lithic.F("string"), EndingBefore: lithic.F("string")})
 	if err != nil {
 		var apiError core.APIError
@@ -74,7 +74,7 @@ func TestSubscriptionsListWithOptionalParams(t *testing.T) {
 
 func TestSubscriptionsDelete(t *testing.T) {
 	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	err := c.Events.Subscriptions.Delete(
 		context.TODO(),
 		"string",
@@ -91,7 +91,7 @@ func TestSubscriptionsDelete(t *testing.T) {
 
 func TestSubscriptionsRecover(t *testing.T) {
 	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	err := c.Events.Subscriptions.Recover(
 		context.TODO(),
 		"string",
@@ -109,7 +109,7 @@ func TestSubscriptionsRecover(t *testing.T) {
 
 func TestSubscriptionsReplayMissing(t *testing.T) {
 	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	err := c.Events.Subscriptions.ReplayMissing(
 		context.TODO(),
 		"string",
@@ -126,7 +126,7 @@ func TestSubscriptionsReplayMissing(t *testing.T) {
 }
 
 func TestSubscriptionsGetSecret(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Events.Subscriptions.GetSecret(
 		context.TODO(),
 		"string",
@@ -143,7 +143,7 @@ func TestSubscriptionsGetSecret(t *testing.T) {
 
 func TestSubscriptionsRotateSecret(t *testing.T) {
 	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	err := c.Events.Subscriptions.RotateSecret(
 		context.TODO(),
 		"string",

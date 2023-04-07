@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lithic-com/lithic-go/core/pointers"
+	"github.com/lithic-com/lithic-go/core/pointer"
 )
 
 type Primitves struct {
@@ -94,19 +94,19 @@ var tests = map[string]struct {
 	"array_int":          {`[1,2]`, []int{1, 2}},
 	"array_int_coerce":   {`["1",2]`, []int{1, 2}},
 
-	"ptr_true":               {"true", pointers.P(true)},
-	"ptr_false":              {"false", pointers.P(false)},
-	"ptr_int":                {"1", pointers.P(1)},
-	"ptr_int_bigger":         {"12324", pointers.P(12324)},
-	"ptr_int_string_coerce":  {`"65"`, pointers.P(65)},
-	"ptr_int_boolean_coerce": {"true", pointers.P(1)},
-	"ptr_int64":              {"1", pointers.P(int64(1))},
-	"ptr_int64_huge":         {"123456789123456789", pointers.P(int64(123456789123456789))},
-	"ptr_uint":               {"1", pointers.P(uint(1))},
-	"ptr_uint_bigger":        {"12324", pointers.P(uint(12324))},
-	"ptr_uint_coerce":        {`"65"`, pointers.P(uint(65))},
-	"ptr_float_1.54":         {"1.54", pointers.P(float32(1.54))},
-	"ptr_float_1.89":         {"1.89", pointers.P(float64(1.89))},
+	"ptr_true":               {"true", pointer.P(true)},
+	"ptr_false":              {"false", pointer.P(false)},
+	"ptr_int":                {"1", pointer.P(1)},
+	"ptr_int_bigger":         {"12324", pointer.P(12324)},
+	"ptr_int_string_coerce":  {`"65"`, pointer.P(65)},
+	"ptr_int_boolean_coerce": {"true", pointer.P(1)},
+	"ptr_int64":              {"1", pointer.P(int64(1))},
+	"ptr_int64_huge":         {"123456789123456789", pointer.P(int64(123456789123456789))},
+	"ptr_uint":               {"1", pointer.P(uint(1))},
+	"ptr_uint_bigger":        {"12324", pointer.P(uint(12324))},
+	"ptr_uint_coerce":        {`"65"`, pointer.P(uint(65))},
+	"ptr_float_1.54":         {"1.54", pointer.P(float32(1.54))},
+	"ptr_float_1.89":         {"1.89", pointer.P(float64(1.89))},
 
 	"date_time": {`"2007-03-01T13:00:00Z"`, time.Date(2007, time.March, 1, 13, 0, 0, 0, time.UTC)},
 
@@ -121,11 +121,11 @@ var tests = map[string]struct {
 	"primitive_pointer_struct": {
 		`{"a":false,"b":237628372683,"c":654,"d":9999.43,"e":43.76,"f":[1,2,3,4,5]}`,
 		PrimitvePointers{
-			A: pointers.P(false),
-			B: pointers.P(237628372683),
-			C: pointers.P(uint(654)),
-			D: pointers.P(9999.43),
-			E: pointers.P(float32(43.76)),
+			A: pointer.P(false),
+			B: pointer.P(237628372683),
+			C: pointer.P(uint(654)),
+			D: pointer.P(9999.43),
+			E: pointer.P(float32(43.76)),
 			F: &[]int{1, 2, 3, 4, 5},
 		},
 	},

@@ -9,12 +9,12 @@ import (
 
 	"github.com/lithic-com/lithic-go"
 	"github.com/lithic-com/lithic-go/core"
-	"github.com/lithic-com/lithic-go/options"
+	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/requests"
 )
 
 func TestCardsNewWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Cards.New(context.TODO(), &requests.CardNewParams{AccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"), CardProgramToken: lithic.F("00000000-0000-0000-1000-000000000000"), ExpMonth: lithic.F("06"), ExpYear: lithic.F("2027"), Memo: lithic.F("New Card"), SpendLimit: lithic.F(int64(0)), SpendLimitDuration: lithic.F(requests.SpendLimitDurationAnnually), State: lithic.F(requests.CardNewParamsStateOpen), Type: lithic.F(requests.CardNewParamsTypeVirtual), Pin: lithic.F("string"), DigitalCardArtToken: lithic.F("00000000-0000-0000-1000-000000000000"), ProductID: lithic.F("1"), ShippingAddress: lithic.F(requests.ShippingAddress{FirstName: lithic.F("Michael"), LastName: lithic.F("Bluth"), Line2Text: lithic.F("The Bluth Company"), Address1: lithic.F("5 Broad Street"), Address2: lithic.F("Unit 25A"), City: lithic.F("NEW YORK"), State: lithic.F("NY"), PostalCode: lithic.F("10001-1809"), Country: lithic.F("USA"), Email: lithic.F("johnny@appleseed.com"), PhoneNumber: lithic.F("+12124007676")}), ShippingMethod: lithic.F(requests.CardNewParamsShippingMethodStandard)})
 	if err != nil {
 		var apiError core.APIError
@@ -27,7 +27,7 @@ func TestCardsNewWithOptionalParams(t *testing.T) {
 }
 
 func TestCardsGet(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Cards.Get(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
@@ -43,7 +43,7 @@ func TestCardsGet(t *testing.T) {
 }
 
 func TestCardsUpdateWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Cards.Update(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
@@ -60,7 +60,7 @@ func TestCardsUpdateWithOptionalParams(t *testing.T) {
 }
 
 func TestCardsListWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Cards.List(context.TODO(), &requests.CardListParams{AccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"), Begin: lithic.F(time.Now()), End: lithic.F(time.Now()), Page: lithic.F(int64(0)), PageSize: lithic.F(int64(1))})
 	if err != nil {
 		var apiError core.APIError
@@ -73,7 +73,7 @@ func TestCardsListWithOptionalParams(t *testing.T) {
 }
 
 func TestCardsEmbedWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Cards.Embed(context.TODO(), &requests.CardEmbedParams{EmbedRequest: lithic.F("string"), Hmac: lithic.F("string")})
 	if err != nil {
 		var apiError core.APIError
@@ -86,7 +86,7 @@ func TestCardsEmbedWithOptionalParams(t *testing.T) {
 }
 
 func TestCardsGetEmbedHTMLWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Cards.GetEmbedHTML(context.TODO(), &requests.EmbedRequestParams{Css: lithic.F("string"), Expiration: lithic.F(time.Now()), Token: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"), TargetOrigin: lithic.F("string")})
 	if err != nil {
 		var apiError core.APIError
@@ -99,7 +99,7 @@ func TestCardsGetEmbedHTMLWithOptionalParams(t *testing.T) {
 }
 
 func TestCardsGetEmbedURLWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Cards.GetEmbedURL(context.TODO(), &requests.EmbedRequestParams{Css: lithic.F("string"), Expiration: lithic.F(time.Now()), Token: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"), TargetOrigin: lithic.F("string")})
 	if err != nil {
 		var apiError core.APIError
@@ -112,7 +112,7 @@ func TestCardsGetEmbedURLWithOptionalParams(t *testing.T) {
 }
 
 func TestCardsProvisionWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Cards.Provision(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
@@ -129,7 +129,7 @@ func TestCardsProvisionWithOptionalParams(t *testing.T) {
 }
 
 func TestCardsReissueWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Cards.Reissue(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",

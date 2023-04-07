@@ -4,7 +4,6 @@ import (
 	"time"
 
 	pjson "github.com/lithic-com/lithic-go/core/json"
-	"github.com/lithic-com/lithic-go/pagination"
 )
 
 type Dispute struct {
@@ -267,12 +266,6 @@ func (r *DisputeListResponse) UnmarshalJSON(data []byte) (err error) {
 	return pjson.UnmarshalRoot(data, r)
 }
 
-type DisputesDeleteEvidenceParams struct {
-	// The {dispute_token} parameter of
-	// /disputes/{dispute_token}/evidences/{evidence_token}
-	DisputeToken string `path:"dispute_token" json:"-"`
-}
-
 type DisputeListEvidencesResponse struct {
 	Data []DisputeEvidence `json:"data,required"`
 	// More data exists.
@@ -292,42 +285,4 @@ type DisputeListEvidencesResponseJSON struct {
 // `jsonFields` property.
 func (r *DisputeListEvidencesResponse) UnmarshalJSON(data []byte) (err error) {
 	return pjson.UnmarshalRoot(data, r)
-}
-
-type DisputesGetEvidenceParams struct {
-	// The {dispute_token} parameter of
-	// /disputes/{dispute_token}/evidences/{evidence_token}
-	DisputeToken string `path:"dispute_token" json:"-"`
-}
-
-type DisputesCursorPage struct {
-	*pagination.CursorPage[Dispute]
-}
-
-func (r *DisputesCursorPage) Dispute() *Dispute {
-	return r.Current()
-}
-
-func (r *DisputesCursorPage) NextPage() (*DisputesCursorPage, error) {
-	if page, err := r.CursorPage.NextPage(); err != nil {
-		return nil, err
-	} else {
-		return &DisputesCursorPage{page}, nil
-	}
-}
-
-type DisputeEvidencesCursorPage struct {
-	*pagination.CursorPage[DisputeEvidence]
-}
-
-func (r *DisputeEvidencesCursorPage) DisputeEvidence() *DisputeEvidence {
-	return r.Current()
-}
-
-func (r *DisputeEvidencesCursorPage) NextPage() (*DisputeEvidencesCursorPage, error) {
-	if page, err := r.CursorPage.NextPage(); err != nil {
-		return nil, err
-	} else {
-		return &DisputeEvidencesCursorPage{page}, nil
-	}
 }

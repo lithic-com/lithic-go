@@ -4,7 +4,6 @@ import (
 	"time"
 
 	pjson "github.com/lithic-com/lithic-go/core/json"
-	"github.com/lithic-com/lithic-go/pagination"
 )
 
 type Transaction struct {
@@ -19,8 +18,8 @@ type Transaction struct {
 	// Authorization amount (in cents) of the transaction, including any acquirer fees.
 	// This amount always represents the amount authorized for the transaction,
 	// unaffected by settlement.
-	AuthorizationAmount      int64                    `json:"authorization_amount"`
-	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication,nullable"`
+	AuthorizationAmount      int64                               `json:"authorization_amount"`
+	CardholderAuthentication TransactionCardholderAuthentication `json:"cardholder_authentication,nullable"`
 	// Analogous to the "amount" property, but will represent the amount in the
 	// transaction's local currency (smallest unit), including any acquirer fees.
 	MerchantAmount int64 `json:"merchant_amount"`
@@ -38,8 +37,8 @@ type Transaction struct {
 	// Date and time when the transaction first occurred. UTC time zone.
 	Created time.Time `json:"created" format:"date-time"`
 	// A list of all events that have modified this transaction.
-	Events   []TransactionEvent `json:"events"`
-	Merchant Merchant           `json:"merchant"`
+	Events   []TransactionEvents `json:"events"`
+	Merchant TransactionMerchant `json:"merchant"`
 	// Card network of the authorization. Can be `INTERLINK`, `MAESTRO`, `MASTERCARD`,
 	// `VISA`, or `UNKNOWN`. Value is `UNKNOWN` when Lithic cannot determine the
 	// network code from the upstream provider.
@@ -92,7 +91,7 @@ func (r *Transaction) UnmarshalJSON(data []byte) (err error) {
 	return pjson.UnmarshalRoot(data, r)
 }
 
-type CardholderAuthentication struct {
+type TransactionCardholderAuthentication struct {
 	// 3-D Secure Protocol version. Possible values:
 	//
 	// - `1`: 3-D Secure Protocol version 1.x applied to the transaction.
@@ -114,7 +113,7 @@ type CardholderAuthentication struct {
 	//     exemption.
 	//
 	// Maps to the 3-D Secure `transChallengeExemption` field.
-	AcquirerExemption CardholderAuthenticationAcquirerExemption `json:"acquirer_exemption,required"`
+	AcquirerExemption TransactionCardholderAuthenticationAcquirerExemption `json:"acquirer_exemption,required"`
 	// Indicates whether chargeback liability shift applies to the transaction.
 	// Possible values:
 	//
@@ -129,7 +128,7 @@ type CardholderAuthentication struct {
 	//   - `TOKEN_AUTHENTICATED`: The transaction was a tokenized payment with validated
 	//     cryptography, possibly recurring. Chargeback liability shift to the issuer
 	//     applies.
-	LiabilityShift CardholderAuthenticationLiabilityShift `json:"liability_shift,required"`
+	LiabilityShift TransactionCardholderAuthenticationLiabilityShift `json:"liability_shift,required"`
 	// Verification attempted values:
 	//
 	//   - `APP_LOGIN`: Out-of-band login verification was attempted by the ACS.
@@ -140,7 +139,7 @@ type CardholderAuthentication struct {
 	//   - `OTHER`: Other method was used by the ACS to verify the cardholder (e.g.
 	//     Mastercard Identity Check Express, recurring transactions, etc.)
 	//   - `OTP`: One-time password verification was attempted by the ACS.
-	VerificationAttempted CardholderAuthenticationVerificationAttempted `json:"verification_attempted,required"`
+	VerificationAttempted TransactionCardholderAuthenticationVerificationAttempted `json:"verification_attempted,required"`
 	// This field partially maps to the `transStatus` field in the
 	// [EMVCo 3-D Secure specification](https://www.emvco.com/emv-technologies/3d-secure/)
 	// and Mastercard SPA2 AAV leading indicators.
@@ -172,11 +171,11 @@ type CardholderAuthentication struct {
 	// - `D`: Challenge Required; decoupled authentication confirmed
 	// - `I`: Informational only
 	// - `S`: Challenge using Secure Payment Confirmation (SPC)
-	VerificationResult CardholderAuthenticationVerificationResult `json:"verification_result,required"`
-	JSON               CardholderAuthenticationJSON
+	VerificationResult TransactionCardholderAuthenticationVerificationResult `json:"verification_result,required"`
+	JSON               TransactionCardholderAuthenticationJSON
 }
 
-type CardholderAuthenticationJSON struct {
+type TransactionCardholderAuthenticationJSON struct {
 	_3dsVersion           pjson.Metadata
 	AcquirerExemption     pjson.Metadata
 	LiabilityShift        pjson.Metadata
@@ -186,57 +185,57 @@ type CardholderAuthenticationJSON struct {
 	Extras                map[string]pjson.Metadata
 }
 
-// UnmarshalJSON deserializes the provided bytes into CardholderAuthentication
-// using the internal pjson library. Unrecognized fields are stored in the
-// `jsonFields` property.
-func (r *CardholderAuthentication) UnmarshalJSON(data []byte) (err error) {
+// UnmarshalJSON deserializes the provided bytes into
+// TransactionCardholderAuthentication using the internal pjson library.
+// Unrecognized fields are stored in the `jsonFields` property.
+func (r *TransactionCardholderAuthentication) UnmarshalJSON(data []byte) (err error) {
 	return pjson.UnmarshalRoot(data, r)
 }
 
-type CardholderAuthenticationAcquirerExemption string
+type TransactionCardholderAuthenticationAcquirerExemption string
 
 const (
-	CardholderAuthenticationAcquirerExemptionAuthenticationOutageException          CardholderAuthenticationAcquirerExemption = "AUTHENTICATION_OUTAGE_EXCEPTION"
-	CardholderAuthenticationAcquirerExemptionLowValue                               CardholderAuthenticationAcquirerExemption = "LOW_VALUE"
-	CardholderAuthenticationAcquirerExemptionMerchantInitiatedTransaction           CardholderAuthenticationAcquirerExemption = "MERCHANT_INITIATED_TRANSACTION"
-	CardholderAuthenticationAcquirerExemptionNone                                   CardholderAuthenticationAcquirerExemption = "NONE"
-	CardholderAuthenticationAcquirerExemptionRecurringPayment                       CardholderAuthenticationAcquirerExemption = "RECURRING_PAYMENT"
-	CardholderAuthenticationAcquirerExemptionSecureCorporatePayment                 CardholderAuthenticationAcquirerExemption = "SECURE_CORPORATE_PAYMENT"
-	CardholderAuthenticationAcquirerExemptionStrongCustomerAuthenticationDelegation CardholderAuthenticationAcquirerExemption = "STRONG_CUSTOMER_AUTHENTICATION_DELEGATION"
-	CardholderAuthenticationAcquirerExemptionTransactionRiskAnalysis                CardholderAuthenticationAcquirerExemption = "TRANSACTION_RISK_ANALYSIS"
+	TransactionCardholderAuthenticationAcquirerExemptionAuthenticationOutageException          TransactionCardholderAuthenticationAcquirerExemption = "AUTHENTICATION_OUTAGE_EXCEPTION"
+	TransactionCardholderAuthenticationAcquirerExemptionLowValue                               TransactionCardholderAuthenticationAcquirerExemption = "LOW_VALUE"
+	TransactionCardholderAuthenticationAcquirerExemptionMerchantInitiatedTransaction           TransactionCardholderAuthenticationAcquirerExemption = "MERCHANT_INITIATED_TRANSACTION"
+	TransactionCardholderAuthenticationAcquirerExemptionNone                                   TransactionCardholderAuthenticationAcquirerExemption = "NONE"
+	TransactionCardholderAuthenticationAcquirerExemptionRecurringPayment                       TransactionCardholderAuthenticationAcquirerExemption = "RECURRING_PAYMENT"
+	TransactionCardholderAuthenticationAcquirerExemptionSecureCorporatePayment                 TransactionCardholderAuthenticationAcquirerExemption = "SECURE_CORPORATE_PAYMENT"
+	TransactionCardholderAuthenticationAcquirerExemptionStrongCustomerAuthenticationDelegation TransactionCardholderAuthenticationAcquirerExemption = "STRONG_CUSTOMER_AUTHENTICATION_DELEGATION"
+	TransactionCardholderAuthenticationAcquirerExemptionTransactionRiskAnalysis                TransactionCardholderAuthenticationAcquirerExemption = "TRANSACTION_RISK_ANALYSIS"
 )
 
-type CardholderAuthenticationLiabilityShift string
+type TransactionCardholderAuthenticationLiabilityShift string
 
 const (
-	CardholderAuthenticationLiabilityShift_3DsAuthenticated  CardholderAuthenticationLiabilityShift = "3DS_AUTHENTICATED"
-	CardholderAuthenticationLiabilityShiftAcquirerExemption  CardholderAuthenticationLiabilityShift = "ACQUIRER_EXEMPTION"
-	CardholderAuthenticationLiabilityShiftNone               CardholderAuthenticationLiabilityShift = "NONE"
-	CardholderAuthenticationLiabilityShiftTokenAuthenticated CardholderAuthenticationLiabilityShift = "TOKEN_AUTHENTICATED"
+	TransactionCardholderAuthenticationLiabilityShift3DsAuthenticated   TransactionCardholderAuthenticationLiabilityShift = "3DS_AUTHENTICATED"
+	TransactionCardholderAuthenticationLiabilityShiftAcquirerExemption  TransactionCardholderAuthenticationLiabilityShift = "ACQUIRER_EXEMPTION"
+	TransactionCardholderAuthenticationLiabilityShiftNone               TransactionCardholderAuthenticationLiabilityShift = "NONE"
+	TransactionCardholderAuthenticationLiabilityShiftTokenAuthenticated TransactionCardholderAuthenticationLiabilityShift = "TOKEN_AUTHENTICATED"
 )
 
-type CardholderAuthenticationVerificationAttempted string
+type TransactionCardholderAuthenticationVerificationAttempted string
 
 const (
-	CardholderAuthenticationVerificationAttemptedAppLogin  CardholderAuthenticationVerificationAttempted = "APP_LOGIN"
-	CardholderAuthenticationVerificationAttemptedBiometric CardholderAuthenticationVerificationAttempted = "BIOMETRIC"
-	CardholderAuthenticationVerificationAttemptedNone      CardholderAuthenticationVerificationAttempted = "NONE"
-	CardholderAuthenticationVerificationAttemptedOther     CardholderAuthenticationVerificationAttempted = "OTHER"
-	CardholderAuthenticationVerificationAttemptedOtp       CardholderAuthenticationVerificationAttempted = "OTP"
+	TransactionCardholderAuthenticationVerificationAttemptedAppLogin  TransactionCardholderAuthenticationVerificationAttempted = "APP_LOGIN"
+	TransactionCardholderAuthenticationVerificationAttemptedBiometric TransactionCardholderAuthenticationVerificationAttempted = "BIOMETRIC"
+	TransactionCardholderAuthenticationVerificationAttemptedNone      TransactionCardholderAuthenticationVerificationAttempted = "NONE"
+	TransactionCardholderAuthenticationVerificationAttemptedOther     TransactionCardholderAuthenticationVerificationAttempted = "OTHER"
+	TransactionCardholderAuthenticationVerificationAttemptedOtp       TransactionCardholderAuthenticationVerificationAttempted = "OTP"
 )
 
-type CardholderAuthenticationVerificationResult string
+type TransactionCardholderAuthenticationVerificationResult string
 
 const (
-	CardholderAuthenticationVerificationResultCancelled    CardholderAuthenticationVerificationResult = "CANCELLED"
-	CardholderAuthenticationVerificationResultFailed       CardholderAuthenticationVerificationResult = "FAILED"
-	CardholderAuthenticationVerificationResultFrictionless CardholderAuthenticationVerificationResult = "FRICTIONLESS"
-	CardholderAuthenticationVerificationResultNotAttempted CardholderAuthenticationVerificationResult = "NOT_ATTEMPTED"
-	CardholderAuthenticationVerificationResultRejected     CardholderAuthenticationVerificationResult = "REJECTED"
-	CardholderAuthenticationVerificationResultSuccess      CardholderAuthenticationVerificationResult = "SUCCESS"
+	TransactionCardholderAuthenticationVerificationResultCancelled    TransactionCardholderAuthenticationVerificationResult = "CANCELLED"
+	TransactionCardholderAuthenticationVerificationResultFailed       TransactionCardholderAuthenticationVerificationResult = "FAILED"
+	TransactionCardholderAuthenticationVerificationResultFrictionless TransactionCardholderAuthenticationVerificationResult = "FRICTIONLESS"
+	TransactionCardholderAuthenticationVerificationResultNotAttempted TransactionCardholderAuthenticationVerificationResult = "NOT_ATTEMPTED"
+	TransactionCardholderAuthenticationVerificationResultRejected     TransactionCardholderAuthenticationVerificationResult = "REJECTED"
+	TransactionCardholderAuthenticationVerificationResultSuccess      TransactionCardholderAuthenticationVerificationResult = "SUCCESS"
 )
 
-type TransactionEvent struct {
+type TransactionEvents struct {
 	// Amount of the transaction event (in cents), including any acquirer fees.
 	Amount int64 `json:"amount,required"`
 	// RFC 3339 date and time this event entered the system. UTC time zone.
@@ -272,7 +271,7 @@ type TransactionEvent struct {
 	//     merchant.
 	//   - `UNKNOWN_HOST_TIMEOUT` - Network error, re-attempt the transaction.
 	//   - `USER_TRANSACTION_LIMIT` - User-set spend limit exceeded.
-	Result TransactionEventResult `json:"result,required"`
+	Result TransactionEventsResult `json:"result,required"`
 	// Globally unique identifier.
 	Token string `json:"token,required" format:"uuid"`
 	// Event types:
@@ -296,11 +295,11 @@ type TransactionEvent struct {
 	//   - `RETURN` - A refund has been processed on the transaction.
 	//   - `RETURN_REVERSAL` - A refund has been reversed (e.g., when a merchant reverses
 	//     an incorrect refund).
-	Type TransactionEventType `json:"type,required"`
-	JSON TransactionEventJSON
+	Type TransactionEventsType `json:"type,required"`
+	JSON TransactionEventsJSON
 }
 
-type TransactionEventJSON struct {
+type TransactionEventsJSON struct {
 	Amount  pjson.Metadata
 	Created pjson.Metadata
 	Result  pjson.Metadata
@@ -310,59 +309,59 @@ type TransactionEventJSON struct {
 	Extras  map[string]pjson.Metadata
 }
 
-// UnmarshalJSON deserializes the provided bytes into TransactionEvent using the
+// UnmarshalJSON deserializes the provided bytes into TransactionEvents using the
 // internal pjson library. Unrecognized fields are stored in the `jsonFields`
 // property.
-func (r *TransactionEvent) UnmarshalJSON(data []byte) (err error) {
+func (r *TransactionEvents) UnmarshalJSON(data []byte) (err error) {
 	return pjson.UnmarshalRoot(data, r)
 }
 
-type TransactionEventResult string
+type TransactionEventsResult string
 
 const (
-	TransactionEventResultAccountStateTransaction TransactionEventResult = "ACCOUNT_STATE_TRANSACTION"
-	TransactionEventResultApproved                TransactionEventResult = "APPROVED"
-	TransactionEventResultBankConnectionError     TransactionEventResult = "BANK_CONNECTION_ERROR"
-	TransactionEventResultBankNotVerified         TransactionEventResult = "BANK_NOT_VERIFIED"
-	TransactionEventResultCardClosed              TransactionEventResult = "CARD_CLOSED"
-	TransactionEventResultCardPaused              TransactionEventResult = "CARD_PAUSED"
-	TransactionEventResultFraudAdvice             TransactionEventResult = "FRAUD_ADVICE"
-	TransactionEventResultGlobalTransactionLimit  TransactionEventResult = "GLOBAL_TRANSACTION_LIMIT"
-	TransactionEventResultGlobalWeeklyLimit       TransactionEventResult = "GLOBAL_WEEKLY_LIMIT"
-	TransactionEventResultGlobalMonthlyLimit      TransactionEventResult = "GLOBAL_MONTHLY_LIMIT"
-	TransactionEventResultInactiveAccount         TransactionEventResult = "INACTIVE_ACCOUNT"
-	TransactionEventResultIncorrectPin            TransactionEventResult = "INCORRECT_PIN"
-	TransactionEventResultInvalidCardDetails      TransactionEventResult = "INVALID_CARD_DETAILS"
-	TransactionEventResultInsufficientFunds       TransactionEventResult = "INSUFFICIENT_FUNDS"
-	TransactionEventResultMerchantBlacklist       TransactionEventResult = "MERCHANT_BLACKLIST"
-	TransactionEventResultSingleUseRecharged      TransactionEventResult = "SINGLE_USE_RECHARGED"
-	TransactionEventResultSwitchInoperativeAdvice TransactionEventResult = "SWITCH_INOPERATIVE_ADVICE"
-	TransactionEventResultUnauthorizedMerchant    TransactionEventResult = "UNAUTHORIZED_MERCHANT"
-	TransactionEventResultUnknownHostTimeout      TransactionEventResult = "UNKNOWN_HOST_TIMEOUT"
-	TransactionEventResultUserTransactionLimit    TransactionEventResult = "USER_TRANSACTION_LIMIT"
+	TransactionEventsResultAccountStateTransaction TransactionEventsResult = "ACCOUNT_STATE_TRANSACTION"
+	TransactionEventsResultApproved                TransactionEventsResult = "APPROVED"
+	TransactionEventsResultBankConnectionError     TransactionEventsResult = "BANK_CONNECTION_ERROR"
+	TransactionEventsResultBankNotVerified         TransactionEventsResult = "BANK_NOT_VERIFIED"
+	TransactionEventsResultCardClosed              TransactionEventsResult = "CARD_CLOSED"
+	TransactionEventsResultCardPaused              TransactionEventsResult = "CARD_PAUSED"
+	TransactionEventsResultFraudAdvice             TransactionEventsResult = "FRAUD_ADVICE"
+	TransactionEventsResultGlobalTransactionLimit  TransactionEventsResult = "GLOBAL_TRANSACTION_LIMIT"
+	TransactionEventsResultGlobalWeeklyLimit       TransactionEventsResult = "GLOBAL_WEEKLY_LIMIT"
+	TransactionEventsResultGlobalMonthlyLimit      TransactionEventsResult = "GLOBAL_MONTHLY_LIMIT"
+	TransactionEventsResultInactiveAccount         TransactionEventsResult = "INACTIVE_ACCOUNT"
+	TransactionEventsResultIncorrectPin            TransactionEventsResult = "INCORRECT_PIN"
+	TransactionEventsResultInvalidCardDetails      TransactionEventsResult = "INVALID_CARD_DETAILS"
+	TransactionEventsResultInsufficientFunds       TransactionEventsResult = "INSUFFICIENT_FUNDS"
+	TransactionEventsResultMerchantBlacklist       TransactionEventsResult = "MERCHANT_BLACKLIST"
+	TransactionEventsResultSingleUseRecharged      TransactionEventsResult = "SINGLE_USE_RECHARGED"
+	TransactionEventsResultSwitchInoperativeAdvice TransactionEventsResult = "SWITCH_INOPERATIVE_ADVICE"
+	TransactionEventsResultUnauthorizedMerchant    TransactionEventsResult = "UNAUTHORIZED_MERCHANT"
+	TransactionEventsResultUnknownHostTimeout      TransactionEventsResult = "UNKNOWN_HOST_TIMEOUT"
+	TransactionEventsResultUserTransactionLimit    TransactionEventsResult = "USER_TRANSACTION_LIMIT"
 )
 
-type TransactionEventType string
+type TransactionEventsType string
 
 const (
-	TransactionEventTypeAuthorization                TransactionEventType = "AUTHORIZATION"
-	TransactionEventTypeAuthorizationAdvice          TransactionEventType = "AUTHORIZATION_ADVICE"
-	TransactionEventTypeAuthorizationExpiry          TransactionEventType = "AUTHORIZATION_EXPIRY"
-	TransactionEventTypeAuthorizationReversal        TransactionEventType = "AUTHORIZATION_REVERSAL"
-	TransactionEventTypeBalanceInquiry               TransactionEventType = "BALANCE_INQUIRY"
-	TransactionEventTypeClearing                     TransactionEventType = "CLEARING"
-	TransactionEventTypeCorrectionDebit              TransactionEventType = "CORRECTION_DEBIT"
-	TransactionEventTypeCorrectionCredit             TransactionEventType = "CORRECTION_CREDIT"
-	TransactionEventTypeCreditAuthorization          TransactionEventType = "CREDIT_AUTHORIZATION"
-	TransactionEventTypeCreditAuthorizationAdvice    TransactionEventType = "CREDIT_AUTHORIZATION_ADVICE"
-	TransactionEventTypeFinancialAuthorization       TransactionEventType = "FINANCIAL_AUTHORIZATION"
-	TransactionEventTypeFinancialCreditAuthorization TransactionEventType = "FINANCIAL_CREDIT_AUTHORIZATION"
-	TransactionEventTypeReturn                       TransactionEventType = "RETURN"
-	TransactionEventTypeReturnReversal               TransactionEventType = "RETURN_REVERSAL"
-	TransactionEventTypeVoid                         TransactionEventType = "VOID"
+	TransactionEventsTypeAuthorization                TransactionEventsType = "AUTHORIZATION"
+	TransactionEventsTypeAuthorizationAdvice          TransactionEventsType = "AUTHORIZATION_ADVICE"
+	TransactionEventsTypeAuthorizationExpiry          TransactionEventsType = "AUTHORIZATION_EXPIRY"
+	TransactionEventsTypeAuthorizationReversal        TransactionEventsType = "AUTHORIZATION_REVERSAL"
+	TransactionEventsTypeBalanceInquiry               TransactionEventsType = "BALANCE_INQUIRY"
+	TransactionEventsTypeClearing                     TransactionEventsType = "CLEARING"
+	TransactionEventsTypeCorrectionDebit              TransactionEventsType = "CORRECTION_DEBIT"
+	TransactionEventsTypeCorrectionCredit             TransactionEventsType = "CORRECTION_CREDIT"
+	TransactionEventsTypeCreditAuthorization          TransactionEventsType = "CREDIT_AUTHORIZATION"
+	TransactionEventsTypeCreditAuthorizationAdvice    TransactionEventsType = "CREDIT_AUTHORIZATION_ADVICE"
+	TransactionEventsTypeFinancialAuthorization       TransactionEventsType = "FINANCIAL_AUTHORIZATION"
+	TransactionEventsTypeFinancialCreditAuthorization TransactionEventsType = "FINANCIAL_CREDIT_AUTHORIZATION"
+	TransactionEventsTypeReturn                       TransactionEventsType = "RETURN"
+	TransactionEventsTypeReturnReversal               TransactionEventsType = "RETURN_REVERSAL"
+	TransactionEventsTypeVoid                         TransactionEventsType = "VOID"
 )
 
-type Merchant struct {
+type TransactionMerchant struct {
 	// Unique identifier to identify the payment card acceptor.
 	AcceptorID string `json:"acceptor_id"`
 	// City of card acceptor.
@@ -376,10 +375,10 @@ type Merchant struct {
 	Mcc string `json:"mcc"`
 	// Geographic state of card acceptor (see ISO 8583 specs).
 	State string `json:"state"`
-	JSON  MerchantJSON
+	JSON  TransactionMerchantJSON
 }
 
-type MerchantJSON struct {
+type TransactionMerchantJSON struct {
 	AcceptorID pjson.Metadata
 	City       pjson.Metadata
 	Country    pjson.Metadata
@@ -390,9 +389,10 @@ type MerchantJSON struct {
 	Extras     map[string]pjson.Metadata
 }
 
-// UnmarshalJSON deserializes the provided bytes into Merchant using the internal
-// pjson library. Unrecognized fields are stored in the `jsonFields` property.
-func (r *Merchant) UnmarshalJSON(data []byte) (err error) {
+// UnmarshalJSON deserializes the provided bytes into TransactionMerchant using the
+// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// property.
+func (r *TransactionMerchant) UnmarshalJSON(data []byte) (err error) {
 	return pjson.UnmarshalRoot(data, r)
 }
 
@@ -614,20 +614,4 @@ type TransactionListResponseJSON struct {
 // property.
 func (r *TransactionListResponse) UnmarshalJSON(data []byte) (err error) {
 	return pjson.UnmarshalRoot(data, r)
-}
-
-type TransactionsPage struct {
-	*pagination.Page[Transaction]
-}
-
-func (r *TransactionsPage) Transaction() *Transaction {
-	return r.Current()
-}
-
-func (r *TransactionsPage) NextPage() (*TransactionsPage, error) {
-	if page, err := r.Page.NextPage(); err != nil {
-		return nil, err
-	} else {
-		return &TransactionsPage{page}, nil
-	}
 }

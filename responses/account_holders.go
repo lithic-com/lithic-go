@@ -245,8 +245,3 @@ type AccountHolderCreateWebhookResponseDataJSON struct {
 func (r *AccountHolderCreateWebhookResponseData) UnmarshalJSON(data []byte) (err error) {
 	return pjson.UnmarshalRoot(data, r)
 }
-
-type AccountHoldersGetDocumentParams struct {
-	// Globally unique identifier for the account holder.
-	AccountHolderToken string `path:"account_holder_token" json:"-"`
-}

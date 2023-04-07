@@ -2,7 +2,6 @@ package responses
 
 import (
 	pjson "github.com/lithic-com/lithic-go/core/json"
-	"github.com/lithic-com/lithic-go/pagination"
 )
 
 type Account struct {
@@ -172,20 +171,4 @@ type AccountListResponseJSON struct {
 // property.
 func (r *AccountListResponse) UnmarshalJSON(data []byte) (err error) {
 	return pjson.UnmarshalRoot(data, r)
-}
-
-type AccountsPage struct {
-	*pagination.Page[Account]
-}
-
-func (r *AccountsPage) Account() *Account {
-	return r.Current()
-}
-
-func (r *AccountsPage) NextPage() (*AccountsPage, error) {
-	if page, err := r.Page.NextPage(); err != nil {
-		return nil, err
-	} else {
-		return &AccountsPage{page}, nil
-	}
 }

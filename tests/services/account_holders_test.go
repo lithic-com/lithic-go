@@ -8,12 +8,12 @@ import (
 
 	"github.com/lithic-com/lithic-go"
 	"github.com/lithic-com/lithic-go/core"
-	"github.com/lithic-com/lithic-go/options"
+	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/requests"
 )
 
 func TestAccountHoldersGet(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AccountHolders.Get(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
@@ -29,7 +29,7 @@ func TestAccountHoldersGet(t *testing.T) {
 }
 
 func TestAccountHoldersUpdateWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AccountHolders.Update(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
@@ -46,7 +46,7 @@ func TestAccountHoldersUpdateWithOptionalParams(t *testing.T) {
 }
 
 func TestAccountHoldersNewWebhook(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AccountHolders.NewWebhook(context.TODO(), &requests.AccountHolderNewWebhookParams{URL: lithic.F("string")})
 	if err != nil {
 		var apiError core.APIError
@@ -59,7 +59,7 @@ func TestAccountHoldersNewWebhook(t *testing.T) {
 }
 
 func TestAccountHoldersListDocuments(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AccountHolders.ListDocuments(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
@@ -75,11 +75,11 @@ func TestAccountHoldersListDocuments(t *testing.T) {
 }
 
 func TestAccountHoldersResubmit(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AccountHolders.Resubmit(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-		&requests.AccountHolderResubmitParams{Workflow: lithic.F(requests.AccountHolderResubmitParamsWorkflowKYCAdvanced), TosTimestamp: lithic.F("2018-05-29T21:16:05Z"), Individual: lithic.F(requests.Individual{Address: lithic.F(requests.Address{Address1: lithic.F("123 Old Forest Way"), Address2: lithic.F("string"), City: lithic.F("Omaha"), Country: lithic.F("USA"), PostalCode: lithic.F("68022"), State: lithic.F("NE")}), Dob: lithic.F("1991-03-08 08:00:00"), Email: lithic.F("tom@middle-earth.com"), FirstName: lithic.F("Tom"), GovernmentID: lithic.F("111-23-1412"), LastName: lithic.F("Bombadil"), PhoneNumber: lithic.F("+12124007676")})},
+		&requests.AccountHolderResubmitParams{Workflow: lithic.F(requests.AccountHolderResubmitParamsWorkflowKYCAdvanced), TosTimestamp: lithic.F("2018-05-29T21:16:05Z"), Individual: lithic.F(requests.AccountHolderResubmitParamsIndividual{Address: lithic.F(requests.Address{Address1: lithic.F("123 Old Forest Way"), Address2: lithic.F("string"), City: lithic.F("Omaha"), Country: lithic.F("USA"), PostalCode: lithic.F("68022"), State: lithic.F("NE")}), Dob: lithic.F("1991-03-08 08:00:00"), Email: lithic.F("tom@middle-earth.com"), FirstName: lithic.F("Tom"), GovernmentID: lithic.F("111-23-1412"), LastName: lithic.F("Bombadil"), PhoneNumber: lithic.F("+12124007676")})},
 	)
 	if err != nil {
 		var apiError core.APIError
@@ -92,11 +92,11 @@ func TestAccountHoldersResubmit(t *testing.T) {
 }
 
 func TestAccountHoldersGetDocument(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AccountHolders.GetDocument(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-		&requests.AccountHoldersGetDocumentParams{AccountHolderToken: "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"},
+		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 	)
 	if err != nil {
 		var apiError core.APIError
@@ -109,7 +109,7 @@ func TestAccountHoldersGetDocument(t *testing.T) {
 }
 
 func TestAccountHoldersUploadDocument(t *testing.T) {
-	c := lithic.NewLithic(options.WithAPIKey("APIKey"), options.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AccountHolders.UploadDocument(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",

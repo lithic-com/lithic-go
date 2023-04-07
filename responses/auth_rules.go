@@ -2,7 +2,6 @@ package responses
 
 import (
 	pjson "github.com/lithic-com/lithic-go/core/json"
-	"github.com/lithic-com/lithic-go/pagination"
 )
 
 type AuthRule struct {
@@ -62,24 +61,6 @@ type AuthRuleAvsType string
 const (
 	AuthRuleAvsTypeZipOnly AuthRuleAvsType = "ZIP_ONLY"
 )
-
-type AuthRuleCreateResponse struct {
-	Data AuthRule `json:"data"`
-	JSON AuthRuleCreateResponseJSON
-}
-
-type AuthRuleCreateResponseJSON struct {
-	Data   pjson.Metadata
-	Raw    []byte
-	Extras map[string]pjson.Metadata
-}
-
-// UnmarshalJSON deserializes the provided bytes into AuthRuleCreateResponse using
-// the internal pjson library. Unrecognized fields are stored in the `jsonFields`
-// property.
-func (r *AuthRuleCreateResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
-}
 
 type AuthRuleRetrieveResponse struct {
 	Data []AuthRule `json:"data"`
@@ -184,20 +165,4 @@ type AuthRuleListResponseJSON struct {
 // property.
 func (r *AuthRuleListResponse) UnmarshalJSON(data []byte) (err error) {
 	return pjson.UnmarshalRoot(data, r)
-}
-
-type AuthRulesPage struct {
-	*pagination.Page[AuthRule]
-}
-
-func (r *AuthRulesPage) AuthRule() *AuthRule {
-	return r.Current()
-}
-
-func (r *AuthRulesPage) NextPage() (*AuthRulesPage, error) {
-	if page, err := r.Page.NextPage(); err != nil {
-		return nil, err
-	} else {
-		return &AuthRulesPage{page}, nil
-	}
 }

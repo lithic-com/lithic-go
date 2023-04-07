@@ -12,7 +12,7 @@ import (
 
 	"github.com/tidwall/sjson"
 
-	"github.com/lithic-com/lithic-go/core/fields"
+	"github.com/lithic-com/lithic-go/core/field"
 )
 
 var encoders sync.Map // map[encoderEntry]encoderFunc
@@ -198,7 +198,7 @@ func (e *encoder) newStructTypeEncoder(t reflect.Type) encoderFunc {
 	if t == reflect.TypeOf(time.Time{}) {
 		return e.newTimeTypeEncoder(t)
 	}
-	if t.Implements(reflect.TypeOf((*fields.FieldLike)(nil)).Elem()) {
+	if t.Implements(reflect.TypeOf((*field.FieldLike)(nil)).Elem()) {
 		return e.newFieldTypeEncoder(t)
 	}
 
@@ -217,7 +217,7 @@ func (e *encoder) newStructTypeEncoder(t reflect.Type) encoderFunc {
 				continue
 			}
 			// If this is an embedded struct, traverse one level deeper to extract
-			// the fields and get their encoders as well.
+			// the field and get their encoders as well.
 			if field.Anonymous {
 				collectFieldEncoders(field.Type, idx)
 				continue
@@ -228,7 +228,7 @@ func (e *encoder) newStructTypeEncoder(t reflect.Type) encoderFunc {
 			if !ok {
 				continue
 			}
-			// We only want to support unexported fields if they're tagged with
+			// We only want to support unexported field if they're tagged with
 			// `extras` because that field shouldn't be part of the public API. We
 			// also want to only keep the top level extras
 			if ptag.extras && len(index) == 0 {

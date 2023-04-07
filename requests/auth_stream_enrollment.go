@@ -1,15 +1,13 @@
 package requests
 
 import (
-	"fmt"
-
-	"github.com/lithic-com/lithic-go/core/fields"
+	"github.com/lithic-com/lithic-go/core/field"
 	pjson "github.com/lithic-com/lithic-go/core/json"
 )
 
 type AuthStreamEnrollmentEnrollParams struct {
 	// A user-specified url to receive and respond to ASA request.
-	WebhookURL fields.Field[string] `json:"webhook_url" format:"uri"`
+	WebhookURL field.Field[string] `json:"webhook_url" format:"uri"`
 }
 
 // MarshalJSON serializes AuthStreamEnrollmentEnrollParams into an array of bytes
@@ -17,8 +15,4 @@ type AuthStreamEnrollmentEnrollParams struct {
 // the top-level, and will overwrite known members of the same name.
 func (r *AuthStreamEnrollmentEnrollParams) MarshalJSON() (data []byte, err error) {
 	return pjson.MarshalRoot(r)
-}
-
-func (r AuthStreamEnrollmentEnrollParams) String() (result string) {
-	return fmt.Sprintf("&AuthStreamEnrollmentEnrollParams{WebhookURL:%s}", r.WebhookURL)
 }

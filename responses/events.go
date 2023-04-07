@@ -4,7 +4,6 @@ import (
 	"time"
 
 	pjson "github.com/lithic-com/lithic-go/core/json"
-	"github.com/lithic-com/lithic-go/pagination"
 )
 
 type Event struct {
@@ -100,20 +99,4 @@ type EventListResponseJSON struct {
 // property.
 func (r *EventListResponse) UnmarshalJSON(data []byte) (err error) {
 	return pjson.UnmarshalRoot(data, r)
-}
-
-type EventsCursorPage struct {
-	*pagination.CursorPage[Event]
-}
-
-func (r *EventsCursorPage) Event() *Event {
-	return r.Current()
-}
-
-func (r *EventsCursorPage) NextPage() (*EventsCursorPage, error) {
-	if page, err := r.CursorPage.NextPage(); err != nil {
-		return nil, err
-	} else {
-		return &EventsCursorPage{page}, nil
-	}
 }

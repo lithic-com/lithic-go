@@ -3,16 +3,16 @@ package services
 import (
 	"context"
 
-	"github.com/lithic-com/lithic-go/options"
+	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/requests"
 	"github.com/lithic-com/lithic-go/responses"
 )
 
 type AuthStreamEnrollmentService struct {
-	Options []options.RequestOption
+	Options []option.RequestOption
 }
 
-func NewAuthStreamEnrollmentService(opts ...options.RequestOption) (r *AuthStreamEnrollmentService) {
+func NewAuthStreamEnrollmentService(opts ...option.RequestOption) (r *AuthStreamEnrollmentService) {
 	r = &AuthStreamEnrollmentService{}
 	r.Options = opts
 	return
@@ -20,19 +20,19 @@ func NewAuthStreamEnrollmentService(opts ...options.RequestOption) (r *AuthStrea
 
 // Check status for whether you have enrolled in Authorization Stream Access (ASA)
 // for your program in Sandbox.
-func (r *AuthStreamEnrollmentService) Get(ctx context.Context, opts ...options.RequestOption) (res *responses.AuthStreamEnrollment, err error) {
+func (r *AuthStreamEnrollmentService) Get(ctx context.Context, opts ...option.RequestOption) (res *responses.AuthStreamEnrollment, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "auth_stream"
-	err = options.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
 	return
 }
 
 // Disenroll Authorization Stream Access (ASA) in Sandbox.
-func (r *AuthStreamEnrollmentService) Disenroll(ctx context.Context, opts ...options.RequestOption) (err error) {
+func (r *AuthStreamEnrollmentService) Disenroll(ctx context.Context, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
-	opts = append([]options.RequestOption{options.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := "auth_stream"
-	err = options.ExecuteNewRequest(ctx, "DELETE", path, nil, nil, opts...)
+	err = option.ExecuteNewRequest(ctx, "DELETE", path, nil, nil, opts...)
 	return
 }
 
@@ -48,11 +48,11 @@ func (r *AuthStreamEnrollmentService) Disenroll(ctx context.Context, opts ...opt
 //
 // In Sandbox, users can self-enroll and disenroll in ASA. In production,
 // onboarding requires manual approval and setup.
-func (r *AuthStreamEnrollmentService) Enroll(ctx context.Context, body *requests.AuthStreamEnrollmentEnrollParams, opts ...options.RequestOption) (err error) {
+func (r *AuthStreamEnrollmentService) Enroll(ctx context.Context, body *requests.AuthStreamEnrollmentEnrollParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
-	opts = append([]options.RequestOption{options.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := "auth_stream"
-	err = options.ExecuteNewRequest(ctx, "POST", path, body, nil, opts...)
+	err = option.ExecuteNewRequest(ctx, "POST", path, body, nil, opts...)
 	return
 }
 
@@ -62,10 +62,10 @@ func (r *AuthStreamEnrollmentService) Enroll(ctx context.Context, body *requests
 // the first time. See
 // [this page](https://docs.lithic.com/docs/auth-stream-access-asa#asa-webhook-verification)
 // for more detail about verifying ASA webhooks.
-func (r *AuthStreamEnrollmentService) GetSecret(ctx context.Context, opts ...options.RequestOption) (res *responses.AuthStreamSecret, err error) {
+func (r *AuthStreamEnrollmentService) GetSecret(ctx context.Context, opts ...option.RequestOption) (res *responses.AuthStreamSecret, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "auth_stream/secret"
-	err = options.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
 	return
 }
 
@@ -73,10 +73,10 @@ func (r *AuthStreamEnrollmentService) GetSecret(ctx context.Context, opts ...opt
 // deactivated 24 hours after a successful request to this endpoint. Make a
 // [`GET /auth_stream/secret`](https://docs.lithic.com/reference/getauthstreamsecret)
 // request to retrieve the new secret key.
-func (r *AuthStreamEnrollmentService) RotateSecret(ctx context.Context, opts ...options.RequestOption) (err error) {
+func (r *AuthStreamEnrollmentService) RotateSecret(ctx context.Context, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
-	opts = append([]options.RequestOption{options.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := "auth_stream/secret/rotate"
-	err = options.ExecuteNewRequest(ctx, "POST", path, nil, nil, opts...)
+	err = option.ExecuteNewRequest(ctx, "POST", path, nil, nil, opts...)
 	return
 }

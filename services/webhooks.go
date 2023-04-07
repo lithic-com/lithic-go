@@ -11,14 +11,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/lithic-com/lithic-go/options"
+	"github.com/lithic-com/lithic-go/option"
 )
 
 type WebhookService struct {
-	Options []options.RequestOption
+	Options []option.RequestOption
 }
 
-func NewWebhookService(opts ...options.RequestOption) (r *WebhookService) {
+func NewWebhookService(opts ...option.RequestOption) (r *WebhookService) {
 	r = &WebhookService{}
 	r.Options = opts
 	return
