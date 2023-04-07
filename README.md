@@ -176,21 +176,14 @@ client.Cards.New(
 
 ### Pagination
 
-In addition to exposing standard response values, this library provides an
-auto-paginating iterator for each paginated response, so you do not have to
-request successive pages manually:
+This library provides some conveniences for working with paginated list endpoints.
 
-To iterate over all elements in a paginated list, we call the iterated
-endpoint, then iterate while there is an element to be read. When `Next()` is
-called, it will load the next element into `Current()` or return `false`. If we
-are at the end of the current page, `Next()` will attempt to fetch the next
-page.
+You can use `.ListAutoPaging()` methods to iterate through items across all pages:
 
 ```go
-iter := client.Cards.ListAutoPager(
-	context.TODO(),
-	...,
-)
+iter := client.Cards.ListAutoPager(context.TODO(), params)
+
+// Automatically fetches more pages as needed.
 for iter.Next() {
 	item := iter.Current()
 	print(item.ID)
@@ -200,13 +193,11 @@ if err := iter.Err(); err != nil {
 }
 ```
 
-If you want to make a simple request and handle paging yourself, you can do
-that! We provide a `GetNextPage()` function which uses the same arguments and
-request options as the original request, except for the arguments responsible
-for the paging.
+Or you can use simple `.List()` methods to fetch a single page and receive a standard response object
+with additional helper methods like `.GetNextPage()`, e.g.:
 
 ```go
-page, err := client.Cards.List(context.TODO(), ...)
+page, err := client.Cards.List(context.TODO(), params)
 for page != nil {
 	for _, item := range page.Data {
 		print(item.ID)
