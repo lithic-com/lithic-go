@@ -26,6 +26,8 @@ func NewAccountHolderService(opts ...option.RequestOption) (r *AccountHolderServ
 // workflow is under review or further action will be needed to complete the
 // account creation process. This endpoint can only be used on accounts that are
 // part of the program the calling API key manages.
+//
+// Note: If you choose to set a timeout for this request, we recommend 5 minutes.
 func (r *AccountHolderService) New(ctx context.Context, opts ...option.RequestOption) (res *responses.AccountHolder, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "account_holders"
