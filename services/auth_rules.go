@@ -46,11 +46,11 @@ func (r *AuthRuleService) List(ctx context.Context, query *requests.AuthRuleList
 	path := "auth_rules"
 	cfg, err := option.NewRequestConfig(ctx, "GET", path, query, &res, opts...)
 	if err != nil {
-		return
+		return nil, err
 	}
 	err = cfg.Execute()
 	if err != nil {
-		return
+		return nil, err
 	}
 	res.SetPageConfig(cfg, raw)
 	return res, nil

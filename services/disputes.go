@@ -55,11 +55,11 @@ func (r *DisputeService) List(ctx context.Context, query *requests.DisputeListPa
 	path := "disputes"
 	cfg, err := option.NewRequestConfig(ctx, "GET", path, query, &res, opts...)
 	if err != nil {
-		return
+		return nil, err
 	}
 	err = cfg.Execute()
 	if err != nil {
-		return
+		return nil, err
 	}
 	res.SetPageConfig(cfg, raw)
 	return res, nil
@@ -107,11 +107,11 @@ func (r *DisputeService) ListEvidences(ctx context.Context, dispute_token string
 	path := fmt.Sprintf("disputes/%s/evidences", dispute_token)
 	cfg, err := option.NewRequestConfig(ctx, "GET", path, query, &res, opts...)
 	if err != nil {
-		return
+		return nil, err
 	}
 	err = cfg.Execute()
 	if err != nil {
-		return
+		return nil, err
 	}
 	res.SetPageConfig(cfg, raw)
 	return res, nil
