@@ -229,7 +229,9 @@ func (cfg *RequestConfig) Clone(ctx context.Context) *RequestConfig {
 	}
 	req := cfg.Request.Clone(ctx)
 	var err error
-	req.Body, err = req.GetBody()
+	if req.Body != nil {
+		req.Body, err = req.GetBody()
+	}
 	if err != nil {
 		return nil
 	}
