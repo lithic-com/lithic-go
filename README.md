@@ -199,7 +199,7 @@ for iter.Next() {
 	card := iter.Current()
 	fmt.Printf("%+v\n", card)
 }
-if err := cards.Err(); err != nil {
+if err := iter.Err(); err != nil {
 	panic(err.Error())
 }
 ```
@@ -213,7 +213,7 @@ for page != nil {
 	for _, card := range page.Data {
 		fmt.Printf("%+v\n", card)
 	}
-	cards, err = cards.GetNextPage()
+	page, err = page.GetNextPage()
 }
 if err != nil {
 	panic(err.Error())
