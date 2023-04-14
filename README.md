@@ -33,8 +33,8 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"github.com/lithic-com/lithic-go"
-	"github.com/lithic-com/lithic-go/core/field"
 	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/requests"
 )
@@ -44,13 +44,13 @@ func main() {
 		option.WithAPIKey("my api key"), // defaults to os.LookupEnv("LITHIC_API_KEY")
 		option.WithEnvironmentSandbox(), // defaults to option.WithEnvironmentProduction()
 	)
-	card, err := lithicClient.Cards.New(context.TODO(), &requests.CardNewParams{
+	card, err := client.Cards.New(context.TODO(), &requests.CardNewParams{
 		Type: lithic.F(requests.CardNewParamsTypeVirtual),
 	})
 	if err != nil {
-		panic(err)
+		panic(err.Error())
 	}
-	println(card.Token)
+	fmt.Printf("%+v\n", card)
 }
 
 ```
@@ -190,17 +190,16 @@ client.Cards.New(
 
 This library provides some conveniences for working with paginated list endpoints.
 
-You can use `.ListAutoPaging()` methods to iterate through items across all pages:
+You can use `.ListAutoPager()` methods to iterate through items across all pages:
 
 ```go
-iter := client.Cards.ListAutoPager(context.TODO(), params)
-
+iter := client.Cards.ListAutoPager(context.TODO(), &requests.CardListParams{})
 // Automatically fetches more pages as needed.
 for iter.Next() {
-	item := iter.Current()
-	println(item.ID)
+	card := iter.Current()
+	fmt.Printf("%+v\n", card)
 }
-if err := iter.Err(); err != nil {
+if err := cards.Err(); err != nil {
 	panic(err.Error())
 }
 ```
@@ -209,12 +208,12 @@ Or you can use simple `.List()` methods to fetch a single page and receive a sta
 with additional helper methods like `.GetNextPage()`, e.g.:
 
 ```go
-page, err := client.Cards.List(context.TODO(), params)
+page, err := client.Cards.List(context.TODO(), &requests.CardListParams{})
 for page != nil {
-	for _, item := range page.Data {
-		println(item.ID)
+	for _, card := range page.Data {
+		fmt.Printf("%+v\n", card)
 	}
-	page, err = page.GetNextPage()
+	cards, err = cards.GetNextPage()
 }
 if err != nil {
 	panic(err.Error())
@@ -236,16 +235,16 @@ You can use the `WithMaxRetries` option to configure or disable this:
 ```go
 // Configure the default for all requests:
 lithicClient := lithic.NewLithic(
-  option.WithMaxRetries(0), // default is 2
+	option.WithMaxRetries(0), // default is 2
 )
 
 // Override per-request:
-lithicClient.Cards.List(
-  context.TODO(),
-  &requests.CardListParams{
-    PageSize: lithic.F(int64(10)),
-  },
-  option.WithMaxRetries(5),
+client.Cards.List(
+	context.TODO(),
+	&requests.CardListParams{
+		PageSize: lithic.F(int64(10)),
+	},
+	option.WithMaxRetries(5),
 )
 ```
 
