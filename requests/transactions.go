@@ -31,7 +31,7 @@ type TransactionListParams struct {
 
 // URLQuery serializes TransactionListParams into a url.Values of the query
 // parameters associated with this value
-func (r *TransactionListParams) URLQuery() (v url.Values) {
+func (r TransactionListParams) URLQuery() (v url.Values) {
 	return query.Marshal(r)
 }
 
@@ -90,7 +90,7 @@ type TransactionSimulateAuthorizationParams struct {
 // MarshalJSON serializes TransactionSimulateAuthorizationParams into an array of
 // bytes using the gjson library. Members of the `jsonFields` field are serialized
 // into the top-level, and will overwrite known members of the same name.
-func (r *TransactionSimulateAuthorizationParams) MarshalJSON() (data []byte, err error) {
+func (r TransactionSimulateAuthorizationParams) MarshalJSON() (data []byte, err error) {
 	return pjson.MarshalRoot(r)
 }
 
@@ -116,7 +116,7 @@ type TransactionSimulateAuthorizationAdviceParams struct {
 // array of bytes using the gjson library. Members of the `jsonFields` field are
 // serialized into the top-level, and will overwrite known members of the same
 // name.
-func (r *TransactionSimulateAuthorizationAdviceParams) MarshalJSON() (data []byte, err error) {
+func (r TransactionSimulateAuthorizationAdviceParams) MarshalJSON() (data []byte, err error) {
 	return pjson.MarshalRoot(r)
 }
 
@@ -135,7 +135,7 @@ type TransactionSimulateClearingParams struct {
 // MarshalJSON serializes TransactionSimulateClearingParams into an array of bytes
 // using the gjson library. Members of the `jsonFields` field are serialized into
 // the top-level, and will overwrite known members of the same name.
-func (r *TransactionSimulateClearingParams) MarshalJSON() (data []byte, err error) {
+func (r TransactionSimulateClearingParams) MarshalJSON() (data []byte, err error) {
 	return pjson.MarshalRoot(r)
 }
 
@@ -160,7 +160,7 @@ type TransactionSimulateCreditAuthorizationParams struct {
 // array of bytes using the gjson library. Members of the `jsonFields` field are
 // serialized into the top-level, and will overwrite known members of the same
 // name.
-func (r *TransactionSimulateCreditAuthorizationParams) MarshalJSON() (data []byte, err error) {
+func (r TransactionSimulateCreditAuthorizationParams) MarshalJSON() (data []byte, err error) {
 	return pjson.MarshalRoot(r)
 }
 
@@ -176,7 +176,7 @@ type TransactionSimulateReturnParams struct {
 // MarshalJSON serializes TransactionSimulateReturnParams into an array of bytes
 // using the gjson library. Members of the `jsonFields` field are serialized into
 // the top-level, and will overwrite known members of the same name.
-func (r *TransactionSimulateReturnParams) MarshalJSON() (data []byte, err error) {
+func (r TransactionSimulateReturnParams) MarshalJSON() (data []byte, err error) {
 	return pjson.MarshalRoot(r)
 }
 
@@ -188,7 +188,7 @@ type TransactionSimulateReturnReversalParams struct {
 // MarshalJSON serializes TransactionSimulateReturnReversalParams into an array of
 // bytes using the gjson library. Members of the `jsonFields` field are serialized
 // into the top-level, and will overwrite known members of the same name.
-func (r *TransactionSimulateReturnReversalParams) MarshalJSON() (data []byte, err error) {
+func (r TransactionSimulateReturnReversalParams) MarshalJSON() (data []byte, err error) {
 	return pjson.MarshalRoot(r)
 }
 
@@ -209,7 +209,7 @@ type TransactionSimulateVoidParams struct {
 // MarshalJSON serializes TransactionSimulateVoidParams into an array of bytes
 // using the gjson library. Members of the `jsonFields` field are serialized into
 // the top-level, and will overwrite known members of the same name.
-func (r *TransactionSimulateVoidParams) MarshalJSON() (data []byte, err error) {
+func (r TransactionSimulateVoidParams) MarshalJSON() (data []byte, err error) {
 	return pjson.MarshalRoot(r)
 }
 

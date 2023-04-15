@@ -28,10 +28,10 @@ func NewAccountHolderService(opts ...option.RequestOption) (r *AccountHolderServ
 // part of the program the calling API key manages.
 //
 // Note: If you choose to set a timeout for this request, we recommend 5 minutes.
-func (r *AccountHolderService) New(ctx context.Context, opts ...option.RequestOption) (res *responses.AccountHolder, err error) {
+func (r *AccountHolderService) New(ctx context.Context, body requests.AccountHolderNewParams, opts ...option.RequestOption) (res *responses.AccountHolder, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "account_holders"
-	err = option.ExecuteNewRequest(ctx, "POST", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
 	return
 }
 

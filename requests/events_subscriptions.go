@@ -24,7 +24,7 @@ type SubscriptionNewParams struct {
 // MarshalJSON serializes SubscriptionNewParams into an array of bytes using the
 // gjson library. Members of the `jsonFields` field are serialized into the
 // top-level, and will overwrite known members of the same name.
-func (r *SubscriptionNewParams) MarshalJSON() (data []byte, err error) {
+func (r SubscriptionNewParams) MarshalJSON() (data []byte, err error) {
 	return pjson.MarshalRoot(r)
 }
 
@@ -50,7 +50,7 @@ type SubscriptionUpdateParams struct {
 // MarshalJSON serializes SubscriptionUpdateParams into an array of bytes using the
 // gjson library. Members of the `jsonFields` field are serialized into the
 // top-level, and will overwrite known members of the same name.
-func (r *SubscriptionUpdateParams) MarshalJSON() (data []byte, err error) {
+func (r SubscriptionUpdateParams) MarshalJSON() (data []byte, err error) {
 	return pjson.MarshalRoot(r)
 }
 
@@ -74,7 +74,7 @@ type SubscriptionListParams struct {
 
 // URLQuery serializes SubscriptionListParams into a url.Values of the query
 // parameters associated with this value
-func (r *SubscriptionListParams) URLQuery() (v url.Values) {
+func (r SubscriptionListParams) URLQuery() (v url.Values) {
 	return query.Marshal(r)
 }
 
@@ -89,7 +89,7 @@ type SubscriptionRecoverParams struct {
 
 // URLQuery serializes SubscriptionRecoverParams into a url.Values of the query
 // parameters associated with this value
-func (r *SubscriptionRecoverParams) URLQuery() (v url.Values) {
+func (r SubscriptionRecoverParams) URLQuery() (v url.Values) {
 	return query.Marshal(r)
 }
 
@@ -104,6 +104,6 @@ type SubscriptionReplayMissingParams struct {
 
 // URLQuery serializes SubscriptionReplayMissingParams into a url.Values of the
 // query parameters associated with this value
-func (r *SubscriptionReplayMissingParams) URLQuery() (v url.Values) {
+func (r SubscriptionReplayMissingParams) URLQuery() (v url.Values) {
 	return query.Marshal(r)
 }

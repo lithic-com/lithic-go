@@ -26,7 +26,7 @@ type Address struct {
 // MarshalJSON serializes Address into an array of bytes using the gjson library.
 // Members of the `jsonFields` field are serialized into the top-level, and will
 // overwrite known members of the same name.
-func (r *Address) MarshalJSON() (data []byte, err error) {
+func (r Address) MarshalJSON() (data []byte, err error) {
 	return pjson.MarshalRoot(r)
 }
 
@@ -64,6 +64,6 @@ type ShippingAddress struct {
 // MarshalJSON serializes ShippingAddress into an array of bytes using the gjson
 // library. Members of the `jsonFields` field are serialized into the top-level,
 // and will overwrite known members of the same name.
-func (r *ShippingAddress) MarshalJSON() (data []byte, err error) {
+func (r ShippingAddress) MarshalJSON() (data []byte, err error) {
 	return pjson.MarshalRoot(r)
 }

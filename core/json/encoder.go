@@ -43,6 +43,7 @@ type encoderField struct {
 type encoderEntry struct {
 	reflect.Type
 	dateFormat string
+	root       bool
 }
 
 func (e *encoder) marshal(value interface{}) ([]byte, error) {
@@ -59,6 +60,7 @@ func (e *encoder) typeEncoder(t reflect.Type) encoderFunc {
 	entry := encoderEntry{
 		Type:       t,
 		dateFormat: e.dateFormat,
+		root:       e.root,
 	}
 
 	if fi, ok := encoders.Load(entry); ok {

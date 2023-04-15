@@ -2,6 +2,7 @@ package json
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"reflect"
 	"strconv"
@@ -40,6 +41,7 @@ type decoderField struct {
 type decoderEntry struct {
 	reflect.Type
 	dateFormat string
+	root       bool
 }
 
 func (d *decoder) unmarshal(raw []byte, to any) error {
@@ -55,6 +57,7 @@ func (d *decoder) typeDecoder(t reflect.Type) decoderFunc {
 	entry := decoderEntry{
 		Type:       t,
 		dateFormat: d.dateFormat,
+		root:       d.root,
 	}
 
 	if fi, ok := decoders.Load(entry); ok {
@@ -92,6 +95,11 @@ func unmarshalerDecoder(n gjson.Result, v reflect.Value) error {
 func (d *decoder) newTypeDecoder(t reflect.Type) decoderFunc {
 	if !d.root && t != reflect.TypeOf(time.Time{}) && t.Implements(reflect.TypeOf((*json.Unmarshaler)(nil)).Elem()) {
 		return unmarshalerDecoder
+	}
+	d.root = false
+
+	if _, ok := unionRegistry[t]; ok {
+		return d.newUnionDecoder(t)
 	}
 
 	switch t.Kind() {
@@ -136,6 +144,36 @@ func (d *decoder) newTypeDecoder(t reflect.Type) decoderFunc {
 		}
 	default:
 		return d.newPrimitiveTypeDecoder(t)
+	}
+}
+
+func (d *decoder) newUnionDecoder(t reflect.Type) decoderFunc {
+	unionEntry, ok := unionRegistry[t]
+	if !ok {
+		panic("json: couldn't find union of type " + t.String() + " in union registry")
+	}
+	decoders := []decoderFunc{}
+	for _, variant := range unionEntry.variants {
+		decoder := d.typeDecoder(variant.Type)
+		decoders = append(decoders, decoder)
+	}
+	return func(n gjson.Result, v reflect.Value) error {
+		for idx, variant := range unionEntry.variants {
+			decoder := decoders[idx]
+			if variant.TypeFilter != n.Type {
+				continue
+			}
+			if len(unionEntry.discriminatorKey) != 0 && n.Get(unionEntry.discriminatorKey).Value() != variant.DiscriminatorValue {
+				continue
+			}
+			inner := reflect.New(variant.Type).Elem()
+			err := decoder(n, inner)
+			if err != nil {
+				return err
+			}
+			v.Set(inner)
+		}
+		return errors.New("json: was not able to coerce type as union")
 	}
 }
 

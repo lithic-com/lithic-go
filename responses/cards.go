@@ -209,46 +209,6 @@ const (
 	CardTypeSingleUse      CardType = "SINGLE_USE"
 )
 
-type EmbedRequestParams struct {
-	// A publicly available URI, so the white-labeled card element can be styled with
-	// the client's branding.
-	Css string `json:"css"`
-	// An RFC 3339 timestamp for when the request should expire. UTC time zone.
-	//
-	// If no timezone is specified, UTC will be used. If payload does not contain an
-	// expiration, the request will never expire.
-	//
-	// Using an `expiration` reduces the risk of a
-	// [replay attack](https://en.wikipedia.org/wiki/Replay_attack). Without supplying
-	// the `expiration`, in the event that a malicious user gets a copy of your request
-	// in transit, they will be able to obtain the response data indefinitely.
-	Expiration time.Time `json:"expiration" format:"date-time"`
-	// Globally unique identifier for the card to be displayed.
-	Token string `json:"token,required" format:"uuid"`
-	// Required if you want to post the element clicked to the parent iframe.
-	//
-	// If you supply this param, you can also capture click events in the parent iframe
-	// by adding an event listener.
-	TargetOrigin string `json:"target_origin"`
-	JSON         EmbedRequestParamsJSON
-}
-
-type EmbedRequestParamsJSON struct {
-	Css          pjson.Metadata
-	Expiration   pjson.Metadata
-	Token        pjson.Metadata
-	TargetOrigin pjson.Metadata
-	Raw          []byte
-	Extras       map[string]pjson.Metadata
-}
-
-// UnmarshalJSON deserializes the provided bytes into EmbedRequestParams using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
-// property.
-func (r *EmbedRequestParams) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
-}
-
 type CardProvisionResponse struct {
 	ProvisioningPayload string `json:"provisioning_payload"`
 	JSON                CardProvisionResponseJSON

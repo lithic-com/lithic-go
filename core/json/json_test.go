@@ -6,6 +6,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/tidwall/gjson"
+
 	"github.com/lithic-com/lithic-go/core/pointer"
 )
 
@@ -70,6 +72,64 @@ type MetadataStructJSON struct {
 	Extras map[string]Metadata
 	Raw    []byte
 }
+
+type UnknownStruct struct {
+	Unknown interface{} `json:"unknown"`
+}
+
+type UnionStruct struct {
+	Union Union `json:"union"`
+}
+
+type Union interface {
+	union()
+}
+
+func init() {
+	RegisterUnion(reflect.TypeOf((*Union)(nil)).Elem(), "type",
+		UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(UnionString("")),
+		},
+		UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(UnionInteger(0)),
+		},
+		UnionVariant{
+			TypeFilter:         gjson.JSON,
+			DiscriminatorValue: "typeA",
+			Type:               reflect.TypeOf(UnionStructA{}),
+		},
+		UnionVariant{
+			TypeFilter:         gjson.JSON,
+			DiscriminatorValue: "typeB",
+			Type:               reflect.TypeOf(UnionStructB{}),
+		},
+	)
+}
+
+type UnionInteger int64
+
+func (UnionInteger) union() {}
+
+type UnionString string
+
+func (UnionString) union() {}
+
+type UnionStructA struct {
+	Type string `json:"type"`
+	A    string `json:"a"`
+	B    string `json:"b"`
+}
+
+func (UnionStructA) union() {}
+
+type UnionStructB struct {
+	Type string `json:"type"`
+	A    string `json:"a"`
+}
+
+func (UnionStructB) union() {}
 
 var tests = map[string]struct {
 	buf string
@@ -180,6 +240,57 @@ var tests = map[string]struct {
 			Extras: map[string]int64{
 				"extra_typed":   12,
 				"extra_untyped": 0,
+			},
+		},
+	},
+
+	"unknown_struct_number": {
+		`{"unknown":12}`,
+		UnknownStruct{
+			Unknown: 12.,
+		},
+	},
+
+	"unknown_struct_map": {
+		`{"unknown":{"foo":"bar"}}`,
+		UnknownStruct{
+			Unknown: map[string]interface{}{
+				"foo": "bar",
+			},
+		},
+	},
+
+	"union_string": {
+		`{"union":"hello"}`,
+		UnionStruct{
+			Union: UnionString("hello"),
+		},
+	},
+
+	"union_integer": {
+		`{"union":12}`,
+		UnionStruct{
+			Union: UnionInteger(12),
+		},
+	},
+
+	"union_struct_discriminated_a": {
+		`{"union":{"a":"foo","b":"bar","type":"typeA"}}`,
+		UnionStruct{
+			Union: UnionStructA{
+				Type: "typeA",
+				A:    "foo",
+				B:    "bar",
+			},
+		},
+	},
+
+	"union_struct_discriminated_b": {
+		`{"union":{"a":"foo","type":"typeB"}}`,
+		UnionStruct{
+			Union: UnionStructB{
+				Type: "typeB",
+				A:    "foo",
 			},
 		},
 	},

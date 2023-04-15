@@ -5,12 +5,63 @@ import (
 	pjson "github.com/lithic-com/lithic-go/core/json"
 )
 
-// 🚧 Unions are still being implemented.
-type AccountHolderNewParams struct{}
+type KYB struct {
+	// Information for business for which the account is being opened and KYB is being
+	// run.
+	BusinessEntity field.Field[KYBBusinessEntity] `json:"business_entity,required"`
+	// List of all entities with >25% ownership in the company. If no entity or
+	// individual owns >25% of the company, and the largest shareholder is an entity,
+	// please identify them in this field. See
+	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
+	// (Section I) for more background. If no business owner is an entity, pass in an
+	// empty list. However, either this parameter or `beneficial_owner_individuals`
+	// must be populated. on entities that should be included.
+	BeneficialOwnerEntities field.Field[[]KYBBeneficialOwnerEntities] `json:"beneficial_owner_entities,required"`
+	// List of all individuals with >25% ownership in the company. If no entity or
+	// individual owns >25% of the company, and the largest shareholder is an
+	// individual, please identify them in this field. See
+	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
+	// (Section I) for more background on individuals that should be included. If no
+	// individual is an entity, pass in an empty list. However, either this parameter
+	// or `beneficial_owner_entities` must be populated.
+	BeneficialOwnerIndividuals field.Field[[]KYBBeneficialOwnerIndividuals] `json:"beneficial_owner_individuals,required"`
+	// An individual with significant responsibility for managing the legal entity
+	// (e.g., a Chief Executive Officer, Chief Financial Officer, Chief Operating
+	// Officer, Managing Member, General Partner, President, Vice President, or
+	// Treasurer). This can be an executive, or someone who will have program-wide
+	// access to the cards that Lithic will provide. In some cases, this individual
+	// could also be a beneficial owner listed above. See
+	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
+	// (Section II) for more background.
+	ControlPerson field.Field[KYBControlPerson] `json:"control_person,required"`
+	// An RFC 3339 timestamp indicating when precomputed KYC was completed on the
+	// business with a pass result.
+	//
+	// This field is required only if workflow type is `KYB_BYO`.
+	KYBPassedTimestamp field.Field[string] `json:"kyb_passed_timestamp"`
+	// Short description of the company's line of business (i.e., what does the company
+	// do?).
+	NatureOfBusiness field.Field[string] `json:"nature_of_business,required"`
+	// An RFC 3339 timestamp indicating when the account holder accepted the applicable
+	// legal agreements (e.g., cardholder terms) as agreed upon during API customer's
+	// implementation with Lithic.
+	TosTimestamp field.Field[string] `json:"tos_timestamp,required"`
+	// Company website URL.
+	WebsiteURL field.Field[string] `json:"website_url,required"`
+	// Specifies the type of KYB workflow to run.
+	Workflow field.Field[KYBWorkflow] `json:"workflow,required"`
+}
 
-func (r *AccountHolderNewParams) MarshalJSON() ([]byte, error) { return nil, nil }
+// MarshalJSON serializes KYB into an array of bytes using the gjson library.
+// Members of the `jsonFields` field are serialized into the top-level, and will
+// overwrite known members of the same name.
+func (r KYB) MarshalJSON() (data []byte, err error) {
+	return pjson.MarshalRoot(r)
+}
 
-type AccountHolderNewParamsBusinessEntity struct {
+func (r KYB) implementsRequestsAccountHolderNewParams() {}
+
+type KYBBusinessEntity struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
 	Address field.Field[Address] `json:"address,required"`
@@ -30,7 +81,14 @@ type AccountHolderNewParamsBusinessEntity struct {
 	PhoneNumbers field.Field[[]string] `json:"phone_numbers,required"`
 }
 
-type AccountHolderNewParamsBeneficialOwnerEntities struct {
+// MarshalJSON serializes KYBBusinessEntity into an array of bytes using the gjson
+// library. Members of the `jsonFields` field are serialized into the top-level,
+// and will overwrite known members of the same name.
+func (r KYBBusinessEntity) MarshalJSON() (data []byte, err error) {
+	return pjson.MarshalRoot(r)
+}
+
+type KYBBeneficialOwnerEntities struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
 	Address field.Field[Address] `json:"address,required"`
@@ -50,7 +108,14 @@ type AccountHolderNewParamsBeneficialOwnerEntities struct {
 	PhoneNumbers field.Field[[]string] `json:"phone_numbers,required"`
 }
 
-type AccountHolderNewParamsBeneficialOwnerIndividuals struct {
+// MarshalJSON serializes KYBBeneficialOwnerEntities into an array of bytes using
+// the gjson library. Members of the `jsonFields` field are serialized into the
+// top-level, and will overwrite known members of the same name.
+func (r KYBBeneficialOwnerEntities) MarshalJSON() (data []byte, err error) {
+	return pjson.MarshalRoot(r)
+}
+
+type KYBBeneficialOwnerIndividuals struct {
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 	Address field.Field[Address] `json:"address,required"`
@@ -72,7 +137,14 @@ type AccountHolderNewParamsBeneficialOwnerIndividuals struct {
 	PhoneNumber field.Field[string] `json:"phone_number,required"`
 }
 
-type AccountHolderNewParamsControlPerson struct {
+// MarshalJSON serializes KYBBeneficialOwnerIndividuals into an array of bytes
+// using the gjson library. Members of the `jsonFields` field are serialized into
+// the top-level, and will overwrite known members of the same name.
+func (r KYBBeneficialOwnerIndividuals) MarshalJSON() (data []byte, err error) {
+	return pjson.MarshalRoot(r)
+}
+
+type KYBControlPerson struct {
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 	Address field.Field[Address] `json:"address,required"`
@@ -94,14 +166,47 @@ type AccountHolderNewParamsControlPerson struct {
 	PhoneNumber field.Field[string] `json:"phone_number,required"`
 }
 
-type AccountHolderNewParamsWorkflow string
+// MarshalJSON serializes KYBControlPerson into an array of bytes using the gjson
+// library. Members of the `jsonFields` field are serialized into the top-level,
+// and will overwrite known members of the same name.
+func (r KYBControlPerson) MarshalJSON() (data []byte, err error) {
+	return pjson.MarshalRoot(r)
+}
+
+type KYBWorkflow string
 
 const (
-	AccountHolderNewParamsWorkflowKYBBasic AccountHolderNewParamsWorkflow = "KYB_BASIC"
-	AccountHolderNewParamsWorkflowKYBByo   AccountHolderNewParamsWorkflow = "KYB_BYO"
+	KYBWorkflowKYBBasic KYBWorkflow = "KYB_BASIC"
+	KYBWorkflowKYBByo   KYBWorkflow = "KYB_BYO"
 )
 
-type AccountHolderNewParamsIndividual struct {
+type KYC struct {
+	// Information on individual for whom the account is being opened and KYC is being
+	// run.
+	Individual field.Field[KYCIndividual] `json:"individual,required"`
+	// An RFC 3339 timestamp indicating when precomputed KYC was completed on the
+	// individual with a pass result.
+	//
+	// This field is required only if workflow type is `KYC_BYO`.
+	KYCPassedTimestamp field.Field[string] `json:"kyc_passed_timestamp"`
+	// An RFC 3339 timestamp indicating when the account holder accepted the applicable
+	// legal agreements (e.g., cardholder terms) as agreed upon during API customer's
+	// implementation with Lithic.
+	TosTimestamp field.Field[string] `json:"tos_timestamp,required"`
+	// Specifies the type of KYC workflow to run.
+	Workflow field.Field[KYCWorkflow] `json:"workflow,required"`
+}
+
+// MarshalJSON serializes KYC into an array of bytes using the gjson library.
+// Members of the `jsonFields` field are serialized into the top-level, and will
+// overwrite known members of the same name.
+func (r KYC) MarshalJSON() (data []byte, err error) {
+	return pjson.MarshalRoot(r)
+}
+
+func (r KYC) implementsRequestsAccountHolderNewParams() {}
+
+type KYCIndividual struct {
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 	Address field.Field[Address] `json:"address,required"`
@@ -123,12 +228,70 @@ type AccountHolderNewParamsIndividual struct {
 	PhoneNumber field.Field[string] `json:"phone_number,required"`
 }
 
-type AccountHolderNewParamsKYCExemptionType string
+// MarshalJSON serializes KYCIndividual into an array of bytes using the gjson
+// library. Members of the `jsonFields` field are serialized into the top-level,
+// and will overwrite known members of the same name.
+func (r KYCIndividual) MarshalJSON() (data []byte, err error) {
+	return pjson.MarshalRoot(r)
+}
+
+type KYCWorkflow string
 
 const (
-	AccountHolderNewParamsKYCExemptionTypeAuthorizedUser  AccountHolderNewParamsKYCExemptionType = "AUTHORIZED_USER"
-	AccountHolderNewParamsKYCExemptionTypePrepaidCardUser AccountHolderNewParamsKYCExemptionType = "PREPAID_CARD_USER"
+	KYCWorkflowKYCAdvanced KYCWorkflow = "KYC_ADVANCED"
+	KYCWorkflowKYCBasic    KYCWorkflow = "KYC_BASIC"
+	KYCWorkflowKYCByo      KYCWorkflow = "KYC_BYO"
 )
+
+type KYCExempt struct {
+	// Specifies the workflow type. This must be 'KYC_EXEMPT'
+	Workflow field.Field[KYCExemptWorkflow] `json:"workflow,required"`
+	// Specifies the type of KYC Exempt user
+	KYCExemptionType field.Field[KYCExemptKYCExemptionType] `json:"kyc_exemption_type,required"`
+	// The KYC Exempt user's first name
+	FirstName field.Field[string] `json:"first_name,required"`
+	// The KYC Exempt user's last name
+	LastName field.Field[string] `json:"last_name,required"`
+	// The KYC Exempt user's email
+	Email field.Field[string] `json:"email,required"`
+	// The KYC Exempt user's phone number
+	PhoneNumber field.Field[string] `json:"phone_number,required"`
+	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
+	// users of businesses. Pass the account_token of the enrolled business associated
+	// with the AUTHORIZED_USER in this field.
+	BusinessAccountToken field.Field[string] `json:"business_account_token"`
+	// KYC Exempt user's current address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
+	Address field.Field[Address] `json:"address"`
+}
+
+// MarshalJSON serializes KYCExempt into an array of bytes using the gjson library.
+// Members of the `jsonFields` field are serialized into the top-level, and will
+// overwrite known members of the same name.
+func (r KYCExempt) MarshalJSON() (data []byte, err error) {
+	return pjson.MarshalRoot(r)
+}
+
+func (r KYCExempt) implementsRequestsAccountHolderNewParams() {}
+
+type KYCExemptWorkflow string
+
+const (
+	KYCExemptWorkflowKYCExempt KYCExemptWorkflow = "KYC_EXEMPT"
+)
+
+type KYCExemptKYCExemptionType string
+
+const (
+	KYCExemptKYCExemptionTypeAuthorizedUser  KYCExemptKYCExemptionType = "AUTHORIZED_USER"
+	KYCExemptKYCExemptionTypePrepaidCardUser KYCExemptKYCExemptionType = "PREPAID_CARD_USER"
+)
+
+// This interface is a union satisfied by one of the following: [KYB], [KYC],
+// [KYCExempt].
+type AccountHolderNewParams interface {
+	implementsRequestsAccountHolderNewParams()
+}
 
 type AccountHolderUpdateParams struct {
 	// Account holder's email address. The primary purpose of this field is for
@@ -148,7 +311,7 @@ type AccountHolderUpdateParams struct {
 // MarshalJSON serializes AccountHolderUpdateParams into an array of bytes using
 // the gjson library. Members of the `jsonFields` field are serialized into the
 // top-level, and will overwrite known members of the same name.
-func (r *AccountHolderUpdateParams) MarshalJSON() (data []byte, err error) {
+func (r AccountHolderUpdateParams) MarshalJSON() (data []byte, err error) {
 	return pjson.MarshalRoot(r)
 }
 
@@ -160,7 +323,7 @@ type AccountHolderNewWebhookParams struct {
 // MarshalJSON serializes AccountHolderNewWebhookParams into an array of bytes
 // using the gjson library. Members of the `jsonFields` field are serialized into
 // the top-level, and will overwrite known members of the same name.
-func (r *AccountHolderNewWebhookParams) MarshalJSON() (data []byte, err error) {
+func (r AccountHolderNewWebhookParams) MarshalJSON() (data []byte, err error) {
 	return pjson.MarshalRoot(r)
 }
 
@@ -178,7 +341,7 @@ type AccountHolderResubmitParams struct {
 // MarshalJSON serializes AccountHolderResubmitParams into an array of bytes using
 // the gjson library. Members of the `jsonFields` field are serialized into the
 // top-level, and will overwrite known members of the same name.
-func (r *AccountHolderResubmitParams) MarshalJSON() (data []byte, err error) {
+func (r AccountHolderResubmitParams) MarshalJSON() (data []byte, err error) {
 	return pjson.MarshalRoot(r)
 }
 
@@ -218,7 +381,7 @@ type AccountHolderUploadDocumentParams struct {
 // MarshalJSON serializes AccountHolderUploadDocumentParams into an array of bytes
 // using the gjson library. Members of the `jsonFields` field are serialized into
 // the top-level, and will overwrite known members of the same name.
-func (r *AccountHolderUploadDocumentParams) MarshalJSON() (data []byte, err error) {
+func (r AccountHolderUploadDocumentParams) MarshalJSON() (data []byte, err error) {
 	return pjson.MarshalRoot(r)
 }
 
