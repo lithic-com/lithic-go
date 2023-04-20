@@ -97,7 +97,7 @@ type TransactionCardholderAuthentication struct {
 	// - `1`: 3-D Secure Protocol version 1.x applied to the transaction.
 	// - `2`: 3-D Secure Protocol version 2.x applied to the transaction.
 	// - `null`: 3-D Secure was not used for the transaction
-	_3dsVersion string `json:"3ds_version,required,nullable"`
+	ThreeDSVersion string `json:"3ds_version,required,nullable"`
 	// Exemption applied by the ACS to authenticate the transaction without requesting
 	// a challenge. Possible values:
 	//
@@ -176,7 +176,7 @@ type TransactionCardholderAuthentication struct {
 }
 
 type TransactionCardholderAuthenticationJSON struct {
-	_3dsVersion           pjson.Metadata
+	ThreeDSVersion        pjson.Metadata
 	AcquirerExemption     pjson.Metadata
 	LiabilityShift        pjson.Metadata
 	VerificationAttempted pjson.Metadata
