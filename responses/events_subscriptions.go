@@ -22,22 +22,22 @@ func (r *SubscriptionRetrieveSecretResponse) UnmarshalJSON(data []byte) (err err
 	return pjson.UnmarshalRoot(data, r)
 }
 
-type SubscriptionListResponse struct {
+type EventSubscriptionListResponse struct {
 	Data    []EventSubscription `json:"data,required"`
 	HasMore bool                `json:"has_more,required"`
-	JSON    SubscriptionListResponseJSON
+	JSON    EventSubscriptionListResponseJSON
 }
 
-type SubscriptionListResponseJSON struct {
+type EventSubscriptionListResponseJSON struct {
 	Data    pjson.Metadata
 	HasMore pjson.Metadata
 	Raw     []byte
 	Extras  map[string]pjson.Metadata
 }
 
-// UnmarshalJSON deserializes the provided bytes into SubscriptionListResponse
+// UnmarshalJSON deserializes the provided bytes into EventSubscriptionListResponse
 // using the internal pjson library. Unrecognized fields are stored in the
 // `jsonFields` property.
-func (r *SubscriptionListResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *EventSubscriptionListResponse) UnmarshalJSON(data []byte) (err error) {
 	return pjson.UnmarshalRoot(data, r)
 }

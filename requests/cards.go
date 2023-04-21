@@ -54,10 +54,10 @@ type CardNewParams struct {
 	// [/account_holders endpoint](https://docs.lithic.com/docs/account-holders-kyc).
 	// See [Managing Your Program](doc:managing-your-program) for more information.
 	AccountToken field.Field[string] `json:"account_token" format:"uuid"`
-	// For physical card programs with more than one BIN range. This must be configured
-	// with Lithic before use. Identifies the card program/BIN range under which to
-	// create the card. If omitted, will utilize the program's default
-	// `card_program_token`. In Sandbox, use 00000000-0000-0000-1000-000000000000 and
+	// For card programs with more than one BIN range. This must be configured with
+	// Lithic before use. Identifies the card program/BIN range under which to create
+	// the card. If omitted, will utilize the program's default `card_program_token`.
+	// In Sandbox, use 00000000-0000-0000-1000-000000000000 and
 	// 00000000-0000-0000-2000-000000000000 to test creating cards on specific card
 	// programs.
 	CardProgramToken field.Field[string] `json:"card_program_token" format:"uuid"`
@@ -247,9 +247,9 @@ func (r CardListParams) URLQuery() (v url.Values) {
 
 type CardEmbedParams struct {
 	// A base64 encoded JSON string of an EmbedRequest to specify which card to load.
-	EmbedRequest field.Field[string] `query:"embed_request"`
+	EmbedRequest field.Field[string] `query:"embed_request,required"`
 	// SHA256 HMAC of the embed_request JSON string with base64 digest.
-	Hmac field.Field[string] `query:"hmac"`
+	Hmac field.Field[string] `query:"hmac,required"`
 }
 
 // URLQuery serializes CardEmbedParams into a url.Values of the query parameters

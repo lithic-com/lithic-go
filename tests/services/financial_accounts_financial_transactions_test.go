@@ -13,11 +13,12 @@ import (
 	"github.com/lithic-com/lithic-go/requests"
 )
 
-func TestEventGet(t *testing.T) {
+func TestFinancialTransactionGet(t *testing.T) {
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Events.Get(
+	_, err := c.FinancialAccounts.FinancialTransactions.Get(
 		context.TODO(),
-		"string",
+		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 	)
 	if err != nil {
 		var apiError core.APIError
@@ -29,9 +30,13 @@ func TestEventGet(t *testing.T) {
 	}
 }
 
-func TestEventListWithOptionalParams(t *testing.T) {
+func TestFinancialTransactionListWithOptionalParams(t *testing.T) {
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Events.List(context.TODO(), &requests.EventListParams{Begin: lithic.F(time.Now()), End: lithic.F(time.Now()), PageSize: lithic.F(int64(1)), StartingAfter: lithic.F("string"), EndingBefore: lithic.F("string"), EventTypes: lithic.F([]requests.EventListParamsEventTypes{requests.EventListParamsEventTypesDisputeUpdated, requests.EventListParamsEventTypesDisputeUpdated, requests.EventListParamsEventTypesDisputeUpdated})})
+	_, err := c.FinancialAccounts.FinancialTransactions.List(
+		context.TODO(),
+		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+		&requests.FinancialTransactionListParams{Category: lithic.F(requests.FinancialTransactionListParamsCategoryACH), Status: lithic.F(requests.FinancialTransactionListParamsStatusDeclined), Result: lithic.F(requests.FinancialTransactionListParamsResultApproved), Begin: lithic.F(time.Now()), End: lithic.F(time.Now()), StartingAfter: lithic.F("string"), EndingBefore: lithic.F("string")},
+	)
 	if err != nil {
 		var apiError core.APIError
 		if errors.As(err, &apiError) {

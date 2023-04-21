@@ -12,13 +12,13 @@ import (
 
 type EventService struct {
 	Options       []option.RequestOption
-	Subscriptions *EventsSubscriptionService
+	Subscriptions *EventSubscriptionService
 }
 
 func NewEventService(opts ...option.RequestOption) (r *EventService) {
 	r = &EventService{}
 	r.Options = opts
-	r.Subscriptions = NewEventsSubscriptionService(opts...)
+	r.Subscriptions = NewEventSubscriptionService(opts...)
 	return
 }
 

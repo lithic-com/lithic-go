@@ -13,9 +13,9 @@ import (
 	"github.com/lithic-com/lithic-go/requests"
 )
 
-func TestSubscriptionsNewWithOptionalParams(t *testing.T) {
+func TestEventSubscriptionNewWithOptionalParams(t *testing.T) {
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Events.Subscriptions.New(context.TODO(), &requests.SubscriptionNewParams{Description: lithic.F("string"), Disabled: lithic.F(true), EventTypes: lithic.F([]requests.SubscriptionNewParamsEventTypes{requests.SubscriptionNewParamsEventTypesDisputeUpdated, requests.SubscriptionNewParamsEventTypesDisputeUpdated, requests.SubscriptionNewParamsEventTypesDisputeUpdated}), URL: lithic.F("https://example.com")})
+	_, err := c.Events.Subscriptions.New(context.TODO(), &requests.EventSubscriptionNewParams{Description: lithic.F("string"), Disabled: lithic.F(true), EventTypes: lithic.F([]requests.EventSubscriptionNewParamsEventTypes{requests.EventSubscriptionNewParamsEventTypesDisputeUpdated, requests.EventSubscriptionNewParamsEventTypesDisputeUpdated, requests.EventSubscriptionNewParamsEventTypesDisputeUpdated}), URL: lithic.F("https://example.com")})
 	if err != nil {
 		var apiError core.APIError
 		if errors.As(err, &apiError) {
@@ -26,7 +26,7 @@ func TestSubscriptionsNewWithOptionalParams(t *testing.T) {
 	}
 }
 
-func TestSubscriptionsGet(t *testing.T) {
+func TestEventSubscriptionGet(t *testing.T) {
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Events.Subscriptions.Get(
 		context.TODO(),
@@ -42,12 +42,12 @@ func TestSubscriptionsGet(t *testing.T) {
 	}
 }
 
-func TestSubscriptionsUpdateWithOptionalParams(t *testing.T) {
+func TestEventSubscriptionUpdateWithOptionalParams(t *testing.T) {
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Events.Subscriptions.Update(
 		context.TODO(),
 		"string",
-		&requests.SubscriptionUpdateParams{Description: lithic.F("string"), Disabled: lithic.F(true), EventTypes: lithic.F([]requests.SubscriptionUpdateParamsEventTypes{requests.SubscriptionUpdateParamsEventTypesDisputeUpdated, requests.SubscriptionUpdateParamsEventTypesDisputeUpdated, requests.SubscriptionUpdateParamsEventTypesDisputeUpdated}), URL: lithic.F("https://example.com")},
+		&requests.EventSubscriptionUpdateParams{Description: lithic.F("string"), Disabled: lithic.F(true), EventTypes: lithic.F([]requests.EventSubscriptionUpdateParamsEventTypes{requests.EventSubscriptionUpdateParamsEventTypesDisputeUpdated, requests.EventSubscriptionUpdateParamsEventTypesDisputeUpdated, requests.EventSubscriptionUpdateParamsEventTypesDisputeUpdated}), URL: lithic.F("https://example.com")},
 	)
 	if err != nil {
 		var apiError core.APIError
@@ -59,9 +59,9 @@ func TestSubscriptionsUpdateWithOptionalParams(t *testing.T) {
 	}
 }
 
-func TestSubscriptionsListWithOptionalParams(t *testing.T) {
+func TestEventSubscriptionListWithOptionalParams(t *testing.T) {
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Events.Subscriptions.List(context.TODO(), &requests.SubscriptionListParams{PageSize: lithic.F(int64(1)), StartingAfter: lithic.F("string"), EndingBefore: lithic.F("string")})
+	_, err := c.Events.Subscriptions.List(context.TODO(), &requests.EventSubscriptionListParams{PageSize: lithic.F(int64(1)), StartingAfter: lithic.F("string"), EndingBefore: lithic.F("string")})
 	if err != nil {
 		var apiError core.APIError
 		if errors.As(err, &apiError) {
@@ -72,7 +72,7 @@ func TestSubscriptionsListWithOptionalParams(t *testing.T) {
 	}
 }
 
-func TestSubscriptionsDelete(t *testing.T) {
+func TestEventSubscriptionDelete(t *testing.T) {
 	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	err := c.Events.Subscriptions.Delete(
@@ -89,13 +89,13 @@ func TestSubscriptionsDelete(t *testing.T) {
 	}
 }
 
-func TestSubscriptionsRecover(t *testing.T) {
+func TestEventSubscriptionRecover(t *testing.T) {
 	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	err := c.Events.Subscriptions.Recover(
 		context.TODO(),
 		"string",
-		&requests.SubscriptionRecoverParams{Begin: lithic.F(time.Now()), End: lithic.F(time.Now())},
+		&requests.EventSubscriptionRecoverParams{Begin: lithic.F(time.Now()), End: lithic.F(time.Now())},
 	)
 	if err != nil {
 		var apiError core.APIError
@@ -107,13 +107,13 @@ func TestSubscriptionsRecover(t *testing.T) {
 	}
 }
 
-func TestSubscriptionsReplayMissing(t *testing.T) {
+func TestEventSubscriptionReplayMissing(t *testing.T) {
 	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	err := c.Events.Subscriptions.ReplayMissing(
 		context.TODO(),
 		"string",
-		&requests.SubscriptionReplayMissingParams{Begin: lithic.F(time.Now()), End: lithic.F(time.Now())},
+		&requests.EventSubscriptionReplayMissingParams{Begin: lithic.F(time.Now()), End: lithic.F(time.Now())},
 	)
 	if err != nil {
 		var apiError core.APIError
@@ -125,7 +125,7 @@ func TestSubscriptionsReplayMissing(t *testing.T) {
 	}
 }
 
-func TestSubscriptionsGetSecret(t *testing.T) {
+func TestEventSubscriptionGetSecret(t *testing.T) {
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Events.Subscriptions.GetSecret(
 		context.TODO(),
@@ -141,7 +141,7 @@ func TestSubscriptionsGetSecret(t *testing.T) {
 	}
 }
 
-func TestSubscriptionsRotateSecret(t *testing.T) {
+func TestEventSubscriptionRotateSecret(t *testing.T) {
 	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	err := c.Events.Subscriptions.RotateSecret(

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net/http/httputil"
 	"testing"
-	"time"
 
 	"github.com/lithic-com/lithic-go"
 	"github.com/lithic-com/lithic-go/core"
@@ -13,12 +12,9 @@ import (
 	"github.com/lithic-com/lithic-go/requests"
 )
 
-func TestAccountGet(t *testing.T) {
+func TestResponderEndpointNewWithOptionalParams(t *testing.T) {
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Accounts.Get(
-		context.TODO(),
-		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-	)
+	_, err := c.ResponderEndpoints.New(context.TODO(), &requests.ResponderEndpointNewParams{URL: lithic.F("https://example.com"), Type: lithic.F(requests.ResponderEndpointNewParamsTypeTokenizationDecisioning)})
 	if err != nil {
 		var apiError core.APIError
 		if errors.As(err, &apiError) {
@@ -29,14 +25,10 @@ func TestAccountGet(t *testing.T) {
 	}
 }
 
-func TestAccountUpdateWithOptionalParams(t *testing.T) {
-	t.Skip("Prism returns invalid data")
+func TestResponderEndpointDelete(t *testing.T) {
+	t.Skip("Prism errors when accept header set but no request body is defined")
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Accounts.Update(
-		context.TODO(),
-		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-		&requests.AccountUpdateParams{DailySpendLimit: lithic.F(int64(0)), LifetimeSpendLimit: lithic.F(int64(0)), MonthlySpendLimit: lithic.F(int64(0)), VerificationAddress: lithic.F(requests.AccountUpdateParamsVerificationAddress{Address1: lithic.F("string"), Address2: lithic.F("string"), City: lithic.F("string"), State: lithic.F("string"), PostalCode: lithic.F("string"), Country: lithic.F("string")}), State: lithic.F(requests.AccountUpdateParamsStateActive)},
-	)
+	err := c.ResponderEndpoints.Delete(context.TODO(), &requests.ResponderEndpointDeleteParams{Type: lithic.F(requests.ResponderEndpointDeleteParamsTypeTokenizationDecisioning)})
 	if err != nil {
 		var apiError core.APIError
 		if errors.As(err, &apiError) {
@@ -47,9 +39,9 @@ func TestAccountUpdateWithOptionalParams(t *testing.T) {
 	}
 }
 
-func TestAccountListWithOptionalParams(t *testing.T) {
+func TestResponderEndpointCheckStatus(t *testing.T) {
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Accounts.List(context.TODO(), &requests.AccountListParams{Begin: lithic.F(time.Now()), End: lithic.F(time.Now()), Page: lithic.F(int64(0)), PageSize: lithic.F(int64(1))})
+	_, err := c.ResponderEndpoints.CheckStatus(context.TODO(), &requests.ResponderEndpointCheckStatusParams{Type: lithic.F(requests.ResponderEndpointCheckStatusParamsTypeTokenizationDecisioning)})
 	if err != nil {
 		var apiError core.APIError
 		if errors.As(err, &apiError) {

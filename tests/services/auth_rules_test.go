@@ -12,7 +12,7 @@ import (
 	"github.com/lithic-com/lithic-go/requests"
 )
 
-func TestAuthRulesGet(t *testing.T) {
+func TestAuthRuleGet(t *testing.T) {
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AuthRules.Get(
 		context.TODO(),
@@ -28,7 +28,7 @@ func TestAuthRulesGet(t *testing.T) {
 	}
 }
 
-func TestAuthRulesUpdateWithOptionalParams(t *testing.T) {
+func TestAuthRuleUpdateWithOptionalParams(t *testing.T) {
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AuthRules.Update(
 		context.TODO(),
@@ -45,7 +45,7 @@ func TestAuthRulesUpdateWithOptionalParams(t *testing.T) {
 	}
 }
 
-func TestAuthRulesListWithOptionalParams(t *testing.T) {
+func TestAuthRuleListWithOptionalParams(t *testing.T) {
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AuthRules.List(context.TODO(), &requests.AuthRuleListParams{Page: lithic.F(int64(0)), PageSize: lithic.F(int64(1))})
 	if err != nil {
@@ -58,7 +58,7 @@ func TestAuthRulesListWithOptionalParams(t *testing.T) {
 	}
 }
 
-func TestAuthRulesApplyWithOptionalParams(t *testing.T) {
+func TestAuthRuleApplyWithOptionalParams(t *testing.T) {
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AuthRules.Apply(
 		context.TODO(),
@@ -75,7 +75,7 @@ func TestAuthRulesApplyWithOptionalParams(t *testing.T) {
 	}
 }
 
-func TestAuthRulesRemoveWithOptionalParams(t *testing.T) {
+func TestAuthRuleRemoveWithOptionalParams(t *testing.T) {
 	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AuthRules.Remove(context.TODO(), &requests.AuthRuleRemoveParams{CardTokens: lithic.F([]string{"string", "string", "string"}), AccountTokens: lithic.F([]string{"string", "string", "string"}), ProgramLevel: lithic.F(true)})
 	if err != nil {

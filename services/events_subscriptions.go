@@ -10,18 +10,18 @@ import (
 	"github.com/lithic-com/lithic-go/responses"
 )
 
-type EventsSubscriptionService struct {
+type EventSubscriptionService struct {
 	Options []option.RequestOption
 }
 
-func NewEventsSubscriptionService(opts ...option.RequestOption) (r *EventsSubscriptionService) {
-	r = &EventsSubscriptionService{}
+func NewEventSubscriptionService(opts ...option.RequestOption) (r *EventSubscriptionService) {
+	r = &EventSubscriptionService{}
 	r.Options = opts
 	return
 }
 
 // Create a new event subscription.
-func (r *EventsSubscriptionService) New(ctx context.Context, body *requests.SubscriptionNewParams, opts ...option.RequestOption) (res *responses.EventSubscription, err error) {
+func (r *EventSubscriptionService) New(ctx context.Context, body *requests.EventSubscriptionNewParams, opts ...option.RequestOption) (res *responses.EventSubscription, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "event_subscriptions"
 	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
@@ -29,7 +29,7 @@ func (r *EventsSubscriptionService) New(ctx context.Context, body *requests.Subs
 }
 
 // Get an event subscription.
-func (r *EventsSubscriptionService) Get(ctx context.Context, event_subscription_token string, opts ...option.RequestOption) (res *responses.EventSubscription, err error) {
+func (r *EventSubscriptionService) Get(ctx context.Context, event_subscription_token string, opts ...option.RequestOption) (res *responses.EventSubscription, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("event_subscriptions/%s", event_subscription_token)
 	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
@@ -37,7 +37,7 @@ func (r *EventsSubscriptionService) Get(ctx context.Context, event_subscription_
 }
 
 // Update an event subscription.
-func (r *EventsSubscriptionService) Update(ctx context.Context, event_subscription_token string, body *requests.SubscriptionUpdateParams, opts ...option.RequestOption) (res *responses.EventSubscription, err error) {
+func (r *EventSubscriptionService) Update(ctx context.Context, event_subscription_token string, body *requests.EventSubscriptionUpdateParams, opts ...option.RequestOption) (res *responses.EventSubscription, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("event_subscriptions/%s", event_subscription_token)
 	err = option.ExecuteNewRequest(ctx, "PATCH", path, body, &res, opts...)
@@ -45,7 +45,7 @@ func (r *EventsSubscriptionService) Update(ctx context.Context, event_subscripti
 }
 
 // List all the event subscriptions.
-func (r *EventsSubscriptionService) List(ctx context.Context, query *requests.SubscriptionListParams, opts ...option.RequestOption) (res *responses.CursorPage[responses.EventSubscription], err error) {
+func (r *EventSubscriptionService) List(ctx context.Context, query *requests.EventSubscriptionListParams, opts ...option.RequestOption) (res *responses.CursorPage[responses.EventSubscription], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -63,12 +63,12 @@ func (r *EventsSubscriptionService) List(ctx context.Context, query *requests.Su
 }
 
 // List all the event subscriptions.
-func (r *EventsSubscriptionService) ListAutoPager(ctx context.Context, query *requests.SubscriptionListParams, opts ...option.RequestOption) *responses.CursorPageAutoPager[responses.EventSubscription] {
+func (r *EventSubscriptionService) ListAutoPager(ctx context.Context, query *requests.EventSubscriptionListParams, opts ...option.RequestOption) *responses.CursorPageAutoPager[responses.EventSubscription] {
 	return responses.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
 // Delete an event subscription.
-func (r *EventsSubscriptionService) Delete(ctx context.Context, event_subscription_token string, opts ...option.RequestOption) (err error) {
+func (r *EventSubscriptionService) Delete(ctx context.Context, event_subscription_token string, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := fmt.Sprintf("event_subscriptions/%s", event_subscription_token)
@@ -77,7 +77,7 @@ func (r *EventsSubscriptionService) Delete(ctx context.Context, event_subscripti
 }
 
 // Resend all failed messages since a given time.
-func (r *EventsSubscriptionService) Recover(ctx context.Context, event_subscription_token string, query *requests.SubscriptionRecoverParams, opts ...option.RequestOption) (err error) {
+func (r *EventSubscriptionService) Recover(ctx context.Context, event_subscription_token string, query *requests.EventSubscriptionRecoverParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := fmt.Sprintf("event_subscriptions/%s/recover", event_subscription_token)
@@ -87,7 +87,7 @@ func (r *EventsSubscriptionService) Recover(ctx context.Context, event_subscript
 
 // Replays messages to the endpoint. Only messages that were created after `begin`
 // will be sent. Messages that were previously sent to the endpoint are not resent.
-func (r *EventsSubscriptionService) ReplayMissing(ctx context.Context, event_subscription_token string, query *requests.SubscriptionReplayMissingParams, opts ...option.RequestOption) (err error) {
+func (r *EventSubscriptionService) ReplayMissing(ctx context.Context, event_subscription_token string, query *requests.EventSubscriptionReplayMissingParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := fmt.Sprintf("event_subscriptions/%s/replay_missing", event_subscription_token)
@@ -96,7 +96,7 @@ func (r *EventsSubscriptionService) ReplayMissing(ctx context.Context, event_sub
 }
 
 // Get the secret for an event subscription.
-func (r *EventsSubscriptionService) GetSecret(ctx context.Context, event_subscription_token string, opts ...option.RequestOption) (res *responses.SubscriptionRetrieveSecretResponse, err error) {
+func (r *EventSubscriptionService) GetSecret(ctx context.Context, event_subscription_token string, opts ...option.RequestOption) (res *responses.SubscriptionRetrieveSecretResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("event_subscriptions/%s/secret", event_subscription_token)
 	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
@@ -105,7 +105,7 @@ func (r *EventsSubscriptionService) GetSecret(ctx context.Context, event_subscri
 
 // Rotate the secret for an event subscription. The previous secret will be valid
 // for the next 24 hours.
-func (r *EventsSubscriptionService) RotateSecret(ctx context.Context, event_subscription_token string, opts ...option.RequestOption) (err error) {
+func (r *EventSubscriptionService) RotateSecret(ctx context.Context, event_subscription_token string, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := fmt.Sprintf("event_subscriptions/%s/secret/rotate", event_subscription_token)

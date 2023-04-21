@@ -17,9 +17,14 @@ type Lithic struct {
 	AuthStreamEnrollment    *services.AuthStreamEnrollmentService
 	TokenizationDecisioning *services.TokenizationDecisioningService
 	Cards                   *services.CardService
+	Balances                *services.BalanceService
+	AggregateBalances       *services.AggregateBalanceService
 	Disputes                *services.DisputeService
 	Events                  *services.EventService
+	Transfers               *services.TransferService
+	FinancialAccounts       *services.FinancialAccountService
 	Transactions            *services.TransactionService
+	ResponderEndpoints      *services.ResponderEndpointService
 	Webhooks                *services.WebhookService
 }
 
@@ -45,9 +50,14 @@ func NewLithic(opts ...option.RequestOption) (r *Lithic) {
 	r.AuthStreamEnrollment = services.NewAuthStreamEnrollmentService(opts...)
 	r.TokenizationDecisioning = services.NewTokenizationDecisioningService(opts...)
 	r.Cards = services.NewCardService(opts...)
+	r.Balances = services.NewBalanceService(opts...)
+	r.AggregateBalances = services.NewAggregateBalanceService(opts...)
 	r.Disputes = services.NewDisputeService(opts...)
 	r.Events = services.NewEventService(opts...)
+	r.Transfers = services.NewTransferService(opts...)
+	r.FinancialAccounts = services.NewFinancialAccountService(opts...)
 	r.Transactions = services.NewTransactionService(opts...)
+	r.ResponderEndpoints = services.NewResponderEndpointService(opts...)
 	r.Webhooks = services.NewWebhookService(opts...)
 
 	return

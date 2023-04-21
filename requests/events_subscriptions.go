@@ -9,59 +9,59 @@ import (
 	"github.com/lithic-com/lithic-go/core/query"
 )
 
-type SubscriptionNewParams struct {
+type EventSubscriptionNewParams struct {
 	// Event subscription description.
 	Description field.Field[string] `json:"description"`
 	// Whether the event subscription is active (false) or inactive (true).
 	Disabled field.Field[bool] `json:"disabled"`
 	// Indicates types of events that will be sent to this subscription. If left blank,
 	// all types will be sent.
-	EventTypes field.Field[[]SubscriptionNewParamsEventTypes] `json:"event_types"`
+	EventTypes field.Field[[]EventSubscriptionNewParamsEventTypes] `json:"event_types"`
 	// URL to which event webhooks will be sent. URL must be a valid HTTPS address.
 	URL field.Field[string] `json:"url,required" format:"uri"`
 }
 
-// MarshalJSON serializes SubscriptionNewParams into an array of bytes using the
-// gjson library. Members of the `jsonFields` field are serialized into the
+// MarshalJSON serializes EventSubscriptionNewParams into an array of bytes using
+// the gjson library. Members of the `jsonFields` field are serialized into the
 // top-level, and will overwrite known members of the same name.
-func (r SubscriptionNewParams) MarshalJSON() (data []byte, err error) {
+func (r EventSubscriptionNewParams) MarshalJSON() (data []byte, err error) {
 	return pjson.MarshalRoot(r)
 }
 
-type SubscriptionNewParamsEventTypes string
+type EventSubscriptionNewParamsEventTypes string
 
 const (
-	SubscriptionNewParamsEventTypesDisputeUpdated                           SubscriptionNewParamsEventTypes = "dispute.updated"
-	SubscriptionNewParamsEventTypesDigitalWalletTokenizationApprovalRequest SubscriptionNewParamsEventTypes = "digital_wallet.tokenization_approval_request"
+	EventSubscriptionNewParamsEventTypesDisputeUpdated                           EventSubscriptionNewParamsEventTypes = "dispute.updated"
+	EventSubscriptionNewParamsEventTypesDigitalWalletTokenizationApprovalRequest EventSubscriptionNewParamsEventTypes = "digital_wallet.tokenization_approval_request"
 )
 
-type SubscriptionUpdateParams struct {
+type EventSubscriptionUpdateParams struct {
 	// Event subscription description.
 	Description field.Field[string] `json:"description"`
 	// Whether the event subscription is active (false) or inactive (true).
 	Disabled field.Field[bool] `json:"disabled"`
 	// Indicates types of events that will be sent to this subscription. If left blank,
 	// all types will be sent.
-	EventTypes field.Field[[]SubscriptionUpdateParamsEventTypes] `json:"event_types"`
+	EventTypes field.Field[[]EventSubscriptionUpdateParamsEventTypes] `json:"event_types"`
 	// URL to which event webhooks will be sent. URL must be a valid HTTPS address.
 	URL field.Field[string] `json:"url,required" format:"uri"`
 }
 
-// MarshalJSON serializes SubscriptionUpdateParams into an array of bytes using the
-// gjson library. Members of the `jsonFields` field are serialized into the
-// top-level, and will overwrite known members of the same name.
-func (r SubscriptionUpdateParams) MarshalJSON() (data []byte, err error) {
+// MarshalJSON serializes EventSubscriptionUpdateParams into an array of bytes
+// using the gjson library. Members of the `jsonFields` field are serialized into
+// the top-level, and will overwrite known members of the same name.
+func (r EventSubscriptionUpdateParams) MarshalJSON() (data []byte, err error) {
 	return pjson.MarshalRoot(r)
 }
 
-type SubscriptionUpdateParamsEventTypes string
+type EventSubscriptionUpdateParamsEventTypes string
 
 const (
-	SubscriptionUpdateParamsEventTypesDisputeUpdated                           SubscriptionUpdateParamsEventTypes = "dispute.updated"
-	SubscriptionUpdateParamsEventTypesDigitalWalletTokenizationApprovalRequest SubscriptionUpdateParamsEventTypes = "digital_wallet.tokenization_approval_request"
+	EventSubscriptionUpdateParamsEventTypesDisputeUpdated                           EventSubscriptionUpdateParamsEventTypes = "dispute.updated"
+	EventSubscriptionUpdateParamsEventTypesDigitalWalletTokenizationApprovalRequest EventSubscriptionUpdateParamsEventTypes = "digital_wallet.tokenization_approval_request"
 )
 
-type SubscriptionListParams struct {
+type EventSubscriptionListParams struct {
 	// Page size (for pagination).
 	PageSize field.Field[int64] `query:"page_size"`
 	// The unique identifier of the last item in the previous page. Used to retrieve
@@ -72,13 +72,13 @@ type SubscriptionListParams struct {
 	EndingBefore field.Field[string] `query:"ending_before"`
 }
 
-// URLQuery serializes SubscriptionListParams into a url.Values of the query
+// URLQuery serializes EventSubscriptionListParams into a url.Values of the query
 // parameters associated with this value
-func (r SubscriptionListParams) URLQuery() (v url.Values) {
+func (r EventSubscriptionListParams) URLQuery() (v url.Values) {
 	return query.Marshal(r)
 }
 
-type SubscriptionRecoverParams struct {
+type EventSubscriptionRecoverParams struct {
 	// Date string in RFC 3339 format. Only entries created after the specified date
 	// will be included. UTC time zone.
 	Begin field.Field[time.Time] `query:"begin" format:"date-time"`
@@ -87,23 +87,23 @@ type SubscriptionRecoverParams struct {
 	End field.Field[time.Time] `query:"end" format:"date-time"`
 }
 
-// URLQuery serializes SubscriptionRecoverParams into a url.Values of the query
-// parameters associated with this value
-func (r SubscriptionRecoverParams) URLQuery() (v url.Values) {
-	return query.Marshal(r)
-}
-
-type SubscriptionReplayMissingParams struct {
-	// Date string in RFC 3339 format. Only entries created after the specified date
-	// will be included. UTC time zone.
-	Begin field.Field[time.Time] `query:"begin" format:"date-time"`
-	// Date string in RFC 3339 format. Only entries created before the specified date
-	// will be included. UTC time zone.
-	End field.Field[time.Time] `query:"end" format:"date-time"`
-}
-
-// URLQuery serializes SubscriptionReplayMissingParams into a url.Values of the
+// URLQuery serializes EventSubscriptionRecoverParams into a url.Values of the
 // query parameters associated with this value
-func (r SubscriptionReplayMissingParams) URLQuery() (v url.Values) {
+func (r EventSubscriptionRecoverParams) URLQuery() (v url.Values) {
+	return query.Marshal(r)
+}
+
+type EventSubscriptionReplayMissingParams struct {
+	// Date string in RFC 3339 format. Only entries created after the specified date
+	// will be included. UTC time zone.
+	Begin field.Field[time.Time] `query:"begin" format:"date-time"`
+	// Date string in RFC 3339 format. Only entries created before the specified date
+	// will be included. UTC time zone.
+	End field.Field[time.Time] `query:"end" format:"date-time"`
+}
+
+// URLQuery serializes EventSubscriptionReplayMissingParams into a url.Values of
+// the query parameters associated with this value
+func (r EventSubscriptionReplayMissingParams) URLQuery() (v url.Values) {
 	return query.Marshal(r)
 }
