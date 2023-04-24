@@ -185,6 +185,8 @@ type DisputeEvidence struct {
 	Created time.Time `json:"created,required" format:"date-time"`
 	// Dispute token evidence is attached to.
 	DisputeToken string `json:"dispute_token,required" format:"uuid"`
+	// URL to download evidence. Only shown when `upload_status` is `UPLOADED`.
+	DownloadURL string `json:"download_url"`
 	// Globally unique identifier.
 	Token string `json:"token,required" format:"uuid"`
 	// Upload status types:
@@ -203,6 +205,7 @@ type DisputeEvidence struct {
 type DisputeEvidenceJSON struct {
 	Created      pjson.Metadata
 	DisputeToken pjson.Metadata
+	DownloadURL  pjson.Metadata
 	Token        pjson.Metadata
 	UploadStatus pjson.Metadata
 	UploadURL    pjson.Metadata
