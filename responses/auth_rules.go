@@ -5,6 +5,14 @@ import (
 )
 
 type AuthRule struct {
+	// Globally unique identifier.
+	Token string `json:"token" format:"uuid"`
+	// Indicates whether the Auth Rule is ACTIVE or INACTIVE
+	State AuthRuleState `json:"state"`
+	// Identifier for the Auth Rule(s) that a new Auth Rule replaced; will be returned
+	// only if an Auth Rule is applied to entities that previously already had one
+	// applied.
+	PreviousAuthRuleTokens []string `json:"previous_auth_rule_tokens"`
 	// Merchant category codes for which the Auth Rule permits transactions.
 	AllowedMcc []string `json:"allowed_mcc"`
 	// Merchant category codes for which the Auth Rule automatically declines
@@ -38,16 +46,19 @@ type AuthRule struct {
 }
 
 type AuthRuleJSON struct {
-	AllowedMcc       pjson.Metadata
-	BlockedMcc       pjson.Metadata
-	AllowedCountries pjson.Metadata
-	BlockedCountries pjson.Metadata
-	AvsType          pjson.Metadata
-	AccountTokens    pjson.Metadata
-	CardTokens       pjson.Metadata
-	ProgramLevel     pjson.Metadata
-	Raw              []byte
-	Extras           map[string]pjson.Metadata
+	Token                  pjson.Metadata
+	State                  pjson.Metadata
+	PreviousAuthRuleTokens pjson.Metadata
+	AllowedMcc             pjson.Metadata
+	BlockedMcc             pjson.Metadata
+	AllowedCountries       pjson.Metadata
+	BlockedCountries       pjson.Metadata
+	AvsType                pjson.Metadata
+	AccountTokens          pjson.Metadata
+	CardTokens             pjson.Metadata
+	ProgramLevel           pjson.Metadata
+	Raw                    []byte
+	Extras                 map[string]pjson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AuthRule using the internal
@@ -56,11 +67,36 @@ func (r *AuthRule) UnmarshalJSON(data []byte) (err error) {
 	return pjson.UnmarshalRoot(data, r)
 }
 
+type AuthRuleState string
+
+const (
+	AuthRuleStateActive   AuthRuleState = "ACTIVE"
+	AuthRuleStateInactive AuthRuleState = "INACTIVE"
+)
+
 type AuthRuleAvsType string
 
 const (
 	AuthRuleAvsTypeZipOnly AuthRuleAvsType = "ZIP_ONLY"
 )
+
+type AuthRuleCreateResponse struct {
+	Data AuthRule `json:"data"`
+	JSON AuthRuleCreateResponseJSON
+}
+
+type AuthRuleCreateResponseJSON struct {
+	Data   pjson.Metadata
+	Raw    []byte
+	Extras map[string]pjson.Metadata
+}
+
+// UnmarshalJSON deserializes the provided bytes into AuthRuleCreateResponse using
+// the internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// property.
+func (r *AuthRuleCreateResponse) UnmarshalJSON(data []byte) (err error) {
+	return pjson.UnmarshalRoot(data, r)
+}
 
 type AuthRuleRetrieveResponse struct {
 	Data []AuthRule `json:"data"`

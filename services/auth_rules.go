@@ -20,6 +20,15 @@ func NewAuthRuleService(opts ...option.RequestOption) (r *AuthRuleService) {
 	return
 }
 
+// Creates an authorization rule (Auth Rule) and applies it at the program,
+// account, or card level.
+func (r *AuthRuleService) New(ctx context.Context, body *requests.AuthRuleNewParams, opts ...option.RequestOption) (res *responses.AuthRuleCreateResponse, err error) {
+	opts = append(r.Options[:], opts...)
+	path := "auth_rules"
+	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	return
+}
+
 // Detail the properties and entities (program, accounts, and cards) associated
 // with an existing authorization rule (Auth Rule).
 func (r *AuthRuleService) Get(ctx context.Context, auth_rule_token string, opts ...option.RequestOption) (res *responses.AuthRuleRetrieveResponse, err error) {
