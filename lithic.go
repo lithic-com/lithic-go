@@ -2,8 +2,10 @@ package lithic
 
 import (
 	"context"
+	"net/http"
 	"os"
 
+	"github.com/lithic-com/lithic-go/apierror"
 	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/responses"
 	"github.com/lithic-com/lithic-go/services"
@@ -67,6 +69,8 @@ func NewLithic(opts ...option.RequestOption) (r *Lithic) {
 func (r *Lithic) APIStatus(ctx context.Context, opts ...option.RequestOption) (res *responses.APIStatus, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "status"
-	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
+
+type Error = apierror.Error

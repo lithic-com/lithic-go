@@ -3,12 +3,10 @@ package services
 import (
 	"context"
 	"errors"
-	"net/http/httputil"
 	"testing"
 	"time"
 
 	"github.com/lithic-com/lithic-go"
-	"github.com/lithic-com/lithic-go/core"
 	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/requests"
 )
@@ -21,10 +19,9 @@ func TestFinancialAccountBalanceListWithOptionalParams(t *testing.T) {
 		&requests.FinancialAccountBalanceListParams{BalanceDate: lithic.F(time.Now()), LastTransactionEventToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")},
 	)
 	if err != nil {
-		var apiError core.APIError
-		if errors.As(err, &apiError) {
-			body, _ := httputil.DumpRequest(apiError.Request(), true)
-			println(string(body))
+		var apierr *lithic.Error
+		if errors.As(err, &apierr) {
+			println(apierr.DumpRequest(true))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}

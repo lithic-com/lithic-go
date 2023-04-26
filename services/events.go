@@ -26,7 +26,7 @@ func NewEventService(opts ...option.RequestOption) (r *EventService) {
 func (r *EventService) Get(ctx context.Context, event_token string, opts ...option.RequestOption) (res *responses.Event, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("events/%s", event_token)
-	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
@@ -36,7 +36,7 @@ func (r *EventService) List(ctx context.Context, query *requests.EventListParams
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "events"
-	cfg, err := option.NewRequestConfig(ctx, "GET", path, query, &res, opts...)
+	cfg, err := option.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
 	}

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/lithic-com/lithic-go/core/field"
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 	"github.com/lithic-com/lithic-go/core/query"
 )
 
@@ -45,7 +45,7 @@ type EmbedRequestParams struct {
 // library. Members of the `jsonFields` field are serialized into the top-level,
 // and will overwrite known members of the same name.
 func (r EmbedRequestParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type CardNewParams struct {
@@ -138,7 +138,7 @@ type CardNewParams struct {
 // library. Members of the `jsonFields` field are serialized into the top-level,
 // and will overwrite known members of the same name.
 func (r CardNewParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type CardNewParamsState string
@@ -213,7 +213,7 @@ type CardUpdateParams struct {
 // library. Members of the `jsonFields` field are serialized into the top-level,
 // and will overwrite known members of the same name.
 func (r CardUpdateParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type CardUpdateParamsState string
@@ -277,7 +277,7 @@ type CardProvisionParams struct {
 // gjson library. Members of the `jsonFields` field are serialized into the
 // top-level, and will overwrite known members of the same name.
 func (r CardProvisionParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type CardProvisionParamsDigitalWallet string
@@ -311,7 +311,7 @@ type CardReissueParams struct {
 // library. Members of the `jsonFields` field are serialized into the top-level,
 // and will overwrite known members of the same name.
 func (r CardReissueParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type CardReissueParamsShippingMethod string

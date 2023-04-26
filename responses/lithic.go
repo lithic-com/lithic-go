@@ -1,7 +1,7 @@
 package responses
 
 import (
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 )
 
 type APIStatus struct {
@@ -10,13 +10,13 @@ type APIStatus struct {
 }
 
 type APIStatusJSON struct {
-	Message pjson.Metadata
+	Message apijson.Metadata
 	Raw     []byte
-	Extras  map[string]pjson.Metadata
+	Extras  map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into APIStatus using the internal
-// pjson library. Unrecognized fields are stored in the `jsonFields` property.
+// json library. Unrecognized fields are stored in the `jsonFields` property.
 func (r *APIStatus) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }

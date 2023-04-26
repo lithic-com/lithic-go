@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/requests"
@@ -22,6 +23,6 @@ func NewTransferService(opts ...option.RequestOption) (r *TransferService) {
 func (r *TransferService) New(ctx context.Context, body *requests.TransferNewParams, opts ...option.RequestOption) (res *responses.TransferCreateResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "transfer"
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }

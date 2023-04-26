@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/tidwall/gjson"
-
-	"github.com/lithic-com/lithic-go/core/pointer"
 )
+
+func P[T any](v T) *T { return &v }
 
 type Primitves struct {
 	A bool    `json:"a"`
@@ -154,19 +154,19 @@ var tests = map[string]struct {
 	"array_int":          {`[1,2]`, []int{1, 2}},
 	"array_int_coerce":   {`["1",2]`, []int{1, 2}},
 
-	"ptr_true":               {"true", pointer.P(true)},
-	"ptr_false":              {"false", pointer.P(false)},
-	"ptr_int":                {"1", pointer.P(1)},
-	"ptr_int_bigger":         {"12324", pointer.P(12324)},
-	"ptr_int_string_coerce":  {`"65"`, pointer.P(65)},
-	"ptr_int_boolean_coerce": {"true", pointer.P(1)},
-	"ptr_int64":              {"1", pointer.P(int64(1))},
-	"ptr_int64_huge":         {"123456789123456789", pointer.P(int64(123456789123456789))},
-	"ptr_uint":               {"1", pointer.P(uint(1))},
-	"ptr_uint_bigger":        {"12324", pointer.P(uint(12324))},
-	"ptr_uint_coerce":        {`"65"`, pointer.P(uint(65))},
-	"ptr_float_1.54":         {"1.54", pointer.P(float32(1.54))},
-	"ptr_float_1.89":         {"1.89", pointer.P(float64(1.89))},
+	"ptr_true":               {"true", P(true)},
+	"ptr_false":              {"false", P(false)},
+	"ptr_int":                {"1", P(1)},
+	"ptr_int_bigger":         {"12324", P(12324)},
+	"ptr_int_string_coerce":  {`"65"`, P(65)},
+	"ptr_int_boolean_coerce": {"true", P(1)},
+	"ptr_int64":              {"1", P(int64(1))},
+	"ptr_int64_huge":         {"123456789123456789", P(int64(123456789123456789))},
+	"ptr_uint":               {"1", P(uint(1))},
+	"ptr_uint_bigger":        {"12324", P(uint(12324))},
+	"ptr_uint_coerce":        {`"65"`, P(uint(65))},
+	"ptr_float_1.54":         {"1.54", P(float32(1.54))},
+	"ptr_float_1.89":         {"1.89", P(float64(1.89))},
 
 	"date_time": {`"2007-03-01T13:00:00Z"`, time.Date(2007, time.March, 1, 13, 0, 0, 0, time.UTC)},
 
@@ -181,11 +181,11 @@ var tests = map[string]struct {
 	"primitive_pointer_struct": {
 		`{"a":false,"b":237628372683,"c":654,"d":9999.43,"e":43.76,"f":[1,2,3,4,5]}`,
 		PrimitvePointers{
-			A: pointer.P(false),
-			B: pointer.P(237628372683),
-			C: pointer.P(uint(654)),
-			D: pointer.P(9999.43),
-			E: pointer.P(float32(43.76)),
+			A: P(false),
+			B: P(237628372683),
+			C: P(uint(654)),
+			D: P(9999.43),
+			E: P(float32(43.76)),
 			F: &[]int{1, 2, 3, 4, 5},
 		},
 	},

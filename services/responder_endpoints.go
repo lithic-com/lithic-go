@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/requests"
@@ -22,7 +23,7 @@ func NewResponderEndpointService(opts ...option.RequestOption) (r *ResponderEndp
 func (r *ResponderEndpointService) New(ctx context.Context, body *requests.ResponderEndpointNewParams, opts ...option.RequestOption) (res *responses.ResponderEndpointCreateResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "responder_endpoints"
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -31,7 +32,7 @@ func (r *ResponderEndpointService) Delete(ctx context.Context, query *requests.R
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := "responder_endpoints"
-	err = option.ExecuteNewRequest(ctx, "DELETE", path, query, nil, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodDelete, path, query, nil, opts...)
 	return
 }
 
@@ -39,6 +40,6 @@ func (r *ResponderEndpointService) Delete(ctx context.Context, query *requests.R
 func (r *ResponderEndpointService) CheckStatus(ctx context.Context, query *requests.ResponderEndpointCheckStatusParams, opts ...option.RequestOption) (res *responses.ResponderEndpointStatus, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "responder_endpoints"
-	err = option.ExecuteNewRequest(ctx, "GET", path, query, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
 	return
 }

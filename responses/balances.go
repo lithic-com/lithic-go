@@ -3,7 +3,7 @@ package responses
 import (
 	"time"
 
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 )
 
 type Balance struct {
@@ -35,24 +35,24 @@ type Balance struct {
 }
 
 type BalanceJSON struct {
-	AvailableAmount           pjson.Metadata
-	Created                   pjson.Metadata
-	Currency                  pjson.Metadata
-	LastTransactionEventToken pjson.Metadata
-	LastTransactionToken      pjson.Metadata
-	PendingAmount             pjson.Metadata
-	Token                     pjson.Metadata
-	TotalAmount               pjson.Metadata
-	Type                      pjson.Metadata
-	Updated                   pjson.Metadata
+	AvailableAmount           apijson.Metadata
+	Created                   apijson.Metadata
+	Currency                  apijson.Metadata
+	LastTransactionEventToken apijson.Metadata
+	LastTransactionToken      apijson.Metadata
+	PendingAmount             apijson.Metadata
+	Token                     apijson.Metadata
+	TotalAmount               apijson.Metadata
+	Type                      apijson.Metadata
+	Updated                   apijson.Metadata
 	Raw                       []byte
-	Extras                    map[string]pjson.Metadata
+	Extras                    map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into Balance using the internal
-// pjson library. Unrecognized fields are stored in the `jsonFields` property.
+// json library. Unrecognized fields are stored in the `jsonFields` property.
 func (r *Balance) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type BalanceType string
@@ -70,15 +70,15 @@ type BalanceListResponse struct {
 }
 
 type BalanceListResponseJSON struct {
-	Data    pjson.Metadata
-	HasMore pjson.Metadata
+	Data    apijson.Metadata
+	HasMore apijson.Metadata
 	Raw     []byte
-	Extras  map[string]pjson.Metadata
+	Extras  map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into BalanceListResponse using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *BalanceListResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }

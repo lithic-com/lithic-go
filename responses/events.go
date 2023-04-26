@@ -3,7 +3,7 @@ package responses
 import (
 	"time"
 
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 )
 
 type Event struct {
@@ -24,18 +24,18 @@ type Event struct {
 }
 
 type EventJSON struct {
-	Token     pjson.Metadata
-	EventType pjson.Metadata
-	Payload   pjson.Metadata
-	Created   pjson.Metadata
+	Token     apijson.Metadata
+	EventType apijson.Metadata
+	Payload   apijson.Metadata
+	Created   apijson.Metadata
 	Raw       []byte
-	Extras    map[string]pjson.Metadata
+	Extras    map[string]apijson.Metadata
 }
 
-// UnmarshalJSON deserializes the provided bytes into Event using the internal
-// pjson library. Unrecognized fields are stored in the `jsonFields` property.
+// UnmarshalJSON deserializes the provided bytes into Event using the internal json
+// library. Unrecognized fields are stored in the `jsonFields` property.
 func (r *Event) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type EventEventType string
@@ -58,20 +58,20 @@ type EventSubscription struct {
 }
 
 type EventSubscriptionJSON struct {
-	Description pjson.Metadata
-	Disabled    pjson.Metadata
-	EventTypes  pjson.Metadata
-	URL         pjson.Metadata
-	Token       pjson.Metadata
+	Description apijson.Metadata
+	Disabled    apijson.Metadata
+	EventTypes  apijson.Metadata
+	URL         apijson.Metadata
+	Token       apijson.Metadata
 	Raw         []byte
-	Extras      map[string]pjson.Metadata
+	Extras      map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into EventSubscription using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *EventSubscription) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type EventSubscriptionEventTypes string
@@ -88,15 +88,15 @@ type EventListResponse struct {
 }
 
 type EventListResponseJSON struct {
-	Data    pjson.Metadata
-	HasMore pjson.Metadata
+	Data    apijson.Metadata
+	HasMore apijson.Metadata
 	Raw     []byte
-	Extras  map[string]pjson.Metadata
+	Extras  map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into EventListResponse using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *EventListResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }

@@ -3,7 +3,7 @@ package responses
 import (
 	"time"
 
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 )
 
 type FinancialAccount struct {
@@ -23,21 +23,21 @@ type FinancialAccount struct {
 }
 
 type FinancialAccountJSON struct {
-	AccountNumber pjson.Metadata
-	Created       pjson.Metadata
-	RoutingNumber pjson.Metadata
-	Token         pjson.Metadata
-	Type          pjson.Metadata
-	Updated       pjson.Metadata
+	AccountNumber apijson.Metadata
+	Created       apijson.Metadata
+	RoutingNumber apijson.Metadata
+	Token         apijson.Metadata
+	Type          apijson.Metadata
+	Updated       apijson.Metadata
 	Raw           []byte
-	Extras        map[string]pjson.Metadata
+	Extras        map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into FinancialAccount using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *FinancialAccount) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type FinancialAccountType string
@@ -92,26 +92,26 @@ type FinancialTransaction struct {
 }
 
 type FinancialTransactionJSON struct {
-	Category      pjson.Metadata
-	Created       pjson.Metadata
-	Currency      pjson.Metadata
-	Descriptor    pjson.Metadata
-	Events        pjson.Metadata
-	PendingAmount pjson.Metadata
-	Result        pjson.Metadata
-	SettledAmount pjson.Metadata
-	Status        pjson.Metadata
-	Token         pjson.Metadata
-	Updated       pjson.Metadata
+	Category      apijson.Metadata
+	Created       apijson.Metadata
+	Currency      apijson.Metadata
+	Descriptor    apijson.Metadata
+	Events        apijson.Metadata
+	PendingAmount apijson.Metadata
+	Result        apijson.Metadata
+	SettledAmount apijson.Metadata
+	Status        apijson.Metadata
+	Token         apijson.Metadata
+	Updated       apijson.Metadata
 	Raw           []byte
-	Extras        map[string]pjson.Metadata
+	Extras        map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into FinancialTransaction using
-// the internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// the internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *FinancialTransaction) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type FinancialTransactionCategory string
@@ -174,20 +174,20 @@ type FinancialTransactionEvents struct {
 }
 
 type FinancialTransactionEventsJSON struct {
-	Amount  pjson.Metadata
-	Created pjson.Metadata
-	Result  pjson.Metadata
-	Token   pjson.Metadata
-	Type    pjson.Metadata
+	Amount  apijson.Metadata
+	Created apijson.Metadata
+	Result  apijson.Metadata
+	Token   apijson.Metadata
+	Type    apijson.Metadata
 	Raw     []byte
-	Extras  map[string]pjson.Metadata
+	Extras  map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into FinancialTransactionEvents
-// using the internal pjson library. Unrecognized fields are stored in the
+// using the internal json library. Unrecognized fields are stored in the
 // `jsonFields` property.
 func (r *FinancialTransactionEvents) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type FinancialTransactionEventsResult string
@@ -249,15 +249,15 @@ type FinancialAccountListResponse struct {
 }
 
 type FinancialAccountListResponseJSON struct {
-	Data    pjson.Metadata
-	HasMore pjson.Metadata
+	Data    apijson.Metadata
+	HasMore apijson.Metadata
 	Raw     []byte
-	Extras  map[string]pjson.Metadata
+	Extras  map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into FinancialAccountListResponse
-// using the internal pjson library. Unrecognized fields are stored in the
+// using the internal json library. Unrecognized fields are stored in the
 // `jsonFields` property.
 func (r *FinancialAccountListResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }

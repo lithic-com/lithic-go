@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/lithic-com/lithic-go/core/field"
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 	"github.com/lithic-com/lithic-go/core/query"
 )
 
@@ -91,7 +91,7 @@ type TransactionSimulateAuthorizationParams struct {
 // bytes using the gjson library. Members of the `jsonFields` field are serialized
 // into the top-level, and will overwrite known members of the same name.
 func (r TransactionSimulateAuthorizationParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type TransactionSimulateAuthorizationParamsStatus string
@@ -117,7 +117,7 @@ type TransactionSimulateAuthorizationAdviceParams struct {
 // serialized into the top-level, and will overwrite known members of the same
 // name.
 func (r TransactionSimulateAuthorizationAdviceParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type TransactionSimulateClearingParams struct {
@@ -136,7 +136,7 @@ type TransactionSimulateClearingParams struct {
 // using the gjson library. Members of the `jsonFields` field are serialized into
 // the top-level, and will overwrite known members of the same name.
 func (r TransactionSimulateClearingParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type TransactionSimulateCreditAuthorizationParams struct {
@@ -161,7 +161,7 @@ type TransactionSimulateCreditAuthorizationParams struct {
 // serialized into the top-level, and will overwrite known members of the same
 // name.
 func (r TransactionSimulateCreditAuthorizationParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type TransactionSimulateReturnParams struct {
@@ -177,7 +177,7 @@ type TransactionSimulateReturnParams struct {
 // using the gjson library. Members of the `jsonFields` field are serialized into
 // the top-level, and will overwrite known members of the same name.
 func (r TransactionSimulateReturnParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type TransactionSimulateReturnReversalParams struct {
@@ -189,7 +189,7 @@ type TransactionSimulateReturnReversalParams struct {
 // bytes using the gjson library. Members of the `jsonFields` field are serialized
 // into the top-level, and will overwrite known members of the same name.
 func (r TransactionSimulateReturnReversalParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type TransactionSimulateVoidParams struct {
@@ -210,7 +210,7 @@ type TransactionSimulateVoidParams struct {
 // using the gjson library. Members of the `jsonFields` field are serialized into
 // the top-level, and will overwrite known members of the same name.
 func (r TransactionSimulateVoidParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type TransactionSimulateVoidParamsType string

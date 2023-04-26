@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"reflect"
 
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 	"github.com/lithic-com/lithic-go/option"
 )
 
@@ -24,18 +24,18 @@ type Page[T any] struct {
 }
 
 type PageJSON struct {
-	Data         pjson.Metadata
-	Page         pjson.Metadata
-	TotalEntries pjson.Metadata
-	TotalPages   pjson.Metadata
+	Data         apijson.Metadata
+	Page         apijson.Metadata
+	TotalEntries apijson.Metadata
+	TotalPages   apijson.Metadata
 	Raw          []byte
-	Extras       map[string]pjson.Metadata
+	Extras       map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into Page[T] using the internal
-// pjson library. Unrecognized fields are stored in the `jsonFields` property.
+// json library. Unrecognized fields are stored in the `jsonFields` property.
 func (r *Page[T]) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 // NextPage returns the next page as defined by this pagination style. When there
@@ -119,17 +119,17 @@ type CursorPage[T any] struct {
 }
 
 type CursorPageJSON struct {
-	Data    pjson.Metadata
-	HasMore pjson.Metadata
+	Data    apijson.Metadata
+	HasMore apijson.Metadata
 	Raw     []byte
-	Extras  map[string]pjson.Metadata
+	Extras  map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into CursorPage[T] using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *CursorPage[T]) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 // NextPage returns the next page as defined by this pagination style. When there
@@ -214,17 +214,17 @@ type SinglePage[T any] struct {
 }
 
 type SinglePageJSON struct {
-	Data    pjson.Metadata
-	HasMore pjson.Metadata
+	Data    apijson.Metadata
+	HasMore apijson.Metadata
 	Raw     []byte
-	Extras  map[string]pjson.Metadata
+	Extras  map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into SinglePage[T] using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *SinglePage[T]) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 // NextPage returns the next page as defined by this pagination style. When there

@@ -29,7 +29,7 @@ func NewCardService(opts ...option.RequestOption) (r *CardService) {
 func (r *CardService) New(ctx context.Context, body *requests.CardNewParams, opts ...option.RequestOption) (res *responses.Card, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "cards"
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -37,7 +37,7 @@ func (r *CardService) New(ctx context.Context, body *requests.CardNewParams, opt
 func (r *CardService) Get(ctx context.Context, card_token string, opts ...option.RequestOption) (res *responses.Card, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("cards/%s", card_token)
-	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
@@ -49,7 +49,7 @@ func (r *CardService) Get(ctx context.Context, card_token string, opts ...option
 func (r *CardService) Update(ctx context.Context, card_token string, body *requests.CardUpdateParams, opts ...option.RequestOption) (res *responses.Card, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("cards/%s", card_token)
-	err = option.ExecuteNewRequest(ctx, "PATCH", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
 }
 
@@ -59,7 +59,7 @@ func (r *CardService) List(ctx context.Context, query *requests.CardListParams, 
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "cards"
-	cfg, err := option.NewRequestConfig(ctx, "GET", path, query, &res, opts...)
+	cfg, err := option.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +108,7 @@ func (r *CardService) Embed(ctx context.Context, query *requests.CardEmbedParams
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "text/html")}, opts...)
 	path := "embed/card"
-	err = option.ExecuteNewRequest(ctx, "GET", path, query, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
 	return
 }
 
@@ -198,7 +198,7 @@ func (r *CardService) GetEmbedURL(ctx context.Context, body *requests.EmbedReque
 func (r *CardService) Provision(ctx context.Context, card_token string, body *requests.CardProvisionParams, opts ...option.RequestOption) (res *responses.CardProvisionResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("cards/%s/provision", card_token)
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -208,6 +208,6 @@ func (r *CardService) Provision(ctx context.Context, card_token string, body *re
 func (r *CardService) Reissue(ctx context.Context, card_token string, body *requests.CardReissueParams, opts ...option.RequestOption) (res *responses.Card, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("cards/%s/reissue", card_token)
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }

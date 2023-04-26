@@ -1,7 +1,7 @@
 package responses
 
 import (
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 )
 
 type SubscriptionRetrieveSecretResponse struct {
@@ -10,16 +10,16 @@ type SubscriptionRetrieveSecretResponse struct {
 }
 
 type SubscriptionRetrieveSecretResponseJSON struct {
-	Key    pjson.Metadata
+	Key    apijson.Metadata
 	Raw    []byte
-	Extras map[string]pjson.Metadata
+	Extras map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into
-// SubscriptionRetrieveSecretResponse using the internal pjson library.
-// Unrecognized fields are stored in the `jsonFields` property.
+// SubscriptionRetrieveSecretResponse using the internal json library. Unrecognized
+// fields are stored in the `jsonFields` property.
 func (r *SubscriptionRetrieveSecretResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type EventSubscriptionListResponse struct {
@@ -29,15 +29,15 @@ type EventSubscriptionListResponse struct {
 }
 
 type EventSubscriptionListResponseJSON struct {
-	Data    pjson.Metadata
-	HasMore pjson.Metadata
+	Data    apijson.Metadata
+	HasMore apijson.Metadata
 	Raw     []byte
-	Extras  map[string]pjson.Metadata
+	Extras  map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into EventSubscriptionListResponse
-// using the internal pjson library. Unrecognized fields are stored in the
+// using the internal json library. Unrecognized fields are stored in the
 // `jsonFields` property.
 func (r *EventSubscriptionListResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }

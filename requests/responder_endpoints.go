@@ -4,7 +4,7 @@ import (
 	"net/url"
 
 	"github.com/lithic-com/lithic-go/core/field"
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 	"github.com/lithic-com/lithic-go/core/query"
 )
 
@@ -19,7 +19,7 @@ type ResponderEndpointNewParams struct {
 // the gjson library. Members of the `jsonFields` field are serialized into the
 // top-level, and will overwrite known members of the same name.
 func (r ResponderEndpointNewParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type ResponderEndpointNewParamsType string

@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/responses"
@@ -26,7 +27,7 @@ func NewTokenizationDecisioningService(opts ...option.RequestOption) (r *Tokeniz
 func (r *TokenizationDecisioningService) GetSecret(ctx context.Context, opts ...option.RequestOption) (res *responses.TokenizationSecret, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "tokenization_decisioning/secret"
-	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
@@ -36,6 +37,6 @@ func (r *TokenizationDecisioningService) GetSecret(ctx context.Context, opts ...
 func (r *TokenizationDecisioningService) RotateSecret(ctx context.Context, opts ...option.RequestOption) (res *responses.TokenizationDecisioningRotateSecretResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "tokenization_decisioning/secret/rotate"
-	err = option.ExecuteNewRequest(ctx, "POST", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
 	return
 }

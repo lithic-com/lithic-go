@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/requests"
@@ -23,7 +24,7 @@ func NewAuthStreamEnrollmentService(opts ...option.RequestOption) (r *AuthStream
 func (r *AuthStreamEnrollmentService) Get(ctx context.Context, opts ...option.RequestOption) (res *responses.AuthStreamEnrollment, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "auth_stream"
-	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
@@ -32,7 +33,7 @@ func (r *AuthStreamEnrollmentService) Disenroll(ctx context.Context, opts ...opt
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := "auth_stream"
-	err = option.ExecuteNewRequest(ctx, "DELETE", path, nil, nil, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, nil, opts...)
 	return
 }
 
@@ -52,7 +53,7 @@ func (r *AuthStreamEnrollmentService) Enroll(ctx context.Context, body *requests
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := "auth_stream"
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, nil, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
 	return
 }
 
@@ -65,7 +66,7 @@ func (r *AuthStreamEnrollmentService) Enroll(ctx context.Context, body *requests
 func (r *AuthStreamEnrollmentService) GetSecret(ctx context.Context, opts ...option.RequestOption) (res *responses.AuthStreamSecret, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "auth_stream/secret"
-	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
@@ -77,6 +78,6 @@ func (r *AuthStreamEnrollmentService) RotateSecret(ctx context.Context, opts ...
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := "auth_stream/secret/rotate"
-	err = option.ExecuteNewRequest(ctx, "POST", path, nil, nil, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
 	return
 }

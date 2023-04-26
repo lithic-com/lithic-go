@@ -1,7 +1,7 @@
 package responses
 
 import (
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 )
 
 type AuthRule struct {
@@ -46,25 +46,25 @@ type AuthRule struct {
 }
 
 type AuthRuleJSON struct {
-	Token                  pjson.Metadata
-	State                  pjson.Metadata
-	PreviousAuthRuleTokens pjson.Metadata
-	AllowedMcc             pjson.Metadata
-	BlockedMcc             pjson.Metadata
-	AllowedCountries       pjson.Metadata
-	BlockedCountries       pjson.Metadata
-	AvsType                pjson.Metadata
-	AccountTokens          pjson.Metadata
-	CardTokens             pjson.Metadata
-	ProgramLevel           pjson.Metadata
+	Token                  apijson.Metadata
+	State                  apijson.Metadata
+	PreviousAuthRuleTokens apijson.Metadata
+	AllowedMcc             apijson.Metadata
+	BlockedMcc             apijson.Metadata
+	AllowedCountries       apijson.Metadata
+	BlockedCountries       apijson.Metadata
+	AvsType                apijson.Metadata
+	AccountTokens          apijson.Metadata
+	CardTokens             apijson.Metadata
+	ProgramLevel           apijson.Metadata
 	Raw                    []byte
-	Extras                 map[string]pjson.Metadata
+	Extras                 map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AuthRule using the internal
-// pjson library. Unrecognized fields are stored in the `jsonFields` property.
+// json library. Unrecognized fields are stored in the `jsonFields` property.
 func (r *AuthRule) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type AuthRuleState string
@@ -86,16 +86,16 @@ type AuthRuleCreateResponse struct {
 }
 
 type AuthRuleCreateResponseJSON struct {
-	Data   pjson.Metadata
+	Data   apijson.Metadata
 	Raw    []byte
-	Extras map[string]pjson.Metadata
+	Extras map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AuthRuleCreateResponse using
-// the internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// the internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *AuthRuleCreateResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type AuthRuleRetrieveResponse struct {
@@ -104,16 +104,16 @@ type AuthRuleRetrieveResponse struct {
 }
 
 type AuthRuleRetrieveResponseJSON struct {
-	Data   pjson.Metadata
+	Data   apijson.Metadata
 	Raw    []byte
-	Extras map[string]pjson.Metadata
+	Extras map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AuthRuleRetrieveResponse
-// using the internal pjson library. Unrecognized fields are stored in the
+// using the internal json library. Unrecognized fields are stored in the
 // `jsonFields` property.
 func (r *AuthRuleRetrieveResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type AuthRuleUpdateResponse struct {
@@ -122,16 +122,16 @@ type AuthRuleUpdateResponse struct {
 }
 
 type AuthRuleUpdateResponseJSON struct {
-	Data   pjson.Metadata
+	Data   apijson.Metadata
 	Raw    []byte
-	Extras map[string]pjson.Metadata
+	Extras map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AuthRuleUpdateResponse using
-// the internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// the internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *AuthRuleUpdateResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type AuthRuleApplyResponse struct {
@@ -140,16 +140,16 @@ type AuthRuleApplyResponse struct {
 }
 
 type AuthRuleApplyResponseJSON struct {
-	Data   pjson.Metadata
+	Data   apijson.Metadata
 	Raw    []byte
-	Extras map[string]pjson.Metadata
+	Extras map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AuthRuleApplyResponse using
-// the internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// the internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *AuthRuleApplyResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type AuthRuleRemoveResponse struct {
@@ -161,19 +161,19 @@ type AuthRuleRemoveResponse struct {
 }
 
 type AuthRuleRemoveResponseJSON struct {
-	AccountTokens          pjson.Metadata
-	CardTokens             pjson.Metadata
-	PreviousAuthRuleTokens pjson.Metadata
-	ProgramLevel           pjson.Metadata
+	AccountTokens          apijson.Metadata
+	CardTokens             apijson.Metadata
+	PreviousAuthRuleTokens apijson.Metadata
+	ProgramLevel           apijson.Metadata
 	Raw                    []byte
-	Extras                 map[string]pjson.Metadata
+	Extras                 map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AuthRuleRemoveResponse using
-// the internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// the internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *AuthRuleRemoveResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type AuthRuleListResponse struct {
@@ -188,17 +188,17 @@ type AuthRuleListResponse struct {
 }
 
 type AuthRuleListResponseJSON struct {
-	Data         pjson.Metadata
-	TotalEntries pjson.Metadata
-	TotalPages   pjson.Metadata
-	Page         pjson.Metadata
+	Data         apijson.Metadata
+	TotalEntries apijson.Metadata
+	TotalPages   apijson.Metadata
+	Page         apijson.Metadata
 	Raw          []byte
-	Extras       map[string]pjson.Metadata
+	Extras       map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AuthRuleListResponse using
-// the internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// the internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *AuthRuleListResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }

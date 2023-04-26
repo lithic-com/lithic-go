@@ -27,7 +27,7 @@ func NewDisputeService(opts ...option.RequestOption) (r *DisputeService) {
 func (r *DisputeService) New(ctx context.Context, body *requests.DisputeNewParams, opts ...option.RequestOption) (res *responses.Dispute, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "disputes"
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -35,7 +35,7 @@ func (r *DisputeService) New(ctx context.Context, body *requests.DisputeNewParam
 func (r *DisputeService) Get(ctx context.Context, dispute_token string, opts ...option.RequestOption) (res *responses.Dispute, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("disputes/%s", dispute_token)
-	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
@@ -43,7 +43,7 @@ func (r *DisputeService) Get(ctx context.Context, dispute_token string, opts ...
 func (r *DisputeService) Update(ctx context.Context, dispute_token string, body *requests.DisputeUpdateParams, opts ...option.RequestOption) (res *responses.Dispute, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("disputes/%s", dispute_token)
-	err = option.ExecuteNewRequest(ctx, "PATCH", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
 }
 
@@ -53,7 +53,7 @@ func (r *DisputeService) List(ctx context.Context, query *requests.DisputeListPa
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "disputes"
-	cfg, err := option.NewRequestConfig(ctx, "GET", path, query, &res, opts...)
+	cfg, err := option.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func (r *DisputeService) ListAutoPager(ctx context.Context, query *requests.Disp
 func (r *DisputeService) Delete(ctx context.Context, dispute_token string, opts ...option.RequestOption) (res *responses.Dispute, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("disputes/%s", dispute_token)
-	err = option.ExecuteNewRequest(ctx, "DELETE", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, &res, opts...)
 	return
 }
 
@@ -83,7 +83,7 @@ func (r *DisputeService) Delete(ctx context.Context, dispute_token string, opts 
 func (r *DisputeService) DeleteEvidence(ctx context.Context, dispute_token string, evidence_token string, opts ...option.RequestOption) (res *responses.DisputeEvidence, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("disputes/%s/evidences/%s", dispute_token, evidence_token)
-	err = option.ExecuteNewRequest(ctx, "DELETE", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, &res, opts...)
 	return
 }
 
@@ -95,7 +95,7 @@ func (r *DisputeService) DeleteEvidence(ctx context.Context, dispute_token strin
 func (r *DisputeService) InitiateEvidenceUpload(ctx context.Context, dispute_token string, opts ...option.RequestOption) (res *responses.DisputeInitiateEvidenceUploadResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("disputes/%s/evidences", dispute_token)
-	err = option.ExecuteNewRequest(ctx, "POST", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
 	return
 }
 
@@ -105,7 +105,7 @@ func (r *DisputeService) ListEvidences(ctx context.Context, dispute_token string
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := fmt.Sprintf("disputes/%s/evidences", dispute_token)
-	cfg, err := option.NewRequestConfig(ctx, "GET", path, query, &res, opts...)
+	cfg, err := option.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +126,7 @@ func (r *DisputeService) ListEvidencesAutoPager(ctx context.Context, dispute_tok
 func (r *DisputeService) GetEvidence(ctx context.Context, dispute_token string, evidence_token string, opts ...option.RequestOption) (res *responses.DisputeEvidence, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("disputes/%s/evidences/%s", dispute_token, evidence_token)
-	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 

@@ -24,7 +24,7 @@ func NewFinancialAccountFinancialTransactionService(opts ...option.RequestOption
 func (r *FinancialAccountFinancialTransactionService) Get(ctx context.Context, financial_account_token string, financial_transaction_token string, opts ...option.RequestOption) (res *responses.FinancialTransaction, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("financial_accounts/%s/financial_transactions/%s", financial_account_token, financial_transaction_token)
-	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
@@ -34,7 +34,7 @@ func (r *FinancialAccountFinancialTransactionService) List(ctx context.Context, 
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := fmt.Sprintf("financial_accounts/%s/financial_transactions", financial_account_token)
-	cfg, err := option.NewRequestConfig(ctx, "GET", path, query, &res, opts...)
+	cfg, err := option.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
 	}

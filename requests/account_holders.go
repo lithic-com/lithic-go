@@ -2,7 +2,7 @@ package requests
 
 import (
 	"github.com/lithic-com/lithic-go/core/field"
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 )
 
 type KYB struct {
@@ -56,7 +56,7 @@ type KYB struct {
 // Members of the `jsonFields` field are serialized into the top-level, and will
 // overwrite known members of the same name.
 func (r KYB) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 func (r KYB) implementsRequestsAccountHolderNewParams() {}
@@ -85,7 +85,7 @@ type KYBBusinessEntity struct {
 // library. Members of the `jsonFields` field are serialized into the top-level,
 // and will overwrite known members of the same name.
 func (r KYBBusinessEntity) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type KYBBeneficialOwnerEntities struct {
@@ -112,7 +112,7 @@ type KYBBeneficialOwnerEntities struct {
 // the gjson library. Members of the `jsonFields` field are serialized into the
 // top-level, and will overwrite known members of the same name.
 func (r KYBBeneficialOwnerEntities) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type KYBBeneficialOwnerIndividuals struct {
@@ -141,7 +141,7 @@ type KYBBeneficialOwnerIndividuals struct {
 // using the gjson library. Members of the `jsonFields` field are serialized into
 // the top-level, and will overwrite known members of the same name.
 func (r KYBBeneficialOwnerIndividuals) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type KYBControlPerson struct {
@@ -170,7 +170,7 @@ type KYBControlPerson struct {
 // library. Members of the `jsonFields` field are serialized into the top-level,
 // and will overwrite known members of the same name.
 func (r KYBControlPerson) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type KYBWorkflow string
@@ -201,7 +201,7 @@ type KYC struct {
 // Members of the `jsonFields` field are serialized into the top-level, and will
 // overwrite known members of the same name.
 func (r KYC) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 func (r KYC) implementsRequestsAccountHolderNewParams() {}
@@ -232,7 +232,7 @@ type KYCIndividual struct {
 // library. Members of the `jsonFields` field are serialized into the top-level,
 // and will overwrite known members of the same name.
 func (r KYCIndividual) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type KYCWorkflow string
@@ -269,7 +269,7 @@ type KYCExempt struct {
 // Members of the `jsonFields` field are serialized into the top-level, and will
 // overwrite known members of the same name.
 func (r KYCExempt) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 func (r KYCExempt) implementsRequestsAccountHolderNewParams() {}
@@ -312,7 +312,7 @@ type AccountHolderUpdateParams struct {
 // the gjson library. Members of the `jsonFields` field are serialized into the
 // top-level, and will overwrite known members of the same name.
 func (r AccountHolderUpdateParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type AccountHolderNewWebhookParams struct {
@@ -324,7 +324,7 @@ type AccountHolderNewWebhookParams struct {
 // using the gjson library. Members of the `jsonFields` field are serialized into
 // the top-level, and will overwrite known members of the same name.
 func (r AccountHolderNewWebhookParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type AccountHolderResubmitParams struct {
@@ -342,7 +342,7 @@ type AccountHolderResubmitParams struct {
 // the gjson library. Members of the `jsonFields` field are serialized into the
 // top-level, and will overwrite known members of the same name.
 func (r AccountHolderResubmitParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type AccountHolderResubmitParamsWorkflow string
@@ -382,7 +382,7 @@ type AccountHolderUploadDocumentParams struct {
 // using the gjson library. Members of the `jsonFields` field are serialized into
 // the top-level, and will overwrite known members of the same name.
 func (r AccountHolderUploadDocumentParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type AccountHolderUploadDocumentParamsDocumentType string

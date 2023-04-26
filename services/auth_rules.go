@@ -25,7 +25,7 @@ func NewAuthRuleService(opts ...option.RequestOption) (r *AuthRuleService) {
 func (r *AuthRuleService) New(ctx context.Context, body *requests.AuthRuleNewParams, opts ...option.RequestOption) (res *responses.AuthRuleCreateResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "auth_rules"
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -34,7 +34,7 @@ func (r *AuthRuleService) New(ctx context.Context, body *requests.AuthRuleNewPar
 func (r *AuthRuleService) Get(ctx context.Context, auth_rule_token string, opts ...option.RequestOption) (res *responses.AuthRuleRetrieveResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("auth_rules/%s", auth_rule_token)
-	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
@@ -43,7 +43,7 @@ func (r *AuthRuleService) Get(ctx context.Context, auth_rule_token string, opts 
 func (r *AuthRuleService) Update(ctx context.Context, auth_rule_token string, body *requests.AuthRuleUpdateParams, opts ...option.RequestOption) (res *responses.AuthRuleUpdateResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("auth_rules/%s", auth_rule_token)
-	err = option.ExecuteNewRequest(ctx, "PUT", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPut, path, body, &res, opts...)
 	return
 }
 
@@ -53,7 +53,7 @@ func (r *AuthRuleService) List(ctx context.Context, query *requests.AuthRuleList
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "auth_rules"
-	cfg, err := option.NewRequestConfig(ctx, "GET", path, query, &res, opts...)
+	cfg, err := option.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (r *AuthRuleService) ListAutoPager(ctx context.Context, query *requests.Aut
 func (r *AuthRuleService) Apply(ctx context.Context, auth_rule_token string, body *requests.AuthRuleApplyParams, opts ...option.RequestOption) (res *responses.AuthRuleApplyResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("auth_rules/%s/apply", auth_rule_token)
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -84,6 +84,6 @@ func (r *AuthRuleService) Apply(ctx context.Context, auth_rule_token string, bod
 func (r *AuthRuleService) Remove(ctx context.Context, body *requests.AuthRuleRemoveParams, opts ...option.RequestOption) (res *responses.AuthRuleRemoveResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "auth_rules/remove"
-	err = option.ExecuteNewRequest(ctx, "DELETE", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodDelete, path, body, &res, opts...)
 	return
 }

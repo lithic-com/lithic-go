@@ -3,7 +3,7 @@ package responses
 import (
 	"time"
 
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 )
 
 type AggregateBalance struct {
@@ -35,25 +35,25 @@ type AggregateBalance struct {
 }
 
 type AggregateBalanceJSON struct {
-	FinancialAccountType      pjson.Metadata
-	Currency                  pjson.Metadata
-	AvailableAmount           pjson.Metadata
-	PendingAmount             pjson.Metadata
-	TotalAmount               pjson.Metadata
-	Created                   pjson.Metadata
-	Updated                   pjson.Metadata
-	LastTransactionToken      pjson.Metadata
-	LastTransactionEventToken pjson.Metadata
-	LastFinancialAccountToken pjson.Metadata
+	FinancialAccountType      apijson.Metadata
+	Currency                  apijson.Metadata
+	AvailableAmount           apijson.Metadata
+	PendingAmount             apijson.Metadata
+	TotalAmount               apijson.Metadata
+	Created                   apijson.Metadata
+	Updated                   apijson.Metadata
+	LastTransactionToken      apijson.Metadata
+	LastTransactionEventToken apijson.Metadata
+	LastFinancialAccountToken apijson.Metadata
 	Raw                       []byte
-	Extras                    map[string]pjson.Metadata
+	Extras                    map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AggregateBalance using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *AggregateBalance) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type AggregateBalanceFinancialAccountType string
@@ -71,15 +71,15 @@ type AggregateBalanceListResponse struct {
 }
 
 type AggregateBalanceListResponseJSON struct {
-	Data    pjson.Metadata
-	HasMore pjson.Metadata
+	Data    apijson.Metadata
+	HasMore apijson.Metadata
 	Raw     []byte
-	Extras  map[string]pjson.Metadata
+	Extras  map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AggregateBalanceListResponse
-// using the internal pjson library. Unrecognized fields are stored in the
+// using the internal json library. Unrecognized fields are stored in the
 // `jsonFields` property.
 func (r *AggregateBalanceListResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }

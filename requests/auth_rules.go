@@ -4,7 +4,7 @@ import (
 	"net/url"
 
 	"github.com/lithic-com/lithic-go/core/field"
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 	"github.com/lithic-com/lithic-go/core/query"
 )
 
@@ -44,7 +44,7 @@ type AuthRuleNewParams struct {
 // library. Members of the `jsonFields` field are serialized into the top-level,
 // and will overwrite known members of the same name.
 func (r AuthRuleNewParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type AuthRuleNewParamsAvsType string
@@ -78,7 +78,7 @@ type AuthRuleUpdateParams struct {
 // gjson library. Members of the `jsonFields` field are serialized into the
 // top-level, and will overwrite known members of the same name.
 func (r AuthRuleUpdateParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type AuthRuleUpdateParamsAvsType string
@@ -116,7 +116,7 @@ type AuthRuleApplyParams struct {
 // gjson library. Members of the `jsonFields` field are serialized into the
 // top-level, and will overwrite known members of the same name.
 func (r AuthRuleApplyParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type AuthRuleRemoveParams struct {
@@ -135,5 +135,5 @@ type AuthRuleRemoveParams struct {
 // gjson library. Members of the `jsonFields` field are serialized into the
 // top-level, and will overwrite known members of the same name.
 func (r AuthRuleRemoveParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }

@@ -3,7 +3,7 @@ package responses
 import (
 	"time"
 
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 )
 
 type Transfer struct {
@@ -51,27 +51,27 @@ type Transfer struct {
 }
 
 type TransferJSON struct {
-	Category      pjson.Metadata
-	Created       pjson.Metadata
-	Currency      pjson.Metadata
-	Descriptor    pjson.Metadata
-	Events        pjson.Metadata
-	PendingAmount pjson.Metadata
-	Result        pjson.Metadata
-	SettledAmount pjson.Metadata
-	Status        pjson.Metadata
-	Token         pjson.Metadata
-	Updated       pjson.Metadata
-	FromBalance   pjson.Metadata
-	ToBalance     pjson.Metadata
+	Category      apijson.Metadata
+	Created       apijson.Metadata
+	Currency      apijson.Metadata
+	Descriptor    apijson.Metadata
+	Events        apijson.Metadata
+	PendingAmount apijson.Metadata
+	Result        apijson.Metadata
+	SettledAmount apijson.Metadata
+	Status        apijson.Metadata
+	Token         apijson.Metadata
+	Updated       apijson.Metadata
+	FromBalance   apijson.Metadata
+	ToBalance     apijson.Metadata
 	Raw           []byte
-	Extras        map[string]pjson.Metadata
+	Extras        map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into Transfer using the internal
-// pjson library. Unrecognized fields are stored in the `jsonFields` property.
+// json library. Unrecognized fields are stored in the `jsonFields` property.
 func (r *Transfer) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type TransferCategory string
@@ -132,20 +132,20 @@ type TransferEvents struct {
 }
 
 type TransferEventsJSON struct {
-	Amount  pjson.Metadata
-	Created pjson.Metadata
-	Result  pjson.Metadata
-	Token   pjson.Metadata
-	Type    pjson.Metadata
+	Amount  apijson.Metadata
+	Created apijson.Metadata
+	Result  apijson.Metadata
+	Token   apijson.Metadata
+	Type    apijson.Metadata
 	Raw     []byte
-	Extras  map[string]pjson.Metadata
+	Extras  map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into TransferEvents using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *TransferEvents) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type TransferEventsResult string
@@ -205,14 +205,14 @@ type TransferCreateResponse struct {
 }
 
 type TransferCreateResponseJSON struct {
-	Data   pjson.Metadata
+	Data   apijson.Metadata
 	Raw    []byte
-	Extras map[string]pjson.Metadata
+	Extras map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into TransferCreateResponse using
-// the internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// the internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *TransferCreateResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }

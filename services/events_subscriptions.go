@@ -24,7 +24,7 @@ func NewEventSubscriptionService(opts ...option.RequestOption) (r *EventSubscrip
 func (r *EventSubscriptionService) New(ctx context.Context, body *requests.EventSubscriptionNewParams, opts ...option.RequestOption) (res *responses.EventSubscription, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "event_subscriptions"
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -32,7 +32,7 @@ func (r *EventSubscriptionService) New(ctx context.Context, body *requests.Event
 func (r *EventSubscriptionService) Get(ctx context.Context, event_subscription_token string, opts ...option.RequestOption) (res *responses.EventSubscription, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("event_subscriptions/%s", event_subscription_token)
-	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
@@ -40,7 +40,7 @@ func (r *EventSubscriptionService) Get(ctx context.Context, event_subscription_t
 func (r *EventSubscriptionService) Update(ctx context.Context, event_subscription_token string, body *requests.EventSubscriptionUpdateParams, opts ...option.RequestOption) (res *responses.EventSubscription, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("event_subscriptions/%s", event_subscription_token)
-	err = option.ExecuteNewRequest(ctx, "PATCH", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
 }
 
@@ -50,7 +50,7 @@ func (r *EventSubscriptionService) List(ctx context.Context, query *requests.Eve
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "event_subscriptions"
-	cfg, err := option.NewRequestConfig(ctx, "GET", path, query, &res, opts...)
+	cfg, err := option.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (r *EventSubscriptionService) Delete(ctx context.Context, event_subscriptio
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := fmt.Sprintf("event_subscriptions/%s", event_subscription_token)
-	err = option.ExecuteNewRequest(ctx, "DELETE", path, nil, nil, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, nil, opts...)
 	return
 }
 
@@ -81,7 +81,7 @@ func (r *EventSubscriptionService) Recover(ctx context.Context, event_subscripti
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := fmt.Sprintf("event_subscriptions/%s/recover", event_subscription_token)
-	err = option.ExecuteNewRequest(ctx, "POST", path, query, nil, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, query, nil, opts...)
 	return
 }
 
@@ -91,7 +91,7 @@ func (r *EventSubscriptionService) ReplayMissing(ctx context.Context, event_subs
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := fmt.Sprintf("event_subscriptions/%s/replay_missing", event_subscription_token)
-	err = option.ExecuteNewRequest(ctx, "POST", path, query, nil, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, query, nil, opts...)
 	return
 }
 
@@ -99,7 +99,7 @@ func (r *EventSubscriptionService) ReplayMissing(ctx context.Context, event_subs
 func (r *EventSubscriptionService) GetSecret(ctx context.Context, event_subscription_token string, opts ...option.RequestOption) (res *responses.SubscriptionRetrieveSecretResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("event_subscriptions/%s/secret", event_subscription_token)
-	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
@@ -109,6 +109,6 @@ func (r *EventSubscriptionService) RotateSecret(ctx context.Context, event_subsc
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := fmt.Sprintf("event_subscriptions/%s/secret/rotate", event_subscription_token)
-	err = option.ExecuteNewRequest(ctx, "POST", path, nil, nil, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
 	return
 }

@@ -1,7 +1,7 @@
 package responses
 
 import (
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 )
 
 type TokenizationSecret struct {
@@ -11,16 +11,16 @@ type TokenizationSecret struct {
 }
 
 type TokenizationSecretJSON struct {
-	Secret pjson.Metadata
+	Secret apijson.Metadata
 	Raw    []byte
-	Extras map[string]pjson.Metadata
+	Extras map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into TokenizationSecret using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *TokenizationSecret) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type TokenizationDecisioningRotateSecretResponse struct {
@@ -30,14 +30,14 @@ type TokenizationDecisioningRotateSecretResponse struct {
 }
 
 type TokenizationDecisioningRotateSecretResponseJSON struct {
-	Secret pjson.Metadata
+	Secret apijson.Metadata
 	Raw    []byte
-	Extras map[string]pjson.Metadata
+	Extras map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into
-// TokenizationDecisioningRotateSecretResponse using the internal pjson library.
+// TokenizationDecisioningRotateSecretResponse using the internal json library.
 // Unrecognized fields are stored in the `jsonFields` property.
 func (r *TokenizationDecisioningRotateSecretResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }

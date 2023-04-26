@@ -3,9 +3,9 @@ package query
 import (
 	"net/url"
 	"testing"
-
-	"github.com/lithic-com/lithic-go/core/pointer"
 )
+
+func P[T any](v T) *T { return &v }
 
 type EmptyTestC struct {
 	Field *string `query:"field"`
@@ -37,7 +37,7 @@ func TestBasic(t *testing.T) {
 	assert(t, BasicTest{A: "b"}, "a=b", QuerySettings{})
 	assert(t, BasicTest{A: true}, "a=true", QuerySettings{})
 	assert(t, BasicTest{A: false}, "a=false", QuerySettings{})
-	assert(t, BasicTest{A: pointer.P(1.23456)}, "a=1.23456", QuerySettings{})
+	assert(t, BasicTest{A: P(1.23456)}, "a=1.23456", QuerySettings{})
 }
 
 func serialize(v interface{}, options QuerySettings) string {
@@ -84,17 +84,17 @@ type NestedTestDepth3 struct {
 func TestNestedDotted(t *testing.T) {
 	settings := QuerySettings{NestedFormat: NestedQueryFormatDots}
 
-	assert(t, NestedTestDepth1{&NestedTestDepth1A{B: pointer.P("c")}}, "a.b=c", settings)
-	assert(t, NestedTestDepth1{&NestedTestDepth1A{B: pointer.P("c"), D: pointer.P("e"), F: pointer.P("g")}}, "a.b=c&a.d=e&a.f=g", settings)
-	assert(t, NestedTestDepth3{&NestedTestDepth3A{&NestedTestDepth3B{&NestedTestDepth3C{D: pointer.P("e")}}}}, "a.b.c.d=e", settings)
+	assert(t, NestedTestDepth1{&NestedTestDepth1A{B: P("c")}}, "a.b=c", settings)
+	assert(t, NestedTestDepth1{&NestedTestDepth1A{B: P("c"), D: P("e"), F: P("g")}}, "a.b=c&a.d=e&a.f=g", settings)
+	assert(t, NestedTestDepth3{&NestedTestDepth3A{&NestedTestDepth3B{&NestedTestDepth3C{D: P("e")}}}}, "a.b.c.d=e", settings)
 }
 
 func TestNestedBrackets(t *testing.T) {
 	settings := QuerySettings{NestedFormat: NestedQueryFormatBrackets}
 
-	assert(t, NestedTestDepth1{&NestedTestDepth1A{B: pointer.P("c")}}, "a[b]=c", settings)
-	assert(t, NestedTestDepth1{&NestedTestDepth1A{B: pointer.P("c"), D: pointer.P("e"), F: pointer.P("g")}}, "a[b]=c&a[d]=e&a[f]=g", settings)
-	assert(t, NestedTestDepth3{&NestedTestDepth3A{&NestedTestDepth3B{&NestedTestDepth3C{D: pointer.P("e")}}}}, "a[b][c][d]=e", settings)
+	assert(t, NestedTestDepth1{&NestedTestDepth1A{B: P("c")}}, "a[b]=c", settings)
+	assert(t, NestedTestDepth1{&NestedTestDepth1A{B: P("c"), D: P("e"), F: P("g")}}, "a[b]=c&a[d]=e&a[f]=g", settings)
+	assert(t, NestedTestDepth3{&NestedTestDepth3A{&NestedTestDepth3B{&NestedTestDepth3C{D: P("e")}}}}, "a[b][c][d]=e", settings)
 }
 
 type ArrayTestDepth0 struct {
@@ -113,8 +113,8 @@ func TestArrayComma(t *testing.T) {
 	settings := QuerySettings{ArrayFormat: ArrayQueryFormatComma}
 
 	assert(t, ArrayTestDepth0{[]string{"foo", "bar"}}, "in=foo,bar", settings)
-	assert(t, ArrayTestDepth1{&ArrayTestDepth1A{B: []*bool{pointer.P(true), pointer.P(false)}}}, "a[b]=true,false", settings)
-	assert(t, ArrayTestDepth1{&ArrayTestDepth1A{B: []*bool{pointer.P(true), pointer.P(false), nil, pointer.P(true)}}}, "a[b]=true,false,true", settings)
+	assert(t, ArrayTestDepth1{&ArrayTestDepth1A{B: []*bool{P(true), P(false)}}}, "a[b]=true,false", settings)
+	assert(t, ArrayTestDepth1{&ArrayTestDepth1A{B: []*bool{P(true), P(false), nil, P(true)}}}, "a[b]=true,false,true", settings)
 }
 
 type ArrayRepeatMixed struct {
@@ -133,8 +133,8 @@ func TestArrayRepeat(t *testing.T) {
 	settings := QuerySettings{ArrayFormat: ArrayQueryFormatRepeat}
 
 	assert(t, ArrayTestDepth0{[]string{"foo", "bar"}}, "in=foo&in=bar", settings)
-	assert(t, ArrayTestDepth1{&ArrayTestDepth1A{B: []*bool{pointer.P(true), pointer.P(false)}}}, "a[b]=true&a[b]=false", settings)
-	assert(t, ArrayTestDepth1{&ArrayTestDepth1A{B: []*bool{pointer.P(true), pointer.P(false), nil, pointer.P(true)}}}, "a[b]=true&a[b]=false&a[b]=true", settings)
+	assert(t, ArrayTestDepth1{&ArrayTestDepth1A{B: []*bool{P(true), P(false)}}}, "a[b]=true&a[b]=false", settings)
+	assert(t, ArrayTestDepth1{&ArrayTestDepth1A{B: []*bool{P(true), P(false), nil, P(true)}}}, "a[b]=true&a[b]=false&a[b]=true", settings)
 	assert(t, ArrayRepeatMixed{In: []interface{}{"foof", ArrayRepeatMixedA{B: ArrayRepeatMixedB{C: []string{"d", "e"}}}}}, "in=foof&in[b][c]=d&in[b][c]=e", settings)
 }
 
@@ -152,5 +152,5 @@ type InlineExtrasTest struct {
 func TestInlineExtras(t *testing.T) {
 	settings := QuerySettings{}
 
-	assert(t, InlineExtrasTest{pointer.P("hi"), map[string]string{"there": "neighbor"}}, "a=hi&there=neighbor", settings)
+	assert(t, InlineExtrasTest{P("hi"), map[string]string{"there": "neighbor"}}, "a=hi&there=neighbor", settings)
 }

@@ -1,7 +1,7 @@
 package responses
 
 import (
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 )
 
 type Account struct {
@@ -31,20 +31,20 @@ type Account struct {
 }
 
 type AccountJSON struct {
-	SpendLimit          pjson.Metadata
-	State               pjson.Metadata
-	Token               pjson.Metadata
-	AuthRuleTokens      pjson.Metadata
-	VerificationAddress pjson.Metadata
-	AccountHolder       pjson.Metadata
+	SpendLimit          apijson.Metadata
+	State               apijson.Metadata
+	Token               apijson.Metadata
+	AuthRuleTokens      apijson.Metadata
+	VerificationAddress apijson.Metadata
+	AccountHolder       apijson.Metadata
 	Raw                 []byte
-	Extras              map[string]pjson.Metadata
+	Extras              map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into Account using the internal
-// pjson library. Unrecognized fields are stored in the `jsonFields` property.
+// json library. Unrecognized fields are stored in the `jsonFields` property.
 func (r *Account) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type AccountSpendLimit struct {
@@ -58,18 +58,18 @@ type AccountSpendLimit struct {
 }
 
 type AccountSpendLimitJSON struct {
-	Daily    pjson.Metadata
-	Monthly  pjson.Metadata
-	Lifetime pjson.Metadata
+	Daily    apijson.Metadata
+	Monthly  apijson.Metadata
+	Lifetime apijson.Metadata
 	Raw      []byte
-	Extras   map[string]pjson.Metadata
+	Extras   map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AccountSpendLimit using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *AccountSpendLimit) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type AccountState string
@@ -99,21 +99,21 @@ type AccountVerificationAddress struct {
 }
 
 type AccountVerificationAddressJSON struct {
-	Address1   pjson.Metadata
-	Address2   pjson.Metadata
-	City       pjson.Metadata
-	State      pjson.Metadata
-	PostalCode pjson.Metadata
-	Country    pjson.Metadata
+	Address1   apijson.Metadata
+	Address2   apijson.Metadata
+	City       apijson.Metadata
+	State      apijson.Metadata
+	PostalCode apijson.Metadata
+	Country    apijson.Metadata
 	Raw        []byte
-	Extras     map[string]pjson.Metadata
+	Extras     map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AccountVerificationAddress
-// using the internal pjson library. Unrecognized fields are stored in the
+// using the internal json library. Unrecognized fields are stored in the
 // `jsonFields` property.
 func (r *AccountVerificationAddress) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type AccountAccountHolder struct {
@@ -131,19 +131,19 @@ type AccountAccountHolder struct {
 }
 
 type AccountAccountHolderJSON struct {
-	Token                pjson.Metadata
-	PhoneNumber          pjson.Metadata
-	Email                pjson.Metadata
-	BusinessAccountToken pjson.Metadata
+	Token                apijson.Metadata
+	PhoneNumber          apijson.Metadata
+	Email                apijson.Metadata
+	BusinessAccountToken apijson.Metadata
 	Raw                  []byte
-	Extras               map[string]pjson.Metadata
+	Extras               map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AccountAccountHolder using
-// the internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// the internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *AccountAccountHolder) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type AccountListResponse struct {
@@ -158,17 +158,17 @@ type AccountListResponse struct {
 }
 
 type AccountListResponseJSON struct {
-	Data         pjson.Metadata
-	Page         pjson.Metadata
-	TotalEntries pjson.Metadata
-	TotalPages   pjson.Metadata
+	Data         apijson.Metadata
+	Page         apijson.Metadata
+	TotalEntries apijson.Metadata
+	TotalPages   apijson.Metadata
 	Raw          []byte
-	Extras       map[string]pjson.Metadata
+	Extras       map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AccountListResponse using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *AccountListResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }

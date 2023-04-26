@@ -1,7 +1,7 @@
 package responses
 
 import (
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 )
 
 type AuthStreamEnrollment struct {
@@ -11,16 +11,16 @@ type AuthStreamEnrollment struct {
 }
 
 type AuthStreamEnrollmentJSON struct {
-	Enrolled pjson.Metadata
+	Enrolled apijson.Metadata
 	Raw      []byte
-	Extras   map[string]pjson.Metadata
+	Extras   map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AuthStreamEnrollment using
-// the internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// the internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *AuthStreamEnrollment) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type AuthStreamSecret struct {
@@ -30,14 +30,14 @@ type AuthStreamSecret struct {
 }
 
 type AuthStreamSecretJSON struct {
-	Secret pjson.Metadata
+	Secret apijson.Metadata
 	Raw    []byte
-	Extras map[string]pjson.Metadata
+	Extras map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AuthStreamSecret using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *AuthStreamSecret) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }

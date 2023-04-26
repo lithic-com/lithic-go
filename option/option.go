@@ -17,7 +17,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/lithic-com/lithic-go/core"
+	"github.com/lithic-com/lithic-go/apierror"
 	"github.com/lithic-com/lithic-go/core/form"
 	"github.com/lithic-com/lithic-go/core/query"
 	"github.com/tidwall/sjson"
@@ -180,10 +180,17 @@ func (cfg *RequestConfig) Execute() error {
 	}
 
 	if err != nil {
-		return core.RequestError{Cause: err, Request: cfg.Request, Response: res}
+		return err
 	}
-	if res.StatusCode > 299 {
-		return core.NewAPIErrorFromResponse(cfg.Request, res)
+
+	if res.StatusCode > 399 {
+		aerr := apierror.Error{Request: cfg.Request, Response: res, StatusCode: res.StatusCode}
+		contents, err := io.ReadAll(res.Body)
+		err = aerr.UnmarshalJSON(contents)
+		if err != nil {
+			return err
+		}
+		return &aerr
 	}
 
 	if cfg.ResponseInto != nil {

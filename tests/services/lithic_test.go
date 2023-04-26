@@ -3,11 +3,9 @@ package services
 import (
 	"context"
 	"errors"
-	"net/http/httputil"
 	"testing"
 
 	"github.com/lithic-com/lithic-go"
-	"github.com/lithic-com/lithic-go/core"
 	"github.com/lithic-com/lithic-go/option"
 )
 
@@ -17,10 +15,9 @@ func TestLithicAPIStatus(t *testing.T) {
 		context.TODO(),
 	)
 	if err != nil {
-		var apiError core.APIError
-		if errors.As(err, &apiError) {
-			body, _ := httputil.DumpRequest(apiError.Request(), true)
-			println(string(body))
+		var apierr *lithic.Error
+		if errors.As(err, &apierr) {
+			println(apierr.DumpRequest(true))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}

@@ -1,7 +1,7 @@
 package responses
 
 import (
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 )
 
 type AccountHolder struct {
@@ -24,20 +24,20 @@ type AccountHolder struct {
 }
 
 type AccountHolderJSON struct {
-	Token                pjson.Metadata
-	AccountToken         pjson.Metadata
-	BusinessAccountToken pjson.Metadata
-	Status               pjson.Metadata
-	StatusReasons        pjson.Metadata
+	Token                apijson.Metadata
+	AccountToken         apijson.Metadata
+	BusinessAccountToken apijson.Metadata
+	Status               apijson.Metadata
+	StatusReasons        apijson.Metadata
 	Raw                  []byte
-	Extras               map[string]pjson.Metadata
+	Extras               map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AccountHolder using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *AccountHolder) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type AccountHolderStatus string
@@ -77,19 +77,19 @@ type AccountHolderDocument struct {
 }
 
 type AccountHolderDocumentJSON struct {
-	AccountHolderToken      pjson.Metadata
-	DocumentType            pjson.Metadata
-	RequiredDocumentUploads pjson.Metadata
-	Token                   pjson.Metadata
+	AccountHolderToken      apijson.Metadata
+	DocumentType            apijson.Metadata
+	RequiredDocumentUploads apijson.Metadata
+	Token                   apijson.Metadata
 	Raw                     []byte
-	Extras                  map[string]pjson.Metadata
+	Extras                  map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AccountHolderDocument using
-// the internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// the internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *AccountHolderDocument) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type AccountHolderDocumentDocumentType string
@@ -118,19 +118,19 @@ type AccountHolderDocumentRequiredDocumentUploads struct {
 }
 
 type AccountHolderDocumentRequiredDocumentUploadsJSON struct {
-	ImageType     pjson.Metadata
-	Status        pjson.Metadata
-	StatusReasons pjson.Metadata
-	UploadURL     pjson.Metadata
+	ImageType     apijson.Metadata
+	Status        apijson.Metadata
+	StatusReasons apijson.Metadata
+	UploadURL     apijson.Metadata
 	Raw           []byte
-	Extras        map[string]pjson.Metadata
+	Extras        map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into
-// AccountHolderDocumentRequiredDocumentUploads using the internal pjson library.
+// AccountHolderDocumentRequiredDocumentUploads using the internal json library.
 // Unrecognized fields are stored in the `jsonFields` property.
 func (r *AccountHolderDocumentRequiredDocumentUploads) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type AccountHolderDocumentRequiredDocumentUploadsImageType string
@@ -175,19 +175,19 @@ type AccountHolderUpdateResponse struct {
 }
 
 type AccountHolderUpdateResponseJSON struct {
-	Token                pjson.Metadata
-	Email                pjson.Metadata
-	PhoneNumber          pjson.Metadata
-	BusinessAccountToken pjson.Metadata
+	Token                apijson.Metadata
+	Email                apijson.Metadata
+	PhoneNumber          apijson.Metadata
+	BusinessAccountToken apijson.Metadata
 	Raw                  []byte
-	Extras               map[string]pjson.Metadata
+	Extras               map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into AccountHolderUpdateResponse
-// using the internal pjson library. Unrecognized fields are stored in the
+// using the internal json library. Unrecognized fields are stored in the
 // `jsonFields` property.
 func (r *AccountHolderUpdateResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type AccountHolderListDocumentsResponse struct {
@@ -196,16 +196,16 @@ type AccountHolderListDocumentsResponse struct {
 }
 
 type AccountHolderListDocumentsResponseJSON struct {
-	Data   pjson.Metadata
+	Data   apijson.Metadata
 	Raw    []byte
-	Extras map[string]pjson.Metadata
+	Extras map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into
-// AccountHolderListDocumentsResponse using the internal pjson library.
-// Unrecognized fields are stored in the `jsonFields` property.
+// AccountHolderListDocumentsResponse using the internal json library. Unrecognized
+// fields are stored in the `jsonFields` property.
 func (r *AccountHolderListDocumentsResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type AccountHolderCreateWebhookResponse struct {
@@ -214,16 +214,16 @@ type AccountHolderCreateWebhookResponse struct {
 }
 
 type AccountHolderCreateWebhookResponseJSON struct {
-	Data   pjson.Metadata
+	Data   apijson.Metadata
 	Raw    []byte
-	Extras map[string]pjson.Metadata
+	Extras map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into
-// AccountHolderCreateWebhookResponse using the internal pjson library.
-// Unrecognized fields are stored in the `jsonFields` property.
+// AccountHolderCreateWebhookResponse using the internal json library. Unrecognized
+// fields are stored in the `jsonFields` property.
 func (r *AccountHolderCreateWebhookResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type AccountHolderCreateWebhookResponseData struct {
@@ -234,14 +234,14 @@ type AccountHolderCreateWebhookResponseData struct {
 }
 
 type AccountHolderCreateWebhookResponseDataJSON struct {
-	HmacToken pjson.Metadata
+	HmacToken apijson.Metadata
 	Raw       []byte
-	Extras    map[string]pjson.Metadata
+	Extras    map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into
-// AccountHolderCreateWebhookResponseData using the internal pjson library.
+// AccountHolderCreateWebhookResponseData using the internal json library.
 // Unrecognized fields are stored in the `jsonFields` property.
 func (r *AccountHolderCreateWebhookResponseData) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }

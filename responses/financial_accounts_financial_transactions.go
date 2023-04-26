@@ -1,7 +1,7 @@
 package responses
 
 import (
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 )
 
 type FinancialTransactionListResponse struct {
@@ -12,15 +12,15 @@ type FinancialTransactionListResponse struct {
 }
 
 type FinancialTransactionListResponseJSON struct {
-	Data    pjson.Metadata
-	HasMore pjson.Metadata
+	Data    apijson.Metadata
+	HasMore apijson.Metadata
 	Raw     []byte
-	Extras  map[string]pjson.Metadata
+	Extras  map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into
-// FinancialTransactionListResponse using the internal pjson library. Unrecognized
+// FinancialTransactionListResponse using the internal json library. Unrecognized
 // fields are stored in the `jsonFields` property.
 func (r *FinancialTransactionListResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }

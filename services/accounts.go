@@ -24,7 +24,7 @@ func NewAccountService(opts ...option.RequestOption) (r *AccountService) {
 func (r *AccountService) Get(ctx context.Context, account_token string, opts ...option.RequestOption) (res *responses.Account, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("accounts/%s", account_token)
-	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
@@ -36,7 +36,7 @@ func (r *AccountService) Get(ctx context.Context, account_token string, opts ...
 func (r *AccountService) Update(ctx context.Context, account_token string, body *requests.AccountUpdateParams, opts ...option.RequestOption) (res *responses.Account, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("accounts/%s", account_token)
-	err = option.ExecuteNewRequest(ctx, "PATCH", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
 }
 
@@ -46,7 +46,7 @@ func (r *AccountService) List(ctx context.Context, query *requests.AccountListPa
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "accounts"
-	cfg, err := option.NewRequestConfig(ctx, "GET", path, query, &res, opts...)
+	cfg, err := option.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
 	}

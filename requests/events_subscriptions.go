@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/lithic-com/lithic-go/core/field"
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 	"github.com/lithic-com/lithic-go/core/query"
 )
 
@@ -25,7 +25,7 @@ type EventSubscriptionNewParams struct {
 // the gjson library. Members of the `jsonFields` field are serialized into the
 // top-level, and will overwrite known members of the same name.
 func (r EventSubscriptionNewParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type EventSubscriptionNewParamsEventTypes string
@@ -51,7 +51,7 @@ type EventSubscriptionUpdateParams struct {
 // using the gjson library. Members of the `jsonFields` field are serialized into
 // the top-level, and will overwrite known members of the same name.
 func (r EventSubscriptionUpdateParams) MarshalJSON() (data []byte, err error) {
-	return pjson.MarshalRoot(r)
+	return apijson.MarshalRoot(r)
 }
 
 type EventSubscriptionUpdateParamsEventTypes string

@@ -3,7 +3,7 @@ package responses
 import (
 	"time"
 
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 )
 
 type Transaction struct {
@@ -63,32 +63,32 @@ type Transaction struct {
 }
 
 type TransactionJSON struct {
-	AcquirerReferenceNumber     pjson.Metadata
-	Amount                      pjson.Metadata
-	AuthorizationAmount         pjson.Metadata
-	CardholderAuthentication    pjson.Metadata
-	MerchantAmount              pjson.Metadata
-	MerchantAuthorizationAmount pjson.Metadata
-	MerchantCurrency            pjson.Metadata
-	AuthorizationCode           pjson.Metadata
-	CardToken                   pjson.Metadata
-	Created                     pjson.Metadata
-	Events                      pjson.Metadata
-	Merchant                    pjson.Metadata
-	Network                     pjson.Metadata
-	Result                      pjson.Metadata
-	SettledAmount               pjson.Metadata
-	Status                      pjson.Metadata
-	Token                       pjson.Metadata
+	AcquirerReferenceNumber     apijson.Metadata
+	Amount                      apijson.Metadata
+	AuthorizationAmount         apijson.Metadata
+	CardholderAuthentication    apijson.Metadata
+	MerchantAmount              apijson.Metadata
+	MerchantAuthorizationAmount apijson.Metadata
+	MerchantCurrency            apijson.Metadata
+	AuthorizationCode           apijson.Metadata
+	CardToken                   apijson.Metadata
+	Created                     apijson.Metadata
+	Events                      apijson.Metadata
+	Merchant                    apijson.Metadata
+	Network                     apijson.Metadata
+	Result                      apijson.Metadata
+	SettledAmount               apijson.Metadata
+	Status                      apijson.Metadata
+	Token                       apijson.Metadata
 	Raw                         []byte
-	Extras                      map[string]pjson.Metadata
+	Extras                      map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into Transaction using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *Transaction) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type TransactionCardholderAuthentication struct {
@@ -176,20 +176,20 @@ type TransactionCardholderAuthentication struct {
 }
 
 type TransactionCardholderAuthenticationJSON struct {
-	ThreeDSVersion        pjson.Metadata
-	AcquirerExemption     pjson.Metadata
-	LiabilityShift        pjson.Metadata
-	VerificationAttempted pjson.Metadata
-	VerificationResult    pjson.Metadata
+	ThreeDSVersion        apijson.Metadata
+	AcquirerExemption     apijson.Metadata
+	LiabilityShift        apijson.Metadata
+	VerificationAttempted apijson.Metadata
+	VerificationResult    apijson.Metadata
 	Raw                   []byte
-	Extras                map[string]pjson.Metadata
+	Extras                map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into
-// TransactionCardholderAuthentication using the internal pjson library.
+// TransactionCardholderAuthentication using the internal json library.
 // Unrecognized fields are stored in the `jsonFields` property.
 func (r *TransactionCardholderAuthentication) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type TransactionCardholderAuthenticationAcquirerExemption string
@@ -300,20 +300,20 @@ type TransactionEvents struct {
 }
 
 type TransactionEventsJSON struct {
-	Amount  pjson.Metadata
-	Created pjson.Metadata
-	Result  pjson.Metadata
-	Token   pjson.Metadata
-	Type    pjson.Metadata
+	Amount  apijson.Metadata
+	Created apijson.Metadata
+	Result  apijson.Metadata
+	Token   apijson.Metadata
+	Type    apijson.Metadata
 	Raw     []byte
-	Extras  map[string]pjson.Metadata
+	Extras  map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into TransactionEvents using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *TransactionEvents) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type TransactionEventsResult string
@@ -379,21 +379,21 @@ type TransactionMerchant struct {
 }
 
 type TransactionMerchantJSON struct {
-	AcceptorID pjson.Metadata
-	City       pjson.Metadata
-	Country    pjson.Metadata
-	Descriptor pjson.Metadata
-	Mcc        pjson.Metadata
-	State      pjson.Metadata
+	AcceptorID apijson.Metadata
+	City       apijson.Metadata
+	Country    apijson.Metadata
+	Descriptor apijson.Metadata
+	Mcc        apijson.Metadata
+	State      apijson.Metadata
 	Raw        []byte
-	Extras     map[string]pjson.Metadata
+	Extras     map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into TransactionMerchant using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *TransactionMerchant) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type TransactionNetwork string
@@ -453,17 +453,17 @@ type TransactionSimulateAuthorizationResponse struct {
 }
 
 type TransactionSimulateAuthorizationResponseJSON struct {
-	DebuggingRequestID pjson.Metadata
-	Token              pjson.Metadata
+	DebuggingRequestID apijson.Metadata
+	Token              apijson.Metadata
 	Raw                []byte
-	Extras             map[string]pjson.Metadata
+	Extras             map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into
-// TransactionSimulateAuthorizationResponse using the internal pjson library.
+// TransactionSimulateAuthorizationResponse using the internal json library.
 // Unrecognized fields are stored in the `jsonFields` property.
 func (r *TransactionSimulateAuthorizationResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type TransactionSimulateClearingResponse struct {
@@ -473,16 +473,16 @@ type TransactionSimulateClearingResponse struct {
 }
 
 type TransactionSimulateClearingResponseJSON struct {
-	DebuggingRequestID pjson.Metadata
+	DebuggingRequestID apijson.Metadata
 	Raw                []byte
-	Extras             map[string]pjson.Metadata
+	Extras             map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into
-// TransactionSimulateClearingResponse using the internal pjson library.
+// TransactionSimulateClearingResponse using the internal json library.
 // Unrecognized fields are stored in the `jsonFields` property.
 func (r *TransactionSimulateClearingResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type TransactionSimulateReturnResponse struct {
@@ -494,17 +494,17 @@ type TransactionSimulateReturnResponse struct {
 }
 
 type TransactionSimulateReturnResponseJSON struct {
-	DebuggingRequestID pjson.Metadata
-	Token              pjson.Metadata
+	DebuggingRequestID apijson.Metadata
+	Token              apijson.Metadata
 	Raw                []byte
-	Extras             map[string]pjson.Metadata
+	Extras             map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into
-// TransactionSimulateReturnResponse using the internal pjson library. Unrecognized
+// TransactionSimulateReturnResponse using the internal json library. Unrecognized
 // fields are stored in the `jsonFields` property.
 func (r *TransactionSimulateReturnResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type TransactionSimulateReturnReversalResponse struct {
@@ -514,16 +514,16 @@ type TransactionSimulateReturnReversalResponse struct {
 }
 
 type TransactionSimulateReturnReversalResponseJSON struct {
-	DebuggingRequestID pjson.Metadata
+	DebuggingRequestID apijson.Metadata
 	Raw                []byte
-	Extras             map[string]pjson.Metadata
+	Extras             map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into
-// TransactionSimulateReturnReversalResponse using the internal pjson library.
+// TransactionSimulateReturnReversalResponse using the internal json library.
 // Unrecognized fields are stored in the `jsonFields` property.
 func (r *TransactionSimulateReturnReversalResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type TransactionSimulateVoidResponse struct {
@@ -533,16 +533,16 @@ type TransactionSimulateVoidResponse struct {
 }
 
 type TransactionSimulateVoidResponseJSON struct {
-	DebuggingRequestID pjson.Metadata
+	DebuggingRequestID apijson.Metadata
 	Raw                []byte
-	Extras             map[string]pjson.Metadata
+	Extras             map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into
-// TransactionSimulateVoidResponse using the internal pjson library. Unrecognized
+// TransactionSimulateVoidResponse using the internal json library. Unrecognized
 // fields are stored in the `jsonFields` property.
 func (r *TransactionSimulateVoidResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type TransactionSimulateCreditAuthorizationResponse struct {
@@ -554,17 +554,17 @@ type TransactionSimulateCreditAuthorizationResponse struct {
 }
 
 type TransactionSimulateCreditAuthorizationResponseJSON struct {
-	DebuggingRequestID pjson.Metadata
-	Token              pjson.Metadata
+	DebuggingRequestID apijson.Metadata
+	Token              apijson.Metadata
 	Raw                []byte
-	Extras             map[string]pjson.Metadata
+	Extras             map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into
-// TransactionSimulateCreditAuthorizationResponse using the internal pjson library.
+// TransactionSimulateCreditAuthorizationResponse using the internal json library.
 // Unrecognized fields are stored in the `jsonFields` property.
 func (r *TransactionSimulateCreditAuthorizationResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type TransactionSimulateAuthorizationAdviceResponse struct {
@@ -576,17 +576,17 @@ type TransactionSimulateAuthorizationAdviceResponse struct {
 }
 
 type TransactionSimulateAuthorizationAdviceResponseJSON struct {
-	DebuggingRequestID pjson.Metadata
-	Token              pjson.Metadata
+	DebuggingRequestID apijson.Metadata
+	Token              apijson.Metadata
 	Raw                []byte
-	Extras             map[string]pjson.Metadata
+	Extras             map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into
-// TransactionSimulateAuthorizationAdviceResponse using the internal pjson library.
+// TransactionSimulateAuthorizationAdviceResponse using the internal json library.
 // Unrecognized fields are stored in the `jsonFields` property.
 func (r *TransactionSimulateAuthorizationAdviceResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type TransactionListResponse struct {
@@ -601,17 +601,17 @@ type TransactionListResponse struct {
 }
 
 type TransactionListResponseJSON struct {
-	Data         pjson.Metadata
-	Page         pjson.Metadata
-	TotalEntries pjson.Metadata
-	TotalPages   pjson.Metadata
+	Data         apijson.Metadata
+	Page         apijson.Metadata
+	TotalEntries apijson.Metadata
+	TotalPages   apijson.Metadata
 	Raw          []byte
-	Extras       map[string]pjson.Metadata
+	Extras       map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into TransactionListResponse using
-// the internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// the internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *TransactionListResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }

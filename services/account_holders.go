@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"fmt"
+	"net/http"
 
 	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/requests"
@@ -31,7 +32,7 @@ func NewAccountHolderService(opts ...option.RequestOption) (r *AccountHolderServ
 func (r *AccountHolderService) New(ctx context.Context, body requests.AccountHolderNewParams, opts ...option.RequestOption) (res *responses.AccountHolder, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "account_holders"
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -40,7 +41,7 @@ func (r *AccountHolderService) New(ctx context.Context, body requests.AccountHol
 func (r *AccountHolderService) Get(ctx context.Context, account_holder_token string, opts ...option.RequestOption) (res *responses.AccountHolder, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("account_holders/%s", account_holder_token)
-	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
@@ -48,7 +49,7 @@ func (r *AccountHolderService) Get(ctx context.Context, account_holder_token str
 func (r *AccountHolderService) Update(ctx context.Context, account_holder_token string, body *requests.AccountHolderUpdateParams, opts ...option.RequestOption) (res *responses.AccountHolderUpdateResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("account_holders/%s", account_holder_token)
-	err = option.ExecuteNewRequest(ctx, "PATCH", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
 }
 
@@ -69,7 +70,7 @@ func (r *AccountHolderService) Update(ctx context.Context, account_holder_token 
 func (r *AccountHolderService) NewWebhook(ctx context.Context, body *requests.AccountHolderNewWebhookParams, opts ...option.RequestOption) (res *responses.AccountHolderCreateWebhookResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "webhooks/account_holders"
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -91,7 +92,7 @@ func (r *AccountHolderService) NewWebhook(ctx context.Context, body *requests.Ac
 func (r *AccountHolderService) ListDocuments(ctx context.Context, account_holder_token string, opts ...option.RequestOption) (res *responses.AccountHolderListDocumentsResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("account_holders/%s/documents", account_holder_token)
-	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
@@ -106,7 +107,7 @@ func (r *AccountHolderService) ListDocuments(ctx context.Context, account_holder
 func (r *AccountHolderService) Resubmit(ctx context.Context, account_holder_token string, body *requests.AccountHolderResubmitParams, opts ...option.RequestOption) (res *responses.AccountHolder, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("account_holders/%s/resubmit", account_holder_token)
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -127,7 +128,7 @@ func (r *AccountHolderService) Resubmit(ctx context.Context, account_holder_toke
 func (r *AccountHolderService) GetDocument(ctx context.Context, account_holder_token string, document_token string, opts ...option.RequestOption) (res *responses.AccountHolderDocument, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("account_holders/%s/documents/%s", account_holder_token, document_token)
-	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
@@ -152,6 +153,6 @@ func (r *AccountHolderService) GetDocument(ctx context.Context, account_holder_t
 func (r *AccountHolderService) UploadDocument(ctx context.Context, account_holder_token string, body *requests.AccountHolderUploadDocumentParams, opts ...option.RequestOption) (res *responses.AccountHolderDocument, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("account_holders/%s/documents", account_holder_token)
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }

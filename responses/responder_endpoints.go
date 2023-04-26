@@ -1,7 +1,7 @@
 package responses
 
 import (
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 )
 
 type ResponderEndpointStatus struct {
@@ -13,17 +13,17 @@ type ResponderEndpointStatus struct {
 }
 
 type ResponderEndpointStatusJSON struct {
-	Enrolled pjson.Metadata
-	URL      pjson.Metadata
+	Enrolled apijson.Metadata
+	URL      apijson.Metadata
 	Raw      []byte
-	Extras   map[string]pjson.Metadata
+	Extras   map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into ResponderEndpointStatus using
-// the internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// the internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *ResponderEndpointStatus) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type ResponderEndpointCreateResponse struct {
@@ -33,14 +33,14 @@ type ResponderEndpointCreateResponse struct {
 }
 
 type ResponderEndpointCreateResponseJSON struct {
-	Enrolled pjson.Metadata
+	Enrolled apijson.Metadata
 	Raw      []byte
-	Extras   map[string]pjson.Metadata
+	Extras   map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into
-// ResponderEndpointCreateResponse using the internal pjson library. Unrecognized
+// ResponderEndpointCreateResponse using the internal json library. Unrecognized
 // fields are stored in the `jsonFields` property.
 func (r *ResponderEndpointCreateResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }

@@ -3,7 +3,7 @@ package responses
 import (
 	"time"
 
-	pjson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/core/json"
 )
 
 type Dispute struct {
@@ -97,33 +97,33 @@ type Dispute struct {
 }
 
 type DisputeJSON struct {
-	Amount             pjson.Metadata
-	ArbitrationDate    pjson.Metadata
-	Created            pjson.Metadata
-	CustomerFiledDate  pjson.Metadata
-	CustomerNote       pjson.Metadata
-	NetworkClaimIDs    pjson.Metadata
-	PrimaryClaimID     pjson.Metadata
-	NetworkFiledDate   pjson.Metadata
-	NetworkReasonCode  pjson.Metadata
-	PrearbitrationDate pjson.Metadata
-	Reason             pjson.Metadata
-	RepresentmentDate  pjson.Metadata
-	ResolutionAmount   pjson.Metadata
-	ResolutionDate     pjson.Metadata
-	ResolutionNote     pjson.Metadata
-	ResolutionReason   pjson.Metadata
-	Status             pjson.Metadata
-	Token              pjson.Metadata
-	TransactionToken   pjson.Metadata
+	Amount             apijson.Metadata
+	ArbitrationDate    apijson.Metadata
+	Created            apijson.Metadata
+	CustomerFiledDate  apijson.Metadata
+	CustomerNote       apijson.Metadata
+	NetworkClaimIDs    apijson.Metadata
+	PrimaryClaimID     apijson.Metadata
+	NetworkFiledDate   apijson.Metadata
+	NetworkReasonCode  apijson.Metadata
+	PrearbitrationDate apijson.Metadata
+	Reason             apijson.Metadata
+	RepresentmentDate  apijson.Metadata
+	ResolutionAmount   apijson.Metadata
+	ResolutionDate     apijson.Metadata
+	ResolutionNote     apijson.Metadata
+	ResolutionReason   apijson.Metadata
+	Status             apijson.Metadata
+	Token              apijson.Metadata
+	TransactionToken   apijson.Metadata
 	Raw                []byte
-	Extras             map[string]pjson.Metadata
+	Extras             map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into Dispute using the internal
-// pjson library. Unrecognized fields are stored in the `jsonFields` property.
+// json library. Unrecognized fields are stored in the `jsonFields` property.
 func (r *Dispute) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type DisputeReason string
@@ -203,21 +203,21 @@ type DisputeEvidence struct {
 }
 
 type DisputeEvidenceJSON struct {
-	Created      pjson.Metadata
-	DisputeToken pjson.Metadata
-	DownloadURL  pjson.Metadata
-	Token        pjson.Metadata
-	UploadStatus pjson.Metadata
-	UploadURL    pjson.Metadata
+	Created      apijson.Metadata
+	DisputeToken apijson.Metadata
+	DownloadURL  apijson.Metadata
+	Token        apijson.Metadata
+	UploadStatus apijson.Metadata
+	UploadURL    apijson.Metadata
 	Raw          []byte
-	Extras       map[string]pjson.Metadata
+	Extras       map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into DisputeEvidence using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *DisputeEvidence) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type DisputeEvidenceUploadStatus string
@@ -236,16 +236,16 @@ type DisputeInitiateEvidenceUploadResponse struct {
 }
 
 type DisputeInitiateEvidenceUploadResponseJSON struct {
-	UploadURL pjson.Metadata
+	UploadURL apijson.Metadata
 	Raw       []byte
-	Extras    map[string]pjson.Metadata
+	Extras    map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into
-// DisputeInitiateEvidenceUploadResponse using the internal pjson library.
+// DisputeInitiateEvidenceUploadResponse using the internal json library.
 // Unrecognized fields are stored in the `jsonFields` property.
 func (r *DisputeInitiateEvidenceUploadResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type DisputeListResponse struct {
@@ -256,17 +256,17 @@ type DisputeListResponse struct {
 }
 
 type DisputeListResponseJSON struct {
-	Data    pjson.Metadata
-	HasMore pjson.Metadata
+	Data    apijson.Metadata
+	HasMore apijson.Metadata
 	Raw     []byte
-	Extras  map[string]pjson.Metadata
+	Extras  map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into DisputeListResponse using the
-// internal pjson library. Unrecognized fields are stored in the `jsonFields`
+// internal json library. Unrecognized fields are stored in the `jsonFields`
 // property.
 func (r *DisputeListResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }
 
 type DisputeListEvidencesResponse struct {
@@ -277,15 +277,15 @@ type DisputeListEvidencesResponse struct {
 }
 
 type DisputeListEvidencesResponseJSON struct {
-	Data    pjson.Metadata
-	HasMore pjson.Metadata
+	Data    apijson.Metadata
+	HasMore apijson.Metadata
 	Raw     []byte
-	Extras  map[string]pjson.Metadata
+	Extras  map[string]apijson.Metadata
 }
 
 // UnmarshalJSON deserializes the provided bytes into DisputeListEvidencesResponse
-// using the internal pjson library. Unrecognized fields are stored in the
+// using the internal json library. Unrecognized fields are stored in the
 // `jsonFields` property.
 func (r *DisputeListEvidencesResponse) UnmarshalJSON(data []byte) (err error) {
-	return pjson.UnmarshalRoot(data, r)
+	return apijson.UnmarshalRoot(data, r)
 }

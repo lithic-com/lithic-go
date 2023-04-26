@@ -222,7 +222,27 @@ if err != nil {
 
 ### Errors
 
-Errors are still WIP.
+When the API returns a non-success status code, we return an error with type `*lithic.Error`. This contains the `StatusCode`, `*http.Request`, and `*http.Response` values of the request, as well as the JSON of the error body (much like other response objects in the SDK).
+
+To handle errors, we recommend that you use the `errors.As` pattern:
+
+```go
+_, err := client.Cards.New(context.TODO(), &requests.CardNewParams{
+	Type: lithic.F(requests.CardNewParamsTypeVirtual),
+})
+if err != nil {
+	var apierr *lithic.Error
+	if errors.As(err, &apierr) {
+		println(string(apierr.DumpRequest(true)))  // Prints the serialized HTTP request
+		println(string(apierr.DumpResponse(true))) // Prints the serialized HTTP response
+		println(apierr.Message)                    // Invalid parameter(s): type
+		println(apierr.DebuggingRequestID)         // 94d5e915-xxxx-4cee-a4f5-2xd6ebd279ac
+	}
+	panic(err.Error()) // GET "/cards": 400 Bad Request { ... }
+}
+```
+
+When other errors occur, we return them unwrapped; for example, when HTTP transport returns an error, we return the `*url.Error` which could wrap `*net.OpError`.
 
 ## Retries
 

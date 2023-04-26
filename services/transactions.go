@@ -24,7 +24,7 @@ func NewTransactionService(opts ...option.RequestOption) (r *TransactionService)
 func (r *TransactionService) Get(ctx context.Context, transaction_token string, opts ...option.RequestOption) (res *responses.Transaction, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("transactions/%s", transaction_token)
-	err = option.ExecuteNewRequest(ctx, "GET", path, nil, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
@@ -34,7 +34,7 @@ func (r *TransactionService) List(ctx context.Context, query *requests.Transacti
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "transactions"
-	cfg, err := option.NewRequestConfig(ctx, "GET", path, query, &res, opts...)
+	cfg, err := option.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +61,7 @@ func (r *TransactionService) ListAutoPager(ctx context.Context, query *requests.
 func (r *TransactionService) SimulateAuthorization(ctx context.Context, body *requests.TransactionSimulateAuthorizationParams, opts ...option.RequestOption) (res *responses.TransactionSimulateAuthorizationResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "simulate/authorize"
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -71,7 +71,7 @@ func (r *TransactionService) SimulateAuthorization(ctx context.Context, body *re
 func (r *TransactionService) SimulateAuthorizationAdvice(ctx context.Context, body *requests.TransactionSimulateAuthorizationAdviceParams, opts ...option.RequestOption) (res *responses.TransactionSimulateAuthorizationAdviceResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "simulate/authorization_advice"
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -84,7 +84,7 @@ func (r *TransactionService) SimulateAuthorizationAdvice(ctx context.Context, bo
 func (r *TransactionService) SimulateClearing(ctx context.Context, body *requests.TransactionSimulateClearingParams, opts ...option.RequestOption) (res *responses.TransactionSimulateClearingResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "simulate/clearing"
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -94,7 +94,7 @@ func (r *TransactionService) SimulateClearing(ctx context.Context, body *request
 func (r *TransactionService) SimulateCreditAuthorization(ctx context.Context, body *requests.TransactionSimulateCreditAuthorizationParams, opts ...option.RequestOption) (res *responses.TransactionSimulateCreditAuthorizationResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "simulate/credit_authorization_advice"
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -103,7 +103,7 @@ func (r *TransactionService) SimulateCreditAuthorization(ctx context.Context, bo
 func (r *TransactionService) SimulateReturn(ctx context.Context, body *requests.TransactionSimulateReturnParams, opts ...option.RequestOption) (res *responses.TransactionSimulateReturnResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "simulate/return"
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -113,7 +113,7 @@ func (r *TransactionService) SimulateReturn(ctx context.Context, body *requests.
 func (r *TransactionService) SimulateReturnReversal(ctx context.Context, body *requests.TransactionSimulateReturnReversalParams, opts ...option.RequestOption) (res *responses.TransactionSimulateReturnReversalResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "simulate/return_reversal"
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -125,6 +125,6 @@ func (r *TransactionService) SimulateReturnReversal(ctx context.Context, body *r
 func (r *TransactionService) SimulateVoid(ctx context.Context, body *requests.TransactionSimulateVoidParams, opts ...option.RequestOption) (res *responses.TransactionSimulateVoidResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "simulate/void"
-	err = option.ExecuteNewRequest(ctx, "POST", path, body, &res, opts...)
+	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
