@@ -12,7 +12,7 @@ import (
 
 	"github.com/tidwall/sjson"
 
-	"github.com/lithic-com/lithic-go/core/field"
+	"github.com/lithic-com/lithic-go/internal/field"
 )
 
 var encoders sync.Map // map[encoderEntry]encoderFunc

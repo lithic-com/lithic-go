@@ -33,7 +33,7 @@ func (r *AccountService) Get(ctx context.Context, account_token string, opts ...
 //
 // Accounts that are in the `PAUSED` state will not be able to transact or create
 // new cards.
-func (r *AccountService) Update(ctx context.Context, account_token string, body *requests.AccountUpdateParams, opts ...option.RequestOption) (res *responses.Account, err error) {
+func (r *AccountService) Update(ctx context.Context, account_token string, body requests.AccountUpdateParams, opts ...option.RequestOption) (res *responses.Account, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("accounts/%s", account_token)
 	err = option.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
@@ -41,7 +41,7 @@ func (r *AccountService) Update(ctx context.Context, account_token string, body 
 }
 
 // List account configurations.
-func (r *AccountService) List(ctx context.Context, query *requests.AccountListParams, opts ...option.RequestOption) (res *responses.Page[responses.Account], err error) {
+func (r *AccountService) List(ctx context.Context, query requests.AccountListParams, opts ...option.RequestOption) (res *responses.Page[responses.Account], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -59,6 +59,6 @@ func (r *AccountService) List(ctx context.Context, query *requests.AccountListPa
 }
 
 // List account configurations.
-func (r *AccountService) ListAutoPager(ctx context.Context, query *requests.AccountListParams, opts ...option.RequestOption) *responses.PageAutoPager[responses.Account] {
+func (r *AccountService) ListAutoPaging(ctx context.Context, query requests.AccountListParams, opts ...option.RequestOption) *responses.PageAutoPager[responses.Account] {
 	return responses.NewPageAutoPager(r.List(ctx, query, opts...))
 }

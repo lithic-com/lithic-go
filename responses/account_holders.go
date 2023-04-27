@@ -1,7 +1,7 @@
 package responses
 
 import (
-	apijson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
 )
 
 type AccountHolder struct {
@@ -29,7 +29,7 @@ type AccountHolderJSON struct {
 	BusinessAccountToken apijson.Metadata
 	Status               apijson.Metadata
 	StatusReasons        apijson.Metadata
-	Raw                  []byte
+	raw                  string
 	Extras               map[string]apijson.Metadata
 }
 
@@ -81,7 +81,7 @@ type AccountHolderDocumentJSON struct {
 	DocumentType            apijson.Metadata
 	RequiredDocumentUploads apijson.Metadata
 	Token                   apijson.Metadata
-	Raw                     []byte
+	raw                     string
 	Extras                  map[string]apijson.Metadata
 }
 
@@ -122,7 +122,7 @@ type AccountHolderDocumentRequiredDocumentUploadsJSON struct {
 	Status        apijson.Metadata
 	StatusReasons apijson.Metadata
 	UploadURL     apijson.Metadata
-	Raw           []byte
+	raw           string
 	Extras        map[string]apijson.Metadata
 }
 
@@ -179,7 +179,7 @@ type AccountHolderUpdateResponseJSON struct {
 	Email                apijson.Metadata
 	PhoneNumber          apijson.Metadata
 	BusinessAccountToken apijson.Metadata
-	Raw                  []byte
+	raw                  string
 	Extras               map[string]apijson.Metadata
 }
 
@@ -197,7 +197,7 @@ type AccountHolderListDocumentsResponse struct {
 
 type AccountHolderListDocumentsResponseJSON struct {
 	Data   apijson.Metadata
-	Raw    []byte
+	raw    string
 	Extras map[string]apijson.Metadata
 }
 
@@ -215,7 +215,7 @@ type AccountHolderCreateWebhookResponse struct {
 
 type AccountHolderCreateWebhookResponseJSON struct {
 	Data   apijson.Metadata
-	Raw    []byte
+	raw    string
 	Extras map[string]apijson.Metadata
 }
 
@@ -235,7 +235,7 @@ type AccountHolderCreateWebhookResponseData struct {
 
 type AccountHolderCreateWebhookResponseDataJSON struct {
 	HmacToken apijson.Metadata
-	Raw       []byte
+	raw       string
 	Extras    map[string]apijson.Metadata
 }
 

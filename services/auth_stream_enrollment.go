@@ -49,7 +49,7 @@ func (r *AuthStreamEnrollmentService) Disenroll(ctx context.Context, opts ...opt
 //
 // In Sandbox, users can self-enroll and disenroll in ASA. In production,
 // onboarding requires manual approval and setup.
-func (r *AuthStreamEnrollmentService) Enroll(ctx context.Context, body *requests.AuthStreamEnrollmentEnrollParams, opts ...option.RequestOption) (err error) {
+func (r *AuthStreamEnrollmentService) Enroll(ctx context.Context, body requests.AuthStreamEnrollmentEnrollParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := "auth_stream"

@@ -1,7 +1,7 @@
 package responses
 
 import (
-	apijson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
 )
 
 type FinancialAccountBalanceListResponse struct {
@@ -14,7 +14,7 @@ type FinancialAccountBalanceListResponse struct {
 type FinancialAccountBalanceListResponseJSON struct {
 	Data    apijson.Metadata
 	HasMore apijson.Metadata
-	Raw     []byte
+	raw     string
 	Extras  map[string]apijson.Metadata
 }
 

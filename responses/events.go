@@ -3,7 +3,7 @@ package responses
 import (
 	"time"
 
-	apijson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
 )
 
 type Event struct {
@@ -28,7 +28,7 @@ type EventJSON struct {
 	EventType apijson.Metadata
 	Payload   apijson.Metadata
 	Created   apijson.Metadata
-	Raw       []byte
+	raw       string
 	Extras    map[string]apijson.Metadata
 }
 
@@ -63,7 +63,7 @@ type EventSubscriptionJSON struct {
 	EventTypes  apijson.Metadata
 	URL         apijson.Metadata
 	Token       apijson.Metadata
-	Raw         []byte
+	raw         string
 	Extras      map[string]apijson.Metadata
 }
 
@@ -90,7 +90,7 @@ type EventListResponse struct {
 type EventListResponseJSON struct {
 	Data    apijson.Metadata
 	HasMore apijson.Metadata
-	Raw     []byte
+	raw     string
 	Extras  map[string]apijson.Metadata
 }
 

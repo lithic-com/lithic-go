@@ -46,7 +46,7 @@ func (r *AccountHolderService) Get(ctx context.Context, account_holder_token str
 }
 
 // Update the information associated with a particular account holder.
-func (r *AccountHolderService) Update(ctx context.Context, account_holder_token string, body *requests.AccountHolderUpdateParams, opts ...option.RequestOption) (res *responses.AccountHolderUpdateResponse, err error) {
+func (r *AccountHolderService) Update(ctx context.Context, account_holder_token string, body requests.AccountHolderUpdateParams, opts ...option.RequestOption) (res *responses.AccountHolderUpdateResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("account_holders/%s", account_holder_token)
 	err = option.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
@@ -67,7 +67,7 @@ func (r *AccountHolderService) Update(ctx context.Context, account_holder_token 
 // HMAC token or modify the registered URL. Only a single webhook is allowed per
 // program. Since HMAC verification is available, the IP addresses from which
 // KYC/KYB webhooks are sent are subject to change.
-func (r *AccountHolderService) NewWebhook(ctx context.Context, body *requests.AccountHolderNewWebhookParams, opts ...option.RequestOption) (res *responses.AccountHolderCreateWebhookResponse, err error) {
+func (r *AccountHolderService) NewWebhook(ctx context.Context, body requests.AccountHolderNewWebhookParams, opts ...option.RequestOption) (res *responses.AccountHolderCreateWebhookResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "webhooks/account_holders"
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -104,7 +104,7 @@ func (r *AccountHolderService) ListDocuments(ctx context.Context, account_holder
 //
 // Two resubmission attempts are permitted via this endpoint before a `REJECTED`
 // status is returned and the account creation process is ended.
-func (r *AccountHolderService) Resubmit(ctx context.Context, account_holder_token string, body *requests.AccountHolderResubmitParams, opts ...option.RequestOption) (res *responses.AccountHolder, err error) {
+func (r *AccountHolderService) Resubmit(ctx context.Context, account_holder_token string, body requests.AccountHolderResubmitParams, opts ...option.RequestOption) (res *responses.AccountHolder, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("account_holders/%s/resubmit", account_holder_token)
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -150,7 +150,7 @@ func (r *AccountHolderService) GetDocument(ctx context.Context, account_holder_t
 // `REJECTED` status is returned and the account creation process is ended.
 // Currently only one type of account holder document is supported per KYC
 // verification.
-func (r *AccountHolderService) UploadDocument(ctx context.Context, account_holder_token string, body *requests.AccountHolderUploadDocumentParams, opts ...option.RequestOption) (res *responses.AccountHolderDocument, err error) {
+func (r *AccountHolderService) UploadDocument(ctx context.Context, account_holder_token string, body requests.AccountHolderUploadDocumentParams, opts ...option.RequestOption) (res *responses.AccountHolderDocument, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("account_holders/%s/documents", account_holder_token)
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)

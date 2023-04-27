@@ -21,7 +21,7 @@ func NewAggregateBalanceService(opts ...option.RequestOption) (r *AggregateBalan
 
 // Get the aggregated balance across all end-user accounts by financial account
 // type
-func (r *AggregateBalanceService) List(ctx context.Context, query *requests.AggregateBalanceListParams, opts ...option.RequestOption) (res *responses.SinglePage[responses.AggregateBalance], err error) {
+func (r *AggregateBalanceService) List(ctx context.Context, query requests.AggregateBalanceListParams, opts ...option.RequestOption) (res *responses.SinglePage[responses.AggregateBalance], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -40,6 +40,6 @@ func (r *AggregateBalanceService) List(ctx context.Context, query *requests.Aggr
 
 // Get the aggregated balance across all end-user accounts by financial account
 // type
-func (r *AggregateBalanceService) ListAutoPager(ctx context.Context, query *requests.AggregateBalanceListParams, opts ...option.RequestOption) *responses.SinglePageAutoPager[responses.AggregateBalance] {
+func (r *AggregateBalanceService) ListAutoPaging(ctx context.Context, query requests.AggregateBalanceListParams, opts ...option.RequestOption) *responses.SinglePageAutoPager[responses.AggregateBalance] {
 	return responses.NewSinglePageAutoPager(r.List(ctx, query, opts...))
 }

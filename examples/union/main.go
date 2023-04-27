@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	client := lithic.NewLithic(option.WithEnvironmentSandbox())
+	client := lithic.NewClient(option.WithEnvironmentSandbox())
 
 	// The request body is an interface that can be fulfilled by
 	// KYC, KYCExempt, and KYB

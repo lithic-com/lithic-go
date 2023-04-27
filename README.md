@@ -40,11 +40,11 @@ import (
 )
 
 func main() {
-	lithicClient := lithic.NewLithic(
+	client := lithic.NewClient(
 		option.WithAPIKey("my api key"), // defaults to os.LookupEnv("LITHIC_API_KEY")
 		option.WithEnvironmentSandbox(), // defaults to option.WithEnvironmentProduction()
 	)
-	card, err := client.Cards.New(context.TODO(), &requests.CardNewParams{
+	card, err := client.Cards.New(context.TODO(), requests.CardNewParams{
 		Type: lithic.F(requests.CardNewParamsTypeVirtual),
 	})
 	if err != nil {
@@ -144,7 +144,7 @@ body := res.JSON.Extras["extra_field"].Raw()
 
 // You can `Unmarshal` the JSON into a struct as needed
 custom := struct{A string, B int64}{}
-json.Unmarshal(body, &custom)
+json.Unmarshal([]byte(body), &custom)
 ```
 
 ### RequestOptions
@@ -159,7 +159,7 @@ supplied, after the defaults for that particular request.
 For example:
 
 ```go
-client := lithic.NewLithic(
+client := lithic.NewClient(
 	// Adds header to every request made by client
 	option.WithHeader("X-Some-Header", "custom_header_info"),
 	// Adds query to every request made by client
@@ -190,10 +190,10 @@ client.Cards.New(
 
 This library provides some conveniences for working with paginated list endpoints.
 
-You can use `.ListAutoPager()` methods to iterate through items across all pages:
+You can use `.ListAutoPaging()` methods to iterate through items across all pages:
 
 ```go
-iter := client.Cards.ListAutoPager(context.TODO(), &requests.CardListParams{})
+iter := client.Cards.ListAutoPaging(context.TODO(), requests.CardListParams{})
 // Automatically fetches more pages as needed.
 for iter.Next() {
 	card := iter.Current()
@@ -208,7 +208,7 @@ Or you can use simple `.List()` methods to fetch a single page and receive a sta
 with additional helper methods like `.GetNextPage()`, e.g.:
 
 ```go
-page, err := client.Cards.List(context.TODO(), &requests.CardListParams{})
+page, err := client.Cards.List(context.TODO(), requests.CardListParams{})
 for page != nil {
 	for _, card := range page.Data {
 		fmt.Printf("%+v\n", card)
@@ -227,7 +227,7 @@ When the API returns a non-success status code, we return an error with type `*l
 To handle errors, we recommend that you use the `errors.As` pattern:
 
 ```go
-_, err := client.Cards.New(context.TODO(), &requests.CardNewParams{
+_, err := client.Cards.New(context.TODO(), requests.CardNewParams{
 	Type: lithic.F(requests.CardNewParamsTypeVirtual),
 })
 if err != nil {
@@ -254,14 +254,14 @@ You can use the `WithMaxRetries` option to configure or disable this:
 
 ```go
 // Configure the default for all requests:
-lithicClient := lithic.NewLithic(
+client := lithic.NewClient(
 	option.WithMaxRetries(0), // default is 2
 )
 
 // Override per-request:
 client.Cards.List(
 	context.TODO(),
-	&requests.CardListParams{
+	requests.CardListParams{
 		PageSize: lithic.F(int64(10)),
 	},
 	option.WithMaxRetries(5),

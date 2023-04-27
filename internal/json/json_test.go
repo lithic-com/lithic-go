@@ -70,7 +70,7 @@ type MetadataStructJSON struct {
 	C      Metadata
 	D      Metadata
 	Extras map[string]Metadata
-	Raw    []byte
+	Raw    string
 }
 
 type UnknownStruct struct {
@@ -221,18 +221,18 @@ var tests = map[string]struct {
 			B: 12,
 			C: "",
 			JSON: MetadataStructJSON{
-				Raw: []byte(`{"a":"12","b":"12","c":null,"extra_typed":12,"extra_untyped":{"foo":"bar"}}`),
-				A:   Metadata{raw: []byte(`"12"`), status: invalid},
-				B:   Metadata{raw: []byte(`"12"`), status: valid},
-				C:   Metadata{raw: []byte("null"), status: null},
-				D:   Metadata{raw: []byte(nil), status: missing},
+				Raw: `{"a":"12","b":"12","c":null,"extra_typed":12,"extra_untyped":{"foo":"bar"}}`,
+				A:   Metadata{raw: `"12"`, status: invalid},
+				B:   Metadata{raw: `"12"`, status: valid},
+				C:   Metadata{raw: "null", status: null},
+				D:   Metadata{raw: "", status: missing},
 				Extras: map[string]Metadata{
 					"extra_typed": {
-						raw:    []byte("12"),
+						raw:    "12",
 						status: valid,
 					},
 					"extra_untyped": {
-						raw:    []byte(`{"foo":"bar"}`),
+						raw:    `{"foo":"bar"}`,
 						status: invalid,
 					},
 				},

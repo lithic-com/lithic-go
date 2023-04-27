@@ -11,7 +11,7 @@ import (
 )
 
 func TestAuthStreamEnrollmentGet(t *testing.T) {
-	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AuthStreamEnrollment.Get(
 		context.TODO(),
 	)
@@ -26,7 +26,7 @@ func TestAuthStreamEnrollmentGet(t *testing.T) {
 
 func TestAuthStreamEnrollmentDisenroll(t *testing.T) {
 	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
-	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	err := c.AuthStreamEnrollment.Disenroll(
 		context.TODO(),
 	)
@@ -41,8 +41,8 @@ func TestAuthStreamEnrollmentDisenroll(t *testing.T) {
 
 func TestAuthStreamEnrollmentEnrollWithOptionalParams(t *testing.T) {
 	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
-	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	err := c.AuthStreamEnrollment.Enroll(context.TODO(), &requests.AuthStreamEnrollmentEnrollParams{WebhookURL: lithic.F("https://example.com")})
+	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
+	err := c.AuthStreamEnrollment.Enroll(context.TODO(), requests.AuthStreamEnrollmentEnrollParams{WebhookURL: lithic.F("https://example.com")})
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
@@ -53,7 +53,7 @@ func TestAuthStreamEnrollmentEnrollWithOptionalParams(t *testing.T) {
 }
 
 func TestAuthStreamEnrollmentGetSecret(t *testing.T) {
-	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AuthStreamEnrollment.GetSecret(
 		context.TODO(),
 	)
@@ -67,7 +67,7 @@ func TestAuthStreamEnrollmentGetSecret(t *testing.T) {
 }
 
 func TestAuthStreamEnrollmentRotateSecret(t *testing.T) {
-	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	err := c.AuthStreamEnrollment.RotateSecret(
 		context.TODO(),
 	)

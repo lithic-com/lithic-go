@@ -20,7 +20,7 @@ func NewTransferService(opts ...option.RequestOption) (r *TransferService) {
 }
 
 // Transfer funds between two financial accounts
-func (r *TransferService) New(ctx context.Context, body *requests.TransferNewParams, opts ...option.RequestOption) (res *responses.TransferCreateResponse, err error) {
+func (r *TransferService) New(ctx context.Context, body requests.TransferNewParams, opts ...option.RequestOption) (res *responses.TransferCreateResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "transfer"
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)

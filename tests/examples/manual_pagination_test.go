@@ -11,8 +11,8 @@ import (
 )
 
 func TestManualPagination(t *testing.T) {
-	client := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	page, err := client.Cards.List(context.TODO(), &requests.CardListParams{})
+	client := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
+	page, err := client.Cards.List(context.TODO(), requests.CardListParams{})
 	if err != nil {
 		t.Fatalf("err should be nil: %s", err.Error())
 	}

@@ -20,7 +20,7 @@ func NewBalanceService(opts ...option.RequestOption) (r *BalanceService) {
 }
 
 // Get the balances for a program or a given end-user account
-func (r *BalanceService) List(ctx context.Context, query *requests.BalanceListParams, opts ...option.RequestOption) (res *responses.SinglePage[responses.Balance], err error) {
+func (r *BalanceService) List(ctx context.Context, query requests.BalanceListParams, opts ...option.RequestOption) (res *responses.SinglePage[responses.Balance], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -38,6 +38,6 @@ func (r *BalanceService) List(ctx context.Context, query *requests.BalanceListPa
 }
 
 // Get the balances for a program or a given end-user account
-func (r *BalanceService) ListAutoPager(ctx context.Context, query *requests.BalanceListParams, opts ...option.RequestOption) *responses.SinglePageAutoPager[responses.Balance] {
+func (r *BalanceService) ListAutoPaging(ctx context.Context, query requests.BalanceListParams, opts ...option.RequestOption) *responses.SinglePageAutoPager[responses.Balance] {
 	return responses.NewSinglePageAutoPager(r.List(ctx, query, opts...))
 }

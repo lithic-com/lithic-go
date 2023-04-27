@@ -10,9 +10,9 @@ import (
 )
 
 func main() {
-	client := lithic.NewLithic(option.WithEnvironmentSandbox())
+	client := lithic.NewClient(option.WithEnvironmentSandbox())
 
-	pager := client.Cards.ListAutoPager(context.TODO(), &requests.CardListParams{PageSize: lithic.Int(2)})
+	pager := client.Cards.ListAutoPaging(context.TODO(), requests.CardListParams{PageSize: lithic.Int(2)})
 	println("Listing Cards")
 	var card responses.Card
 	for pager.Next() {
@@ -23,7 +23,7 @@ func main() {
 		panic(err.Error())
 	}
 
-	result, err := client.Cards.GetEmbedHTML(context.TODO(), &requests.EmbedRequestParams{Token: lithic.F(card.Token)})
+	result, err := client.Cards.GetEmbedHTML(context.TODO(), requests.EmbedRequestParams{Token: lithic.F(card.Token)})
 	if err != nil {
 		panic(err.Error())
 	}

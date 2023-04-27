@@ -11,9 +11,9 @@ import (
 )
 
 func main() {
-	client := lithic.NewLithic(option.WithEnvironmentSandbox())
+	client := lithic.NewClient(option.WithEnvironmentSandbox())
 
-	pager := client.Disputes.ListAutoPager(context.TODO(), &requests.DisputeListParams{})
+	pager := client.Disputes.ListAutoPaging(context.TODO(), requests.DisputeListParams{})
 
 	println("Listing disputes")
 	var dispute responses.Dispute

@@ -26,7 +26,7 @@ func NewCardService(opts ...option.RequestOption) (r *CardService) {
 
 // Create a new virtual or physical card. Parameters `pin`, `shipping_address`, and
 // `product_id` only apply to physical cards.
-func (r *CardService) New(ctx context.Context, body *requests.CardNewParams, opts ...option.RequestOption) (res *responses.Card, err error) {
+func (r *CardService) New(ctx context.Context, body requests.CardNewParams, opts ...option.RequestOption) (res *responses.Card, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "cards"
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -46,7 +46,7 @@ func (r *CardService) Get(ctx context.Context, card_token string, opts ...option
 //
 // _Note: setting a card to a `CLOSED` state is a final action that cannot be
 // undone._
-func (r *CardService) Update(ctx context.Context, card_token string, body *requests.CardUpdateParams, opts ...option.RequestOption) (res *responses.Card, err error) {
+func (r *CardService) Update(ctx context.Context, card_token string, body requests.CardUpdateParams, opts ...option.RequestOption) (res *responses.Card, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("cards/%s", card_token)
 	err = option.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
@@ -54,7 +54,7 @@ func (r *CardService) Update(ctx context.Context, card_token string, body *reque
 }
 
 // List cards.
-func (r *CardService) List(ctx context.Context, query *requests.CardListParams, opts ...option.RequestOption) (res *responses.Page[responses.Card], err error) {
+func (r *CardService) List(ctx context.Context, query requests.CardListParams, opts ...option.RequestOption) (res *responses.Page[responses.Card], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -72,7 +72,7 @@ func (r *CardService) List(ctx context.Context, query *requests.CardListParams, 
 }
 
 // List cards.
-func (r *CardService) ListAutoPager(ctx context.Context, query *requests.CardListParams, opts ...option.RequestOption) *responses.PageAutoPager[responses.Card] {
+func (r *CardService) ListAutoPaging(ctx context.Context, query requests.CardListParams, opts ...option.RequestOption) *responses.PageAutoPager[responses.Card] {
 	return responses.NewPageAutoPager(r.List(ctx, query, opts...))
 }
 
@@ -104,7 +104,7 @@ func (r *CardService) ListAutoPager(ctx context.Context, query *requests.CardLis
 // the whole iframe) on the server or make an ajax call from your front end code,
 // but **do not ever embed your API key into front end code, as doing so introduces
 // a serious security vulnerability**.
-func (r *CardService) Embed(ctx context.Context, query *requests.CardEmbedParams, opts ...option.RequestOption) (res *string, err error) {
+func (r *CardService) Embed(ctx context.Context, query requests.CardEmbedParams, opts ...option.RequestOption) (res *string, err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "text/html")}, opts...)
 	path := "embed/card"
@@ -112,7 +112,7 @@ func (r *CardService) Embed(ctx context.Context, query *requests.CardEmbedParams
 	return
 }
 
-func (r *CardService) GetEmbedHTML(ctx context.Context, body *requests.EmbedRequestParams, opts ...option.RequestOption) (res []byte, err error) {
+func (r *CardService) GetEmbedHTML(ctx context.Context, body requests.EmbedRequestParams, opts ...option.RequestOption) (res []byte, err error) {
 	opts = append(r.Options, opts...)
 	buf, err := body.MarshalJSON()
 	if err != nil {
@@ -166,7 +166,7 @@ func (r *CardService) GetEmbedHTML(ctx context.Context, body *requests.EmbedRequ
 // the whole iframe) on the server or make an ajax call from your front end code,
 // but **do not ever embed your API key into front end code, as doing so introduces
 // a serious security vulnerability**.
-func (r *CardService) GetEmbedURL(ctx context.Context, body *requests.EmbedRequestParams, opts ...option.RequestOption) (res *url.URL, err error) {
+func (r *CardService) GetEmbedURL(ctx context.Context, body requests.EmbedRequestParams, opts ...option.RequestOption) (res *url.URL, err error) {
 	buf, err := body.MarshalJSON()
 	if err != nil {
 		return nil, err
@@ -195,7 +195,7 @@ func (r *CardService) GetEmbedURL(ctx context.Context, body *requests.EmbedReque
 // This requires some additional setup and configuration. Please
 // [Contact Us](https://lithic.com/contact) or your Customer Success representative
 // for more information.
-func (r *CardService) Provision(ctx context.Context, card_token string, body *requests.CardProvisionParams, opts ...option.RequestOption) (res *responses.CardProvisionResponse, err error) {
+func (r *CardService) Provision(ctx context.Context, card_token string, body requests.CardProvisionParams, opts ...option.RequestOption) (res *responses.CardProvisionResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("cards/%s/provision", card_token)
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -205,7 +205,7 @@ func (r *CardService) Provision(ctx context.Context, card_token string, body *re
 // Initiate print and shipment of a duplicate physical card.
 //
 // Only applies to cards of type `PHYSICAL`.
-func (r *CardService) Reissue(ctx context.Context, card_token string, body *requests.CardReissueParams, opts ...option.RequestOption) (res *responses.Card, err error) {
+func (r *CardService) Reissue(ctx context.Context, card_token string, body requests.CardReissueParams, opts ...option.RequestOption) (res *responses.Card, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("cards/%s/reissue", card_token)
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)

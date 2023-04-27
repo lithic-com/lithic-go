@@ -21,7 +21,7 @@ func NewEventSubscriptionService(opts ...option.RequestOption) (r *EventSubscrip
 }
 
 // Create a new event subscription.
-func (r *EventSubscriptionService) New(ctx context.Context, body *requests.EventSubscriptionNewParams, opts ...option.RequestOption) (res *responses.EventSubscription, err error) {
+func (r *EventSubscriptionService) New(ctx context.Context, body requests.EventSubscriptionNewParams, opts ...option.RequestOption) (res *responses.EventSubscription, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "event_subscriptions"
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -37,7 +37,7 @@ func (r *EventSubscriptionService) Get(ctx context.Context, event_subscription_t
 }
 
 // Update an event subscription.
-func (r *EventSubscriptionService) Update(ctx context.Context, event_subscription_token string, body *requests.EventSubscriptionUpdateParams, opts ...option.RequestOption) (res *responses.EventSubscription, err error) {
+func (r *EventSubscriptionService) Update(ctx context.Context, event_subscription_token string, body requests.EventSubscriptionUpdateParams, opts ...option.RequestOption) (res *responses.EventSubscription, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("event_subscriptions/%s", event_subscription_token)
 	err = option.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
@@ -45,7 +45,7 @@ func (r *EventSubscriptionService) Update(ctx context.Context, event_subscriptio
 }
 
 // List all the event subscriptions.
-func (r *EventSubscriptionService) List(ctx context.Context, query *requests.EventSubscriptionListParams, opts ...option.RequestOption) (res *responses.CursorPage[responses.EventSubscription], err error) {
+func (r *EventSubscriptionService) List(ctx context.Context, query requests.EventSubscriptionListParams, opts ...option.RequestOption) (res *responses.CursorPage[responses.EventSubscription], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -63,7 +63,7 @@ func (r *EventSubscriptionService) List(ctx context.Context, query *requests.Eve
 }
 
 // List all the event subscriptions.
-func (r *EventSubscriptionService) ListAutoPager(ctx context.Context, query *requests.EventSubscriptionListParams, opts ...option.RequestOption) *responses.CursorPageAutoPager[responses.EventSubscription] {
+func (r *EventSubscriptionService) ListAutoPaging(ctx context.Context, query requests.EventSubscriptionListParams, opts ...option.RequestOption) *responses.CursorPageAutoPager[responses.EventSubscription] {
 	return responses.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
@@ -77,7 +77,7 @@ func (r *EventSubscriptionService) Delete(ctx context.Context, event_subscriptio
 }
 
 // Resend all failed messages since a given time.
-func (r *EventSubscriptionService) Recover(ctx context.Context, event_subscription_token string, query *requests.EventSubscriptionRecoverParams, opts ...option.RequestOption) (err error) {
+func (r *EventSubscriptionService) Recover(ctx context.Context, event_subscription_token string, query requests.EventSubscriptionRecoverParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := fmt.Sprintf("event_subscriptions/%s/recover", event_subscription_token)
@@ -87,7 +87,7 @@ func (r *EventSubscriptionService) Recover(ctx context.Context, event_subscripti
 
 // Replays messages to the endpoint. Only messages that were created after `begin`
 // will be sent. Messages that were previously sent to the endpoint are not resent.
-func (r *EventSubscriptionService) ReplayMissing(ctx context.Context, event_subscription_token string, query *requests.EventSubscriptionReplayMissingParams, opts ...option.RequestOption) (err error) {
+func (r *EventSubscriptionService) ReplayMissing(ctx context.Context, event_subscription_token string, query requests.EventSubscriptionReplayMissingParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := fmt.Sprintf("event_subscriptions/%s/replay_missing", event_subscription_token)

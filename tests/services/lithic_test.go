@@ -10,7 +10,7 @@ import (
 )
 
 func TestLithicAPIStatus(t *testing.T) {
-	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.APIStatus(
 		context.TODO(),
 	)

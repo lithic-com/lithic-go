@@ -11,8 +11,8 @@ import (
 )
 
 func TestAuthRuleNewWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.AuthRules.New(context.TODO(), &requests.AuthRuleNewParams{AllowedMcc: lithic.F([]string{"string", "string", "string"}), BlockedMcc: lithic.F([]string{"string", "string", "string"}), AllowedCountries: lithic.F([]string{"string", "string", "string"}), BlockedCountries: lithic.F([]string{"string", "string", "string"}), AvsType: lithic.F(requests.AuthRuleNewParamsAvsTypeZipOnly), AccountTokens: lithic.F([]string{"string", "string", "string"}), CardTokens: lithic.F([]string{"string", "string", "string"}), ProgramLevel: lithic.F(false)})
+	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
+	_, err := c.AuthRules.New(context.TODO(), requests.AuthRuleNewParams{AllowedMcc: lithic.F([]string{"string", "string", "string"}), BlockedMcc: lithic.F([]string{"string", "string", "string"}), AllowedCountries: lithic.F([]string{"string", "string", "string"}), BlockedCountries: lithic.F([]string{"string", "string", "string"}), AvsType: lithic.F(requests.AuthRuleNewParamsAvsTypeZipOnly), AccountTokens: lithic.F([]string{"string", "string", "string"}), CardTokens: lithic.F([]string{"string", "string", "string"}), ProgramLevel: lithic.F(false)})
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
@@ -23,7 +23,7 @@ func TestAuthRuleNewWithOptionalParams(t *testing.T) {
 }
 
 func TestAuthRuleGet(t *testing.T) {
-	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AuthRules.Get(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
@@ -38,11 +38,11 @@ func TestAuthRuleGet(t *testing.T) {
 }
 
 func TestAuthRuleUpdateWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AuthRules.Update(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-		&requests.AuthRuleUpdateParams{AllowedMcc: lithic.F([]string{"string", "string", "string"}), BlockedMcc: lithic.F([]string{"string", "string", "string"}), AllowedCountries: lithic.F([]string{"string", "string", "string"}), BlockedCountries: lithic.F([]string{"string", "string", "string"}), AvsType: lithic.F(requests.AuthRuleUpdateParamsAvsTypeZipOnly)},
+		requests.AuthRuleUpdateParams{AllowedMcc: lithic.F([]string{"string", "string", "string"}), BlockedMcc: lithic.F([]string{"string", "string", "string"}), AllowedCountries: lithic.F([]string{"string", "string", "string"}), BlockedCountries: lithic.F([]string{"string", "string", "string"}), AvsType: lithic.F(requests.AuthRuleUpdateParamsAvsTypeZipOnly)},
 	)
 	if err != nil {
 		var apierr *lithic.Error
@@ -54,8 +54,8 @@ func TestAuthRuleUpdateWithOptionalParams(t *testing.T) {
 }
 
 func TestAuthRuleListWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.AuthRules.List(context.TODO(), &requests.AuthRuleListParams{Page: lithic.F(int64(0)), PageSize: lithic.F(int64(1))})
+	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
+	_, err := c.AuthRules.List(context.TODO(), requests.AuthRuleListParams{Page: lithic.F(int64(0)), PageSize: lithic.F(int64(1))})
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
@@ -66,11 +66,11 @@ func TestAuthRuleListWithOptionalParams(t *testing.T) {
 }
 
 func TestAuthRuleApplyWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AuthRules.Apply(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-		&requests.AuthRuleApplyParams{CardTokens: lithic.F([]string{"string", "string", "string"}), AccountTokens: lithic.F([]string{"string", "string", "string"}), ProgramLevel: lithic.F(true)},
+		requests.AuthRuleApplyParams{CardTokens: lithic.F([]string{"string", "string", "string"}), AccountTokens: lithic.F([]string{"string", "string", "string"}), ProgramLevel: lithic.F(true)},
 	)
 	if err != nil {
 		var apierr *lithic.Error
@@ -82,8 +82,8 @@ func TestAuthRuleApplyWithOptionalParams(t *testing.T) {
 }
 
 func TestAuthRuleRemoveWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.AuthRules.Remove(context.TODO(), &requests.AuthRuleRemoveParams{CardTokens: lithic.F([]string{"string", "string", "string"}), AccountTokens: lithic.F([]string{"string", "string", "string"}), ProgramLevel: lithic.F(true)})
+	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
+	_, err := c.AuthRules.Remove(context.TODO(), requests.AuthRuleRemoveParams{CardTokens: lithic.F([]string{"string", "string", "string"}), AccountTokens: lithic.F([]string{"string", "string", "string"}), ProgramLevel: lithic.F(true)})
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {

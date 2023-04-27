@@ -1,7 +1,7 @@
 package responses
 
 import (
-	apijson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
 )
 
 type APIStatus struct {
@@ -11,7 +11,7 @@ type APIStatus struct {
 
 type APIStatusJSON struct {
 	Message apijson.Metadata
-	Raw     []byte
+	raw     string
 	Extras  map[string]apijson.Metadata
 }
 

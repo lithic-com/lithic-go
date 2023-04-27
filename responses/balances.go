@@ -3,7 +3,7 @@ package responses
 import (
 	"time"
 
-	apijson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
 )
 
 type Balance struct {
@@ -45,7 +45,7 @@ type BalanceJSON struct {
 	TotalAmount               apijson.Metadata
 	Type                      apijson.Metadata
 	Updated                   apijson.Metadata
-	Raw                       []byte
+	raw                       string
 	Extras                    map[string]apijson.Metadata
 }
 
@@ -72,7 +72,7 @@ type BalanceListResponse struct {
 type BalanceListResponseJSON struct {
 	Data    apijson.Metadata
 	HasMore apijson.Metadata
-	Raw     []byte
+	raw     string
 	Extras  map[string]apijson.Metadata
 }
 

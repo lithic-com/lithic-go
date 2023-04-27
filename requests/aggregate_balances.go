@@ -3,8 +3,8 @@ package requests
 import (
 	"net/url"
 
-	"github.com/lithic-com/lithic-go/core/field"
-	"github.com/lithic-com/lithic-go/core/query"
+	"github.com/lithic-com/lithic-go/internal/field"
+	"github.com/lithic-com/lithic-go/internal/query"
 )
 
 type AggregateBalanceListParams struct {

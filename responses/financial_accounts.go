@@ -3,7 +3,7 @@ package responses
 import (
 	"time"
 
-	apijson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
 )
 
 type FinancialAccount struct {
@@ -29,7 +29,7 @@ type FinancialAccountJSON struct {
 	Token         apijson.Metadata
 	Type          apijson.Metadata
 	Updated       apijson.Metadata
-	Raw           []byte
+	raw           string
 	Extras        map[string]apijson.Metadata
 }
 
@@ -103,7 +103,7 @@ type FinancialTransactionJSON struct {
 	Status        apijson.Metadata
 	Token         apijson.Metadata
 	Updated       apijson.Metadata
-	Raw           []byte
+	raw           string
 	Extras        map[string]apijson.Metadata
 }
 
@@ -179,7 +179,7 @@ type FinancialTransactionEventsJSON struct {
 	Result  apijson.Metadata
 	Token   apijson.Metadata
 	Type    apijson.Metadata
-	Raw     []byte
+	raw     string
 	Extras  map[string]apijson.Metadata
 }
 
@@ -251,7 +251,7 @@ type FinancialAccountListResponse struct {
 type FinancialAccountListResponseJSON struct {
 	Data    apijson.Metadata
 	HasMore apijson.Metadata
-	Raw     []byte
+	raw     string
 	Extras  map[string]apijson.Metadata
 }
 

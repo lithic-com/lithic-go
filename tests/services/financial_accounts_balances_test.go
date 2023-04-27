@@ -12,11 +12,11 @@ import (
 )
 
 func TestFinancialAccountBalanceListWithOptionalParams(t *testing.T) {
-	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.FinancialAccounts.Balances.List(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-		&requests.FinancialAccountBalanceListParams{BalanceDate: lithic.F(time.Now()), LastTransactionEventToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")},
+		requests.FinancialAccountBalanceListParams{BalanceDate: lithic.F(time.Now()), LastTransactionEventToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")},
 	)
 	if err != nil {
 		var apierr *lithic.Error

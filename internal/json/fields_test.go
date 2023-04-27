@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/lithic-com/lithic-go/core/field"
+	"github.com/lithic-com/lithic-go/internal/field"
 )
 
 type Struct struct {

@@ -1,7 +1,7 @@
 package responses
 
 import (
-	apijson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
 )
 
 type AuthStreamEnrollment struct {
@@ -12,7 +12,7 @@ type AuthStreamEnrollment struct {
 
 type AuthStreamEnrollmentJSON struct {
 	Enrolled apijson.Metadata
-	Raw      []byte
+	raw      string
 	Extras   map[string]apijson.Metadata
 }
 
@@ -31,7 +31,7 @@ type AuthStreamSecret struct {
 
 type AuthStreamSecretJSON struct {
 	Secret apijson.Metadata
-	Raw    []byte
+	raw    string
 	Extras map[string]apijson.Metadata
 }
 

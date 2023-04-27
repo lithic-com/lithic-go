@@ -11,8 +11,8 @@ import (
 )
 
 func TestUsage(t *testing.T) {
-	client := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	card, err := client.Cards.New(context.TODO(), &requests.CardNewParams{
+	client := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
+	card, err := client.Cards.New(context.TODO(), requests.CardNewParams{
 		Type: lithic.F(requests.CardNewParamsTypeVirtual),
 	})
 	if err != nil {

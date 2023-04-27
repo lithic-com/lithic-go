@@ -1,7 +1,7 @@
 package responses
 
 import (
-	apijson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
 )
 
 type TokenizationSecret struct {
@@ -12,7 +12,7 @@ type TokenizationSecret struct {
 
 type TokenizationSecretJSON struct {
 	Secret apijson.Metadata
-	Raw    []byte
+	raw    string
 	Extras map[string]apijson.Metadata
 }
 
@@ -31,7 +31,7 @@ type TokenizationDecisioningRotateSecretResponse struct {
 
 type TokenizationDecisioningRotateSecretResponseJSON struct {
 	Secret apijson.Metadata
-	Raw    []byte
+	raw    string
 	Extras map[string]apijson.Metadata
 }
 

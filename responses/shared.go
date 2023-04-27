@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"reflect"
 
-	apijson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
 	"github.com/lithic-com/lithic-go/option"
 )
 
@@ -28,7 +28,7 @@ type PageJSON struct {
 	Page         apijson.Metadata
 	TotalEntries apijson.Metadata
 	TotalPages   apijson.Metadata
-	Raw          []byte
+	raw          string
 	Extras       map[string]apijson.Metadata
 }
 
@@ -82,7 +82,7 @@ func NewPageAutoPager[T any](page *Page[T], err error) *PageAutoPager[T] {
 }
 
 func (r *PageAutoPager[T]) Next() bool {
-	if len(r.page.Data) == 0 {
+	if r.page == nil || len(r.page.Data) == 0 {
 		return false
 	}
 	if r.idx >= len(r.page.Data) {
@@ -121,7 +121,7 @@ type CursorPage[T any] struct {
 type CursorPageJSON struct {
 	Data    apijson.Metadata
 	HasMore apijson.Metadata
-	Raw     []byte
+	raw     string
 	Extras  map[string]apijson.Metadata
 }
 
@@ -176,7 +176,7 @@ func NewCursorPageAutoPager[T any](page *CursorPage[T], err error) *CursorPageAu
 }
 
 func (r *CursorPageAutoPager[T]) Next() bool {
-	if len(r.page.Data) == 0 {
+	if r.page == nil || len(r.page.Data) == 0 {
 		return false
 	}
 	if r.idx >= len(r.page.Data) {
@@ -216,7 +216,7 @@ type SinglePage[T any] struct {
 type SinglePageJSON struct {
 	Data    apijson.Metadata
 	HasMore apijson.Metadata
-	Raw     []byte
+	raw     string
 	Extras  map[string]apijson.Metadata
 }
 
@@ -269,7 +269,7 @@ func NewSinglePageAutoPager[T any](page *SinglePage[T], err error) *SinglePageAu
 }
 
 func (r *SinglePageAutoPager[T]) Next() bool {
-	if len(r.page.Data) == 0 {
+	if r.page == nil || len(r.page.Data) == 0 {
 		return false
 	}
 	if r.idx >= len(r.page.Data) {

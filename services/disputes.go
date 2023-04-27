@@ -24,7 +24,7 @@ func NewDisputeService(opts ...option.RequestOption) (r *DisputeService) {
 }
 
 // Initiate a dispute.
-func (r *DisputeService) New(ctx context.Context, body *requests.DisputeNewParams, opts ...option.RequestOption) (res *responses.Dispute, err error) {
+func (r *DisputeService) New(ctx context.Context, body requests.DisputeNewParams, opts ...option.RequestOption) (res *responses.Dispute, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "disputes"
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -40,7 +40,7 @@ func (r *DisputeService) Get(ctx context.Context, dispute_token string, opts ...
 }
 
 // Update dispute. Can only be modified if status is `NEW`.
-func (r *DisputeService) Update(ctx context.Context, dispute_token string, body *requests.DisputeUpdateParams, opts ...option.RequestOption) (res *responses.Dispute, err error) {
+func (r *DisputeService) Update(ctx context.Context, dispute_token string, body requests.DisputeUpdateParams, opts ...option.RequestOption) (res *responses.Dispute, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("disputes/%s", dispute_token)
 	err = option.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
@@ -48,7 +48,7 @@ func (r *DisputeService) Update(ctx context.Context, dispute_token string, body 
 }
 
 // List disputes.
-func (r *DisputeService) List(ctx context.Context, query *requests.DisputeListParams, opts ...option.RequestOption) (res *responses.CursorPage[responses.Dispute], err error) {
+func (r *DisputeService) List(ctx context.Context, query requests.DisputeListParams, opts ...option.RequestOption) (res *responses.CursorPage[responses.Dispute], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -66,7 +66,7 @@ func (r *DisputeService) List(ctx context.Context, query *requests.DisputeListPa
 }
 
 // List disputes.
-func (r *DisputeService) ListAutoPager(ctx context.Context, query *requests.DisputeListParams, opts ...option.RequestOption) *responses.CursorPageAutoPager[responses.Dispute] {
+func (r *DisputeService) ListAutoPaging(ctx context.Context, query requests.DisputeListParams, opts ...option.RequestOption) *responses.CursorPageAutoPager[responses.Dispute] {
 	return responses.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
@@ -100,7 +100,7 @@ func (r *DisputeService) InitiateEvidenceUpload(ctx context.Context, dispute_tok
 }
 
 // List evidence metadata for a dispute.
-func (r *DisputeService) ListEvidences(ctx context.Context, dispute_token string, query *requests.DisputeListEvidencesParams, opts ...option.RequestOption) (res *responses.CursorPage[responses.DisputeEvidence], err error) {
+func (r *DisputeService) ListEvidences(ctx context.Context, dispute_token string, query requests.DisputeListEvidencesParams, opts ...option.RequestOption) (res *responses.CursorPage[responses.DisputeEvidence], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -118,7 +118,7 @@ func (r *DisputeService) ListEvidences(ctx context.Context, dispute_token string
 }
 
 // List evidence metadata for a dispute.
-func (r *DisputeService) ListEvidencesAutoPager(ctx context.Context, dispute_token string, query *requests.DisputeListEvidencesParams, opts ...option.RequestOption) *responses.CursorPageAutoPager[responses.DisputeEvidence] {
+func (r *DisputeService) ListEvidencesAutoPaging(ctx context.Context, dispute_token string, query requests.DisputeListEvidencesParams, opts ...option.RequestOption) *responses.CursorPageAutoPager[responses.DisputeEvidence] {
 	return responses.NewCursorPageAutoPager(r.ListEvidences(ctx, dispute_token, query, opts...))
 }
 

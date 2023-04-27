@@ -11,7 +11,7 @@ import (
 	"github.com/lithic-com/lithic-go/services"
 )
 
-type Lithic struct {
+type Client struct {
 	Options                 []option.RequestOption
 	Accounts                *services.AccountService
 	AccountHolders          *services.AccountHolderService
@@ -30,11 +30,11 @@ type Lithic struct {
 	Webhooks                *services.WebhookService
 }
 
-// NewLithic generates a new client with the default option read from the
+// NewClient generates a new client with the default option read from the
 // environment ("LITHIC_API_KEY", "LITHIC_WEBHOOK_SECRET"). The option passed in as
 // arguments are applied after these default arguments, and all option will be
 // passed down to the services and requests that this client makes.
-func NewLithic(opts ...option.RequestOption) (r *Lithic) {
+func NewClient(opts ...option.RequestOption) (r *Client) {
 	defaults := []option.RequestOption{option.WithEnvironmentProduction()}
 	if o, ok := os.LookupEnv("LITHIC_API_KEY"); ok {
 		defaults = append(defaults, option.WithAPIKey(o))
@@ -44,7 +44,7 @@ func NewLithic(opts ...option.RequestOption) (r *Lithic) {
 	}
 	opts = append(defaults, opts...)
 
-	r = &Lithic{Options: opts}
+	r = &Client{Options: opts}
 
 	r.Accounts = services.NewAccountService(opts...)
 	r.AccountHolders = services.NewAccountHolderService(opts...)
@@ -66,7 +66,7 @@ func NewLithic(opts ...option.RequestOption) (r *Lithic) {
 }
 
 // API status check
-func (r *Lithic) APIStatus(ctx context.Context, opts ...option.RequestOption) (res *responses.APIStatus, err error) {
+func (r *Client) APIStatus(ctx context.Context, opts ...option.RequestOption) (res *responses.APIStatus, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "status"
 	err = option.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)

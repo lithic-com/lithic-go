@@ -1,7 +1,7 @@
 package responses
 
 import (
-	apijson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
 )
 
 type Account struct {
@@ -37,7 +37,7 @@ type AccountJSON struct {
 	AuthRuleTokens      apijson.Metadata
 	VerificationAddress apijson.Metadata
 	AccountHolder       apijson.Metadata
-	Raw                 []byte
+	raw                 string
 	Extras              map[string]apijson.Metadata
 }
 
@@ -61,7 +61,7 @@ type AccountSpendLimitJSON struct {
 	Daily    apijson.Metadata
 	Monthly  apijson.Metadata
 	Lifetime apijson.Metadata
-	Raw      []byte
+	raw      string
 	Extras   map[string]apijson.Metadata
 }
 
@@ -105,7 +105,7 @@ type AccountVerificationAddressJSON struct {
 	State      apijson.Metadata
 	PostalCode apijson.Metadata
 	Country    apijson.Metadata
-	Raw        []byte
+	raw        string
 	Extras     map[string]apijson.Metadata
 }
 
@@ -135,7 +135,7 @@ type AccountAccountHolderJSON struct {
 	PhoneNumber          apijson.Metadata
 	Email                apijson.Metadata
 	BusinessAccountToken apijson.Metadata
-	Raw                  []byte
+	raw                  string
 	Extras               map[string]apijson.Metadata
 }
 
@@ -162,7 +162,7 @@ type AccountListResponseJSON struct {
 	Page         apijson.Metadata
 	TotalEntries apijson.Metadata
 	TotalPages   apijson.Metadata
-	Raw          []byte
+	raw          string
 	Extras       map[string]apijson.Metadata
 }
 

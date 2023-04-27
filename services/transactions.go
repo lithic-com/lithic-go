@@ -29,7 +29,7 @@ func (r *TransactionService) Get(ctx context.Context, transaction_token string, 
 }
 
 // List transactions.
-func (r *TransactionService) List(ctx context.Context, query *requests.TransactionListParams, opts ...option.RequestOption) (res *responses.Page[responses.Transaction], err error) {
+func (r *TransactionService) List(ctx context.Context, query requests.TransactionListParams, opts ...option.RequestOption) (res *responses.Page[responses.Transaction], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -47,7 +47,7 @@ func (r *TransactionService) List(ctx context.Context, query *requests.Transacti
 }
 
 // List transactions.
-func (r *TransactionService) ListAutoPager(ctx context.Context, query *requests.TransactionListParams, opts ...option.RequestOption) *responses.PageAutoPager[responses.Transaction] {
+func (r *TransactionService) ListAutoPaging(ctx context.Context, query requests.TransactionListParams, opts ...option.RequestOption) *responses.PageAutoPager[responses.Transaction] {
 	return responses.NewPageAutoPager(r.List(ctx, query, opts...))
 }
 
@@ -58,7 +58,7 @@ func (r *TransactionService) ListAutoPager(ctx context.Context, query *requests.
 // USD is applied by default. This limit can be modified via the
 // [update account](https://docs.lithic.com/reference/patchaccountbytoken)
 // endpoint.
-func (r *TransactionService) SimulateAuthorization(ctx context.Context, body *requests.TransactionSimulateAuthorizationParams, opts ...option.RequestOption) (res *responses.TransactionSimulateAuthorizationResponse, err error) {
+func (r *TransactionService) SimulateAuthorization(ctx context.Context, body requests.TransactionSimulateAuthorizationParams, opts ...option.RequestOption) (res *responses.TransactionSimulateAuthorizationResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "simulate/authorize"
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -68,7 +68,7 @@ func (r *TransactionService) SimulateAuthorization(ctx context.Context, body *re
 // Simulates an authorization advice request from the payment network as if it came
 // from a merchant acquirer. An authorization advice request changes the amount of
 // the transaction.
-func (r *TransactionService) SimulateAuthorizationAdvice(ctx context.Context, body *requests.TransactionSimulateAuthorizationAdviceParams, opts ...option.RequestOption) (res *responses.TransactionSimulateAuthorizationAdviceResponse, err error) {
+func (r *TransactionService) SimulateAuthorizationAdvice(ctx context.Context, body requests.TransactionSimulateAuthorizationAdviceParams, opts ...option.RequestOption) (res *responses.TransactionSimulateAuthorizationAdviceResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "simulate/authorization_advice"
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -81,7 +81,7 @@ func (r *TransactionService) SimulateAuthorizationAdvice(ctx context.Context, bo
 // If no `amount` is supplied to this endpoint, the amount of the transaction will
 // be captured. Any transaction that has any amount completed at all do not have
 // access to this behavior.
-func (r *TransactionService) SimulateClearing(ctx context.Context, body *requests.TransactionSimulateClearingParams, opts ...option.RequestOption) (res *responses.TransactionSimulateClearingResponse, err error) {
+func (r *TransactionService) SimulateClearing(ctx context.Context, body requests.TransactionSimulateClearingParams, opts ...option.RequestOption) (res *responses.TransactionSimulateClearingResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "simulate/clearing"
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -91,7 +91,7 @@ func (r *TransactionService) SimulateClearing(ctx context.Context, body *request
 // Simulates a credit authorization advice message from the payment network. This
 // message indicates that a credit authorization was approved on your behalf by the
 // network.
-func (r *TransactionService) SimulateCreditAuthorization(ctx context.Context, body *requests.TransactionSimulateCreditAuthorizationParams, opts ...option.RequestOption) (res *responses.TransactionSimulateCreditAuthorizationResponse, err error) {
+func (r *TransactionService) SimulateCreditAuthorization(ctx context.Context, body requests.TransactionSimulateCreditAuthorizationParams, opts ...option.RequestOption) (res *responses.TransactionSimulateCreditAuthorizationResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "simulate/credit_authorization_advice"
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -100,7 +100,7 @@ func (r *TransactionService) SimulateCreditAuthorization(ctx context.Context, bo
 
 // Returns (aka refunds) an amount back to a card. Returns are cleared immediately
 // and do not spend time in a `PENDING` state.
-func (r *TransactionService) SimulateReturn(ctx context.Context, body *requests.TransactionSimulateReturnParams, opts ...option.RequestOption) (res *responses.TransactionSimulateReturnResponse, err error) {
+func (r *TransactionService) SimulateReturn(ctx context.Context, body requests.TransactionSimulateReturnParams, opts ...option.RequestOption) (res *responses.TransactionSimulateReturnResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "simulate/return"
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -110,7 +110,7 @@ func (r *TransactionService) SimulateReturn(ctx context.Context, body *requests.
 // Voids a settled credit transaction – i.e., a transaction with a negative amount
 // and `SETTLED` status. These can be credit authorizations that have already
 // cleared or financial credit authorizations.
-func (r *TransactionService) SimulateReturnReversal(ctx context.Context, body *requests.TransactionSimulateReturnReversalParams, opts ...option.RequestOption) (res *responses.TransactionSimulateReturnReversalResponse, err error) {
+func (r *TransactionService) SimulateReturnReversal(ctx context.Context, body requests.TransactionSimulateReturnReversalParams, opts ...option.RequestOption) (res *responses.TransactionSimulateReturnReversalResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "simulate/return_reversal"
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -122,7 +122,7 @@ func (r *TransactionService) SimulateReturnReversal(ctx context.Context, body *r
 // transactions, but can be used on partially voided transactions. _Note that
 // simulating an authorization expiry on credit authorizations or credit
 // authorization advice is not currently supported but will be added soon._
-func (r *TransactionService) SimulateVoid(ctx context.Context, body *requests.TransactionSimulateVoidParams, opts ...option.RequestOption) (res *responses.TransactionSimulateVoidResponse, err error) {
+func (r *TransactionService) SimulateVoid(ctx context.Context, body requests.TransactionSimulateVoidParams, opts ...option.RequestOption) (res *responses.TransactionSimulateVoidResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "simulate/void"
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)

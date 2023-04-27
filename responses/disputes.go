@@ -3,7 +3,7 @@ package responses
 import (
 	"time"
 
-	apijson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
 )
 
 type Dispute struct {
@@ -116,7 +116,7 @@ type DisputeJSON struct {
 	Status             apijson.Metadata
 	Token              apijson.Metadata
 	TransactionToken   apijson.Metadata
-	Raw                []byte
+	raw                string
 	Extras             map[string]apijson.Metadata
 }
 
@@ -209,7 +209,7 @@ type DisputeEvidenceJSON struct {
 	Token        apijson.Metadata
 	UploadStatus apijson.Metadata
 	UploadURL    apijson.Metadata
-	Raw          []byte
+	raw          string
 	Extras       map[string]apijson.Metadata
 }
 
@@ -237,7 +237,7 @@ type DisputeInitiateEvidenceUploadResponse struct {
 
 type DisputeInitiateEvidenceUploadResponseJSON struct {
 	UploadURL apijson.Metadata
-	Raw       []byte
+	raw       string
 	Extras    map[string]apijson.Metadata
 }
 
@@ -258,7 +258,7 @@ type DisputeListResponse struct {
 type DisputeListResponseJSON struct {
 	Data    apijson.Metadata
 	HasMore apijson.Metadata
-	Raw     []byte
+	raw     string
 	Extras  map[string]apijson.Metadata
 }
 
@@ -279,7 +279,7 @@ type DisputeListEvidencesResponse struct {
 type DisputeListEvidencesResponseJSON struct {
 	Data    apijson.Metadata
 	HasMore apijson.Metadata
-	Raw     []byte
+	raw     string
 	Extras  map[string]apijson.Metadata
 }
 

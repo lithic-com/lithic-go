@@ -3,9 +3,9 @@ package requests
 import (
 	"net/url"
 
-	"github.com/lithic-com/lithic-go/core/field"
-	apijson "github.com/lithic-com/lithic-go/core/json"
-	"github.com/lithic-com/lithic-go/core/query"
+	"github.com/lithic-com/lithic-go/internal/field"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
+	"github.com/lithic-com/lithic-go/internal/query"
 )
 
 type AuthRuleNewParams struct {

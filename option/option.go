@@ -18,8 +18,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/lithic-com/lithic-go/apierror"
-	"github.com/lithic-com/lithic-go/core/form"
-	"github.com/lithic-com/lithic-go/core/query"
+	"github.com/lithic-com/lithic-go/internal/form"
+	"github.com/lithic-com/lithic-go/internal/query"
 	"github.com/tidwall/sjson"
 )
 

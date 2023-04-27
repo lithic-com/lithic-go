@@ -3,7 +3,7 @@ package responses
 import (
 	"time"
 
-	apijson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
 )
 
 type AggregateBalance struct {
@@ -45,7 +45,7 @@ type AggregateBalanceJSON struct {
 	LastTransactionToken      apijson.Metadata
 	LastTransactionEventToken apijson.Metadata
 	LastFinancialAccountToken apijson.Metadata
-	Raw                       []byte
+	raw                       string
 	Extras                    map[string]apijson.Metadata
 }
 
@@ -73,7 +73,7 @@ type AggregateBalanceListResponse struct {
 type AggregateBalanceListResponseJSON struct {
 	Data    apijson.Metadata
 	HasMore apijson.Metadata
-	Raw     []byte
+	raw     string
 	Extras  map[string]apijson.Metadata
 }
 

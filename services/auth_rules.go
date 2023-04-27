@@ -22,7 +22,7 @@ func NewAuthRuleService(opts ...option.RequestOption) (r *AuthRuleService) {
 
 // Creates an authorization rule (Auth Rule) and applies it at the program,
 // account, or card level.
-func (r *AuthRuleService) New(ctx context.Context, body *requests.AuthRuleNewParams, opts ...option.RequestOption) (res *responses.AuthRuleCreateResponse, err error) {
+func (r *AuthRuleService) New(ctx context.Context, body requests.AuthRuleNewParams, opts ...option.RequestOption) (res *responses.AuthRuleCreateResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "auth_rules"
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -40,7 +40,7 @@ func (r *AuthRuleService) Get(ctx context.Context, auth_rule_token string, opts 
 
 // Update the properties associated with an existing authorization rule (Auth
 // Rule).
-func (r *AuthRuleService) Update(ctx context.Context, auth_rule_token string, body *requests.AuthRuleUpdateParams, opts ...option.RequestOption) (res *responses.AuthRuleUpdateResponse, err error) {
+func (r *AuthRuleService) Update(ctx context.Context, auth_rule_token string, body requests.AuthRuleUpdateParams, opts ...option.RequestOption) (res *responses.AuthRuleUpdateResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("auth_rules/%s", auth_rule_token)
 	err = option.ExecuteNewRequest(ctx, http.MethodPut, path, body, &res, opts...)
@@ -48,7 +48,7 @@ func (r *AuthRuleService) Update(ctx context.Context, auth_rule_token string, bo
 }
 
 // Return all of the Auth Rules under the program.
-func (r *AuthRuleService) List(ctx context.Context, query *requests.AuthRuleListParams, opts ...option.RequestOption) (res *responses.Page[responses.AuthRule], err error) {
+func (r *AuthRuleService) List(ctx context.Context, query requests.AuthRuleListParams, opts ...option.RequestOption) (res *responses.Page[responses.AuthRule], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -66,13 +66,13 @@ func (r *AuthRuleService) List(ctx context.Context, query *requests.AuthRuleList
 }
 
 // Return all of the Auth Rules under the program.
-func (r *AuthRuleService) ListAutoPager(ctx context.Context, query *requests.AuthRuleListParams, opts ...option.RequestOption) *responses.PageAutoPager[responses.AuthRule] {
+func (r *AuthRuleService) ListAutoPaging(ctx context.Context, query requests.AuthRuleListParams, opts ...option.RequestOption) *responses.PageAutoPager[responses.AuthRule] {
 	return responses.NewPageAutoPager(r.List(ctx, query, opts...))
 }
 
 // Applies an existing authorization rule (Auth Rule) to an program, account, or
 // card level.
-func (r *AuthRuleService) Apply(ctx context.Context, auth_rule_token string, body *requests.AuthRuleApplyParams, opts ...option.RequestOption) (res *responses.AuthRuleApplyResponse, err error) {
+func (r *AuthRuleService) Apply(ctx context.Context, auth_rule_token string, body requests.AuthRuleApplyParams, opts ...option.RequestOption) (res *responses.AuthRuleApplyResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("auth_rules/%s/apply", auth_rule_token)
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -81,7 +81,7 @@ func (r *AuthRuleService) Apply(ctx context.Context, auth_rule_token string, bod
 
 // Remove an existing authorization rule (Auth Rule) from an program, account, or
 // card-level.
-func (r *AuthRuleService) Remove(ctx context.Context, body *requests.AuthRuleRemoveParams, opts ...option.RequestOption) (res *responses.AuthRuleRemoveResponse, err error) {
+func (r *AuthRuleService) Remove(ctx context.Context, body requests.AuthRuleRemoveParams, opts ...option.RequestOption) (res *responses.AuthRuleRemoveResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "auth_rules/remove"
 	err = option.ExecuteNewRequest(ctx, http.MethodDelete, path, body, &res, opts...)

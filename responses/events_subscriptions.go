@@ -1,7 +1,7 @@
 package responses
 
 import (
-	apijson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
 )
 
 type SubscriptionRetrieveSecretResponse struct {
@@ -11,7 +11,7 @@ type SubscriptionRetrieveSecretResponse struct {
 
 type SubscriptionRetrieveSecretResponseJSON struct {
 	Key    apijson.Metadata
-	Raw    []byte
+	raw    string
 	Extras map[string]apijson.Metadata
 }
 
@@ -31,7 +31,7 @@ type EventSubscriptionListResponse struct {
 type EventSubscriptionListResponseJSON struct {
 	Data    apijson.Metadata
 	HasMore apijson.Metadata
-	Raw     []byte
+	raw     string
 	Extras  map[string]apijson.Metadata
 }
 

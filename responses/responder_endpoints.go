@@ -1,7 +1,7 @@
 package responses
 
 import (
-	apijson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
 )
 
 type ResponderEndpointStatus struct {
@@ -15,7 +15,7 @@ type ResponderEndpointStatus struct {
 type ResponderEndpointStatusJSON struct {
 	Enrolled apijson.Metadata
 	URL      apijson.Metadata
-	Raw      []byte
+	raw      string
 	Extras   map[string]apijson.Metadata
 }
 
@@ -34,7 +34,7 @@ type ResponderEndpointCreateResponse struct {
 
 type ResponderEndpointCreateResponseJSON struct {
 	Enrolled apijson.Metadata
-	Raw      []byte
+	raw      string
 	Extras   map[string]apijson.Metadata
 }
 

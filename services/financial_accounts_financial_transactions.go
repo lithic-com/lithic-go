@@ -29,7 +29,7 @@ func (r *FinancialAccountFinancialTransactionService) Get(ctx context.Context, f
 }
 
 // List the financial transactions for a given financial account.
-func (r *FinancialAccountFinancialTransactionService) List(ctx context.Context, financial_account_token string, query *requests.FinancialTransactionListParams, opts ...option.RequestOption) (res *responses.SinglePage[responses.FinancialTransaction], err error) {
+func (r *FinancialAccountFinancialTransactionService) List(ctx context.Context, financial_account_token string, query requests.FinancialTransactionListParams, opts ...option.RequestOption) (res *responses.SinglePage[responses.FinancialTransaction], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -47,6 +47,6 @@ func (r *FinancialAccountFinancialTransactionService) List(ctx context.Context, 
 }
 
 // List the financial transactions for a given financial account.
-func (r *FinancialAccountFinancialTransactionService) ListAutoPager(ctx context.Context, financial_account_token string, query *requests.FinancialTransactionListParams, opts ...option.RequestOption) *responses.SinglePageAutoPager[responses.FinancialTransaction] {
+func (r *FinancialAccountFinancialTransactionService) ListAutoPaging(ctx context.Context, financial_account_token string, query requests.FinancialTransactionListParams, opts ...option.RequestOption) *responses.SinglePageAutoPager[responses.FinancialTransaction] {
 	return responses.NewSinglePageAutoPager(r.List(ctx, financial_account_token, query, opts...))
 }

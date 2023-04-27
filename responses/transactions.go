@@ -3,7 +3,7 @@ package responses
 import (
 	"time"
 
-	apijson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
 )
 
 type Transaction struct {
@@ -80,7 +80,7 @@ type TransactionJSON struct {
 	SettledAmount               apijson.Metadata
 	Status                      apijson.Metadata
 	Token                       apijson.Metadata
-	Raw                         []byte
+	raw                         string
 	Extras                      map[string]apijson.Metadata
 }
 
@@ -181,7 +181,7 @@ type TransactionCardholderAuthenticationJSON struct {
 	LiabilityShift        apijson.Metadata
 	VerificationAttempted apijson.Metadata
 	VerificationResult    apijson.Metadata
-	Raw                   []byte
+	raw                   string
 	Extras                map[string]apijson.Metadata
 }
 
@@ -305,7 +305,7 @@ type TransactionEventsJSON struct {
 	Result  apijson.Metadata
 	Token   apijson.Metadata
 	Type    apijson.Metadata
-	Raw     []byte
+	raw     string
 	Extras  map[string]apijson.Metadata
 }
 
@@ -385,7 +385,7 @@ type TransactionMerchantJSON struct {
 	Descriptor apijson.Metadata
 	Mcc        apijson.Metadata
 	State      apijson.Metadata
-	Raw        []byte
+	raw        string
 	Extras     map[string]apijson.Metadata
 }
 
@@ -455,7 +455,7 @@ type TransactionSimulateAuthorizationResponse struct {
 type TransactionSimulateAuthorizationResponseJSON struct {
 	DebuggingRequestID apijson.Metadata
 	Token              apijson.Metadata
-	Raw                []byte
+	raw                string
 	Extras             map[string]apijson.Metadata
 }
 
@@ -474,7 +474,7 @@ type TransactionSimulateClearingResponse struct {
 
 type TransactionSimulateClearingResponseJSON struct {
 	DebuggingRequestID apijson.Metadata
-	Raw                []byte
+	raw                string
 	Extras             map[string]apijson.Metadata
 }
 
@@ -496,7 +496,7 @@ type TransactionSimulateReturnResponse struct {
 type TransactionSimulateReturnResponseJSON struct {
 	DebuggingRequestID apijson.Metadata
 	Token              apijson.Metadata
-	Raw                []byte
+	raw                string
 	Extras             map[string]apijson.Metadata
 }
 
@@ -515,7 +515,7 @@ type TransactionSimulateReturnReversalResponse struct {
 
 type TransactionSimulateReturnReversalResponseJSON struct {
 	DebuggingRequestID apijson.Metadata
-	Raw                []byte
+	raw                string
 	Extras             map[string]apijson.Metadata
 }
 
@@ -534,7 +534,7 @@ type TransactionSimulateVoidResponse struct {
 
 type TransactionSimulateVoidResponseJSON struct {
 	DebuggingRequestID apijson.Metadata
-	Raw                []byte
+	raw                string
 	Extras             map[string]apijson.Metadata
 }
 
@@ -556,7 +556,7 @@ type TransactionSimulateCreditAuthorizationResponse struct {
 type TransactionSimulateCreditAuthorizationResponseJSON struct {
 	DebuggingRequestID apijson.Metadata
 	Token              apijson.Metadata
-	Raw                []byte
+	raw                string
 	Extras             map[string]apijson.Metadata
 }
 
@@ -578,7 +578,7 @@ type TransactionSimulateAuthorizationAdviceResponse struct {
 type TransactionSimulateAuthorizationAdviceResponseJSON struct {
 	DebuggingRequestID apijson.Metadata
 	Token              apijson.Metadata
-	Raw                []byte
+	raw                string
 	Extras             map[string]apijson.Metadata
 }
 
@@ -605,7 +605,7 @@ type TransactionListResponseJSON struct {
 	Page         apijson.Metadata
 	TotalEntries apijson.Metadata
 	TotalPages   apijson.Metadata
-	Raw          []byte
+	raw          string
 	Extras       map[string]apijson.Metadata
 }
 

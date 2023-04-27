@@ -321,17 +321,17 @@ func (d *decoder) newStructTypeDecoder(t reflect.Type) decoderFunc {
 
 			if itemNode.Type == gjson.Null {
 				meta = Metadata{
-					raw:    []byte(itemNode.Raw),
+					raw:    itemNode.Raw,
 					status: null,
 				}
 			} else if !isValid {
 				meta = Metadata{
-					raw:    []byte(itemNode.Raw),
+					raw:    itemNode.Raw,
 					status: invalid,
 				}
 			} else if isValid {
 				meta = Metadata{
-					raw:    []byte(itemNode.Raw),
+					raw:    itemNode.Raw,
 					status: valid,
 				}
 			}
@@ -357,7 +357,7 @@ func (d *decoder) newStructTypeDecoder(t reflect.Type) decoderFunc {
 		}
 		if field := value.FieldByName("JSON"); field.IsValid() {
 			if raw := field.FieldByName("Raw"); raw.IsValid() {
-				raw.Set(reflect.ValueOf([]byte(node.Raw)))
+				raw.Set(reflect.ValueOf(node.Raw))
 			}
 		}
 		return nil

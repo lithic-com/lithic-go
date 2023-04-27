@@ -1,7 +1,7 @@
 package responses
 
 import (
-	apijson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
 )
 
 type AuthRule struct {
@@ -57,7 +57,7 @@ type AuthRuleJSON struct {
 	AccountTokens          apijson.Metadata
 	CardTokens             apijson.Metadata
 	ProgramLevel           apijson.Metadata
-	Raw                    []byte
+	raw                    string
 	Extras                 map[string]apijson.Metadata
 }
 
@@ -87,7 +87,7 @@ type AuthRuleCreateResponse struct {
 
 type AuthRuleCreateResponseJSON struct {
 	Data   apijson.Metadata
-	Raw    []byte
+	raw    string
 	Extras map[string]apijson.Metadata
 }
 
@@ -105,7 +105,7 @@ type AuthRuleRetrieveResponse struct {
 
 type AuthRuleRetrieveResponseJSON struct {
 	Data   apijson.Metadata
-	Raw    []byte
+	raw    string
 	Extras map[string]apijson.Metadata
 }
 
@@ -123,7 +123,7 @@ type AuthRuleUpdateResponse struct {
 
 type AuthRuleUpdateResponseJSON struct {
 	Data   apijson.Metadata
-	Raw    []byte
+	raw    string
 	Extras map[string]apijson.Metadata
 }
 
@@ -141,7 +141,7 @@ type AuthRuleApplyResponse struct {
 
 type AuthRuleApplyResponseJSON struct {
 	Data   apijson.Metadata
-	Raw    []byte
+	raw    string
 	Extras map[string]apijson.Metadata
 }
 
@@ -165,7 +165,7 @@ type AuthRuleRemoveResponseJSON struct {
 	CardTokens             apijson.Metadata
 	PreviousAuthRuleTokens apijson.Metadata
 	ProgramLevel           apijson.Metadata
-	Raw                    []byte
+	raw                    string
 	Extras                 map[string]apijson.Metadata
 }
 
@@ -192,7 +192,7 @@ type AuthRuleListResponseJSON struct {
 	TotalEntries apijson.Metadata
 	TotalPages   apijson.Metadata
 	Page         apijson.Metadata
-	Raw          []byte
+	raw          string
 	Extras       map[string]apijson.Metadata
 }
 

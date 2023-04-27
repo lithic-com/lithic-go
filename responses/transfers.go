@@ -3,7 +3,7 @@ package responses
 import (
 	"time"
 
-	apijson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
 )
 
 type Transfer struct {
@@ -64,7 +64,7 @@ type TransferJSON struct {
 	Updated       apijson.Metadata
 	FromBalance   apijson.Metadata
 	ToBalance     apijson.Metadata
-	Raw           []byte
+	raw           string
 	Extras        map[string]apijson.Metadata
 }
 
@@ -137,7 +137,7 @@ type TransferEventsJSON struct {
 	Result  apijson.Metadata
 	Token   apijson.Metadata
 	Type    apijson.Metadata
-	Raw     []byte
+	raw     string
 	Extras  map[string]apijson.Metadata
 }
 
@@ -206,7 +206,7 @@ type TransferCreateResponse struct {
 
 type TransferCreateResponseJSON struct {
 	Data   apijson.Metadata
-	Raw    []byte
+	raw    string
 	Extras map[string]apijson.Metadata
 }
 

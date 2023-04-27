@@ -21,7 +21,7 @@ func NewFinancialAccountBalanceService(opts ...option.RequestOption) (r *Financi
 }
 
 // Get the balances for a given financial account.
-func (r *FinancialAccountBalanceService) List(ctx context.Context, financial_account_token string, query *requests.FinancialAccountBalanceListParams, opts ...option.RequestOption) (res *responses.SinglePage[responses.Balance], err error) {
+func (r *FinancialAccountBalanceService) List(ctx context.Context, financial_account_token string, query requests.FinancialAccountBalanceListParams, opts ...option.RequestOption) (res *responses.SinglePage[responses.Balance], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -39,6 +39,6 @@ func (r *FinancialAccountBalanceService) List(ctx context.Context, financial_acc
 }
 
 // Get the balances for a given financial account.
-func (r *FinancialAccountBalanceService) ListAutoPager(ctx context.Context, financial_account_token string, query *requests.FinancialAccountBalanceListParams, opts ...option.RequestOption) *responses.SinglePageAutoPager[responses.Balance] {
+func (r *FinancialAccountBalanceService) ListAutoPaging(ctx context.Context, financial_account_token string, query requests.FinancialAccountBalanceListParams, opts ...option.RequestOption) *responses.SinglePageAutoPager[responses.Balance] {
 	return responses.NewSinglePageAutoPager(r.List(ctx, financial_account_token, query, opts...))
 }

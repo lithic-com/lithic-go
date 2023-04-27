@@ -10,7 +10,7 @@ import (
 )
 
 func TestTokenizationDecisioningGetSecret(t *testing.T) {
-	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.TokenizationDecisioning.GetSecret(
 		context.TODO(),
 	)
@@ -24,7 +24,7 @@ func TestTokenizationDecisioningGetSecret(t *testing.T) {
 }
 
 func TestTokenizationDecisioningRotateSecret(t *testing.T) {
-	c := lithic.NewLithic(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
+	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.TokenizationDecisioning.RotateSecret(
 		context.TODO(),
 	)

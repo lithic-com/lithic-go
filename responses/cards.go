@@ -3,7 +3,7 @@ package responses
 import (
 	"time"
 
-	apijson "github.com/lithic-com/lithic-go/core/json"
+	apijson "github.com/lithic-com/lithic-go/internal/json"
 )
 
 type Card struct {
@@ -106,7 +106,7 @@ type CardJSON struct {
 	Token               apijson.Metadata
 	Type                apijson.Metadata
 	DigitalCardArtToken apijson.Metadata
-	Raw                 []byte
+	raw                 string
 	Extras              map[string]apijson.Metadata
 }
 
@@ -155,7 +155,7 @@ type CardFundingJSON struct {
 	State       apijson.Metadata
 	Token       apijson.Metadata
 	Type        apijson.Metadata
-	Raw         []byte
+	raw         string
 	Extras      map[string]apijson.Metadata
 }
 
@@ -216,7 +216,7 @@ type CardProvisionResponse struct {
 
 type CardProvisionResponseJSON struct {
 	ProvisioningPayload apijson.Metadata
-	Raw                 []byte
+	raw                 string
 	Extras              map[string]apijson.Metadata
 }
 
@@ -243,7 +243,7 @@ type CardListResponseJSON struct {
 	Page         apijson.Metadata
 	TotalEntries apijson.Metadata
 	TotalPages   apijson.Metadata
-	Raw          []byte
+	raw          string
 	Extras       map[string]apijson.Metadata
 }
 

@@ -25,7 +25,7 @@ func NewFinancialAccountService(opts ...option.RequestOption) (r *FinancialAccou
 
 // Retrieve information on your financial accounts including routing and account
 // number.
-func (r *FinancialAccountService) List(ctx context.Context, query *requests.FinancialAccountListParams, opts ...option.RequestOption) (res *responses.SinglePage[responses.FinancialAccount], err error) {
+func (r *FinancialAccountService) List(ctx context.Context, query requests.FinancialAccountListParams, opts ...option.RequestOption) (res *responses.SinglePage[responses.FinancialAccount], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -44,6 +44,6 @@ func (r *FinancialAccountService) List(ctx context.Context, query *requests.Fina
 
 // Retrieve information on your financial accounts including routing and account
 // number.
-func (r *FinancialAccountService) ListAutoPager(ctx context.Context, query *requests.FinancialAccountListParams, opts ...option.RequestOption) *responses.SinglePageAutoPager[responses.FinancialAccount] {
+func (r *FinancialAccountService) ListAutoPaging(ctx context.Context, query requests.FinancialAccountListParams, opts ...option.RequestOption) *responses.SinglePageAutoPager[responses.FinancialAccount] {
 	return responses.NewSinglePageAutoPager(r.List(ctx, query, opts...))
 }
