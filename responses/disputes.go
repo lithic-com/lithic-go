@@ -181,7 +181,7 @@ const (
 )
 
 type DisputeEvidence struct {
-	// Timestamp of when first Dispute was reported.
+	// Timestamp of when dispute evidence was created.
 	Created time.Time `json:"created,required" format:"date-time"`
 	// Dispute token evidence is attached to.
 	DisputeToken string `json:"dispute_token,required" format:"uuid"`
@@ -229,24 +229,6 @@ const (
 	DisputeEvidenceUploadStatusRejected DisputeEvidenceUploadStatus = "REJECTED"
 	DisputeEvidenceUploadStatusUploaded DisputeEvidenceUploadStatus = "UPLOADED"
 )
-
-type DisputeInitiateEvidenceUploadResponse struct {
-	UploadURL string `json:"upload_url"`
-	JSON      DisputeInitiateEvidenceUploadResponseJSON
-}
-
-type DisputeInitiateEvidenceUploadResponseJSON struct {
-	UploadURL apijson.Metadata
-	raw       string
-	Extras    map[string]apijson.Metadata
-}
-
-// UnmarshalJSON deserializes the provided bytes into
-// DisputeInitiateEvidenceUploadResponse using the internal json library.
-// Unrecognized fields are stored in the `jsonFields` property.
-func (r *DisputeInitiateEvidenceUploadResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
 
 type DisputeListResponse struct {
 	Data []Dispute `json:"data,required"`

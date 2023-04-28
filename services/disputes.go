@@ -92,7 +92,7 @@ func (r *DisputeService) DeleteEvidence(ctx context.Context, dispute_token strin
 //
 // Uploaded documents must either be a `jpg`, `png` or `pdf` file, and each must be
 // less than 5 GiB.
-func (r *DisputeService) InitiateEvidenceUpload(ctx context.Context, dispute_token string, opts ...option.RequestOption) (res *responses.DisputeInitiateEvidenceUploadResponse, err error) {
+func (r *DisputeService) InitiateEvidenceUpload(ctx context.Context, dispute_token string, opts ...option.RequestOption) (res *responses.DisputeEvidence, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("disputes/%s/evidences", dispute_token)
 	err = option.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
