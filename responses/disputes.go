@@ -150,7 +150,7 @@ type DisputeResolutionReason string
 const (
 	DisputeResolutionReasonCaseLost                      DisputeResolutionReason = "CASE_LOST"
 	DisputeResolutionReasonNetworkRejected               DisputeResolutionReason = "NETWORK_REJECTED"
-	DisputeResolutionReasonNoDisputeRights_3Ds           DisputeResolutionReason = "NO_DISPUTE_RIGHTS_3DS"
+	DisputeResolutionReasonNoDisputeRights3DS            DisputeResolutionReason = "NO_DISPUTE_RIGHTS_3DS"
 	DisputeResolutionReasonNoDisputeRightsBelowThreshold DisputeResolutionReason = "NO_DISPUTE_RIGHTS_BELOW_THRESHOLD"
 	DisputeResolutionReasonNoDisputeRightsContactless    DisputeResolutionReason = "NO_DISPUTE_RIGHTS_CONTACTLESS"
 	DisputeResolutionReasonNoDisputeRightsHybrid         DisputeResolutionReason = "NO_DISPUTE_RIGHTS_HYBRID"
