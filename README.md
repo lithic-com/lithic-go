@@ -60,38 +60,38 @@ Types for requests look like the following:
 
 ```go
 type FooParams struct {
-	ID     fields.Field[string] `json:"id,required"`
-	Number fields.Field[int64]  `json:"number,required"`
-	Name   fields.Field[string] `json:"name"`
-	Other  fields.Field[Bar]    `json:"other"`
+	Type   field.Field[string] `json:"type,required"`
+	Number field.Field[int64]  `json:"number,required"`
+	Name   field.Field[string] `json:"name"`
+	Other  field.Field[Bar]    `json:"other"`
 }
 
 type Bar struct {
-	Number fields.Field[int64]  `json:"number"`
-	Name   fields.Field[string] `json:"name"`
+	Number field.Field[int64]  `json:"number"`
+	Name   field.Field[string] `json:"name"`
 }
 ```
 
 For each field, you can either supply a value field with
-`lithic.F(...)`, a `null` value with `lithic.NullField()`, or
-some raw JSON value with `lithic.RawField(...)` that you specify as a
+`lithic.F(...)`, a `null` value with `lithic.Null()`, or
+some raw JSON value with `lithic.Raw(...)` that you specify as a
 byte slice. We also provide convenient helpers `lithic.Int(...)` and
-`lithic.Str(...)`. If you do not supply a value, then we do not
+`lithic.String(...)`. If you do not supply a value, then we do not
 populate the field. An example request may look like
 
 ```go
 params := FooParams{
-	// Normally populates this field as `"id": "foo_id"`
-	ID: lithic.F("foo_id"),
+	// Normally populates this field as `"type": "foo"`
+	Type: lithic.F("foo"),
 
-	// Integer helper casts integer values and literals to fields.Field[int64]
+	// Integer helper casts integer values and literals to field.Field[int64]
 	Number: lithic.Int(12),
 
 	// Explicitly sends this field as null, e.g., `"name": null`
-	Name: lithic.NullField[string](),
+	Name: lithic.Null[string](),
 
 	// Overrides this field as `"other": "ovveride_this_field"`
-	Other: lithic.RawField[Bar]("override_this_field")
+	Other: lithic.Raw[Bar]("override_this_field")
 }
 ```
 
@@ -111,7 +111,8 @@ res, err := client.Service.Foo(context.TODO())
 res.Name // is just some string value
 ```
 
-If null, not present, or invalid, all fields will simply be their empty values.
+If the value received is null, not present, or invalid, the corresponding field
+will simply be its empty value.
 
 If you want to be able to tell that the value is either `null`, not present, or
 invalid, we provide metadata in the `JSON` property of every response object.
@@ -130,8 +131,6 @@ res.JSON.Name.IsInvalid()
 res.JSON.Name.Raw()
 ```
 
-You can also access the JSON value of the entire object with `res.JSON.Raw`.
-
 There may be instances where we provide experimental or private API features
 for some customers. In those cases, the related features will not be exposed to
 the SDK as typed fields, and are instead deserialized to an internal map. We
@@ -148,9 +147,10 @@ json.Unmarshal([]byte(body), &custom)
 
 ### RequestOptions
 
-This library uses the functional options pattern. `RequestOptions` are closures
-that mutate a `RequestConfig`. These options can be supplied to the client or
-at individual requests, and they will cascade appropriately.
+This library uses the functional options pattern. Functions defined in the
+`option` package return a `RequestOption`, which is a closure that mutates a
+`RequestConfig`. These options can be supplied to the client or at individual
+requests, and they will cascade appropriately.
 
 At each request, these closures will be run in the order that they are
 supplied, after the defaults for that particular request.
@@ -221,7 +221,10 @@ if err != nil {
 
 ### Errors
 
-When the API returns a non-success status code, we return an error with type `*lithic.Error`. This contains the `StatusCode`, `*http.Request`, and `*http.Response` values of the request, as well as the JSON of the error body (much like other response objects in the SDK).
+When the API returns a non-success status code, we return an error with type
+`*lithic.Error`. This contains the `StatusCode`, `*http.Request`, and
+`*http.Response` values of the request, as well as the JSON of the error body
+(much like other response objects in the SDK).
 
 To handle errors, we recommend that you use the `errors.As` pattern:
 
@@ -241,7 +244,9 @@ if err != nil {
 }
 ```
 
-When other errors occur, we return them unwrapped; for example, when HTTP transport returns an error, we return the `*url.Error` which could wrap `*net.OpError`.
+When other errors occur, we return them unwrapped; for example, when HTTP
+transport returns an error, we return the `*url.Error` which could wrap
+`*net.OpError`.
 
 ## Retries
 
