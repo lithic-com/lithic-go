@@ -1,0 +1,305 @@
+package lithic
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"net/url"
+	"time"
+
+	"github.com/lithic-com/lithic-go/internal/apijson"
+	"github.com/lithic-com/lithic-go/internal/apiquery"
+	"github.com/lithic-com/lithic-go/internal/field"
+	"github.com/lithic-com/lithic-go/internal/requestconfig"
+	"github.com/lithic-com/lithic-go/internal/shared"
+	"github.com/lithic-com/lithic-go/option"
+)
+
+type AccountService struct {
+	Options []option.RequestOption
+}
+
+func NewAccountService(opts ...option.RequestOption) (r *AccountService) {
+	r = &AccountService{}
+	r.Options = opts
+	return
+}
+
+// Get account configuration such as spend limits.
+func (r *AccountService) Get(ctx context.Context, account_token string, opts ...option.RequestOption) (res *Account, err error) {
+	opts = append(r.Options[:], opts...)
+	path := fmt.Sprintf("accounts/%s", account_token)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
+	return
+}
+
+// Update account configuration such as spend limits and verification address. Can
+// only be run on accounts that are part of the program managed by this API key.
+//
+// Accounts that are in the `PAUSED` state will not be able to transact or create
+// new cards.
+func (r *AccountService) Update(ctx context.Context, account_token string, body AccountUpdateParams, opts ...option.RequestOption) (res *Account, err error) {
+	opts = append(r.Options[:], opts...)
+	path := fmt.Sprintf("accounts/%s", account_token)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
+	return
+}
+
+// List account configurations.
+func (r *AccountService) List(ctx context.Context, query AccountListParams, opts ...option.RequestOption) (res *shared.Page[Account], err error) {
+	var raw *http.Response
+	opts = append(r.Options, opts...)
+	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
+	path := "accounts"
+	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
+	if err != nil {
+		return nil, err
+	}
+	err = cfg.Execute()
+	if err != nil {
+		return nil, err
+	}
+	res.SetPageConfig(cfg, raw)
+	return res, nil
+}
+
+// List account configurations.
+func (r *AccountService) ListAutoPaging(ctx context.Context, query AccountListParams, opts ...option.RequestOption) *shared.PageAutoPager[Account] {
+	return shared.NewPageAutoPager(r.List(ctx, query, opts...))
+}
+
+type Account struct {
+	// Spend limit information for the user containing the daily, monthly, and lifetime
+	// spend limit of the account. Any charges to a card owned by this account will be
+	// declined once their transaction volume has surpassed the value in the applicable
+	// time limit (rolling). A lifetime limit of 0 indicates that the lifetime limit
+	// feature is disabled.
+	SpendLimit AccountSpendLimit `json:"spend_limit,required"`
+	// Account state:
+	//
+	//   - `ACTIVE` - Account is able to transact and create new cards.
+	//   - `PAUSED` - Account will not be able to transact or create new cards. It can be
+	//     set back to `ACTIVE`.
+	//   - `CLOSED` - Account will permanently not be able to transact or create new
+	//     cards.
+	State AccountState `json:"state,required"`
+	// Globally unique identifier for the account. This is the same as the
+	// account_token returned by the enroll endpoint. If using this parameter, do not
+	// include pagination.
+	Token string `json:"token,required" format:"uuid"`
+	// List of identifiers for the Auth Rule(s) that are applied on the account.
+	AuthRuleTokens      []string                   `json:"auth_rule_tokens"`
+	VerificationAddress AccountVerificationAddress `json:"verification_address"`
+	AccountHolder       AccountAccountHolder       `json:"account_holder"`
+	JSON                AccountJSON
+}
+
+type AccountJSON struct {
+	SpendLimit          apijson.Metadata
+	State               apijson.Metadata
+	Token               apijson.Metadata
+	AuthRuleTokens      apijson.Metadata
+	VerificationAddress apijson.Metadata
+	AccountHolder       apijson.Metadata
+	raw                 string
+	Extras              map[string]apijson.Metadata
+}
+
+// UnmarshalJSON deserializes the provided bytes into Account using the internal
+// json library. Unrecognized fields are stored in the `jsonFields` property.
+func (r *Account) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type AccountSpendLimit struct {
+	// Daily spend limit (in cents).
+	Daily int64 `json:"daily,required"`
+	// Monthly spend limit (in cents).
+	Monthly int64 `json:"monthly,required"`
+	// Total spend limit over account lifetime (in cents).
+	Lifetime int64 `json:"lifetime,required"`
+	JSON     AccountSpendLimitJSON
+}
+
+type AccountSpendLimitJSON struct {
+	Daily    apijson.Metadata
+	Monthly  apijson.Metadata
+	Lifetime apijson.Metadata
+	raw      string
+	Extras   map[string]apijson.Metadata
+}
+
+// UnmarshalJSON deserializes the provided bytes into AccountSpendLimit using the
+// internal json library. Unrecognized fields are stored in the `jsonFields`
+// property.
+func (r *AccountSpendLimit) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type AccountState string
+
+const (
+	AccountStateActive AccountState = "ACTIVE"
+	AccountStatePaused AccountState = "PAUSED"
+	AccountStateClosed AccountState = "CLOSED"
+)
+
+type AccountVerificationAddress struct {
+	// Valid deliverable address (no PO boxes).
+	Address1 string `json:"address1,required"`
+	// Unit or apartment number (if applicable).
+	Address2 string `json:"address2"`
+	// City name.
+	City string `json:"city,required"`
+	// Valid state code. Only USA state codes are currently supported, entered in
+	// uppercase ISO 3166-2 two-character format.
+	State string `json:"state,required"`
+	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
+	// five-digit ZIP or nine-digit ZIP+4.
+	PostalCode string `json:"postal_code,required"`
+	// Country name. Only USA is currently supported.
+	Country string `json:"country,required"`
+	JSON    AccountVerificationAddressJSON
+}
+
+type AccountVerificationAddressJSON struct {
+	Address1   apijson.Metadata
+	Address2   apijson.Metadata
+	City       apijson.Metadata
+	State      apijson.Metadata
+	PostalCode apijson.Metadata
+	Country    apijson.Metadata
+	raw        string
+	Extras     map[string]apijson.Metadata
+}
+
+// UnmarshalJSON deserializes the provided bytes into AccountVerificationAddress
+// using the internal json library. Unrecognized fields are stored in the
+// `jsonFields` property.
+func (r *AccountVerificationAddress) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type AccountAccountHolder struct {
+	// Globally unique identifier for the account holder.
+	Token string `json:"token,required"`
+	// Phone number of the individual.
+	PhoneNumber string `json:"phone_number,required"`
+	// Email address.
+	Email string `json:"email,required"`
+	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
+	// users of businesses. Account_token of the enrolled business associated with an
+	// enrolled AUTHORIZED_USER individual.
+	BusinessAccountToken string `json:"business_account_token,required"`
+	JSON                 AccountAccountHolderJSON
+}
+
+type AccountAccountHolderJSON struct {
+	Token                apijson.Metadata
+	PhoneNumber          apijson.Metadata
+	Email                apijson.Metadata
+	BusinessAccountToken apijson.Metadata
+	raw                  string
+	Extras               map[string]apijson.Metadata
+}
+
+// UnmarshalJSON deserializes the provided bytes into AccountAccountHolder using
+// the internal json library. Unrecognized fields are stored in the `jsonFields`
+// property.
+func (r *AccountAccountHolder) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type AccountUpdateParams struct {
+	// Amount (in cents) for the account's new daily spend limit. Note that a spend
+	// limit of 0 is effectively no limit, and should only be used to reset or remove a
+	// prior limit. Only a limit of 1 or above will result in declined transactions due
+	// to checks against the account limit.
+	DailySpendLimit field.Field[int64] `json:"daily_spend_limit"`
+	// Amount (in cents) for the account's new lifetime limit. Once this limit is
+	// reached, no transactions will be accepted on any card created for this account
+	// until the limit is updated. Note that a spend limit of 0 is effectively no
+	// limit, and should only be used to reset or remove a prior limit. Only a limit of
+	// 1 or above will result in declined transactions due to checks against the
+	// account limit.
+	LifetimeSpendLimit field.Field[int64] `json:"lifetime_spend_limit"`
+	// Amount (in cents) for the account's new monthly spend limit. Note that a spend
+	// limit of 0 is effectively no limit, and should only be used to reset or remove a
+	// prior limit. Only a limit of 1 or above will result in declined transactions due
+	// to checks against the account limit.
+	MonthlySpendLimit field.Field[int64] `json:"monthly_spend_limit"`
+	// Address used during Address Verification Service (AVS) checks during
+	// transactions if enabled via Auth Rules.
+	VerificationAddress field.Field[AccountUpdateParamsVerificationAddress] `json:"verification_address"`
+	// Account states.
+	State field.Field[AccountUpdateParamsState] `json:"state"`
+}
+
+// MarshalJSON serializes AccountUpdateParams into an array of bytes using the
+// gjson library. Members of the `jsonFields` field are serialized into the
+// top-level, and will overwrite known members of the same name.
+func (r AccountUpdateParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+type AccountUpdateParamsVerificationAddress struct {
+	Address1   field.Field[string] `json:"address1"`
+	Address2   field.Field[string] `json:"address2"`
+	City       field.Field[string] `json:"city"`
+	State      field.Field[string] `json:"state"`
+	PostalCode field.Field[string] `json:"postal_code"`
+	Country    field.Field[string] `json:"country"`
+}
+
+type AccountUpdateParamsState string
+
+const (
+	AccountUpdateParamsStateActive AccountUpdateParamsState = "ACTIVE"
+	AccountUpdateParamsStatePaused AccountUpdateParamsState = "PAUSED"
+)
+
+type AccountListParams struct {
+	// Date string in RFC 3339 format. Only entries created after the specified date
+	// will be included. UTC time zone.
+	Begin field.Field[time.Time] `query:"begin" format:"date-time"`
+	// Date string in RFC 3339 format. Only entries created before the specified date
+	// will be included. UTC time zone.
+	End field.Field[time.Time] `query:"end" format:"date-time"`
+	// Page (for pagination).
+	Page field.Field[int64] `query:"page"`
+	// Page size (for pagination).
+	PageSize field.Field[int64] `query:"page_size"`
+}
+
+// URLQuery serializes AccountListParams into a url.Values of the query parameters
+// associated with this value
+func (r AccountListParams) URLQuery() (v url.Values) {
+	return apiquery.Marshal(r)
+}
+
+type AccountListResponse struct {
+	Data []Account `json:"data,required"`
+	// Page number.
+	Page int64 `json:"page,required"`
+	// Total number of entries.
+	TotalEntries int64 `json:"total_entries,required"`
+	// Total number of pages.
+	TotalPages int64 `json:"total_pages,required"`
+	JSON       AccountListResponseJSON
+}
+
+type AccountListResponseJSON struct {
+	Data         apijson.Metadata
+	Page         apijson.Metadata
+	TotalEntries apijson.Metadata
+	TotalPages   apijson.Metadata
+	raw          string
+	Extras       map[string]apijson.Metadata
+}
+
+// UnmarshalJSON deserializes the provided bytes into AccountListResponse using the
+// internal json library. Unrecognized fields are stored in the `jsonFields`
+// property.
+func (r *AccountListResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
