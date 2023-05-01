@@ -18,6 +18,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/lithic-com/lithic-go/apierror"
+	"github.com/lithic-com/lithic-go/internal"
 	"github.com/lithic-com/lithic-go/internal/form"
 	"github.com/lithic-com/lithic-go/internal/query"
 	"github.com/tidwall/sjson"
@@ -62,7 +63,7 @@ func getNormalizedArchitecture() string {
 func getPlatformProperties() map[string]string {
 	return map[string]string{
 		"X-Stainless-Lang":            "go",
-		"X-Stainless-Package-Version": "unknown",
+		"X-Stainless-Package-Version": internal.PackageVersion,
 		"X-Stainless-OS":              getNormalizedOS(),
 		"X-Stainless-Arch":            getNormalizedArchitecture(),
 		"X-Stainless-Runtime":         "go",
