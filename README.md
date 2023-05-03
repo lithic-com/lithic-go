@@ -88,8 +88,11 @@ For each field, you can either supply a value field with
 `lithic.F(...)`, a `null` value with `lithic.Null()`, or
 some raw JSON value with `lithic.Raw(...)` that you specify as a
 byte slice. We also provide convenient helpers `lithic.Int(...)` and
-`lithic.String(...)`. If you do not supply a value, then we do not
-populate the field. An example request may look like
+`lithic.String(...)`.
+
+If you do not supply a value, then we do not populate the field.
+
+An example request may look like this:
 
 ```go
 params := FooParams{
@@ -113,7 +116,7 @@ values, and overriden values.
 If you want to add or override a field in the JSON body, then you can use the
 `option.WithJSONSet(key string, value interface{})` RequestOption, which you
 can read more about [here](#requestoptions). Internally, this uses
-'github.com/tidwall/sjson' library, so you can compose complex access as seen
+`github.com/tidwall/sjson` library, so you can compose complex access as seen
 [here](https://github.com/tidwall/sjson).
 
 ### Response Objects
@@ -123,7 +126,7 @@ response objects is as simple as:
 
 ```go
 res, err := client.Service.Foo(context.TODO())
-res.Name // is just some string value
+res.Name // is just some `string` value
 ```
 
 If the value received is null, not present, or invalid, the corresponding field
@@ -142,21 +145,22 @@ res.JSON.Name.IsMissing()
 // This is true if `name` is present, but not coercable
 res.JSON.Name.IsInvalid()
 
-// If needed, you can access the Raw JSON value of the field by accessing
+// If needed, you can access the Raw JSON value of the field
+// as a string by accessing
 res.JSON.Name.Raw()
 ```
 
-There may be instances where we provide experimental or private API features
-for some customers. In those cases, the related features will not be exposed to
+There may be instances where we provide experimental or private API features.
+In those cases, the related features will not be exposed to
 the SDK as typed fields, and are instead deserialized to an internal map. We
 provide methods to get and set these json fields in API objects.
 
 ```go
-// Access the JSON value as
+// Access the JSON value as:
 body := res.JSON.Extras["extra_field"].Raw()
 
 // You can `Unmarshal` the JSON into a struct as needed
-custom := struct{A string, B int64}{}
+custom := struct{Foo string, Bar int64}{}
 json.Unmarshal([]byte(body), &custom)
 ```
 
@@ -174,9 +178,9 @@ For example:
 
 ```go
 client := lithic.NewClient(
-	// Adds header to every request made by client
+	// Adds a header to every request made by the client
 	option.WithHeader("X-Some-Header", "custom_header_info"),
-	// Adds query to every request made by client
+	// Adds a query param to every request made by the client
 	option.WithQuery("test_token", "my_test_token"),
 )
 
@@ -194,7 +198,7 @@ client.Cards.New(
 	// WithHeaderDel removes the header set in the client
 	// from this request
 	option.WithHeaderDel("X-Some-Header"),
-	// WithQueryDel removes the query set in the client
+	// WithQueryDel removes the query param set in the client
 	// from this request
 	option.WithQueryDel("test_token"),
 )
@@ -279,7 +283,7 @@ client.Cards.List(
 		PageSize: lithic.F(int64(10)),
 	},
 	// This sets the per-retry timeout
-	option.WithRequestTimeout("20 * time.Second"),
+	option.WithRequestTimeout(20*time.Second),
 )
 ```
 
