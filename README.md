@@ -22,6 +22,18 @@ Or, explicitly import this package with
 go get -u 'github.com/lithic-com/lithic-go'
 ```
 
+You can also explicitly set the version of the package to use by updating your `go.mod` file:
+
+```
+module your_project_name
+
+go 1.19
+
+require (
+        github.com/lithic-com/lithic-go v0.0.1
+)
+```
+
 ## Documentation
 
 The API documentation can be found [here](https://docs.lithic.com).
