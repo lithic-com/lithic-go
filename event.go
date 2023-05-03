@@ -15,11 +15,18 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
+// EventService contains methods and other services that help with interacting with
+// the lithic API. Note, unlike clients, this service does not read variables from
+// the environment automatically. You should not instantiate this service directly,
+// and instead use the [NewEventService] method instead.
 type EventService struct {
 	Options       []option.RequestOption
 	Subscriptions *EventSubscriptionService
 }
 
+// NewEventService generates a new service that applies the given options to each
+// request. These options are applied after the parent client's options (if there
+// is one), and before any request-specific options.
 func NewEventService(opts ...option.RequestOption) (r *EventService) {
 	r = &EventService{}
 	r.Options = opts
@@ -58,6 +65,7 @@ func (r *EventService) ListAutoPaging(ctx context.Context, query EventListParams
 	return shared.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
+// A single event that affects the transaction state and lifecycle.
 type Event struct {
 	// Globally unique identifier.
 	Token string `json:"token,required"`
@@ -72,20 +80,19 @@ type Event struct {
 	//
 	// If no timezone is specified, UTC will be used.
 	Created time.Time `json:"created,required" format:"date-time"`
-	JSON    EventJSON
+	JSON    eventJSON
 }
 
-type EventJSON struct {
-	Token     apijson.Metadata
-	EventType apijson.Metadata
-	Payload   apijson.Metadata
-	Created   apijson.Metadata
+// eventJSON contains the JSON metadata for the struct [Event]
+type eventJSON struct {
+	Token     apijson.Field
+	EventType apijson.Field
+	Payload   apijson.Field
+	Created   apijson.Field
 	raw       string
-	Extras    map[string]apijson.Metadata
+	Extras    map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into Event using the internal json
-// library. Unrecognized fields are stored in the `jsonFields` property.
 func (r *Event) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -97,6 +104,7 @@ const (
 	EventEventTypeDigitalWalletTokenizationApprovalRequest EventEventType = "digital_wallet.tokenization_approval_request"
 )
 
+// A subscription to specific event types.
 type EventSubscription struct {
 	// A description of the subscription.
 	Description string `json:"description,required"`
@@ -106,22 +114,21 @@ type EventSubscription struct {
 	URL        string                        `json:"url,required" format:"uri"`
 	// Globally unique identifier.
 	Token string `json:"token,required"`
-	JSON  EventSubscriptionJSON
+	JSON  eventSubscriptionJSON
 }
 
-type EventSubscriptionJSON struct {
-	Description apijson.Metadata
-	Disabled    apijson.Metadata
-	EventTypes  apijson.Metadata
-	URL         apijson.Metadata
-	Token       apijson.Metadata
+// eventSubscriptionJSON contains the JSON metadata for the struct
+// [EventSubscription]
+type eventSubscriptionJSON struct {
+	Description apijson.Field
+	Disabled    apijson.Field
+	EventTypes  apijson.Field
+	URL         apijson.Field
+	Token       apijson.Field
 	raw         string
-	Extras      map[string]apijson.Metadata
+	Extras      map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into EventSubscription using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *EventSubscription) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -151,8 +158,7 @@ type EventListParams struct {
 	EventTypes   field.Field[[]EventListParamsEventTypes] `query:"event_types[]"`
 }
 
-// URLQuery serializes EventListParams into a url.Values of the query parameters
-// associated with this value
+// URLQuery serializes [EventListParams]'s query parameters as `url.Values`.
 func (r EventListParams) URLQuery() (v url.Values) {
 	return apiquery.Marshal(r)
 }
@@ -167,19 +173,18 @@ const (
 type EventListResponse struct {
 	Data    []Event `json:"data,required"`
 	HasMore bool    `json:"has_more,required"`
-	JSON    EventListResponseJSON
+	JSON    eventListResponseJSON
 }
 
-type EventListResponseJSON struct {
-	Data    apijson.Metadata
-	HasMore apijson.Metadata
+// eventListResponseJSON contains the JSON metadata for the struct
+// [EventListResponse]
+type eventListResponseJSON struct {
+	Data    apijson.Field
+	HasMore apijson.Field
 	raw     string
-	Extras  map[string]apijson.Metadata
+	Extras  map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into EventListResponse using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *EventListResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }

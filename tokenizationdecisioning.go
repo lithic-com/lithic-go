@@ -9,10 +9,18 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
+// TokenizationDecisioningService contains methods and other services that help
+// with interacting with the lithic API. Note, unlike clients, this service does
+// not read variables from the environment automatically. You should not
+// instantiate this service directly, and instead use the
+// [NewTokenizationDecisioningService] method instead.
 type TokenizationDecisioningService struct {
 	Options []option.RequestOption
 }
 
+// NewTokenizationDecisioningService generates a new service that applies the given
+// options to each request. These options are applied after the parent client's
+// options (if there is one), and before any request-specific options.
 func NewTokenizationDecisioningService(opts ...option.RequestOption) (r *TokenizationDecisioningService) {
 	r = &TokenizationDecisioningService{}
 	r.Options = opts
@@ -45,18 +53,17 @@ func (r *TokenizationDecisioningService) RotateSecret(ctx context.Context, opts 
 type TokenizationSecret struct {
 	// The Tokenization Decisioning HMAC secret
 	Secret string `json:"secret"`
-	JSON   TokenizationSecretJSON
+	JSON   tokenizationSecretJSON
 }
 
-type TokenizationSecretJSON struct {
-	Secret apijson.Metadata
+// tokenizationSecretJSON contains the JSON metadata for the struct
+// [TokenizationSecret]
+type tokenizationSecretJSON struct {
+	Secret apijson.Field
 	raw    string
-	Extras map[string]apijson.Metadata
+	Extras map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into TokenizationSecret using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *TokenizationSecret) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -64,18 +71,17 @@ func (r *TokenizationSecret) UnmarshalJSON(data []byte) (err error) {
 type TokenizationDecisioningRotateSecretResponse struct {
 	// The new Tokenization Decisioning HMAC secret
 	Secret string `json:"secret"`
-	JSON   TokenizationDecisioningRotateSecretResponseJSON
+	JSON   tokenizationDecisioningRotateSecretResponseJSON
 }
 
-type TokenizationDecisioningRotateSecretResponseJSON struct {
-	Secret apijson.Metadata
+// tokenizationDecisioningRotateSecretResponseJSON contains the JSON metadata for
+// the struct [TokenizationDecisioningRotateSecretResponse]
+type tokenizationDecisioningRotateSecretResponseJSON struct {
+	Secret apijson.Field
 	raw    string
-	Extras map[string]apijson.Metadata
+	Extras map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into
-// TokenizationDecisioningRotateSecretResponse using the internal json library.
-// Unrecognized fields are stored in the `jsonFields` property.
 func (r *TokenizationDecisioningRotateSecretResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }

@@ -12,16 +12,6 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
-type SharedService struct {
-	Options []option.RequestOption
-}
-
-func NewSharedService(opts ...option.RequestOption) (r *SharedService) {
-	r = &SharedService{}
-	r.Options = opts
-	return
-}
-
 type Page[T any] struct {
 	Data []T `json:"data,required"`
 	// Page number.
@@ -30,22 +20,21 @@ type Page[T any] struct {
 	TotalEntries int64 `json:"total_entries,required"`
 	// Total number of pages.
 	TotalPages int64 `json:"total_pages,required"`
-	JSON       PageJSON
+	JSON       pageJSON
 	cfg        *requestconfig.RequestConfig
 	res        *http.Response
 }
 
-type PageJSON struct {
-	Data         apijson.Metadata
-	Page         apijson.Metadata
-	TotalEntries apijson.Metadata
-	TotalPages   apijson.Metadata
+// pageJSON contains the JSON metadata for the struct [Page[T]]
+type pageJSON struct {
+	Data         apijson.Field
+	Page         apijson.Field
+	TotalEntries apijson.Field
+	TotalPages   apijson.Field
 	raw          string
-	Extras       map[string]apijson.Metadata
+	Extras       map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into Page[T] using the internal
-// json library. Unrecognized fields are stored in the `jsonFields` property.
 func (r *Page[T]) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -125,21 +114,19 @@ func (r *PageAutoPager[T]) Index() int {
 type CursorPage[T any] struct {
 	Data    []T  `json:"data,required"`
 	HasMore bool `json:"has_more,required"`
-	JSON    CursorPageJSON
+	JSON    cursorPageJSON
 	cfg     *requestconfig.RequestConfig
 	res     *http.Response
 }
 
-type CursorPageJSON struct {
-	Data    apijson.Metadata
-	HasMore apijson.Metadata
+// cursorPageJSON contains the JSON metadata for the struct [CursorPage[T]]
+type cursorPageJSON struct {
+	Data    apijson.Field
+	HasMore apijson.Field
 	raw     string
-	Extras  map[string]apijson.Metadata
+	Extras  map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into CursorPage[T] using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *CursorPage[T]) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -220,21 +207,19 @@ type SinglePage[T any] struct {
 	Data []T `json:"data,required"`
 	// More data exists.
 	HasMore bool `json:"has_more,required"`
-	JSON    SinglePageJSON
+	JSON    singlePageJSON
 	cfg     *requestconfig.RequestConfig
 	res     *http.Response
 }
 
-type SinglePageJSON struct {
-	Data    apijson.Metadata
-	HasMore apijson.Metadata
+// singlePageJSON contains the JSON metadata for the struct [SinglePage[T]]
+type singlePageJSON struct {
+	Data    apijson.Field
+	HasMore apijson.Field
 	raw     string
-	Extras  map[string]apijson.Metadata
+	Extras  map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into SinglePage[T] using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *SinglePage[T]) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -327,9 +312,6 @@ type AddressParam struct {
 	State field.Field[string] `json:"state,required"`
 }
 
-// MarshalJSON serializes AddressParam into an array of bytes using the gjson
-// library. Members of the `jsonFields` field are serialized into the top-level,
-// and will overwrite known members of the same name.
 func (r AddressParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -365,9 +347,6 @@ type ShippingAddressParam struct {
 	PhoneNumber field.Field[string] `json:"phone_number"`
 }
 
-// MarshalJSON serializes ShippingAddressParam into an array of bytes using the
-// gjson library. Members of the `jsonFields` field are serialized into the
-// top-level, and will overwrite known members of the same name.
 func (r ShippingAddressParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }

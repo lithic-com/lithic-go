@@ -15,10 +15,18 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
+// TransactionService contains methods and other services that help with
+// interacting with the lithic API. Note, unlike clients, this service does not
+// read variables from the environment automatically. You should not instantiate
+// this service directly, and instead use the [NewTransactionService] method
+// instead.
 type TransactionService struct {
 	Options []option.RequestOption
 }
 
+// NewTransactionService generates a new service that applies the given options to
+// each request. These options are applied after the parent client's options (if
+// there is one), and before any request-specific options.
 func NewTransactionService(opts ...option.RequestOption) (r *TransactionService) {
 	r = &TransactionService{}
 	r.Options = opts
@@ -187,34 +195,32 @@ type Transaction struct {
 	Status TransactionStatus `json:"status"`
 	// Globally unique identifier.
 	Token string `json:"token" format:"uuid"`
-	JSON  TransactionJSON
+	JSON  transactionJSON
 }
 
-type TransactionJSON struct {
-	AcquirerReferenceNumber     apijson.Metadata
-	Amount                      apijson.Metadata
-	AuthorizationAmount         apijson.Metadata
-	CardholderAuthentication    apijson.Metadata
-	MerchantAmount              apijson.Metadata
-	MerchantAuthorizationAmount apijson.Metadata
-	MerchantCurrency            apijson.Metadata
-	AuthorizationCode           apijson.Metadata
-	CardToken                   apijson.Metadata
-	Created                     apijson.Metadata
-	Events                      apijson.Metadata
-	Merchant                    apijson.Metadata
-	Network                     apijson.Metadata
-	Result                      apijson.Metadata
-	SettledAmount               apijson.Metadata
-	Status                      apijson.Metadata
-	Token                       apijson.Metadata
+// transactionJSON contains the JSON metadata for the struct [Transaction]
+type transactionJSON struct {
+	AcquirerReferenceNumber     apijson.Field
+	Amount                      apijson.Field
+	AuthorizationAmount         apijson.Field
+	CardholderAuthentication    apijson.Field
+	MerchantAmount              apijson.Field
+	MerchantAuthorizationAmount apijson.Field
+	MerchantCurrency            apijson.Field
+	AuthorizationCode           apijson.Field
+	CardToken                   apijson.Field
+	Created                     apijson.Field
+	Events                      apijson.Field
+	Merchant                    apijson.Field
+	Network                     apijson.Field
+	Result                      apijson.Field
+	SettledAmount               apijson.Field
+	Status                      apijson.Field
+	Token                       apijson.Field
 	raw                         string
-	Extras                      map[string]apijson.Metadata
+	Extras                      map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into Transaction using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *Transaction) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -300,22 +306,21 @@ type TransactionCardholderAuthentication struct {
 	// - `I`: Informational only
 	// - `S`: Challenge using Secure Payment Confirmation (SPC)
 	VerificationResult TransactionCardholderAuthenticationVerificationResult `json:"verification_result,required"`
-	JSON               TransactionCardholderAuthenticationJSON
+	JSON               transactionCardholderAuthenticationJSON
 }
 
-type TransactionCardholderAuthenticationJSON struct {
-	ThreeDSVersion        apijson.Metadata
-	AcquirerExemption     apijson.Metadata
-	LiabilityShift        apijson.Metadata
-	VerificationAttempted apijson.Metadata
-	VerificationResult    apijson.Metadata
+// transactionCardholderAuthenticationJSON contains the JSON metadata for the
+// struct [TransactionCardholderAuthentication]
+type transactionCardholderAuthenticationJSON struct {
+	ThreeDSVersion        apijson.Field
+	AcquirerExemption     apijson.Field
+	LiabilityShift        apijson.Field
+	VerificationAttempted apijson.Field
+	VerificationResult    apijson.Field
 	raw                   string
-	Extras                map[string]apijson.Metadata
+	Extras                map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into
-// TransactionCardholderAuthentication using the internal json library.
-// Unrecognized fields are stored in the `jsonFields` property.
 func (r *TransactionCardholderAuthentication) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -363,6 +368,8 @@ const (
 	TransactionCardholderAuthenticationVerificationResultSuccess      TransactionCardholderAuthenticationVerificationResult = "SUCCESS"
 )
 
+// A single card transaction may include multiple events that affect the
+// transaction state and lifecycle.
 type TransactionEvents struct {
 	// Amount of the transaction event (in cents), including any acquirer fees.
 	Amount int64 `json:"amount,required"`
@@ -424,22 +431,21 @@ type TransactionEvents struct {
 	//   - `RETURN_REVERSAL` - A refund has been reversed (e.g., when a merchant reverses
 	//     an incorrect refund).
 	Type TransactionEventsType `json:"type,required"`
-	JSON TransactionEventsJSON
+	JSON transactionEventsJSON
 }
 
-type TransactionEventsJSON struct {
-	Amount  apijson.Metadata
-	Created apijson.Metadata
-	Result  apijson.Metadata
-	Token   apijson.Metadata
-	Type    apijson.Metadata
+// transactionEventsJSON contains the JSON metadata for the struct
+// [TransactionEvents]
+type transactionEventsJSON struct {
+	Amount  apijson.Field
+	Created apijson.Field
+	Result  apijson.Field
+	Token   apijson.Field
+	Type    apijson.Field
 	raw     string
-	Extras  map[string]apijson.Metadata
+	Extras  map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into TransactionEvents using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *TransactionEvents) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -503,23 +509,22 @@ type TransactionMerchant struct {
 	Mcc string `json:"mcc"`
 	// Geographic state of card acceptor (see ISO 8583 specs).
 	State string `json:"state"`
-	JSON  TransactionMerchantJSON
+	JSON  transactionMerchantJSON
 }
 
-type TransactionMerchantJSON struct {
-	AcceptorID apijson.Metadata
-	City       apijson.Metadata
-	Country    apijson.Metadata
-	Descriptor apijson.Metadata
-	Mcc        apijson.Metadata
-	State      apijson.Metadata
+// transactionMerchantJSON contains the JSON metadata for the struct
+// [TransactionMerchant]
+type transactionMerchantJSON struct {
+	AcceptorID apijson.Field
+	City       apijson.Field
+	Country    apijson.Field
+	Descriptor apijson.Field
+	Mcc        apijson.Field
+	State      apijson.Field
 	raw        string
-	Extras     map[string]apijson.Metadata
+	Extras     map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into TransactionMerchant using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *TransactionMerchant) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -577,19 +582,18 @@ type TransactionSimulateAuthorizationResponse struct {
 	// A unique token to reference this transaction with later calls to void or clear
 	// the authorization.
 	Token string `json:"token" format:"uuid"`
-	JSON  TransactionSimulateAuthorizationResponseJSON
+	JSON  transactionSimulateAuthorizationResponseJSON
 }
 
-type TransactionSimulateAuthorizationResponseJSON struct {
-	DebuggingRequestID apijson.Metadata
-	Token              apijson.Metadata
+// transactionSimulateAuthorizationResponseJSON contains the JSON metadata for the
+// struct [TransactionSimulateAuthorizationResponse]
+type transactionSimulateAuthorizationResponseJSON struct {
+	DebuggingRequestID apijson.Field
+	Token              apijson.Field
 	raw                string
-	Extras             map[string]apijson.Metadata
+	Extras             map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into
-// TransactionSimulateAuthorizationResponse using the internal json library.
-// Unrecognized fields are stored in the `jsonFields` property.
 func (r *TransactionSimulateAuthorizationResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -597,18 +601,17 @@ func (r *TransactionSimulateAuthorizationResponse) UnmarshalJSON(data []byte) (e
 type TransactionSimulateClearingResponse struct {
 	// Debugging request ID to share with Lithic Support team.
 	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
-	JSON               TransactionSimulateClearingResponseJSON
+	JSON               transactionSimulateClearingResponseJSON
 }
 
-type TransactionSimulateClearingResponseJSON struct {
-	DebuggingRequestID apijson.Metadata
+// transactionSimulateClearingResponseJSON contains the JSON metadata for the
+// struct [TransactionSimulateClearingResponse]
+type transactionSimulateClearingResponseJSON struct {
+	DebuggingRequestID apijson.Field
 	raw                string
-	Extras             map[string]apijson.Metadata
+	Extras             map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into
-// TransactionSimulateClearingResponse using the internal json library.
-// Unrecognized fields are stored in the `jsonFields` property.
 func (r *TransactionSimulateClearingResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -618,19 +621,18 @@ type TransactionSimulateReturnResponse struct {
 	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
 	// A unique token to reference this transaction.
 	Token string `json:"token" format:"uuid"`
-	JSON  TransactionSimulateReturnResponseJSON
+	JSON  transactionSimulateReturnResponseJSON
 }
 
-type TransactionSimulateReturnResponseJSON struct {
-	DebuggingRequestID apijson.Metadata
-	Token              apijson.Metadata
+// transactionSimulateReturnResponseJSON contains the JSON metadata for the struct
+// [TransactionSimulateReturnResponse]
+type transactionSimulateReturnResponseJSON struct {
+	DebuggingRequestID apijson.Field
+	Token              apijson.Field
 	raw                string
-	Extras             map[string]apijson.Metadata
+	Extras             map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into
-// TransactionSimulateReturnResponse using the internal json library. Unrecognized
-// fields are stored in the `jsonFields` property.
 func (r *TransactionSimulateReturnResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -638,18 +640,17 @@ func (r *TransactionSimulateReturnResponse) UnmarshalJSON(data []byte) (err erro
 type TransactionSimulateReturnReversalResponse struct {
 	// Debugging request ID to share with Lithic Support team.
 	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
-	JSON               TransactionSimulateReturnReversalResponseJSON
+	JSON               transactionSimulateReturnReversalResponseJSON
 }
 
-type TransactionSimulateReturnReversalResponseJSON struct {
-	DebuggingRequestID apijson.Metadata
+// transactionSimulateReturnReversalResponseJSON contains the JSON metadata for the
+// struct [TransactionSimulateReturnReversalResponse]
+type transactionSimulateReturnReversalResponseJSON struct {
+	DebuggingRequestID apijson.Field
 	raw                string
-	Extras             map[string]apijson.Metadata
+	Extras             map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into
-// TransactionSimulateReturnReversalResponse using the internal json library.
-// Unrecognized fields are stored in the `jsonFields` property.
 func (r *TransactionSimulateReturnReversalResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -657,18 +658,17 @@ func (r *TransactionSimulateReturnReversalResponse) UnmarshalJSON(data []byte) (
 type TransactionSimulateVoidResponse struct {
 	// Debugging request ID to share with Lithic Support team.
 	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
-	JSON               TransactionSimulateVoidResponseJSON
+	JSON               transactionSimulateVoidResponseJSON
 }
 
-type TransactionSimulateVoidResponseJSON struct {
-	DebuggingRequestID apijson.Metadata
+// transactionSimulateVoidResponseJSON contains the JSON metadata for the struct
+// [TransactionSimulateVoidResponse]
+type transactionSimulateVoidResponseJSON struct {
+	DebuggingRequestID apijson.Field
 	raw                string
-	Extras             map[string]apijson.Metadata
+	Extras             map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into
-// TransactionSimulateVoidResponse using the internal json library. Unrecognized
-// fields are stored in the `jsonFields` property.
 func (r *TransactionSimulateVoidResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -678,19 +678,18 @@ type TransactionSimulateCreditAuthorizationResponse struct {
 	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
 	// A unique token to reference this transaction.
 	Token string `json:"token" format:"uuid"`
-	JSON  TransactionSimulateCreditAuthorizationResponseJSON
+	JSON  transactionSimulateCreditAuthorizationResponseJSON
 }
 
-type TransactionSimulateCreditAuthorizationResponseJSON struct {
-	DebuggingRequestID apijson.Metadata
-	Token              apijson.Metadata
+// transactionSimulateCreditAuthorizationResponseJSON contains the JSON metadata
+// for the struct [TransactionSimulateCreditAuthorizationResponse]
+type transactionSimulateCreditAuthorizationResponseJSON struct {
+	DebuggingRequestID apijson.Field
+	Token              apijson.Field
 	raw                string
-	Extras             map[string]apijson.Metadata
+	Extras             map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into
-// TransactionSimulateCreditAuthorizationResponse using the internal json library.
-// Unrecognized fields are stored in the `jsonFields` property.
 func (r *TransactionSimulateCreditAuthorizationResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -700,19 +699,18 @@ type TransactionSimulateAuthorizationAdviceResponse struct {
 	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
 	// A unique token to reference this transaction.
 	Token string `json:"token" format:"uuid"`
-	JSON  TransactionSimulateAuthorizationAdviceResponseJSON
+	JSON  transactionSimulateAuthorizationAdviceResponseJSON
 }
 
-type TransactionSimulateAuthorizationAdviceResponseJSON struct {
-	DebuggingRequestID apijson.Metadata
-	Token              apijson.Metadata
+// transactionSimulateAuthorizationAdviceResponseJSON contains the JSON metadata
+// for the struct [TransactionSimulateAuthorizationAdviceResponse]
+type transactionSimulateAuthorizationAdviceResponseJSON struct {
+	DebuggingRequestID apijson.Field
+	Token              apijson.Field
 	raw                string
-	Extras             map[string]apijson.Metadata
+	Extras             map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into
-// TransactionSimulateAuthorizationAdviceResponse using the internal json library.
-// Unrecognized fields are stored in the `jsonFields` property.
 func (r *TransactionSimulateAuthorizationAdviceResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -737,8 +735,7 @@ type TransactionListParams struct {
 	PageSize field.Field[int64] `query:"page_size"`
 }
 
-// URLQuery serializes TransactionListParams into a url.Values of the query
-// parameters associated with this value
+// URLQuery serializes [TransactionListParams]'s query parameters as `url.Values`.
 func (r TransactionListParams) URLQuery() (v url.Values) {
 	return apiquery.Marshal(r)
 }
@@ -758,21 +755,20 @@ type TransactionListResponse struct {
 	TotalEntries int64 `json:"total_entries,required"`
 	// Total pages of result.
 	TotalPages int64 `json:"total_pages,required"`
-	JSON       TransactionListResponseJSON
+	JSON       transactionListResponseJSON
 }
 
-type TransactionListResponseJSON struct {
-	Data         apijson.Metadata
-	Page         apijson.Metadata
-	TotalEntries apijson.Metadata
-	TotalPages   apijson.Metadata
+// transactionListResponseJSON contains the JSON metadata for the struct
+// [TransactionListResponse]
+type transactionListResponseJSON struct {
+	Data         apijson.Field
+	Page         apijson.Field
+	TotalEntries apijson.Field
+	TotalPages   apijson.Field
 	raw          string
-	Extras       map[string]apijson.Metadata
+	Extras       map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into TransactionListResponse using
-// the internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *TransactionListResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -822,9 +818,6 @@ type TransactionSimulateAuthorizationParams struct {
 	PartialApprovalCapable field.Field[bool] `json:"partial_approval_capable"`
 }
 
-// MarshalJSON serializes TransactionSimulateAuthorizationParams into an array of
-// bytes using the gjson library. Members of the `jsonFields` field are serialized
-// into the top-level, and will overwrite known members of the same name.
 func (r TransactionSimulateAuthorizationParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -847,10 +840,6 @@ type TransactionSimulateAuthorizationAdviceParams struct {
 	Token field.Field[string] `json:"token,required" format:"uuid"`
 }
 
-// MarshalJSON serializes TransactionSimulateAuthorizationAdviceParams into an
-// array of bytes using the gjson library. Members of the `jsonFields` field are
-// serialized into the top-level, and will overwrite known members of the same
-// name.
 func (r TransactionSimulateAuthorizationAdviceParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -867,9 +856,6 @@ type TransactionSimulateClearingParams struct {
 	Token field.Field[string] `json:"token,required" format:"uuid"`
 }
 
-// MarshalJSON serializes TransactionSimulateClearingParams into an array of bytes
-// using the gjson library. Members of the `jsonFields` field are serialized into
-// the top-level, and will overwrite known members of the same name.
 func (r TransactionSimulateClearingParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -891,10 +877,6 @@ type TransactionSimulateCreditAuthorizationParams struct {
 	Mcc field.Field[string] `json:"mcc"`
 }
 
-// MarshalJSON serializes TransactionSimulateCreditAuthorizationParams into an
-// array of bytes using the gjson library. Members of the `jsonFields` field are
-// serialized into the top-level, and will overwrite known members of the same
-// name.
 func (r TransactionSimulateCreditAuthorizationParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -908,9 +890,6 @@ type TransactionSimulateReturnParams struct {
 	Pan field.Field[string] `json:"pan,required"`
 }
 
-// MarshalJSON serializes TransactionSimulateReturnParams into an array of bytes
-// using the gjson library. Members of the `jsonFields` field are serialized into
-// the top-level, and will overwrite known members of the same name.
 func (r TransactionSimulateReturnParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -920,9 +899,6 @@ type TransactionSimulateReturnReversalParams struct {
 	Token field.Field[string] `json:"token,required" format:"uuid"`
 }
 
-// MarshalJSON serializes TransactionSimulateReturnReversalParams into an array of
-// bytes using the gjson library. Members of the `jsonFields` field are serialized
-// into the top-level, and will overwrite known members of the same name.
 func (r TransactionSimulateReturnReversalParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -941,9 +917,6 @@ type TransactionSimulateVoidParams struct {
 	Type field.Field[TransactionSimulateVoidParamsType] `json:"type"`
 }
 
-// MarshalJSON serializes TransactionSimulateVoidParams into an array of bytes
-// using the gjson library. Members of the `jsonFields` field are serialized into
-// the top-level, and will overwrite known members of the same name.
 func (r TransactionSimulateVoidParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }

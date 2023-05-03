@@ -14,10 +14,18 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
+// AggregateBalanceService contains methods and other services that help with
+// interacting with the lithic API. Note, unlike clients, this service does not
+// read variables from the environment automatically. You should not instantiate
+// this service directly, and instead use the [NewAggregateBalanceService] method
+// instead.
 type AggregateBalanceService struct {
 	Options []option.RequestOption
 }
 
+// NewAggregateBalanceService generates a new service that applies the given
+// options to each request. These options are applied after the parent client's
+// options (if there is one), and before any request-specific options.
 func NewAggregateBalanceService(opts ...option.RequestOption) (r *AggregateBalanceService) {
 	r = &AggregateBalanceService{}
 	r.Options = opts
@@ -49,6 +57,7 @@ func (r *AggregateBalanceService) ListAutoPaging(ctx context.Context, query Aggr
 	return shared.NewSinglePageAutoPager(r.List(ctx, query, opts...))
 }
 
+// Aggregate Balance across all end-user accounts
 type AggregateBalance struct {
 	// Type of financial account
 	FinancialAccountType AggregateBalanceFinancialAccountType `json:"financial_account_type,required"`
@@ -74,27 +83,26 @@ type AggregateBalance struct {
 	// Globally unique identifier for the financial account that had its balance
 	// updated most recently
 	LastFinancialAccountToken string `json:"last_financial_account_token,required" format:"uuid"`
-	JSON                      AggregateBalanceJSON
+	JSON                      aggregateBalanceJSON
 }
 
-type AggregateBalanceJSON struct {
-	FinancialAccountType      apijson.Metadata
-	Currency                  apijson.Metadata
-	AvailableAmount           apijson.Metadata
-	PendingAmount             apijson.Metadata
-	TotalAmount               apijson.Metadata
-	Created                   apijson.Metadata
-	Updated                   apijson.Metadata
-	LastTransactionToken      apijson.Metadata
-	LastTransactionEventToken apijson.Metadata
-	LastFinancialAccountToken apijson.Metadata
+// aggregateBalanceJSON contains the JSON metadata for the struct
+// [AggregateBalance]
+type aggregateBalanceJSON struct {
+	FinancialAccountType      apijson.Field
+	Currency                  apijson.Field
+	AvailableAmount           apijson.Field
+	PendingAmount             apijson.Field
+	TotalAmount               apijson.Field
+	Created                   apijson.Field
+	Updated                   apijson.Field
+	LastTransactionToken      apijson.Field
+	LastTransactionEventToken apijson.Field
+	LastFinancialAccountToken apijson.Field
 	raw                       string
-	Extras                    map[string]apijson.Metadata
+	Extras                    map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into AggregateBalance using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *AggregateBalance) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -111,8 +119,8 @@ type AggregateBalanceListParams struct {
 	FinancialAccountType field.Field[AggregateBalanceListParamsFinancialAccountType] `query:"financial_account_type"`
 }
 
-// URLQuery serializes AggregateBalanceListParams into a url.Values of the query
-// parameters associated with this value
+// URLQuery serializes [AggregateBalanceListParams]'s query parameters as
+// `url.Values`.
 func (r AggregateBalanceListParams) URLQuery() (v url.Values) {
 	return apiquery.Marshal(r)
 }
@@ -128,19 +136,18 @@ type AggregateBalanceListResponse struct {
 	Data []AggregateBalance `json:"data,required"`
 	// More data exists.
 	HasMore bool `json:"has_more,required"`
-	JSON    AggregateBalanceListResponseJSON
+	JSON    aggregateBalanceListResponseJSON
 }
 
-type AggregateBalanceListResponseJSON struct {
-	Data    apijson.Metadata
-	HasMore apijson.Metadata
+// aggregateBalanceListResponseJSON contains the JSON metadata for the struct
+// [AggregateBalanceListResponse]
+type aggregateBalanceListResponseJSON struct {
+	Data    apijson.Field
+	HasMore apijson.Field
 	raw     string
-	Extras  map[string]apijson.Metadata
+	Extras  map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into AggregateBalanceListResponse
-// using the internal json library. Unrecognized fields are stored in the
-// `jsonFields` property.
 func (r *AggregateBalanceListResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }

@@ -12,10 +12,18 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
+// AccountHolderService contains methods and other services that help with
+// interacting with the lithic API. Note, unlike clients, this service does not
+// read variables from the environment automatically. You should not instantiate
+// this service directly, and instead use the [NewAccountHolderService] method
+// instead.
 type AccountHolderService struct {
 	Options []option.RequestOption
 }
 
+// NewAccountHolderService generates a new service that applies the given options
+// to each request. These options are applied after the parent client's options (if
+// there is one), and before any request-specific options.
 func NewAccountHolderService(opts ...option.RequestOption) (r *AccountHolderService) {
 	r = &AccountHolderService{}
 	r.Options = opts
@@ -175,22 +183,20 @@ type AccountHolder struct {
 	Status AccountHolderStatus `json:"status"`
 	// Reason for the evaluation status.
 	StatusReasons []AccountHolderStatusReasons `json:"status_reasons"`
-	JSON          AccountHolderJSON
+	JSON          accountHolderJSON
 }
 
-type AccountHolderJSON struct {
-	Token                apijson.Metadata
-	AccountToken         apijson.Metadata
-	BusinessAccountToken apijson.Metadata
-	Status               apijson.Metadata
-	StatusReasons        apijson.Metadata
+// accountHolderJSON contains the JSON metadata for the struct [AccountHolder]
+type accountHolderJSON struct {
+	Token                apijson.Field
+	AccountToken         apijson.Field
+	BusinessAccountToken apijson.Field
+	Status               apijson.Field
+	StatusReasons        apijson.Field
 	raw                  string
-	Extras               map[string]apijson.Metadata
+	Extras               map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into AccountHolder using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *AccountHolder) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -220,6 +226,8 @@ const (
 	AccountHolderStatusReasonsWatchlistAlertFailure       AccountHolderStatusReasons = "WATCHLIST_ALERT_FAILURE"
 )
 
+// Describes the document and the required document image uploads required to
+// re-run KYC.
 type AccountHolderDocument struct {
 	// Globally unique identifier for the account holder.
 	AccountHolderToken string `json:"account_holder_token" format:"uuid"`
@@ -228,21 +236,20 @@ type AccountHolderDocument struct {
 	RequiredDocumentUploads []AccountHolderDocumentRequiredDocumentUploads `json:"required_document_uploads"`
 	// Globally unique identifier for the document.
 	Token string `json:"token" format:"uuid"`
-	JSON  AccountHolderDocumentJSON
+	JSON  accountHolderDocumentJSON
 }
 
-type AccountHolderDocumentJSON struct {
-	AccountHolderToken      apijson.Metadata
-	DocumentType            apijson.Metadata
-	RequiredDocumentUploads apijson.Metadata
-	Token                   apijson.Metadata
+// accountHolderDocumentJSON contains the JSON metadata for the struct
+// [AccountHolderDocument]
+type accountHolderDocumentJSON struct {
+	AccountHolderToken      apijson.Field
+	DocumentType            apijson.Field
+	RequiredDocumentUploads apijson.Field
+	Token                   apijson.Field
 	raw                     string
-	Extras                  map[string]apijson.Metadata
+	Extras                  map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into AccountHolderDocument using
-// the internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *AccountHolderDocument) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -257,6 +264,7 @@ const (
 	AccountHolderDocumentDocumentTypeVisa              AccountHolderDocumentDocumentType = "visa"
 )
 
+// Represents a single image of the document to upload.
 type AccountHolderDocumentRequiredDocumentUploads struct {
 	// Type of image to upload.
 	ImageType AccountHolderDocumentRequiredDocumentUploadsImageType `json:"image_type"`
@@ -269,21 +277,20 @@ type AccountHolderDocumentRequiredDocumentUploads struct {
 	// refresh the URLs by retrieving the document upload from
 	// `GET /account_holders/{account_holder_token}/documents`.
 	UploadURL string `json:"upload_url"`
-	JSON      AccountHolderDocumentRequiredDocumentUploadsJSON
+	JSON      accountHolderDocumentRequiredDocumentUploadsJSON
 }
 
-type AccountHolderDocumentRequiredDocumentUploadsJSON struct {
-	ImageType     apijson.Metadata
-	Status        apijson.Metadata
-	StatusReasons apijson.Metadata
-	UploadURL     apijson.Metadata
+// accountHolderDocumentRequiredDocumentUploadsJSON contains the JSON metadata for
+// the struct [AccountHolderDocumentRequiredDocumentUploads]
+type accountHolderDocumentRequiredDocumentUploadsJSON struct {
+	ImageType     apijson.Field
+	Status        apijson.Field
+	StatusReasons apijson.Field
+	UploadURL     apijson.Field
 	raw           string
-	Extras        map[string]apijson.Metadata
+	Extras        map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into
-// AccountHolderDocumentRequiredDocumentUploads using the internal json library.
-// Unrecognized fields are stored in the `jsonFields` property.
 func (r *AccountHolderDocumentRequiredDocumentUploads) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -362,15 +369,14 @@ type KYBParam struct {
 	Workflow field.Field[KYBWorkflow] `json:"workflow,required"`
 }
 
-// MarshalJSON serializes KYBParam into an array of bytes using the gjson library.
-// Members of the `jsonFields` field are serialized into the top-level, and will
-// overwrite known members of the same name.
 func (r KYBParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
 func (r KYBParam) implementsAccountHolderNewParams() {}
 
+// Information for business for which the account is being opened and KYB is being
+// run.
 type KYBBusinessEntityParam struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
@@ -391,9 +397,6 @@ type KYBBusinessEntityParam struct {
 	PhoneNumbers field.Field[[]string] `json:"phone_numbers,required"`
 }
 
-// MarshalJSON serializes KYBBusinessEntityParam into an array of bytes using the
-// gjson library. Members of the `jsonFields` field are serialized into the
-// top-level, and will overwrite known members of the same name.
 func (r KYBBusinessEntityParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -418,9 +421,6 @@ type KYBBeneficialOwnerEntitiesParam struct {
 	PhoneNumbers field.Field[[]string] `json:"phone_numbers,required"`
 }
 
-// MarshalJSON serializes KYBBeneficialOwnerEntitiesParam into an array of bytes
-// using the gjson library. Members of the `jsonFields` field are serialized into
-// the top-level, and will overwrite known members of the same name.
 func (r KYBBeneficialOwnerEntitiesParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -447,13 +447,18 @@ type KYBBeneficialOwnerIndividualsParam struct {
 	PhoneNumber field.Field[string] `json:"phone_number,required"`
 }
 
-// MarshalJSON serializes KYBBeneficialOwnerIndividualsParam into an array of bytes
-// using the gjson library. Members of the `jsonFields` field are serialized into
-// the top-level, and will overwrite known members of the same name.
 func (r KYBBeneficialOwnerIndividualsParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
+// An individual with significant responsibility for managing the legal entity
+// (e.g., a Chief Executive Officer, Chief Financial Officer, Chief Operating
+// Officer, Managing Member, General Partner, President, Vice President, or
+// Treasurer). This can be an executive, or someone who will have program-wide
+// access to the cards that Lithic will provide. In some cases, this individual
+// could also be a beneficial owner listed above. See
+// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
+// (Section II) for more background.
 type KYBControlPersonParam struct {
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
@@ -476,9 +481,6 @@ type KYBControlPersonParam struct {
 	PhoneNumber field.Field[string] `json:"phone_number,required"`
 }
 
-// MarshalJSON serializes KYBControlPersonParam into an array of bytes using the
-// gjson library. Members of the `jsonFields` field are serialized into the
-// top-level, and will overwrite known members of the same name.
 func (r KYBControlPersonParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -507,15 +509,14 @@ type KYCParam struct {
 	Workflow field.Field[KYCWorkflow] `json:"workflow,required"`
 }
 
-// MarshalJSON serializes KYCParam into an array of bytes using the gjson library.
-// Members of the `jsonFields` field are serialized into the top-level, and will
-// overwrite known members of the same name.
 func (r KYCParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
 func (r KYCParam) implementsAccountHolderNewParams() {}
 
+// Information on individual for whom the account is being opened and KYC is being
+// run.
 type KYCIndividualParam struct {
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
@@ -538,9 +539,6 @@ type KYCIndividualParam struct {
 	PhoneNumber field.Field[string] `json:"phone_number,required"`
 }
 
-// MarshalJSON serializes KYCIndividualParam into an array of bytes using the gjson
-// library. Members of the `jsonFields` field are serialized into the top-level,
-// and will overwrite known members of the same name.
 func (r KYCIndividualParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -575,9 +573,6 @@ type KYCExemptParam struct {
 	Address field.Field[shared.AddressParam] `json:"address"`
 }
 
-// MarshalJSON serializes KYCExemptParam into an array of bytes using the gjson
-// library. Members of the `jsonFields` field are serialized into the top-level,
-// and will overwrite known members of the same name.
 func (r KYCExemptParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -608,57 +603,54 @@ type AccountHolderUpdateResponse struct {
 	// with authorized users. Pass the account_token of the enrolled business
 	// associated with the AUTHORIZED_USER in this field.
 	BusinessAccountToken string `json:"business_account_token"`
-	JSON                 AccountHolderUpdateResponseJSON
+	JSON                 accountHolderUpdateResponseJSON
 }
 
-type AccountHolderUpdateResponseJSON struct {
-	Token                apijson.Metadata
-	Email                apijson.Metadata
-	PhoneNumber          apijson.Metadata
-	BusinessAccountToken apijson.Metadata
+// accountHolderUpdateResponseJSON contains the JSON metadata for the struct
+// [AccountHolderUpdateResponse]
+type accountHolderUpdateResponseJSON struct {
+	Token                apijson.Field
+	Email                apijson.Field
+	PhoneNumber          apijson.Field
+	BusinessAccountToken apijson.Field
 	raw                  string
-	Extras               map[string]apijson.Metadata
+	Extras               map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into AccountHolderUpdateResponse
-// using the internal json library. Unrecognized fields are stored in the
-// `jsonFields` property.
 func (r *AccountHolderUpdateResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
 type AccountHolderListDocumentsResponse struct {
 	Data []AccountHolderDocument `json:"data"`
-	JSON AccountHolderListDocumentsResponseJSON
+	JSON accountHolderListDocumentsResponseJSON
 }
 
-type AccountHolderListDocumentsResponseJSON struct {
-	Data   apijson.Metadata
+// accountHolderListDocumentsResponseJSON contains the JSON metadata for the struct
+// [AccountHolderListDocumentsResponse]
+type accountHolderListDocumentsResponseJSON struct {
+	Data   apijson.Field
 	raw    string
-	Extras map[string]apijson.Metadata
+	Extras map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into
-// AccountHolderListDocumentsResponse using the internal json library. Unrecognized
-// fields are stored in the `jsonFields` property.
 func (r *AccountHolderListDocumentsResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
 type AccountHolderCreateWebhookResponse struct {
 	Data AccountHolderCreateWebhookResponseData `json:"data"`
-	JSON AccountHolderCreateWebhookResponseJSON
+	JSON accountHolderCreateWebhookResponseJSON
 }
 
-type AccountHolderCreateWebhookResponseJSON struct {
-	Data   apijson.Metadata
+// accountHolderCreateWebhookResponseJSON contains the JSON metadata for the struct
+// [AccountHolderCreateWebhookResponse]
+type accountHolderCreateWebhookResponseJSON struct {
+	Data   apijson.Field
 	raw    string
-	Extras map[string]apijson.Metadata
+	Extras map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into
-// AccountHolderCreateWebhookResponse using the internal json library. Unrecognized
-// fields are stored in the `jsonFields` property.
 func (r *AccountHolderCreateWebhookResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -667,18 +659,17 @@ type AccountHolderCreateWebhookResponseData struct {
 	// Shared secret which can optionally be used to validate the authenticity of
 	// incoming identity webhooks.
 	HmacToken string `json:"hmac_token" format:"uuid"`
-	JSON      AccountHolderCreateWebhookResponseDataJSON
+	JSON      accountHolderCreateWebhookResponseDataJSON
 }
 
-type AccountHolderCreateWebhookResponseDataJSON struct {
-	HmacToken apijson.Metadata
+// accountHolderCreateWebhookResponseDataJSON contains the JSON metadata for the
+// struct [AccountHolderCreateWebhookResponseData]
+type accountHolderCreateWebhookResponseDataJSON struct {
+	HmacToken apijson.Field
 	raw       string
-	Extras    map[string]apijson.Metadata
+	Extras    map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into
-// AccountHolderCreateWebhookResponseData using the internal json library.
-// Unrecognized fields are stored in the `jsonFields` property.
 func (r *AccountHolderCreateWebhookResponseData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -704,9 +695,6 @@ type AccountHolderUpdateParams struct {
 	BusinessAccountToken field.Field[string] `json:"business_account_token"`
 }
 
-// MarshalJSON serializes AccountHolderUpdateParams into an array of bytes using
-// the gjson library. Members of the `jsonFields` field are serialized into the
-// top-level, and will overwrite known members of the same name.
 func (r AccountHolderUpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -716,9 +704,6 @@ type AccountHolderNewWebhookParams struct {
 	URL field.Field[string] `json:"url,required"`
 }
 
-// MarshalJSON serializes AccountHolderNewWebhookParams into an array of bytes
-// using the gjson library. Members of the `jsonFields` field are serialized into
-// the top-level, and will overwrite known members of the same name.
 func (r AccountHolderNewWebhookParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -734,9 +719,6 @@ type AccountHolderResubmitParams struct {
 	Individual field.Field[AccountHolderResubmitParamsIndividual] `json:"individual,required"`
 }
 
-// MarshalJSON serializes AccountHolderResubmitParams into an array of bytes using
-// the gjson library. Members of the `jsonFields` field are serialized into the
-// top-level, and will overwrite known members of the same name.
 func (r AccountHolderResubmitParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -747,6 +729,8 @@ const (
 	AccountHolderResubmitParamsWorkflowKYCAdvanced AccountHolderResubmitParamsWorkflow = "KYC_ADVANCED"
 )
 
+// Information on individual for whom the account is being opened and KYC is being
+// re-run.
 type AccountHolderResubmitParamsIndividual struct {
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
@@ -774,9 +758,6 @@ type AccountHolderUploadDocumentParams struct {
 	DocumentType field.Field[AccountHolderUploadDocumentParamsDocumentType] `json:"document_type,required"`
 }
 
-// MarshalJSON serializes AccountHolderUploadDocumentParams into an array of bytes
-// using the gjson library. Members of the `jsonFields` field are serialized into
-// the top-level, and will overwrite known members of the same name.
 func (r AccountHolderUploadDocumentParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }

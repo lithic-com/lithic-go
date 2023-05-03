@@ -15,10 +15,19 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
+// FinancialAccountFinancialTransactionService contains methods and other services
+// that help with interacting with the lithic API. Note, unlike clients, this
+// service does not read variables from the environment automatically. You should
+// not instantiate this service directly, and instead use the
+// [NewFinancialAccountFinancialTransactionService] method instead.
 type FinancialAccountFinancialTransactionService struct {
 	Options []option.RequestOption
 }
 
+// NewFinancialAccountFinancialTransactionService generates a new service that
+// applies the given options to each request. These options are applied after the
+// parent client's options (if there is one), and before any request-specific
+// options.
 func NewFinancialAccountFinancialTransactionService(opts ...option.RequestOption) (r *FinancialAccountFinancialTransactionService) {
 	r = &FinancialAccountFinancialTransactionService{}
 	r.Options = opts
@@ -77,8 +86,8 @@ type FinancialTransactionListParams struct {
 	EndingBefore field.Field[string] `query:"ending_before"`
 }
 
-// URLQuery serializes FinancialTransactionListParams into a url.Values of the
-// query parameters associated with this value
+// URLQuery serializes [FinancialTransactionListParams]'s query parameters as
+// `url.Values`.
 func (r FinancialTransactionListParams) URLQuery() (v url.Values) {
 	return apiquery.Marshal(r)
 }
@@ -112,19 +121,18 @@ type FinancialTransactionListResponse struct {
 	Data []FinancialTransaction `json:"data,required"`
 	// More data exists.
 	HasMore bool `json:"has_more,required"`
-	JSON    FinancialTransactionListResponseJSON
+	JSON    financialTransactionListResponseJSON
 }
 
-type FinancialTransactionListResponseJSON struct {
-	Data    apijson.Metadata
-	HasMore apijson.Metadata
+// financialTransactionListResponseJSON contains the JSON metadata for the struct
+// [FinancialTransactionListResponse]
+type financialTransactionListResponseJSON struct {
+	Data    apijson.Field
+	HasMore apijson.Field
 	raw     string
-	Extras  map[string]apijson.Metadata
+	Extras  map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into
-// FinancialTransactionListResponse using the internal json library. Unrecognized
-// fields are stored in the `jsonFields` property.
 func (r *FinancialTransactionListResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }

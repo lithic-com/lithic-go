@@ -14,10 +14,17 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
+// BalanceService contains methods and other services that help with interacting
+// with the lithic API. Note, unlike clients, this service does not read variables
+// from the environment automatically. You should not instantiate this service
+// directly, and instead use the [NewBalanceService] method instead.
 type BalanceService struct {
 	Options []option.RequestOption
 }
 
+// NewBalanceService generates a new service that applies the given options to each
+// request. These options are applied after the parent client's options (if there
+// is one), and before any request-specific options.
 func NewBalanceService(opts ...option.RequestOption) (r *BalanceService) {
 	r = &BalanceService{}
 	r.Options = opts
@@ -47,6 +54,7 @@ func (r *BalanceService) ListAutoPaging(ctx context.Context, query BalanceListPa
 	return shared.NewSinglePageAutoPager(r.List(ctx, query, opts...))
 }
 
+// Balance of a Financial Account
 type Balance struct {
 	// Funds available for spend in the currency's smallest unit (e.g., cents for USD)
 	AvailableAmount int64 `json:"available_amount,required"`
@@ -72,26 +80,25 @@ type Balance struct {
 	Type BalanceType `json:"type,required"`
 	// Date and time for when the balance was last updated.
 	Updated time.Time `json:"updated,required" format:"date-time"`
-	JSON    BalanceJSON
+	JSON    balanceJSON
 }
 
-type BalanceJSON struct {
-	AvailableAmount           apijson.Metadata
-	Created                   apijson.Metadata
-	Currency                  apijson.Metadata
-	LastTransactionEventToken apijson.Metadata
-	LastTransactionToken      apijson.Metadata
-	PendingAmount             apijson.Metadata
-	Token                     apijson.Metadata
-	TotalAmount               apijson.Metadata
-	Type                      apijson.Metadata
-	Updated                   apijson.Metadata
+// balanceJSON contains the JSON metadata for the struct [Balance]
+type balanceJSON struct {
+	AvailableAmount           apijson.Field
+	Created                   apijson.Field
+	Currency                  apijson.Field
+	LastTransactionEventToken apijson.Field
+	LastTransactionToken      apijson.Field
+	PendingAmount             apijson.Field
+	Token                     apijson.Field
+	TotalAmount               apijson.Field
+	Type                      apijson.Field
+	Updated                   apijson.Field
 	raw                       string
-	Extras                    map[string]apijson.Metadata
+	Extras                    map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into Balance using the internal
-// json library. Unrecognized fields are stored in the `jsonFields` property.
 func (r *Balance) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -113,8 +120,7 @@ type BalanceListParams struct {
 	FinancialAccountType field.Field[BalanceListParamsFinancialAccountType] `query:"financial_account_type"`
 }
 
-// URLQuery serializes BalanceListParams into a url.Values of the query parameters
-// associated with this value
+// URLQuery serializes [BalanceListParams]'s query parameters as `url.Values`.
 func (r BalanceListParams) URLQuery() (v url.Values) {
 	return apiquery.Marshal(r)
 }
@@ -130,19 +136,18 @@ type BalanceListResponse struct {
 	Data []Balance `json:"data,required"`
 	// More data exists.
 	HasMore bool `json:"has_more,required"`
-	JSON    BalanceListResponseJSON
+	JSON    balanceListResponseJSON
 }
 
-type BalanceListResponseJSON struct {
-	Data    apijson.Metadata
-	HasMore apijson.Metadata
+// balanceListResponseJSON contains the JSON metadata for the struct
+// [BalanceListResponse]
+type balanceListResponseJSON struct {
+	Data    apijson.Field
+	HasMore apijson.Field
 	raw     string
-	Extras  map[string]apijson.Metadata
+	Extras  map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into BalanceListResponse using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *BalanceListResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }

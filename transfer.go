@@ -11,10 +11,17 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
+// TransferService contains methods and other services that help with interacting
+// with the lithic API. Note, unlike clients, this service does not read variables
+// from the environment automatically. You should not instantiate this service
+// directly, and instead use the [NewTransferService] method instead.
 type TransferService struct {
 	Options []option.RequestOption
 }
 
+// NewTransferService generates a new service that applies the given options to
+// each request. These options are applied after the parent client's options (if
+// there is one), and before any request-specific options.
 func NewTransferService(opts ...option.RequestOption) (r *TransferService) {
 	r = &TransferService{}
 	r.Options = opts
@@ -70,29 +77,28 @@ type Transfer struct {
 	FromBalance []Balance `json:"from_balance"`
 	// The updated balance of the receiving financial account.
 	ToBalance []Balance `json:"to_balance"`
-	JSON      TransferJSON
+	JSON      transferJSON
 }
 
-type TransferJSON struct {
-	Category      apijson.Metadata
-	Created       apijson.Metadata
-	Currency      apijson.Metadata
-	Descriptor    apijson.Metadata
-	Events        apijson.Metadata
-	PendingAmount apijson.Metadata
-	Result        apijson.Metadata
-	SettledAmount apijson.Metadata
-	Status        apijson.Metadata
-	Token         apijson.Metadata
-	Updated       apijson.Metadata
-	FromBalance   apijson.Metadata
-	ToBalance     apijson.Metadata
+// transferJSON contains the JSON metadata for the struct [Transfer]
+type transferJSON struct {
+	Category      apijson.Field
+	Created       apijson.Field
+	Currency      apijson.Field
+	Descriptor    apijson.Field
+	Events        apijson.Field
+	PendingAmount apijson.Field
+	Result        apijson.Field
+	SettledAmount apijson.Field
+	Status        apijson.Field
+	Token         apijson.Field
+	Updated       apijson.Field
+	FromBalance   apijson.Field
+	ToBalance     apijson.Field
 	raw           string
-	Extras        map[string]apijson.Metadata
+	Extras        map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into Transfer using the internal
-// json library. Unrecognized fields are stored in the `jsonFields` property.
 func (r *Transfer) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -151,22 +157,20 @@ type TransferEvents struct {
 	//   - `TRANSFER_INSUFFICIENT_FUNDS` - Declined internl transfer of funds due to
 	//     insufficient balance of the sender.
 	Type TransferEventsType `json:"type"`
-	JSON TransferEventsJSON
+	JSON transferEventsJSON
 }
 
-type TransferEventsJSON struct {
-	Amount  apijson.Metadata
-	Created apijson.Metadata
-	Result  apijson.Metadata
-	Token   apijson.Metadata
-	Type    apijson.Metadata
+// transferEventsJSON contains the JSON metadata for the struct [TransferEvents]
+type transferEventsJSON struct {
+	Amount  apijson.Field
+	Created apijson.Field
+	Result  apijson.Field
+	Token   apijson.Field
+	Type    apijson.Field
 	raw     string
-	Extras  map[string]apijson.Metadata
+	Extras  map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into TransferEvents using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *TransferEvents) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -224,18 +228,17 @@ const (
 
 type TransferCreateResponse struct {
 	Data Transfer `json:"data"`
-	JSON TransferCreateResponseJSON
+	JSON transferCreateResponseJSON
 }
 
-type TransferCreateResponseJSON struct {
-	Data   apijson.Metadata
+// transferCreateResponseJSON contains the JSON metadata for the struct
+// [TransferCreateResponse]
+type transferCreateResponseJSON struct {
+	Data   apijson.Field
 	raw    string
-	Extras map[string]apijson.Metadata
+	Extras map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into TransferCreateResponse using
-// the internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *TransferCreateResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -254,9 +257,6 @@ type TransferNewParams struct {
 	TransactionToken field.Field[string] `json:"transaction_token" format:"uuid"`
 }
 
-// MarshalJSON serializes TransferNewParams into an array of bytes using the gjson
-// library. Members of the `jsonFields` field are serialized into the top-level,
-// and will overwrite known members of the same name.
 func (r TransferNewParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }

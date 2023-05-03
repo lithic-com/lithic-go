@@ -14,12 +14,20 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
+// FinancialAccountService contains methods and other services that help with
+// interacting with the lithic API. Note, unlike clients, this service does not
+// read variables from the environment automatically. You should not instantiate
+// this service directly, and instead use the [NewFinancialAccountService] method
+// instead.
 type FinancialAccountService struct {
 	Options               []option.RequestOption
 	Balances              *FinancialAccountBalanceService
 	FinancialTransactions *FinancialAccountFinancialTransactionService
 }
 
+// NewFinancialAccountService generates a new service that applies the given
+// options to each request. These options are applied after the parent client's
+// options (if there is one), and before any request-specific options.
 func NewFinancialAccountService(opts ...option.RequestOption) (r *FinancialAccountService) {
 	r = &FinancialAccountService{}
 	r.Options = opts
@@ -53,6 +61,7 @@ func (r *FinancialAccountService) ListAutoPaging(ctx context.Context, query Fina
 	return shared.NewSinglePageAutoPager(r.List(ctx, query, opts...))
 }
 
+// Financial Account
 type FinancialAccount struct {
 	// Account number for your Lithic-assigned bank account number, if applicable.
 	AccountNumber string `json:"account_number"`
@@ -66,27 +75,27 @@ type FinancialAccount struct {
 	Type FinancialAccountType `json:"type,required"`
 	// Date and time for when the financial account was last updated.
 	Updated time.Time `json:"updated,required" format:"date-time"`
-	JSON    FinancialAccountJSON
+	JSON    financialAccountJSON
 }
 
-type FinancialAccountJSON struct {
-	AccountNumber apijson.Metadata
-	Created       apijson.Metadata
-	RoutingNumber apijson.Metadata
-	Token         apijson.Metadata
-	Type          apijson.Metadata
-	Updated       apijson.Metadata
+// financialAccountJSON contains the JSON metadata for the struct
+// [FinancialAccount]
+type financialAccountJSON struct {
+	AccountNumber apijson.Field
+	Created       apijson.Field
+	RoutingNumber apijson.Field
+	Token         apijson.Field
+	Type          apijson.Field
+	Updated       apijson.Field
 	raw           string
-	Extras        map[string]apijson.Metadata
+	Extras        map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into FinancialAccount using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *FinancialAccount) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+// Financial Account
 type FinancialAccountParam struct {
 	// Account number for your Lithic-assigned bank account number, if applicable.
 	AccountNumber field.Field[string] `json:"account_number"`
@@ -102,9 +111,6 @@ type FinancialAccountParam struct {
 	Updated field.Field[time.Time] `json:"updated,required" format:"date-time"`
 }
 
-// MarshalJSON serializes FinancialAccountParam into an array of bytes using the
-// gjson library. Members of the `jsonFields` field are serialized into the
-// top-level, and will overwrite known members of the same name.
 func (r FinancialAccountParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -157,28 +163,27 @@ type FinancialTransaction struct {
 	Token string `json:"token" format:"uuid"`
 	// Date and time when the financial transaction was last updated. UTC time zone.
 	Updated time.Time `json:"updated" format:"date-time"`
-	JSON    FinancialTransactionJSON
+	JSON    financialTransactionJSON
 }
 
-type FinancialTransactionJSON struct {
-	Category      apijson.Metadata
-	Created       apijson.Metadata
-	Currency      apijson.Metadata
-	Descriptor    apijson.Metadata
-	Events        apijson.Metadata
-	PendingAmount apijson.Metadata
-	Result        apijson.Metadata
-	SettledAmount apijson.Metadata
-	Status        apijson.Metadata
-	Token         apijson.Metadata
-	Updated       apijson.Metadata
+// financialTransactionJSON contains the JSON metadata for the struct
+// [FinancialTransaction]
+type financialTransactionJSON struct {
+	Category      apijson.Field
+	Created       apijson.Field
+	Currency      apijson.Field
+	Descriptor    apijson.Field
+	Events        apijson.Field
+	PendingAmount apijson.Field
+	Result        apijson.Field
+	SettledAmount apijson.Field
+	Status        apijson.Field
+	Token         apijson.Field
+	Updated       apijson.Field
 	raw           string
-	Extras        map[string]apijson.Metadata
+	Extras        map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into FinancialTransaction using
-// the internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *FinancialTransaction) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -239,22 +244,21 @@ type FinancialTransactionEvents struct {
 	//   - `TRANSFER_INSUFFICIENT_FUNDS` - Declined internl transfer of funds due to
 	//     insufficient balance of the sender.
 	Type FinancialTransactionEventsType `json:"type"`
-	JSON FinancialTransactionEventsJSON
+	JSON financialTransactionEventsJSON
 }
 
-type FinancialTransactionEventsJSON struct {
-	Amount  apijson.Metadata
-	Created apijson.Metadata
-	Result  apijson.Metadata
-	Token   apijson.Metadata
-	Type    apijson.Metadata
+// financialTransactionEventsJSON contains the JSON metadata for the struct
+// [FinancialTransactionEvents]
+type financialTransactionEventsJSON struct {
+	Amount  apijson.Field
+	Created apijson.Field
+	Result  apijson.Field
+	Token   apijson.Field
+	Type    apijson.Field
 	raw     string
-	Extras  map[string]apijson.Metadata
+	Extras  map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into FinancialTransactionEvents
-// using the internal json library. Unrecognized fields are stored in the
-// `jsonFields` property.
 func (r *FinancialTransactionEvents) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -317,8 +321,8 @@ type FinancialAccountListParams struct {
 	Type field.Field[FinancialAccountListParamsType] `query:"type"`
 }
 
-// URLQuery serializes FinancialAccountListParams into a url.Values of the query
-// parameters associated with this value
+// URLQuery serializes [FinancialAccountListParams]'s query parameters as
+// `url.Values`.
 func (r FinancialAccountListParams) URLQuery() (v url.Values) {
 	return apiquery.Marshal(r)
 }
@@ -334,19 +338,18 @@ type FinancialAccountListResponse struct {
 	Data []FinancialAccount `json:"data,required"`
 	// More data exists.
 	HasMore bool `json:"has_more,required"`
-	JSON    FinancialAccountListResponseJSON
+	JSON    financialAccountListResponseJSON
 }
 
-type FinancialAccountListResponseJSON struct {
-	Data    apijson.Metadata
-	HasMore apijson.Metadata
+// financialAccountListResponseJSON contains the JSON metadata for the struct
+// [FinancialAccountListResponse]
+type financialAccountListResponseJSON struct {
+	Data    apijson.Field
+	HasMore apijson.Field
 	raw     string
-	Extras  map[string]apijson.Metadata
+	Extras  map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into FinancialAccountListResponse
-// using the internal json library. Unrecognized fields are stored in the
-// `jsonFields` property.
 func (r *FinancialAccountListResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }

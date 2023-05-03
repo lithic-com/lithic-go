@@ -12,10 +12,18 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
+// ResponderEndpointService contains methods and other services that help with
+// interacting with the lithic API. Note, unlike clients, this service does not
+// read variables from the environment automatically. You should not instantiate
+// this service directly, and instead use the [NewResponderEndpointService] method
+// instead.
 type ResponderEndpointService struct {
 	Options []option.RequestOption
 }
 
+// NewResponderEndpointService generates a new service that applies the given
+// options to each request. These options are applied after the parent client's
+// options (if there is one), and before any request-specific options.
 func NewResponderEndpointService(opts ...option.RequestOption) (r *ResponderEndpointService) {
 	r = &ResponderEndpointService{}
 	r.Options = opts
@@ -52,19 +60,18 @@ type ResponderEndpointStatus struct {
 	Enrolled bool `json:"enrolled"`
 	// The URL of the currently enrolled endpoint or null.
 	URL  string `json:"url,nullable" format:"uri"`
-	JSON ResponderEndpointStatusJSON
+	JSON responderEndpointStatusJSON
 }
 
-type ResponderEndpointStatusJSON struct {
-	Enrolled apijson.Metadata
-	URL      apijson.Metadata
+// responderEndpointStatusJSON contains the JSON metadata for the struct
+// [ResponderEndpointStatus]
+type responderEndpointStatusJSON struct {
+	Enrolled apijson.Field
+	URL      apijson.Field
 	raw      string
-	Extras   map[string]apijson.Metadata
+	Extras   map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into ResponderEndpointStatus using
-// the internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *ResponderEndpointStatus) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -72,18 +79,17 @@ func (r *ResponderEndpointStatus) UnmarshalJSON(data []byte) (err error) {
 type ResponderEndpointCreateResponse struct {
 	// True if the endpoint was enrolled successfully.
 	Enrolled bool `json:"enrolled"`
-	JSON     ResponderEndpointCreateResponseJSON
+	JSON     responderEndpointCreateResponseJSON
 }
 
-type ResponderEndpointCreateResponseJSON struct {
-	Enrolled apijson.Metadata
+// responderEndpointCreateResponseJSON contains the JSON metadata for the struct
+// [ResponderEndpointCreateResponse]
+type responderEndpointCreateResponseJSON struct {
+	Enrolled apijson.Field
 	raw      string
-	Extras   map[string]apijson.Metadata
+	Extras   map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into
-// ResponderEndpointCreateResponse using the internal json library. Unrecognized
-// fields are stored in the `jsonFields` property.
 func (r *ResponderEndpointCreateResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -95,9 +101,6 @@ type ResponderEndpointNewParams struct {
 	Type field.Field[ResponderEndpointNewParamsType] `json:"type"`
 }
 
-// MarshalJSON serializes ResponderEndpointNewParams into an array of bytes using
-// the gjson library. Members of the `jsonFields` field are serialized into the
-// top-level, and will overwrite known members of the same name.
 func (r ResponderEndpointNewParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -113,8 +116,8 @@ type ResponderEndpointDeleteParams struct {
 	Type field.Field[ResponderEndpointDeleteParamsType] `query:"type,required"`
 }
 
-// URLQuery serializes ResponderEndpointDeleteParams into a url.Values of the query
-// parameters associated with this value
+// URLQuery serializes [ResponderEndpointDeleteParams]'s query parameters as
+// `url.Values`.
 func (r ResponderEndpointDeleteParams) URLQuery() (v url.Values) {
 	return apiquery.Marshal(r)
 }
@@ -130,8 +133,8 @@ type ResponderEndpointCheckStatusParams struct {
 	Type field.Field[ResponderEndpointCheckStatusParamsType] `query:"type,required"`
 }
 
-// URLQuery serializes ResponderEndpointCheckStatusParams into a url.Values of the
-// query parameters associated with this value
+// URLQuery serializes [ResponderEndpointCheckStatusParams]'s query parameters as
+// `url.Values`.
 func (r ResponderEndpointCheckStatusParams) URLQuery() (v url.Values) {
 	return apiquery.Marshal(r)
 }

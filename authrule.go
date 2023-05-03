@@ -14,10 +14,17 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
+// AuthRuleService contains methods and other services that help with interacting
+// with the lithic API. Note, unlike clients, this service does not read variables
+// from the environment automatically. You should not instantiate this service
+// directly, and instead use the [NewAuthRuleService] method instead.
 type AuthRuleService struct {
 	Options []option.RequestOption
 }
 
+// NewAuthRuleService generates a new service that applies the given options to
+// each request. These options are applied after the parent client's options (if
+// there is one), and before any request-specific options.
 func NewAuthRuleService(opts ...option.RequestOption) (r *AuthRuleService) {
 	r = &AuthRuleService{}
 	r.Options = opts
@@ -130,27 +137,26 @@ type AuthRule struct {
 	CardTokens []string `json:"card_tokens"`
 	// Boolean indicating whether the Auth Rule is applied at the program level.
 	ProgramLevel bool `json:"program_level"`
-	JSON         AuthRuleJSON
+	JSON         authRuleJSON
 }
 
-type AuthRuleJSON struct {
-	Token                  apijson.Metadata
-	State                  apijson.Metadata
-	PreviousAuthRuleTokens apijson.Metadata
-	AllowedMcc             apijson.Metadata
-	BlockedMcc             apijson.Metadata
-	AllowedCountries       apijson.Metadata
-	BlockedCountries       apijson.Metadata
-	AvsType                apijson.Metadata
-	AccountTokens          apijson.Metadata
-	CardTokens             apijson.Metadata
-	ProgramLevel           apijson.Metadata
+// authRuleJSON contains the JSON metadata for the struct [AuthRule]
+type authRuleJSON struct {
+	Token                  apijson.Field
+	State                  apijson.Field
+	PreviousAuthRuleTokens apijson.Field
+	AllowedMcc             apijson.Field
+	BlockedMcc             apijson.Field
+	AllowedCountries       apijson.Field
+	BlockedCountries       apijson.Field
+	AvsType                apijson.Field
+	AccountTokens          apijson.Field
+	CardTokens             apijson.Field
+	ProgramLevel           apijson.Field
 	raw                    string
-	Extras                 map[string]apijson.Metadata
+	Extras                 map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into AuthRule using the internal
-// json library. Unrecognized fields are stored in the `jsonFields` property.
 func (r *AuthRule) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -170,72 +176,68 @@ const (
 
 type AuthRuleCreateResponse struct {
 	Data AuthRule `json:"data"`
-	JSON AuthRuleCreateResponseJSON
+	JSON authRuleCreateResponseJSON
 }
 
-type AuthRuleCreateResponseJSON struct {
-	Data   apijson.Metadata
+// authRuleCreateResponseJSON contains the JSON metadata for the struct
+// [AuthRuleCreateResponse]
+type authRuleCreateResponseJSON struct {
+	Data   apijson.Field
 	raw    string
-	Extras map[string]apijson.Metadata
+	Extras map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into AuthRuleCreateResponse using
-// the internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *AuthRuleCreateResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
 type AuthRuleRetrieveResponse struct {
 	Data []AuthRule `json:"data"`
-	JSON AuthRuleRetrieveResponseJSON
+	JSON authRuleRetrieveResponseJSON
 }
 
-type AuthRuleRetrieveResponseJSON struct {
-	Data   apijson.Metadata
+// authRuleRetrieveResponseJSON contains the JSON metadata for the struct
+// [AuthRuleRetrieveResponse]
+type authRuleRetrieveResponseJSON struct {
+	Data   apijson.Field
 	raw    string
-	Extras map[string]apijson.Metadata
+	Extras map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into AuthRuleRetrieveResponse
-// using the internal json library. Unrecognized fields are stored in the
-// `jsonFields` property.
 func (r *AuthRuleRetrieveResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
 type AuthRuleUpdateResponse struct {
 	Data AuthRule `json:"data"`
-	JSON AuthRuleUpdateResponseJSON
+	JSON authRuleUpdateResponseJSON
 }
 
-type AuthRuleUpdateResponseJSON struct {
-	Data   apijson.Metadata
+// authRuleUpdateResponseJSON contains the JSON metadata for the struct
+// [AuthRuleUpdateResponse]
+type authRuleUpdateResponseJSON struct {
+	Data   apijson.Field
 	raw    string
-	Extras map[string]apijson.Metadata
+	Extras map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into AuthRuleUpdateResponse using
-// the internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *AuthRuleUpdateResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
 type AuthRuleApplyResponse struct {
 	Data AuthRule `json:"data"`
-	JSON AuthRuleApplyResponseJSON
+	JSON authRuleApplyResponseJSON
 }
 
-type AuthRuleApplyResponseJSON struct {
-	Data   apijson.Metadata
+// authRuleApplyResponseJSON contains the JSON metadata for the struct
+// [AuthRuleApplyResponse]
+type authRuleApplyResponseJSON struct {
+	Data   apijson.Field
 	raw    string
-	Extras map[string]apijson.Metadata
+	Extras map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into AuthRuleApplyResponse using
-// the internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *AuthRuleApplyResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -245,21 +247,20 @@ type AuthRuleRemoveResponse struct {
 	CardTokens             []string `json:"card_tokens"`
 	PreviousAuthRuleTokens []string `json:"previous_auth_rule_tokens"`
 	ProgramLevel           bool     `json:"program_level"`
-	JSON                   AuthRuleRemoveResponseJSON
+	JSON                   authRuleRemoveResponseJSON
 }
 
-type AuthRuleRemoveResponseJSON struct {
-	AccountTokens          apijson.Metadata
-	CardTokens             apijson.Metadata
-	PreviousAuthRuleTokens apijson.Metadata
-	ProgramLevel           apijson.Metadata
+// authRuleRemoveResponseJSON contains the JSON metadata for the struct
+// [AuthRuleRemoveResponse]
+type authRuleRemoveResponseJSON struct {
+	AccountTokens          apijson.Field
+	CardTokens             apijson.Field
+	PreviousAuthRuleTokens apijson.Field
+	ProgramLevel           apijson.Field
 	raw                    string
-	Extras                 map[string]apijson.Metadata
+	Extras                 map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into AuthRuleRemoveResponse using
-// the internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *AuthRuleRemoveResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -296,9 +297,6 @@ type AuthRuleNewParams struct {
 	ProgramLevel field.Field[bool] `json:"program_level"`
 }
 
-// MarshalJSON serializes AuthRuleNewParams into an array of bytes using the gjson
-// library. Members of the `jsonFields` field are serialized into the top-level,
-// and will overwrite known members of the same name.
 func (r AuthRuleNewParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -330,9 +328,6 @@ type AuthRuleUpdateParams struct {
 	AvsType field.Field[AuthRuleUpdateParamsAvsType] `json:"avs_type"`
 }
 
-// MarshalJSON serializes AuthRuleUpdateParams into an array of bytes using the
-// gjson library. Members of the `jsonFields` field are serialized into the
-// top-level, and will overwrite known members of the same name.
 func (r AuthRuleUpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -350,8 +345,7 @@ type AuthRuleListParams struct {
 	PageSize field.Field[int64] `query:"page_size"`
 }
 
-// URLQuery serializes AuthRuleListParams into a url.Values of the query parameters
-// associated with this value
+// URLQuery serializes [AuthRuleListParams]'s query parameters as `url.Values`.
 func (r AuthRuleListParams) URLQuery() (v url.Values) {
 	return apiquery.Marshal(r)
 }
@@ -364,21 +358,20 @@ type AuthRuleListResponse struct {
 	TotalPages int64 `json:"total_pages"`
 	// Page number.
 	Page int64 `json:"page"`
-	JSON AuthRuleListResponseJSON
+	JSON authRuleListResponseJSON
 }
 
-type AuthRuleListResponseJSON struct {
-	Data         apijson.Metadata
-	TotalEntries apijson.Metadata
-	TotalPages   apijson.Metadata
-	Page         apijson.Metadata
+// authRuleListResponseJSON contains the JSON metadata for the struct
+// [AuthRuleListResponse]
+type authRuleListResponseJSON struct {
+	Data         apijson.Field
+	TotalEntries apijson.Field
+	TotalPages   apijson.Field
+	Page         apijson.Field
 	raw          string
-	Extras       map[string]apijson.Metadata
+	Extras       map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into AuthRuleListResponse using
-// the internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *AuthRuleListResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -395,9 +388,6 @@ type AuthRuleApplyParams struct {
 	ProgramLevel field.Field[bool] `json:"program_level"`
 }
 
-// MarshalJSON serializes AuthRuleApplyParams into an array of bytes using the
-// gjson library. Members of the `jsonFields` field are serialized into the
-// top-level, and will overwrite known members of the same name.
 func (r AuthRuleApplyParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -414,9 +404,6 @@ type AuthRuleRemoveParams struct {
 	ProgramLevel field.Field[bool] `json:"program_level"`
 }
 
-// MarshalJSON serializes AuthRuleRemoveParams into an array of bytes using the
-// gjson library. Members of the `jsonFields` field are serialized into the
-// top-level, and will overwrite known members of the same name.
 func (r AuthRuleRemoveParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }

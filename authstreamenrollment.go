@@ -10,10 +10,18 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
+// AuthStreamEnrollmentService contains methods and other services that help with
+// interacting with the lithic API. Note, unlike clients, this service does not
+// read variables from the environment automatically. You should not instantiate
+// this service directly, and instead use the [NewAuthStreamEnrollmentService]
+// method instead.
 type AuthStreamEnrollmentService struct {
 	Options []option.RequestOption
 }
 
+// NewAuthStreamEnrollmentService generates a new service that applies the given
+// options to each request. These options are applied after the parent client's
+// options (if there is one), and before any request-specific options.
 func NewAuthStreamEnrollmentService(opts ...option.RequestOption) (r *AuthStreamEnrollmentService) {
 	r = &AuthStreamEnrollmentService{}
 	r.Options = opts
@@ -86,18 +94,17 @@ func (r *AuthStreamEnrollmentService) RotateSecret(ctx context.Context, opts ...
 type AuthStreamEnrollment struct {
 	// Whether ASA is enrolled.
 	Enrolled bool `json:"enrolled"`
-	JSON     AuthStreamEnrollmentJSON
+	JSON     authStreamEnrollmentJSON
 }
 
-type AuthStreamEnrollmentJSON struct {
-	Enrolled apijson.Metadata
+// authStreamEnrollmentJSON contains the JSON metadata for the struct
+// [AuthStreamEnrollment]
+type authStreamEnrollmentJSON struct {
+	Enrolled apijson.Field
 	raw      string
-	Extras   map[string]apijson.Metadata
+	Extras   map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into AuthStreamEnrollment using
-// the internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *AuthStreamEnrollment) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -105,18 +112,17 @@ func (r *AuthStreamEnrollment) UnmarshalJSON(data []byte) (err error) {
 type AuthStreamSecret struct {
 	// The shared HMAC ASA secret
 	Secret string `json:"secret"`
-	JSON   AuthStreamSecretJSON
+	JSON   authStreamSecretJSON
 }
 
-type AuthStreamSecretJSON struct {
-	Secret apijson.Metadata
+// authStreamSecretJSON contains the JSON metadata for the struct
+// [AuthStreamSecret]
+type authStreamSecretJSON struct {
+	Secret apijson.Field
 	raw    string
-	Extras map[string]apijson.Metadata
+	Extras map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into AuthStreamSecret using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *AuthStreamSecret) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -126,9 +132,6 @@ type AuthStreamEnrollmentEnrollParams struct {
 	WebhookURL field.Field[string] `json:"webhook_url" format:"uri"`
 }
 
-// MarshalJSON serializes AuthStreamEnrollmentEnrollParams into an array of bytes
-// using the gjson library. Members of the `jsonFields` field are serialized into
-// the top-level, and will overwrite known members of the same name.
 func (r AuthStreamEnrollmentEnrollParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }

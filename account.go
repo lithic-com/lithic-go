@@ -15,10 +15,17 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
+// AccountService contains methods and other services that help with interacting
+// with the lithic API. Note, unlike clients, this service does not read variables
+// from the environment automatically. You should not instantiate this service
+// directly, and instead use the [NewAccountService] method instead.
 type AccountService struct {
 	Options []option.RequestOption
 }
 
+// NewAccountService generates a new service that applies the given options to each
+// request. These options are applied after the parent client's options (if there
+// is one), and before any request-specific options.
 func NewAccountService(opts ...option.RequestOption) (r *AccountService) {
 	r = &AccountService{}
 	r.Options = opts
@@ -91,26 +98,30 @@ type Account struct {
 	AuthRuleTokens      []string                   `json:"auth_rule_tokens"`
 	VerificationAddress AccountVerificationAddress `json:"verification_address"`
 	AccountHolder       AccountAccountHolder       `json:"account_holder"`
-	JSON                AccountJSON
+	JSON                accountJSON
 }
 
-type AccountJSON struct {
-	SpendLimit          apijson.Metadata
-	State               apijson.Metadata
-	Token               apijson.Metadata
-	AuthRuleTokens      apijson.Metadata
-	VerificationAddress apijson.Metadata
-	AccountHolder       apijson.Metadata
+// accountJSON contains the JSON metadata for the struct [Account]
+type accountJSON struct {
+	SpendLimit          apijson.Field
+	State               apijson.Field
+	Token               apijson.Field
+	AuthRuleTokens      apijson.Field
+	VerificationAddress apijson.Field
+	AccountHolder       apijson.Field
 	raw                 string
-	Extras              map[string]apijson.Metadata
+	Extras              map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into Account using the internal
-// json library. Unrecognized fields are stored in the `jsonFields` property.
 func (r *Account) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+// Spend limit information for the user containing the daily, monthly, and lifetime
+// spend limit of the account. Any charges to a card owned by this account will be
+// declined once their transaction volume has surpassed the value in the applicable
+// time limit (rolling). A lifetime limit of 0 indicates that the lifetime limit
+// feature is disabled.
 type AccountSpendLimit struct {
 	// Daily spend limit (in cents).
 	Daily int64 `json:"daily,required"`
@@ -118,20 +129,19 @@ type AccountSpendLimit struct {
 	Monthly int64 `json:"monthly,required"`
 	// Total spend limit over account lifetime (in cents).
 	Lifetime int64 `json:"lifetime,required"`
-	JSON     AccountSpendLimitJSON
+	JSON     accountSpendLimitJSON
 }
 
-type AccountSpendLimitJSON struct {
-	Daily    apijson.Metadata
-	Monthly  apijson.Metadata
-	Lifetime apijson.Metadata
+// accountSpendLimitJSON contains the JSON metadata for the struct
+// [AccountSpendLimit]
+type accountSpendLimitJSON struct {
+	Daily    apijson.Field
+	Monthly  apijson.Field
+	Lifetime apijson.Field
 	raw      string
-	Extras   map[string]apijson.Metadata
+	Extras   map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into AccountSpendLimit using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *AccountSpendLimit) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -159,23 +169,22 @@ type AccountVerificationAddress struct {
 	PostalCode string `json:"postal_code,required"`
 	// Country name. Only USA is currently supported.
 	Country string `json:"country,required"`
-	JSON    AccountVerificationAddressJSON
+	JSON    accountVerificationAddressJSON
 }
 
-type AccountVerificationAddressJSON struct {
-	Address1   apijson.Metadata
-	Address2   apijson.Metadata
-	City       apijson.Metadata
-	State      apijson.Metadata
-	PostalCode apijson.Metadata
-	Country    apijson.Metadata
+// accountVerificationAddressJSON contains the JSON metadata for the struct
+// [AccountVerificationAddress]
+type accountVerificationAddressJSON struct {
+	Address1   apijson.Field
+	Address2   apijson.Field
+	City       apijson.Field
+	State      apijson.Field
+	PostalCode apijson.Field
+	Country    apijson.Field
 	raw        string
-	Extras     map[string]apijson.Metadata
+	Extras     map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into AccountVerificationAddress
-// using the internal json library. Unrecognized fields are stored in the
-// `jsonFields` property.
 func (r *AccountVerificationAddress) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -191,21 +200,20 @@ type AccountAccountHolder struct {
 	// users of businesses. Account_token of the enrolled business associated with an
 	// enrolled AUTHORIZED_USER individual.
 	BusinessAccountToken string `json:"business_account_token,required"`
-	JSON                 AccountAccountHolderJSON
+	JSON                 accountAccountHolderJSON
 }
 
-type AccountAccountHolderJSON struct {
-	Token                apijson.Metadata
-	PhoneNumber          apijson.Metadata
-	Email                apijson.Metadata
-	BusinessAccountToken apijson.Metadata
+// accountAccountHolderJSON contains the JSON metadata for the struct
+// [AccountAccountHolder]
+type accountAccountHolderJSON struct {
+	Token                apijson.Field
+	PhoneNumber          apijson.Field
+	Email                apijson.Field
+	BusinessAccountToken apijson.Field
 	raw                  string
-	Extras               map[string]apijson.Metadata
+	Extras               map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into AccountAccountHolder using
-// the internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *AccountAccountHolder) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -235,13 +243,12 @@ type AccountUpdateParams struct {
 	State field.Field[AccountUpdateParamsState] `json:"state"`
 }
 
-// MarshalJSON serializes AccountUpdateParams into an array of bytes using the
-// gjson library. Members of the `jsonFields` field are serialized into the
-// top-level, and will overwrite known members of the same name.
 func (r AccountUpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
+// Address used during Address Verification Service (AVS) checks during
+// transactions if enabled via Auth Rules.
 type AccountUpdateParamsVerificationAddress struct {
 	Address1   field.Field[string] `json:"address1"`
 	Address2   field.Field[string] `json:"address2"`
@@ -271,8 +278,7 @@ type AccountListParams struct {
 	PageSize field.Field[int64] `query:"page_size"`
 }
 
-// URLQuery serializes AccountListParams into a url.Values of the query parameters
-// associated with this value
+// URLQuery serializes [AccountListParams]'s query parameters as `url.Values`.
 func (r AccountListParams) URLQuery() (v url.Values) {
 	return apiquery.Marshal(r)
 }
@@ -285,21 +291,20 @@ type AccountListResponse struct {
 	TotalEntries int64 `json:"total_entries,required"`
 	// Total number of pages.
 	TotalPages int64 `json:"total_pages,required"`
-	JSON       AccountListResponseJSON
+	JSON       accountListResponseJSON
 }
 
-type AccountListResponseJSON struct {
-	Data         apijson.Metadata
-	Page         apijson.Metadata
-	TotalEntries apijson.Metadata
-	TotalPages   apijson.Metadata
+// accountListResponseJSON contains the JSON metadata for the struct
+// [AccountListResponse]
+type accountListResponseJSON struct {
+	Data         apijson.Field
+	Page         apijson.Field
+	TotalEntries apijson.Field
+	TotalPages   apijson.Field
 	raw          string
-	Extras       map[string]apijson.Metadata
+	Extras       map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into AccountListResponse using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *AccountListResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }

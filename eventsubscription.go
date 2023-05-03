@@ -15,10 +15,18 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
+// EventSubscriptionService contains methods and other services that help with
+// interacting with the lithic API. Note, unlike clients, this service does not
+// read variables from the environment automatically. You should not instantiate
+// this service directly, and instead use the [NewEventSubscriptionService] method
+// instead.
 type EventSubscriptionService struct {
 	Options []option.RequestOption
 }
 
+// NewEventSubscriptionService generates a new service that applies the given
+// options to each request. These options are applied after the parent client's
+// options (if there is one), and before any request-specific options.
 func NewEventSubscriptionService(opts ...option.RequestOption) (r *EventSubscriptionService) {
 	r = &EventSubscriptionService{}
 	r.Options = opts
@@ -120,18 +128,17 @@ func (r *EventSubscriptionService) RotateSecret(ctx context.Context, event_subsc
 
 type SubscriptionRetrieveSecretResponse struct {
 	Key  string `json:"key"`
-	JSON SubscriptionRetrieveSecretResponseJSON
+	JSON subscriptionRetrieveSecretResponseJSON
 }
 
-type SubscriptionRetrieveSecretResponseJSON struct {
-	Key    apijson.Metadata
+// subscriptionRetrieveSecretResponseJSON contains the JSON metadata for the struct
+// [SubscriptionRetrieveSecretResponse]
+type subscriptionRetrieveSecretResponseJSON struct {
+	Key    apijson.Field
 	raw    string
-	Extras map[string]apijson.Metadata
+	Extras map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into
-// SubscriptionRetrieveSecretResponse using the internal json library. Unrecognized
-// fields are stored in the `jsonFields` property.
 func (r *SubscriptionRetrieveSecretResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -148,9 +155,6 @@ type EventSubscriptionNewParams struct {
 	URL field.Field[string] `json:"url,required" format:"uri"`
 }
 
-// MarshalJSON serializes EventSubscriptionNewParams into an array of bytes using
-// the gjson library. Members of the `jsonFields` field are serialized into the
-// top-level, and will overwrite known members of the same name.
 func (r EventSubscriptionNewParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -174,9 +178,6 @@ type EventSubscriptionUpdateParams struct {
 	URL field.Field[string] `json:"url,required" format:"uri"`
 }
 
-// MarshalJSON serializes EventSubscriptionUpdateParams into an array of bytes
-// using the gjson library. Members of the `jsonFields` field are serialized into
-// the top-level, and will overwrite known members of the same name.
 func (r EventSubscriptionUpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -199,8 +200,8 @@ type EventSubscriptionListParams struct {
 	EndingBefore field.Field[string] `query:"ending_before"`
 }
 
-// URLQuery serializes EventSubscriptionListParams into a url.Values of the query
-// parameters associated with this value
+// URLQuery serializes [EventSubscriptionListParams]'s query parameters as
+// `url.Values`.
 func (r EventSubscriptionListParams) URLQuery() (v url.Values) {
 	return apiquery.Marshal(r)
 }
@@ -208,19 +209,18 @@ func (r EventSubscriptionListParams) URLQuery() (v url.Values) {
 type EventSubscriptionListResponse struct {
 	Data    []EventSubscription `json:"data,required"`
 	HasMore bool                `json:"has_more,required"`
-	JSON    EventSubscriptionListResponseJSON
+	JSON    eventSubscriptionListResponseJSON
 }
 
-type EventSubscriptionListResponseJSON struct {
-	Data    apijson.Metadata
-	HasMore apijson.Metadata
+// eventSubscriptionListResponseJSON contains the JSON metadata for the struct
+// [EventSubscriptionListResponse]
+type eventSubscriptionListResponseJSON struct {
+	Data    apijson.Field
+	HasMore apijson.Field
 	raw     string
-	Extras  map[string]apijson.Metadata
+	Extras  map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into EventSubscriptionListResponse
-// using the internal json library. Unrecognized fields are stored in the
-// `jsonFields` property.
 func (r *EventSubscriptionListResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -234,8 +234,8 @@ type EventSubscriptionRecoverParams struct {
 	End field.Field[time.Time] `query:"end" format:"date-time"`
 }
 
-// URLQuery serializes EventSubscriptionRecoverParams into a url.Values of the
-// query parameters associated with this value
+// URLQuery serializes [EventSubscriptionRecoverParams]'s query parameters as
+// `url.Values`.
 func (r EventSubscriptionRecoverParams) URLQuery() (v url.Values) {
 	return apiquery.Marshal(r)
 }
@@ -249,8 +249,8 @@ type EventSubscriptionReplayMissingParams struct {
 	End field.Field[time.Time] `query:"end" format:"date-time"`
 }
 
-// URLQuery serializes EventSubscriptionReplayMissingParams into a url.Values of
-// the query parameters associated with this value
+// URLQuery serializes [EventSubscriptionReplayMissingParams]'s query parameters as
+// `url.Values`.
 func (r EventSubscriptionReplayMissingParams) URLQuery() (v url.Values) {
 	return apiquery.Marshal(r)
 }

@@ -18,10 +18,17 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
+// CardService contains methods and other services that help with interacting with
+// the lithic API. Note, unlike clients, this service does not read variables from
+// the environment automatically. You should not instantiate this service directly,
+// and instead use the [NewCardService] method instead.
 type CardService struct {
 	Options []option.RequestOption
 }
 
+// NewCardService generates a new service that applies the given options to each
+// request. These options are applied after the parent client's options (if there
+// is one), and before any request-specific options.
 func NewCardService(opts ...option.RequestOption) (r *CardService) {
 	r = &CardService{}
 	r.Options = opts
@@ -296,32 +303,31 @@ type Card struct {
 	// by Lithic to use. See
 	// [Flexible Card Art Guide](https://docs.lithic.com/docs/about-digital-wallets#flexible-card-art).
 	DigitalCardArtToken string `json:"digital_card_art_token" format:"uuid"`
-	JSON                CardJSON
+	JSON                cardJSON
 }
 
-type CardJSON struct {
-	Created             apijson.Metadata
-	Cvv                 apijson.Metadata
-	Funding             apijson.Metadata
-	ExpMonth            apijson.Metadata
-	ExpYear             apijson.Metadata
-	Hostname            apijson.Metadata
-	LastFour            apijson.Metadata
-	Memo                apijson.Metadata
-	Pan                 apijson.Metadata
-	SpendLimit          apijson.Metadata
-	SpendLimitDuration  apijson.Metadata
-	State               apijson.Metadata
-	AuthRuleTokens      apijson.Metadata
-	Token               apijson.Metadata
-	Type                apijson.Metadata
-	DigitalCardArtToken apijson.Metadata
+// cardJSON contains the JSON metadata for the struct [Card]
+type cardJSON struct {
+	Created             apijson.Field
+	Cvv                 apijson.Field
+	Funding             apijson.Field
+	ExpMonth            apijson.Field
+	ExpYear             apijson.Field
+	Hostname            apijson.Field
+	LastFour            apijson.Field
+	Memo                apijson.Field
+	Pan                 apijson.Field
+	SpendLimit          apijson.Field
+	SpendLimitDuration  apijson.Field
+	State               apijson.Field
+	AuthRuleTokens      apijson.Field
+	Token               apijson.Field
+	Type                apijson.Field
+	DigitalCardArtToken apijson.Field
 	raw                 string
-	Extras              map[string]apijson.Metadata
+	Extras              map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into Card using the internal json
-// library. Unrecognized fields are stored in the `jsonFields` property.
 func (r *Card) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -354,24 +360,22 @@ type CardFunding struct {
 	// - `DEPOSITORY_CHECKING` - Bank checking account.
 	// - `DEPOSITORY_SAVINGS` - Bank savings account.
 	Type CardFundingType `json:"type,required"`
-	JSON CardFundingJSON
+	JSON cardFundingJSON
 }
 
-type CardFundingJSON struct {
-	AccountName apijson.Metadata
-	Created     apijson.Metadata
-	LastFour    apijson.Metadata
-	Nickname    apijson.Metadata
-	State       apijson.Metadata
-	Token       apijson.Metadata
-	Type        apijson.Metadata
+// cardFundingJSON contains the JSON metadata for the struct [CardFunding]
+type cardFundingJSON struct {
+	AccountName apijson.Field
+	Created     apijson.Field
+	LastFour    apijson.Field
+	Nickname    apijson.Field
+	State       apijson.Field
+	Token       apijson.Field
+	Type        apijson.Field
 	raw         string
-	Extras      map[string]apijson.Metadata
+	Extras      map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into CardFunding using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *CardFunding) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -442,27 +446,23 @@ type EmbedRequestParams struct {
 	TargetOrigin field.Field[string] `json:"target_origin"`
 }
 
-// MarshalJSON serializes EmbedRequestParams into an array of bytes using the gjson
-// library. Members of the `jsonFields` field are serialized into the top-level,
-// and will overwrite known members of the same name.
 func (r EmbedRequestParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
 type CardProvisionResponse struct {
 	ProvisioningPayload string `json:"provisioning_payload"`
-	JSON                CardProvisionResponseJSON
+	JSON                cardProvisionResponseJSON
 }
 
-type CardProvisionResponseJSON struct {
-	ProvisioningPayload apijson.Metadata
+// cardProvisionResponseJSON contains the JSON metadata for the struct
+// [CardProvisionResponse]
+type cardProvisionResponseJSON struct {
+	ProvisioningPayload apijson.Field
 	raw                 string
-	Extras              map[string]apijson.Metadata
+	Extras              map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into CardProvisionResponse using
-// the internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *CardProvisionResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -553,9 +553,6 @@ type CardNewParams struct {
 	ShippingMethod field.Field[CardNewParamsShippingMethod] `json:"shipping_method"`
 }
 
-// MarshalJSON serializes CardNewParams into an array of bytes using the gjson
-// library. Members of the `jsonFields` field are serialized into the top-level,
-// and will overwrite known members of the same name.
 func (r CardNewParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -628,9 +625,6 @@ type CardUpdateParams struct {
 	DigitalCardArtToken field.Field[string] `json:"digital_card_art_token" format:"uuid"`
 }
 
-// MarshalJSON serializes CardUpdateParams into an array of bytes using the gjson
-// library. Members of the `jsonFields` field are serialized into the top-level,
-// and will overwrite known members of the same name.
 func (r CardUpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -658,8 +652,7 @@ type CardListParams struct {
 	PageSize field.Field[int64] `query:"page_size"`
 }
 
-// URLQuery serializes CardListParams into a url.Values of the query parameters
-// associated with this value
+// URLQuery serializes [CardListParams]'s query parameters as `url.Values`.
 func (r CardListParams) URLQuery() (v url.Values) {
 	return apiquery.Marshal(r)
 }
@@ -672,21 +665,20 @@ type CardListResponse struct {
 	TotalEntries int64 `json:"total_entries,required"`
 	// Total number of pages.
 	TotalPages int64 `json:"total_pages,required"`
-	JSON       CardListResponseJSON
+	JSON       cardListResponseJSON
 }
 
-type CardListResponseJSON struct {
-	Data         apijson.Metadata
-	Page         apijson.Metadata
-	TotalEntries apijson.Metadata
-	TotalPages   apijson.Metadata
+// cardListResponseJSON contains the JSON metadata for the struct
+// [CardListResponse]
+type cardListResponseJSON struct {
+	Data         apijson.Field
+	Page         apijson.Field
+	TotalEntries apijson.Field
+	TotalPages   apijson.Field
 	raw          string
-	Extras       map[string]apijson.Metadata
+	Extras       map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into CardListResponse using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *CardListResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -698,8 +690,7 @@ type CardEmbedParams struct {
 	Hmac field.Field[string] `query:"hmac,required"`
 }
 
-// URLQuery serializes CardEmbedParams into a url.Values of the query parameters
-// associated with this value
+// URLQuery serializes [CardEmbedParams]'s query parameters as `url.Values`.
 func (r CardEmbedParams) URLQuery() (v url.Values) {
 	return apiquery.Marshal(r)
 }
@@ -719,9 +710,6 @@ type CardProvisionParams struct {
 	Certificate field.Field[string] `json:"certificate" format:"byte"`
 }
 
-// MarshalJSON serializes CardProvisionParams into an array of bytes using the
-// gjson library. Members of the `jsonFields` field are serialized into the
-// top-level, and will overwrite known members of the same name.
 func (r CardProvisionParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -753,9 +741,6 @@ type CardReissueParams struct {
 	ProductID field.Field[string] `json:"product_id"`
 }
 
-// MarshalJSON serializes CardReissueParams into an array of bytes using the gjson
-// library. Members of the `jsonFields` field are serialized into the top-level,
-// and will overwrite known members of the same name.
 func (r CardReissueParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }

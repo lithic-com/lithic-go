@@ -18,10 +18,17 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
+// DisputeService contains methods and other services that help with interacting
+// with the lithic API. Note, unlike clients, this service does not read variables
+// from the environment automatically. You should not instantiate this service
+// directly, and instead use the [NewDisputeService] method instead.
 type DisputeService struct {
 	Options []option.RequestOption
 }
 
+// NewDisputeService generates a new service that applies the given options to each
+// request. These options are applied after the parent client's options (if there
+// is one), and before any request-specific options.
 func NewDisputeService(opts ...option.RequestOption) (r *DisputeService) {
 	r = &DisputeService{}
 	r.Options = opts
@@ -163,6 +170,7 @@ func (r *DisputeService) UploadEvidence(ctx context.Context, disputeToken string
 
 }
 
+// Dispute.
 type Dispute struct {
 	// Amount under dispute. May be different from the original transaction amount.
 	Amount int64 `json:"amount,required"`
@@ -250,35 +258,34 @@ type Dispute struct {
 	// The transaction that is being disputed. A transaction can only be disputed once
 	// but may have multiple dispute cases.
 	TransactionToken string `json:"transaction_token,required" format:"uuid"`
-	JSON             DisputeJSON
+	JSON             disputeJSON
 }
 
-type DisputeJSON struct {
-	Amount             apijson.Metadata
-	ArbitrationDate    apijson.Metadata
-	Created            apijson.Metadata
-	CustomerFiledDate  apijson.Metadata
-	CustomerNote       apijson.Metadata
-	NetworkClaimIDs    apijson.Metadata
-	PrimaryClaimID     apijson.Metadata
-	NetworkFiledDate   apijson.Metadata
-	NetworkReasonCode  apijson.Metadata
-	PrearbitrationDate apijson.Metadata
-	Reason             apijson.Metadata
-	RepresentmentDate  apijson.Metadata
-	ResolutionAmount   apijson.Metadata
-	ResolutionDate     apijson.Metadata
-	ResolutionNote     apijson.Metadata
-	ResolutionReason   apijson.Metadata
-	Status             apijson.Metadata
-	Token              apijson.Metadata
-	TransactionToken   apijson.Metadata
+// disputeJSON contains the JSON metadata for the struct [Dispute]
+type disputeJSON struct {
+	Amount             apijson.Field
+	ArbitrationDate    apijson.Field
+	Created            apijson.Field
+	CustomerFiledDate  apijson.Field
+	CustomerNote       apijson.Field
+	NetworkClaimIDs    apijson.Field
+	PrimaryClaimID     apijson.Field
+	NetworkFiledDate   apijson.Field
+	NetworkReasonCode  apijson.Field
+	PrearbitrationDate apijson.Field
+	Reason             apijson.Field
+	RepresentmentDate  apijson.Field
+	ResolutionAmount   apijson.Field
+	ResolutionDate     apijson.Field
+	ResolutionNote     apijson.Field
+	ResolutionReason   apijson.Field
+	Status             apijson.Field
+	Token              apijson.Field
+	TransactionToken   apijson.Field
 	raw                string
-	Extras             map[string]apijson.Metadata
+	Extras             map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into Dispute using the internal
-// json library. Unrecognized fields are stored in the `jsonFields` property.
 func (r *Dispute) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -337,6 +344,7 @@ const (
 	DisputeStatusCaseClosed      DisputeStatus = "CASE_CLOSED"
 )
 
+// Dispute evidence.
 type DisputeEvidence struct {
 	// Timestamp of when dispute evidence was created.
 	Created time.Time `json:"created,required" format:"date-time"`
@@ -356,23 +364,21 @@ type DisputeEvidence struct {
 	UploadStatus DisputeEvidenceUploadStatus `json:"upload_status,required"`
 	// URL to upload evidence. Only shown when `upload_status` is `PENDING`.
 	UploadURL string `json:"upload_url"`
-	JSON      DisputeEvidenceJSON
+	JSON      disputeEvidenceJSON
 }
 
-type DisputeEvidenceJSON struct {
-	Created      apijson.Metadata
-	DisputeToken apijson.Metadata
-	DownloadURL  apijson.Metadata
-	Token        apijson.Metadata
-	UploadStatus apijson.Metadata
-	UploadURL    apijson.Metadata
+// disputeEvidenceJSON contains the JSON metadata for the struct [DisputeEvidence]
+type disputeEvidenceJSON struct {
+	Created      apijson.Field
+	DisputeToken apijson.Field
+	DownloadURL  apijson.Field
+	Token        apijson.Field
+	UploadStatus apijson.Field
+	UploadURL    apijson.Field
 	raw          string
-	Extras       map[string]apijson.Metadata
+	Extras       map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into DisputeEvidence using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *DisputeEvidence) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -400,9 +406,6 @@ type DisputeNewParams struct {
 	CustomerNote field.Field[string] `json:"customer_note"`
 }
 
-// MarshalJSON serializes DisputeNewParams into an array of bytes using the gjson
-// library. Members of the `jsonFields` field are serialized into the top-level,
-// and will overwrite known members of the same name.
 func (r DisputeNewParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -437,9 +440,6 @@ type DisputeUpdateParams struct {
 	Reason field.Field[DisputeUpdateParamsReason] `json:"reason"`
 }
 
-// MarshalJSON serializes DisputeUpdateParams into an array of bytes using the
-// gjson library. Members of the `jsonFields` field are serialized into the
-// top-level, and will overwrite known members of the same name.
 func (r DisputeUpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
@@ -484,8 +484,7 @@ type DisputeListParams struct {
 	EndingBefore field.Field[string] `query:"ending_before"`
 }
 
-// URLQuery serializes DisputeListParams into a url.Values of the query parameters
-// associated with this value
+// URLQuery serializes [DisputeListParams]'s query parameters as `url.Values`.
 func (r DisputeListParams) URLQuery() (v url.Values) {
 	return apiquery.Marshal(r)
 }
@@ -507,19 +506,18 @@ type DisputeListResponse struct {
 	Data []Dispute `json:"data,required"`
 	// More data exists.
 	HasMore bool `json:"has_more,required"`
-	JSON    DisputeListResponseJSON
+	JSON    disputeListResponseJSON
 }
 
-type DisputeListResponseJSON struct {
-	Data    apijson.Metadata
-	HasMore apijson.Metadata
+// disputeListResponseJSON contains the JSON metadata for the struct
+// [DisputeListResponse]
+type disputeListResponseJSON struct {
+	Data    apijson.Field
+	HasMore apijson.Field
 	raw     string
-	Extras  map[string]apijson.Metadata
+	Extras  map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into DisputeListResponse using the
-// internal json library. Unrecognized fields are stored in the `jsonFields`
-// property.
 func (r *DisputeListResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -541,8 +539,8 @@ type DisputeListEvidencesParams struct {
 	EndingBefore field.Field[string] `query:"ending_before"`
 }
 
-// URLQuery serializes DisputeListEvidencesParams into a url.Values of the query
-// parameters associated with this value
+// URLQuery serializes [DisputeListEvidencesParams]'s query parameters as
+// `url.Values`.
 func (r DisputeListEvidencesParams) URLQuery() (v url.Values) {
 	return apiquery.Marshal(r)
 }
@@ -551,19 +549,18 @@ type DisputeListEvidencesResponse struct {
 	Data []DisputeEvidence `json:"data,required"`
 	// More data exists.
 	HasMore bool `json:"has_more,required"`
-	JSON    DisputeListEvidencesResponseJSON
+	JSON    disputeListEvidencesResponseJSON
 }
 
-type DisputeListEvidencesResponseJSON struct {
-	Data    apijson.Metadata
-	HasMore apijson.Metadata
+// disputeListEvidencesResponseJSON contains the JSON metadata for the struct
+// [DisputeListEvidencesResponse]
+type disputeListEvidencesResponseJSON struct {
+	Data    apijson.Field
+	HasMore apijson.Field
 	raw     string
-	Extras  map[string]apijson.Metadata
+	Extras  map[string]apijson.Field
 }
 
-// UnmarshalJSON deserializes the provided bytes into DisputeListEvidencesResponse
-// using the internal json library. Unrecognized fields are stored in the
-// `jsonFields` property.
 func (r *DisputeListEvidencesResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
