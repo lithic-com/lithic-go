@@ -7,7 +7,7 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
-	"github.com/lithic-com/lithic-go/internal/field"
+	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/option"
 )
@@ -96,9 +96,9 @@ func (r *ResponderEndpointCreateResponse) UnmarshalJSON(data []byte) (err error)
 
 type ResponderEndpointNewParams struct {
 	// The URL for the responder endpoint (must be http(s)).
-	URL field.Field[string] `json:"url" format:"uri"`
+	URL param.Field[string] `json:"url" format:"uri"`
 	// The type of the endpoint.
-	Type field.Field[ResponderEndpointNewParamsType] `json:"type"`
+	Type param.Field[ResponderEndpointNewParamsType] `json:"type"`
 }
 
 func (r ResponderEndpointNewParams) MarshalJSON() (data []byte, err error) {
@@ -113,7 +113,7 @@ const (
 
 type ResponderEndpointDeleteParams struct {
 	// The type of the endpoint.
-	Type field.Field[ResponderEndpointDeleteParamsType] `query:"type,required"`
+	Type param.Field[ResponderEndpointDeleteParamsType] `query:"type,required"`
 }
 
 // URLQuery serializes [ResponderEndpointDeleteParams]'s query parameters as
@@ -130,7 +130,7 @@ const (
 
 type ResponderEndpointCheckStatusParams struct {
 	// The type of the endpoint.
-	Type field.Field[ResponderEndpointCheckStatusParamsType] `query:"type,required"`
+	Type param.Field[ResponderEndpointCheckStatusParamsType] `query:"type,required"`
 }
 
 // URLQuery serializes [ResponderEndpointCheckStatusParams]'s query parameters as

@@ -9,7 +9,7 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
-	"github.com/lithic-com/lithic-go/internal/field"
+	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
@@ -58,11 +58,11 @@ func (r *FinancialAccountBalanceService) ListAutoPaging(ctx context.Context, fin
 
 type FinancialAccountBalanceListParams struct {
 	// UTC date of the balance to retrieve. Defaults to latest available balance
-	BalanceDate field.Field[time.Time] `query:"balance_date" format:"date-time"`
+	BalanceDate param.Field[time.Time] `query:"balance_date" format:"date-time"`
 	// Balance after a given financial event occured. For example, passing the
 	// event_token of a $5 CARD_CLEARING financial event will return a balance
 	// decreased by $5
-	LastTransactionEventToken field.Field[string] `query:"last_transaction_event_token" format:"uuid"`
+	LastTransactionEventToken param.Field[string] `query:"last_transaction_event_token" format:"uuid"`
 }
 
 // URLQuery serializes [FinancialAccountBalanceListParams]'s query parameters as

@@ -9,7 +9,7 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
-	"github.com/lithic-com/lithic-go/internal/field"
+	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
@@ -145,14 +145,14 @@ func (r *SubscriptionRetrieveSecretResponse) UnmarshalJSON(data []byte) (err err
 
 type EventSubscriptionNewParams struct {
 	// Event subscription description.
-	Description field.Field[string] `json:"description"`
+	Description param.Field[string] `json:"description"`
 	// Whether the event subscription is active (false) or inactive (true).
-	Disabled field.Field[bool] `json:"disabled"`
+	Disabled param.Field[bool] `json:"disabled"`
 	// Indicates types of events that will be sent to this subscription. If left blank,
 	// all types will be sent.
-	EventTypes field.Field[[]EventSubscriptionNewParamsEventTypes] `json:"event_types"`
+	EventTypes param.Field[[]EventSubscriptionNewParamsEventTypes] `json:"event_types"`
 	// URL to which event webhooks will be sent. URL must be a valid HTTPS address.
-	URL field.Field[string] `json:"url,required" format:"uri"`
+	URL param.Field[string] `json:"url,required" format:"uri"`
 }
 
 func (r EventSubscriptionNewParams) MarshalJSON() (data []byte, err error) {
@@ -168,14 +168,14 @@ const (
 
 type EventSubscriptionUpdateParams struct {
 	// Event subscription description.
-	Description field.Field[string] `json:"description"`
+	Description param.Field[string] `json:"description"`
 	// Whether the event subscription is active (false) or inactive (true).
-	Disabled field.Field[bool] `json:"disabled"`
+	Disabled param.Field[bool] `json:"disabled"`
 	// Indicates types of events that will be sent to this subscription. If left blank,
 	// all types will be sent.
-	EventTypes field.Field[[]EventSubscriptionUpdateParamsEventTypes] `json:"event_types"`
+	EventTypes param.Field[[]EventSubscriptionUpdateParamsEventTypes] `json:"event_types"`
 	// URL to which event webhooks will be sent. URL must be a valid HTTPS address.
-	URL field.Field[string] `json:"url,required" format:"uri"`
+	URL param.Field[string] `json:"url,required" format:"uri"`
 }
 
 func (r EventSubscriptionUpdateParams) MarshalJSON() (data []byte, err error) {
@@ -191,13 +191,13 @@ const (
 
 type EventSubscriptionListParams struct {
 	// Page size (for pagination).
-	PageSize field.Field[int64] `query:"page_size"`
+	PageSize param.Field[int64] `query:"page_size"`
 	// The unique identifier of the last item in the previous page. Used to retrieve
 	// the next page.
-	StartingAfter field.Field[string] `query:"starting_after"`
+	StartingAfter param.Field[string] `query:"starting_after"`
 	// The unique identifier of the first item in the previous page. Used to retrieve
 	// the previous page.
-	EndingBefore field.Field[string] `query:"ending_before"`
+	EndingBefore param.Field[string] `query:"ending_before"`
 }
 
 // URLQuery serializes [EventSubscriptionListParams]'s query parameters as
@@ -228,10 +228,10 @@ func (r *EventSubscriptionListResponse) UnmarshalJSON(data []byte) (err error) {
 type EventSubscriptionRecoverParams struct {
 	// Date string in RFC 3339 format. Only entries created after the specified date
 	// will be included. UTC time zone.
-	Begin field.Field[time.Time] `query:"begin" format:"date-time"`
+	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Date string in RFC 3339 format. Only entries created before the specified date
 	// will be included. UTC time zone.
-	End field.Field[time.Time] `query:"end" format:"date-time"`
+	End param.Field[time.Time] `query:"end" format:"date-time"`
 }
 
 // URLQuery serializes [EventSubscriptionRecoverParams]'s query parameters as
@@ -243,10 +243,10 @@ func (r EventSubscriptionRecoverParams) URLQuery() (v url.Values) {
 type EventSubscriptionReplayMissingParams struct {
 	// Date string in RFC 3339 format. Only entries created after the specified date
 	// will be included. UTC time zone.
-	Begin field.Field[time.Time] `query:"begin" format:"date-time"`
+	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Date string in RFC 3339 format. Only entries created before the specified date
 	// will be included. UTC time zone.
-	End field.Field[time.Time] `query:"end" format:"date-time"`
+	End param.Field[time.Time] `query:"end" format:"date-time"`
 }
 
 // URLQuery serializes [EventSubscriptionReplayMissingParams]'s query parameters as

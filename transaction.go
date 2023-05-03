@@ -9,7 +9,7 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
-	"github.com/lithic-com/lithic-go/internal/field"
+	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
@@ -717,22 +717,22 @@ func (r *TransactionSimulateAuthorizationAdviceResponse) UnmarshalJSON(data []by
 
 type TransactionListParams struct {
 	// Filters for transactions associated with a specific account.
-	AccountToken field.Field[string] `query:"account_token" format:"uuid"`
+	AccountToken param.Field[string] `query:"account_token" format:"uuid"`
 	// Filters for transactions associated with a specific card.
-	CardToken field.Field[string] `query:"card_token" format:"uuid"`
+	CardToken param.Field[string] `query:"card_token" format:"uuid"`
 	// Filters for transactions using transaction result field. Can filter by
 	// `APPROVED`, and `DECLINED`.
-	Result field.Field[TransactionListParamsResult] `query:"result"`
+	Result param.Field[TransactionListParamsResult] `query:"result"`
 	// Date string in RFC 3339 format. Only entries created after the specified date
 	// will be included. UTC time zone.
-	Begin field.Field[time.Time] `query:"begin" format:"date-time"`
+	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Date string in RFC 3339 format. Only entries created before the specified date
 	// will be included. UTC time zone.
-	End field.Field[time.Time] `query:"end" format:"date-time"`
+	End param.Field[time.Time] `query:"end" format:"date-time"`
 	// Page (for pagination).
-	Page field.Field[int64] `query:"page"`
+	Page param.Field[int64] `query:"page"`
 	// Page size (for pagination).
-	PageSize field.Field[int64] `query:"page_size"`
+	PageSize param.Field[int64] `query:"page_size"`
 }
 
 // URLQuery serializes [TransactionListParams]'s query parameters as `url.Values`.
@@ -779,11 +779,11 @@ type TransactionSimulateAuthorizationParams struct {
 	// the simulated transaction. For example, entering 100 in this field will appear
 	// as a -100 amount in the transaction. For balance inquiries, this field must be
 	// set to 0.
-	Amount field.Field[int64] `json:"amount,required"`
+	Amount param.Field[int64] `json:"amount,required"`
 	// Merchant descriptor.
-	Descriptor field.Field[string] `json:"descriptor,required"`
+	Descriptor param.Field[string] `json:"descriptor,required"`
 	// Sixteen digit card number.
-	Pan field.Field[string] `json:"pan,required"`
+	Pan param.Field[string] `json:"pan,required"`
 	// Type of event to simulate.
 	//
 	//   - `AUTHORIZATION` is a dual message purchase authorization, meaning a subsequent
@@ -800,22 +800,22 @@ type TransactionSimulateAuthorizationParams struct {
 	//   - `FINANCIAL_CREDIT_AUTHORIZATION` is a single message request from a merchant
 	//     to credit funds immediately, and no subsequent clearing is required to settle
 	//     the transaction.
-	Status field.Field[TransactionSimulateAuthorizationParamsStatus] `json:"status"`
+	Status param.Field[TransactionSimulateAuthorizationParamsStatus] `json:"status"`
 	// Unique identifier to identify the payment card acceptor.
-	MerchantAcceptorID field.Field[string] `json:"merchant_acceptor_id"`
+	MerchantAcceptorID param.Field[string] `json:"merchant_acceptor_id"`
 	// 3-digit alphabetic ISO 4217 currency code.
-	MerchantCurrency field.Field[string] `json:"merchant_currency"`
+	MerchantCurrency param.Field[string] `json:"merchant_currency"`
 	// Amount of the transaction to be simulated in currency specified in
 	// merchant_currency, including any acquirer fees.
-	MerchantAmount field.Field[int64] `json:"merchant_amount"`
+	MerchantAmount param.Field[int64] `json:"merchant_amount"`
 	// Merchant category code for the transaction to be simulated. A four-digit number
 	// listed in ISO 18245. Supported merchant category codes can be found
 	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
-	Mcc field.Field[string] `json:"mcc"`
+	Mcc param.Field[string] `json:"mcc"`
 	// Set to true if the terminal is capable of partial approval otherwise false.
 	// Partial approval is when part of a transaction is approved and another payment
 	// must be used for the remainder.
-	PartialApprovalCapable field.Field[bool] `json:"partial_approval_capable"`
+	PartialApprovalCapable param.Field[bool] `json:"partial_approval_capable"`
 }
 
 func (r TransactionSimulateAuthorizationParams) MarshalJSON() (data []byte, err error) {
@@ -835,9 +835,9 @@ const (
 type TransactionSimulateAuthorizationAdviceParams struct {
 	// Amount (in cents) to authorize. This amount will override the transaction's
 	// amount that was originally set by /v1/simulate/authorize.
-	Amount field.Field[int64] `json:"amount,required"`
+	Amount param.Field[int64] `json:"amount,required"`
 	// The transaction token returned from the /v1/simulate/authorize response.
-	Token field.Field[string] `json:"token,required" format:"uuid"`
+	Token param.Field[string] `json:"token,required" format:"uuid"`
 }
 
 func (r TransactionSimulateAuthorizationAdviceParams) MarshalJSON() (data []byte, err error) {
@@ -851,9 +851,9 @@ type TransactionSimulateClearingParams struct {
 	// If no amount is supplied to this endpoint, the amount of the transaction will be
 	// captured. Any transaction that has any amount completed at all do not have
 	// access to this behavior.
-	Amount field.Field[int64] `json:"amount"`
+	Amount param.Field[int64] `json:"amount"`
 	// The transaction token returned from the /v1/simulate/authorize response.
-	Token field.Field[string] `json:"token,required" format:"uuid"`
+	Token param.Field[string] `json:"token,required" format:"uuid"`
 }
 
 func (r TransactionSimulateClearingParams) MarshalJSON() (data []byte, err error) {
@@ -864,17 +864,17 @@ type TransactionSimulateCreditAuthorizationParams struct {
 	// Amount (in cents). Any value entered will be converted into a negative amount in
 	// the simulated transaction. For example, entering 100 in this field will appear
 	// as a -100 amount in the transaction.
-	Amount field.Field[int64] `json:"amount,required"`
+	Amount param.Field[int64] `json:"amount,required"`
 	// Merchant descriptor.
-	Descriptor field.Field[string] `json:"descriptor,required"`
+	Descriptor param.Field[string] `json:"descriptor,required"`
 	// Sixteen digit card number.
-	Pan field.Field[string] `json:"pan,required"`
+	Pan param.Field[string] `json:"pan,required"`
 	// Unique identifier to identify the payment card acceptor.
-	MerchantAcceptorID field.Field[string] `json:"merchant_acceptor_id"`
+	MerchantAcceptorID param.Field[string] `json:"merchant_acceptor_id"`
 	// Merchant category code for the transaction to be simulated. A four-digit number
 	// listed in ISO 18245. Supported merchant category codes can be found
 	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
-	Mcc field.Field[string] `json:"mcc"`
+	Mcc param.Field[string] `json:"mcc"`
 }
 
 func (r TransactionSimulateCreditAuthorizationParams) MarshalJSON() (data []byte, err error) {
@@ -883,11 +883,11 @@ func (r TransactionSimulateCreditAuthorizationParams) MarshalJSON() (data []byte
 
 type TransactionSimulateReturnParams struct {
 	// Amount (in cents) to authorize.
-	Amount field.Field[int64] `json:"amount,required"`
+	Amount param.Field[int64] `json:"amount,required"`
 	// Merchant descriptor.
-	Descriptor field.Field[string] `json:"descriptor,required"`
+	Descriptor param.Field[string] `json:"descriptor,required"`
 	// Sixteen digit card number.
-	Pan field.Field[string] `json:"pan,required"`
+	Pan param.Field[string] `json:"pan,required"`
 }
 
 func (r TransactionSimulateReturnParams) MarshalJSON() (data []byte, err error) {
@@ -896,7 +896,7 @@ func (r TransactionSimulateReturnParams) MarshalJSON() (data []byte, err error) 
 
 type TransactionSimulateReturnReversalParams struct {
 	// The transaction token returned from the /v1/simulate/authorize response.
-	Token field.Field[string] `json:"token,required" format:"uuid"`
+	Token param.Field[string] `json:"token,required" format:"uuid"`
 }
 
 func (r TransactionSimulateReturnReversalParams) MarshalJSON() (data []byte, err error) {
@@ -906,15 +906,15 @@ func (r TransactionSimulateReturnReversalParams) MarshalJSON() (data []byte, err
 type TransactionSimulateVoidParams struct {
 	// Amount (in cents) to void. Typically this will match the original authorization,
 	// but may be less.
-	Amount field.Field[int64] `json:"amount"`
+	Amount param.Field[int64] `json:"amount"`
 	// The transaction token returned from the /v1/simulate/authorize response.
-	Token field.Field[string] `json:"token,required" format:"uuid"`
+	Token param.Field[string] `json:"token,required" format:"uuid"`
 	// Type of event to simulate. Defaults to `AUTHORIZATION_REVERSAL`.
 	//
 	//   - `AUTHORIZATION_EXPIRY` indicates authorization has expired and been reversed
 	//     by Lithic.
 	//   - `AUTHORIZATION_REVERSAL` indicates authorization was reversed by the merchant.
-	Type field.Field[TransactionSimulateVoidParamsType] `json:"type"`
+	Type param.Field[TransactionSimulateVoidParamsType] `json:"type"`
 }
 
 func (r TransactionSimulateVoidParams) MarshalJSON() (data []byte, err error) {

@@ -9,7 +9,7 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
-	"github.com/lithic-com/lithic-go/internal/field"
+	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
@@ -67,23 +67,23 @@ func (r *FinancialAccountFinancialTransactionService) ListAutoPaging(ctx context
 
 type FinancialTransactionListParams struct {
 	// Financial Transaction category to be returned.
-	Category field.Field[FinancialTransactionListParamsCategory] `query:"category"`
+	Category param.Field[FinancialTransactionListParamsCategory] `query:"category"`
 	// Financial Transaction status to be returned.
-	Status field.Field[FinancialTransactionListParamsStatus] `query:"status"`
+	Status param.Field[FinancialTransactionListParamsStatus] `query:"status"`
 	// Financial Transaction result to be returned.
-	Result field.Field[FinancialTransactionListParamsResult] `query:"result"`
+	Result param.Field[FinancialTransactionListParamsResult] `query:"result"`
 	// Date string in RFC 3339 format. Only entries created after the specified date
 	// will be included. UTC time zone.
-	Begin field.Field[time.Time] `query:"begin" format:"date-time"`
+	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Date string in RFC 3339 format. Only entries created before the specified date
 	// will be included. UTC time zone.
-	End field.Field[time.Time] `query:"end" format:"date-time"`
+	End param.Field[time.Time] `query:"end" format:"date-time"`
 	// The unique identifier of the last item in the previous page. Used to retrieve
 	// the next page.
-	StartingAfter field.Field[string] `query:"starting_after"`
+	StartingAfter param.Field[string] `query:"starting_after"`
 	// The unique identifier of the first item in the previous page. Used to retrieve
 	// the previous page.
-	EndingBefore field.Field[string] `query:"ending_before"`
+	EndingBefore param.Field[string] `query:"ending_before"`
 }
 
 // URLQuery serializes [FinancialTransactionListParams]'s query parameters as

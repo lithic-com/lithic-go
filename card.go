@@ -12,7 +12,7 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
-	"github.com/lithic-com/lithic-go/internal/field"
+	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
@@ -426,7 +426,7 @@ const (
 type EmbedRequestParams struct {
 	// A publicly available URI, so the white-labeled card element can be styled with
 	// the client's branding.
-	Css field.Field[string] `json:"css"`
+	Css param.Field[string] `json:"css"`
 	// An RFC 3339 timestamp for when the request should expire. UTC time zone.
 	//
 	// If no timezone is specified, UTC will be used. If payload does not contain an
@@ -436,14 +436,14 @@ type EmbedRequestParams struct {
 	// [replay attack](https://en.wikipedia.org/wiki/Replay_attack). Without supplying
 	// the `expiration`, in the event that a malicious user gets a copy of your request
 	// in transit, they will be able to obtain the response data indefinitely.
-	Expiration field.Field[time.Time] `json:"expiration" format:"date-time"`
+	Expiration param.Field[time.Time] `json:"expiration" format:"date-time"`
 	// Globally unique identifier for the card to be displayed.
-	Token field.Field[string] `json:"token,required" format:"uuid"`
+	Token param.Field[string] `json:"token,required" format:"uuid"`
 	// Required if you want to post the element clicked to the parent iframe.
 	//
 	// If you supply this param, you can also capture click events in the parent iframe
 	// by adding an event listener.
-	TargetOrigin field.Field[string] `json:"target_origin"`
+	TargetOrigin param.Field[string] `json:"target_origin"`
 }
 
 func (r EmbedRequestParams) MarshalJSON() (data []byte, err error) {
@@ -472,29 +472,29 @@ type CardNewParams struct {
 	// with. Required for programs enrolling users using the
 	// [/account_holders endpoint](https://docs.lithic.com/docs/account-holders-kyc).
 	// See [Managing Your Program](doc:managing-your-program) for more information.
-	AccountToken field.Field[string] `json:"account_token" format:"uuid"`
+	AccountToken param.Field[string] `json:"account_token" format:"uuid"`
 	// For card programs with more than one BIN range. This must be configured with
 	// Lithic before use. Identifies the card program/BIN range under which to create
 	// the card. If omitted, will utilize the program's default `card_program_token`.
 	// In Sandbox, use 00000000-0000-0000-1000-000000000000 and
 	// 00000000-0000-0000-2000-000000000000 to test creating cards on specific card
 	// programs.
-	CardProgramToken field.Field[string] `json:"card_program_token" format:"uuid"`
+	CardProgramToken param.Field[string] `json:"card_program_token" format:"uuid"`
 	// Two digit (MM) expiry month. If neither `exp_month` nor `exp_year` is provided,
 	// an expiration date will be generated.
-	ExpMonth field.Field[string] `json:"exp_month"`
+	ExpMonth param.Field[string] `json:"exp_month"`
 	// Four digit (yyyy) expiry year. If neither `exp_month` nor `exp_year` is
 	// provided, an expiration date will be generated.
-	ExpYear field.Field[string] `json:"exp_year"`
+	ExpYear param.Field[string] `json:"exp_year"`
 	// Friendly name to identify the card. We recommend against using this field to
 	// store JSON data as it can cause unexpected behavior.
-	Memo field.Field[string] `json:"memo"`
+	Memo param.Field[string] `json:"memo"`
 	// Amount (in cents) to limit approved authorizations. Transaction requests above
 	// the spend limit will be declined. Note that a spend limit of 0 is effectively no
 	// limit, and should only be used to reset or remove a prior limit. Only a limit of
 	// 1 or above will result in declined transactions due to checks against the card
 	// limit.
-	SpendLimit field.Field[int64] `json:"spend_limit"`
+	SpendLimit param.Field[int64] `json:"spend_limit"`
 	// Spend limit duration values:
 	//
 	//   - `ANNUALLY` - Card will authorize transactions up to spend limit in a calendar
@@ -505,14 +505,14 @@ type CardNewParams struct {
 	//     trailing month. Month is calculated as this calendar date one month prior.
 	//   - `TRANSACTION` - Card will authorize multiple transactions if each individual
 	//     transaction is under the spend limit.
-	SpendLimitDuration field.Field[SpendLimitDuration] `json:"spend_limit_duration"`
+	SpendLimitDuration param.Field[SpendLimitDuration] `json:"spend_limit_duration"`
 	// Card state values:
 	//
 	//   - `OPEN` - Card will approve authorizations (if they match card and account
 	//     parameters).
 	//   - `PAUSED` - Card will decline authorizations, but can be resumed at a later
 	//     time.
-	State field.Field[CardNewParamsState] `json:"state"`
+	State param.Field[CardNewParamsState] `json:"state"`
 	// Card types:
 	//
 	//   - `VIRTUAL` - Card will authorize at any merchant and can be added to a digital
@@ -526,21 +526,21 @@ type CardNewParams struct {
 	//     successfully authorizes the card.
 	//   - `SINGLE_USE` - _[Deprecated]_ Card is closed upon first successful
 	//     authorization.
-	Type field.Field[CardNewParamsType] `json:"type,required"`
+	Type param.Field[CardNewParamsType] `json:"type,required"`
 	// Encrypted PIN block (in base64). Only applies to cards of type `PHYSICAL` and
 	// `VIRTUAL`. See
 	// [Encrypted PIN Block](https://docs.lithic.com/docs/cards#encrypted-pin-block-enterprise).
-	Pin field.Field[string] `json:"pin"`
+	Pin param.Field[string] `json:"pin"`
 	// Specifies the digital card art to be displayed in the user’s digital wallet
 	// after tokenization. This artwork must be approved by Mastercard and configured
 	// by Lithic to use. See
 	// [Flexible Card Art Guide](https://docs.lithic.com/docs/about-digital-wallets#flexible-card-art).
-	DigitalCardArtToken field.Field[string] `json:"digital_card_art_token" format:"uuid"`
+	DigitalCardArtToken param.Field[string] `json:"digital_card_art_token" format:"uuid"`
 	// Only applicable to cards of type `PHYSICAL`. This must be configured with Lithic
 	// before use. Specifies the configuration (i.e., physical card art) that the card
 	// should be manufactured with.
-	ProductID       field.Field[string]                      `json:"product_id"`
-	ShippingAddress field.Field[shared.ShippingAddressParam] `json:"shipping_address"`
+	ProductID       param.Field[string]                      `json:"product_id"`
+	ShippingAddress param.Field[shared.ShippingAddressParam] `json:"shipping_address"`
 	// Shipping method for the card. Only applies to cards of type PHYSICAL. Use of
 	// options besides `STANDARD` require additional permissions.
 	//
@@ -550,7 +550,7 @@ type CardNewParams struct {
 	//     with tracking
 	//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
 	//     tracking
-	ShippingMethod field.Field[CardNewParamsShippingMethod] `json:"shipping_method"`
+	ShippingMethod param.Field[CardNewParamsShippingMethod] `json:"shipping_method"`
 }
 
 func (r CardNewParams) MarshalJSON() (data []byte, err error) {
@@ -584,13 +584,13 @@ const (
 type CardUpdateParams struct {
 	// Friendly name to identify the card. We recommend against using this field to
 	// store JSON data as it can cause unexpected behavior.
-	Memo field.Field[string] `json:"memo"`
+	Memo param.Field[string] `json:"memo"`
 	// Amount (in cents) to limit approved authorizations. Transaction requests above
 	// the spend limit will be declined. Note that a spend limit of 0 is effectively no
 	// limit, and should only be used to reset or remove a prior limit. Only a limit of
 	// 1 or above will result in declined transactions due to checks against the card
 	// limit.
-	SpendLimit field.Field[int64] `json:"spend_limit"`
+	SpendLimit param.Field[int64] `json:"spend_limit"`
 	// Spend limit duration values:
 	//
 	//   - `ANNUALLY` - Card will authorize transactions up to spend limit in a calendar
@@ -601,10 +601,10 @@ type CardUpdateParams struct {
 	//     trailing month. Month is calculated as this calendar date one month prior.
 	//   - `TRANSACTION` - Card will authorize multiple transactions if each individual
 	//     transaction is under the spend limit.
-	SpendLimitDuration field.Field[SpendLimitDuration] `json:"spend_limit_duration"`
+	SpendLimitDuration param.Field[SpendLimitDuration] `json:"spend_limit_duration"`
 	// Identifier for any Auth Rules that will be applied to transactions taking place
 	// with the card.
-	AuthRuleToken field.Field[string] `json:"auth_rule_token"`
+	AuthRuleToken param.Field[string] `json:"auth_rule_token"`
 	// Card state values:
 	//
 	//   - `CLOSED` - Card will no longer approve authorizations. Closing a card cannot
@@ -613,16 +613,16 @@ type CardUpdateParams struct {
 	//     parameters).
 	//   - `PAUSED` - Card will decline authorizations, but can be resumed at a later
 	//     time.
-	State field.Field[CardUpdateParamsState] `json:"state"`
+	State param.Field[CardUpdateParamsState] `json:"state"`
 	// Encrypted PIN block (in base64). Only applies to cards of type `PHYSICAL` and
 	// `VIRTUAL`. See
 	// [Encrypted PIN Block](https://docs.lithic.com/docs/cards#encrypted-pin-block-enterprise).
-	Pin field.Field[string] `json:"pin"`
+	Pin param.Field[string] `json:"pin"`
 	// Specifies the digital card art to be displayed in the user’s digital wallet
 	// after tokenization. This artwork must be approved by Mastercard and configured
 	// by Lithic to use. See
 	// [Flexible Card Art Guide](https://docs.lithic.com/docs/about-digital-wallets#flexible-card-art).
-	DigitalCardArtToken field.Field[string] `json:"digital_card_art_token" format:"uuid"`
+	DigitalCardArtToken param.Field[string] `json:"digital_card_art_token" format:"uuid"`
 }
 
 func (r CardUpdateParams) MarshalJSON() (data []byte, err error) {
@@ -639,17 +639,17 @@ const (
 
 type CardListParams struct {
 	// Returns cards associated with the specified account.
-	AccountToken field.Field[string] `query:"account_token" format:"uuid"`
+	AccountToken param.Field[string] `query:"account_token" format:"uuid"`
 	// Date string in RFC 3339 format. Only entries created after the specified date
 	// will be included. UTC time zone.
-	Begin field.Field[time.Time] `query:"begin" format:"date-time"`
+	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Date string in RFC 3339 format. Only entries created before the specified date
 	// will be included. UTC time zone.
-	End field.Field[time.Time] `query:"end" format:"date-time"`
+	End param.Field[time.Time] `query:"end" format:"date-time"`
 	// Page (for pagination).
-	Page field.Field[int64] `query:"page"`
+	Page param.Field[int64] `query:"page"`
 	// Page size (for pagination).
-	PageSize field.Field[int64] `query:"page_size"`
+	PageSize param.Field[int64] `query:"page_size"`
 }
 
 // URLQuery serializes [CardListParams]'s query parameters as `url.Values`.
@@ -685,9 +685,9 @@ func (r *CardListResponse) UnmarshalJSON(data []byte) (err error) {
 
 type CardEmbedParams struct {
 	// A base64 encoded JSON string of an EmbedRequest to specify which card to load.
-	EmbedRequest field.Field[string] `query:"embed_request,required"`
+	EmbedRequest param.Field[string] `query:"embed_request,required"`
 	// SHA256 HMAC of the embed_request JSON string with base64 digest.
-	Hmac field.Field[string] `query:"hmac,required"`
+	Hmac param.Field[string] `query:"hmac,required"`
 }
 
 // URLQuery serializes [CardEmbedParams]'s query parameters as `url.Values`.
@@ -697,17 +697,17 @@ func (r CardEmbedParams) URLQuery() (v url.Values) {
 
 type CardProvisionParams struct {
 	// Name of digital wallet provider.
-	DigitalWallet field.Field[CardProvisionParamsDigitalWallet] `json:"digital_wallet"`
+	DigitalWallet param.Field[CardProvisionParamsDigitalWallet] `json:"digital_wallet"`
 	// Required for `APPLE_PAY`. Base64 cryptographic nonce provided by the device's
 	// wallet.
-	Nonce field.Field[string] `json:"nonce" format:"byte"`
+	Nonce param.Field[string] `json:"nonce" format:"byte"`
 	// Required for `APPLE_PAY`. Base64 cryptographic nonce provided by the device's
 	// wallet.
-	NonceSignature field.Field[string] `json:"nonce_signature" format:"byte"`
+	NonceSignature param.Field[string] `json:"nonce_signature" format:"byte"`
 	// Required for `APPLE_PAY`. Apple's public leaf certificate. Base64 encoded in PEM
 	// format with headers `(-----BEGIN CERTIFICATE-----)` and trailers omitted.
 	// Provided by the device's wallet.
-	Certificate field.Field[string] `json:"certificate" format:"byte"`
+	Certificate param.Field[string] `json:"certificate" format:"byte"`
 }
 
 func (r CardProvisionParams) MarshalJSON() (data []byte, err error) {
@@ -724,7 +724,7 @@ const (
 
 type CardReissueParams struct {
 	// If omitted, the previous shipping address will be used.
-	ShippingAddress field.Field[shared.ShippingAddressParam] `json:"shipping_address"`
+	ShippingAddress param.Field[shared.ShippingAddressParam] `json:"shipping_address"`
 	// Shipping method for the card. Use of options besides `STANDARD` require
 	// additional permissions.
 	//
@@ -734,11 +734,11 @@ type CardReissueParams struct {
 	//     with tracking
 	//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
 	//     tracking
-	ShippingMethod field.Field[CardReissueParamsShippingMethod] `json:"shipping_method"`
+	ShippingMethod param.Field[CardReissueParamsShippingMethod] `json:"shipping_method"`
 	// Specifies the configuration (e.g. physical card art) that the card should be
 	// manufactured with, and only applies to cards of type `PHYSICAL`. This must be
 	// configured with Lithic before use.
-	ProductID field.Field[string] `json:"product_id"`
+	ProductID param.Field[string] `json:"product_id"`
 }
 
 func (r CardReissueParams) MarshalJSON() (data []byte, err error) {

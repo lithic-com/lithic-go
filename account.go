@@ -9,7 +9,7 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
-	"github.com/lithic-com/lithic-go/internal/field"
+	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
@@ -223,24 +223,24 @@ type AccountUpdateParams struct {
 	// limit of 0 is effectively no limit, and should only be used to reset or remove a
 	// prior limit. Only a limit of 1 or above will result in declined transactions due
 	// to checks against the account limit.
-	DailySpendLimit field.Field[int64] `json:"daily_spend_limit"`
+	DailySpendLimit param.Field[int64] `json:"daily_spend_limit"`
 	// Amount (in cents) for the account's new lifetime limit. Once this limit is
 	// reached, no transactions will be accepted on any card created for this account
 	// until the limit is updated. Note that a spend limit of 0 is effectively no
 	// limit, and should only be used to reset or remove a prior limit. Only a limit of
 	// 1 or above will result in declined transactions due to checks against the
 	// account limit.
-	LifetimeSpendLimit field.Field[int64] `json:"lifetime_spend_limit"`
+	LifetimeSpendLimit param.Field[int64] `json:"lifetime_spend_limit"`
 	// Amount (in cents) for the account's new monthly spend limit. Note that a spend
 	// limit of 0 is effectively no limit, and should only be used to reset or remove a
 	// prior limit. Only a limit of 1 or above will result in declined transactions due
 	// to checks against the account limit.
-	MonthlySpendLimit field.Field[int64] `json:"monthly_spend_limit"`
+	MonthlySpendLimit param.Field[int64] `json:"monthly_spend_limit"`
 	// Address used during Address Verification Service (AVS) checks during
 	// transactions if enabled via Auth Rules.
-	VerificationAddress field.Field[AccountUpdateParamsVerificationAddress] `json:"verification_address"`
+	VerificationAddress param.Field[AccountUpdateParamsVerificationAddress] `json:"verification_address"`
 	// Account states.
-	State field.Field[AccountUpdateParamsState] `json:"state"`
+	State param.Field[AccountUpdateParamsState] `json:"state"`
 }
 
 func (r AccountUpdateParams) MarshalJSON() (data []byte, err error) {
@@ -250,12 +250,12 @@ func (r AccountUpdateParams) MarshalJSON() (data []byte, err error) {
 // Address used during Address Verification Service (AVS) checks during
 // transactions if enabled via Auth Rules.
 type AccountUpdateParamsVerificationAddress struct {
-	Address1   field.Field[string] `json:"address1"`
-	Address2   field.Field[string] `json:"address2"`
-	City       field.Field[string] `json:"city"`
-	State      field.Field[string] `json:"state"`
-	PostalCode field.Field[string] `json:"postal_code"`
-	Country    field.Field[string] `json:"country"`
+	Address1   param.Field[string] `json:"address1"`
+	Address2   param.Field[string] `json:"address2"`
+	City       param.Field[string] `json:"city"`
+	State      param.Field[string] `json:"state"`
+	PostalCode param.Field[string] `json:"postal_code"`
+	Country    param.Field[string] `json:"country"`
 }
 
 type AccountUpdateParamsState string
@@ -268,14 +268,14 @@ const (
 type AccountListParams struct {
 	// Date string in RFC 3339 format. Only entries created after the specified date
 	// will be included. UTC time zone.
-	Begin field.Field[time.Time] `query:"begin" format:"date-time"`
+	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Date string in RFC 3339 format. Only entries created before the specified date
 	// will be included. UTC time zone.
-	End field.Field[time.Time] `query:"end" format:"date-time"`
+	End param.Field[time.Time] `query:"end" format:"date-time"`
 	// Page (for pagination).
-	Page field.Field[int64] `query:"page"`
+	Page param.Field[int64] `query:"page"`
 	// Page size (for pagination).
-	PageSize field.Field[int64] `query:"page_size"`
+	PageSize param.Field[int64] `query:"page_size"`
 }
 
 // URLQuery serializes [AccountListParams]'s query parameters as `url.Values`.

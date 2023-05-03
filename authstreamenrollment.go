@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
-	"github.com/lithic-com/lithic-go/internal/field"
+	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/option"
 )
@@ -129,7 +129,7 @@ func (r *AuthStreamSecret) UnmarshalJSON(data []byte) (err error) {
 
 type AuthStreamEnrollmentEnrollParams struct {
 	// A user-specified url to receive and respond to ASA request.
-	WebhookURL field.Field[string] `json:"webhook_url" format:"uri"`
+	WebhookURL param.Field[string] `json:"webhook_url" format:"uri"`
 }
 
 func (r AuthStreamEnrollmentEnrollParams) MarshalJSON() (data []byte, err error) {

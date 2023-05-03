@@ -8,7 +8,7 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
-	"github.com/lithic-com/lithic-go/internal/field"
+	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
@@ -267,16 +267,16 @@ func (r *AuthRuleRemoveResponse) UnmarshalJSON(data []byte) (err error) {
 
 type AuthRuleNewParams struct {
 	// Merchant category codes for which the Auth Rule permits transactions.
-	AllowedMcc field.Field[[]string] `json:"allowed_mcc"`
+	AllowedMcc param.Field[[]string] `json:"allowed_mcc"`
 	// Merchant category codes for which the Auth Rule automatically declines
 	// transactions.
-	BlockedMcc field.Field[[]string] `json:"blocked_mcc"`
+	BlockedMcc param.Field[[]string] `json:"blocked_mcc"`
 	// Countries in which the Auth Rule permits transactions. Note that Lithic
 	// maintains a list of countries in which all transactions are blocked; "allowing"
 	// those countries in an Auth Rule does not override the Lithic-wide restrictions.
-	AllowedCountries field.Field[[]string] `json:"allowed_countries"`
+	AllowedCountries param.Field[[]string] `json:"allowed_countries"`
 	// Countries in which the Auth Rule automatically declines transactions.
-	BlockedCountries field.Field[[]string] `json:"blocked_countries"`
+	BlockedCountries param.Field[[]string] `json:"blocked_countries"`
 	// Address verification to confirm that postal code entered at point of transaction
 	// (if applicable) matches the postal code on file for a given card. Since this
 	// check is performed against the address submitted via the Enroll Consumer
@@ -285,16 +285,16 @@ type AuthRuleNewParams struct {
 	//
 	//   - `ZIP_ONLY` - AVS check is performed to confirm ZIP code entered at point of
 	//     transaction (if applicable) matches address on file.
-	AvsType field.Field[AuthRuleNewParamsAvsType] `json:"avs_type"`
+	AvsType param.Field[AuthRuleNewParamsAvsType] `json:"avs_type"`
 	// Array of account_token(s) identifying the accounts that the Auth Rule applies
 	// to. Note that only this field or `card_tokens` can be provided for a given Auth
 	// Rule.
-	AccountTokens field.Field[[]string] `json:"account_tokens"`
+	AccountTokens param.Field[[]string] `json:"account_tokens"`
 	// Array of card_token(s) identifying the cards that the Auth Rule applies to. Note
 	// that only this field or `account_tokens` can be provided for a given Auth Rule.
-	CardTokens field.Field[[]string] `json:"card_tokens"`
+	CardTokens param.Field[[]string] `json:"card_tokens"`
 	// Boolean indicating whether the Auth Rule is applied at the program level.
-	ProgramLevel field.Field[bool] `json:"program_level"`
+	ProgramLevel param.Field[bool] `json:"program_level"`
 }
 
 func (r AuthRuleNewParams) MarshalJSON() (data []byte, err error) {
@@ -311,21 +311,21 @@ type AuthRuleUpdateParams struct {
 	// Array of merchant category codes for which the Auth Rule will permit
 	// transactions. Note that only this field or `blocked_mcc` can be used for a given
 	// Auth Rule.
-	AllowedMcc field.Field[[]string] `json:"allowed_mcc"`
+	AllowedMcc param.Field[[]string] `json:"allowed_mcc"`
 	// Array of merchant category codes for which the Auth Rule will automatically
 	// decline transactions. Note that only this field or `allowed_mcc` can be used for
 	// a given Auth Rule.
-	BlockedMcc field.Field[[]string] `json:"blocked_mcc"`
+	BlockedMcc param.Field[[]string] `json:"blocked_mcc"`
 	// Array of country codes for which the Auth Rule will permit transactions. Note
 	// that only this field or `blocked_countries` can be used for a given Auth Rule.
-	AllowedCountries field.Field[[]string] `json:"allowed_countries"`
+	AllowedCountries param.Field[[]string] `json:"allowed_countries"`
 	// Array of country codes for which the Auth Rule will automatically decline
 	// transactions. Note that only this field or `allowed_countries` can be used for a
 	// given Auth Rule.
-	BlockedCountries field.Field[[]string] `json:"blocked_countries"`
+	BlockedCountries param.Field[[]string] `json:"blocked_countries"`
 	// Address verification to confirm that postal code entered at point of transaction
 	// (if applicable) matches the postal code on file for a given card.
-	AvsType field.Field[AuthRuleUpdateParamsAvsType] `json:"avs_type"`
+	AvsType param.Field[AuthRuleUpdateParamsAvsType] `json:"avs_type"`
 }
 
 func (r AuthRuleUpdateParams) MarshalJSON() (data []byte, err error) {
@@ -340,9 +340,9 @@ const (
 
 type AuthRuleListParams struct {
 	// Page (for pagination).
-	Page field.Field[int64] `query:"page"`
+	Page param.Field[int64] `query:"page"`
 	// Page size (for pagination).
-	PageSize field.Field[int64] `query:"page_size"`
+	PageSize param.Field[int64] `query:"page_size"`
 }
 
 // URLQuery serializes [AuthRuleListParams]'s query parameters as `url.Values`.
@@ -379,13 +379,13 @@ func (r *AuthRuleListResponse) UnmarshalJSON(data []byte) (err error) {
 type AuthRuleApplyParams struct {
 	// Array of card_token(s) identifying the cards that the Auth Rule applies to. Note
 	// that only this field or `account_tokens` can be provided for a given Auth Rule.
-	CardTokens field.Field[[]string] `json:"card_tokens"`
+	CardTokens param.Field[[]string] `json:"card_tokens"`
 	// Array of account_token(s) identifying the accounts that the Auth Rule applies
 	// to. Note that only this field or `card_tokens` can be provided for a given Auth
 	// Rule.
-	AccountTokens field.Field[[]string] `json:"account_tokens"`
+	AccountTokens param.Field[[]string] `json:"account_tokens"`
 	// Boolean indicating whether the Auth Rule is applied at the program level.
-	ProgramLevel field.Field[bool] `json:"program_level"`
+	ProgramLevel param.Field[bool] `json:"program_level"`
 }
 
 func (r AuthRuleApplyParams) MarshalJSON() (data []byte, err error) {
@@ -395,13 +395,13 @@ func (r AuthRuleApplyParams) MarshalJSON() (data []byte, err error) {
 type AuthRuleRemoveParams struct {
 	// Array of card_token(s) identifying the cards that the Auth Rule applies to. Note
 	// that only this field or `account_tokens` can be provided for a given Auth Rule.
-	CardTokens field.Field[[]string] `json:"card_tokens"`
+	CardTokens param.Field[[]string] `json:"card_tokens"`
 	// Array of account_token(s) identifying the accounts that the Auth Rule applies
 	// to. Note that only this field or `card_tokens` can be provided for a given Auth
 	// Rule.
-	AccountTokens field.Field[[]string] `json:"account_tokens"`
+	AccountTokens param.Field[[]string] `json:"account_tokens"`
 	// Boolean indicating whether the Auth Rule is applied at the program level.
-	ProgramLevel field.Field[bool] `json:"program_level"`
+	ProgramLevel param.Field[bool] `json:"program_level"`
 }
 
 func (r AuthRuleRemoveParams) MarshalJSON() (data []byte, err error) {

@@ -8,7 +8,7 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
-	"github.com/lithic-com/lithic-go/internal/field"
+	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
@@ -116,7 +116,7 @@ const (
 
 type AggregateBalanceListParams struct {
 	// Get the aggregate balance for a given Financial Account type.
-	FinancialAccountType field.Field[AggregateBalanceListParamsFinancialAccountType] `query:"financial_account_type"`
+	FinancialAccountType param.Field[AggregateBalanceListParamsFinancialAccountType] `query:"financial_account_type"`
 }
 
 // URLQuery serializes [AggregateBalanceListParams]'s query parameters as

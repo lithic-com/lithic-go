@@ -8,7 +8,7 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
-	"github.com/lithic-com/lithic-go/internal/field"
+	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
@@ -98,17 +98,17 @@ func (r *FinancialAccount) UnmarshalJSON(data []byte) (err error) {
 // Financial Account
 type FinancialAccountParam struct {
 	// Account number for your Lithic-assigned bank account number, if applicable.
-	AccountNumber field.Field[string] `json:"account_number"`
+	AccountNumber param.Field[string] `json:"account_number"`
 	// Date and time for when the financial account was first created.
-	Created field.Field[time.Time] `json:"created,required" format:"date-time"`
+	Created param.Field[time.Time] `json:"created,required" format:"date-time"`
 	// Routing number for your Lithic-assigned bank account number, if applicable.
-	RoutingNumber field.Field[string] `json:"routing_number"`
+	RoutingNumber param.Field[string] `json:"routing_number"`
 	// Globally unique identifier for the financial account.
-	Token field.Field[string] `json:"token,required" format:"uuid"`
+	Token param.Field[string] `json:"token,required" format:"uuid"`
 	// Type of financial account
-	Type field.Field[FinancialAccountType] `json:"type,required"`
+	Type param.Field[FinancialAccountType] `json:"type,required"`
 	// Date and time for when the financial account was last updated.
-	Updated field.Field[time.Time] `json:"updated,required" format:"date-time"`
+	Updated param.Field[time.Time] `json:"updated,required" format:"date-time"`
 }
 
 func (r FinancialAccountParam) MarshalJSON() (data []byte, err error) {
@@ -316,9 +316,9 @@ const (
 
 type FinancialAccountListParams struct {
 	// List financial accounts for a given account_token
-	AccountToken field.Field[string] `query:"account_token" format:"uuid"`
+	AccountToken param.Field[string] `query:"account_token" format:"uuid"`
 	// List financial accounts of a given type
-	Type field.Field[FinancialAccountListParamsType] `query:"type"`
+	Type param.Field[FinancialAccountListParamsType] `query:"type"`
 }
 
 // URLQuery serializes [FinancialAccountListParams]'s query parameters as

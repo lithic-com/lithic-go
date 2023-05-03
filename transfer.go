@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
-	"github.com/lithic-com/lithic-go/internal/field"
+	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/option"
 )
@@ -245,16 +245,16 @@ func (r *TransferCreateResponse) UnmarshalJSON(data []byte) (err error) {
 
 type TransferNewParams struct {
 	// Financial Account
-	From field.Field[FinancialAccountParam] `json:"from,required"`
+	From param.Field[FinancialAccountParam] `json:"from,required"`
 	// Financial Account
-	To field.Field[FinancialAccountParam] `json:"to,required"`
+	To param.Field[FinancialAccountParam] `json:"to,required"`
 	// Amount to be transferred in the currency’s smallest unit (e.g., cents for USD).
 	// This should always be a positive value.
-	Amount field.Field[int64] `json:"amount,required"`
+	Amount param.Field[int64] `json:"amount,required"`
 	// Optional descriptor for the transfer.
-	Memo field.Field[string] `json:"memo"`
+	Memo param.Field[string] `json:"memo"`
 	// Customer-provided transaction_token that will serve as an idempotency token.
-	TransactionToken field.Field[string] `json:"transaction_token" format:"uuid"`
+	TransactionToken param.Field[string] `json:"transaction_token" format:"uuid"`
 }
 
 func (r TransferNewParams) MarshalJSON() (data []byte, err error) {

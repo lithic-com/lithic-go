@@ -12,7 +12,7 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
-	"github.com/lithic-com/lithic-go/internal/field"
+	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
@@ -395,15 +395,15 @@ const (
 
 type DisputeNewParams struct {
 	// Amount to dispute
-	Amount field.Field[int64] `json:"amount,required"`
+	Amount param.Field[int64] `json:"amount,required"`
 	// Date the customer filed the dispute
-	CustomerFiledDate field.Field[time.Time] `json:"customer_filed_date" format:"date-time"`
+	CustomerFiledDate param.Field[time.Time] `json:"customer_filed_date" format:"date-time"`
 	// Reason for dispute
-	Reason field.Field[DisputeNewParamsReason] `json:"reason,required"`
+	Reason param.Field[DisputeNewParamsReason] `json:"reason,required"`
 	// Transaction to dispute
-	TransactionToken field.Field[string] `json:"transaction_token,required" format:"uuid"`
+	TransactionToken param.Field[string] `json:"transaction_token,required" format:"uuid"`
 	// Customer description of dispute
-	CustomerNote field.Field[string] `json:"customer_note"`
+	CustomerNote param.Field[string] `json:"customer_note"`
 }
 
 func (r DisputeNewParams) MarshalJSON() (data []byte, err error) {
@@ -431,13 +431,13 @@ const (
 
 type DisputeUpdateParams struct {
 	// Amount to dispute
-	Amount field.Field[int64] `json:"amount"`
+	Amount param.Field[int64] `json:"amount"`
 	// Date the customer filed the dispute
-	CustomerFiledDate field.Field[time.Time] `json:"customer_filed_date" format:"date-time"`
+	CustomerFiledDate param.Field[time.Time] `json:"customer_filed_date" format:"date-time"`
 	// Customer description of dispute
-	CustomerNote field.Field[string] `json:"customer_note"`
+	CustomerNote param.Field[string] `json:"customer_note"`
 	// Reason for dispute
-	Reason field.Field[DisputeUpdateParamsReason] `json:"reason"`
+	Reason param.Field[DisputeUpdateParamsReason] `json:"reason"`
 }
 
 func (r DisputeUpdateParams) MarshalJSON() (data []byte, err error) {
@@ -465,23 +465,23 @@ const (
 
 type DisputeListParams struct {
 	// List disputes of a given transaction token.
-	TransactionToken field.Field[string] `query:"transaction_token" format:"uuid"`
+	TransactionToken param.Field[string] `query:"transaction_token" format:"uuid"`
 	// List disputes of a specific status.
-	Status field.Field[DisputeListParamsStatus] `query:"status"`
+	Status param.Field[DisputeListParamsStatus] `query:"status"`
 	// Page size (for pagination).
-	PageSize field.Field[int64] `query:"page_size"`
+	PageSize param.Field[int64] `query:"page_size"`
 	// Date string in RFC 3339 format. Only entries created after the specified date
 	// will be included. UTC time zone.
-	Begin field.Field[time.Time] `query:"begin" format:"date-time"`
+	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Date string in RFC 3339 format. Only entries created before the specified date
 	// will be included. UTC time zone.
-	End field.Field[time.Time] `query:"end" format:"date-time"`
+	End param.Field[time.Time] `query:"end" format:"date-time"`
 	// The unique identifier of the last item in the previous page. Used to retrieve
 	// the next page.
-	StartingAfter field.Field[string] `query:"starting_after"`
+	StartingAfter param.Field[string] `query:"starting_after"`
 	// The unique identifier of the first item in the previous page. Used to retrieve
 	// the previous page.
-	EndingBefore field.Field[string] `query:"ending_before"`
+	EndingBefore param.Field[string] `query:"ending_before"`
 }
 
 // URLQuery serializes [DisputeListParams]'s query parameters as `url.Values`.
@@ -524,19 +524,19 @@ func (r *DisputeListResponse) UnmarshalJSON(data []byte) (err error) {
 
 type DisputeListEvidencesParams struct {
 	// Page size (for pagination).
-	PageSize field.Field[int64] `query:"page_size"`
+	PageSize param.Field[int64] `query:"page_size"`
 	// Date string in RFC 3339 format. Only entries created after the specified date
 	// will be included. UTC time zone.
-	Begin field.Field[time.Time] `query:"begin" format:"date-time"`
+	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Date string in RFC 3339 format. Only entries created before the specified date
 	// will be included. UTC time zone.
-	End field.Field[time.Time] `query:"end" format:"date-time"`
+	End param.Field[time.Time] `query:"end" format:"date-time"`
 	// The unique identifier of the last item in the previous page. Used to retrieve
 	// the next page.
-	StartingAfter field.Field[string] `query:"starting_after"`
+	StartingAfter param.Field[string] `query:"starting_after"`
 	// The unique identifier of the first item in the previous page. Used to retrieve
 	// the previous page.
-	EndingBefore field.Field[string] `query:"ending_before"`
+	EndingBefore param.Field[string] `query:"ending_before"`
 }
 
 // URLQuery serializes [DisputeListEvidencesParams]'s query parameters as

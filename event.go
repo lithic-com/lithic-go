@@ -9,7 +9,7 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
-	"github.com/lithic-com/lithic-go/internal/field"
+	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
@@ -143,19 +143,19 @@ const (
 type EventListParams struct {
 	// Date string in RFC 3339 format. Only entries created after the specified date
 	// will be included. UTC time zone.
-	Begin field.Field[time.Time] `query:"begin" format:"date-time"`
+	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Date string in RFC 3339 format. Only entries created before the specified date
 	// will be included. UTC time zone.
-	End field.Field[time.Time] `query:"end" format:"date-time"`
+	End param.Field[time.Time] `query:"end" format:"date-time"`
 	// Page size (for pagination).
-	PageSize field.Field[int64] `query:"page_size"`
+	PageSize param.Field[int64] `query:"page_size"`
 	// The unique identifier of the last item in the previous page. Used to retrieve
 	// the next page.
-	StartingAfter field.Field[string] `query:"starting_after"`
+	StartingAfter param.Field[string] `query:"starting_after"`
 	// The unique identifier of the first item in the previous page. Used to retrieve
 	// the previous page.
-	EndingBefore field.Field[string]                      `query:"ending_before"`
-	EventTypes   field.Field[[]EventListParamsEventTypes] `query:"event_types[]"`
+	EndingBefore param.Field[string]                      `query:"ending_before"`
+	EventTypes   param.Field[[]EventListParamsEventTypes] `query:"event_types[]"`
 }
 
 // URLQuery serializes [EventListParams]'s query parameters as `url.Values`.

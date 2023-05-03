@@ -7,7 +7,7 @@ import (
 	"reflect"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
-	"github.com/lithic-com/lithic-go/internal/field"
+	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/option"
 )
@@ -296,20 +296,20 @@ func (r *SinglePageAutoPager[T]) Index() int {
 
 type AddressParam struct {
 	// Valid deliverable address (no PO boxes).
-	Address1 field.Field[string] `json:"address1,required"`
+	Address1 param.Field[string] `json:"address1,required"`
 	// Unit or apartment number (if applicable).
-	Address2 field.Field[string] `json:"address2"`
+	Address2 param.Field[string] `json:"address2"`
 	// Name of city.
-	City field.Field[string] `json:"city,required"`
+	City param.Field[string] `json:"city,required"`
 	// Valid country code. Only USA is currently supported, entered in uppercase ISO
 	// 3166-1 alpha-3 three-character format.
-	Country field.Field[string] `json:"country,required"`
+	Country param.Field[string] `json:"country,required"`
 	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
 	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode field.Field[string] `json:"postal_code,required"`
+	PostalCode param.Field[string] `json:"postal_code,required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
-	State field.Field[string] `json:"state,required"`
+	State param.Field[string] `json:"state,required"`
 }
 
 func (r AddressParam) MarshalJSON() (data []byte, err error) {
@@ -318,33 +318,33 @@ func (r AddressParam) MarshalJSON() (data []byte, err error) {
 
 type ShippingAddressParam struct {
 	// Customer's first name. This will be the first name printed on the physical card.
-	FirstName field.Field[string] `json:"first_name,required"`
+	FirstName param.Field[string] `json:"first_name,required"`
 	// Customer's surname (family name). This will be the last name printed on the
 	// physical card.
-	LastName field.Field[string] `json:"last_name,required"`
+	LastName param.Field[string] `json:"last_name,required"`
 	// Text to be printed on line two of the physical card. Use of this field requires
 	// additional permissions.
-	Line2Text field.Field[string] `json:"line2_text"`
+	Line2Text param.Field[string] `json:"line2_text"`
 	// Valid USPS routable address.
-	Address1 field.Field[string] `json:"address1,required"`
+	Address1 param.Field[string] `json:"address1,required"`
 	// Unit number (if applicable).
-	Address2 field.Field[string] `json:"address2"`
+	Address2 param.Field[string] `json:"address2"`
 	// City
-	City field.Field[string] `json:"city,required"`
+	City param.Field[string] `json:"city,required"`
 	// Uppercase ISO 3166-2 two character abbreviation for US and CA. Optional with a
 	// limit of 24 characters for other countries.
-	State field.Field[string] `json:"state,required"`
+	State param.Field[string] `json:"state,required"`
 	// Postal code (formerly zipcode). For US addresses, either five-digit zipcode or
 	// nine-digit "ZIP+4".
-	PostalCode field.Field[string] `json:"postal_code,required"`
+	PostalCode param.Field[string] `json:"postal_code,required"`
 	// Uppercase ISO 3166-1 alpha-3 three character abbreviation.
-	Country field.Field[string] `json:"country,required"`
+	Country param.Field[string] `json:"country,required"`
 	// Email address to be contacted for expedited shipping process purposes. Required
 	// if `shipping_method` is `EXPEDITED`.
-	Email field.Field[string] `json:"email"`
+	Email param.Field[string] `json:"email"`
 	// Cardholder's phone number in E.164 format to be contacted for expedited shipping
 	// process purposes. Required if `shipping_method` is `EXPEDITED`.
-	PhoneNumber field.Field[string] `json:"phone_number"`
+	PhoneNumber param.Field[string] `json:"phone_number"`
 }
 
 func (r ShippingAddressParam) MarshalJSON() (data []byte, err error) {
