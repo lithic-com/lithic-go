@@ -19,7 +19,7 @@ func TestVerifySignature(t *testing.T) {
 	header.Add("webhook-signature", "v1,Dwa0AHInLL3XFo2sxcHamOQDrJNi7F654S3L6skMAOI=")
 
 	client := lithic.NewClient()
-	err := client.Webhooks.VerifySignature([]byte(payload), header, secret, time.UnixMilli(1676312382))
+	err := client.Webhooks.VerifySignature([]byte(payload), header, secret, time.Unix(1676312382, 0))
 	if err != nil {
 		t.Fatalf("did not expect error %s", err.Error())
 	}
