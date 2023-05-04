@@ -100,9 +100,9 @@ type AuthStreamEnrollment struct {
 // authStreamEnrollmentJSON contains the JSON metadata for the struct
 // [AuthStreamEnrollment]
 type authStreamEnrollmentJSON struct {
-	Enrolled apijson.Field
-	raw      string
-	Extras   map[string]apijson.Field
+	Enrolled    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *AuthStreamEnrollment) UnmarshalJSON(data []byte) (err error) {
@@ -118,9 +118,9 @@ type AuthStreamSecret struct {
 // authStreamSecretJSON contains the JSON metadata for the struct
 // [AuthStreamSecret]
 type authStreamSecretJSON struct {
-	Secret apijson.Field
-	raw    string
-	Extras map[string]apijson.Field
+	Secret      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *AuthStreamSecret) UnmarshalJSON(data []byte) (err error) {

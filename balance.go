@@ -96,7 +96,7 @@ type balanceJSON struct {
 	Type                      apijson.Field
 	Updated                   apijson.Field
 	raw                       string
-	Extras                    map[string]apijson.Field
+	ExtraFields               map[string]apijson.Field
 }
 
 func (r *Balance) UnmarshalJSON(data []byte) (err error) {
@@ -142,10 +142,10 @@ type BalanceListResponse struct {
 // balanceListResponseJSON contains the JSON metadata for the struct
 // [BalanceListResponse]
 type balanceListResponseJSON struct {
-	Data    apijson.Field
-	HasMore apijson.Field
-	raw     string
-	Extras  map[string]apijson.Field
+	Data        apijson.Field
+	HasMore     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *BalanceListResponse) UnmarshalJSON(data []byte) (err error) {

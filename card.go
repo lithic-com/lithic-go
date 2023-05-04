@@ -325,7 +325,7 @@ type cardJSON struct {
 	Type                apijson.Field
 	DigitalCardArtToken apijson.Field
 	raw                 string
-	Extras              map[string]apijson.Field
+	ExtraFields         map[string]apijson.Field
 }
 
 func (r *Card) UnmarshalJSON(data []byte) (err error) {
@@ -373,7 +373,7 @@ type cardFundingJSON struct {
 	Token       apijson.Field
 	Type        apijson.Field
 	raw         string
-	Extras      map[string]apijson.Field
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *CardFunding) UnmarshalJSON(data []byte) (err error) {
@@ -460,7 +460,7 @@ type CardProvisionResponse struct {
 type cardProvisionResponseJSON struct {
 	ProvisioningPayload apijson.Field
 	raw                 string
-	Extras              map[string]apijson.Field
+	ExtraFields         map[string]apijson.Field
 }
 
 func (r *CardProvisionResponse) UnmarshalJSON(data []byte) (err error) {
@@ -676,7 +676,7 @@ type cardListResponseJSON struct {
 	TotalEntries apijson.Field
 	TotalPages   apijson.Field
 	raw          string
-	Extras       map[string]apijson.Field
+	ExtraFields  map[string]apijson.Field
 }
 
 func (r *CardListResponse) UnmarshalJSON(data []byte) (err error) {

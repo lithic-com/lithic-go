@@ -96,7 +96,7 @@ type transferJSON struct {
 	FromBalance   apijson.Field
 	ToBalance     apijson.Field
 	raw           string
-	Extras        map[string]apijson.Field
+	ExtraFields   map[string]apijson.Field
 }
 
 func (r *Transfer) UnmarshalJSON(data []byte) (err error) {
@@ -162,13 +162,13 @@ type TransferEvents struct {
 
 // transferEventsJSON contains the JSON metadata for the struct [TransferEvents]
 type transferEventsJSON struct {
-	Amount  apijson.Field
-	Created apijson.Field
-	Result  apijson.Field
-	Token   apijson.Field
-	Type    apijson.Field
-	raw     string
-	Extras  map[string]apijson.Field
+	Amount      apijson.Field
+	Created     apijson.Field
+	Result      apijson.Field
+	Token       apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *TransferEvents) UnmarshalJSON(data []byte) (err error) {
@@ -234,9 +234,9 @@ type TransferCreateResponse struct {
 // transferCreateResponseJSON contains the JSON metadata for the struct
 // [TransferCreateResponse]
 type transferCreateResponseJSON struct {
-	Data   apijson.Field
-	raw    string
-	Extras map[string]apijson.Field
+	Data        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *TransferCreateResponse) UnmarshalJSON(data []byte) (err error) {

@@ -88,7 +88,7 @@ type financialAccountJSON struct {
 	Type          apijson.Field
 	Updated       apijson.Field
 	raw           string
-	Extras        map[string]apijson.Field
+	ExtraFields   map[string]apijson.Field
 }
 
 func (r *FinancialAccount) UnmarshalJSON(data []byte) (err error) {
@@ -181,7 +181,7 @@ type financialTransactionJSON struct {
 	Token         apijson.Field
 	Updated       apijson.Field
 	raw           string
-	Extras        map[string]apijson.Field
+	ExtraFields   map[string]apijson.Field
 }
 
 func (r *FinancialTransaction) UnmarshalJSON(data []byte) (err error) {
@@ -250,13 +250,13 @@ type FinancialTransactionEvents struct {
 // financialTransactionEventsJSON contains the JSON metadata for the struct
 // [FinancialTransactionEvents]
 type financialTransactionEventsJSON struct {
-	Amount  apijson.Field
-	Created apijson.Field
-	Result  apijson.Field
-	Token   apijson.Field
-	Type    apijson.Field
-	raw     string
-	Extras  map[string]apijson.Field
+	Amount      apijson.Field
+	Created     apijson.Field
+	Result      apijson.Field
+	Token       apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *FinancialTransactionEvents) UnmarshalJSON(data []byte) (err error) {
@@ -344,10 +344,10 @@ type FinancialAccountListResponse struct {
 // financialAccountListResponseJSON contains the JSON metadata for the struct
 // [FinancialAccountListResponse]
 type financialAccountListResponseJSON struct {
-	Data    apijson.Field
-	HasMore apijson.Field
-	raw     string
-	Extras  map[string]apijson.Field
+	Data        apijson.Field
+	HasMore     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *FinancialAccountListResponse) UnmarshalJSON(data []byte) (err error) {

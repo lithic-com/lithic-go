@@ -32,7 +32,7 @@ type pageJSON struct {
 	TotalEntries apijson.Field
 	TotalPages   apijson.Field
 	raw          string
-	Extras       map[string]apijson.Field
+	ExtraFields  map[string]apijson.Field
 }
 
 func (r *Page[T]) UnmarshalJSON(data []byte) (err error) {
@@ -121,10 +121,10 @@ type CursorPage[T any] struct {
 
 // cursorPageJSON contains the JSON metadata for the struct [CursorPage[T]]
 type cursorPageJSON struct {
-	Data    apijson.Field
-	HasMore apijson.Field
-	raw     string
-	Extras  map[string]apijson.Field
+	Data        apijson.Field
+	HasMore     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *CursorPage[T]) UnmarshalJSON(data []byte) (err error) {
@@ -214,10 +214,10 @@ type SinglePage[T any] struct {
 
 // singlePageJSON contains the JSON metadata for the struct [SinglePage[T]]
 type singlePageJSON struct {
-	Data    apijson.Field
-	HasMore apijson.Field
-	raw     string
-	Extras  map[string]apijson.Field
+	Data        apijson.Field
+	HasMore     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *SinglePage[T]) UnmarshalJSON(data []byte) (err error) {
