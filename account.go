@@ -110,7 +110,7 @@ type accountJSON struct {
 	VerificationAddress apijson.Field
 	AccountHolder       apijson.Field
 	raw                 string
-	Extras              map[string]apijson.Field
+	ExtraFields         map[string]apijson.Field
 }
 
 func (r *Account) UnmarshalJSON(data []byte) (err error) {
@@ -135,11 +135,11 @@ type AccountSpendLimit struct {
 // accountSpendLimitJSON contains the JSON metadata for the struct
 // [AccountSpendLimit]
 type accountSpendLimitJSON struct {
-	Daily    apijson.Field
-	Monthly  apijson.Field
-	Lifetime apijson.Field
-	raw      string
-	Extras   map[string]apijson.Field
+	Daily       apijson.Field
+	Monthly     apijson.Field
+	Lifetime    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *AccountSpendLimit) UnmarshalJSON(data []byte) (err error) {
@@ -175,14 +175,14 @@ type AccountVerificationAddress struct {
 // accountVerificationAddressJSON contains the JSON metadata for the struct
 // [AccountVerificationAddress]
 type accountVerificationAddressJSON struct {
-	Address1   apijson.Field
-	Address2   apijson.Field
-	City       apijson.Field
-	State      apijson.Field
-	PostalCode apijson.Field
-	Country    apijson.Field
-	raw        string
-	Extras     map[string]apijson.Field
+	Address1    apijson.Field
+	Address2    apijson.Field
+	City        apijson.Field
+	State       apijson.Field
+	PostalCode  apijson.Field
+	Country     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *AccountVerificationAddress) UnmarshalJSON(data []byte) (err error) {
@@ -211,7 +211,7 @@ type accountAccountHolderJSON struct {
 	Email                apijson.Field
 	BusinessAccountToken apijson.Field
 	raw                  string
-	Extras               map[string]apijson.Field
+	ExtraFields          map[string]apijson.Field
 }
 
 func (r *AccountAccountHolder) UnmarshalJSON(data []byte) (err error) {
@@ -302,7 +302,7 @@ type accountListResponseJSON struct {
 	TotalEntries apijson.Field
 	TotalPages   apijson.Field
 	raw          string
-	Extras       map[string]apijson.Field
+	ExtraFields  map[string]apijson.Field
 }
 
 func (r *AccountListResponse) UnmarshalJSON(data []byte) (err error) {

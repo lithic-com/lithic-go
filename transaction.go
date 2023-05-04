@@ -218,7 +218,7 @@ type transactionJSON struct {
 	Status                      apijson.Field
 	Token                       apijson.Field
 	raw                         string
-	Extras                      map[string]apijson.Field
+	ExtraFields                 map[string]apijson.Field
 }
 
 func (r *Transaction) UnmarshalJSON(data []byte) (err error) {
@@ -318,7 +318,7 @@ type transactionCardholderAuthenticationJSON struct {
 	VerificationAttempted apijson.Field
 	VerificationResult    apijson.Field
 	raw                   string
-	Extras                map[string]apijson.Field
+	ExtraFields           map[string]apijson.Field
 }
 
 func (r *TransactionCardholderAuthentication) UnmarshalJSON(data []byte) (err error) {
@@ -437,13 +437,13 @@ type TransactionEvents struct {
 // transactionEventsJSON contains the JSON metadata for the struct
 // [TransactionEvents]
 type transactionEventsJSON struct {
-	Amount  apijson.Field
-	Created apijson.Field
-	Result  apijson.Field
-	Token   apijson.Field
-	Type    apijson.Field
-	raw     string
-	Extras  map[string]apijson.Field
+	Amount      apijson.Field
+	Created     apijson.Field
+	Result      apijson.Field
+	Token       apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *TransactionEvents) UnmarshalJSON(data []byte) (err error) {
@@ -515,14 +515,14 @@ type TransactionMerchant struct {
 // transactionMerchantJSON contains the JSON metadata for the struct
 // [TransactionMerchant]
 type transactionMerchantJSON struct {
-	AcceptorID apijson.Field
-	City       apijson.Field
-	Country    apijson.Field
-	Descriptor apijson.Field
-	Mcc        apijson.Field
-	State      apijson.Field
-	raw        string
-	Extras     map[string]apijson.Field
+	AcceptorID  apijson.Field
+	City        apijson.Field
+	Country     apijson.Field
+	Descriptor  apijson.Field
+	Mcc         apijson.Field
+	State       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *TransactionMerchant) UnmarshalJSON(data []byte) (err error) {
@@ -591,7 +591,7 @@ type transactionSimulateAuthorizationResponseJSON struct {
 	DebuggingRequestID apijson.Field
 	Token              apijson.Field
 	raw                string
-	Extras             map[string]apijson.Field
+	ExtraFields        map[string]apijson.Field
 }
 
 func (r *TransactionSimulateAuthorizationResponse) UnmarshalJSON(data []byte) (err error) {
@@ -609,7 +609,7 @@ type TransactionSimulateClearingResponse struct {
 type transactionSimulateClearingResponseJSON struct {
 	DebuggingRequestID apijson.Field
 	raw                string
-	Extras             map[string]apijson.Field
+	ExtraFields        map[string]apijson.Field
 }
 
 func (r *TransactionSimulateClearingResponse) UnmarshalJSON(data []byte) (err error) {
@@ -630,7 +630,7 @@ type transactionSimulateReturnResponseJSON struct {
 	DebuggingRequestID apijson.Field
 	Token              apijson.Field
 	raw                string
-	Extras             map[string]apijson.Field
+	ExtraFields        map[string]apijson.Field
 }
 
 func (r *TransactionSimulateReturnResponse) UnmarshalJSON(data []byte) (err error) {
@@ -648,7 +648,7 @@ type TransactionSimulateReturnReversalResponse struct {
 type transactionSimulateReturnReversalResponseJSON struct {
 	DebuggingRequestID apijson.Field
 	raw                string
-	Extras             map[string]apijson.Field
+	ExtraFields        map[string]apijson.Field
 }
 
 func (r *TransactionSimulateReturnReversalResponse) UnmarshalJSON(data []byte) (err error) {
@@ -666,7 +666,7 @@ type TransactionSimulateVoidResponse struct {
 type transactionSimulateVoidResponseJSON struct {
 	DebuggingRequestID apijson.Field
 	raw                string
-	Extras             map[string]apijson.Field
+	ExtraFields        map[string]apijson.Field
 }
 
 func (r *TransactionSimulateVoidResponse) UnmarshalJSON(data []byte) (err error) {
@@ -687,7 +687,7 @@ type transactionSimulateCreditAuthorizationResponseJSON struct {
 	DebuggingRequestID apijson.Field
 	Token              apijson.Field
 	raw                string
-	Extras             map[string]apijson.Field
+	ExtraFields        map[string]apijson.Field
 }
 
 func (r *TransactionSimulateCreditAuthorizationResponse) UnmarshalJSON(data []byte) (err error) {
@@ -708,7 +708,7 @@ type transactionSimulateAuthorizationAdviceResponseJSON struct {
 	DebuggingRequestID apijson.Field
 	Token              apijson.Field
 	raw                string
-	Extras             map[string]apijson.Field
+	ExtraFields        map[string]apijson.Field
 }
 
 func (r *TransactionSimulateAuthorizationAdviceResponse) UnmarshalJSON(data []byte) (err error) {
@@ -766,7 +766,7 @@ type transactionListResponseJSON struct {
 	TotalEntries apijson.Field
 	TotalPages   apijson.Field
 	raw          string
-	Extras       map[string]apijson.Field
+	ExtraFields  map[string]apijson.Field
 }
 
 func (r *TransactionListResponse) UnmarshalJSON(data []byte) (err error) {

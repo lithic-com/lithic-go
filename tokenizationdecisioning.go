@@ -59,9 +59,9 @@ type TokenizationSecret struct {
 // tokenizationSecretJSON contains the JSON metadata for the struct
 // [TokenizationSecret]
 type tokenizationSecretJSON struct {
-	Secret apijson.Field
-	raw    string
-	Extras map[string]apijson.Field
+	Secret      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *TokenizationSecret) UnmarshalJSON(data []byte) (err error) {
@@ -77,9 +77,9 @@ type TokenizationDecisioningRotateSecretResponse struct {
 // tokenizationDecisioningRotateSecretResponseJSON contains the JSON metadata for
 // the struct [TokenizationDecisioningRotateSecretResponse]
 type tokenizationDecisioningRotateSecretResponseJSON struct {
-	Secret apijson.Field
-	raw    string
-	Extras map[string]apijson.Field
+	Secret      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *TokenizationDecisioningRotateSecretResponse) UnmarshalJSON(data []byte) (err error) {

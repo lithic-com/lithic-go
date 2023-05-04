@@ -11,9 +11,9 @@ type APIStatus struct {
 
 // apiStatusJSON contains the JSON metadata for the struct [APIStatus]
 type apiStatusJSON struct {
-	Message apijson.Field
-	raw     string
-	Extras  map[string]apijson.Field
+	Message     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *APIStatus) UnmarshalJSON(data []byte) (err error) {

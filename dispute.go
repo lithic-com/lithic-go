@@ -283,7 +283,7 @@ type disputeJSON struct {
 	Token              apijson.Field
 	TransactionToken   apijson.Field
 	raw                string
-	Extras             map[string]apijson.Field
+	ExtraFields        map[string]apijson.Field
 }
 
 func (r *Dispute) UnmarshalJSON(data []byte) (err error) {
@@ -376,7 +376,7 @@ type disputeEvidenceJSON struct {
 	UploadStatus apijson.Field
 	UploadURL    apijson.Field
 	raw          string
-	Extras       map[string]apijson.Field
+	ExtraFields  map[string]apijson.Field
 }
 
 func (r *DisputeEvidence) UnmarshalJSON(data []byte) (err error) {
@@ -512,10 +512,10 @@ type DisputeListResponse struct {
 // disputeListResponseJSON contains the JSON metadata for the struct
 // [DisputeListResponse]
 type disputeListResponseJSON struct {
-	Data    apijson.Field
-	HasMore apijson.Field
-	raw     string
-	Extras  map[string]apijson.Field
+	Data        apijson.Field
+	HasMore     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *DisputeListResponse) UnmarshalJSON(data []byte) (err error) {
@@ -555,10 +555,10 @@ type DisputeListEvidencesResponse struct {
 // disputeListEvidencesResponseJSON contains the JSON metadata for the struct
 // [DisputeListEvidencesResponse]
 type disputeListEvidencesResponseJSON struct {
-	Data    apijson.Field
-	HasMore apijson.Field
-	raw     string
-	Extras  map[string]apijson.Field
+	Data        apijson.Field
+	HasMore     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *DisputeListEvidencesResponse) UnmarshalJSON(data []byte) (err error) {
