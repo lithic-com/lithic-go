@@ -58,10 +58,10 @@ func (r *WebhookService) VerifySignature(payload []byte, headers http.Header, se
 		return fmt.Errorf("invalid signature headers: %s", err)
 	}
 
-	if timestamp < now.UnixMilli()-300 {
+	if timestamp < now.Unix()-300 {
 		return errors.New("webhook timestamp too old")
 	}
-	if timestamp > now.UnixMilli()+300 {
+	if timestamp > now.Unix()+300 {
 		return errors.New("webhook timestamp too new")
 	}
 
