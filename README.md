@@ -7,17 +7,25 @@ API](https://docs.lithic.com) from applications written in Go.
 
 ## Installation
 
+<!-- x-release-please-start-version -->
+
 ```go
 import (
 	"github.com/lithic-com/lithic-go" // imported as lithic
 )
 ```
 
+<!-- x-release-please-end -->
+
 Or to pin the version:
+
+<!-- x-release-please-start-version -->
 
 ```sh
 go get -u 'github.com/lithic-com/lithic-go@v0.0.1'
 ```
+
+<!-- x-release-please-end -->
 
 ## Requirements
 
