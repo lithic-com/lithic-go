@@ -127,7 +127,7 @@ in the struct. This can be useful for API features not yet
 present in the SDK.
 
 ```go
-body := res.JSON.Extras["my_unexpected_field"].Raw()
+body := res.JSON.ExtraFields["my_unexpected_field"].Raw()
 ```
 
 ### RequestOptions

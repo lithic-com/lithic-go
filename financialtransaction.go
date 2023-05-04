@@ -127,10 +127,10 @@ type FinancialTransactionListResponse struct {
 // financialTransactionListResponseJSON contains the JSON metadata for the struct
 // [FinancialTransactionListResponse]
 type financialTransactionListResponseJSON struct {
-	Data    apijson.Field
-	HasMore apijson.Field
-	raw     string
-	Extras  map[string]apijson.Field
+	Data        apijson.Field
+	HasMore     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *FinancialTransactionListResponse) UnmarshalJSON(data []byte) (err error) {

@@ -134,9 +134,9 @@ type SubscriptionRetrieveSecretResponse struct {
 // subscriptionRetrieveSecretResponseJSON contains the JSON metadata for the struct
 // [SubscriptionRetrieveSecretResponse]
 type subscriptionRetrieveSecretResponseJSON struct {
-	Key    apijson.Field
-	raw    string
-	Extras map[string]apijson.Field
+	Key         apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *SubscriptionRetrieveSecretResponse) UnmarshalJSON(data []byte) (err error) {
@@ -215,10 +215,10 @@ type EventSubscriptionListResponse struct {
 // eventSubscriptionListResponseJSON contains the JSON metadata for the struct
 // [EventSubscriptionListResponse]
 type eventSubscriptionListResponseJSON struct {
-	Data    apijson.Field
-	HasMore apijson.Field
-	raw     string
-	Extras  map[string]apijson.Field
+	Data        apijson.Field
+	HasMore     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *EventSubscriptionListResponse) UnmarshalJSON(data []byte) (err error) {

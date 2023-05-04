@@ -100,7 +100,7 @@ type aggregateBalanceJSON struct {
 	LastTransactionEventToken apijson.Field
 	LastFinancialAccountToken apijson.Field
 	raw                       string
-	Extras                    map[string]apijson.Field
+	ExtraFields               map[string]apijson.Field
 }
 
 func (r *AggregateBalance) UnmarshalJSON(data []byte) (err error) {
@@ -142,10 +142,10 @@ type AggregateBalanceListResponse struct {
 // aggregateBalanceListResponseJSON contains the JSON metadata for the struct
 // [AggregateBalanceListResponse]
 type aggregateBalanceListResponseJSON struct {
-	Data    apijson.Field
-	HasMore apijson.Field
-	raw     string
-	Extras  map[string]apijson.Field
+	Data        apijson.Field
+	HasMore     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *AggregateBalanceListResponse) UnmarshalJSON(data []byte) (err error) {

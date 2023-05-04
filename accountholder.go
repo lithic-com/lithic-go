@@ -194,7 +194,7 @@ type accountHolderJSON struct {
 	Status               apijson.Field
 	StatusReasons        apijson.Field
 	raw                  string
-	Extras               map[string]apijson.Field
+	ExtraFields          map[string]apijson.Field
 }
 
 func (r *AccountHolder) UnmarshalJSON(data []byte) (err error) {
@@ -247,7 +247,7 @@ type accountHolderDocumentJSON struct {
 	RequiredDocumentUploads apijson.Field
 	Token                   apijson.Field
 	raw                     string
-	Extras                  map[string]apijson.Field
+	ExtraFields             map[string]apijson.Field
 }
 
 func (r *AccountHolderDocument) UnmarshalJSON(data []byte) (err error) {
@@ -288,7 +288,7 @@ type accountHolderDocumentRequiredDocumentUploadsJSON struct {
 	StatusReasons apijson.Field
 	UploadURL     apijson.Field
 	raw           string
-	Extras        map[string]apijson.Field
+	ExtraFields   map[string]apijson.Field
 }
 
 func (r *AccountHolderDocumentRequiredDocumentUploads) UnmarshalJSON(data []byte) (err error) {
@@ -614,7 +614,7 @@ type accountHolderUpdateResponseJSON struct {
 	PhoneNumber          apijson.Field
 	BusinessAccountToken apijson.Field
 	raw                  string
-	Extras               map[string]apijson.Field
+	ExtraFields          map[string]apijson.Field
 }
 
 func (r *AccountHolderUpdateResponse) UnmarshalJSON(data []byte) (err error) {
@@ -629,9 +629,9 @@ type AccountHolderListDocumentsResponse struct {
 // accountHolderListDocumentsResponseJSON contains the JSON metadata for the struct
 // [AccountHolderListDocumentsResponse]
 type accountHolderListDocumentsResponseJSON struct {
-	Data   apijson.Field
-	raw    string
-	Extras map[string]apijson.Field
+	Data        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *AccountHolderListDocumentsResponse) UnmarshalJSON(data []byte) (err error) {
@@ -646,9 +646,9 @@ type AccountHolderCreateWebhookResponse struct {
 // accountHolderCreateWebhookResponseJSON contains the JSON metadata for the struct
 // [AccountHolderCreateWebhookResponse]
 type accountHolderCreateWebhookResponseJSON struct {
-	Data   apijson.Field
-	raw    string
-	Extras map[string]apijson.Field
+	Data        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *AccountHolderCreateWebhookResponse) UnmarshalJSON(data []byte) (err error) {
@@ -665,9 +665,9 @@ type AccountHolderCreateWebhookResponseData struct {
 // accountHolderCreateWebhookResponseDataJSON contains the JSON metadata for the
 // struct [AccountHolderCreateWebhookResponseData]
 type accountHolderCreateWebhookResponseDataJSON struct {
-	HmacToken apijson.Field
-	raw       string
-	Extras    map[string]apijson.Field
+	HmacToken   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *AccountHolderCreateWebhookResponseData) UnmarshalJSON(data []byte) (err error) {

@@ -66,10 +66,10 @@ type ResponderEndpointStatus struct {
 // responderEndpointStatusJSON contains the JSON metadata for the struct
 // [ResponderEndpointStatus]
 type responderEndpointStatusJSON struct {
-	Enrolled apijson.Field
-	URL      apijson.Field
-	raw      string
-	Extras   map[string]apijson.Field
+	Enrolled    apijson.Field
+	URL         apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *ResponderEndpointStatus) UnmarshalJSON(data []byte) (err error) {
@@ -85,9 +85,9 @@ type ResponderEndpointCreateResponse struct {
 // responderEndpointCreateResponseJSON contains the JSON metadata for the struct
 // [ResponderEndpointCreateResponse]
 type responderEndpointCreateResponseJSON struct {
-	Enrolled apijson.Field
-	raw      string
-	Extras   map[string]apijson.Field
+	Enrolled    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *ResponderEndpointCreateResponse) UnmarshalJSON(data []byte) (err error) {

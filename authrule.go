@@ -154,7 +154,7 @@ type authRuleJSON struct {
 	CardTokens             apijson.Field
 	ProgramLevel           apijson.Field
 	raw                    string
-	Extras                 map[string]apijson.Field
+	ExtraFields            map[string]apijson.Field
 }
 
 func (r *AuthRule) UnmarshalJSON(data []byte) (err error) {
@@ -182,9 +182,9 @@ type AuthRuleCreateResponse struct {
 // authRuleCreateResponseJSON contains the JSON metadata for the struct
 // [AuthRuleCreateResponse]
 type authRuleCreateResponseJSON struct {
-	Data   apijson.Field
-	raw    string
-	Extras map[string]apijson.Field
+	Data        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *AuthRuleCreateResponse) UnmarshalJSON(data []byte) (err error) {
@@ -199,9 +199,9 @@ type AuthRuleRetrieveResponse struct {
 // authRuleRetrieveResponseJSON contains the JSON metadata for the struct
 // [AuthRuleRetrieveResponse]
 type authRuleRetrieveResponseJSON struct {
-	Data   apijson.Field
-	raw    string
-	Extras map[string]apijson.Field
+	Data        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *AuthRuleRetrieveResponse) UnmarshalJSON(data []byte) (err error) {
@@ -216,9 +216,9 @@ type AuthRuleUpdateResponse struct {
 // authRuleUpdateResponseJSON contains the JSON metadata for the struct
 // [AuthRuleUpdateResponse]
 type authRuleUpdateResponseJSON struct {
-	Data   apijson.Field
-	raw    string
-	Extras map[string]apijson.Field
+	Data        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *AuthRuleUpdateResponse) UnmarshalJSON(data []byte) (err error) {
@@ -233,9 +233,9 @@ type AuthRuleApplyResponse struct {
 // authRuleApplyResponseJSON contains the JSON metadata for the struct
 // [AuthRuleApplyResponse]
 type authRuleApplyResponseJSON struct {
-	Data   apijson.Field
-	raw    string
-	Extras map[string]apijson.Field
+	Data        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *AuthRuleApplyResponse) UnmarshalJSON(data []byte) (err error) {
@@ -258,7 +258,7 @@ type authRuleRemoveResponseJSON struct {
 	PreviousAuthRuleTokens apijson.Field
 	ProgramLevel           apijson.Field
 	raw                    string
-	Extras                 map[string]apijson.Field
+	ExtraFields            map[string]apijson.Field
 }
 
 func (r *AuthRuleRemoveResponse) UnmarshalJSON(data []byte) (err error) {
@@ -369,7 +369,7 @@ type authRuleListResponseJSON struct {
 	TotalPages   apijson.Field
 	Page         apijson.Field
 	raw          string
-	Extras       map[string]apijson.Field
+	ExtraFields  map[string]apijson.Field
 }
 
 func (r *AuthRuleListResponse) UnmarshalJSON(data []byte) (err error) {
