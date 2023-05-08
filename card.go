@@ -293,10 +293,9 @@ type Card struct {
 	//     branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe functionality.
 	//     Reach out at [lithic.com/contact](https://lithic.com/contact) for more
 	//     information.
+	//   - `SINGLE_USE` - Card is closed upon first successful authorization.
 	//   - `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first merchant that
 	//     successfully authorizes the card.
-	//   - `SINGLE_USE` - _[Deprecated]_ Card is closed upon first successful
-	//     authorization.
 	Type CardType `json:"type,required"`
 	// Specifies the digital card art to be displayed in the user’s digital wallet
 	// after tokenization. This artwork must be approved by Mastercard and configured
@@ -522,10 +521,9 @@ type CardNewParams struct {
 	//     branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe functionality.
 	//     Reach out at [lithic.com/contact](https://lithic.com/contact) for more
 	//     information.
+	//   - `SINGLE_USE` - Card is closed upon first successful authorization.
 	//   - `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first merchant that
 	//     successfully authorizes the card.
-	//   - `SINGLE_USE` - _[Deprecated]_ Card is closed upon first successful
-	//     authorization.
 	Type param.Field[CardNewParamsType] `json:"type,required"`
 	// Encrypted PIN block (in base64). Only applies to cards of type `PHYSICAL` and
 	// `VIRTUAL`. See

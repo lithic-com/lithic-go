@@ -66,7 +66,7 @@ func (r *AuthStreamEnrollmentService) Enroll(ctx context.Context, body AuthStrea
 	return
 }
 
-// Retrieve the ASA HMAC secret key. If one does not exist your program yet,
+// Retrieve the ASA HMAC secret key. If one does not exist for your program yet,
 // calling this endpoint will create one for you. The headers (which you can use to
 // verify webhooks) will begin appearing shortly after calling this endpoint for
 // the first time. See
