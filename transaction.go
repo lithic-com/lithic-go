@@ -146,44 +146,44 @@ type Transaction struct {
 	// A fixed-width 23-digit numeric identifier for the Transaction that may be set if
 	// the transaction originated from the Mastercard network. This number may be used
 	// for dispute tracking.
-	AcquirerReferenceNumber string `json:"acquirer_reference_number,nullable"`
+	AcquirerReferenceNumber string `json:"acquirer_reference_number,required,nullable"`
 	// Authorization amount of the transaction (in cents), including any acquirer fees.
 	// This may change over time, and will represent the settled amount once the
 	// transaction is settled.
-	Amount int64 `json:"amount"`
+	Amount int64 `json:"amount,required"`
 	// Authorization amount (in cents) of the transaction, including any acquirer fees.
 	// This amount always represents the amount authorized for the transaction,
 	// unaffected by settlement.
-	AuthorizationAmount      int64                               `json:"authorization_amount"`
+	AuthorizationAmount int64 `json:"authorization_amount,required"`
+	// A fixed-width 6-digit numeric identifier that can be used to identify a
+	// transaction with networks.
+	AuthorizationCode string `json:"authorization_code,required"`
+	// Token for the card used in this transaction.
+	CardToken                string                              `json:"card_token,required" format:"uuid"`
 	CardholderAuthentication TransactionCardholderAuthentication `json:"cardholder_authentication,nullable"`
+	// Date and time when the transaction first occurred. UTC time zone.
+	Created time.Time `json:"created,required" format:"date-time"`
+	// A list of all events that have modified this transaction.
+	Events   []TransactionEvents `json:"events,required"`
+	Merchant TransactionMerchant `json:"merchant,required"`
 	// Analogous to the "amount" property, but will represent the amount in the
 	// transaction's local currency (smallest unit), including any acquirer fees.
-	MerchantAmount int64 `json:"merchant_amount"`
+	MerchantAmount int64 `json:"merchant_amount,required"`
 	// Analogous to the "authorization_amount" property, but will represent the amount
 	// in the transaction's local currency (smallest unit), including any acquirer
 	// fees.
-	MerchantAuthorizationAmount int64 `json:"merchant_authorization_amount"`
+	MerchantAuthorizationAmount int64 `json:"merchant_authorization_amount,required"`
 	// 3-digit alphabetic ISO 4217 code for the local currency of the transaction.
-	MerchantCurrency string `json:"merchant_currency"`
-	// A fixed-width 6-digit numeric identifier that can be used to identify a
-	// transaction with networks.
-	AuthorizationCode string `json:"authorization_code"`
-	// Token for the card used in this transaction.
-	CardToken string `json:"card_token" format:"uuid"`
-	// Date and time when the transaction first occurred. UTC time zone.
-	Created time.Time `json:"created" format:"date-time"`
-	// A list of all events that have modified this transaction.
-	Events   []TransactionEvents `json:"events"`
-	Merchant TransactionMerchant `json:"merchant"`
+	MerchantCurrency string `json:"merchant_currency,required"`
 	// Card network of the authorization. Can be `INTERLINK`, `MAESTRO`, `MASTERCARD`,
 	// `VISA`, or `UNKNOWN`. Value is `UNKNOWN` when Lithic cannot determine the
 	// network code from the upstream provider.
-	Network TransactionNetwork `json:"network,nullable"`
+	Network TransactionNetwork `json:"network,required,nullable"`
 	// `APPROVED` or decline reason. See Event result types
-	Result TransactionResult `json:"result"`
+	Result TransactionResult `json:"result,required"`
 	// Amount of the transaction that has been settled (in cents), including any
 	// acquirer fees. This may change over time.
-	SettledAmount int64 `json:"settled_amount"`
+	SettledAmount int64 `json:"settled_amount,required"`
 	// Status types:
 	//
 	//   - `DECLINED` - The transaction was declined.
@@ -192,9 +192,9 @@ type Transaction struct {
 	//   - `PENDING` - Authorization is pending completion from the merchant.
 	//   - `SETTLED` - The transaction is complete.
 	//   - `VOIDED` - The merchant has voided the previously pending authorization.
-	Status TransactionStatus `json:"status"`
+	Status TransactionStatus `json:"status,required"`
 	// Globally unique identifier.
-	Token string `json:"token" format:"uuid"`
+	Token string `json:"token,required" format:"uuid"`
 	JSON  transactionJSON
 }
 
@@ -203,15 +203,15 @@ type transactionJSON struct {
 	AcquirerReferenceNumber     apijson.Field
 	Amount                      apijson.Field
 	AuthorizationAmount         apijson.Field
-	CardholderAuthentication    apijson.Field
-	MerchantAmount              apijson.Field
-	MerchantAuthorizationAmount apijson.Field
-	MerchantCurrency            apijson.Field
 	AuthorizationCode           apijson.Field
 	CardToken                   apijson.Field
+	CardholderAuthentication    apijson.Field
 	Created                     apijson.Field
 	Events                      apijson.Field
 	Merchant                    apijson.Field
+	MerchantAmount              apijson.Field
+	MerchantAuthorizationAmount apijson.Field
+	MerchantCurrency            apijson.Field
 	Network                     apijson.Field
 	Result                      apijson.Field
 	SettledAmount               apijson.Field
