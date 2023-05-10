@@ -466,6 +466,8 @@ const (
 type DisputeListParams struct {
 	// List disputes of a given transaction token.
 	TransactionToken param.Field[string] `query:"transaction_token" format:"uuid"`
+	// List disputes from list of transaction tokens.
+	TransactionTokens param.Field[[]string] `query:"transaction_tokens" format:"uuid"`
 	// List disputes of a specific status.
 	Status param.Field[DisputeListParamsStatus] `query:"status"`
 	// Page size (for pagination).
@@ -476,11 +478,11 @@ type DisputeListParams struct {
 	// Date string in RFC 3339 format. Only entries created before the specified date
 	// will be included. UTC time zone.
 	End param.Field[time.Time] `query:"end" format:"date-time"`
-	// The unique identifier of the last item in the previous page. Used to retrieve
-	// the next page.
+	// A cursor representing an item's token after which a page of results should
+	// begin. Used to retrieve the next page of results after this item.
 	StartingAfter param.Field[string] `query:"starting_after"`
-	// The unique identifier of the first item in the previous page. Used to retrieve
-	// the previous page.
+	// A cursor representing an item's token before which a page of results should end.
+	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string] `query:"ending_before"`
 }
 
@@ -531,11 +533,11 @@ type DisputeListEvidencesParams struct {
 	// Date string in RFC 3339 format. Only entries created before the specified date
 	// will be included. UTC time zone.
 	End param.Field[time.Time] `query:"end" format:"date-time"`
-	// The unique identifier of the last item in the previous page. Used to retrieve
-	// the next page.
+	// A cursor representing an item's token after which a page of results should
+	// begin. Used to retrieve the next page of results after this item.
 	StartingAfter param.Field[string] `query:"starting_after"`
-	// The unique identifier of the first item in the previous page. Used to retrieve
-	// the previous page.
+	// A cursor representing an item's token before which a page of results should end.
+	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string] `query:"ending_before"`
 }
 
