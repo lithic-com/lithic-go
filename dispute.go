@@ -486,7 +486,10 @@ type DisputeListParams struct {
 
 // URLQuery serializes [DisputeListParams]'s query parameters as `url.Values`.
 func (r DisputeListParams) URLQuery() (v url.Values) {
-	return apiquery.Marshal(r)
+	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
+		ArrayFormat:  apiquery.ArrayQueryFormatRepeat,
+		NestedFormat: apiquery.NestedQueryFormatBrackets,
+	})
 }
 
 type DisputeListParamsStatus string
@@ -542,7 +545,10 @@ type DisputeListEvidencesParams struct {
 // URLQuery serializes [DisputeListEvidencesParams]'s query parameters as
 // `url.Values`.
 func (r DisputeListEvidencesParams) URLQuery() (v url.Values) {
-	return apiquery.Marshal(r)
+	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
+		ArrayFormat:  apiquery.ArrayQueryFormatRepeat,
+		NestedFormat: apiquery.NestedQueryFormatBrackets,
+	})
 }
 
 type DisputeListEvidencesResponse struct {
