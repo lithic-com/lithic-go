@@ -160,7 +160,10 @@ type EventListParams struct {
 
 // URLQuery serializes [EventListParams]'s query parameters as `url.Values`.
 func (r EventListParams) URLQuery() (v url.Values) {
-	return apiquery.Marshal(r)
+	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
+		ArrayFormat:  apiquery.ArrayQueryFormatRepeat,
+		NestedFormat: apiquery.NestedQueryFormatBrackets,
+	})
 }
 
 type EventListParamsEventTypes string

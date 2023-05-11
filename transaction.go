@@ -737,7 +737,10 @@ type TransactionListParams struct {
 
 // URLQuery serializes [TransactionListParams]'s query parameters as `url.Values`.
 func (r TransactionListParams) URLQuery() (v url.Values) {
-	return apiquery.Marshal(r)
+	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
+		ArrayFormat:  apiquery.ArrayQueryFormatRepeat,
+		NestedFormat: apiquery.NestedQueryFormatBrackets,
+	})
 }
 
 type TransactionListParamsResult string
