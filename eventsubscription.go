@@ -203,7 +203,10 @@ type EventSubscriptionListParams struct {
 // URLQuery serializes [EventSubscriptionListParams]'s query parameters as
 // `url.Values`.
 func (r EventSubscriptionListParams) URLQuery() (v url.Values) {
-	return apiquery.Marshal(r)
+	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
+		ArrayFormat:  apiquery.ArrayQueryFormatRepeat,
+		NestedFormat: apiquery.NestedQueryFormatBrackets,
+	})
 }
 
 type EventSubscriptionListResponse struct {
@@ -237,7 +240,10 @@ type EventSubscriptionRecoverParams struct {
 // URLQuery serializes [EventSubscriptionRecoverParams]'s query parameters as
 // `url.Values`.
 func (r EventSubscriptionRecoverParams) URLQuery() (v url.Values) {
-	return apiquery.Marshal(r)
+	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
+		ArrayFormat:  apiquery.ArrayQueryFormatRepeat,
+		NestedFormat: apiquery.NestedQueryFormatBrackets,
+	})
 }
 
 type EventSubscriptionReplayMissingParams struct {
@@ -252,5 +258,8 @@ type EventSubscriptionReplayMissingParams struct {
 // URLQuery serializes [EventSubscriptionReplayMissingParams]'s query parameters as
 // `url.Values`.
 func (r EventSubscriptionReplayMissingParams) URLQuery() (v url.Values) {
-	return apiquery.Marshal(r)
+	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
+		ArrayFormat:  apiquery.ArrayQueryFormatRepeat,
+		NestedFormat: apiquery.NestedQueryFormatBrackets,
+	})
 }

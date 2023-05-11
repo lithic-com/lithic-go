@@ -119,7 +119,10 @@ type ResponderEndpointDeleteParams struct {
 // URLQuery serializes [ResponderEndpointDeleteParams]'s query parameters as
 // `url.Values`.
 func (r ResponderEndpointDeleteParams) URLQuery() (v url.Values) {
-	return apiquery.Marshal(r)
+	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
+		ArrayFormat:  apiquery.ArrayQueryFormatRepeat,
+		NestedFormat: apiquery.NestedQueryFormatBrackets,
+	})
 }
 
 type ResponderEndpointDeleteParamsType string
@@ -136,7 +139,10 @@ type ResponderEndpointCheckStatusParams struct {
 // URLQuery serializes [ResponderEndpointCheckStatusParams]'s query parameters as
 // `url.Values`.
 func (r ResponderEndpointCheckStatusParams) URLQuery() (v url.Values) {
-	return apiquery.Marshal(r)
+	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
+		ArrayFormat:  apiquery.ArrayQueryFormatRepeat,
+		NestedFormat: apiquery.NestedQueryFormatBrackets,
+	})
 }
 
 type ResponderEndpointCheckStatusParamsType string
