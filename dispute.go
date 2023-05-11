@@ -466,8 +466,6 @@ const (
 type DisputeListParams struct {
 	// List disputes of a given transaction token.
 	TransactionToken param.Field[string] `query:"transaction_token" format:"uuid"`
-	// List disputes from list of transaction tokens.
-	TransactionTokens param.Field[[]string] `query:"transaction_tokens" format:"uuid"`
 	// List disputes of a specific status.
 	Status param.Field[DisputeListParamsStatus] `query:"status"`
 	// Page size (for pagination).
