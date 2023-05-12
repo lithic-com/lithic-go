@@ -155,13 +155,13 @@ type EventListParams struct {
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string]                      `query:"ending_before"`
-	EventTypes   param.Field[[]EventListParamsEventTypes] `query:"event_types[]"`
+	EventTypes   param.Field[[]EventListParamsEventTypes] `query:"event_types"`
 }
 
 // URLQuery serializes [EventListParams]'s query parameters as `url.Values`.
 func (r EventListParams) URLQuery() (v url.Values) {
 	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
-		ArrayFormat:  apiquery.ArrayQueryFormatRepeat,
+		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
 }
