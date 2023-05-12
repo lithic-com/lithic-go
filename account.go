@@ -281,7 +281,7 @@ type AccountListParams struct {
 // URLQuery serializes [AccountListParams]'s query parameters as `url.Values`.
 func (r AccountListParams) URLQuery() (v url.Values) {
 	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
-		ArrayFormat:  apiquery.ArrayQueryFormatRepeat,
+		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
 }
