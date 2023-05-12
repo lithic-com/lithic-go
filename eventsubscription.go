@@ -162,8 +162,12 @@ func (r EventSubscriptionNewParams) MarshalJSON() (data []byte, err error) {
 type EventSubscriptionNewParamsEventTypes string
 
 const (
-	EventSubscriptionNewParamsEventTypesDisputeUpdated                           EventSubscriptionNewParamsEventTypes = "dispute.updated"
-	EventSubscriptionNewParamsEventTypesDigitalWalletTokenizationApprovalRequest EventSubscriptionNewParamsEventTypes = "digital_wallet.tokenization_approval_request"
+	EventSubscriptionNewParamsEventTypesCardCreated                                          EventSubscriptionNewParamsEventTypes = "card.created"
+	EventSubscriptionNewParamsEventTypesCardShipped                                          EventSubscriptionNewParamsEventTypes = "card.shipped"
+	EventSubscriptionNewParamsEventTypesCardTransactionUpdated                               EventSubscriptionNewParamsEventTypes = "card_transaction.updated"
+	EventSubscriptionNewParamsEventTypesDigitalWalletTokenizationApprovalRequest             EventSubscriptionNewParamsEventTypes = "digital_wallet.tokenization_approval_request"
+	EventSubscriptionNewParamsEventTypesDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionNewParamsEventTypes = "digital_wallet.tokenization_two_factor_authentication_code"
+	EventSubscriptionNewParamsEventTypesDisputeUpdated                                       EventSubscriptionNewParamsEventTypes = "dispute.updated"
 )
 
 type EventSubscriptionUpdateParams struct {
@@ -185,8 +189,12 @@ func (r EventSubscriptionUpdateParams) MarshalJSON() (data []byte, err error) {
 type EventSubscriptionUpdateParamsEventTypes string
 
 const (
-	EventSubscriptionUpdateParamsEventTypesDisputeUpdated                           EventSubscriptionUpdateParamsEventTypes = "dispute.updated"
-	EventSubscriptionUpdateParamsEventTypesDigitalWalletTokenizationApprovalRequest EventSubscriptionUpdateParamsEventTypes = "digital_wallet.tokenization_approval_request"
+	EventSubscriptionUpdateParamsEventTypesCardCreated                                          EventSubscriptionUpdateParamsEventTypes = "card.created"
+	EventSubscriptionUpdateParamsEventTypesCardShipped                                          EventSubscriptionUpdateParamsEventTypes = "card.shipped"
+	EventSubscriptionUpdateParamsEventTypesCardTransactionUpdated                               EventSubscriptionUpdateParamsEventTypes = "card_transaction.updated"
+	EventSubscriptionUpdateParamsEventTypesDigitalWalletTokenizationApprovalRequest             EventSubscriptionUpdateParamsEventTypes = "digital_wallet.tokenization_approval_request"
+	EventSubscriptionUpdateParamsEventTypesDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionUpdateParamsEventTypes = "digital_wallet.tokenization_two_factor_authentication_code"
+	EventSubscriptionUpdateParamsEventTypesDisputeUpdated                                       EventSubscriptionUpdateParamsEventTypes = "dispute.updated"
 )
 
 type EventSubscriptionListParams struct {

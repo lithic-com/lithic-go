@@ -71,9 +71,17 @@ type Event struct {
 	Token string `json:"token,required"`
 	// Event types:
 	//
+	//   - `card.created` - Notification that a card has been created.
+	//   - `card.shipped` - Physical card shipment notification. See
+	//     https://docs.lithic.com/docs/cards#physical-card-shipped-webhook.
+	//   - `card_transaction.updated` - Transaction Lifecycle webhook. See
+	//     https://docs.lithic.com/docs/transaction-webhooks.
 	//   - `dispute.updated` - A dispute has been updated.
 	//   - `digital_wallet.tokenization_approval_request` - Card network's request to
 	//     Lithic to activate a digital wallet token.
+	//   - `digital_wallet.tokenization_two_factor_authentication_code` - A code to be
+	//     passed to an end user to complete digital wallet authentication. See
+	//     https://docs.lithic.com/docs/tokenization-control#digital-wallet-tokenization-auth-code.
 	EventType EventEventType         `json:"event_type,required"`
 	Payload   map[string]interface{} `json:"payload,required"`
 	// An RFC 3339 timestamp for when the event was created. UTC time zone.
@@ -100,8 +108,12 @@ func (r *Event) UnmarshalJSON(data []byte) (err error) {
 type EventEventType string
 
 const (
-	EventEventTypeDisputeUpdated                           EventEventType = "dispute.updated"
-	EventEventTypeDigitalWalletTokenizationApprovalRequest EventEventType = "digital_wallet.tokenization_approval_request"
+	EventEventTypeCardCreated                                          EventEventType = "card.created"
+	EventEventTypeCardShipped                                          EventEventType = "card.shipped"
+	EventEventTypeCardTransactionUpdated                               EventEventType = "card_transaction.updated"
+	EventEventTypeDigitalWalletTokenizationApprovalRequest             EventEventType = "digital_wallet.tokenization_approval_request"
+	EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventEventType = "digital_wallet.tokenization_two_factor_authentication_code"
+	EventEventTypeDisputeUpdated                                       EventEventType = "dispute.updated"
 )
 
 // A subscription to specific event types.
@@ -136,8 +148,12 @@ func (r *EventSubscription) UnmarshalJSON(data []byte) (err error) {
 type EventSubscriptionEventTypes string
 
 const (
-	EventSubscriptionEventTypesDisputeUpdated                           EventSubscriptionEventTypes = "dispute.updated"
-	EventSubscriptionEventTypesDigitalWalletTokenizationApprovalRequest EventSubscriptionEventTypes = "digital_wallet.tokenization_approval_request"
+	EventSubscriptionEventTypesCardCreated                                          EventSubscriptionEventTypes = "card.created"
+	EventSubscriptionEventTypesCardShipped                                          EventSubscriptionEventTypes = "card.shipped"
+	EventSubscriptionEventTypesCardTransactionUpdated                               EventSubscriptionEventTypes = "card_transaction.updated"
+	EventSubscriptionEventTypesDigitalWalletTokenizationApprovalRequest             EventSubscriptionEventTypes = "digital_wallet.tokenization_approval_request"
+	EventSubscriptionEventTypesDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionEventTypes = "digital_wallet.tokenization_two_factor_authentication_code"
+	EventSubscriptionEventTypesDisputeUpdated                                       EventSubscriptionEventTypes = "dispute.updated"
 )
 
 type EventListParams struct {
@@ -154,8 +170,9 @@ type EventListParams struct {
 	StartingAfter param.Field[string] `query:"starting_after"`
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.
-	EndingBefore param.Field[string]                      `query:"ending_before"`
-	EventTypes   param.Field[[]EventListParamsEventTypes] `query:"event_types"`
+	EndingBefore param.Field[string] `query:"ending_before"`
+	// Event types to filter events by.
+	EventTypes param.Field[[]EventListParamsEventTypes] `query:"event_types"`
 }
 
 // URLQuery serializes [EventListParams]'s query parameters as `url.Values`.
@@ -169,8 +186,12 @@ func (r EventListParams) URLQuery() (v url.Values) {
 type EventListParamsEventTypes string
 
 const (
-	EventListParamsEventTypesDisputeUpdated                           EventListParamsEventTypes = "dispute.updated"
-	EventListParamsEventTypesDigitalWalletTokenizationApprovalRequest EventListParamsEventTypes = "digital_wallet.tokenization_approval_request"
+	EventListParamsEventTypesCardCreated                                          EventListParamsEventTypes = "card.created"
+	EventListParamsEventTypesCardShipped                                          EventListParamsEventTypes = "card.shipped"
+	EventListParamsEventTypesCardTransactionUpdated                               EventListParamsEventTypes = "card_transaction.updated"
+	EventListParamsEventTypesDigitalWalletTokenizationApprovalRequest             EventListParamsEventTypes = "digital_wallet.tokenization_approval_request"
+	EventListParamsEventTypesDigitalWalletTokenizationTwoFactorAuthenticationCode EventListParamsEventTypes = "digital_wallet.tokenization_two_factor_authentication_code"
+	EventListParamsEventTypesDisputeUpdated                                       EventListParamsEventTypes = "dispute.updated"
 )
 
 type EventListResponse struct {
