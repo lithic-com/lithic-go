@@ -653,7 +653,7 @@ type CardListParams struct {
 // URLQuery serializes [CardListParams]'s query parameters as `url.Values`.
 func (r CardListParams) URLQuery() (v url.Values) {
 	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
-		ArrayFormat:  apiquery.ArrayQueryFormatRepeat,
+		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
 }
@@ -694,7 +694,7 @@ type CardEmbedParams struct {
 // URLQuery serializes [CardEmbedParams]'s query parameters as `url.Values`.
 func (r CardEmbedParams) URLQuery() (v url.Values) {
 	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
-		ArrayFormat:  apiquery.ArrayQueryFormatRepeat,
+		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
 }
