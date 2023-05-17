@@ -702,15 +702,18 @@ func (r CardEmbedParams) URLQuery() (v url.Values) {
 type CardProvisionParams struct {
 	// Name of digital wallet provider.
 	DigitalWallet param.Field[CardProvisionParamsDigitalWallet] `json:"digital_wallet"`
-	// Required for `APPLE_PAY`. Base64 cryptographic nonce provided by the device's
-	// wallet.
+	// Only applicable if `digital_wallet` is `APPLE_PAY`. Omit to receive only
+	// `activationData` in the response. Base64 cryptographic nonce provided by the
+	// device's wallet.
 	Nonce param.Field[string] `json:"nonce" format:"byte"`
-	// Required for `APPLE_PAY`. Base64 cryptographic nonce provided by the device's
-	// wallet.
+	// Only applicable if `digital_wallet` is `APPLE_PAY`. Omit to receive only
+	// `activationData` in the response. Base64 cryptographic nonce provided by the
+	// device's wallet.
 	NonceSignature param.Field[string] `json:"nonce_signature" format:"byte"`
-	// Required for `APPLE_PAY`. Apple's public leaf certificate. Base64 encoded in PEM
-	// format with headers `(-----BEGIN CERTIFICATE-----)` and trailers omitted.
-	// Provided by the device's wallet.
+	// Only applicable if `digital_wallet` is `APPLE_PAY`. Omit to receive only
+	// `activationData` in the response. Apple's public leaf certificate. Base64
+	// encoded in PEM format with headers `(-----BEGIN CERTIFICATE-----)` and trailers
+	// omitted. Provided by the device's wallet.
 	Certificate param.Field[string] `json:"certificate" format:"byte"`
 }
 
