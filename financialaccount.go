@@ -95,6 +95,13 @@ func (r *FinancialAccount) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+type FinancialAccountType string
+
+const (
+	FinancialAccountTypeIssuing FinancialAccountType = "ISSUING"
+	FinancialAccountTypeReserve FinancialAccountType = "RESERVE"
+)
+
 // Financial Account
 type FinancialAccountParam struct {
 	// Account number for your Lithic-assigned bank account number, if applicable.
@@ -114,13 +121,6 @@ type FinancialAccountParam struct {
 func (r FinancialAccountParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
-
-type FinancialAccountType string
-
-const (
-	FinancialAccountTypeIssuing FinancialAccountType = "ISSUING"
-	FinancialAccountTypeReserve FinancialAccountType = "RESERVE"
-)
 
 type FinancialTransaction struct {
 	// Status types:
