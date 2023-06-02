@@ -244,13 +244,13 @@ func (r *TransferCreateResponse) UnmarshalJSON(data []byte) (err error) {
 }
 
 type TransferNewParams struct {
+	// Amount to be transferred in the currency’s smallest unit (e.g., cents for USD).
+	// This should always be a positive value.
+	Amount param.Field[int64] `json:"amount,required"`
 	// Financial Account
 	From param.Field[FinancialAccountParam] `json:"from,required"`
 	// Financial Account
 	To param.Field[FinancialAccountParam] `json:"to,required"`
-	// Amount to be transferred in the currency’s smallest unit (e.g., cents for USD).
-	// This should always be a positive value.
-	Amount param.Field[int64] `json:"amount,required"`
 	// Optional descriptor for the transfer.
 	Memo param.Field[string] `json:"memo"`
 	// Customer-provided transaction_token that will serve as an idempotency token.

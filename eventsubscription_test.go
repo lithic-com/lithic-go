@@ -12,7 +12,12 @@ import (
 
 func TestEventSubscriptionNewWithOptionalParams(t *testing.T) {
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Events.Subscriptions.New(context.TODO(), lithic.EventSubscriptionNewParams{Description: lithic.F("string"), Disabled: lithic.F(true), EventTypes: lithic.F([]lithic.EventSubscriptionNewParamsEventTypes{lithic.EventSubscriptionNewParamsEventTypesCardCreated, lithic.EventSubscriptionNewParamsEventTypesCardCreated, lithic.EventSubscriptionNewParamsEventTypesCardCreated}), URL: lithic.F("https://example.com")})
+	_, err := c.Events.Subscriptions.New(context.TODO(), lithic.EventSubscriptionNewParams{
+		URL:         lithic.F("https://example.com"),
+		Description: lithic.F("string"),
+		Disabled:    lithic.F(true),
+		EventTypes:  lithic.F([]lithic.EventSubscriptionNewParamsEventTypes{lithic.EventSubscriptionNewParamsEventTypesCardCreated, lithic.EventSubscriptionNewParamsEventTypesCardCreated, lithic.EventSubscriptionNewParamsEventTypesCardCreated}),
+	})
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
@@ -42,7 +47,12 @@ func TestEventSubscriptionUpdateWithOptionalParams(t *testing.T) {
 	_, err := c.Events.Subscriptions.Update(
 		context.TODO(),
 		"string",
-		lithic.EventSubscriptionUpdateParams{Description: lithic.F("string"), Disabled: lithic.F(true), EventTypes: lithic.F([]lithic.EventSubscriptionUpdateParamsEventTypes{lithic.EventSubscriptionUpdateParamsEventTypesCardCreated, lithic.EventSubscriptionUpdateParamsEventTypesCardCreated, lithic.EventSubscriptionUpdateParamsEventTypesCardCreated}), URL: lithic.F("https://example.com")},
+		lithic.EventSubscriptionUpdateParams{
+			URL:         lithic.F("https://example.com"),
+			Description: lithic.F("string"),
+			Disabled:    lithic.F(true),
+			EventTypes:  lithic.F([]lithic.EventSubscriptionUpdateParamsEventTypes{lithic.EventSubscriptionUpdateParamsEventTypesCardCreated, lithic.EventSubscriptionUpdateParamsEventTypesCardCreated, lithic.EventSubscriptionUpdateParamsEventTypesCardCreated}),
+		},
 	)
 	if err != nil {
 		var apierr *lithic.Error
@@ -55,7 +65,11 @@ func TestEventSubscriptionUpdateWithOptionalParams(t *testing.T) {
 
 func TestEventSubscriptionListWithOptionalParams(t *testing.T) {
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Events.Subscriptions.List(context.TODO(), lithic.EventSubscriptionListParams{PageSize: lithic.F(int64(1)), StartingAfter: lithic.F("string"), EndingBefore: lithic.F("string")})
+	_, err := c.Events.Subscriptions.List(context.TODO(), lithic.EventSubscriptionListParams{
+		EndingBefore:  lithic.F("string"),
+		PageSize:      lithic.F(int64(1)),
+		StartingAfter: lithic.F("string"),
+	})
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
@@ -81,13 +95,16 @@ func TestEventSubscriptionDelete(t *testing.T) {
 	}
 }
 
-func TestEventSubscriptionRecover(t *testing.T) {
+func TestEventSubscriptionRecoverWithOptionalParams(t *testing.T) {
 	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	err := c.Events.Subscriptions.Recover(
 		context.TODO(),
 		"string",
-		lithic.EventSubscriptionRecoverParams{Begin: lithic.F(time.Now()), End: lithic.F(time.Now())},
+		lithic.EventSubscriptionRecoverParams{
+			Begin: lithic.F(time.Now()),
+			End:   lithic.F(time.Now()),
+		},
 	)
 	if err != nil {
 		var apierr *lithic.Error
@@ -98,13 +115,16 @@ func TestEventSubscriptionRecover(t *testing.T) {
 	}
 }
 
-func TestEventSubscriptionReplayMissing(t *testing.T) {
+func TestEventSubscriptionReplayMissingWithOptionalParams(t *testing.T) {
 	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	err := c.Events.Subscriptions.ReplayMissing(
 		context.TODO(),
 		"string",
-		lithic.EventSubscriptionReplayMissingParams{Begin: lithic.F(time.Now()), End: lithic.F(time.Now())},
+		lithic.EventSubscriptionReplayMissingParams{
+			Begin: lithic.F(time.Now()),
+			End:   lithic.F(time.Now()),
+		},
 	)
 	if err != nil {
 		var apierr *lithic.Error

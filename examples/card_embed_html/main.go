@@ -22,7 +22,7 @@ func main() {
 		panic(err.Error())
 	}
 
-	result, err := client.Cards.GetEmbedHTML(context.TODO(), lithic.EmbedRequestParams{Token: lithic.F(card.Token)})
+	result, err := client.Cards.GetEmbedHTML(context.TODO(), lithic.CardGetEmbedHTMLParams{Token: lithic.F(card.Token)})
 	if err != nil {
 		panic(err.Error())
 	}

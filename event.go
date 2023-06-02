@@ -35,9 +35,9 @@ func NewEventService(opts ...option.RequestOption) (r *EventService) {
 }
 
 // Get an event.
-func (r *EventService) Get(ctx context.Context, event_token string, opts ...option.RequestOption) (res *Event, err error) {
+func (r *EventService) Get(ctx context.Context, eventToken string, opts ...option.RequestOption) (res *Event, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("events/%s", event_token)
+	path := fmt.Sprintf("events/%s", eventToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -163,16 +163,16 @@ type EventListParams struct {
 	// Date string in RFC 3339 format. Only entries created before the specified date
 	// will be included. UTC time zone.
 	End param.Field[time.Time] `query:"end" format:"date-time"`
-	// Page size (for pagination).
-	PageSize param.Field[int64] `query:"page_size"`
-	// A cursor representing an item's token after which a page of results should
-	// begin. Used to retrieve the next page of results after this item.
-	StartingAfter param.Field[string] `query:"starting_after"`
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string] `query:"ending_before"`
 	// Event types to filter events by.
 	EventTypes param.Field[[]EventListParamsEventTypes] `query:"event_types"`
+	// Page size (for pagination).
+	PageSize param.Field[int64] `query:"page_size"`
+	// A cursor representing an item's token after which a page of results should
+	// begin. Used to retrieve the next page of results after this item.
+	StartingAfter param.Field[string] `query:"starting_after"`
 }
 
 // URLQuery serializes [EventListParams]'s query parameters as `url.Values`.

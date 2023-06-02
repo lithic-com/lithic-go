@@ -42,17 +42,17 @@ func (r *EventSubscriptionService) New(ctx context.Context, body EventSubscripti
 }
 
 // Get an event subscription.
-func (r *EventSubscriptionService) Get(ctx context.Context, event_subscription_token string, opts ...option.RequestOption) (res *EventSubscription, err error) {
+func (r *EventSubscriptionService) Get(ctx context.Context, eventSubscriptionToken string, opts ...option.RequestOption) (res *EventSubscription, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("event_subscriptions/%s", event_subscription_token)
+	path := fmt.Sprintf("event_subscriptions/%s", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
 // Update an event subscription.
-func (r *EventSubscriptionService) Update(ctx context.Context, event_subscription_token string, body EventSubscriptionUpdateParams, opts ...option.RequestOption) (res *EventSubscription, err error) {
+func (r *EventSubscriptionService) Update(ctx context.Context, eventSubscriptionToken string, body EventSubscriptionUpdateParams, opts ...option.RequestOption) (res *EventSubscription, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("event_subscriptions/%s", event_subscription_token)
+	path := fmt.Sprintf("event_subscriptions/%s", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
 }
@@ -81,47 +81,47 @@ func (r *EventSubscriptionService) ListAutoPaging(ctx context.Context, query Eve
 }
 
 // Delete an event subscription.
-func (r *EventSubscriptionService) Delete(ctx context.Context, event_subscription_token string, opts ...option.RequestOption) (err error) {
+func (r *EventSubscriptionService) Delete(ctx context.Context, eventSubscriptionToken string, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
-	path := fmt.Sprintf("event_subscriptions/%s", event_subscription_token)
+	path := fmt.Sprintf("event_subscriptions/%s", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, nil, opts...)
 	return
 }
 
 // Resend all failed messages since a given time.
-func (r *EventSubscriptionService) Recover(ctx context.Context, event_subscription_token string, query EventSubscriptionRecoverParams, opts ...option.RequestOption) (err error) {
+func (r *EventSubscriptionService) Recover(ctx context.Context, eventSubscriptionToken string, body EventSubscriptionRecoverParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
-	path := fmt.Sprintf("event_subscriptions/%s/recover", event_subscription_token)
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, query, nil, opts...)
+	path := fmt.Sprintf("event_subscriptions/%s/recover", eventSubscriptionToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
 	return
 }
 
 // Replays messages to the endpoint. Only messages that were created after `begin`
 // will be sent. Messages that were previously sent to the endpoint are not resent.
-func (r *EventSubscriptionService) ReplayMissing(ctx context.Context, event_subscription_token string, query EventSubscriptionReplayMissingParams, opts ...option.RequestOption) (err error) {
+func (r *EventSubscriptionService) ReplayMissing(ctx context.Context, eventSubscriptionToken string, body EventSubscriptionReplayMissingParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
-	path := fmt.Sprintf("event_subscriptions/%s/replay_missing", event_subscription_token)
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, query, nil, opts...)
+	path := fmt.Sprintf("event_subscriptions/%s/replay_missing", eventSubscriptionToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
 	return
 }
 
 // Get the secret for an event subscription.
-func (r *EventSubscriptionService) GetSecret(ctx context.Context, event_subscription_token string, opts ...option.RequestOption) (res *SubscriptionRetrieveSecretResponse, err error) {
+func (r *EventSubscriptionService) GetSecret(ctx context.Context, eventSubscriptionToken string, opts ...option.RequestOption) (res *SubscriptionRetrieveSecretResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("event_subscriptions/%s/secret", event_subscription_token)
+	path := fmt.Sprintf("event_subscriptions/%s/secret", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
 // Rotate the secret for an event subscription. The previous secret will be valid
 // for the next 24 hours.
-func (r *EventSubscriptionService) RotateSecret(ctx context.Context, event_subscription_token string, opts ...option.RequestOption) (err error) {
+func (r *EventSubscriptionService) RotateSecret(ctx context.Context, eventSubscriptionToken string, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
-	path := fmt.Sprintf("event_subscriptions/%s/secret/rotate", event_subscription_token)
+	path := fmt.Sprintf("event_subscriptions/%s/secret/rotate", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
 	return
 }
@@ -144,6 +144,8 @@ func (r *SubscriptionRetrieveSecretResponse) UnmarshalJSON(data []byte) (err err
 }
 
 type EventSubscriptionNewParams struct {
+	// URL to which event webhooks will be sent. URL must be a valid HTTPS address.
+	URL param.Field[string] `json:"url,required" format:"uri"`
 	// Event subscription description.
 	Description param.Field[string] `json:"description"`
 	// Whether the event subscription is active (false) or inactive (true).
@@ -151,8 +153,6 @@ type EventSubscriptionNewParams struct {
 	// Indicates types of events that will be sent to this subscription. If left blank,
 	// all types will be sent.
 	EventTypes param.Field[[]EventSubscriptionNewParamsEventTypes] `json:"event_types"`
-	// URL to which event webhooks will be sent. URL must be a valid HTTPS address.
-	URL param.Field[string] `json:"url,required" format:"uri"`
 }
 
 func (r EventSubscriptionNewParams) MarshalJSON() (data []byte, err error) {
@@ -171,6 +171,8 @@ const (
 )
 
 type EventSubscriptionUpdateParams struct {
+	// URL to which event webhooks will be sent. URL must be a valid HTTPS address.
+	URL param.Field[string] `json:"url,required" format:"uri"`
 	// Event subscription description.
 	Description param.Field[string] `json:"description"`
 	// Whether the event subscription is active (false) or inactive (true).
@@ -178,8 +180,6 @@ type EventSubscriptionUpdateParams struct {
 	// Indicates types of events that will be sent to this subscription. If left blank,
 	// all types will be sent.
 	EventTypes param.Field[[]EventSubscriptionUpdateParamsEventTypes] `json:"event_types"`
-	// URL to which event webhooks will be sent. URL must be a valid HTTPS address.
-	URL param.Field[string] `json:"url,required" format:"uri"`
 }
 
 func (r EventSubscriptionUpdateParams) MarshalJSON() (data []byte, err error) {
@@ -198,14 +198,14 @@ const (
 )
 
 type EventSubscriptionListParams struct {
+	// A cursor representing an item's token before which a page of results should end.
+	// Used to retrieve the previous page of results before this item.
+	EndingBefore param.Field[string] `query:"ending_before"`
 	// Page size (for pagination).
 	PageSize param.Field[int64] `query:"page_size"`
 	// A cursor representing an item's token after which a page of results should
 	// begin. Used to retrieve the next page of results after this item.
 	StartingAfter param.Field[string] `query:"starting_after"`
-	// A cursor representing an item's token before which a page of results should end.
-	// Used to retrieve the previous page of results before this item.
-	EndingBefore param.Field[string] `query:"ending_before"`
 }
 
 // URLQuery serializes [EventSubscriptionListParams]'s query parameters as

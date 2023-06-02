@@ -41,7 +41,9 @@ func TestAuthStreamEnrollmentDisenroll(t *testing.T) {
 func TestAuthStreamEnrollmentEnrollWithOptionalParams(t *testing.T) {
 	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	err := c.AuthStreamEnrollment.Enroll(context.TODO(), lithic.AuthStreamEnrollmentEnrollParams{WebhookURL: lithic.F("https://example.com")})
+	err := c.AuthStreamEnrollment.Enroll(context.TODO(), lithic.AuthStreamEnrollmentEnrollParams{
+		WebhookURL: lithic.F("https://example.com"),
+	})
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
