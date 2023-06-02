@@ -34,9 +34,9 @@ func NewTransactionService(opts ...option.RequestOption) (r *TransactionService)
 }
 
 // Get specific transaction.
-func (r *TransactionService) Get(ctx context.Context, transaction_token string, opts ...option.RequestOption) (res *Transaction, err error) {
+func (r *TransactionService) Get(ctx context.Context, transactionToken string, opts ...option.RequestOption) (res *Transaction, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("transactions/%s", transaction_token)
+	path := fmt.Sprintf("transactions/%s", transactionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -718,14 +718,11 @@ func (r *TransactionSimulateAuthorizationAdviceResponse) UnmarshalJSON(data []by
 type TransactionListParams struct {
 	// Filters for transactions associated with a specific account.
 	AccountToken param.Field[string] `query:"account_token" format:"uuid"`
-	// Filters for transactions associated with a specific card.
-	CardToken param.Field[string] `query:"card_token" format:"uuid"`
-	// Filters for transactions using transaction result field. Can filter by
-	// `APPROVED`, and `DECLINED`.
-	Result param.Field[TransactionListParamsResult] `query:"result"`
 	// Date string in RFC 3339 format. Only entries created after the specified date
 	// will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
+	// Filters for transactions associated with a specific card.
+	CardToken param.Field[string] `query:"card_token" format:"uuid"`
 	// Date string in RFC 3339 format. Only entries created before the specified date
 	// will be included. UTC time zone.
 	End param.Field[time.Time] `query:"end" format:"date-time"`
@@ -733,6 +730,9 @@ type TransactionListParams struct {
 	Page param.Field[int64] `query:"page"`
 	// Page size (for pagination).
 	PageSize param.Field[int64] `query:"page_size"`
+	// Filters for transactions using transaction result field. Can filter by
+	// `APPROVED`, and `DECLINED`.
+	Result param.Field[TransactionListParamsResult] `query:"result"`
 }
 
 // URLQuery serializes [TransactionListParams]'s query parameters as `url.Values`.
@@ -787,6 +787,21 @@ type TransactionSimulateAuthorizationParams struct {
 	Descriptor param.Field[string] `json:"descriptor,required"`
 	// Sixteen digit card number.
 	Pan param.Field[string] `json:"pan,required"`
+	// Merchant category code for the transaction to be simulated. A four-digit number
+	// listed in ISO 18245. Supported merchant category codes can be found
+	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
+	Mcc param.Field[string] `json:"mcc"`
+	// Unique identifier to identify the payment card acceptor.
+	MerchantAcceptorID param.Field[string] `json:"merchant_acceptor_id"`
+	// Amount of the transaction to be simulated in currency specified in
+	// merchant_currency, including any acquirer fees.
+	MerchantAmount param.Field[int64] `json:"merchant_amount"`
+	// 3-digit alphabetic ISO 4217 currency code.
+	MerchantCurrency param.Field[string] `json:"merchant_currency"`
+	// Set to true if the terminal is capable of partial approval otherwise false.
+	// Partial approval is when part of a transaction is approved and another payment
+	// must be used for the remainder.
+	PartialApprovalCapable param.Field[bool] `json:"partial_approval_capable"`
 	// Type of event to simulate.
 	//
 	//   - `AUTHORIZATION` is a dual message purchase authorization, meaning a subsequent
@@ -804,21 +819,6 @@ type TransactionSimulateAuthorizationParams struct {
 	//     to credit funds immediately, and no subsequent clearing is required to settle
 	//     the transaction.
 	Status param.Field[TransactionSimulateAuthorizationParamsStatus] `json:"status"`
-	// Unique identifier to identify the payment card acceptor.
-	MerchantAcceptorID param.Field[string] `json:"merchant_acceptor_id"`
-	// 3-digit alphabetic ISO 4217 currency code.
-	MerchantCurrency param.Field[string] `json:"merchant_currency"`
-	// Amount of the transaction to be simulated in currency specified in
-	// merchant_currency, including any acquirer fees.
-	MerchantAmount param.Field[int64] `json:"merchant_amount"`
-	// Merchant category code for the transaction to be simulated. A four-digit number
-	// listed in ISO 18245. Supported merchant category codes can be found
-	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
-	Mcc param.Field[string] `json:"mcc"`
-	// Set to true if the terminal is capable of partial approval otherwise false.
-	// Partial approval is when part of a transaction is approved and another payment
-	// must be used for the remainder.
-	PartialApprovalCapable param.Field[bool] `json:"partial_approval_capable"`
 }
 
 func (r TransactionSimulateAuthorizationParams) MarshalJSON() (data []byte, err error) {
@@ -848,6 +848,8 @@ func (r TransactionSimulateAuthorizationAdviceParams) MarshalJSON() (data []byte
 }
 
 type TransactionSimulateClearingParams struct {
+	// The transaction token returned from the /v1/simulate/authorize response.
+	Token param.Field[string] `json:"token,required" format:"uuid"`
 	// Amount (in cents) to complete. Typically this will match the original
 	// authorization, but may be more or less.
 	//
@@ -855,8 +857,6 @@ type TransactionSimulateClearingParams struct {
 	// captured. Any transaction that has any amount completed at all do not have
 	// access to this behavior.
 	Amount param.Field[int64] `json:"amount"`
-	// The transaction token returned from the /v1/simulate/authorize response.
-	Token param.Field[string] `json:"token,required" format:"uuid"`
 }
 
 func (r TransactionSimulateClearingParams) MarshalJSON() (data []byte, err error) {
@@ -872,12 +872,12 @@ type TransactionSimulateCreditAuthorizationParams struct {
 	Descriptor param.Field[string] `json:"descriptor,required"`
 	// Sixteen digit card number.
 	Pan param.Field[string] `json:"pan,required"`
-	// Unique identifier to identify the payment card acceptor.
-	MerchantAcceptorID param.Field[string] `json:"merchant_acceptor_id"`
 	// Merchant category code for the transaction to be simulated. A four-digit number
 	// listed in ISO 18245. Supported merchant category codes can be found
 	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
 	Mcc param.Field[string] `json:"mcc"`
+	// Unique identifier to identify the payment card acceptor.
+	MerchantAcceptorID param.Field[string] `json:"merchant_acceptor_id"`
 }
 
 func (r TransactionSimulateCreditAuthorizationParams) MarshalJSON() (data []byte, err error) {
@@ -907,11 +907,11 @@ func (r TransactionSimulateReturnReversalParams) MarshalJSON() (data []byte, err
 }
 
 type TransactionSimulateVoidParams struct {
+	// The transaction token returned from the /v1/simulate/authorize response.
+	Token param.Field[string] `json:"token,required" format:"uuid"`
 	// Amount (in cents) to void. Typically this will match the original authorization,
 	// but may be less.
 	Amount param.Field[int64] `json:"amount"`
-	// The transaction token returned from the /v1/simulate/authorize response.
-	Token param.Field[string] `json:"token,required" format:"uuid"`
 	// Type of event to simulate. Defaults to `AUTHORIZATION_REVERSAL`.
 	//
 	//   - `AUTHORIZATION_EXPIRY` indicates authorization has expired and been reversed

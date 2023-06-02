@@ -44,17 +44,17 @@ func (r *DisputeService) New(ctx context.Context, body DisputeNewParams, opts ..
 }
 
 // Get dispute.
-func (r *DisputeService) Get(ctx context.Context, dispute_token string, opts ...option.RequestOption) (res *Dispute, err error) {
+func (r *DisputeService) Get(ctx context.Context, disputeToken string, opts ...option.RequestOption) (res *Dispute, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("disputes/%s", dispute_token)
+	path := fmt.Sprintf("disputes/%s", disputeToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
 // Update dispute. Can only be modified if status is `NEW`.
-func (r *DisputeService) Update(ctx context.Context, dispute_token string, body DisputeUpdateParams, opts ...option.RequestOption) (res *Dispute, err error) {
+func (r *DisputeService) Update(ctx context.Context, disputeToken string, body DisputeUpdateParams, opts ...option.RequestOption) (res *Dispute, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("disputes/%s", dispute_token)
+	path := fmt.Sprintf("disputes/%s", disputeToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
 }
@@ -83,18 +83,18 @@ func (r *DisputeService) ListAutoPaging(ctx context.Context, query DisputeListPa
 }
 
 // Withdraw dispute.
-func (r *DisputeService) Delete(ctx context.Context, dispute_token string, opts ...option.RequestOption) (res *Dispute, err error) {
+func (r *DisputeService) Delete(ctx context.Context, disputeToken string, opts ...option.RequestOption) (res *Dispute, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("disputes/%s", dispute_token)
+	path := fmt.Sprintf("disputes/%s", disputeToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, &res, opts...)
 	return
 }
 
 // Soft delete evidence for a dispute. Evidence will not be reviewed or submitted
 // by Lithic after it is withdrawn.
-func (r *DisputeService) DeleteEvidence(ctx context.Context, dispute_token string, evidence_token string, opts ...option.RequestOption) (res *DisputeEvidence, err error) {
+func (r *DisputeService) DeleteEvidence(ctx context.Context, disputeToken string, evidenceToken string, opts ...option.RequestOption) (res *DisputeEvidence, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("disputes/%s/evidences/%s", dispute_token, evidence_token)
+	path := fmt.Sprintf("disputes/%s/evidences/%s", disputeToken, evidenceToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, &res, opts...)
 	return
 }
@@ -104,19 +104,19 @@ func (r *DisputeService) DeleteEvidence(ctx context.Context, dispute_token strin
 //
 // Uploaded documents must either be a `jpg`, `png` or `pdf` file, and each must be
 // less than 5 GiB.
-func (r *DisputeService) InitiateEvidenceUpload(ctx context.Context, dispute_token string, opts ...option.RequestOption) (res *DisputeEvidence, err error) {
+func (r *DisputeService) InitiateEvidenceUpload(ctx context.Context, disputeToken string, opts ...option.RequestOption) (res *DisputeEvidence, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("disputes/%s/evidences", dispute_token)
+	path := fmt.Sprintf("disputes/%s/evidences", disputeToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
 	return
 }
 
 // List evidence metadata for a dispute.
-func (r *DisputeService) ListEvidences(ctx context.Context, dispute_token string, query DisputeListEvidencesParams, opts ...option.RequestOption) (res *shared.CursorPage[DisputeEvidence], err error) {
+func (r *DisputeService) ListEvidences(ctx context.Context, disputeToken string, query DisputeListEvidencesParams, opts ...option.RequestOption) (res *shared.CursorPage[DisputeEvidence], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
-	path := fmt.Sprintf("disputes/%s/evidences", dispute_token)
+	path := fmt.Sprintf("disputes/%s/evidences", disputeToken)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
@@ -130,14 +130,14 @@ func (r *DisputeService) ListEvidences(ctx context.Context, dispute_token string
 }
 
 // List evidence metadata for a dispute.
-func (r *DisputeService) ListEvidencesAutoPaging(ctx context.Context, dispute_token string, query DisputeListEvidencesParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[DisputeEvidence] {
-	return shared.NewCursorPageAutoPager(r.ListEvidences(ctx, dispute_token, query, opts...))
+func (r *DisputeService) ListEvidencesAutoPaging(ctx context.Context, disputeToken string, query DisputeListEvidencesParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[DisputeEvidence] {
+	return shared.NewCursorPageAutoPager(r.ListEvidences(ctx, disputeToken, query, opts...))
 }
 
 // Get a dispute's evidence metadata.
-func (r *DisputeService) GetEvidence(ctx context.Context, dispute_token string, evidence_token string, opts ...option.RequestOption) (res *DisputeEvidence, err error) {
+func (r *DisputeService) GetEvidence(ctx context.Context, disputeToken string, evidenceToken string, opts ...option.RequestOption) (res *DisputeEvidence, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("disputes/%s/evidences/%s", dispute_token, evidence_token)
+	path := fmt.Sprintf("disputes/%s/evidences/%s", disputeToken, evidenceToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -396,12 +396,12 @@ const (
 type DisputeNewParams struct {
 	// Amount to dispute
 	Amount param.Field[int64] `json:"amount,required"`
-	// Date the customer filed the dispute
-	CustomerFiledDate param.Field[time.Time] `json:"customer_filed_date" format:"date-time"`
 	// Reason for dispute
 	Reason param.Field[DisputeNewParamsReason] `json:"reason,required"`
 	// Transaction to dispute
 	TransactionToken param.Field[string] `json:"transaction_token,required" format:"uuid"`
+	// Date the customer filed the dispute
+	CustomerFiledDate param.Field[time.Time] `json:"customer_filed_date" format:"date-time"`
 	// Customer description of dispute
 	CustomerNote param.Field[string] `json:"customer_note"`
 }
@@ -464,24 +464,24 @@ const (
 )
 
 type DisputeListParams struct {
-	// Transaction tokens to filter by.
-	TransactionTokens param.Field[[]string] `query:"transaction_tokens" format:"uuid"`
-	// List disputes of a specific status.
-	Status param.Field[DisputeListParamsStatus] `query:"status"`
-	// Page size (for pagination).
-	PageSize param.Field[int64] `query:"page_size"`
 	// Date string in RFC 3339 format. Only entries created after the specified date
 	// will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Date string in RFC 3339 format. Only entries created before the specified date
 	// will be included. UTC time zone.
 	End param.Field[time.Time] `query:"end" format:"date-time"`
-	// A cursor representing an item's token after which a page of results should
-	// begin. Used to retrieve the next page of results after this item.
-	StartingAfter param.Field[string] `query:"starting_after"`
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string] `query:"ending_before"`
+	// Page size (for pagination).
+	PageSize param.Field[int64] `query:"page_size"`
+	// A cursor representing an item's token after which a page of results should
+	// begin. Used to retrieve the next page of results after this item.
+	StartingAfter param.Field[string] `query:"starting_after"`
+	// List disputes of a specific status.
+	Status param.Field[DisputeListParamsStatus] `query:"status"`
+	// Transaction tokens to filter by.
+	TransactionTokens param.Field[[]string] `query:"transaction_tokens" format:"uuid"`
 }
 
 // URLQuery serializes [DisputeListParams]'s query parameters as `url.Values`.
@@ -526,20 +526,20 @@ func (r *DisputeListResponse) UnmarshalJSON(data []byte) (err error) {
 }
 
 type DisputeListEvidencesParams struct {
-	// Page size (for pagination).
-	PageSize param.Field[int64] `query:"page_size"`
 	// Date string in RFC 3339 format. Only entries created after the specified date
 	// will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Date string in RFC 3339 format. Only entries created before the specified date
 	// will be included. UTC time zone.
 	End param.Field[time.Time] `query:"end" format:"date-time"`
-	// A cursor representing an item's token after which a page of results should
-	// begin. Used to retrieve the next page of results after this item.
-	StartingAfter param.Field[string] `query:"starting_after"`
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string] `query:"ending_before"`
+	// Page size (for pagination).
+	PageSize param.Field[int64] `query:"page_size"`
+	// A cursor representing an item's token after which a page of results should
+	// begin. Used to retrieve the next page of results after this item.
+	StartingAfter param.Field[string] `query:"starting_after"`
 }
 
 // URLQuery serializes [DisputeListEvidencesParams]'s query parameters as
@@ -569,4 +569,7 @@ type disputeListEvidencesResponseJSON struct {
 
 func (r *DisputeListEvidencesResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+type DisputeUploadEvidenceParams struct {
 }

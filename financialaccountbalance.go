@@ -34,11 +34,11 @@ func NewFinancialAccountBalanceService(opts ...option.RequestOption) (r *Financi
 }
 
 // Get the balances for a given financial account.
-func (r *FinancialAccountBalanceService) List(ctx context.Context, financial_account_token string, query FinancialAccountBalanceListParams, opts ...option.RequestOption) (res *shared.SinglePage[Balance], err error) {
+func (r *FinancialAccountBalanceService) List(ctx context.Context, financialAccountToken string, query FinancialAccountBalanceListParams, opts ...option.RequestOption) (res *shared.SinglePage[Balance], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
-	path := fmt.Sprintf("financial_accounts/%s/balances", financial_account_token)
+	path := fmt.Sprintf("financial_accounts/%s/balances", financialAccountToken)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
@@ -52,8 +52,8 @@ func (r *FinancialAccountBalanceService) List(ctx context.Context, financial_acc
 }
 
 // Get the balances for a given financial account.
-func (r *FinancialAccountBalanceService) ListAutoPaging(ctx context.Context, financial_account_token string, query FinancialAccountBalanceListParams, opts ...option.RequestOption) *shared.SinglePageAutoPager[Balance] {
-	return shared.NewSinglePageAutoPager(r.List(ctx, financial_account_token, query, opts...))
+func (r *FinancialAccountBalanceService) ListAutoPaging(ctx context.Context, financialAccountToken string, query FinancialAccountBalanceListParams, opts ...option.RequestOption) *shared.SinglePageAutoPager[Balance] {
+	return shared.NewSinglePageAutoPager(r.List(ctx, financialAccountToken, query, opts...))
 }
 
 type FinancialAccountBalanceListParams struct {

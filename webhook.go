@@ -93,3 +93,6 @@ func (r *WebhookService) VerifySignature(payload []byte, headers http.Header, se
 	return errors.New("None of the given webhook signatures match the expected signature")
 
 }
+
+type WebhookVerifySignatureParams struct {
+}

@@ -31,7 +31,15 @@ func TestFinancialTransactionListWithOptionalParams(t *testing.T) {
 	_, err := c.FinancialAccounts.FinancialTransactions.List(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-		lithic.FinancialTransactionListParams{Category: lithic.F(lithic.FinancialTransactionListParamsCategoryACH), Status: lithic.F(lithic.FinancialTransactionListParamsStatusDeclined), Result: lithic.F(lithic.FinancialTransactionListParamsResultApproved), Begin: lithic.F(time.Now()), End: lithic.F(time.Now()), StartingAfter: lithic.F("string"), EndingBefore: lithic.F("string")},
+		lithic.FinancialTransactionListParams{
+			Begin:         lithic.F(time.Now()),
+			Category:      lithic.F(lithic.FinancialTransactionListParamsCategoryACH),
+			End:           lithic.F(time.Now()),
+			EndingBefore:  lithic.F("string"),
+			Result:        lithic.F(lithic.FinancialTransactionListParamsResultApproved),
+			StartingAfter: lithic.F("string"),
+			Status:        lithic.F(lithic.FinancialTransactionListParamsStatusDeclined),
+		},
 	)
 	if err != nil {
 		var apierr *lithic.Error

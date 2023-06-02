@@ -45,9 +45,9 @@ func (r *CardService) New(ctx context.Context, body CardNewParams, opts ...optio
 }
 
 // Get card configuration such as spend limit and state.
-func (r *CardService) Get(ctx context.Context, card_token string, opts ...option.RequestOption) (res *Card, err error) {
+func (r *CardService) Get(ctx context.Context, cardToken string, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("cards/%s", card_token)
+	path := fmt.Sprintf("cards/%s", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -57,9 +57,9 @@ func (r *CardService) Get(ctx context.Context, card_token string, opts ...option
 //
 // _Note: setting a card to a `CLOSED` state is a final action that cannot be
 // undone._
-func (r *CardService) Update(ctx context.Context, card_token string, body CardUpdateParams, opts ...option.RequestOption) (res *Card, err error) {
+func (r *CardService) Update(ctx context.Context, cardToken string, body CardUpdateParams, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("cards/%s", card_token)
+	path := fmt.Sprintf("cards/%s", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
 }
@@ -123,7 +123,7 @@ func (r *CardService) Embed(ctx context.Context, query CardEmbedParams, opts ...
 	return
 }
 
-func (r *CardService) GetEmbedHTML(ctx context.Context, body EmbedRequestParams, opts ...option.RequestOption) (res []byte, err error) {
+func (r *CardService) GetEmbedHTML(ctx context.Context, body CardGetEmbedHTMLParams, opts ...option.RequestOption) (res []byte, err error) {
 	opts = append(r.Options, opts...)
 	buf, err := body.MarshalJSON()
 	if err != nil {
@@ -177,7 +177,7 @@ func (r *CardService) GetEmbedHTML(ctx context.Context, body EmbedRequestParams,
 // the whole iframe) on the server or make an ajax call from your front end code,
 // but **do not ever embed your API key into front end code, as doing so introduces
 // a serious security vulnerability**.
-func (r *CardService) GetEmbedURL(ctx context.Context, body EmbedRequestParams, opts ...option.RequestOption) (res *url.URL, err error) {
+func (r *CardService) GetEmbedURL(ctx context.Context, body CardGetEmbedURLParams, opts ...option.RequestOption) (res *url.URL, err error) {
 	buf, err := body.MarshalJSON()
 	if err != nil {
 		return nil, err
@@ -206,9 +206,9 @@ func (r *CardService) GetEmbedURL(ctx context.Context, body EmbedRequestParams, 
 // This requires some additional setup and configuration. Please
 // [Contact Us](https://lithic.com/contact) or your Customer Success representative
 // for more information.
-func (r *CardService) Provision(ctx context.Context, card_token string, body CardProvisionParams, opts ...option.RequestOption) (res *CardProvisionResponse, err error) {
+func (r *CardService) Provision(ctx context.Context, cardToken string, body CardProvisionParams, opts ...option.RequestOption) (res *CardProvisionResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("cards/%s/provision", card_token)
+	path := fmt.Sprintf("cards/%s/provision", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -216,9 +216,9 @@ func (r *CardService) Provision(ctx context.Context, card_token string, body Car
 // Initiate print and shipment of a duplicate physical card.
 //
 // Only applies to cards of type `PHYSICAL`.
-func (r *CardService) Reissue(ctx context.Context, card_token string, body CardReissueParams, opts ...option.RequestOption) (res *Card, err error) {
+func (r *CardService) Reissue(ctx context.Context, cardToken string, body CardReissueParams, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("cards/%s/reissue", card_token)
+	path := fmt.Sprintf("cards/%s/reissue", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -422,33 +422,6 @@ const (
 	CardTypeSingleUse      CardType = "SINGLE_USE"
 )
 
-type EmbedRequestParams struct {
-	// A publicly available URI, so the white-labeled card element can be styled with
-	// the client's branding.
-	Css param.Field[string] `json:"css"`
-	// An RFC 3339 timestamp for when the request should expire. UTC time zone.
-	//
-	// If no timezone is specified, UTC will be used. If payload does not contain an
-	// expiration, the request will never expire.
-	//
-	// Using an `expiration` reduces the risk of a
-	// [replay attack](https://en.wikipedia.org/wiki/Replay_attack). Without supplying
-	// the `expiration`, in the event that a malicious user gets a copy of your request
-	// in transit, they will be able to obtain the response data indefinitely.
-	Expiration param.Field[time.Time] `json:"expiration" format:"date-time"`
-	// Globally unique identifier for the card to be displayed.
-	Token param.Field[string] `json:"token,required" format:"uuid"`
-	// Required if you want to post the element clicked to the parent iframe.
-	//
-	// If you supply this param, you can also capture click events in the parent iframe
-	// by adding an event listener.
-	TargetOrigin param.Field[string] `json:"target_origin"`
-}
-
-func (r EmbedRequestParams) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
-}
-
 type CardProvisionResponse struct {
 	ProvisioningPayload string `json:"provisioning_payload"`
 	JSON                cardProvisionResponseJSON
@@ -467,6 +440,19 @@ func (r *CardProvisionResponse) UnmarshalJSON(data []byte) (err error) {
 }
 
 type CardNewParams struct {
+	// Card types:
+	//
+	//   - `VIRTUAL` - Card will authorize at any merchant and can be added to a digital
+	//     wallet like Apple Pay or Google Pay (if the card program is digital
+	//     wallet-enabled).
+	//   - `PHYSICAL` - Manufactured and sent to the cardholder. We offer white label
+	//     branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe functionality.
+	//     Reach out at [lithic.com/contact](https://lithic.com/contact) for more
+	//     information.
+	//   - `SINGLE_USE` - Card is closed upon first successful authorization.
+	//   - `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first merchant that
+	//     successfully authorizes the card.
+	Type param.Field[CardNewParamsType] `json:"type,required"`
 	// Globally unique identifier for the account that the card will be associated
 	// with. Required for programs enrolling users using the
 	// [/account_holders endpoint](https://docs.lithic.com/docs/account-holders-kyc).
@@ -479,6 +465,11 @@ type CardNewParams struct {
 	// 00000000-0000-0000-2000-000000000000 to test creating cards on specific card
 	// programs.
 	CardProgramToken param.Field[string] `json:"card_program_token" format:"uuid"`
+	// Specifies the digital card art to be displayed in the user’s digital wallet
+	// after tokenization. This artwork must be approved by Mastercard and configured
+	// by Lithic to use. See
+	// [Flexible Card Art Guide](https://docs.lithic.com/docs/about-digital-wallets#flexible-card-art).
+	DigitalCardArtToken param.Field[string] `json:"digital_card_art_token" format:"uuid"`
 	// Two digit (MM) expiry month. If neither `exp_month` nor `exp_year` is provided,
 	// an expiration date will be generated.
 	ExpMonth param.Field[string] `json:"exp_month"`
@@ -488,6 +479,25 @@ type CardNewParams struct {
 	// Friendly name to identify the card. We recommend against using this field to
 	// store JSON data as it can cause unexpected behavior.
 	Memo param.Field[string] `json:"memo"`
+	// Encrypted PIN block (in base64). Only applies to cards of type `PHYSICAL` and
+	// `VIRTUAL`. See
+	// [Encrypted PIN Block](https://docs.lithic.com/docs/cards#encrypted-pin-block-enterprise).
+	Pin param.Field[string] `json:"pin"`
+	// Only applicable to cards of type `PHYSICAL`. This must be configured with Lithic
+	// before use. Specifies the configuration (i.e., physical card art) that the card
+	// should be manufactured with.
+	ProductID       param.Field[string]                      `json:"product_id"`
+	ShippingAddress param.Field[shared.ShippingAddressParam] `json:"shipping_address"`
+	// Shipping method for the card. Only applies to cards of type PHYSICAL. Use of
+	// options besides `STANDARD` require additional permissions.
+	//
+	//   - `STANDARD` - USPS regular mail or similar international option, with no
+	//     tracking
+	//   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
+	//     with tracking
+	//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
+	//     tracking
+	ShippingMethod param.Field[CardNewParamsShippingMethod] `json:"shipping_method"`
 	// Amount (in cents) to limit approved authorizations. Transaction requests above
 	// the spend limit will be declined. Note that a spend limit of 0 is effectively no
 	// limit, and should only be used to reset or remove a prior limit. Only a limit of
@@ -512,55 +522,11 @@ type CardNewParams struct {
 	//   - `PAUSED` - Card will decline authorizations, but can be resumed at a later
 	//     time.
 	State param.Field[CardNewParamsState] `json:"state"`
-	// Card types:
-	//
-	//   - `VIRTUAL` - Card will authorize at any merchant and can be added to a digital
-	//     wallet like Apple Pay or Google Pay (if the card program is digital
-	//     wallet-enabled).
-	//   - `PHYSICAL` - Manufactured and sent to the cardholder. We offer white label
-	//     branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe functionality.
-	//     Reach out at [lithic.com/contact](https://lithic.com/contact) for more
-	//     information.
-	//   - `SINGLE_USE` - Card is closed upon first successful authorization.
-	//   - `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first merchant that
-	//     successfully authorizes the card.
-	Type param.Field[CardNewParamsType] `json:"type,required"`
-	// Encrypted PIN block (in base64). Only applies to cards of type `PHYSICAL` and
-	// `VIRTUAL`. See
-	// [Encrypted PIN Block](https://docs.lithic.com/docs/cards#encrypted-pin-block-enterprise).
-	Pin param.Field[string] `json:"pin"`
-	// Specifies the digital card art to be displayed in the user’s digital wallet
-	// after tokenization. This artwork must be approved by Mastercard and configured
-	// by Lithic to use. See
-	// [Flexible Card Art Guide](https://docs.lithic.com/docs/about-digital-wallets#flexible-card-art).
-	DigitalCardArtToken param.Field[string] `json:"digital_card_art_token" format:"uuid"`
-	// Only applicable to cards of type `PHYSICAL`. This must be configured with Lithic
-	// before use. Specifies the configuration (i.e., physical card art) that the card
-	// should be manufactured with.
-	ProductID       param.Field[string]                      `json:"product_id"`
-	ShippingAddress param.Field[shared.ShippingAddressParam] `json:"shipping_address"`
-	// Shipping method for the card. Only applies to cards of type PHYSICAL. Use of
-	// options besides `STANDARD` require additional permissions.
-	//
-	//   - `STANDARD` - USPS regular mail or similar international option, with no
-	//     tracking
-	//   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
-	//     with tracking
-	//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
-	//     tracking
-	ShippingMethod param.Field[CardNewParamsShippingMethod] `json:"shipping_method"`
 }
 
 func (r CardNewParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
-
-type CardNewParamsState string
-
-const (
-	CardNewParamsStateOpen   CardNewParamsState = "OPEN"
-	CardNewParamsStatePaused CardNewParamsState = "PAUSED"
-)
 
 type CardNewParamsType string
 
@@ -579,10 +545,29 @@ const (
 	CardNewParamsShippingMethodExpedited            CardNewParamsShippingMethod = "EXPEDITED"
 )
 
+type CardNewParamsState string
+
+const (
+	CardNewParamsStateOpen   CardNewParamsState = "OPEN"
+	CardNewParamsStatePaused CardNewParamsState = "PAUSED"
+)
+
 type CardUpdateParams struct {
+	// Identifier for any Auth Rules that will be applied to transactions taking place
+	// with the card.
+	AuthRuleToken param.Field[string] `json:"auth_rule_token"`
+	// Specifies the digital card art to be displayed in the user’s digital wallet
+	// after tokenization. This artwork must be approved by Mastercard and configured
+	// by Lithic to use. See
+	// [Flexible Card Art Guide](https://docs.lithic.com/docs/about-digital-wallets#flexible-card-art).
+	DigitalCardArtToken param.Field[string] `json:"digital_card_art_token" format:"uuid"`
 	// Friendly name to identify the card. We recommend against using this field to
 	// store JSON data as it can cause unexpected behavior.
 	Memo param.Field[string] `json:"memo"`
+	// Encrypted PIN block (in base64). Only applies to cards of type `PHYSICAL` and
+	// `VIRTUAL`. See
+	// [Encrypted PIN Block](https://docs.lithic.com/docs/cards#encrypted-pin-block-enterprise).
+	Pin param.Field[string] `json:"pin"`
 	// Amount (in cents) to limit approved authorizations. Transaction requests above
 	// the spend limit will be declined. Note that a spend limit of 0 is effectively no
 	// limit, and should only be used to reset or remove a prior limit. Only a limit of
@@ -600,9 +585,6 @@ type CardUpdateParams struct {
 	//   - `TRANSACTION` - Card will authorize multiple transactions if each individual
 	//     transaction is under the spend limit.
 	SpendLimitDuration param.Field[SpendLimitDuration] `json:"spend_limit_duration"`
-	// Identifier for any Auth Rules that will be applied to transactions taking place
-	// with the card.
-	AuthRuleToken param.Field[string] `json:"auth_rule_token"`
 	// Card state values:
 	//
 	//   - `CLOSED` - Card will no longer approve authorizations. Closing a card cannot
@@ -612,15 +594,6 @@ type CardUpdateParams struct {
 	//   - `PAUSED` - Card will decline authorizations, but can be resumed at a later
 	//     time.
 	State param.Field[CardUpdateParamsState] `json:"state"`
-	// Encrypted PIN block (in base64). Only applies to cards of type `PHYSICAL` and
-	// `VIRTUAL`. See
-	// [Encrypted PIN Block](https://docs.lithic.com/docs/cards#encrypted-pin-block-enterprise).
-	Pin param.Field[string] `json:"pin"`
-	// Specifies the digital card art to be displayed in the user’s digital wallet
-	// after tokenization. This artwork must be approved by Mastercard and configured
-	// by Lithic to use. See
-	// [Flexible Card Art Guide](https://docs.lithic.com/docs/about-digital-wallets#flexible-card-art).
-	DigitalCardArtToken param.Field[string] `json:"digital_card_art_token" format:"uuid"`
 }
 
 func (r CardUpdateParams) MarshalJSON() (data []byte, err error) {
@@ -699,7 +672,66 @@ func (r CardEmbedParams) URLQuery() (v url.Values) {
 	})
 }
 
+type CardGetEmbedHTMLParams struct {
+	// Globally unique identifier for the card to be displayed.
+	Token param.Field[string] `json:"token,required" format:"uuid"`
+	// A publicly available URI, so the white-labeled card element can be styled with
+	// the client's branding.
+	Css param.Field[string] `json:"css"`
+	// An RFC 3339 timestamp for when the request should expire. UTC time zone.
+	//
+	// If no timezone is specified, UTC will be used. If payload does not contain an
+	// expiration, the request will never expire.
+	//
+	// Using an `expiration` reduces the risk of a
+	// [replay attack](https://en.wikipedia.org/wiki/Replay_attack). Without supplying
+	// the `expiration`, in the event that a malicious user gets a copy of your request
+	// in transit, they will be able to obtain the response data indefinitely.
+	Expiration param.Field[time.Time] `json:"expiration" format:"date-time"`
+	// Required if you want to post the element clicked to the parent iframe.
+	//
+	// If you supply this param, you can also capture click events in the parent iframe
+	// by adding an event listener.
+	TargetOrigin param.Field[string] `json:"target_origin"`
+}
+
+func (r CardGetEmbedHTMLParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+type CardGetEmbedURLParams struct {
+	// Globally unique identifier for the card to be displayed.
+	Token param.Field[string] `json:"token,required" format:"uuid"`
+	// A publicly available URI, so the white-labeled card element can be styled with
+	// the client's branding.
+	Css param.Field[string] `json:"css"`
+	// An RFC 3339 timestamp for when the request should expire. UTC time zone.
+	//
+	// If no timezone is specified, UTC will be used. If payload does not contain an
+	// expiration, the request will never expire.
+	//
+	// Using an `expiration` reduces the risk of a
+	// [replay attack](https://en.wikipedia.org/wiki/Replay_attack). Without supplying
+	// the `expiration`, in the event that a malicious user gets a copy of your request
+	// in transit, they will be able to obtain the response data indefinitely.
+	Expiration param.Field[time.Time] `json:"expiration" format:"date-time"`
+	// Required if you want to post the element clicked to the parent iframe.
+	//
+	// If you supply this param, you can also capture click events in the parent iframe
+	// by adding an event listener.
+	TargetOrigin param.Field[string] `json:"target_origin"`
+}
+
+func (r CardGetEmbedURLParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
 type CardProvisionParams struct {
+	// Only applicable if `digital_wallet` is `APPLE_PAY`. Omit to receive only
+	// `activationData` in the response. Apple's public leaf certificate. Base64
+	// encoded in PEM format with headers `(-----BEGIN CERTIFICATE-----)` and trailers
+	// omitted. Provided by the device's wallet.
+	Certificate param.Field[string] `json:"certificate" format:"byte"`
 	// Name of digital wallet provider.
 	DigitalWallet param.Field[CardProvisionParamsDigitalWallet] `json:"digital_wallet"`
 	// Only applicable if `digital_wallet` is `APPLE_PAY`. Omit to receive only
@@ -710,11 +742,6 @@ type CardProvisionParams struct {
 	// `activationData` in the response. Base64 cryptographic nonce provided by the
 	// device's wallet.
 	NonceSignature param.Field[string] `json:"nonce_signature" format:"byte"`
-	// Only applicable if `digital_wallet` is `APPLE_PAY`. Omit to receive only
-	// `activationData` in the response. Apple's public leaf certificate. Base64
-	// encoded in PEM format with headers `(-----BEGIN CERTIFICATE-----)` and trailers
-	// omitted. Provided by the device's wallet.
-	Certificate param.Field[string] `json:"certificate" format:"byte"`
 }
 
 func (r CardProvisionParams) MarshalJSON() (data []byte, err error) {
@@ -730,6 +757,10 @@ const (
 )
 
 type CardReissueParams struct {
+	// Specifies the configuration (e.g. physical card art) that the card should be
+	// manufactured with, and only applies to cards of type `PHYSICAL`. This must be
+	// configured with Lithic before use.
+	ProductID param.Field[string] `json:"product_id"`
 	// If omitted, the previous shipping address will be used.
 	ShippingAddress param.Field[shared.ShippingAddressParam] `json:"shipping_address"`
 	// Shipping method for the card. Use of options besides `STANDARD` require
@@ -742,10 +773,6 @@ type CardReissueParams struct {
 	//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
 	//     tracking
 	ShippingMethod param.Field[CardReissueParamsShippingMethod] `json:"shipping_method"`
-	// Specifies the configuration (e.g. physical card art) that the card should be
-	// manufactured with, and only applies to cards of type `PHYSICAL`. This must be
-	// configured with Lithic before use.
-	ProductID param.Field[string] `json:"product_id"`
 }
 
 func (r CardReissueParams) MarshalJSON() (data []byte, err error) {
