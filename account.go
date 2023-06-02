@@ -33,9 +33,9 @@ func NewAccountService(opts ...option.RequestOption) (r *AccountService) {
 }
 
 // Get account configuration such as spend limits.
-func (r *AccountService) Get(ctx context.Context, account_token string, opts ...option.RequestOption) (res *Account, err error) {
+func (r *AccountService) Get(ctx context.Context, accountToken string, opts ...option.RequestOption) (res *Account, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("accounts/%s", account_token)
+	path := fmt.Sprintf("accounts/%s", accountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -45,9 +45,9 @@ func (r *AccountService) Get(ctx context.Context, account_token string, opts ...
 //
 // Accounts that are in the `PAUSED` state will not be able to transact or create
 // new cards.
-func (r *AccountService) Update(ctx context.Context, account_token string, body AccountUpdateParams, opts ...option.RequestOption) (res *Account, err error) {
+func (r *AccountService) Update(ctx context.Context, accountToken string, body AccountUpdateParams, opts ...option.RequestOption) (res *Account, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("accounts/%s", account_token)
+	path := fmt.Sprintf("accounts/%s", accountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
 }
@@ -236,16 +236,23 @@ type AccountUpdateParams struct {
 	// prior limit. Only a limit of 1 or above will result in declined transactions due
 	// to checks against the account limit.
 	MonthlySpendLimit param.Field[int64] `json:"monthly_spend_limit"`
+	// Account states.
+	State param.Field[AccountUpdateParamsState] `json:"state"`
 	// Address used during Address Verification Service (AVS) checks during
 	// transactions if enabled via Auth Rules.
 	VerificationAddress param.Field[AccountUpdateParamsVerificationAddress] `json:"verification_address"`
-	// Account states.
-	State param.Field[AccountUpdateParamsState] `json:"state"`
 }
 
 func (r AccountUpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
+
+type AccountUpdateParamsState string
+
+const (
+	AccountUpdateParamsStateActive AccountUpdateParamsState = "ACTIVE"
+	AccountUpdateParamsStatePaused AccountUpdateParamsState = "PAUSED"
+)
 
 // Address used during Address Verification Service (AVS) checks during
 // transactions if enabled via Auth Rules.
@@ -258,12 +265,9 @@ type AccountUpdateParamsVerificationAddress struct {
 	Country    param.Field[string] `json:"country"`
 }
 
-type AccountUpdateParamsState string
-
-const (
-	AccountUpdateParamsStateActive AccountUpdateParamsState = "ACTIVE"
-	AccountUpdateParamsStatePaused AccountUpdateParamsState = "PAUSED"
-)
+func (r AccountUpdateParamsVerificationAddress) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
 
 type AccountListParams struct {
 	// Date string in RFC 3339 format. Only entries created after the specified date

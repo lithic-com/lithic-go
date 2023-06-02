@@ -39,11 +39,11 @@ func (r *ResponderEndpointService) New(ctx context.Context, body ResponderEndpoi
 }
 
 // Disenroll a responder endpoint
-func (r *ResponderEndpointService) Delete(ctx context.Context, query ResponderEndpointDeleteParams, opts ...option.RequestOption) (err error) {
+func (r *ResponderEndpointService) Delete(ctx context.Context, body ResponderEndpointDeleteParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := "responder_endpoints"
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, query, nil, opts...)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, body, nil, opts...)
 	return
 }
 
@@ -95,10 +95,10 @@ func (r *ResponderEndpointCreateResponse) UnmarshalJSON(data []byte) (err error)
 }
 
 type ResponderEndpointNewParams struct {
-	// The URL for the responder endpoint (must be http(s)).
-	URL param.Field[string] `json:"url" format:"uri"`
 	// The type of the endpoint.
 	Type param.Field[ResponderEndpointNewParamsType] `json:"type"`
+	// The URL for the responder endpoint (must be http(s)).
+	URL param.Field[string] `json:"url" format:"uri"`
 }
 
 func (r ResponderEndpointNewParams) MarshalJSON() (data []byte, err error) {

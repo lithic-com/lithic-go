@@ -12,8 +12,8 @@ func main() {
 
 	// The request body is an interface that can be fulfilled by
 	// KYC, KYCExempt, and KYB
-	accountholder, err := client.AccountHolders.New(context.TODO(), lithic.KYCParam{
-		Individual: lithic.F(lithic.KYCIndividualParam{
+	accountholder, err := client.AccountHolders.New(context.TODO(), lithic.AccountHolderNewParamsKYC{
+		Individual: lithic.F(lithic.AccountHolderNewParamsKYCIndividual{
 			Address: lithic.F(lithic.AddressParam{
 				Address1:   lithic.String("address1"),
 				Address2:   lithic.String("address2"),
@@ -30,7 +30,7 @@ func main() {
 			PhoneNumber:  lithic.String("123-456-7890"),
 		}),
 		TosTimestamp: lithic.String("2023-04-13T10:40:20.23Z"),
-		Workflow:     lithic.F(lithic.KYCWorkflowKYCBasic),
+		Workflow:     lithic.F(lithic.AccountHolderNewParamsKYCWorkflowKYCBasic),
 	})
 	if err != nil {
 		panic(err.Error())
