@@ -9,10 +9,14 @@ import (
 	"time"
 
 	"github.com/lithic-com/lithic-go"
+	"github.com/lithic-com/lithic-go/internal/testutil"
 	"github.com/lithic-com/lithic-go/option"
 )
 
 func TestDisputeNewWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Disputes.New(context.TODO(), lithic.DisputeNewParams{
 		Amount:            lithic.F(int64(0)),
@@ -31,6 +35,9 @@ func TestDisputeNewWithOptionalParams(t *testing.T) {
 }
 
 func TestDisputeGet(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Disputes.Get(
 		context.TODO(),
@@ -46,6 +53,9 @@ func TestDisputeGet(t *testing.T) {
 }
 
 func TestDisputeUpdateWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Disputes.Update(
 		context.TODO(),
@@ -67,6 +77,9 @@ func TestDisputeUpdateWithOptionalParams(t *testing.T) {
 }
 
 func TestDisputeListWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Disputes.List(context.TODO(), lithic.DisputeListParams{
 		Begin:             lithic.F(time.Now()),
@@ -87,6 +100,9 @@ func TestDisputeListWithOptionalParams(t *testing.T) {
 }
 
 func TestDisputeDelete(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Disputes.Delete(
 		context.TODO(),
@@ -102,6 +118,9 @@ func TestDisputeDelete(t *testing.T) {
 }
 
 func TestDisputeDeleteEvidence(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Disputes.DeleteEvidence(
 		context.TODO(),
@@ -118,6 +137,9 @@ func TestDisputeDeleteEvidence(t *testing.T) {
 }
 
 func TestDisputeInitiateEvidenceUpload(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Disputes.InitiateEvidenceUpload(
 		context.TODO(),
@@ -133,6 +155,9 @@ func TestDisputeInitiateEvidenceUpload(t *testing.T) {
 }
 
 func TestDisputeListEvidencesWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Disputes.ListEvidences(
 		context.TODO(),
@@ -155,6 +180,9 @@ func TestDisputeListEvidencesWithOptionalParams(t *testing.T) {
 }
 
 func TestDisputeGetEvidence(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Disputes.GetEvidence(
 		context.TODO(),

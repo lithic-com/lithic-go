@@ -8,10 +8,14 @@ import (
 	"testing"
 
 	"github.com/lithic-com/lithic-go"
+	"github.com/lithic-com/lithic-go/internal/testutil"
 	"github.com/lithic-com/lithic-go/option"
 )
 
 func TestLithicAPIStatus(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.APIStatus(
 		context.TODO(),

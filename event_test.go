@@ -9,10 +9,14 @@ import (
 	"time"
 
 	"github.com/lithic-com/lithic-go"
+	"github.com/lithic-com/lithic-go/internal/testutil"
 	"github.com/lithic-com/lithic-go/option"
 )
 
 func TestEventGet(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Events.Get(
 		context.TODO(),
@@ -28,6 +32,9 @@ func TestEventGet(t *testing.T) {
 }
 
 func TestEventListWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Events.List(context.TODO(), lithic.EventListParams{
 		Begin:         lithic.F(time.Now()),
