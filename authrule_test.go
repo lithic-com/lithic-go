@@ -8,10 +8,14 @@ import (
 	"testing"
 
 	"github.com/lithic-com/lithic-go"
+	"github.com/lithic-com/lithic-go/internal/testutil"
 	"github.com/lithic-com/lithic-go/option"
 )
 
 func TestAuthRuleNewWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AuthRules.New(context.TODO(), lithic.AuthRuleNewParams{
 		AccountTokens:    lithic.F([]string{"string", "string", "string"}),
@@ -33,6 +37,9 @@ func TestAuthRuleNewWithOptionalParams(t *testing.T) {
 }
 
 func TestAuthRuleGet(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AuthRules.Get(
 		context.TODO(),
@@ -48,6 +55,9 @@ func TestAuthRuleGet(t *testing.T) {
 }
 
 func TestAuthRuleUpdateWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AuthRules.Update(
 		context.TODO(),
@@ -70,6 +80,9 @@ func TestAuthRuleUpdateWithOptionalParams(t *testing.T) {
 }
 
 func TestAuthRuleListWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AuthRules.List(context.TODO(), lithic.AuthRuleListParams{
 		Page:     lithic.F(int64(0)),
@@ -85,6 +98,9 @@ func TestAuthRuleListWithOptionalParams(t *testing.T) {
 }
 
 func TestAuthRuleApplyWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AuthRules.Apply(
 		context.TODO(),
@@ -105,6 +121,9 @@ func TestAuthRuleApplyWithOptionalParams(t *testing.T) {
 }
 
 func TestAuthRuleRemoveWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AuthRules.Remove(context.TODO(), lithic.AuthRuleRemoveParams{
 		AccountTokens: lithic.F([]string{"string", "string", "string"}),

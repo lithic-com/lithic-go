@@ -10,10 +10,14 @@ import (
 
 	"github.com/lithic-com/lithic-go"
 	"github.com/lithic-com/lithic-go/internal/shared"
+	"github.com/lithic-com/lithic-go/internal/testutil"
 	"github.com/lithic-com/lithic-go/option"
 )
 
 func TestCardNewWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Cards.New(context.TODO(), lithic.CardNewParams{
 		Type:                lithic.F(lithic.CardNewParamsTypeVirtual),
@@ -41,6 +45,9 @@ func TestCardNewWithOptionalParams(t *testing.T) {
 }
 
 func TestCardGet(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Cards.Get(
 		context.TODO(),
@@ -56,6 +63,9 @@ func TestCardGet(t *testing.T) {
 }
 
 func TestCardUpdateWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Cards.Update(
 		context.TODO(),
@@ -80,6 +90,9 @@ func TestCardUpdateWithOptionalParams(t *testing.T) {
 }
 
 func TestCardListWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Cards.List(context.TODO(), lithic.CardListParams{
 		AccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
@@ -98,6 +111,9 @@ func TestCardListWithOptionalParams(t *testing.T) {
 }
 
 func TestCardEmbed(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Cards.Embed(context.TODO(), lithic.CardEmbedParams{
 		EmbedRequest: lithic.F("string"),
@@ -113,6 +129,9 @@ func TestCardEmbed(t *testing.T) {
 }
 
 func TestCardGetEmbedHTMLWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Cards.GetEmbedHTML(context.TODO(), lithic.CardGetEmbedHTMLParams{
 		Token:        lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
@@ -130,6 +149,9 @@ func TestCardGetEmbedHTMLWithOptionalParams(t *testing.T) {
 }
 
 func TestCardGetEmbedURLWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Cards.GetEmbedURL(context.TODO(), lithic.CardGetEmbedURLParams{
 		Token:        lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
@@ -147,6 +169,9 @@ func TestCardGetEmbedURLWithOptionalParams(t *testing.T) {
 }
 
 func TestCardProvisionWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Cards.Provision(
 		context.TODO(),
@@ -168,6 +193,9 @@ func TestCardProvisionWithOptionalParams(t *testing.T) {
 }
 
 func TestCardReissueWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Cards.Reissue(
 		context.TODO(),

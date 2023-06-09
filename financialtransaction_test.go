@@ -9,10 +9,14 @@ import (
 	"time"
 
 	"github.com/lithic-com/lithic-go"
+	"github.com/lithic-com/lithic-go/internal/testutil"
 	"github.com/lithic-com/lithic-go/option"
 )
 
 func TestFinancialTransactionGet(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.FinancialAccounts.FinancialTransactions.Get(
 		context.TODO(),
@@ -29,6 +33,9 @@ func TestFinancialTransactionGet(t *testing.T) {
 }
 
 func TestFinancialTransactionListWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.FinancialAccounts.FinancialTransactions.List(
 		context.TODO(),
