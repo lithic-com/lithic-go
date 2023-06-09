@@ -381,6 +381,15 @@ func (r *CardFunding) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+// State of funding source.
+//
+// Funding source states:
+//
+//   - `ENABLED` - The funding account is available to use for card creation and
+//     transactions.
+//   - `PENDING` - The funding account is still being verified e.g. bank
+//     micro-deposits verification.
+//   - `DELETED` - The founding account has been deleted.
 type CardFundingState string
 
 const (
@@ -389,6 +398,10 @@ const (
 	CardFundingStateDeleted CardFundingState = "DELETED"
 )
 
+// Types of funding source:
+//
+// - `DEPOSITORY_CHECKING` - Bank checking account.
+// - `DEPOSITORY_SAVINGS` - Bank savings account.
 type CardFundingType string
 
 const (
@@ -396,6 +409,16 @@ const (
 	CardFundingTypeDepositorySavings  CardFundingType = "DEPOSITORY_SAVINGS"
 )
 
+// Spend limit duration values:
+//
+//   - `ANNUALLY` - Card will authorize transactions up to spend limit in a calendar
+//     year.
+//   - `FOREVER` - Card will authorize only up to spend limit for the entire lifetime
+//     of the card.
+//   - `MONTHLY` - Card will authorize transactions up to spend limit for the
+//     trailing month. Month is calculated as this calendar date one month prior.
+//   - `TRANSACTION` - Card will authorize multiple transactions if each individual
+//     transaction is under the spend limit.
 type SpendLimitDuration string
 
 const (
@@ -405,6 +428,27 @@ const (
 	SpendLimitDurationTransaction SpendLimitDuration = "TRANSACTION"
 )
 
+// Card state values:
+//
+//   - `CLOSED` - Card will no longer approve authorizations. Closing a card cannot
+//     be undone.
+//   - `OPEN` - Card will approve authorizations (if they match card and account
+//     parameters).
+//   - `PAUSED` - Card will decline authorizations, but can be resumed at a later
+//     time.
+//   - `PENDING_FULFILLMENT` - The initial state for cards of type `PHYSICAL`. The
+//     card is provisioned pending manufacturing and fulfillment. Cards in this state
+//     can accept authorizations for e-commerce purchases, but not for "Card Present"
+//     purchases where the physical card itself is present.
+//   - `PENDING_ACTIVATION` - Each business day at 2pm Eastern Time Zone (ET), cards
+//     of type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card
+//     production warehouse and updated to state `PENDING_ACTIVATION` . Similar to
+//     `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
+//     transactions. API clients should update the card's state to `OPEN` only after
+//     the cardholder confirms receipt of the card.
+//
+// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
+// manufactured.
 type CardState string
 
 const (
@@ -415,6 +459,18 @@ const (
 	CardStatePendingFulfillment CardState = "PENDING_FULFILLMENT"
 )
 
+// Card types:
+//
+//   - `VIRTUAL` - Card will authorize at any merchant and can be added to a digital
+//     wallet like Apple Pay or Google Pay (if the card program is digital
+//     wallet-enabled).
+//   - `PHYSICAL` - Manufactured and sent to the cardholder. We offer white label
+//     branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe functionality.
+//     Reach out at [lithic.com/contact](https://lithic.com/contact) for more
+//     information.
+//   - `SINGLE_USE` - Card is closed upon first successful authorization.
+//   - `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first merchant that
+//     successfully authorizes the card.
 type CardType string
 
 const (
@@ -530,6 +586,18 @@ func (r CardNewParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
+// Card types:
+//
+//   - `VIRTUAL` - Card will authorize at any merchant and can be added to a digital
+//     wallet like Apple Pay or Google Pay (if the card program is digital
+//     wallet-enabled).
+//   - `PHYSICAL` - Manufactured and sent to the cardholder. We offer white label
+//     branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe functionality.
+//     Reach out at [lithic.com/contact](https://lithic.com/contact) for more
+//     information.
+//   - `SINGLE_USE` - Card is closed upon first successful authorization.
+//   - `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first merchant that
+//     successfully authorizes the card.
 type CardNewParamsType string
 
 const (
@@ -539,6 +607,15 @@ const (
 	CardNewParamsTypeSingleUse      CardNewParamsType = "SINGLE_USE"
 )
 
+// Shipping method for the card. Only applies to cards of type PHYSICAL. Use of
+// options besides `STANDARD` require additional permissions.
+//
+//   - `STANDARD` - USPS regular mail or similar international option, with no
+//     tracking
+//   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
+//     with tracking
+//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
+//     tracking
 type CardNewParamsShippingMethod string
 
 const (
@@ -547,6 +624,12 @@ const (
 	CardNewParamsShippingMethodExpedited            CardNewParamsShippingMethod = "EXPEDITED"
 )
 
+// Card state values:
+//
+//   - `OPEN` - Card will approve authorizations (if they match card and account
+//     parameters).
+//   - `PAUSED` - Card will decline authorizations, but can be resumed at a later
+//     time.
 type CardNewParamsState string
 
 const (
@@ -602,6 +685,14 @@ func (r CardUpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
+// Card state values:
+//
+//   - `CLOSED` - Card will no longer approve authorizations. Closing a card cannot
+//     be undone.
+//   - `OPEN` - Card will approve authorizations (if they match card and account
+//     parameters).
+//   - `PAUSED` - Card will decline authorizations, but can be resumed at a later
+//     time.
 type CardUpdateParamsState string
 
 const (
@@ -750,6 +841,7 @@ func (r CardProvisionParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
+// Name of digital wallet provider.
 type CardProvisionParamsDigitalWallet string
 
 const (
@@ -781,6 +873,15 @@ func (r CardReissueParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
+// Shipping method for the card. Use of options besides `STANDARD` require
+// additional permissions.
+//
+//   - `STANDARD` - USPS regular mail or similar international option, with no
+//     tracking
+//   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
+//     with tracking
+//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
+//     tracking
 type CardReissueParamsShippingMethod string
 
 const (
