@@ -163,6 +163,7 @@ func (r *AuthRule) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+// Indicates whether the Auth Rule is ACTIVE or INACTIVE
 type AuthRuleState string
 
 const (
@@ -170,6 +171,14 @@ const (
 	AuthRuleStateInactive AuthRuleState = "INACTIVE"
 )
 
+// Address verification to confirm that postal code entered at point of transaction
+// (if applicable) matches the postal code on file for a given card. Since this
+// check is performed against the address submitted via the Enroll Consumer
+// endpoint, it should only be used in cases where card users are enrolled with
+// their own accounts. Available values:
+//
+//   - `ZIP_ONLY` - AVS check is performed to confirm ZIP code entered at point of
+//     transaction (if applicable) matches address on file.
 type AuthRuleAvsType string
 
 const (
@@ -303,6 +312,14 @@ func (r AuthRuleNewParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
+// Address verification to confirm that postal code entered at point of transaction
+// (if applicable) matches the postal code on file for a given card. Since this
+// check is performed against the address submitted via the Enroll Consumer
+// endpoint, it should only be used in cases where card users are enrolled with
+// their own accounts. Available values:
+//
+//   - `ZIP_ONLY` - AVS check is performed to confirm ZIP code entered at point of
+//     transaction (if applicable) matches address on file.
 type AuthRuleNewParamsAvsType string
 
 const (
@@ -334,6 +351,8 @@ func (r AuthRuleUpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
+// Address verification to confirm that postal code entered at point of transaction
+// (if applicable) matches the postal code on file for a given card.
 type AuthRuleUpdateParamsAvsType string
 
 const (

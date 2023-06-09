@@ -107,6 +107,7 @@ func (r ResponderEndpointNewParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
+// The type of the endpoint.
 type ResponderEndpointNewParamsType string
 
 const (
@@ -127,6 +128,7 @@ func (r ResponderEndpointDeleteParams) URLQuery() (v url.Values) {
 	})
 }
 
+// The type of the endpoint.
 type ResponderEndpointDeleteParamsType string
 
 const (
@@ -147,6 +149,7 @@ func (r ResponderEndpointCheckStatusParams) URLQuery() (v url.Values) {
 	})
 }
 
+// The type of the endpoint.
 type ResponderEndpointCheckStatusParamsType string
 
 const (

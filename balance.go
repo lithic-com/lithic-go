@@ -105,6 +105,7 @@ func (r *Balance) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+// Type of financial account.
 type BalanceType string
 
 const (
@@ -130,6 +131,7 @@ func (r BalanceListParams) URLQuery() (v url.Values) {
 	})
 }
 
+// List balances for a given Financial Account type.
 type BalanceListParamsFinancialAccountType string
 
 const (

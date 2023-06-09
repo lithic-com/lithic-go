@@ -292,6 +292,25 @@ func (r *Dispute) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+// Dispute reason:
+//
+//   - `ATM_CASH_MISDISPENSE`: ATM cash misdispense.
+//   - `CANCELLED`: Transaction was cancelled by the customer.
+//   - `DUPLICATED`: The transaction was a duplicate.
+//   - `FRAUD_CARD_NOT_PRESENT`: Fraudulent transaction, card not present.
+//   - `FRAUD_CARD_PRESENT`: Fraudulent transaction, card present.
+//   - `FRAUD_OTHER`: Fraudulent transaction, other types such as questionable
+//     merchant activity.
+//   - `GOODS_SERVICES_NOT_AS_DESCRIBED`: The goods or services were not as
+//     described.
+//   - `GOODS_SERVICES_NOT_RECEIVED`: The goods or services were not received.
+//   - `INCORRECT_AMOUNT`: The transaction amount was incorrect.
+//   - `MISSING_AUTH`: The transaction was missing authorization.
+//   - `OTHER`: Other reason.
+//   - `PROCESSING_ERROR`: Processing error.
+//   - `REFUND_NOT_PROCESSED`: The refund was not processed.
+//   - `RECURRING_TRANSACTION_NOT_CANCELLED`: The recurring transaction was not
+//     cancelled.
 type DisputeReason string
 
 const (
@@ -311,6 +330,25 @@ const (
 	DisputeReasonRecurringTransactionNotCancelled DisputeReason = "RECURRING_TRANSACTION_NOT_CANCELLED"
 )
 
+// Reason for the dispute resolution:
+//
+// - `CASE_LOST`: This case was lost at final arbitration.
+// - `NETWORK_REJECTED`: Network rejected.
+// - `NO_DISPUTE_RIGHTS_3DS`: No dispute rights, 3DS.
+// - `NO_DISPUTE_RIGHTS_BELOW_THRESHOLD`: No dispute rights, below threshold.
+// - `NO_DISPUTE_RIGHTS_CONTACTLESS`: No dispute rights, contactless.
+// - `NO_DISPUTE_RIGHTS_HYBRID`: No dispute rights, hybrid.
+// - `NO_DISPUTE_RIGHTS_MAX_CHARGEBACKS`: No dispute rights, max chargebacks.
+// - `NO_DISPUTE_RIGHTS_OTHER`: No dispute rights, other.
+// - `PAST_FILING_DATE`: Past filing date.
+// - `PREARBITRATION_REJECTED`: Prearbitration rejected.
+// - `PROCESSOR_REJECTED_OTHER`: Processor rejected, other.
+// - `REFUNDED`: Refunded.
+// - `REFUNDED_AFTER_CHARGEBACK`: Refunded after chargeback.
+// - `WITHDRAWN`: Withdrawn.
+// - `WON_ARBITRATION`: Won arbitration.
+// - `WON_FIRST_CHARGEBACK`: Won first chargeback.
+// - `WON_PREARBITRATION`: Won prearbitration.
 type DisputeResolutionReason string
 
 const (
@@ -333,6 +371,17 @@ const (
 	DisputeResolutionReasonWonPrearbitration             DisputeResolutionReason = "WON_PREARBITRATION"
 )
 
+// Status types:
+//
+//   - `NEW` - New dispute case is opened.
+//   - `PENDING_CUSTOMER` - Lithic is waiting for customer to provide more
+//     information.
+//   - `SUBMITTED` - Dispute is submitted to the card network.
+//   - `REPRESENTMENT` - Case has entered second presentment.
+//   - `PREARBITRATION` - Case has entered prearbitration.
+//   - `ARBITRATION` - Case has entered arbitration.
+//   - `CASE_WON` - Case was won and credit will be issued.
+//   - `CASE_CLOSED` - Case was lost or withdrawn.
 type DisputeStatus string
 
 const (
@@ -385,6 +434,13 @@ func (r *DisputeEvidence) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+// Upload status types:
+//
+// - `DELETED` - Evidence was deleted.
+// - `ERROR` - Evidence upload failed.
+// - `PENDING` - Evidence is pending upload.
+// - `REJECTED` - Evidence was rejected.
+// - `UPLOADED` - Evidence was uploaded.
 type DisputeEvidenceUploadStatus string
 
 const (
@@ -412,6 +468,7 @@ func (r DisputeNewParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
+// Reason for dispute
 type DisputeNewParamsReason string
 
 const (
@@ -446,6 +503,7 @@ func (r DisputeUpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
+// Reason for dispute
 type DisputeUpdateParamsReason string
 
 const (
@@ -494,6 +552,7 @@ func (r DisputeListParams) URLQuery() (v url.Values) {
 	})
 }
 
+// List disputes of a specific status.
 type DisputeListParamsStatus string
 
 const (
