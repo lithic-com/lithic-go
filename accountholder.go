@@ -203,6 +203,10 @@ func (r *AccountHolder) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+// KYC and KYB evaluation states.
+//
+// Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
+// `ADVANCED` workflow.
 type AccountHolderStatus string
 
 const (
@@ -256,6 +260,7 @@ func (r *AccountHolderDocument) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+// Type of documentation to be submitted for verification.
 type AccountHolderDocumentDocumentType string
 
 const (
@@ -297,6 +302,7 @@ func (r *AccountHolderDocumentRequiredDocumentUploads) UnmarshalJSON(data []byte
 	return apijson.UnmarshalRoot(data, r)
 }
 
+// Type of image to upload.
 type AccountHolderDocumentRequiredDocumentUploadsImageType string
 
 const (
@@ -304,6 +310,7 @@ const (
 	AccountHolderDocumentRequiredDocumentUploadsImageTypeFront AccountHolderDocumentRequiredDocumentUploadsImageType = "front"
 )
 
+// Status of document image upload.
 type AccountHolderDocumentRequiredDocumentUploadsStatus string
 
 const (
@@ -313,6 +320,7 @@ const (
 	AccountHolderDocumentRequiredDocumentUploadsStatusUploaded  AccountHolderDocumentRequiredDocumentUploadsStatus = "UPLOADED"
 )
 
+// Reasons for document image upload status.
 type AccountHolderDocumentRequiredDocumentUploadsStatusReasons string
 
 const (
@@ -578,6 +586,7 @@ func (r AccountHolderNewParamsKYBControlPerson) MarshalJSON() (data []byte, err 
 	return apijson.MarshalRoot(r)
 }
 
+// Specifies the type of KYB workflow to run.
 type AccountHolderNewParamsKYBWorkflow string
 
 const (
@@ -638,6 +647,7 @@ func (r AccountHolderNewParamsKYCIndividual) MarshalJSON() (data []byte, err err
 	return apijson.MarshalRoot(r)
 }
 
+// Specifies the type of KYC workflow to run.
 type AccountHolderNewParamsKYCWorkflow string
 
 const (
@@ -676,6 +686,7 @@ func (AccountHolderNewParamsKYCExempt) ImplementsAccountHolderNewParams() {
 
 }
 
+// Specifies the type of KYC Exempt user
 type AccountHolderNewParamsKYCExemptKYCExemptionType string
 
 const (
@@ -683,6 +694,7 @@ const (
 	AccountHolderNewParamsKYCExemptKYCExemptionTypePrepaidCardUser AccountHolderNewParamsKYCExemptKYCExemptionType = "PREPAID_CARD_USER"
 )
 
+// Specifies the workflow type. This must be 'KYC_EXEMPT'
 type AccountHolderNewParamsKYCExemptWorkflow string
 
 const (
@@ -775,6 +787,7 @@ func (r AccountHolderUploadDocumentParams) MarshalJSON() (data []byte, err error
 	return apijson.MarshalRoot(r)
 }
 
+// Type of the document to upload.
 type AccountHolderUploadDocumentParamsDocumentType string
 
 const (

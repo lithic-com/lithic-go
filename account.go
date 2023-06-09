@@ -148,6 +148,13 @@ func (r *AccountSpendLimit) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+// Account state:
+//
+//   - `ACTIVE` - Account is able to transact and create new cards.
+//   - `PAUSED` - Account will not be able to transact or create new cards. It can be
+//     set back to `ACTIVE`.
+//   - `CLOSED` - Account will permanently not be able to transact or create new
+//     cards.
 type AccountState string
 
 const (
@@ -249,6 +256,7 @@ func (r AccountUpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
+// Account states.
 type AccountUpdateParamsState string
 
 const (

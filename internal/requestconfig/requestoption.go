@@ -120,7 +120,7 @@ func NewRequestConfig(ctx context.Context, method string, u string, body interfa
 	return &cfg, nil
 }
 
-// RequestConfigruation represents all the state related to one request.
+// RequestConfig represents all the state related to one request.
 //
 // Editing the variables inside RequestConfig directly is unstable api. Prefer
 // composing [func(*RequestConfig) error] instead if possible.

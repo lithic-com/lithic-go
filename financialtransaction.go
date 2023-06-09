@@ -97,6 +97,7 @@ func (r FinancialTransactionListParams) URLQuery() (v url.Values) {
 	})
 }
 
+// Financial Transaction category to be returned.
 type FinancialTransactionListParamsCategory string
 
 const (
@@ -105,6 +106,7 @@ const (
 	FinancialTransactionListParamsCategoryTransfer FinancialTransactionListParamsCategory = "TRANSFER"
 )
 
+// Financial Transaction result to be returned.
 type FinancialTransactionListParamsResult string
 
 const (
@@ -112,6 +114,7 @@ const (
 	FinancialTransactionListParamsResultDeclined FinancialTransactionListParamsResult = "DECLINED"
 )
 
+// Financial Transaction status to be returned.
 type FinancialTransactionListParamsStatus string
 
 const (

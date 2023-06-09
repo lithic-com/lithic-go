@@ -109,6 +109,7 @@ func (r *AggregateBalance) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+// Type of financial account
 type AggregateBalanceFinancialAccountType string
 
 const (
@@ -130,6 +131,7 @@ func (r AggregateBalanceListParams) URLQuery() (v url.Values) {
 	})
 }
 
+// Get the aggregate balance for a given Financial Account type.
 type AggregateBalanceListParamsFinancialAccountType string
 
 const (
