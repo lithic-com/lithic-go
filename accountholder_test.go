@@ -9,10 +9,14 @@ import (
 
 	"github.com/lithic-com/lithic-go"
 	"github.com/lithic-com/lithic-go/internal/shared"
+	"github.com/lithic-com/lithic-go/internal/testutil"
 	"github.com/lithic-com/lithic-go/option"
 )
 
 func TestAccountHolderNewWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AccountHolders.New(context.TODO(), lithic.AccountHolderNewParamsKYB{
 		BeneficialOwnerEntities:    lithic.F([]lithic.AccountHolderNewParamsKYBBeneficialOwnerEntities{{Address: lithic.F(shared.AddressParam{Address1: lithic.F("123 Old Forest Way"), Address2: lithic.F("string"), City: lithic.F("Omaha"), Country: lithic.F("USA"), PostalCode: lithic.F("68022"), State: lithic.F("NE")}), DbaBusinessName: lithic.F("string"), GovernmentID: lithic.F("114-123-1513"), LegalBusinessName: lithic.F("Acme, Inc."), ParentCompany: lithic.F("string"), PhoneNumbers: lithic.F([]string{"+12124007676"})}, {Address: lithic.F(shared.AddressParam{Address1: lithic.F("123 Old Forest Way"), Address2: lithic.F("string"), City: lithic.F("Omaha"), Country: lithic.F("USA"), PostalCode: lithic.F("68022"), State: lithic.F("NE")}), DbaBusinessName: lithic.F("string"), GovernmentID: lithic.F("114-123-1513"), LegalBusinessName: lithic.F("Acme, Inc."), ParentCompany: lithic.F("string"), PhoneNumbers: lithic.F([]string{"+12124007676"})}, {Address: lithic.F(shared.AddressParam{Address1: lithic.F("123 Old Forest Way"), Address2: lithic.F("string"), City: lithic.F("Omaha"), Country: lithic.F("USA"), PostalCode: lithic.F("68022"), State: lithic.F("NE")}), DbaBusinessName: lithic.F("string"), GovernmentID: lithic.F("114-123-1513"), LegalBusinessName: lithic.F("Acme, Inc."), ParentCompany: lithic.F("string"), PhoneNumbers: lithic.F([]string{"+12124007676"})}}),
@@ -35,6 +39,9 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 }
 
 func TestAccountHolderGet(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AccountHolders.Get(
 		context.TODO(),
@@ -50,6 +57,9 @@ func TestAccountHolderGet(t *testing.T) {
 }
 
 func TestAccountHolderUpdateWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AccountHolders.Update(
 		context.TODO(),
@@ -70,6 +80,9 @@ func TestAccountHolderUpdateWithOptionalParams(t *testing.T) {
 }
 
 func TestAccountHolderNewWebhook(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AccountHolders.NewWebhook(context.TODO(), lithic.AccountHolderNewWebhookParams{
 		URL: lithic.F("string"),
@@ -84,6 +97,9 @@ func TestAccountHolderNewWebhook(t *testing.T) {
 }
 
 func TestAccountHolderListDocuments(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AccountHolders.ListDocuments(
 		context.TODO(),
@@ -99,6 +115,9 @@ func TestAccountHolderListDocuments(t *testing.T) {
 }
 
 func TestAccountHolderResubmit(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AccountHolders.Resubmit(
 		context.TODO(),
@@ -119,6 +138,9 @@ func TestAccountHolderResubmit(t *testing.T) {
 }
 
 func TestAccountHolderGetDocument(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AccountHolders.GetDocument(
 		context.TODO(),
@@ -135,6 +157,9 @@ func TestAccountHolderGetDocument(t *testing.T) {
 }
 
 func TestAccountHolderUploadDocument(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AccountHolders.UploadDocument(
 		context.TODO(),

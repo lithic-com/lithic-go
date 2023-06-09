@@ -8,10 +8,14 @@ import (
 	"testing"
 
 	"github.com/lithic-com/lithic-go"
+	"github.com/lithic-com/lithic-go/internal/testutil"
 	"github.com/lithic-com/lithic-go/option"
 )
 
 func TestAuthStreamEnrollmentGet(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AuthStreamEnrollment.Get(
 		context.TODO(),
@@ -26,6 +30,9 @@ func TestAuthStreamEnrollmentGet(t *testing.T) {
 }
 
 func TestAuthStreamEnrollmentDisenroll(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	err := c.AuthStreamEnrollment.Disenroll(
@@ -41,6 +48,9 @@ func TestAuthStreamEnrollmentDisenroll(t *testing.T) {
 }
 
 func TestAuthStreamEnrollmentEnrollWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	err := c.AuthStreamEnrollment.Enroll(context.TODO(), lithic.AuthStreamEnrollmentEnrollParams{
@@ -56,6 +66,9 @@ func TestAuthStreamEnrollmentEnrollWithOptionalParams(t *testing.T) {
 }
 
 func TestAuthStreamEnrollmentGetSecret(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.AuthStreamEnrollment.GetSecret(
 		context.TODO(),
@@ -70,6 +83,9 @@ func TestAuthStreamEnrollmentGetSecret(t *testing.T) {
 }
 
 func TestAuthStreamEnrollmentRotateSecret(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	err := c.AuthStreamEnrollment.RotateSecret(
 		context.TODO(),

@@ -9,10 +9,14 @@ import (
 	"time"
 
 	"github.com/lithic-com/lithic-go"
+	"github.com/lithic-com/lithic-go/internal/testutil"
 	"github.com/lithic-com/lithic-go/option"
 )
 
 func TestAccountGet(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Accounts.Get(
 		context.TODO(),
@@ -28,6 +32,9 @@ func TestAccountGet(t *testing.T) {
 }
 
 func TestAccountUpdateWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	t.Skip("Prism returns invalid data")
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Accounts.Update(
@@ -51,6 +58,9 @@ func TestAccountUpdateWithOptionalParams(t *testing.T) {
 }
 
 func TestAccountListWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
 	_, err := c.Accounts.List(context.TODO(), lithic.AccountListParams{
 		Begin:    lithic.F(time.Now()),
