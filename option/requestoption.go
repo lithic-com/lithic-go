@@ -40,6 +40,24 @@ func WithHTTPClient(client *http.Client) RequestOption {
 	}
 }
 
+// MiddlewareNext is a function which is called by a middleware to pass an HTTP request
+// to the next stage in the middleware chain.
+type MiddlewareNext = func(*http.Request) (*http.Response, error)
+
+// Middleware is a function which intercepts HTTP requests, processing or modifying
+// them, and then passing the request to the next middleware or handler
+// in the chain by calling the provided MiddlewareNext function.
+type Middleware = func(*http.Request, MiddlewareNext) (*http.Response, error)
+
+// WithMiddleware returns a RequestOption that applies the given middleware
+// to the requests made. Each middleware will execute in the order they were given.
+func WithMiddleware(middlewares ...Middleware) RequestOption {
+	return func(r *requestconfig.RequestConfig) error {
+		r.Middlewares = append(r.Middlewares, middlewares...)
+		return nil
+	}
+}
+
 // WithMaxRetries returns a RequestOption that sets the maximum number of retries that the client
 // attempts to make. When given 0, the client only makes one request. By
 // default, the client retries two times.
