@@ -28,7 +28,7 @@ func TestDisputeNewWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -46,7 +46,7 @@ func TestDisputeGet(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -70,7 +70,7 @@ func TestDisputeUpdateWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -93,7 +93,7 @@ func TestDisputeListWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -111,7 +111,7 @@ func TestDisputeDelete(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -130,7 +130,7 @@ func TestDisputeDeleteEvidence(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -148,7 +148,7 @@ func TestDisputeInitiateEvidenceUpload(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -173,7 +173,7 @@ func TestDisputeListEvidencesWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -192,7 +192,7 @@ func TestDisputeGetEvidence(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}

@@ -82,7 +82,7 @@ type UnknownStruct struct {
 }
 
 type UnionStruct struct {
-	Union Union `json:"union"`
+	Union Union `json:"union" format:"date"`
 }
 
 type Union interface {
@@ -93,7 +93,7 @@ func init() {
 	RegisterUnion(reflect.TypeOf((*Union)(nil)).Elem(), "type",
 		UnionVariant{
 			TypeFilter: gjson.String,
-			Type:       reflect.TypeOf(UnionString("")),
+			Type:       reflect.TypeOf(UnionTime{}),
 		},
 		UnionVariant{
 			TypeFilter: gjson.Number,
@@ -116,10 +116,6 @@ type UnionInteger int64
 
 func (UnionInteger) union() {}
 
-type UnionString string
-
-func (UnionString) union() {}
-
 type UnionStructA struct {
 	Type string `json:"type"`
 	A    string `json:"a"`
@@ -134,6 +130,10 @@ type UnionStructB struct {
 }
 
 func (UnionStructB) union() {}
+
+type UnionTime time.Time
+
+func (UnionTime) union() {}
 
 var tests = map[string]struct {
 	buf string
@@ -271,13 +271,6 @@ var tests = map[string]struct {
 		},
 	},
 
-	"union_string": {
-		`{"union":"hello"}`,
-		UnionStruct{
-			Union: UnionString("hello"),
-		},
-	},
-
 	"union_integer": {
 		`{"union":12}`,
 		UnionStruct{
@@ -303,6 +296,13 @@ var tests = map[string]struct {
 				Type: "typeB",
 				A:    "foo",
 			},
+		},
+	},
+
+	"union_struct_time": {
+		`{"union":"2010-05-23"}`,
+		UnionStruct{
+			Union: UnionTime(time.Date(2010, 05, 23, 0, 0, 0, 0, time.UTC)),
 		},
 	},
 }

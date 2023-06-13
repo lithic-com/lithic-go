@@ -4,7 +4,6 @@ package lithic_test
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/lithic-com/lithic-go"
@@ -23,5 +22,5 @@ func TestUsage(t *testing.T) {
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Printf("%+v\n", card)
+	t.Logf("%+v\n", card)
 }

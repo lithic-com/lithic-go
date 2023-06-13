@@ -51,7 +51,7 @@ type UnknownStruct struct {
 }
 
 type UnionStruct struct {
-	Union Union `query:"union"`
+	Union Union `query:"union" format:"date"`
 }
 
 type Union interface {
@@ -81,6 +81,10 @@ type UnionStructB struct {
 
 func (UnionStructB) union() {}
 
+type UnionTime time.Time
+
+func (UnionTime) union() {}
+
 type DeeplyNested struct {
 	A DeeplyNested1 `query:"a"`
 }
@@ -95,21 +99,6 @@ type DeeplyNested2 struct {
 
 type DeeplyNested3 struct {
 	D *string `query:"d"`
-}
-
-func serialize(v interface{}, options QuerySettings) string {
-	escaped := MarshalWithSettings(v, options).Encode()
-	unescaped, err := url.QueryUnescape(escaped)
-	if err != nil {
-		panic(err)
-	}
-	return unescaped
-}
-
-func assert(t *testing.T, v interface{}, expectation string, settings QuerySettings) {
-	if serialized := serialize(v, settings); serialized != expectation {
-		t.Fatalf("Expected %v to serialize to %s but got %s", v, expectation, serialized)
-	}
 }
 
 var tests = map[string]struct {
@@ -264,6 +253,14 @@ var tests = map[string]struct {
 				Type: "typeB",
 				A:    "foo",
 			},
+		},
+		QuerySettings{},
+	},
+
+	"union_struct_time": {
+		`union=2010-05-23`,
+		UnionStruct{
+			Union: UnionTime(time.Date(2010, 05, 23, 0, 0, 0, 0, time.UTC)),
 		},
 		QuerySettings{},
 	},

@@ -25,7 +25,7 @@ func TestTransactionGet(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -48,7 +48,7 @@ func TestTransactionListWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -73,7 +73,7 @@ func TestTransactionSimulateAuthorizationWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -91,7 +91,7 @@ func TestTransactionSimulateAuthorizationAdvice(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -109,7 +109,7 @@ func TestTransactionSimulateClearingWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -130,7 +130,7 @@ func TestTransactionSimulateCreditAuthorizationWithOptionalParams(t *testing.T) 
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -149,7 +149,7 @@ func TestTransactionSimulateReturn(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -166,7 +166,7 @@ func TestTransactionSimulateReturnReversal(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -185,7 +185,7 @@ func TestTransactionSimulateVoidWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
