@@ -4,7 +4,6 @@ package lithic_test
 
 import (
 	"context"
-	"fmt"
 	"testing"
 
 	"github.com/lithic-com/lithic-go"
@@ -21,7 +20,7 @@ func TestAutoPagination(t *testing.T) {
 	// Prism mock isn't going to give us real pagination
 	for i := 0; i < 3 && iter.Next(); i++ {
 		card := iter.Current()
-		fmt.Printf("%+v\n", card)
+		t.Logf("%+v\n", card)
 	}
 	if err := iter.Err(); err != nil {
 		t.Fatalf("err should be nil: %s", err.Error())

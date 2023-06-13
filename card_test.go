@@ -38,7 +38,7 @@ func TestCardNewWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -56,7 +56,7 @@ func TestCardGet(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -83,7 +83,7 @@ func TestCardUpdateWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -104,7 +104,7 @@ func TestCardListWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -122,7 +122,7 @@ func TestCardEmbed(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -142,7 +142,7 @@ func TestCardGetEmbedHTMLWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -162,7 +162,7 @@ func TestCardGetEmbedURLWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -186,7 +186,7 @@ func TestCardProvisionWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -209,7 +209,7 @@ func TestCardReissueWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
