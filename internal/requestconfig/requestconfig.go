@@ -189,7 +189,19 @@ func (cfg *RequestConfig) Execute() error {
 		req := cfg.Request.Clone(ctx)
 		res, err = handler(req)
 
-		if i == cfg.MaxRetries || err == nil && res.StatusCode != http.StatusConflict && res.StatusCode != http.StatusTooManyRequests && res.StatusCode < http.StatusInternalServerError {
+		shouldRetry := err != nil ||
+			res.StatusCode == http.StatusConflict ||
+			res.StatusCode == http.StatusTooManyRequests ||
+			res.StatusCode >= http.StatusInternalServerError
+
+		if res.Header.Get("x-should-retry") == "true" {
+			shouldRetry = true
+		}
+		if res.Header.Get("x-should-retry") == "false" {
+			shouldRetry = false
+		}
+
+		if !shouldRetry || i >= cfg.MaxRetries {
 			break
 		}
 
