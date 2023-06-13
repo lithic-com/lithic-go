@@ -96,7 +96,10 @@ func marshalerEncoder(v reflect.Value) ([]byte, error) {
 }
 
 func (e *encoder) newTypeEncoder(t reflect.Type) encoderFunc {
-	if !e.root && t != reflect.TypeOf(time.Time{}) && t.Implements(reflect.TypeOf((*json.Marshaler)(nil)).Elem()) {
+	if t.ConvertibleTo(reflect.TypeOf(time.Time{})) {
+		return e.newTimeTypeEncoder()
+	}
+	if !e.root && t.Implements(reflect.TypeOf((*json.Marshaler)(nil)).Elem()) {
 		return marshalerEncoder
 	}
 	e.root = false
@@ -120,13 +123,7 @@ func (e *encoder) newTypeEncoder(t reflect.Type) encoderFunc {
 	case reflect.Map:
 		return e.newMapEncoder(t)
 	case reflect.Interface:
-		return func(value reflect.Value) ([]byte, error) {
-			value = value.Elem()
-			if !value.IsValid() {
-				return nil, nil
-			}
-			return e.typeEncoder(value.Type())(value)
-		}
+		return e.newInterfaceEncoder()
 	default:
 		return e.newPrimitiveTypeEncoder(t)
 	}
@@ -197,9 +194,6 @@ func (e *encoder) newArrayTypeEncoder(t reflect.Type) encoderFunc {
 }
 
 func (e *encoder) newStructTypeEncoder(t reflect.Type) encoderFunc {
-	if t == reflect.TypeOf(time.Time{}) {
-		return e.newTimeTypeEncoder(t)
-	}
 	if t.Implements(reflect.TypeOf((*param.FieldLike)(nil)).Elem()) {
 		return e.newFieldTypeEncoder(t)
 	}
@@ -311,10 +305,20 @@ func (e *encoder) newFieldTypeEncoder(t reflect.Type) encoderFunc {
 	}
 }
 
-func (e *encoder) newTimeTypeEncoder(t reflect.Type) encoderFunc {
+func (e *encoder) newTimeTypeEncoder() encoderFunc {
 	format := e.dateFormat
 	return func(value reflect.Value) (json []byte, err error) {
-		return []byte(`"` + value.Interface().(time.Time).Format(format) + `"`), nil
+		return []byte(`"` + value.Convert(reflect.TypeOf(time.Time{})).Interface().(time.Time).Format(format) + `"`), nil
+	}
+}
+
+func (e encoder) newInterfaceEncoder() encoderFunc {
+	return func(value reflect.Value) ([]byte, error) {
+		value = value.Elem()
+		if !value.IsValid() {
+			return nil, nil
+		}
+		return e.typeEncoder(value.Type())(value)
 	}
 }
 

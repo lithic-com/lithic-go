@@ -30,7 +30,7 @@ func TestAuthRuleNewWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -48,7 +48,7 @@ func TestAuthRuleGet(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -73,7 +73,7 @@ func TestAuthRuleUpdateWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -91,7 +91,7 @@ func TestAuthRuleListWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -114,7 +114,7 @@ func TestAuthRuleApplyWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -133,7 +133,7 @@ func TestAuthRuleRemoveWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}

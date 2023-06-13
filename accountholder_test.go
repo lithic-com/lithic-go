@@ -32,7 +32,7 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -50,7 +50,7 @@ func TestAccountHolderGet(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -73,7 +73,7 @@ func TestAccountHolderUpdateWithOptionalParams(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -90,7 +90,7 @@ func TestAccountHolderNewWebhook(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -108,7 +108,7 @@ func TestAccountHolderListDocuments(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -131,7 +131,7 @@ func TestAccountHolderResubmit(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -150,7 +150,7 @@ func TestAccountHolderGetDocument(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
@@ -171,7 +171,7 @@ func TestAccountHolderUploadDocument(t *testing.T) {
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
-			println(apierr.DumpRequest(true))
+			t.Log(string(apierr.DumpRequest(true)))
 		}
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
