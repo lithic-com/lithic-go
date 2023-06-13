@@ -123,7 +123,7 @@ func NewRequestConfig(ctx context.Context, method string, u string, body interfa
 // RequestConfig represents all the state related to one request.
 //
 // Editing the variables inside RequestConfig directly is unstable api. Prefer
-// composing [func(*RequestConfig) error] instead if possible.
+// composing func(\*RequestConfig) error instead if possible.
 type RequestConfig struct {
 	MaxRetries     int
 	RequestTimeout time.Duration
@@ -131,6 +131,7 @@ type RequestConfig struct {
 	Request        *http.Request
 	BaseURL        *url.URL
 	HTTPClient     *http.Client
+	Middlewares    []middleware
 	APIKey         string
 	// If ResponseBodyInto not nil, then we will attempt to deserialize into
 	// ResponseBodyInto. If Destination is a []byte, then it will return the body as
@@ -141,6 +142,20 @@ type RequestConfig struct {
 	ResponseInto  **http.Response
 	WebhookSecret string
 	Buffer        []byte
+}
+
+// middleware is exactly the same type as the Middleware type found in the [option] package,
+// but it is redeclared here for circular dependency issues.
+type middleware = func(*http.Request, middlewareNext) (*http.Response, error)
+
+// middlewareNext is exactly the same type as the MiddlewareNext type found in the [option] package,
+// but it is redeclared here for circular dependency issues.
+type middlewareNext = func(*http.Request) (*http.Response, error)
+
+func applyMiddleware(middleware middleware, next middlewareNext) middlewareNext {
+	return func(req *http.Request) (res *http.Response, err error) {
+		return middleware(req, next)
+	}
 }
 
 func (cfg *RequestConfig) Execute() error {
@@ -157,6 +172,11 @@ func (cfg *RequestConfig) Execute() error {
 		cfg.Request.GetBody = func() (io.ReadCloser, error) { return io.NopCloser(bytes.NewReader(cfg.Buffer)), nil }
 	}
 
+	handler := cfg.HTTPClient.Do
+	for i := len(cfg.Middlewares) - 1; i >= 0; i -= 1 {
+		handler = applyMiddleware(cfg.Middlewares[i], handler)
+	}
+
 	var res *http.Response
 	for i := 0; i <= cfg.MaxRetries; i += 1 {
 		ctx := cfg.Request.Context()
@@ -165,7 +185,9 @@ func (cfg *RequestConfig) Execute() error {
 			ctx = nctx
 			defer cancel()
 		}
-		res, err = cfg.HTTPClient.Do(cfg.Request.Clone(ctx))
+
+		req := cfg.Request.Clone(ctx)
+		res, err = handler(req)
 
 		if i == cfg.MaxRetries || err == nil && res.StatusCode != http.StatusConflict && res.StatusCode != http.StatusTooManyRequests && res.StatusCode < http.StatusInternalServerError {
 			break
