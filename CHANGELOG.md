@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.4.0](https://github.com/lithic-com/lithic-go/compare/v0.3.2...v0.4.0) (2023-06-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* **api:** add dispute evidence filename ([#46](https://github.com/lithic-com/lithic-go/issues/46))
+
+### Features
+
+* **api:** add dispute evidence filename ([#46](https://github.com/lithic-com/lithic-go/issues/46)) ([78f70af](https://github.com/lithic-com/lithic-go/commit/78f70afe9e7d54d5c1640787109fca90b7afbf5c))
+* respect `x-should-retry` header ([#45](https://github.com/lithic-com/lithic-go/issues/45)) ([875dd50](https://github.com/lithic-com/lithic-go/commit/875dd5072eb0574aa499a3fb32d1b136c42b9bfc))
+
+
+### Refactors
+
+* improve `time.Time` encoding and decoding ([#43](https://github.com/lithic-com/lithic-go/issues/43)) ([cb81762](https://github.com/lithic-com/lithic-go/commit/cb8176278a71c2628704d5aa6acb3a9f168e6984))
+
 ## [0.3.2](https://github.com/lithic-com/lithic-go/compare/v0.3.1...v0.3.2) (2023-06-13)
 
 
