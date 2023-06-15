@@ -106,10 +106,10 @@ func (r *DisputeService) DeleteEvidence(ctx context.Context, disputeToken string
 //
 // Uploaded documents must either be a `jpg`, `png` or `pdf` file, and each must be
 // less than 5 GiB.
-func (r *DisputeService) InitiateEvidenceUpload(ctx context.Context, disputeToken string, opts ...option.RequestOption) (res *DisputeEvidence, err error) {
+func (r *DisputeService) InitiateEvidenceUpload(ctx context.Context, disputeToken string, body DisputeInitiateEvidenceUploadParams, opts ...option.RequestOption) (res *DisputeEvidence, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("disputes/%s/evidences", disputeToken)
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -145,7 +145,7 @@ func (r *DisputeService) GetEvidence(ctx context.Context, disputeToken string, e
 }
 
 func (r *DisputeService) UploadEvidence(ctx context.Context, disputeToken string, file io.Reader, opts ...option.RequestOption) (err error) {
-	payload, err := r.InitiateEvidenceUpload(ctx, disputeToken, opts...)
+	payload, err := r.InitiateEvidenceUpload(ctx, disputeToken, DisputeInitiateEvidenceUploadParams{}, opts...)
 	if err != nil {
 		return err
 	}
@@ -177,24 +177,24 @@ type Dispute struct {
 	// Amount under dispute. May be different from the original transaction amount.
 	Amount int64 `json:"amount,required"`
 	// Date dispute entered arbitration.
-	ArbitrationDate time.Time `json:"arbitration_date,required" format:"date-time"`
+	ArbitrationDate time.Time `json:"arbitration_date,required,nullable" format:"date-time"`
 	// Timestamp of when first Dispute was reported.
 	Created time.Time `json:"created,required" format:"date-time"`
 	// Date that the dispute was filed by the customer making the dispute.
-	CustomerFiledDate time.Time `json:"customer_filed_date,required" format:"date-time"`
+	CustomerFiledDate time.Time `json:"customer_filed_date,required,nullable" format:"date-time"`
 	// End customer description of the reason for the dispute.
-	CustomerNote string `json:"customer_note,required"`
+	CustomerNote string `json:"customer_note,required,nullable"`
 	// Unique identifiers for the dispute from the network.
-	NetworkClaimIDs []string `json:"network_claim_ids,required"`
+	NetworkClaimIDs []string `json:"network_claim_ids,required,nullable"`
 	// Unique identifier for the dispute from the network. If there are multiple, this
 	// will be the first claim id set by the network
-	PrimaryClaimID string `json:"primary_claim_id,required"`
+	PrimaryClaimID string `json:"primary_claim_id,required,nullable"`
 	// Date that the dispute was submitted to the network.
-	NetworkFiledDate time.Time `json:"network_filed_date,required" format:"date-time"`
+	NetworkFiledDate time.Time `json:"network_filed_date,required,nullable" format:"date-time"`
 	// Network reason code used to file the dispute.
-	NetworkReasonCode string `json:"network_reason_code,required"`
+	NetworkReasonCode string `json:"network_reason_code,required,nullable"`
 	// Date dispute entered pre-arbitration.
-	PrearbitrationDate time.Time `json:"prearbitration_date,required" format:"date-time"`
+	PrearbitrationDate time.Time `json:"prearbitration_date,required,nullable" format:"date-time"`
 	// Dispute reason:
 	//
 	//   - `ATM_CASH_MISDISPENSE`: ATM cash misdispense.
@@ -216,13 +216,13 @@ type Dispute struct {
 	//     cancelled.
 	Reason DisputeReason `json:"reason,required"`
 	// Date the representment was received.
-	RepresentmentDate time.Time `json:"representment_date,required" format:"date-time"`
+	RepresentmentDate time.Time `json:"representment_date,required,nullable" format:"date-time"`
 	// Resolution amount net of network fees.
-	ResolutionAmount int64 `json:"resolution_amount,required"`
+	ResolutionAmount int64 `json:"resolution_amount,required,nullable"`
 	// Date that the dispute was resolved.
-	ResolutionDate time.Time `json:"resolution_date,required" format:"date-time"`
+	ResolutionDate time.Time `json:"resolution_date,required,nullable" format:"date-time"`
 	// Note by Dispute team on the case resolution.
-	ResolutionNote string `json:"resolution_note,required"`
+	ResolutionNote string `json:"resolution_note,required,nullable"`
 	// Reason for the dispute resolution:
 	//
 	// - `CASE_LOST`: This case was lost at final arbitration.
@@ -242,7 +242,7 @@ type Dispute struct {
 	// - `WON_ARBITRATION`: Won arbitration.
 	// - `WON_FIRST_CHARGEBACK`: Won first chargeback.
 	// - `WON_PREARBITRATION`: Won prearbitration.
-	ResolutionReason DisputeResolutionReason `json:"resolution_reason,required"`
+	ResolutionReason DisputeResolutionReason `json:"resolution_reason,required,nullable"`
 	// Status types:
 	//
 	//   - `NEW` - New dispute case is opened.
@@ -403,6 +403,8 @@ type DisputeEvidence struct {
 	DisputeToken string `json:"dispute_token,required" format:"uuid"`
 	// URL to download evidence. Only shown when `upload_status` is `UPLOADED`.
 	DownloadURL string `json:"download_url"`
+	// File name of evidence.
+	Filename string `json:"filename"`
 	// Globally unique identifier.
 	Token string `json:"token,required" format:"uuid"`
 	// Upload status types:
@@ -423,6 +425,7 @@ type disputeEvidenceJSON struct {
 	Created      apijson.Field
 	DisputeToken apijson.Field
 	DownloadURL  apijson.Field
+	Filename     apijson.Field
 	Token        apijson.Field
 	UploadStatus apijson.Field
 	UploadURL    apijson.Field
@@ -519,8 +522,8 @@ const (
 	DisputeUpdateParamsReasonMissingAuth                      DisputeUpdateParamsReason = "MISSING_AUTH"
 	DisputeUpdateParamsReasonOther                            DisputeUpdateParamsReason = "OTHER"
 	DisputeUpdateParamsReasonProcessingError                  DisputeUpdateParamsReason = "PROCESSING_ERROR"
-	DisputeUpdateParamsReasonRefundNotProcessed               DisputeUpdateParamsReason = "REFUND_NOT_PROCESSED"
 	DisputeUpdateParamsReasonRecurringTransactionNotCancelled DisputeUpdateParamsReason = "RECURRING_TRANSACTION_NOT_CANCELLED"
+	DisputeUpdateParamsReasonRefundNotProcessed               DisputeUpdateParamsReason = "REFUND_NOT_PROCESSED"
 )
 
 type DisputeListParams struct {
@@ -584,6 +587,15 @@ type disputeListResponseJSON struct {
 
 func (r *DisputeListResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+type DisputeInitiateEvidenceUploadParams struct {
+	// Filename of the evidence.
+	Filename param.Field[string] `json:"filename"`
+}
+
+func (r DisputeInitiateEvidenceUploadParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }
 
 type DisputeListEvidencesParams struct {
