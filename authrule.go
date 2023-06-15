@@ -121,15 +121,6 @@ type AuthRule struct {
 	AllowedCountries []string `json:"allowed_countries"`
 	// Countries in which the Auth Rule automatically declines transactions.
 	BlockedCountries []string `json:"blocked_countries"`
-	// Address verification to confirm that postal code entered at point of transaction
-	// (if applicable) matches the postal code on file for a given card. Since this
-	// check is performed against the address submitted via the Enroll Consumer
-	// endpoint, it should only be used in cases where card users are enrolled with
-	// their own accounts. Available values:
-	//
-	//   - `ZIP_ONLY` - AVS check is performed to confirm ZIP code entered at point of
-	//     transaction (if applicable) matches address on file.
-	AvsType AuthRuleAvsType `json:"avs_type"`
 	// Array of account_token(s) identifying the accounts that the Auth Rule applies
 	// to. Note that only this field or `card_tokens` can be provided for a given Auth
 	// Rule.
@@ -151,7 +142,6 @@ type authRuleJSON struct {
 	BlockedMcc             apijson.Field
 	AllowedCountries       apijson.Field
 	BlockedCountries       apijson.Field
-	AvsType                apijson.Field
 	AccountTokens          apijson.Field
 	CardTokens             apijson.Field
 	ProgramLevel           apijson.Field
@@ -169,20 +159,6 @@ type AuthRuleState string
 const (
 	AuthRuleStateActive   AuthRuleState = "ACTIVE"
 	AuthRuleStateInactive AuthRuleState = "INACTIVE"
-)
-
-// Address verification to confirm that postal code entered at point of transaction
-// (if applicable) matches the postal code on file for a given card. Since this
-// check is performed against the address submitted via the Enroll Consumer
-// endpoint, it should only be used in cases where card users are enrolled with
-// their own accounts. Available values:
-//
-//   - `ZIP_ONLY` - AVS check is performed to confirm ZIP code entered at point of
-//     transaction (if applicable) matches address on file.
-type AuthRuleAvsType string
-
-const (
-	AuthRuleAvsTypeZipOnly AuthRuleAvsType = "ZIP_ONLY"
 )
 
 type AuthRuleCreateResponse struct {
@@ -287,15 +263,6 @@ type AuthRuleNewParams struct {
 	AllowedCountries param.Field[[]string] `json:"allowed_countries"`
 	// Merchant category codes for which the Auth Rule permits transactions.
 	AllowedMcc param.Field[[]string] `json:"allowed_mcc"`
-	// Address verification to confirm that postal code entered at point of transaction
-	// (if applicable) matches the postal code on file for a given card. Since this
-	// check is performed against the address submitted via the Enroll Consumer
-	// endpoint, it should only be used in cases where card users are enrolled with
-	// their own accounts. Available values:
-	//
-	//   - `ZIP_ONLY` - AVS check is performed to confirm ZIP code entered at point of
-	//     transaction (if applicable) matches address on file.
-	AvsType param.Field[AuthRuleNewParamsAvsType] `json:"avs_type"`
 	// Countries in which the Auth Rule automatically declines transactions.
 	BlockedCountries param.Field[[]string] `json:"blocked_countries"`
 	// Merchant category codes for which the Auth Rule automatically declines
@@ -312,20 +279,6 @@ func (r AuthRuleNewParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-// Address verification to confirm that postal code entered at point of transaction
-// (if applicable) matches the postal code on file for a given card. Since this
-// check is performed against the address submitted via the Enroll Consumer
-// endpoint, it should only be used in cases where card users are enrolled with
-// their own accounts. Available values:
-//
-//   - `ZIP_ONLY` - AVS check is performed to confirm ZIP code entered at point of
-//     transaction (if applicable) matches address on file.
-type AuthRuleNewParamsAvsType string
-
-const (
-	AuthRuleNewParamsAvsTypeZipOnly AuthRuleNewParamsAvsType = "ZIP_ONLY"
-)
-
 type AuthRuleUpdateParams struct {
 	// Array of country codes for which the Auth Rule will permit transactions. Note
 	// that only this field or `blocked_countries` can be used for a given Auth Rule.
@@ -334,9 +287,6 @@ type AuthRuleUpdateParams struct {
 	// transactions. Note that only this field or `blocked_mcc` can be used for a given
 	// Auth Rule.
 	AllowedMcc param.Field[[]string] `json:"allowed_mcc"`
-	// Address verification to confirm that postal code entered at point of transaction
-	// (if applicable) matches the postal code on file for a given card.
-	AvsType param.Field[AuthRuleUpdateParamsAvsType] `json:"avs_type"`
 	// Array of country codes for which the Auth Rule will automatically decline
 	// transactions. Note that only this field or `allowed_countries` can be used for a
 	// given Auth Rule.
@@ -350,14 +300,6 @@ type AuthRuleUpdateParams struct {
 func (r AuthRuleUpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
-
-// Address verification to confirm that postal code entered at point of transaction
-// (if applicable) matches the postal code on file for a given card.
-type AuthRuleUpdateParamsAvsType string
-
-const (
-	AuthRuleUpdateParamsAvsTypeZipOnly AuthRuleUpdateParamsAvsType = "ZIP_ONLY"
-)
 
 type AuthRuleListParams struct {
 	// Page (for pagination).

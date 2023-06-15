@@ -136,7 +136,7 @@ func TestDisputeDeleteEvidence(t *testing.T) {
 	}
 }
 
-func TestDisputeInitiateEvidenceUpload(t *testing.T) {
+func TestDisputeInitiateEvidenceUploadWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
@@ -144,6 +144,9 @@ func TestDisputeInitiateEvidenceUpload(t *testing.T) {
 	_, err := c.Disputes.InitiateEvidenceUpload(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+		lithic.DisputeInitiateEvidenceUploadParams{
+			Filename: lithic.F("string"),
+		},
 	)
 	if err != nil {
 		var apierr *lithic.Error
