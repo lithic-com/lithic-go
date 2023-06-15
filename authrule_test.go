@@ -21,7 +21,6 @@ func TestAuthRuleNewWithOptionalParams(t *testing.T) {
 		AccountTokens:    lithic.F([]string{"string", "string", "string"}),
 		AllowedCountries: lithic.F([]string{"string", "string", "string"}),
 		AllowedMcc:       lithic.F([]string{"string", "string", "string"}),
-		AvsType:          lithic.F(lithic.AuthRuleNewParamsAvsTypeZipOnly),
 		BlockedCountries: lithic.F([]string{"string", "string", "string"}),
 		BlockedMcc:       lithic.F([]string{"string", "string", "string"}),
 		CardTokens:       lithic.F([]string{"string", "string", "string"}),
@@ -65,7 +64,6 @@ func TestAuthRuleUpdateWithOptionalParams(t *testing.T) {
 		lithic.AuthRuleUpdateParams{
 			AllowedCountries: lithic.F([]string{"string", "string", "string"}),
 			AllowedMcc:       lithic.F([]string{"string", "string", "string"}),
-			AvsType:          lithic.F(lithic.AuthRuleUpdateParamsAvsTypeZipOnly),
 			BlockedCountries: lithic.F([]string{"string", "string", "string"}),
 			BlockedMcc:       lithic.F([]string{"string", "string", "string"}),
 		},
