@@ -40,10 +40,7 @@ func TestAuthRuleGet(t *testing.T) {
 		return
 	}
 	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.AuthRules.Get(
-		context.TODO(),
-		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-	)
+	_, err := c.AuthRules.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
