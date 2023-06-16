@@ -403,7 +403,8 @@ type DisputeEvidence struct {
 	DisputeToken string `json:"dispute_token,required" format:"uuid"`
 	// URL to download evidence. Only shown when `upload_status` is `UPLOADED`.
 	DownloadURL string `json:"download_url"`
-	// File name of evidence.
+	// File name of evidence. Recommended to give the dispute evidence a human-readable
+	// identifier.
 	Filename string `json:"filename"`
 	// Globally unique identifier.
 	Token string `json:"token,required" format:"uuid"`
