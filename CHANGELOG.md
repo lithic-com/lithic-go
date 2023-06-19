@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/lithic-com/lithic-go/compare/v0.4.0...v0.4.1) (2023-06-19)
+
+
+### Documentation
+
+* **api:** clarify dispute evidence filename docstring ([#50](https://github.com/lithic-com/lithic-go/issues/50)) ([bee16d8](https://github.com/lithic-com/lithic-go/commit/bee16d8d297776b78d4cac21e002702953976af8))
+
 ## [0.4.0](https://github.com/lithic-com/lithic-go/compare/v0.3.2...v0.4.0) (2023-06-15)
 
 
