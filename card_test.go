@@ -18,8 +18,11 @@ func TestCardNewWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Cards.New(context.TODO(), lithic.CardNewParams{
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Cards.New(context.TODO(), lithic.CardNewParams{
 		Type:                lithic.F(lithic.CardNewParamsTypeVirtual),
 		AccountToken:        lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		CardProgramToken:    lithic.F("00000000-0000-0000-1000-000000000000"),
@@ -29,11 +32,23 @@ func TestCardNewWithOptionalParams(t *testing.T) {
 		Memo:                lithic.F("New Card"),
 		Pin:                 lithic.F("string"),
 		ProductID:           lithic.F("1"),
-		ShippingAddress:     lithic.F(shared.ShippingAddressParam{FirstName: lithic.F("Michael"), LastName: lithic.F("Bluth"), Line2Text: lithic.F("The Bluth Company"), Address1: lithic.F("5 Broad Street"), Address2: lithic.F("Unit 25A"), City: lithic.F("NEW YORK"), State: lithic.F("NY"), PostalCode: lithic.F("10001-1809"), Country: lithic.F("USA"), Email: lithic.F("johnny@appleseed.com"), PhoneNumber: lithic.F("+12124007676")}),
-		ShippingMethod:      lithic.F(lithic.CardNewParamsShippingMethodStandard),
-		SpendLimit:          lithic.F(int64(0)),
-		SpendLimitDuration:  lithic.F(lithic.SpendLimitDurationAnnually),
-		State:               lithic.F(lithic.CardNewParamsStateOpen),
+		ShippingAddress: lithic.F(shared.ShippingAddressParam{
+			FirstName:   lithic.F("Michael"),
+			LastName:    lithic.F("Bluth"),
+			Line2Text:   lithic.F("The Bluth Company"),
+			Address1:    lithic.F("5 Broad Street"),
+			Address2:    lithic.F("Unit 25A"),
+			City:        lithic.F("NEW YORK"),
+			State:       lithic.F("NY"),
+			PostalCode:  lithic.F("10001-1809"),
+			Country:     lithic.F("USA"),
+			Email:       lithic.F("johnny@appleseed.com"),
+			PhoneNumber: lithic.F("+12124007676"),
+		}),
+		ShippingMethod:     lithic.F(lithic.CardNewParamsShippingMethodStandard),
+		SpendLimit:         lithic.F(int64(0)),
+		SpendLimitDuration: lithic.F(lithic.SpendLimitDurationAnnually),
+		State:              lithic.F(lithic.CardNewParamsStateOpen),
 	})
 	if err != nil {
 		var apierr *lithic.Error
@@ -48,8 +63,11 @@ func TestCardGet(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Cards.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Cards.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
@@ -63,8 +81,11 @@ func TestCardUpdateWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Cards.Update(
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Cards.Update(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.CardUpdateParams{
@@ -90,8 +111,11 @@ func TestCardListWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Cards.List(context.TODO(), lithic.CardListParams{
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Cards.List(context.TODO(), lithic.CardListParams{
 		AccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Begin:        lithic.F(time.Now()),
 		End:          lithic.F(time.Now()),
@@ -111,8 +135,11 @@ func TestCardEmbed(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Cards.Embed(context.TODO(), lithic.CardEmbedParams{
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Cards.Embed(context.TODO(), lithic.CardEmbedParams{
 		EmbedRequest: lithic.F("string"),
 		Hmac:         lithic.F("string"),
 	})
@@ -129,8 +156,11 @@ func TestCardGetEmbedHTMLWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Cards.GetEmbedHTML(context.TODO(), lithic.CardGetEmbedHTMLParams{
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Cards.GetEmbedHTML(context.TODO(), lithic.CardGetEmbedHTMLParams{
 		Token:        lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Css:          lithic.F("string"),
 		Expiration:   lithic.F(time.Now()),
@@ -149,8 +179,11 @@ func TestCardGetEmbedURLWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Cards.GetEmbedURL(context.TODO(), lithic.CardGetEmbedURLParams{
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Cards.GetEmbedURL(context.TODO(), lithic.CardGetEmbedURLParams{
 		Token:        lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Css:          lithic.F("string"),
 		Expiration:   lithic.F(time.Now()),
@@ -169,8 +202,11 @@ func TestCardProvisionWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Cards.Provision(
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Cards.Provision(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.CardProvisionParams{
@@ -193,14 +229,29 @@ func TestCardReissueWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Cards.Reissue(
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Cards.Reissue(
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.CardReissueParams{
-			ProductID:       lithic.F("string"),
-			ShippingAddress: lithic.F(shared.ShippingAddressParam{FirstName: lithic.F("Michael"), LastName: lithic.F("Bluth"), Line2Text: lithic.F("The Bluth Company"), Address1: lithic.F("5 Broad Street"), Address2: lithic.F("Unit 25A"), City: lithic.F("NEW YORK"), State: lithic.F("NY"), PostalCode: lithic.F("10001-1809"), Country: lithic.F("USA"), Email: lithic.F("johnny@appleseed.com"), PhoneNumber: lithic.F("+12124007676")}),
-			ShippingMethod:  lithic.F(lithic.CardReissueParamsShippingMethodStandard),
+			ProductID: lithic.F("string"),
+			ShippingAddress: lithic.F(shared.ShippingAddressParam{
+				FirstName:   lithic.F("Michael"),
+				LastName:    lithic.F("Bluth"),
+				Line2Text:   lithic.F("The Bluth Company"),
+				Address1:    lithic.F("5 Broad Street"),
+				Address2:    lithic.F("Unit 25A"),
+				City:        lithic.F("NEW YORK"),
+				State:       lithic.F("NY"),
+				PostalCode:  lithic.F("10001-1809"),
+				Country:     lithic.F("USA"),
+				Email:       lithic.F("johnny@appleseed.com"),
+				PhoneNumber: lithic.F("+12124007676"),
+			}),
+			ShippingMethod: lithic.F(lithic.CardReissueParamsShippingMethodStandard),
 		},
 	)
 	if err != nil {

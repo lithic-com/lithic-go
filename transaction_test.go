@@ -17,8 +17,11 @@ func TestTransactionGet(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Transactions.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Transactions.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
@@ -32,8 +35,11 @@ func TestTransactionListWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Transactions.List(context.TODO(), lithic.TransactionListParams{
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Transactions.List(context.TODO(), lithic.TransactionListParams{
 		AccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Begin:        lithic.F(time.Now()),
 		CardToken:    lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
@@ -55,8 +61,11 @@ func TestTransactionSimulateAuthorizationWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Transactions.SimulateAuthorization(context.TODO(), lithic.TransactionSimulateAuthorizationParams{
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Transactions.SimulateAuthorization(context.TODO(), lithic.TransactionSimulateAuthorizationParams{
 		Amount:                 lithic.F(int64(0)),
 		Descriptor:             lithic.F("COFFEE SHOP"),
 		Pan:                    lithic.F("4111111289144142"),
@@ -80,8 +89,11 @@ func TestTransactionSimulateAuthorizationAdvice(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Transactions.SimulateAuthorizationAdvice(context.TODO(), lithic.TransactionSimulateAuthorizationAdviceParams{
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Transactions.SimulateAuthorizationAdvice(context.TODO(), lithic.TransactionSimulateAuthorizationAdviceParams{
 		Amount: lithic.F(int64(0)),
 		Token:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 	})
@@ -98,8 +110,11 @@ func TestTransactionSimulateClearingWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Transactions.SimulateClearing(context.TODO(), lithic.TransactionSimulateClearingParams{
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Transactions.SimulateClearing(context.TODO(), lithic.TransactionSimulateClearingParams{
 		Token:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Amount: lithic.F(int64(0)),
 	})
@@ -116,8 +131,11 @@ func TestTransactionSimulateCreditAuthorizationWithOptionalParams(t *testing.T) 
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Transactions.SimulateCreditAuthorization(context.TODO(), lithic.TransactionSimulateCreditAuthorizationParams{
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Transactions.SimulateCreditAuthorization(context.TODO(), lithic.TransactionSimulateCreditAuthorizationParams{
 		Amount:             lithic.F(int64(0)),
 		Descriptor:         lithic.F("COFFEE SHOP"),
 		Pan:                lithic.F("4111111289144142"),
@@ -137,8 +155,11 @@ func TestTransactionSimulateReturn(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Transactions.SimulateReturn(context.TODO(), lithic.TransactionSimulateReturnParams{
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Transactions.SimulateReturn(context.TODO(), lithic.TransactionSimulateReturnParams{
 		Amount:     lithic.F(int64(0)),
 		Descriptor: lithic.F("COFFEE SHOP"),
 		Pan:        lithic.F("4111111289144142"),
@@ -156,8 +177,11 @@ func TestTransactionSimulateReturnReversal(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Transactions.SimulateReturnReversal(context.TODO(), lithic.TransactionSimulateReturnReversalParams{
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Transactions.SimulateReturnReversal(context.TODO(), lithic.TransactionSimulateReturnReversalParams{
 		Token: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 	})
 	if err != nil {
@@ -173,8 +197,11 @@ func TestTransactionSimulateVoidWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.Transactions.SimulateVoid(context.TODO(), lithic.TransactionSimulateVoidParams{
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Transactions.SimulateVoid(context.TODO(), lithic.TransactionSimulateVoidParams{
 		Token:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Amount: lithic.F(int64(0)),
 		Type:   lithic.F(lithic.TransactionSimulateVoidParamsTypeAuthorizationExpiry),

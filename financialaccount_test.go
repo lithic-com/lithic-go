@@ -16,8 +16,11 @@ func TestFinancialAccountListWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
-	c := lithic.NewClient(option.WithAPIKey("APIKey"), option.WithBaseURL("http://127.0.0.1:4010"))
-	_, err := c.FinancialAccounts.List(context.TODO(), lithic.FinancialAccountListParams{
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.FinancialAccounts.List(context.TODO(), lithic.FinancialAccountListParams{
 		AccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Type:         lithic.F(lithic.FinancialAccountListParamsTypeIssuing),
 	})
