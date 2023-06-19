@@ -54,7 +54,7 @@ func main() {
 	if err != nil {
 		panic(err.Error())
 	}
-	fmt.Printf("%+v\n", card)
+	fmt.Printf("%+v\n", card.Token)
 }
 
 ```
