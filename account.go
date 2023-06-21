@@ -231,7 +231,8 @@ type AccountUpdateParams struct {
 	// Amount (in cents) for the account's new daily spend limit. Note that a spend
 	// limit of 0 is effectively no limit, and should only be used to reset or remove a
 	// prior limit. Only a limit of 1 or above will result in declined transactions due
-	// to checks against the account limit.
+	// to checks against the account limit. By default the daily spend limit is set to
+	// $1,250.00.
 	DailySpendLimit param.Field[int64] `json:"daily_spend_limit"`
 	// Amount (in cents) for the account's new lifetime limit. Once this limit is
 	// reached, no transactions will be accepted on any card created for this account
@@ -243,7 +244,8 @@ type AccountUpdateParams struct {
 	// Amount (in cents) for the account's new monthly spend limit. Note that a spend
 	// limit of 0 is effectively no limit, and should only be used to reset or remove a
 	// prior limit. Only a limit of 1 or above will result in declined transactions due
-	// to checks against the account limit.
+	// to checks against the account limit. By default the monthly spend limit is set
+	// to $5,000.00.
 	MonthlySpendLimit param.Field[int64] `json:"monthly_spend_limit"`
 	// Account states.
 	State param.Field[AccountUpdateParamsState] `json:"state"`
