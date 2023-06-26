@@ -138,23 +138,3 @@ const (
 	BalanceListParamsFinancialAccountTypeIssuing BalanceListParamsFinancialAccountType = "ISSUING"
 	BalanceListParamsFinancialAccountTypeReserve BalanceListParamsFinancialAccountType = "RESERVE"
 )
-
-type BalanceListResponse struct {
-	Data []Balance `json:"data,required"`
-	// More data exists.
-	HasMore bool `json:"has_more,required"`
-	JSON    balanceListResponseJSON
-}
-
-// balanceListResponseJSON contains the JSON metadata for the struct
-// [BalanceListResponse]
-type balanceListResponseJSON struct {
-	Data        apijson.Field
-	HasMore     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *BalanceListResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}

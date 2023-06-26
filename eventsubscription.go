@@ -111,7 +111,7 @@ func (r *EventSubscriptionService) ReplayMissing(ctx context.Context, eventSubsc
 }
 
 // Get the secret for an event subscription.
-func (r *EventSubscriptionService) GetSecret(ctx context.Context, eventSubscriptionToken string, opts ...option.RequestOption) (res *SubscriptionRetrieveSecretResponse, err error) {
+func (r *EventSubscriptionService) GetSecret(ctx context.Context, eventSubscriptionToken string, opts ...option.RequestOption) (res *EventSubscriptionGetSecretResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("event_subscriptions/%s/secret", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
@@ -128,20 +128,20 @@ func (r *EventSubscriptionService) RotateSecret(ctx context.Context, eventSubscr
 	return
 }
 
-type SubscriptionRetrieveSecretResponse struct {
+type EventSubscriptionGetSecretResponse struct {
 	Key  string `json:"key"`
-	JSON subscriptionRetrieveSecretResponseJSON
+	JSON eventSubscriptionGetSecretResponseJSON
 }
 
-// subscriptionRetrieveSecretResponseJSON contains the JSON metadata for the struct
-// [SubscriptionRetrieveSecretResponse]
-type subscriptionRetrieveSecretResponseJSON struct {
+// eventSubscriptionGetSecretResponseJSON contains the JSON metadata for the struct
+// [EventSubscriptionGetSecretResponse]
+type eventSubscriptionGetSecretResponseJSON struct {
 	Key         apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *SubscriptionRetrieveSecretResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *EventSubscriptionGetSecretResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
@@ -217,25 +217,6 @@ func (r EventSubscriptionListParams) URLQuery() (v url.Values) {
 		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
-}
-
-type EventSubscriptionListResponse struct {
-	Data    []EventSubscription `json:"data,required"`
-	HasMore bool                `json:"has_more,required"`
-	JSON    eventSubscriptionListResponseJSON
-}
-
-// eventSubscriptionListResponseJSON contains the JSON metadata for the struct
-// [EventSubscriptionListResponse]
-type eventSubscriptionListResponseJSON struct {
-	Data        apijson.Field
-	HasMore     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *EventSubscriptionListResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
 }
 
 type EventSubscriptionRecoverParams struct {

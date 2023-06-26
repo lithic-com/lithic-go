@@ -208,22 +208,3 @@ const (
 	EventListParamsEventTypesDigitalWalletTokenizationTwoFactorAuthenticationCode EventListParamsEventTypes = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventListParamsEventTypesDisputeUpdated                                       EventListParamsEventTypes = "dispute.updated"
 )
-
-type EventListResponse struct {
-	Data    []Event `json:"data,required"`
-	HasMore bool    `json:"has_more,required"`
-	JSON    eventListResponseJSON
-}
-
-// eventListResponseJSON contains the JSON metadata for the struct
-// [EventListResponse]
-type eventListResponseJSON struct {
-	Data        apijson.Field
-	HasMore     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *EventListResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}

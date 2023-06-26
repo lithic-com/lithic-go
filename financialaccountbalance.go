@@ -9,7 +9,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
@@ -74,24 +73,4 @@ func (r FinancialAccountBalanceListParams) URLQuery() (v url.Values) {
 		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
-}
-
-type FinancialAccountBalanceListResponse struct {
-	Data []Balance `json:"data,required"`
-	// More data exists.
-	HasMore bool `json:"has_more,required"`
-	JSON    financialAccountBalanceListResponseJSON
-}
-
-// financialAccountBalanceListResponseJSON contains the JSON metadata for the
-// struct [FinancialAccountBalanceListResponse]
-type financialAccountBalanceListResponseJSON struct {
-	Data        apijson.Field
-	HasMore     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *FinancialAccountBalanceListResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
 }

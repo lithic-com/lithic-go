@@ -35,7 +35,7 @@ func NewAuthRuleService(opts ...option.RequestOption) (r *AuthRuleService) {
 
 // Creates an authorization rule (Auth Rule) and applies it at the program,
 // account, or card level.
-func (r *AuthRuleService) New(ctx context.Context, body AuthRuleNewParams, opts ...option.RequestOption) (res *AuthRuleCreateResponse, err error) {
+func (r *AuthRuleService) New(ctx context.Context, body AuthRuleNewParams, opts ...option.RequestOption) (res *AuthRuleNewResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "auth_rules"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -44,7 +44,7 @@ func (r *AuthRuleService) New(ctx context.Context, body AuthRuleNewParams, opts 
 
 // Detail the properties and entities (program, accounts, and cards) associated
 // with an existing authorization rule (Auth Rule).
-func (r *AuthRuleService) Get(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (res *AuthRuleRetrieveResponse, err error) {
+func (r *AuthRuleService) Get(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (res *AuthRuleGetResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("auth_rules/%s", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
@@ -161,37 +161,37 @@ const (
 	AuthRuleStateInactive AuthRuleState = "INACTIVE"
 )
 
-type AuthRuleCreateResponse struct {
+type AuthRuleNewResponse struct {
 	Data AuthRule `json:"data"`
-	JSON authRuleCreateResponseJSON
+	JSON authRuleNewResponseJSON
 }
 
-// authRuleCreateResponseJSON contains the JSON metadata for the struct
-// [AuthRuleCreateResponse]
-type authRuleCreateResponseJSON struct {
+// authRuleNewResponseJSON contains the JSON metadata for the struct
+// [AuthRuleNewResponse]
+type authRuleNewResponseJSON struct {
 	Data        apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *AuthRuleCreateResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *AuthRuleNewResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type AuthRuleRetrieveResponse struct {
+type AuthRuleGetResponse struct {
 	Data []AuthRule `json:"data"`
-	JSON authRuleRetrieveResponseJSON
+	JSON authRuleGetResponseJSON
 }
 
-// authRuleRetrieveResponseJSON contains the JSON metadata for the struct
-// [AuthRuleRetrieveResponse]
-type authRuleRetrieveResponseJSON struct {
+// authRuleGetResponseJSON contains the JSON metadata for the struct
+// [AuthRuleGetResponse]
+type authRuleGetResponseJSON struct {
 	Data        apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *AuthRuleRetrieveResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *AuthRuleGetResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
@@ -314,32 +314,6 @@ func (r AuthRuleListParams) URLQuery() (v url.Values) {
 		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
-}
-
-type AuthRuleListResponse struct {
-	Data []AuthRule `json:"data"`
-	// Total number of entries.
-	TotalEntries string `json:"total_entries"`
-	// Total number of pages
-	TotalPages int64 `json:"total_pages"`
-	// Page number.
-	Page int64 `json:"page"`
-	JSON authRuleListResponseJSON
-}
-
-// authRuleListResponseJSON contains the JSON metadata for the struct
-// [AuthRuleListResponse]
-type authRuleListResponseJSON struct {
-	Data         apijson.Field
-	TotalEntries apijson.Field
-	TotalPages   apijson.Field
-	Page         apijson.Field
-	raw          string
-	ExtraFields  map[string]apijson.Field
-}
-
-func (r *AuthRuleListResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
 }
 
 type AuthRuleApplyParams struct {

@@ -9,7 +9,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
@@ -124,23 +123,3 @@ const (
 	FinancialTransactionListParamsStatusSettled  FinancialTransactionListParamsStatus = "SETTLED"
 	FinancialTransactionListParamsStatusVoided   FinancialTransactionListParamsStatus = "VOIDED"
 )
-
-type FinancialTransactionListResponse struct {
-	Data []FinancialTransaction `json:"data,required"`
-	// More data exists.
-	HasMore bool `json:"has_more,required"`
-	JSON    financialTransactionListResponseJSON
-}
-
-// financialTransactionListResponseJSON contains the JSON metadata for the struct
-// [FinancialTransactionListResponse]
-type financialTransactionListResponseJSON struct {
-	Data        apijson.Field
-	HasMore     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *FinancialTransactionListResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
