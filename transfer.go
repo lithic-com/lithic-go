@@ -31,7 +31,7 @@ func NewTransferService(opts ...option.RequestOption) (r *TransferService) {
 }
 
 // Transfer funds between two financial accounts
-func (r *TransferService) New(ctx context.Context, body TransferNewParams, opts ...option.RequestOption) (res *TransferCreateResponse, err error) {
+func (r *TransferService) New(ctx context.Context, body TransferNewParams, opts ...option.RequestOption) (res *TransferNewResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "transfer"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -279,20 +279,20 @@ const (
 	TransferStatusVoided   TransferStatus = "VOIDED"
 )
 
-type TransferCreateResponse struct {
+type TransferNewResponse struct {
 	Data Transfer `json:"data"`
-	JSON transferCreateResponseJSON
+	JSON transferNewResponseJSON
 }
 
-// transferCreateResponseJSON contains the JSON metadata for the struct
-// [TransferCreateResponse]
-type transferCreateResponseJSON struct {
+// transferNewResponseJSON contains the JSON metadata for the struct
+// [TransferNewResponse]
+type transferNewResponseJSON struct {
 	Data        apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *TransferCreateResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *TransferNewResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 

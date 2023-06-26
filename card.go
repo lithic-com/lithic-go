@@ -724,32 +724,6 @@ func (r CardListParams) URLQuery() (v url.Values) {
 	})
 }
 
-type CardListResponse struct {
-	Data []Card `json:"data,required"`
-	// Page number.
-	Page int64 `json:"page,required"`
-	// Total number of entries.
-	TotalEntries int64 `json:"total_entries,required"`
-	// Total number of pages.
-	TotalPages int64 `json:"total_pages,required"`
-	JSON       cardListResponseJSON
-}
-
-// cardListResponseJSON contains the JSON metadata for the struct
-// [CardListResponse]
-type cardListResponseJSON struct {
-	Data         apijson.Field
-	Page         apijson.Field
-	TotalEntries apijson.Field
-	TotalPages   apijson.Field
-	raw          string
-	ExtraFields  map[string]apijson.Field
-}
-
-func (r *CardListResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
 type CardEmbedParams struct {
 	// A base64 encoded JSON string of an EmbedRequest to specify which card to load.
 	EmbedRequest param.Field[string] `query:"embed_request,required"`

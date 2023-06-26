@@ -79,7 +79,7 @@ func (r *AccountHolderService) Update(ctx context.Context, accountHolderToken st
 // HMAC token or modify the registered URL. Only a single webhook is allowed per
 // program. Since HMAC verification is available, the IP addresses from which
 // KYC/KYB webhooks are sent are subject to change.
-func (r *AccountHolderService) NewWebhook(ctx context.Context, body AccountHolderNewWebhookParams, opts ...option.RequestOption) (res *AccountHolderCreateWebhookResponse, err error) {
+func (r *AccountHolderService) NewWebhook(ctx context.Context, body AccountHolderNewWebhookParams, opts ...option.RequestOption) (res *AccountHolderNewWebhookResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "webhooks/account_holders"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -361,6 +361,42 @@ func (r *AccountHolderUpdateResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+type AccountHolderNewWebhookResponse struct {
+	Data AccountHolderNewWebhookResponseData `json:"data"`
+	JSON accountHolderNewWebhookResponseJSON
+}
+
+// accountHolderNewWebhookResponseJSON contains the JSON metadata for the struct
+// [AccountHolderNewWebhookResponse]
+type accountHolderNewWebhookResponseJSON struct {
+	Data        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AccountHolderNewWebhookResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type AccountHolderNewWebhookResponseData struct {
+	// Shared secret which can optionally be used to validate the authenticity of
+	// incoming identity webhooks.
+	HmacToken string `json:"hmac_token" format:"uuid"`
+	JSON      accountHolderNewWebhookResponseDataJSON
+}
+
+// accountHolderNewWebhookResponseDataJSON contains the JSON metadata for the
+// struct [AccountHolderNewWebhookResponseData]
+type accountHolderNewWebhookResponseDataJSON struct {
+	HmacToken   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AccountHolderNewWebhookResponseData) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
 type AccountHolderListDocumentsResponse struct {
 	Data []AccountHolderDocument `json:"data"`
 	JSON accountHolderListDocumentsResponseJSON
@@ -375,42 +411,6 @@ type accountHolderListDocumentsResponseJSON struct {
 }
 
 func (r *AccountHolderListDocumentsResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type AccountHolderCreateWebhookResponse struct {
-	Data AccountHolderCreateWebhookResponseData `json:"data"`
-	JSON accountHolderCreateWebhookResponseJSON
-}
-
-// accountHolderCreateWebhookResponseJSON contains the JSON metadata for the struct
-// [AccountHolderCreateWebhookResponse]
-type accountHolderCreateWebhookResponseJSON struct {
-	Data        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AccountHolderCreateWebhookResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type AccountHolderCreateWebhookResponseData struct {
-	// Shared secret which can optionally be used to validate the authenticity of
-	// incoming identity webhooks.
-	HmacToken string `json:"hmac_token" format:"uuid"`
-	JSON      accountHolderCreateWebhookResponseDataJSON
-}
-
-// accountHolderCreateWebhookResponseDataJSON contains the JSON metadata for the
-// struct [AccountHolderCreateWebhookResponseData]
-type accountHolderCreateWebhookResponseDataJSON struct {
-	HmacToken   apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AccountHolderCreateWebhookResponseData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 

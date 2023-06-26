@@ -734,6 +734,27 @@ func (r *TransactionSimulateAuthorizationResponse) UnmarshalJSON(data []byte) (e
 	return apijson.UnmarshalRoot(data, r)
 }
 
+type TransactionSimulateAuthorizationAdviceResponse struct {
+	// Debugging request ID to share with Lithic Support team.
+	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
+	// A unique token to reference this transaction.
+	Token string `json:"token" format:"uuid"`
+	JSON  transactionSimulateAuthorizationAdviceResponseJSON
+}
+
+// transactionSimulateAuthorizationAdviceResponseJSON contains the JSON metadata
+// for the struct [TransactionSimulateAuthorizationAdviceResponse]
+type transactionSimulateAuthorizationAdviceResponseJSON struct {
+	DebuggingRequestID apijson.Field
+	Token              apijson.Field
+	raw                string
+	ExtraFields        map[string]apijson.Field
+}
+
+func (r *TransactionSimulateAuthorizationAdviceResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
 type TransactionSimulateClearingResponse struct {
 	// Debugging request ID to share with Lithic Support team.
 	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
@@ -749,6 +770,27 @@ type transactionSimulateClearingResponseJSON struct {
 }
 
 func (r *TransactionSimulateClearingResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type TransactionSimulateCreditAuthorizationResponse struct {
+	// Debugging request ID to share with Lithic Support team.
+	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
+	// A unique token to reference this transaction.
+	Token string `json:"token" format:"uuid"`
+	JSON  transactionSimulateCreditAuthorizationResponseJSON
+}
+
+// transactionSimulateCreditAuthorizationResponseJSON contains the JSON metadata
+// for the struct [TransactionSimulateCreditAuthorizationResponse]
+type transactionSimulateCreditAuthorizationResponseJSON struct {
+	DebuggingRequestID apijson.Field
+	Token              apijson.Field
+	raw                string
+	ExtraFields        map[string]apijson.Field
+}
+
+func (r *TransactionSimulateCreditAuthorizationResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
@@ -809,48 +851,6 @@ func (r *TransactionSimulateVoidResponse) UnmarshalJSON(data []byte) (err error)
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type TransactionSimulateCreditAuthorizationResponse struct {
-	// Debugging request ID to share with Lithic Support team.
-	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
-	// A unique token to reference this transaction.
-	Token string `json:"token" format:"uuid"`
-	JSON  transactionSimulateCreditAuthorizationResponseJSON
-}
-
-// transactionSimulateCreditAuthorizationResponseJSON contains the JSON metadata
-// for the struct [TransactionSimulateCreditAuthorizationResponse]
-type transactionSimulateCreditAuthorizationResponseJSON struct {
-	DebuggingRequestID apijson.Field
-	Token              apijson.Field
-	raw                string
-	ExtraFields        map[string]apijson.Field
-}
-
-func (r *TransactionSimulateCreditAuthorizationResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type TransactionSimulateAuthorizationAdviceResponse struct {
-	// Debugging request ID to share with Lithic Support team.
-	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
-	// A unique token to reference this transaction.
-	Token string `json:"token" format:"uuid"`
-	JSON  transactionSimulateAuthorizationAdviceResponseJSON
-}
-
-// transactionSimulateAuthorizationAdviceResponseJSON contains the JSON metadata
-// for the struct [TransactionSimulateAuthorizationAdviceResponse]
-type transactionSimulateAuthorizationAdviceResponseJSON struct {
-	DebuggingRequestID apijson.Field
-	Token              apijson.Field
-	raw                string
-	ExtraFields        map[string]apijson.Field
-}
-
-func (r *TransactionSimulateAuthorizationAdviceResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
 type TransactionListParams struct {
 	// Filters for transactions associated with a specific account.
 	AccountToken param.Field[string] `query:"account_token" format:"uuid"`
@@ -887,32 +887,6 @@ const (
 	TransactionListParamsResultApproved TransactionListParamsResult = "APPROVED"
 	TransactionListParamsResultDeclined TransactionListParamsResult = "DECLINED"
 )
-
-type TransactionListResponse struct {
-	Data []Transaction `json:"data,required"`
-	// Page of the result.
-	Page int64 `json:"page,required"`
-	// Number of matched rows.
-	TotalEntries int64 `json:"total_entries,required"`
-	// Total pages of result.
-	TotalPages int64 `json:"total_pages,required"`
-	JSON       transactionListResponseJSON
-}
-
-// transactionListResponseJSON contains the JSON metadata for the struct
-// [TransactionListResponse]
-type transactionListResponseJSON struct {
-	Data         apijson.Field
-	Page         apijson.Field
-	TotalEntries apijson.Field
-	TotalPages   apijson.Field
-	raw          string
-	ExtraFields  map[string]apijson.Field
-}
-
-func (r *TransactionListResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
 
 type TransactionSimulateAuthorizationParams struct {
 	// Amount (in cents) to authorize. For credit authorizations and financial credit

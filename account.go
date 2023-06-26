@@ -296,29 +296,3 @@ func (r AccountListParams) URLQuery() (v url.Values) {
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
 }
-
-type AccountListResponse struct {
-	Data []Account `json:"data,required"`
-	// Page number.
-	Page int64 `json:"page,required"`
-	// Total number of entries.
-	TotalEntries int64 `json:"total_entries,required"`
-	// Total number of pages.
-	TotalPages int64 `json:"total_pages,required"`
-	JSON       accountListResponseJSON
-}
-
-// accountListResponseJSON contains the JSON metadata for the struct
-// [AccountListResponse]
-type accountListResponseJSON struct {
-	Data         apijson.Field
-	Page         apijson.Field
-	TotalEntries apijson.Field
-	TotalPages   apijson.Field
-	raw          string
-	ExtraFields  map[string]apijson.Field
-}
-
-func (r *AccountListResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}

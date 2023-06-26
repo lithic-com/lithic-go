@@ -570,26 +570,6 @@ const (
 	DisputeListParamsStatusCaseClosed      DisputeListParamsStatus = "CASE_CLOSED"
 )
 
-type DisputeListResponse struct {
-	Data []Dispute `json:"data,required"`
-	// More data exists.
-	HasMore bool `json:"has_more,required"`
-	JSON    disputeListResponseJSON
-}
-
-// disputeListResponseJSON contains the JSON metadata for the struct
-// [DisputeListResponse]
-type disputeListResponseJSON struct {
-	Data        apijson.Field
-	HasMore     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *DisputeListResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
 type DisputeInitiateEvidenceUploadParams struct {
 	// Filename of the evidence.
 	Filename param.Field[string] `json:"filename"`
@@ -623,26 +603,6 @@ func (r DisputeListEvidencesParams) URLQuery() (v url.Values) {
 		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
-}
-
-type DisputeListEvidencesResponse struct {
-	Data []DisputeEvidence `json:"data,required"`
-	// More data exists.
-	HasMore bool `json:"has_more,required"`
-	JSON    disputeListEvidencesResponseJSON
-}
-
-// disputeListEvidencesResponseJSON contains the JSON metadata for the struct
-// [DisputeListEvidencesResponse]
-type disputeListEvidencesResponseJSON struct {
-	Data        apijson.Field
-	HasMore     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *DisputeListEvidencesResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
 }
 
 type DisputeUploadEvidenceParams struct {
