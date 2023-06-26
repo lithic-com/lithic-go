@@ -33,7 +33,7 @@ func NewResponderEndpointService(opts ...option.RequestOption) (r *ResponderEndp
 }
 
 // Enroll a responder endpoint
-func (r *ResponderEndpointService) New(ctx context.Context, body ResponderEndpointNewParams, opts ...option.RequestOption) (res *ResponderEndpointCreateResponse, err error) {
+func (r *ResponderEndpointService) New(ctx context.Context, body ResponderEndpointNewParams, opts ...option.RequestOption) (res *ResponderEndpointNewResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "responder_endpoints"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -78,21 +78,21 @@ func (r *ResponderEndpointStatus) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type ResponderEndpointCreateResponse struct {
+type ResponderEndpointNewResponse struct {
 	// True if the endpoint was enrolled successfully.
 	Enrolled bool `json:"enrolled"`
-	JSON     responderEndpointCreateResponseJSON
+	JSON     responderEndpointNewResponseJSON
 }
 
-// responderEndpointCreateResponseJSON contains the JSON metadata for the struct
-// [ResponderEndpointCreateResponse]
-type responderEndpointCreateResponseJSON struct {
+// responderEndpointNewResponseJSON contains the JSON metadata for the struct
+// [ResponderEndpointNewResponse]
+type responderEndpointNewResponseJSON struct {
 	Enrolled    apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *ResponderEndpointCreateResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *ResponderEndpointNewResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
