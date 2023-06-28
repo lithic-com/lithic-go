@@ -94,8 +94,8 @@ func TestTransactionSimulateAuthorizationAdvice(t *testing.T) {
 		option.WithBaseURL("http://127.0.0.1:4010"),
 	)
 	_, err := client.Transactions.SimulateAuthorizationAdvice(context.TODO(), lithic.TransactionSimulateAuthorizationAdviceParams{
-		Amount: lithic.F(int64(0)),
 		Token:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		Amount: lithic.F(int64(0)),
 	})
 	if err != nil {
 		var apierr *lithic.Error
