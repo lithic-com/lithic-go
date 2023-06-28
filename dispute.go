@@ -174,6 +174,8 @@ func (r *DisputeService) UploadEvidence(ctx context.Context, disputeToken string
 
 // Dispute.
 type Dispute struct {
+	// Globally unique identifier.
+	Token string `json:"token,required" format:"uuid"`
 	// Amount under dispute. May be different from the original transaction amount.
 	Amount int64 `json:"amount,required"`
 	// Date dispute entered arbitration.
@@ -186,15 +188,15 @@ type Dispute struct {
 	CustomerNote string `json:"customer_note,required,nullable"`
 	// Unique identifiers for the dispute from the network.
 	NetworkClaimIDs []string `json:"network_claim_ids,required,nullable"`
-	// Unique identifier for the dispute from the network. If there are multiple, this
-	// will be the first claim id set by the network
-	PrimaryClaimID string `json:"primary_claim_id,required,nullable"`
 	// Date that the dispute was submitted to the network.
 	NetworkFiledDate time.Time `json:"network_filed_date,required,nullable" format:"date-time"`
 	// Network reason code used to file the dispute.
 	NetworkReasonCode string `json:"network_reason_code,required,nullable"`
 	// Date dispute entered pre-arbitration.
 	PrearbitrationDate time.Time `json:"prearbitration_date,required,nullable" format:"date-time"`
+	// Unique identifier for the dispute from the network. If there are multiple, this
+	// will be the first claim id set by the network
+	PrimaryClaimID string `json:"primary_claim_id,required,nullable"`
 	// Dispute reason:
 	//
 	//   - `ATM_CASH_MISDISPENSE`: ATM cash misdispense.
@@ -255,8 +257,6 @@ type Dispute struct {
 	//   - `CASE_WON` - Case was won and credit will be issued.
 	//   - `CASE_CLOSED` - Case was lost or withdrawn.
 	Status DisputeStatus `json:"status,required"`
-	// Globally unique identifier.
-	Token string `json:"token,required" format:"uuid"`
 	// The transaction that is being disputed. A transaction can only be disputed once
 	// but may have multiple dispute cases.
 	TransactionToken string `json:"transaction_token,required" format:"uuid"`
@@ -265,16 +265,17 @@ type Dispute struct {
 
 // disputeJSON contains the JSON metadata for the struct [Dispute]
 type disputeJSON struct {
+	Token              apijson.Field
 	Amount             apijson.Field
 	ArbitrationDate    apijson.Field
 	Created            apijson.Field
 	CustomerFiledDate  apijson.Field
 	CustomerNote       apijson.Field
 	NetworkClaimIDs    apijson.Field
-	PrimaryClaimID     apijson.Field
 	NetworkFiledDate   apijson.Field
 	NetworkReasonCode  apijson.Field
 	PrearbitrationDate apijson.Field
+	PrimaryClaimID     apijson.Field
 	Reason             apijson.Field
 	RepresentmentDate  apijson.Field
 	ResolutionAmount   apijson.Field
@@ -282,7 +283,6 @@ type disputeJSON struct {
 	ResolutionNote     apijson.Field
 	ResolutionReason   apijson.Field
 	Status             apijson.Field
-	Token              apijson.Field
 	TransactionToken   apijson.Field
 	raw                string
 	ExtraFields        map[string]apijson.Field
@@ -397,17 +397,12 @@ const (
 
 // Dispute evidence.
 type DisputeEvidence struct {
+	// Globally unique identifier.
+	Token string `json:"token,required" format:"uuid"`
 	// Timestamp of when dispute evidence was created.
 	Created time.Time `json:"created,required" format:"date-time"`
 	// Dispute token evidence is attached to.
 	DisputeToken string `json:"dispute_token,required" format:"uuid"`
-	// URL to download evidence. Only shown when `upload_status` is `UPLOADED`.
-	DownloadURL string `json:"download_url"`
-	// File name of evidence. Recommended to give the dispute evidence a human-readable
-	// identifier.
-	Filename string `json:"filename"`
-	// Globally unique identifier.
-	Token string `json:"token,required" format:"uuid"`
 	// Upload status types:
 	//
 	// - `DELETED` - Evidence was deleted.
@@ -416,6 +411,11 @@ type DisputeEvidence struct {
 	// - `REJECTED` - Evidence was rejected.
 	// - `UPLOADED` - Evidence was uploaded.
 	UploadStatus DisputeEvidenceUploadStatus `json:"upload_status,required"`
+	// URL to download evidence. Only shown when `upload_status` is `UPLOADED`.
+	DownloadURL string `json:"download_url"`
+	// File name of evidence. Recommended to give the dispute evidence a human-readable
+	// identifier.
+	Filename string `json:"filename"`
 	// URL to upload evidence. Only shown when `upload_status` is `PENDING`.
 	UploadURL string `json:"upload_url"`
 	JSON      disputeEvidenceJSON
@@ -423,12 +423,12 @@ type DisputeEvidence struct {
 
 // disputeEvidenceJSON contains the JSON metadata for the struct [DisputeEvidence]
 type disputeEvidenceJSON struct {
+	Token        apijson.Field
 	Created      apijson.Field
 	DisputeToken apijson.Field
+	UploadStatus apijson.Field
 	DownloadURL  apijson.Field
 	Filename     apijson.Field
-	Token        apijson.Field
-	UploadStatus apijson.Field
 	UploadURL    apijson.Field
 	raw          string
 	ExtraFields  map[string]apijson.Field

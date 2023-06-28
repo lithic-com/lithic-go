@@ -65,30 +65,30 @@ func (r *FinancialAccountService) ListAutoPaging(ctx context.Context, query Fina
 
 // Financial Account
 type FinancialAccount struct {
-	// Account number for your Lithic-assigned bank account number, if applicable.
-	AccountNumber string `json:"account_number"`
-	// Date and time for when the financial account was first created.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// Routing number for your Lithic-assigned bank account number, if applicable.
-	RoutingNumber string `json:"routing_number"`
 	// Globally unique identifier for the financial account.
 	Token string `json:"token,required" format:"uuid"`
+	// Date and time for when the financial account was first created.
+	Created time.Time `json:"created,required" format:"date-time"`
 	// Type of financial account
 	Type FinancialAccountType `json:"type,required"`
 	// Date and time for when the financial account was last updated.
 	Updated time.Time `json:"updated,required" format:"date-time"`
-	JSON    financialAccountJSON
+	// Account number for your Lithic-assigned bank account number, if applicable.
+	AccountNumber string `json:"account_number"`
+	// Routing number for your Lithic-assigned bank account number, if applicable.
+	RoutingNumber string `json:"routing_number"`
+	JSON          financialAccountJSON
 }
 
 // financialAccountJSON contains the JSON metadata for the struct
 // [FinancialAccount]
 type financialAccountJSON struct {
-	AccountNumber apijson.Field
-	Created       apijson.Field
-	RoutingNumber apijson.Field
 	Token         apijson.Field
+	Created       apijson.Field
 	Type          apijson.Field
 	Updated       apijson.Field
+	AccountNumber apijson.Field
+	RoutingNumber apijson.Field
 	raw           string
 	ExtraFields   map[string]apijson.Field
 }
@@ -107,18 +107,18 @@ const (
 
 // Financial Account
 type FinancialAccountParam struct {
-	// Account number for your Lithic-assigned bank account number, if applicable.
-	AccountNumber param.Field[string] `json:"account_number"`
-	// Date and time for when the financial account was first created.
-	Created param.Field[time.Time] `json:"created,required" format:"date-time"`
-	// Routing number for your Lithic-assigned bank account number, if applicable.
-	RoutingNumber param.Field[string] `json:"routing_number"`
 	// Globally unique identifier for the financial account.
 	Token param.Field[string] `json:"token,required" format:"uuid"`
+	// Date and time for when the financial account was first created.
+	Created param.Field[time.Time] `json:"created,required" format:"date-time"`
 	// Type of financial account
 	Type param.Field[FinancialAccountType] `json:"type,required"`
 	// Date and time for when the financial account was last updated.
 	Updated param.Field[time.Time] `json:"updated,required" format:"date-time"`
+	// Account number for your Lithic-assigned bank account number, if applicable.
+	AccountNumber param.Field[string] `json:"account_number"`
+	// Routing number for your Lithic-assigned bank account number, if applicable.
+	RoutingNumber param.Field[string] `json:"routing_number"`
 }
 
 func (r FinancialAccountParam) MarshalJSON() (data []byte, err error) {
@@ -126,6 +126,8 @@ func (r FinancialAccountParam) MarshalJSON() (data []byte, err error) {
 }
 
 type FinancialTransaction struct {
+	// Globally unique identifier.
+	Token string `json:"token" format:"uuid"`
 	// Status types:
 	//
 	//   - `CARD` - Issuing card transaction.
@@ -162,8 +164,6 @@ type FinancialTransaction struct {
 	//   - `SETTLED` - The financial transaction is completed.
 	//   - `VOIDED` - The merchant has voided the previously pending card authorization.
 	Status FinancialTransactionStatus `json:"status"`
-	// Globally unique identifier.
-	Token string `json:"token" format:"uuid"`
 	// Date and time when the financial transaction was last updated. UTC time zone.
 	Updated time.Time `json:"updated" format:"date-time"`
 	JSON    financialTransactionJSON
@@ -172,6 +172,7 @@ type FinancialTransaction struct {
 // financialTransactionJSON contains the JSON metadata for the struct
 // [FinancialTransaction]
 type financialTransactionJSON struct {
+	Token         apijson.Field
 	Category      apijson.Field
 	Created       apijson.Field
 	Currency      apijson.Field
@@ -181,7 +182,6 @@ type financialTransactionJSON struct {
 	Result        apijson.Field
 	SettledAmount apijson.Field
 	Status        apijson.Field
-	Token         apijson.Field
 	Updated       apijson.Field
 	raw           string
 	ExtraFields   map[string]apijson.Field
@@ -206,6 +206,8 @@ const (
 )
 
 type FinancialTransactionEvents struct {
+	// Globally unique identifier.
+	Token string `json:"token" format:"uuid"`
 	// Amount of the financial event that has been settled in the currency's smallest
 	// unit (e.g., cents).
 	Amount int64 `json:"amount"`
@@ -214,8 +216,6 @@ type FinancialTransactionEvents struct {
 	// APPROVED financial events were successful while DECLINED financial events were
 	// declined by user, Lithic, or the network.
 	Result FinancialTransactionEventsResult `json:"result"`
-	// Globally unique identifier.
-	Token string `json:"token" format:"uuid"`
 	// Event types:
 	//
 	//   - `ACH_INSUFFICIENT_FUNDS` - Attempted ACH origination declined due to
@@ -259,10 +259,10 @@ type FinancialTransactionEvents struct {
 // financialTransactionEventsJSON contains the JSON metadata for the struct
 // [FinancialTransactionEvents]
 type financialTransactionEventsJSON struct {
+	Token       apijson.Field
 	Amount      apijson.Field
 	Created     apijson.Field
 	Result      apijson.Field
-	Token       apijson.Field
 	Type        apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field

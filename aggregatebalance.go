@@ -61,46 +61,46 @@ func (r *AggregateBalanceService) ListAutoPaging(ctx context.Context, query Aggr
 
 // Aggregate Balance across all end-user accounts
 type AggregateBalance struct {
-	// Type of financial account
-	FinancialAccountType AggregateBalanceFinancialAccountType `json:"financial_account_type,required"`
-	// 3-digit alphabetic ISO 4217 code for the local currency of the balance.
-	Currency string `json:"currency,required"`
 	// Funds available for spend in the currency's smallest unit (e.g., cents for USD)
 	AvailableAmount int64 `json:"available_amount,required"`
+	// Date and time for when the balance was first created.
+	Created time.Time `json:"created,required" format:"date-time"`
+	// 3-digit alphabetic ISO 4217 code for the local currency of the balance.
+	Currency string `json:"currency,required"`
+	// Type of financial account
+	FinancialAccountType AggregateBalanceFinancialAccountType `json:"financial_account_type,required"`
+	// Globally unique identifier for the financial account that had its balance
+	// updated most recently
+	LastFinancialAccountToken string `json:"last_financial_account_token,required" format:"uuid"`
+	// Globally unique identifier for the last transaction event that impacted this
+	// balance
+	LastTransactionEventToken string `json:"last_transaction_event_token,required" format:"uuid"`
+	// Globally unique identifier for the last transaction that impacted this balance
+	LastTransactionToken string `json:"last_transaction_token,required" format:"uuid"`
 	// Funds not available for spend due to card authorizations or pending ACH release.
 	// Shown in the currency's smallest unit (e.g., cents for USD)
 	PendingAmount int64 `json:"pending_amount,required"`
 	// The sum of available and pending balance in the currency's smallest unit (e.g.,
 	// cents for USD)
 	TotalAmount int64 `json:"total_amount,required"`
-	// Date and time for when the balance was first created.
-	Created time.Time `json:"created,required" format:"date-time"`
 	// Date and time for when the balance was last updated.
 	Updated time.Time `json:"updated,required" format:"date-time"`
-	// Globally unique identifier for the last transaction that impacted this balance
-	LastTransactionToken string `json:"last_transaction_token,required" format:"uuid"`
-	// Globally unique identifier for the last transaction event that impacted this
-	// balance
-	LastTransactionEventToken string `json:"last_transaction_event_token,required" format:"uuid"`
-	// Globally unique identifier for the financial account that had its balance
-	// updated most recently
-	LastFinancialAccountToken string `json:"last_financial_account_token,required" format:"uuid"`
-	JSON                      aggregateBalanceJSON
+	JSON    aggregateBalanceJSON
 }
 
 // aggregateBalanceJSON contains the JSON metadata for the struct
 // [AggregateBalance]
 type aggregateBalanceJSON struct {
-	FinancialAccountType      apijson.Field
-	Currency                  apijson.Field
 	AvailableAmount           apijson.Field
+	Created                   apijson.Field
+	Currency                  apijson.Field
+	FinancialAccountType      apijson.Field
+	LastFinancialAccountToken apijson.Field
+	LastTransactionEventToken apijson.Field
+	LastTransactionToken      apijson.Field
 	PendingAmount             apijson.Field
 	TotalAmount               apijson.Field
-	Created                   apijson.Field
 	Updated                   apijson.Field
-	LastTransactionToken      apijson.Field
-	LastTransactionEventToken apijson.Field
-	LastFinancialAccountToken apijson.Field
 	raw                       string
 	ExtraFields               map[string]apijson.Field
 }

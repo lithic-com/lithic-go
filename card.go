@@ -226,26 +226,13 @@ func (r *CardService) Reissue(ctx context.Context, cardToken string, body CardRe
 }
 
 type Card struct {
+	// Globally unique identifier.
+	Token string `json:"token,required" format:"uuid"`
 	// An RFC 3339 timestamp for when the card was created. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// Three digit cvv printed on the back of the card.
-	Cvv     string      `json:"cvv"`
+	Created time.Time   `json:"created,required" format:"date-time"`
 	Funding CardFunding `json:"funding,required"`
-	// Two digit (MM) expiry month.
-	ExpMonth string `json:"exp_month"`
-	// Four digit (yyyy) expiry year.
-	ExpYear string `json:"exp_year"`
-	// Hostname of card’s locked merchant (will be empty if not applicable).
-	Hostname string `json:"hostname"`
 	// Last four digits of the card number.
 	LastFour string `json:"last_four,required"`
-	// Friendly name to identify the card. We recommend against using this field to
-	// store JSON data as it can cause unexpected behavior.
-	Memo string `json:"memo"`
-	// Primary Account Number (PAN) (i.e. the card number). Customers must be PCI
-	// compliant to have PAN returned as a field in production. Please contact
-	// [support@lithic.com](mailto:support@lithic.com) for questions.
-	Pan string `json:"pan"`
 	// Amount (in cents) to limit approved authorizations. Transaction requests above
 	// the spend limit will be declined.
 	SpendLimit int64 `json:"spend_limit,required"`
@@ -282,10 +269,6 @@ type Card struct {
 	// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
 	// manufactured.
 	State CardState `json:"state,required"`
-	// List of identifiers for the Auth Rule(s) that are applied on the card.
-	AuthRuleTokens []string `json:"auth_rule_tokens"`
-	// Globally unique identifier.
-	Token string `json:"token,required" format:"uuid"`
 	// Card types:
 	//
 	//   - `VIRTUAL` - Card will authorize at any merchant and can be added to a digital
@@ -299,32 +282,49 @@ type Card struct {
 	//   - `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first merchant that
 	//     successfully authorizes the card.
 	Type CardType `json:"type,required"`
+	// List of identifiers for the Auth Rule(s) that are applied on the card.
+	AuthRuleTokens []string `json:"auth_rule_tokens"`
+	// Three digit cvv printed on the back of the card.
+	Cvv string `json:"cvv"`
 	// Specifies the digital card art to be displayed in the user’s digital wallet
 	// after tokenization. This artwork must be approved by Mastercard and configured
 	// by Lithic to use. See
 	// [Flexible Card Art Guide](https://docs.lithic.com/docs/about-digital-wallets#flexible-card-art).
 	DigitalCardArtToken string `json:"digital_card_art_token" format:"uuid"`
-	JSON                cardJSON
+	// Two digit (MM) expiry month.
+	ExpMonth string `json:"exp_month"`
+	// Four digit (yyyy) expiry year.
+	ExpYear string `json:"exp_year"`
+	// Hostname of card’s locked merchant (will be empty if not applicable).
+	Hostname string `json:"hostname"`
+	// Friendly name to identify the card. We recommend against using this field to
+	// store JSON data as it can cause unexpected behavior.
+	Memo string `json:"memo"`
+	// Primary Account Number (PAN) (i.e. the card number). Customers must be PCI
+	// compliant to have PAN returned as a field in production. Please contact
+	// [support@lithic.com](mailto:support@lithic.com) for questions.
+	Pan  string `json:"pan"`
+	JSON cardJSON
 }
 
 // cardJSON contains the JSON metadata for the struct [Card]
 type cardJSON struct {
+	Token               apijson.Field
 	Created             apijson.Field
-	Cvv                 apijson.Field
 	Funding             apijson.Field
-	ExpMonth            apijson.Field
-	ExpYear             apijson.Field
-	Hostname            apijson.Field
 	LastFour            apijson.Field
-	Memo                apijson.Field
-	Pan                 apijson.Field
 	SpendLimit          apijson.Field
 	SpendLimitDuration  apijson.Field
 	State               apijson.Field
-	AuthRuleTokens      apijson.Field
-	Token               apijson.Field
 	Type                apijson.Field
+	AuthRuleTokens      apijson.Field
+	Cvv                 apijson.Field
 	DigitalCardArtToken apijson.Field
+	ExpMonth            apijson.Field
+	ExpYear             apijson.Field
+	Hostname            apijson.Field
+	Memo                apijson.Field
+	Pan                 apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
 }
@@ -334,16 +334,14 @@ func (r *Card) UnmarshalJSON(data []byte) (err error) {
 }
 
 type CardFunding struct {
-	// Account name identifying the funding source. This may be `null`.
-	AccountName string `json:"account_name"`
+	// A globally unique identifier for this FundingAccount.
+	Token string `json:"token,required" format:"uuid"`
 	// An RFC 3339 string representing when this funding source was added to the Lithic
 	// account. This may be `null`. UTC time zone.
 	Created time.Time `json:"created,required" format:"date-time"`
 	// The last 4 digits of the account (e.g. bank account, debit card) associated with
 	// this FundingAccount. This may be null.
 	LastFour string `json:"last_four,required"`
-	// The nickname given to the `FundingAccount` or `null` if it has no nickname.
-	Nickname string `json:"nickname"`
 	// State of funding source.
 	//
 	// Funding source states:
@@ -354,25 +352,27 @@ type CardFunding struct {
 	//     micro-deposits verification.
 	//   - `DELETED` - The founding account has been deleted.
 	State CardFundingState `json:"state,required"`
-	// A globally unique identifier for this FundingAccount.
-	Token string `json:"token,required" format:"uuid"`
 	// Types of funding source:
 	//
 	// - `DEPOSITORY_CHECKING` - Bank checking account.
 	// - `DEPOSITORY_SAVINGS` - Bank savings account.
 	Type CardFundingType `json:"type,required"`
-	JSON cardFundingJSON
+	// Account name identifying the funding source. This may be `null`.
+	AccountName string `json:"account_name"`
+	// The nickname given to the `FundingAccount` or `null` if it has no nickname.
+	Nickname string `json:"nickname"`
+	JSON     cardFundingJSON
 }
 
 // cardFundingJSON contains the JSON metadata for the struct [CardFunding]
 type cardFundingJSON struct {
-	AccountName apijson.Field
+	Token       apijson.Field
 	Created     apijson.Field
 	LastFour    apijson.Field
-	Nickname    apijson.Field
 	State       apijson.Field
-	Token       apijson.Field
 	Type        apijson.Field
+	AccountName apijson.Field
+	Nickname    apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }

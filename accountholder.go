@@ -235,23 +235,23 @@ const (
 // Describes the document and the required document image uploads required to
 // re-run KYC.
 type AccountHolderDocument struct {
+	// Globally unique identifier for the document.
+	Token string `json:"token" format:"uuid"`
 	// Globally unique identifier for the account holder.
 	AccountHolderToken string `json:"account_holder_token" format:"uuid"`
 	// Type of documentation to be submitted for verification.
 	DocumentType            AccountHolderDocumentDocumentType              `json:"document_type"`
 	RequiredDocumentUploads []AccountHolderDocumentRequiredDocumentUploads `json:"required_document_uploads"`
-	// Globally unique identifier for the document.
-	Token string `json:"token" format:"uuid"`
-	JSON  accountHolderDocumentJSON
+	JSON                    accountHolderDocumentJSON
 }
 
 // accountHolderDocumentJSON contains the JSON metadata for the struct
 // [AccountHolderDocument]
 type accountHolderDocumentJSON struct {
+	Token                   apijson.Field
 	AccountHolderToken      apijson.Field
 	DocumentType            apijson.Field
 	RequiredDocumentUploads apijson.Field
-	Token                   apijson.Field
 	raw                     string
 	ExtraFields             map[string]apijson.Field
 }
@@ -335,24 +335,24 @@ const (
 type AccountHolderUpdateResponse struct {
 	// The token for the account holder that was updated
 	Token string `json:"token"`
-	// The newly updated email for the account holder
-	Email string `json:"email"`
-	// The newly updated phone_number for the account holder
-	PhoneNumber string `json:"phone_number"`
 	// Only applicable for customers using the KYC-Exempt workflow to enroll businesses
 	// with authorized users. Pass the account_token of the enrolled business
 	// associated with the AUTHORIZED_USER in this field.
 	BusinessAccountToken string `json:"business_account_token"`
-	JSON                 accountHolderUpdateResponseJSON
+	// The newly updated email for the account holder
+	Email string `json:"email"`
+	// The newly updated phone_number for the account holder
+	PhoneNumber string `json:"phone_number"`
+	JSON        accountHolderUpdateResponseJSON
 }
 
 // accountHolderUpdateResponseJSON contains the JSON metadata for the struct
 // [AccountHolderUpdateResponse]
 type accountHolderUpdateResponseJSON struct {
 	Token                apijson.Field
+	BusinessAccountToken apijson.Field
 	Email                apijson.Field
 	PhoneNumber          apijson.Field
-	BusinessAccountToken apijson.Field
 	raw                  string
 	ExtraFields          map[string]apijson.Field
 }
@@ -480,20 +480,20 @@ type AccountHolderNewParamsKYBBeneficialOwnerEntities struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
 	Address param.Field[shared.AddressParam] `json:"address,required"`
-	// Any name that the business operates under that is not its legal business name
-	// (if applicable).
-	DbaBusinessName param.Field[string] `json:"dba_business_name"`
 	// Government-issued identification number. US Federal Employer Identification
 	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
 	// without hyphens.
 	GovernmentID param.Field[string] `json:"government_id,required"`
 	// Legal (formal) business name.
 	LegalBusinessName param.Field[string] `json:"legal_business_name,required"`
-	// Parent company name (if applicable).
-	ParentCompany param.Field[string] `json:"parent_company"`
 	// One or more of the business's phone number(s), entered as a list in E.164
 	// format.
 	PhoneNumbers param.Field[[]string] `json:"phone_numbers,required"`
+	// Any name that the business operates under that is not its legal business name
+	// (if applicable).
+	DbaBusinessName param.Field[string] `json:"dba_business_name"`
+	// Parent company name (if applicable).
+	ParentCompany param.Field[string] `json:"parent_company"`
 }
 
 func (r AccountHolderNewParamsKYBBeneficialOwnerEntities) MarshalJSON() (data []byte, err error) {
@@ -532,20 +532,20 @@ type AccountHolderNewParamsKYBBusinessEntity struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
 	Address param.Field[shared.AddressParam] `json:"address,required"`
-	// Any name that the business operates under that is not its legal business name
-	// (if applicable).
-	DbaBusinessName param.Field[string] `json:"dba_business_name"`
 	// Government-issued identification number. US Federal Employer Identification
 	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
 	// without hyphens.
 	GovernmentID param.Field[string] `json:"government_id,required"`
 	// Legal (formal) business name.
 	LegalBusinessName param.Field[string] `json:"legal_business_name,required"`
-	// Parent company name (if applicable).
-	ParentCompany param.Field[string] `json:"parent_company"`
 	// One or more of the business's phone number(s), entered as a list in E.164
 	// format.
 	PhoneNumbers param.Field[[]string] `json:"phone_numbers,required"`
+	// Any name that the business operates under that is not its legal business name
+	// (if applicable).
+	DbaBusinessName param.Field[string] `json:"dba_business_name"`
+	// Parent company name (if applicable).
+	ParentCompany param.Field[string] `json:"parent_company"`
 }
 
 func (r AccountHolderNewParamsKYBBusinessEntity) MarshalJSON() (data []byte, err error) {
