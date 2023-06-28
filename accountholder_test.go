@@ -22,7 +22,7 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 		option.WithBaseURL("http://127.0.0.1:4010"),
 	)
 	_, err := client.AccountHolders.New(context.TODO(), lithic.AccountHolderNewParamsKYB{
-		BeneficialOwnerEntities: lithic.F([]lithic.AccountHolderNewParamsKYBBeneficialOwnerEntities{{
+		BeneficialOwnerEntities: lithic.F([]lithic.AccountHolderNewParamsKYBBeneficialOwnerEntity{{
 			Address: lithic.F(shared.AddressParam{
 				Address1:   lithic.F("123 Old Forest Way"),
 				Address2:   lithic.F("string"),
@@ -65,7 +65,7 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 			ParentCompany:     lithic.F("string"),
 			PhoneNumbers:      lithic.F([]string{"+12124007676"}),
 		}}),
-		BeneficialOwnerIndividuals: lithic.F([]lithic.AccountHolderNewParamsKYBBeneficialOwnerIndividuals{{
+		BeneficialOwnerIndividuals: lithic.F([]lithic.AccountHolderNewParamsKYBBeneficialOwnerIndividual{{
 			Address: lithic.F(shared.AddressParam{
 				Address1:   lithic.F("123 Old Forest Way"),
 				Address2:   lithic.F("string"),

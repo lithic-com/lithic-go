@@ -184,7 +184,7 @@ type AccountHolder struct {
 	// `ADVANCED` workflow.
 	Status AccountHolderStatus `json:"status"`
 	// Reason for the evaluation status.
-	StatusReasons []AccountHolderStatusReasons `json:"status_reasons"`
+	StatusReasons []AccountHolderStatusReason `json:"status_reasons"`
 	JSON          accountHolderJSON
 }
 
@@ -216,20 +216,20 @@ const (
 	AccountHolderStatusPendingDocument AccountHolderStatus = "PENDING_DOCUMENT"
 )
 
-type AccountHolderStatusReasons string
+type AccountHolderStatusReason string
 
 const (
-	AccountHolderStatusReasonsAddressVerificationFailure  AccountHolderStatusReasons = "ADDRESS_VERIFICATION_FAILURE"
-	AccountHolderStatusReasonsAgeThresholdFailure         AccountHolderStatusReasons = "AGE_THRESHOLD_FAILURE"
-	AccountHolderStatusReasonsCompleteVerificationFailure AccountHolderStatusReasons = "COMPLETE_VERIFICATION_FAILURE"
-	AccountHolderStatusReasonsDobVerificationFailure      AccountHolderStatusReasons = "DOB_VERIFICATION_FAILURE"
-	AccountHolderStatusReasonsIDVerificationFailure       AccountHolderStatusReasons = "ID_VERIFICATION_FAILURE"
-	AccountHolderStatusReasonsMaxDocumentAttempts         AccountHolderStatusReasons = "MAX_DOCUMENT_ATTEMPTS"
-	AccountHolderStatusReasonsMaxResubmissionAttempts     AccountHolderStatusReasons = "MAX_RESUBMISSION_ATTEMPTS"
-	AccountHolderStatusReasonsNameVerificationFailure     AccountHolderStatusReasons = "NAME_VERIFICATION_FAILURE"
-	AccountHolderStatusReasonsOtherVerificationFailure    AccountHolderStatusReasons = "OTHER_VERIFICATION_FAILURE"
-	AccountHolderStatusReasonsRiskThresholdFailure        AccountHolderStatusReasons = "RISK_THRESHOLD_FAILURE"
-	AccountHolderStatusReasonsWatchlistAlertFailure       AccountHolderStatusReasons = "WATCHLIST_ALERT_FAILURE"
+	AccountHolderStatusReasonAddressVerificationFailure  AccountHolderStatusReason = "ADDRESS_VERIFICATION_FAILURE"
+	AccountHolderStatusReasonAgeThresholdFailure         AccountHolderStatusReason = "AGE_THRESHOLD_FAILURE"
+	AccountHolderStatusReasonCompleteVerificationFailure AccountHolderStatusReason = "COMPLETE_VERIFICATION_FAILURE"
+	AccountHolderStatusReasonDobVerificationFailure      AccountHolderStatusReason = "DOB_VERIFICATION_FAILURE"
+	AccountHolderStatusReasonIDVerificationFailure       AccountHolderStatusReason = "ID_VERIFICATION_FAILURE"
+	AccountHolderStatusReasonMaxDocumentAttempts         AccountHolderStatusReason = "MAX_DOCUMENT_ATTEMPTS"
+	AccountHolderStatusReasonMaxResubmissionAttempts     AccountHolderStatusReason = "MAX_RESUBMISSION_ATTEMPTS"
+	AccountHolderStatusReasonNameVerificationFailure     AccountHolderStatusReason = "NAME_VERIFICATION_FAILURE"
+	AccountHolderStatusReasonOtherVerificationFailure    AccountHolderStatusReason = "OTHER_VERIFICATION_FAILURE"
+	AccountHolderStatusReasonRiskThresholdFailure        AccountHolderStatusReason = "RISK_THRESHOLD_FAILURE"
+	AccountHolderStatusReasonWatchlistAlertFailure       AccountHolderStatusReason = "WATCHLIST_ALERT_FAILURE"
 )
 
 // Describes the document and the required document image uploads required to
@@ -240,8 +240,8 @@ type AccountHolderDocument struct {
 	// Globally unique identifier for the account holder.
 	AccountHolderToken string `json:"account_holder_token" format:"uuid"`
 	// Type of documentation to be submitted for verification.
-	DocumentType            AccountHolderDocumentDocumentType              `json:"document_type"`
-	RequiredDocumentUploads []AccountHolderDocumentRequiredDocumentUploads `json:"required_document_uploads"`
+	DocumentType            AccountHolderDocumentDocumentType             `json:"document_type"`
+	RequiredDocumentUploads []AccountHolderDocumentRequiredDocumentUpload `json:"required_document_uploads"`
 	JSON                    accountHolderDocumentJSON
 }
 
@@ -272,24 +272,24 @@ const (
 )
 
 // Represents a single image of the document to upload.
-type AccountHolderDocumentRequiredDocumentUploads struct {
+type AccountHolderDocumentRequiredDocumentUpload struct {
 	// Type of image to upload.
 	ImageType AccountHolderDocumentRequiredDocumentUploadsImageType `json:"image_type"`
 	// Status of document image upload.
-	Status        AccountHolderDocumentRequiredDocumentUploadsStatus          `json:"status"`
-	StatusReasons []AccountHolderDocumentRequiredDocumentUploadsStatusReasons `json:"status_reasons"`
+	Status        AccountHolderDocumentRequiredDocumentUploadsStatus         `json:"status"`
+	StatusReasons []AccountHolderDocumentRequiredDocumentUploadsStatusReason `json:"status_reasons"`
 	// URL to upload document image to.
 	//
 	// Note that the upload URLs expire after 7 days. If an upload URL expires, you can
 	// refresh the URLs by retrieving the document upload from
 	// `GET /account_holders/{account_holder_token}/documents`.
 	UploadURL string `json:"upload_url"`
-	JSON      accountHolderDocumentRequiredDocumentUploadsJSON
+	JSON      accountHolderDocumentRequiredDocumentUploadJSON
 }
 
-// accountHolderDocumentRequiredDocumentUploadsJSON contains the JSON metadata for
-// the struct [AccountHolderDocumentRequiredDocumentUploads]
-type accountHolderDocumentRequiredDocumentUploadsJSON struct {
+// accountHolderDocumentRequiredDocumentUploadJSON contains the JSON metadata for
+// the struct [AccountHolderDocumentRequiredDocumentUpload]
+type accountHolderDocumentRequiredDocumentUploadJSON struct {
 	ImageType     apijson.Field
 	Status        apijson.Field
 	StatusReasons apijson.Field
@@ -298,7 +298,7 @@ type accountHolderDocumentRequiredDocumentUploadsJSON struct {
 	ExtraFields   map[string]apijson.Field
 }
 
-func (r *AccountHolderDocumentRequiredDocumentUploads) UnmarshalJSON(data []byte) (err error) {
+func (r *AccountHolderDocumentRequiredDocumentUpload) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
@@ -321,15 +321,15 @@ const (
 )
 
 // Reasons for document image upload status.
-type AccountHolderDocumentRequiredDocumentUploadsStatusReasons string
+type AccountHolderDocumentRequiredDocumentUploadsStatusReason string
 
 const (
-	AccountHolderDocumentRequiredDocumentUploadsStatusReasonsBackImageBlurry  AccountHolderDocumentRequiredDocumentUploadsStatusReasons = "BACK_IMAGE_BLURRY"
-	AccountHolderDocumentRequiredDocumentUploadsStatusReasonsFileSizeTooLarge AccountHolderDocumentRequiredDocumentUploadsStatusReasons = "FILE_SIZE_TOO_LARGE"
-	AccountHolderDocumentRequiredDocumentUploadsStatusReasonsFrontImageBlurry AccountHolderDocumentRequiredDocumentUploadsStatusReasons = "FRONT_IMAGE_BLURRY"
-	AccountHolderDocumentRequiredDocumentUploadsStatusReasonsFrontImageGlare  AccountHolderDocumentRequiredDocumentUploadsStatusReasons = "FRONT_IMAGE_GLARE"
-	AccountHolderDocumentRequiredDocumentUploadsStatusReasonsInvalidFileType  AccountHolderDocumentRequiredDocumentUploadsStatusReasons = "INVALID_FILE_TYPE"
-	AccountHolderDocumentRequiredDocumentUploadsStatusReasonsUnknownError     AccountHolderDocumentRequiredDocumentUploadsStatusReasons = "UNKNOWN_ERROR"
+	AccountHolderDocumentRequiredDocumentUploadsStatusReasonBackImageBlurry  AccountHolderDocumentRequiredDocumentUploadsStatusReason = "BACK_IMAGE_BLURRY"
+	AccountHolderDocumentRequiredDocumentUploadsStatusReasonFileSizeTooLarge AccountHolderDocumentRequiredDocumentUploadsStatusReason = "FILE_SIZE_TOO_LARGE"
+	AccountHolderDocumentRequiredDocumentUploadsStatusReasonFrontImageBlurry AccountHolderDocumentRequiredDocumentUploadsStatusReason = "FRONT_IMAGE_BLURRY"
+	AccountHolderDocumentRequiredDocumentUploadsStatusReasonFrontImageGlare  AccountHolderDocumentRequiredDocumentUploadsStatusReason = "FRONT_IMAGE_GLARE"
+	AccountHolderDocumentRequiredDocumentUploadsStatusReasonInvalidFileType  AccountHolderDocumentRequiredDocumentUploadsStatusReason = "INVALID_FILE_TYPE"
+	AccountHolderDocumentRequiredDocumentUploadsStatusReasonUnknownError     AccountHolderDocumentRequiredDocumentUploadsStatusReason = "UNKNOWN_ERROR"
 )
 
 type AccountHolderUpdateResponse struct {
@@ -429,7 +429,7 @@ type AccountHolderNewParamsKYB struct {
 	// (Section I) for more background. If no business owner is an entity, pass in an
 	// empty list. However, either this parameter or `beneficial_owner_individuals`
 	// must be populated. on entities that should be included.
-	BeneficialOwnerEntities param.Field[[]AccountHolderNewParamsKYBBeneficialOwnerEntities] `json:"beneficial_owner_entities,required"`
+	BeneficialOwnerEntities param.Field[[]AccountHolderNewParamsKYBBeneficialOwnerEntity] `json:"beneficial_owner_entities,required"`
 	// List of all individuals with >25% ownership in the company. If no entity or
 	// individual owns >25% of the company, and the largest shareholder is an
 	// individual, please identify them in this field. See
@@ -437,7 +437,7 @@ type AccountHolderNewParamsKYB struct {
 	// (Section I) for more background on individuals that should be included. If no
 	// individual is an entity, pass in an empty list. However, either this parameter
 	// or `beneficial_owner_entities` must be populated.
-	BeneficialOwnerIndividuals param.Field[[]AccountHolderNewParamsKYBBeneficialOwnerIndividuals] `json:"beneficial_owner_individuals,required"`
+	BeneficialOwnerIndividuals param.Field[[]AccountHolderNewParamsKYBBeneficialOwnerIndividual] `json:"beneficial_owner_individuals,required"`
 	// Information for business for which the account is being opened and KYB is being
 	// run.
 	BusinessEntity param.Field[AccountHolderNewParamsKYBBusinessEntity] `json:"business_entity,required"`
@@ -476,7 +476,7 @@ func (AccountHolderNewParamsKYB) ImplementsAccountHolderNewParams() {
 
 }
 
-type AccountHolderNewParamsKYBBeneficialOwnerEntities struct {
+type AccountHolderNewParamsKYBBeneficialOwnerEntity struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
 	Address param.Field[shared.AddressParam] `json:"address,required"`
@@ -496,11 +496,11 @@ type AccountHolderNewParamsKYBBeneficialOwnerEntities struct {
 	ParentCompany param.Field[string] `json:"parent_company"`
 }
 
-func (r AccountHolderNewParamsKYBBeneficialOwnerEntities) MarshalJSON() (data []byte, err error) {
+func (r AccountHolderNewParamsKYBBeneficialOwnerEntity) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-type AccountHolderNewParamsKYBBeneficialOwnerIndividuals struct {
+type AccountHolderNewParamsKYBBeneficialOwnerIndividual struct {
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 	Address param.Field[shared.AddressParam] `json:"address,required"`
@@ -522,7 +522,7 @@ type AccountHolderNewParamsKYBBeneficialOwnerIndividuals struct {
 	PhoneNumber param.Field[string] `json:"phone_number,required"`
 }
 
-func (r AccountHolderNewParamsKYBBeneficialOwnerIndividuals) MarshalJSON() (data []byte, err error) {
+func (r AccountHolderNewParamsKYBBeneficialOwnerIndividual) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
