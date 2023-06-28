@@ -54,7 +54,7 @@ type Transfer struct {
 	// to users.
 	Descriptor string `json:"descriptor"`
 	// A list of all financial events that have modified this trasnfer.
-	Events []TransferEvents `json:"events"`
+	Events []TransferEvent `json:"events"`
 	// The updated balance of the sending financial account.
 	FromBalance []Balance `json:"from_balance"`
 	// Pending amount of the transaction in the currency's smallest unit (e.g., cents),
@@ -115,7 +115,7 @@ const (
 	TransferCategoryTransfer TransferCategory = "TRANSFER"
 )
 
-type TransferEvents struct {
+type TransferEvent struct {
 	// Globally unique identifier.
 	Token string `json:"token" format:"uuid"`
 	// Amount of the financial event that has been settled in the currency's smallest
@@ -163,11 +163,11 @@ type TransferEvents struct {
 	//   - `TRANSFER_INSUFFICIENT_FUNDS` - Declined internl transfer of funds due to
 	//     insufficient balance of the sender.
 	Type TransferEventsType `json:"type"`
-	JSON transferEventsJSON
+	JSON transferEventJSON
 }
 
-// transferEventsJSON contains the JSON metadata for the struct [TransferEvents]
-type transferEventsJSON struct {
+// transferEventJSON contains the JSON metadata for the struct [TransferEvent]
+type transferEventJSON struct {
 	Token       apijson.Field
 	Amount      apijson.Field
 	Created     apijson.Field
@@ -177,7 +177,7 @@ type transferEventsJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *TransferEvents) UnmarshalJSON(data []byte) (err error) {
+func (r *TransferEvent) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 

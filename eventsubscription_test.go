@@ -25,7 +25,7 @@ func TestEventSubscriptionNewWithOptionalParams(t *testing.T) {
 		URL:         lithic.F("https://example.com"),
 		Description: lithic.F("string"),
 		Disabled:    lithic.F(true),
-		EventTypes:  lithic.F([]lithic.EventSubscriptionNewParamsEventTypes{lithic.EventSubscriptionNewParamsEventTypesCardCreated, lithic.EventSubscriptionNewParamsEventTypesCardCreated, lithic.EventSubscriptionNewParamsEventTypesCardCreated}),
+		EventTypes:  lithic.F([]lithic.EventSubscriptionNewParamsEventType{lithic.EventSubscriptionNewParamsEventTypeCardCreated, lithic.EventSubscriptionNewParamsEventTypeCardCreated, lithic.EventSubscriptionNewParamsEventTypeCardCreated}),
 	})
 	if err != nil {
 		var apierr *lithic.Error
@@ -69,7 +69,7 @@ func TestEventSubscriptionUpdateWithOptionalParams(t *testing.T) {
 			URL:         lithic.F("https://example.com"),
 			Description: lithic.F("string"),
 			Disabled:    lithic.F(true),
-			EventTypes:  lithic.F([]lithic.EventSubscriptionUpdateParamsEventTypes{lithic.EventSubscriptionUpdateParamsEventTypesCardCreated, lithic.EventSubscriptionUpdateParamsEventTypesCardCreated, lithic.EventSubscriptionUpdateParamsEventTypesCardCreated}),
+			EventTypes:  lithic.F([]lithic.EventSubscriptionUpdateParamsEventType{lithic.EventSubscriptionUpdateParamsEventTypeCardCreated, lithic.EventSubscriptionUpdateParamsEventTypeCardCreated, lithic.EventSubscriptionUpdateParamsEventTypeCardCreated}),
 		},
 	)
 	if err != nil {

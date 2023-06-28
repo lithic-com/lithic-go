@@ -143,7 +143,7 @@ type FinancialTransaction struct {
 	// to display to users.
 	Descriptor string `json:"descriptor"`
 	// A list of all financial events that have modified this financial transaction.
-	Events []FinancialTransactionEvents `json:"events"`
+	Events []FinancialTransactionEvent `json:"events"`
 	// Pending amount of the transaction in the currency's smallest unit (e.g., cents),
 	// including any acquirer fees. The value of this field will go to zero over time
 	// once the financial transaction is settled.
@@ -205,7 +205,7 @@ const (
 	FinancialTransactionCategoryTransfer FinancialTransactionCategory = "TRANSFER"
 )
 
-type FinancialTransactionEvents struct {
+type FinancialTransactionEvent struct {
 	// Globally unique identifier.
 	Token string `json:"token" format:"uuid"`
 	// Amount of the financial event that has been settled in the currency's smallest
@@ -253,12 +253,12 @@ type FinancialTransactionEvents struct {
 	//   - `TRANSFER_INSUFFICIENT_FUNDS` - Declined internl transfer of funds due to
 	//     insufficient balance of the sender.
 	Type FinancialTransactionEventsType `json:"type"`
-	JSON financialTransactionEventsJSON
+	JSON financialTransactionEventJSON
 }
 
-// financialTransactionEventsJSON contains the JSON metadata for the struct
-// [FinancialTransactionEvents]
-type financialTransactionEventsJSON struct {
+// financialTransactionEventJSON contains the JSON metadata for the struct
+// [FinancialTransactionEvent]
+type financialTransactionEventJSON struct {
 	Token       apijson.Field
 	Amount      apijson.Field
 	Created     apijson.Field
@@ -268,7 +268,7 @@ type financialTransactionEventsJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *FinancialTransactionEvents) UnmarshalJSON(data []byte) (err error) {
+func (r *FinancialTransactionEvent) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
