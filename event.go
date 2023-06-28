@@ -138,9 +138,9 @@ type EventSubscription struct {
 	// A description of the subscription.
 	Description string `json:"description,required"`
 	// Whether the subscription is disabled.
-	Disabled   bool                          `json:"disabled,required"`
-	EventTypes []EventSubscriptionEventTypes `json:"event_types,required,nullable"`
-	URL        string                        `json:"url,required" format:"uri"`
+	Disabled   bool                         `json:"disabled,required"`
+	EventTypes []EventSubscriptionEventType `json:"event_types,required,nullable"`
+	URL        string                       `json:"url,required" format:"uri"`
 	JSON       eventSubscriptionJSON
 }
 
@@ -160,15 +160,15 @@ func (r *EventSubscription) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-type EventSubscriptionEventTypes string
+type EventSubscriptionEventType string
 
 const (
-	EventSubscriptionEventTypesCardCreated                                          EventSubscriptionEventTypes = "card.created"
-	EventSubscriptionEventTypesCardShipped                                          EventSubscriptionEventTypes = "card.shipped"
-	EventSubscriptionEventTypesCardTransactionUpdated                               EventSubscriptionEventTypes = "card_transaction.updated"
-	EventSubscriptionEventTypesDigitalWalletTokenizationApprovalRequest             EventSubscriptionEventTypes = "digital_wallet.tokenization_approval_request"
-	EventSubscriptionEventTypesDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionEventTypes = "digital_wallet.tokenization_two_factor_authentication_code"
-	EventSubscriptionEventTypesDisputeUpdated                                       EventSubscriptionEventTypes = "dispute.updated"
+	EventSubscriptionEventTypeCardCreated                                          EventSubscriptionEventType = "card.created"
+	EventSubscriptionEventTypeCardShipped                                          EventSubscriptionEventType = "card.shipped"
+	EventSubscriptionEventTypeCardTransactionUpdated                               EventSubscriptionEventType = "card_transaction.updated"
+	EventSubscriptionEventTypeDigitalWalletTokenizationApprovalRequest             EventSubscriptionEventType = "digital_wallet.tokenization_approval_request"
+	EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionEventType = "digital_wallet.tokenization_two_factor_authentication_code"
+	EventSubscriptionEventTypeDisputeUpdated                                       EventSubscriptionEventType = "dispute.updated"
 )
 
 type EventListParams struct {
@@ -182,7 +182,7 @@ type EventListParams struct {
 	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string] `query:"ending_before"`
 	// Event types to filter events by.
-	EventTypes param.Field[[]EventListParamsEventTypes] `query:"event_types"`
+	EventTypes param.Field[[]EventListParamsEventType] `query:"event_types"`
 	// Page size (for pagination).
 	PageSize param.Field[int64] `query:"page_size"`
 	// A cursor representing an item's token after which a page of results should
@@ -198,13 +198,13 @@ func (r EventListParams) URLQuery() (v url.Values) {
 	})
 }
 
-type EventListParamsEventTypes string
+type EventListParamsEventType string
 
 const (
-	EventListParamsEventTypesCardCreated                                          EventListParamsEventTypes = "card.created"
-	EventListParamsEventTypesCardShipped                                          EventListParamsEventTypes = "card.shipped"
-	EventListParamsEventTypesCardTransactionUpdated                               EventListParamsEventTypes = "card_transaction.updated"
-	EventListParamsEventTypesDigitalWalletTokenizationApprovalRequest             EventListParamsEventTypes = "digital_wallet.tokenization_approval_request"
-	EventListParamsEventTypesDigitalWalletTokenizationTwoFactorAuthenticationCode EventListParamsEventTypes = "digital_wallet.tokenization_two_factor_authentication_code"
-	EventListParamsEventTypesDisputeUpdated                                       EventListParamsEventTypes = "dispute.updated"
+	EventListParamsEventTypeCardCreated                                          EventListParamsEventType = "card.created"
+	EventListParamsEventTypeCardShipped                                          EventListParamsEventType = "card.shipped"
+	EventListParamsEventTypeCardTransactionUpdated                               EventListParamsEventType = "card_transaction.updated"
+	EventListParamsEventTypeDigitalWalletTokenizationApprovalRequest             EventListParamsEventType = "digital_wallet.tokenization_approval_request"
+	EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventListParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
+	EventListParamsEventTypeDisputeUpdated                                       EventListParamsEventType = "dispute.updated"
 )

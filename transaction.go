@@ -167,7 +167,7 @@ type Transaction struct {
 	// Date and time when the transaction first occurred. UTC time zone.
 	Created time.Time `json:"created,required" format:"date-time"`
 	// A list of all events that have modified this transaction.
-	Events   []TransactionEvents `json:"events,required"`
+	Events   []TransactionEvent  `json:"events,required"`
 	Merchant TransactionMerchant `json:"merchant,required"`
 	// Analogous to the "amount" property, but will represent the amount in the
 	// transaction's local currency (smallest unit), including any acquirer fees.
@@ -229,7 +229,7 @@ func (r *Transaction) UnmarshalJSON(data []byte) (err error) {
 
 // A single card transaction may include multiple events that affect the
 // transaction state and lifecycle.
-type TransactionEvents struct {
+type TransactionEvent struct {
 	// Globally unique identifier.
 	Token string `json:"token,required" format:"uuid"`
 	// Amount of the transaction event (in cents), including any acquirer fees.
@@ -290,12 +290,12 @@ type TransactionEvents struct {
 	//   - `RETURN_REVERSAL` - A refund has been reversed (e.g., when a merchant reverses
 	//     an incorrect refund).
 	Type TransactionEventsType `json:"type,required"`
-	JSON transactionEventsJSON
+	JSON transactionEventJSON
 }
 
-// transactionEventsJSON contains the JSON metadata for the struct
-// [TransactionEvents]
-type transactionEventsJSON struct {
+// transactionEventJSON contains the JSON metadata for the struct
+// [TransactionEvent]
+type transactionEventJSON struct {
 	Token       apijson.Field
 	Amount      apijson.Field
 	Created     apijson.Field
@@ -305,7 +305,7 @@ type transactionEventsJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *TransactionEvents) UnmarshalJSON(data []byte) (err error) {
+func (r *TransactionEvent) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 

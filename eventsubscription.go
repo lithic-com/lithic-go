@@ -154,22 +154,22 @@ type EventSubscriptionNewParams struct {
 	Disabled param.Field[bool] `json:"disabled"`
 	// Indicates types of events that will be sent to this subscription. If left blank,
 	// all types will be sent.
-	EventTypes param.Field[[]EventSubscriptionNewParamsEventTypes] `json:"event_types"`
+	EventTypes param.Field[[]EventSubscriptionNewParamsEventType] `json:"event_types"`
 }
 
 func (r EventSubscriptionNewParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-type EventSubscriptionNewParamsEventTypes string
+type EventSubscriptionNewParamsEventType string
 
 const (
-	EventSubscriptionNewParamsEventTypesCardCreated                                          EventSubscriptionNewParamsEventTypes = "card.created"
-	EventSubscriptionNewParamsEventTypesCardShipped                                          EventSubscriptionNewParamsEventTypes = "card.shipped"
-	EventSubscriptionNewParamsEventTypesCardTransactionUpdated                               EventSubscriptionNewParamsEventTypes = "card_transaction.updated"
-	EventSubscriptionNewParamsEventTypesDigitalWalletTokenizationApprovalRequest             EventSubscriptionNewParamsEventTypes = "digital_wallet.tokenization_approval_request"
-	EventSubscriptionNewParamsEventTypesDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionNewParamsEventTypes = "digital_wallet.tokenization_two_factor_authentication_code"
-	EventSubscriptionNewParamsEventTypesDisputeUpdated                                       EventSubscriptionNewParamsEventTypes = "dispute.updated"
+	EventSubscriptionNewParamsEventTypeCardCreated                                          EventSubscriptionNewParamsEventType = "card.created"
+	EventSubscriptionNewParamsEventTypeCardShipped                                          EventSubscriptionNewParamsEventType = "card.shipped"
+	EventSubscriptionNewParamsEventTypeCardTransactionUpdated                               EventSubscriptionNewParamsEventType = "card_transaction.updated"
+	EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationApprovalRequest             EventSubscriptionNewParamsEventType = "digital_wallet.tokenization_approval_request"
+	EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionNewParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
+	EventSubscriptionNewParamsEventTypeDisputeUpdated                                       EventSubscriptionNewParamsEventType = "dispute.updated"
 )
 
 type EventSubscriptionUpdateParams struct {
@@ -181,22 +181,22 @@ type EventSubscriptionUpdateParams struct {
 	Disabled param.Field[bool] `json:"disabled"`
 	// Indicates types of events that will be sent to this subscription. If left blank,
 	// all types will be sent.
-	EventTypes param.Field[[]EventSubscriptionUpdateParamsEventTypes] `json:"event_types"`
+	EventTypes param.Field[[]EventSubscriptionUpdateParamsEventType] `json:"event_types"`
 }
 
 func (r EventSubscriptionUpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-type EventSubscriptionUpdateParamsEventTypes string
+type EventSubscriptionUpdateParamsEventType string
 
 const (
-	EventSubscriptionUpdateParamsEventTypesCardCreated                                          EventSubscriptionUpdateParamsEventTypes = "card.created"
-	EventSubscriptionUpdateParamsEventTypesCardShipped                                          EventSubscriptionUpdateParamsEventTypes = "card.shipped"
-	EventSubscriptionUpdateParamsEventTypesCardTransactionUpdated                               EventSubscriptionUpdateParamsEventTypes = "card_transaction.updated"
-	EventSubscriptionUpdateParamsEventTypesDigitalWalletTokenizationApprovalRequest             EventSubscriptionUpdateParamsEventTypes = "digital_wallet.tokenization_approval_request"
-	EventSubscriptionUpdateParamsEventTypesDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionUpdateParamsEventTypes = "digital_wallet.tokenization_two_factor_authentication_code"
-	EventSubscriptionUpdateParamsEventTypesDisputeUpdated                                       EventSubscriptionUpdateParamsEventTypes = "dispute.updated"
+	EventSubscriptionUpdateParamsEventTypeCardCreated                                          EventSubscriptionUpdateParamsEventType = "card.created"
+	EventSubscriptionUpdateParamsEventTypeCardShipped                                          EventSubscriptionUpdateParamsEventType = "card.shipped"
+	EventSubscriptionUpdateParamsEventTypeCardTransactionUpdated                               EventSubscriptionUpdateParamsEventType = "card_transaction.updated"
+	EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationApprovalRequest             EventSubscriptionUpdateParamsEventType = "digital_wallet.tokenization_approval_request"
+	EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionUpdateParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
+	EventSubscriptionUpdateParamsEventTypeDisputeUpdated                                       EventSubscriptionUpdateParamsEventType = "dispute.updated"
 )
 
 type EventSubscriptionListParams struct {
