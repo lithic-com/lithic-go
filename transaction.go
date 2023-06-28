@@ -145,6 +145,8 @@ func (r *TransactionService) SimulateVoid(ctx context.Context, body TransactionS
 }
 
 type Transaction struct {
+	// Globally unique identifier.
+	Token string `json:"token,required" format:"uuid"`
 	// A fixed-width 23-digit numeric identifier for the Transaction that may be set if
 	// the transaction originated from the Mastercard network. This number may be used
 	// for dispute tracking.
@@ -161,8 +163,7 @@ type Transaction struct {
 	// transaction with networks.
 	AuthorizationCode string `json:"authorization_code,required"`
 	// Token for the card used in this transaction.
-	CardToken                string                              `json:"card_token,required" format:"uuid"`
-	CardholderAuthentication TransactionCardholderAuthentication `json:"cardholder_authentication,nullable"`
+	CardToken string `json:"card_token,required" format:"uuid"`
 	// Date and time when the transaction first occurred. UTC time zone.
 	Created time.Time `json:"created,required" format:"date-time"`
 	// A list of all events that have modified this transaction.
@@ -194,20 +195,19 @@ type Transaction struct {
 	//   - `PENDING` - Authorization is pending completion from the merchant.
 	//   - `SETTLED` - The transaction is complete.
 	//   - `VOIDED` - The merchant has voided the previously pending authorization.
-	Status TransactionStatus `json:"status,required"`
-	// Globally unique identifier.
-	Token string `json:"token,required" format:"uuid"`
-	JSON  transactionJSON
+	Status                   TransactionStatus                   `json:"status,required"`
+	CardholderAuthentication TransactionCardholderAuthentication `json:"cardholder_authentication,nullable"`
+	JSON                     transactionJSON
 }
 
 // transactionJSON contains the JSON metadata for the struct [Transaction]
 type transactionJSON struct {
+	Token                       apijson.Field
 	AcquirerReferenceNumber     apijson.Field
 	Amount                      apijson.Field
 	AuthorizationAmount         apijson.Field
 	AuthorizationCode           apijson.Field
 	CardToken                   apijson.Field
-	CardholderAuthentication    apijson.Field
 	Created                     apijson.Field
 	Events                      apijson.Field
 	Merchant                    apijson.Field
@@ -218,7 +218,7 @@ type transactionJSON struct {
 	Result                      apijson.Field
 	SettledAmount               apijson.Field
 	Status                      apijson.Field
-	Token                       apijson.Field
+	CardholderAuthentication    apijson.Field
 	raw                         string
 	ExtraFields                 map[string]apijson.Field
 }
@@ -226,6 +226,278 @@ type transactionJSON struct {
 func (r *Transaction) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
+
+// A single card transaction may include multiple events that affect the
+// transaction state and lifecycle.
+type TransactionEvents struct {
+	// Globally unique identifier.
+	Token string `json:"token,required" format:"uuid"`
+	// Amount of the transaction event (in cents), including any acquirer fees.
+	Amount int64 `json:"amount,required"`
+	// RFC 3339 date and time this event entered the system. UTC time zone.
+	Created time.Time `json:"created,required" format:"date-time"`
+	// `APPROVED` or decline reason.
+	//
+	// Result types:
+	//
+	//   - `ACCOUNT_STATE_TRANSACTION_FAIL` - Contact
+	//     [support@lithic.com](mailto:support@lithic.com).
+	//   - `APPROVED` - Transaction is approved.
+	//   - `BANK_CONNECTION_ERROR` - Please reconnect a funding source.
+	//   - `BANK_NOT_VERIFIED` - Please confirm the funding source.
+	//   - `CARD_CLOSED` - Card state was closed at the time of authorization.
+	//   - `CARD_PAUSED` - Card state was paused at the time of authorization.
+	//   - `FRAUD_ADVICE` - Transaction declined due to risk.
+	//   - `GLOBAL_TRANSACTION_LIMIT` - Platform spend limit exceeded, contact
+	//     [support@lithic.com](mailto:support@lithic.com).
+	//   - `GLOBAL_WEEKLY_LIMIT` - Platform spend limit exceeded, contact
+	//     [support@lithic.com](mailto:support@lithic.com).
+	//   - `GLOBAL_MONTHLY_LIMIT` - Platform spend limit exceeded, contact
+	//     [support@lithic.com](mailto:support@lithic.com).
+	//   - `INACTIVE_ACCOUNT` - Account is inactive. Contact
+	//     [support@lithic.com](mailto:support@lithic.com).
+	//   - `INCORRECT_PIN` - PIN verification failed.
+	//   - `INVALID_CARD_DETAILS` - Incorrect CVV or expiry date.
+	//   - `INSUFFICIENT_FUNDS` - Please ensure the funding source is connected and up to
+	//     date.
+	//   - `MERCHANT_BLACKLIST` - This merchant is disallowed on the platform.
+	//   - `SINGLE_USE_RECHARGED` - Single use card attempted multiple times.
+	//   - `SWITCH_INOPERATIVE_ADVICE` - Network error, re-attempt the transaction.
+	//   - `UNAUTHORIZED_MERCHANT` - Merchant locked card attempted at different
+	//     merchant.
+	//   - `UNKNOWN_HOST_TIMEOUT` - Network error, re-attempt the transaction.
+	//   - `USER_TRANSACTION_LIMIT` - User-set spend limit exceeded.
+	Result TransactionEventsResult `json:"result,required"`
+	// Event types:
+	//
+	//   - `AUTHORIZATION` - Authorize a transaction.
+	//   - `AUTHORIZATION_ADVICE` - Advice on a transaction.
+	//   - `AUTHORIZATION_EXPIRY` - Authorization has expired and reversed by Lithic.
+	//   - `AUTHORIZATION_REVERSAL` - Authorization was reversed by the merchant.
+	//   - `BALANCE_INQUIRY` - A balance inquiry (typically a $0 authorization) has
+	//     occurred on a card.
+	//   - `CLEARING` - Transaction is settled.
+	//   - `CORRECTION_DEBIT` - Manual transaction correction (Debit).
+	//   - `CORRECTION_CREDIT` - Manual transaction correction (Credit).
+	//   - `CREDIT_AUTHORIZATION` - A refund or credit authorization from a merchant.
+	//   - `CREDIT_AUTHORIZATION_ADVICE` - A credit authorization was approved on your
+	//     behalf by the network.
+	//   - `FINANCIAL_AUTHORIZATION` - A request from a merchant to debit funds without
+	//     additional clearing.
+	//   - `FINANCIAL_CREDIT_AUTHORIZATION` - A request from a merchant to refund or
+	//     credit funds without additional clearing.
+	//   - `RETURN` - A refund has been processed on the transaction.
+	//   - `RETURN_REVERSAL` - A refund has been reversed (e.g., when a merchant reverses
+	//     an incorrect refund).
+	Type TransactionEventsType `json:"type,required"`
+	JSON transactionEventsJSON
+}
+
+// transactionEventsJSON contains the JSON metadata for the struct
+// [TransactionEvents]
+type transactionEventsJSON struct {
+	Token       apijson.Field
+	Amount      apijson.Field
+	Created     apijson.Field
+	Result      apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *TransactionEvents) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+// `APPROVED` or decline reason.
+//
+// Result types:
+//
+//   - `ACCOUNT_STATE_TRANSACTION_FAIL` - Contact
+//     [support@lithic.com](mailto:support@lithic.com).
+//   - `APPROVED` - Transaction is approved.
+//   - `BANK_CONNECTION_ERROR` - Please reconnect a funding source.
+//   - `BANK_NOT_VERIFIED` - Please confirm the funding source.
+//   - `CARD_CLOSED` - Card state was closed at the time of authorization.
+//   - `CARD_PAUSED` - Card state was paused at the time of authorization.
+//   - `FRAUD_ADVICE` - Transaction declined due to risk.
+//   - `GLOBAL_TRANSACTION_LIMIT` - Platform spend limit exceeded, contact
+//     [support@lithic.com](mailto:support@lithic.com).
+//   - `GLOBAL_WEEKLY_LIMIT` - Platform spend limit exceeded, contact
+//     [support@lithic.com](mailto:support@lithic.com).
+//   - `GLOBAL_MONTHLY_LIMIT` - Platform spend limit exceeded, contact
+//     [support@lithic.com](mailto:support@lithic.com).
+//   - `INACTIVE_ACCOUNT` - Account is inactive. Contact
+//     [support@lithic.com](mailto:support@lithic.com).
+//   - `INCORRECT_PIN` - PIN verification failed.
+//   - `INVALID_CARD_DETAILS` - Incorrect CVV or expiry date.
+//   - `INSUFFICIENT_FUNDS` - Please ensure the funding source is connected and up to
+//     date.
+//   - `MERCHANT_BLACKLIST` - This merchant is disallowed on the platform.
+//   - `SINGLE_USE_RECHARGED` - Single use card attempted multiple times.
+//   - `SWITCH_INOPERATIVE_ADVICE` - Network error, re-attempt the transaction.
+//   - `UNAUTHORIZED_MERCHANT` - Merchant locked card attempted at different
+//     merchant.
+//   - `UNKNOWN_HOST_TIMEOUT` - Network error, re-attempt the transaction.
+//   - `USER_TRANSACTION_LIMIT` - User-set spend limit exceeded.
+type TransactionEventsResult string
+
+const (
+	TransactionEventsResultAccountStateTransaction TransactionEventsResult = "ACCOUNT_STATE_TRANSACTION"
+	TransactionEventsResultApproved                TransactionEventsResult = "APPROVED"
+	TransactionEventsResultBankConnectionError     TransactionEventsResult = "BANK_CONNECTION_ERROR"
+	TransactionEventsResultBankNotVerified         TransactionEventsResult = "BANK_NOT_VERIFIED"
+	TransactionEventsResultCardClosed              TransactionEventsResult = "CARD_CLOSED"
+	TransactionEventsResultCardPaused              TransactionEventsResult = "CARD_PAUSED"
+	TransactionEventsResultFraudAdvice             TransactionEventsResult = "FRAUD_ADVICE"
+	TransactionEventsResultGlobalTransactionLimit  TransactionEventsResult = "GLOBAL_TRANSACTION_LIMIT"
+	TransactionEventsResultGlobalWeeklyLimit       TransactionEventsResult = "GLOBAL_WEEKLY_LIMIT"
+	TransactionEventsResultGlobalMonthlyLimit      TransactionEventsResult = "GLOBAL_MONTHLY_LIMIT"
+	TransactionEventsResultInactiveAccount         TransactionEventsResult = "INACTIVE_ACCOUNT"
+	TransactionEventsResultIncorrectPin            TransactionEventsResult = "INCORRECT_PIN"
+	TransactionEventsResultInvalidCardDetails      TransactionEventsResult = "INVALID_CARD_DETAILS"
+	TransactionEventsResultInsufficientFunds       TransactionEventsResult = "INSUFFICIENT_FUNDS"
+	TransactionEventsResultMerchantBlacklist       TransactionEventsResult = "MERCHANT_BLACKLIST"
+	TransactionEventsResultSingleUseRecharged      TransactionEventsResult = "SINGLE_USE_RECHARGED"
+	TransactionEventsResultSwitchInoperativeAdvice TransactionEventsResult = "SWITCH_INOPERATIVE_ADVICE"
+	TransactionEventsResultUnauthorizedMerchant    TransactionEventsResult = "UNAUTHORIZED_MERCHANT"
+	TransactionEventsResultUnknownHostTimeout      TransactionEventsResult = "UNKNOWN_HOST_TIMEOUT"
+	TransactionEventsResultUserTransactionLimit    TransactionEventsResult = "USER_TRANSACTION_LIMIT"
+)
+
+// Event types:
+//
+//   - `AUTHORIZATION` - Authorize a transaction.
+//   - `AUTHORIZATION_ADVICE` - Advice on a transaction.
+//   - `AUTHORIZATION_EXPIRY` - Authorization has expired and reversed by Lithic.
+//   - `AUTHORIZATION_REVERSAL` - Authorization was reversed by the merchant.
+//   - `BALANCE_INQUIRY` - A balance inquiry (typically a $0 authorization) has
+//     occurred on a card.
+//   - `CLEARING` - Transaction is settled.
+//   - `CORRECTION_DEBIT` - Manual transaction correction (Debit).
+//   - `CORRECTION_CREDIT` - Manual transaction correction (Credit).
+//   - `CREDIT_AUTHORIZATION` - A refund or credit authorization from a merchant.
+//   - `CREDIT_AUTHORIZATION_ADVICE` - A credit authorization was approved on your
+//     behalf by the network.
+//   - `FINANCIAL_AUTHORIZATION` - A request from a merchant to debit funds without
+//     additional clearing.
+//   - `FINANCIAL_CREDIT_AUTHORIZATION` - A request from a merchant to refund or
+//     credit funds without additional clearing.
+//   - `RETURN` - A refund has been processed on the transaction.
+//   - `RETURN_REVERSAL` - A refund has been reversed (e.g., when a merchant reverses
+//     an incorrect refund).
+type TransactionEventsType string
+
+const (
+	TransactionEventsTypeAuthorization                TransactionEventsType = "AUTHORIZATION"
+	TransactionEventsTypeAuthorizationAdvice          TransactionEventsType = "AUTHORIZATION_ADVICE"
+	TransactionEventsTypeAuthorizationExpiry          TransactionEventsType = "AUTHORIZATION_EXPIRY"
+	TransactionEventsTypeAuthorizationReversal        TransactionEventsType = "AUTHORIZATION_REVERSAL"
+	TransactionEventsTypeBalanceInquiry               TransactionEventsType = "BALANCE_INQUIRY"
+	TransactionEventsTypeClearing                     TransactionEventsType = "CLEARING"
+	TransactionEventsTypeCorrectionDebit              TransactionEventsType = "CORRECTION_DEBIT"
+	TransactionEventsTypeCorrectionCredit             TransactionEventsType = "CORRECTION_CREDIT"
+	TransactionEventsTypeCreditAuthorization          TransactionEventsType = "CREDIT_AUTHORIZATION"
+	TransactionEventsTypeCreditAuthorizationAdvice    TransactionEventsType = "CREDIT_AUTHORIZATION_ADVICE"
+	TransactionEventsTypeFinancialAuthorization       TransactionEventsType = "FINANCIAL_AUTHORIZATION"
+	TransactionEventsTypeFinancialCreditAuthorization TransactionEventsType = "FINANCIAL_CREDIT_AUTHORIZATION"
+	TransactionEventsTypeReturn                       TransactionEventsType = "RETURN"
+	TransactionEventsTypeReturnReversal               TransactionEventsType = "RETURN_REVERSAL"
+	TransactionEventsTypeVoid                         TransactionEventsType = "VOID"
+)
+
+type TransactionMerchant struct {
+	// Unique identifier to identify the payment card acceptor.
+	AcceptorID string `json:"acceptor_id"`
+	// City of card acceptor.
+	City string `json:"city"`
+	// Uppercase country of card acceptor (see ISO 8583 specs).
+	Country string `json:"country"`
+	// Short description of card acceptor.
+	Descriptor string `json:"descriptor"`
+	// Merchant category code (MCC). A four-digit number listed in ISO 18245. An MCC is
+	// used to classify a business by the types of goods or services it provides.
+	Mcc string `json:"mcc"`
+	// Geographic state of card acceptor (see ISO 8583 specs).
+	State string `json:"state"`
+	JSON  transactionMerchantJSON
+}
+
+// transactionMerchantJSON contains the JSON metadata for the struct
+// [TransactionMerchant]
+type transactionMerchantJSON struct {
+	AcceptorID  apijson.Field
+	City        apijson.Field
+	Country     apijson.Field
+	Descriptor  apijson.Field
+	Mcc         apijson.Field
+	State       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *TransactionMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+// Card network of the authorization. Can be `INTERLINK`, `MAESTRO`, `MASTERCARD`,
+// `VISA`, or `UNKNOWN`. Value is `UNKNOWN` when Lithic cannot determine the
+// network code from the upstream provider.
+type TransactionNetwork string
+
+const (
+	TransactionNetworkInterlink  TransactionNetwork = "INTERLINK"
+	TransactionNetworkMaestro    TransactionNetwork = "MAESTRO"
+	TransactionNetworkMastercard TransactionNetwork = "MASTERCARD"
+	TransactionNetworkVisa       TransactionNetwork = "VISA"
+	TransactionNetworkUnknown    TransactionNetwork = "UNKNOWN"
+)
+
+// `APPROVED` or decline reason. See Event result types
+type TransactionResult string
+
+const (
+	TransactionResultAccountStateTransaction TransactionResult = "ACCOUNT_STATE_TRANSACTION"
+	TransactionResultApproved                TransactionResult = "APPROVED"
+	TransactionResultBankConnectionError     TransactionResult = "BANK_CONNECTION_ERROR"
+	TransactionResultBankNotVerified         TransactionResult = "BANK_NOT_VERIFIED"
+	TransactionResultCardClosed              TransactionResult = "CARD_CLOSED"
+	TransactionResultCardPaused              TransactionResult = "CARD_PAUSED"
+	TransactionResultFraudAdvice             TransactionResult = "FRAUD_ADVICE"
+	TransactionResultGlobalTransactionLimit  TransactionResult = "GLOBAL_TRANSACTION_LIMIT"
+	TransactionResultGlobalWeeklyLimit       TransactionResult = "GLOBAL_WEEKLY_LIMIT"
+	TransactionResultGlobalMonthlyLimit      TransactionResult = "GLOBAL_MONTHLY_LIMIT"
+	TransactionResultInactiveAccount         TransactionResult = "INACTIVE_ACCOUNT"
+	TransactionResultIncorrectPin            TransactionResult = "INCORRECT_PIN"
+	TransactionResultInvalidCardDetails      TransactionResult = "INVALID_CARD_DETAILS"
+	TransactionResultInsufficientFunds       TransactionResult = "INSUFFICIENT_FUNDS"
+	TransactionResultMerchantBlacklist       TransactionResult = "MERCHANT_BLACKLIST"
+	TransactionResultSingleUseRecharged      TransactionResult = "SINGLE_USE_RECHARGED"
+	TransactionResultSwitchInoperativeAdvice TransactionResult = "SWITCH_INOPERATIVE_ADVICE"
+	TransactionResultUnauthorizedMerchant    TransactionResult = "UNAUTHORIZED_MERCHANT"
+	TransactionResultUnknownHostTimeout      TransactionResult = "UNKNOWN_HOST_TIMEOUT"
+	TransactionResultUserTransactionLimit    TransactionResult = "USER_TRANSACTION_LIMIT"
+)
+
+// Status types:
+//
+//   - `DECLINED` - The transaction was declined.
+//   - `EXPIRED` - Lithic reversed the authorization as it has passed its expiration
+//     time.
+//   - `PENDING` - Authorization is pending completion from the merchant.
+//   - `SETTLED` - The transaction is complete.
+//   - `VOIDED` - The merchant has voided the previously pending authorization.
+type TransactionStatus string
+
+const (
+	TransactionStatusBounced  TransactionStatus = "BOUNCED"
+	TransactionStatusDeclined TransactionStatus = "DECLINED"
+	TransactionStatusExpired  TransactionStatus = "EXPIRED"
+	TransactionStatusPending  TransactionStatus = "PENDING"
+	TransactionStatusSettled  TransactionStatus = "SETTLED"
+	TransactionStatusSettling TransactionStatus = "SETTLING"
+	TransactionStatusVoided   TransactionStatus = "VOIDED"
+)
 
 type TransactionCardholderAuthentication struct {
 	// 3-D Secure Protocol version. Possible values:
@@ -440,292 +712,20 @@ const (
 	TransactionCardholderAuthenticationVerificationResultSuccess      TransactionCardholderAuthenticationVerificationResult = "SUCCESS"
 )
 
-// A single card transaction may include multiple events that affect the
-// transaction state and lifecycle.
-type TransactionEvents struct {
-	// Amount of the transaction event (in cents), including any acquirer fees.
-	Amount int64 `json:"amount,required"`
-	// RFC 3339 date and time this event entered the system. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// `APPROVED` or decline reason.
-	//
-	// Result types:
-	//
-	//   - `ACCOUNT_STATE_TRANSACTION_FAIL` - Contact
-	//     [support@lithic.com](mailto:support@lithic.com).
-	//   - `APPROVED` - Transaction is approved.
-	//   - `BANK_CONNECTION_ERROR` - Please reconnect a funding source.
-	//   - `BANK_NOT_VERIFIED` - Please confirm the funding source.
-	//   - `CARD_CLOSED` - Card state was closed at the time of authorization.
-	//   - `CARD_PAUSED` - Card state was paused at the time of authorization.
-	//   - `FRAUD_ADVICE` - Transaction declined due to risk.
-	//   - `GLOBAL_TRANSACTION_LIMIT` - Platform spend limit exceeded, contact
-	//     [support@lithic.com](mailto:support@lithic.com).
-	//   - `GLOBAL_WEEKLY_LIMIT` - Platform spend limit exceeded, contact
-	//     [support@lithic.com](mailto:support@lithic.com).
-	//   - `GLOBAL_MONTHLY_LIMIT` - Platform spend limit exceeded, contact
-	//     [support@lithic.com](mailto:support@lithic.com).
-	//   - `INACTIVE_ACCOUNT` - Account is inactive. Contact
-	//     [support@lithic.com](mailto:support@lithic.com).
-	//   - `INCORRECT_PIN` - PIN verification failed.
-	//   - `INVALID_CARD_DETAILS` - Incorrect CVV or expiry date.
-	//   - `INSUFFICIENT_FUNDS` - Please ensure the funding source is connected and up to
-	//     date.
-	//   - `MERCHANT_BLACKLIST` - This merchant is disallowed on the platform.
-	//   - `SINGLE_USE_RECHARGED` - Single use card attempted multiple times.
-	//   - `SWITCH_INOPERATIVE_ADVICE` - Network error, re-attempt the transaction.
-	//   - `UNAUTHORIZED_MERCHANT` - Merchant locked card attempted at different
-	//     merchant.
-	//   - `UNKNOWN_HOST_TIMEOUT` - Network error, re-attempt the transaction.
-	//   - `USER_TRANSACTION_LIMIT` - User-set spend limit exceeded.
-	Result TransactionEventsResult `json:"result,required"`
-	// Globally unique identifier.
-	Token string `json:"token,required" format:"uuid"`
-	// Event types:
-	//
-	//   - `AUTHORIZATION` - Authorize a transaction.
-	//   - `AUTHORIZATION_ADVICE` - Advice on a transaction.
-	//   - `AUTHORIZATION_EXPIRY` - Authorization has expired and reversed by Lithic.
-	//   - `AUTHORIZATION_REVERSAL` - Authorization was reversed by the merchant.
-	//   - `BALANCE_INQUIRY` - A balance inquiry (typically a $0 authorization) has
-	//     occurred on a card.
-	//   - `CLEARING` - Transaction is settled.
-	//   - `CORRECTION_DEBIT` - Manual transaction correction (Debit).
-	//   - `CORRECTION_CREDIT` - Manual transaction correction (Credit).
-	//   - `CREDIT_AUTHORIZATION` - A refund or credit authorization from a merchant.
-	//   - `CREDIT_AUTHORIZATION_ADVICE` - A credit authorization was approved on your
-	//     behalf by the network.
-	//   - `FINANCIAL_AUTHORIZATION` - A request from a merchant to debit funds without
-	//     additional clearing.
-	//   - `FINANCIAL_CREDIT_AUTHORIZATION` - A request from a merchant to refund or
-	//     credit funds without additional clearing.
-	//   - `RETURN` - A refund has been processed on the transaction.
-	//   - `RETURN_REVERSAL` - A refund has been reversed (e.g., when a merchant reverses
-	//     an incorrect refund).
-	Type TransactionEventsType `json:"type,required"`
-	JSON transactionEventsJSON
-}
-
-// transactionEventsJSON contains the JSON metadata for the struct
-// [TransactionEvents]
-type transactionEventsJSON struct {
-	Amount      apijson.Field
-	Created     apijson.Field
-	Result      apijson.Field
-	Token       apijson.Field
-	Type        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *TransactionEvents) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-// `APPROVED` or decline reason.
-//
-// Result types:
-//
-//   - `ACCOUNT_STATE_TRANSACTION_FAIL` - Contact
-//     [support@lithic.com](mailto:support@lithic.com).
-//   - `APPROVED` - Transaction is approved.
-//   - `BANK_CONNECTION_ERROR` - Please reconnect a funding source.
-//   - `BANK_NOT_VERIFIED` - Please confirm the funding source.
-//   - `CARD_CLOSED` - Card state was closed at the time of authorization.
-//   - `CARD_PAUSED` - Card state was paused at the time of authorization.
-//   - `FRAUD_ADVICE` - Transaction declined due to risk.
-//   - `GLOBAL_TRANSACTION_LIMIT` - Platform spend limit exceeded, contact
-//     [support@lithic.com](mailto:support@lithic.com).
-//   - `GLOBAL_WEEKLY_LIMIT` - Platform spend limit exceeded, contact
-//     [support@lithic.com](mailto:support@lithic.com).
-//   - `GLOBAL_MONTHLY_LIMIT` - Platform spend limit exceeded, contact
-//     [support@lithic.com](mailto:support@lithic.com).
-//   - `INACTIVE_ACCOUNT` - Account is inactive. Contact
-//     [support@lithic.com](mailto:support@lithic.com).
-//   - `INCORRECT_PIN` - PIN verification failed.
-//   - `INVALID_CARD_DETAILS` - Incorrect CVV or expiry date.
-//   - `INSUFFICIENT_FUNDS` - Please ensure the funding source is connected and up to
-//     date.
-//   - `MERCHANT_BLACKLIST` - This merchant is disallowed on the platform.
-//   - `SINGLE_USE_RECHARGED` - Single use card attempted multiple times.
-//   - `SWITCH_INOPERATIVE_ADVICE` - Network error, re-attempt the transaction.
-//   - `UNAUTHORIZED_MERCHANT` - Merchant locked card attempted at different
-//     merchant.
-//   - `UNKNOWN_HOST_TIMEOUT` - Network error, re-attempt the transaction.
-//   - `USER_TRANSACTION_LIMIT` - User-set spend limit exceeded.
-type TransactionEventsResult string
-
-const (
-	TransactionEventsResultAccountStateTransaction TransactionEventsResult = "ACCOUNT_STATE_TRANSACTION"
-	TransactionEventsResultApproved                TransactionEventsResult = "APPROVED"
-	TransactionEventsResultBankConnectionError     TransactionEventsResult = "BANK_CONNECTION_ERROR"
-	TransactionEventsResultBankNotVerified         TransactionEventsResult = "BANK_NOT_VERIFIED"
-	TransactionEventsResultCardClosed              TransactionEventsResult = "CARD_CLOSED"
-	TransactionEventsResultCardPaused              TransactionEventsResult = "CARD_PAUSED"
-	TransactionEventsResultFraudAdvice             TransactionEventsResult = "FRAUD_ADVICE"
-	TransactionEventsResultGlobalTransactionLimit  TransactionEventsResult = "GLOBAL_TRANSACTION_LIMIT"
-	TransactionEventsResultGlobalWeeklyLimit       TransactionEventsResult = "GLOBAL_WEEKLY_LIMIT"
-	TransactionEventsResultGlobalMonthlyLimit      TransactionEventsResult = "GLOBAL_MONTHLY_LIMIT"
-	TransactionEventsResultInactiveAccount         TransactionEventsResult = "INACTIVE_ACCOUNT"
-	TransactionEventsResultIncorrectPin            TransactionEventsResult = "INCORRECT_PIN"
-	TransactionEventsResultInvalidCardDetails      TransactionEventsResult = "INVALID_CARD_DETAILS"
-	TransactionEventsResultInsufficientFunds       TransactionEventsResult = "INSUFFICIENT_FUNDS"
-	TransactionEventsResultMerchantBlacklist       TransactionEventsResult = "MERCHANT_BLACKLIST"
-	TransactionEventsResultSingleUseRecharged      TransactionEventsResult = "SINGLE_USE_RECHARGED"
-	TransactionEventsResultSwitchInoperativeAdvice TransactionEventsResult = "SWITCH_INOPERATIVE_ADVICE"
-	TransactionEventsResultUnauthorizedMerchant    TransactionEventsResult = "UNAUTHORIZED_MERCHANT"
-	TransactionEventsResultUnknownHostTimeout      TransactionEventsResult = "UNKNOWN_HOST_TIMEOUT"
-	TransactionEventsResultUserTransactionLimit    TransactionEventsResult = "USER_TRANSACTION_LIMIT"
-)
-
-// Event types:
-//
-//   - `AUTHORIZATION` - Authorize a transaction.
-//   - `AUTHORIZATION_ADVICE` - Advice on a transaction.
-//   - `AUTHORIZATION_EXPIRY` - Authorization has expired and reversed by Lithic.
-//   - `AUTHORIZATION_REVERSAL` - Authorization was reversed by the merchant.
-//   - `BALANCE_INQUIRY` - A balance inquiry (typically a $0 authorization) has
-//     occurred on a card.
-//   - `CLEARING` - Transaction is settled.
-//   - `CORRECTION_DEBIT` - Manual transaction correction (Debit).
-//   - `CORRECTION_CREDIT` - Manual transaction correction (Credit).
-//   - `CREDIT_AUTHORIZATION` - A refund or credit authorization from a merchant.
-//   - `CREDIT_AUTHORIZATION_ADVICE` - A credit authorization was approved on your
-//     behalf by the network.
-//   - `FINANCIAL_AUTHORIZATION` - A request from a merchant to debit funds without
-//     additional clearing.
-//   - `FINANCIAL_CREDIT_AUTHORIZATION` - A request from a merchant to refund or
-//     credit funds without additional clearing.
-//   - `RETURN` - A refund has been processed on the transaction.
-//   - `RETURN_REVERSAL` - A refund has been reversed (e.g., when a merchant reverses
-//     an incorrect refund).
-type TransactionEventsType string
-
-const (
-	TransactionEventsTypeAuthorization                TransactionEventsType = "AUTHORIZATION"
-	TransactionEventsTypeAuthorizationAdvice          TransactionEventsType = "AUTHORIZATION_ADVICE"
-	TransactionEventsTypeAuthorizationExpiry          TransactionEventsType = "AUTHORIZATION_EXPIRY"
-	TransactionEventsTypeAuthorizationReversal        TransactionEventsType = "AUTHORIZATION_REVERSAL"
-	TransactionEventsTypeBalanceInquiry               TransactionEventsType = "BALANCE_INQUIRY"
-	TransactionEventsTypeClearing                     TransactionEventsType = "CLEARING"
-	TransactionEventsTypeCorrectionDebit              TransactionEventsType = "CORRECTION_DEBIT"
-	TransactionEventsTypeCorrectionCredit             TransactionEventsType = "CORRECTION_CREDIT"
-	TransactionEventsTypeCreditAuthorization          TransactionEventsType = "CREDIT_AUTHORIZATION"
-	TransactionEventsTypeCreditAuthorizationAdvice    TransactionEventsType = "CREDIT_AUTHORIZATION_ADVICE"
-	TransactionEventsTypeFinancialAuthorization       TransactionEventsType = "FINANCIAL_AUTHORIZATION"
-	TransactionEventsTypeFinancialCreditAuthorization TransactionEventsType = "FINANCIAL_CREDIT_AUTHORIZATION"
-	TransactionEventsTypeReturn                       TransactionEventsType = "RETURN"
-	TransactionEventsTypeReturnReversal               TransactionEventsType = "RETURN_REVERSAL"
-	TransactionEventsTypeVoid                         TransactionEventsType = "VOID"
-)
-
-type TransactionMerchant struct {
-	// Unique identifier to identify the payment card acceptor.
-	AcceptorID string `json:"acceptor_id"`
-	// City of card acceptor.
-	City string `json:"city"`
-	// Uppercase country of card acceptor (see ISO 8583 specs).
-	Country string `json:"country"`
-	// Short description of card acceptor.
-	Descriptor string `json:"descriptor"`
-	// Merchant category code (MCC). A four-digit number listed in ISO 18245. An MCC is
-	// used to classify a business by the types of goods or services it provides.
-	Mcc string `json:"mcc"`
-	// Geographic state of card acceptor (see ISO 8583 specs).
-	State string `json:"state"`
-	JSON  transactionMerchantJSON
-}
-
-// transactionMerchantJSON contains the JSON metadata for the struct
-// [TransactionMerchant]
-type transactionMerchantJSON struct {
-	AcceptorID  apijson.Field
-	City        apijson.Field
-	Country     apijson.Field
-	Descriptor  apijson.Field
-	Mcc         apijson.Field
-	State       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *TransactionMerchant) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-// Card network of the authorization. Can be `INTERLINK`, `MAESTRO`, `MASTERCARD`,
-// `VISA`, or `UNKNOWN`. Value is `UNKNOWN` when Lithic cannot determine the
-// network code from the upstream provider.
-type TransactionNetwork string
-
-const (
-	TransactionNetworkInterlink  TransactionNetwork = "INTERLINK"
-	TransactionNetworkMaestro    TransactionNetwork = "MAESTRO"
-	TransactionNetworkMastercard TransactionNetwork = "MASTERCARD"
-	TransactionNetworkVisa       TransactionNetwork = "VISA"
-	TransactionNetworkUnknown    TransactionNetwork = "UNKNOWN"
-)
-
-// `APPROVED` or decline reason. See Event result types
-type TransactionResult string
-
-const (
-	TransactionResultAccountStateTransaction TransactionResult = "ACCOUNT_STATE_TRANSACTION"
-	TransactionResultApproved                TransactionResult = "APPROVED"
-	TransactionResultBankConnectionError     TransactionResult = "BANK_CONNECTION_ERROR"
-	TransactionResultBankNotVerified         TransactionResult = "BANK_NOT_VERIFIED"
-	TransactionResultCardClosed              TransactionResult = "CARD_CLOSED"
-	TransactionResultCardPaused              TransactionResult = "CARD_PAUSED"
-	TransactionResultFraudAdvice             TransactionResult = "FRAUD_ADVICE"
-	TransactionResultGlobalTransactionLimit  TransactionResult = "GLOBAL_TRANSACTION_LIMIT"
-	TransactionResultGlobalWeeklyLimit       TransactionResult = "GLOBAL_WEEKLY_LIMIT"
-	TransactionResultGlobalMonthlyLimit      TransactionResult = "GLOBAL_MONTHLY_LIMIT"
-	TransactionResultInactiveAccount         TransactionResult = "INACTIVE_ACCOUNT"
-	TransactionResultIncorrectPin            TransactionResult = "INCORRECT_PIN"
-	TransactionResultInvalidCardDetails      TransactionResult = "INVALID_CARD_DETAILS"
-	TransactionResultInsufficientFunds       TransactionResult = "INSUFFICIENT_FUNDS"
-	TransactionResultMerchantBlacklist       TransactionResult = "MERCHANT_BLACKLIST"
-	TransactionResultSingleUseRecharged      TransactionResult = "SINGLE_USE_RECHARGED"
-	TransactionResultSwitchInoperativeAdvice TransactionResult = "SWITCH_INOPERATIVE_ADVICE"
-	TransactionResultUnauthorizedMerchant    TransactionResult = "UNAUTHORIZED_MERCHANT"
-	TransactionResultUnknownHostTimeout      TransactionResult = "UNKNOWN_HOST_TIMEOUT"
-	TransactionResultUserTransactionLimit    TransactionResult = "USER_TRANSACTION_LIMIT"
-)
-
-// Status types:
-//
-//   - `DECLINED` - The transaction was declined.
-//   - `EXPIRED` - Lithic reversed the authorization as it has passed its expiration
-//     time.
-//   - `PENDING` - Authorization is pending completion from the merchant.
-//   - `SETTLED` - The transaction is complete.
-//   - `VOIDED` - The merchant has voided the previously pending authorization.
-type TransactionStatus string
-
-const (
-	TransactionStatusBounced  TransactionStatus = "BOUNCED"
-	TransactionStatusDeclined TransactionStatus = "DECLINED"
-	TransactionStatusExpired  TransactionStatus = "EXPIRED"
-	TransactionStatusPending  TransactionStatus = "PENDING"
-	TransactionStatusSettled  TransactionStatus = "SETTLED"
-	TransactionStatusSettling TransactionStatus = "SETTLING"
-	TransactionStatusVoided   TransactionStatus = "VOIDED"
-)
-
 type TransactionSimulateAuthorizationResponse struct {
-	// Debugging request ID to share with Lithic Support team.
-	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
 	// A unique token to reference this transaction with later calls to void or clear
 	// the authorization.
 	Token string `json:"token" format:"uuid"`
-	JSON  transactionSimulateAuthorizationResponseJSON
+	// Debugging request ID to share with Lithic Support team.
+	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
+	JSON               transactionSimulateAuthorizationResponseJSON
 }
 
 // transactionSimulateAuthorizationResponseJSON contains the JSON metadata for the
 // struct [TransactionSimulateAuthorizationResponse]
 type transactionSimulateAuthorizationResponseJSON struct {
-	DebuggingRequestID apijson.Field
 	Token              apijson.Field
+	DebuggingRequestID apijson.Field
 	raw                string
 	ExtraFields        map[string]apijson.Field
 }
@@ -735,18 +735,18 @@ func (r *TransactionSimulateAuthorizationResponse) UnmarshalJSON(data []byte) (e
 }
 
 type TransactionSimulateAuthorizationAdviceResponse struct {
-	// Debugging request ID to share with Lithic Support team.
-	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
 	// A unique token to reference this transaction.
 	Token string `json:"token" format:"uuid"`
-	JSON  transactionSimulateAuthorizationAdviceResponseJSON
+	// Debugging request ID to share with Lithic Support team.
+	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
+	JSON               transactionSimulateAuthorizationAdviceResponseJSON
 }
 
 // transactionSimulateAuthorizationAdviceResponseJSON contains the JSON metadata
 // for the struct [TransactionSimulateAuthorizationAdviceResponse]
 type transactionSimulateAuthorizationAdviceResponseJSON struct {
-	DebuggingRequestID apijson.Field
 	Token              apijson.Field
+	DebuggingRequestID apijson.Field
 	raw                string
 	ExtraFields        map[string]apijson.Field
 }
@@ -774,18 +774,18 @@ func (r *TransactionSimulateClearingResponse) UnmarshalJSON(data []byte) (err er
 }
 
 type TransactionSimulateCreditAuthorizationResponse struct {
-	// Debugging request ID to share with Lithic Support team.
-	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
 	// A unique token to reference this transaction.
 	Token string `json:"token" format:"uuid"`
-	JSON  transactionSimulateCreditAuthorizationResponseJSON
+	// Debugging request ID to share with Lithic Support team.
+	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
+	JSON               transactionSimulateCreditAuthorizationResponseJSON
 }
 
 // transactionSimulateCreditAuthorizationResponseJSON contains the JSON metadata
 // for the struct [TransactionSimulateCreditAuthorizationResponse]
 type transactionSimulateCreditAuthorizationResponseJSON struct {
-	DebuggingRequestID apijson.Field
 	Token              apijson.Field
+	DebuggingRequestID apijson.Field
 	raw                string
 	ExtraFields        map[string]apijson.Field
 }
@@ -795,18 +795,18 @@ func (r *TransactionSimulateCreditAuthorizationResponse) UnmarshalJSON(data []by
 }
 
 type TransactionSimulateReturnResponse struct {
-	// Debugging request ID to share with Lithic Support team.
-	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
 	// A unique token to reference this transaction.
 	Token string `json:"token" format:"uuid"`
-	JSON  transactionSimulateReturnResponseJSON
+	// Debugging request ID to share with Lithic Support team.
+	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
+	JSON               transactionSimulateReturnResponseJSON
 }
 
 // transactionSimulateReturnResponseJSON contains the JSON metadata for the struct
 // [TransactionSimulateReturnResponse]
 type transactionSimulateReturnResponseJSON struct {
-	DebuggingRequestID apijson.Field
 	Token              apijson.Field
+	DebuggingRequestID apijson.Field
 	raw                string
 	ExtraFields        map[string]apijson.Field
 }
@@ -964,11 +964,11 @@ const (
 )
 
 type TransactionSimulateAuthorizationAdviceParams struct {
+	// The transaction token returned from the /v1/simulate/authorize response.
+	Token param.Field[string] `json:"token,required" format:"uuid"`
 	// Amount (in cents) to authorize. This amount will override the transaction's
 	// amount that was originally set by /v1/simulate/authorize.
 	Amount param.Field[int64] `json:"amount,required"`
-	// The transaction token returned from the /v1/simulate/authorize response.
-	Token param.Field[string] `json:"token,required" format:"uuid"`
 }
 
 func (r TransactionSimulateAuthorizationAdviceParams) MarshalJSON() (data []byte, err error) {

@@ -39,6 +39,8 @@ func (r *TransferService) New(ctx context.Context, body TransferNewParams, opts 
 }
 
 type Transfer struct {
+	// Globally unique identifier for the transfer event.
+	Token string `json:"token" format:"uuid"`
 	// Status types:
 	//
 	//   - `TRANSFER` - Internal transfer of funds between financial accounts in your
@@ -53,6 +55,8 @@ type Transfer struct {
 	Descriptor string `json:"descriptor"`
 	// A list of all financial events that have modified this trasnfer.
 	Events []TransferEvents `json:"events"`
+	// The updated balance of the sending financial account.
+	FromBalance []Balance `json:"from_balance"`
 	// Pending amount of the transaction in the currency's smallest unit (e.g., cents),
 	// including any acquirer fees. The value of this field will go to zero over time
 	// once the financial transaction is settled.
@@ -71,32 +75,28 @@ type Transfer struct {
 	// - `SETTLED` - The transfer is completed.
 	// - `VOIDED` - The transfer was reversed before it settled.
 	Status TransferStatus `json:"status"`
-	// Globally unique identifier for the transfer event.
-	Token string `json:"token" format:"uuid"`
-	// Date and time when the financial transaction was last updated. UTC time zone.
-	Updated time.Time `json:"updated" format:"date-time"`
-	// The updated balance of the sending financial account.
-	FromBalance []Balance `json:"from_balance"`
 	// The updated balance of the receiving financial account.
 	ToBalance []Balance `json:"to_balance"`
-	JSON      transferJSON
+	// Date and time when the financial transaction was last updated. UTC time zone.
+	Updated time.Time `json:"updated" format:"date-time"`
+	JSON    transferJSON
 }
 
 // transferJSON contains the JSON metadata for the struct [Transfer]
 type transferJSON struct {
+	Token         apijson.Field
 	Category      apijson.Field
 	Created       apijson.Field
 	Currency      apijson.Field
 	Descriptor    apijson.Field
 	Events        apijson.Field
+	FromBalance   apijson.Field
 	PendingAmount apijson.Field
 	Result        apijson.Field
 	SettledAmount apijson.Field
 	Status        apijson.Field
-	Token         apijson.Field
-	Updated       apijson.Field
-	FromBalance   apijson.Field
 	ToBalance     apijson.Field
+	Updated       apijson.Field
 	raw           string
 	ExtraFields   map[string]apijson.Field
 }
@@ -116,6 +116,8 @@ const (
 )
 
 type TransferEvents struct {
+	// Globally unique identifier.
+	Token string `json:"token" format:"uuid"`
 	// Amount of the financial event that has been settled in the currency's smallest
 	// unit (e.g., cents).
 	Amount int64 `json:"amount"`
@@ -124,8 +126,6 @@ type TransferEvents struct {
 	// APPROVED financial events were successful while DECLINED financial events were
 	// declined by user, Lithic, or the network.
 	Result TransferEventsResult `json:"result"`
-	// Globally unique identifier.
-	Token string `json:"token" format:"uuid"`
 	// Event types:
 	//
 	//   - `ACH_INSUFFICIENT_FUNDS` - Attempted ACH origination declined due to
@@ -168,10 +168,10 @@ type TransferEvents struct {
 
 // transferEventsJSON contains the JSON metadata for the struct [TransferEvents]
 type transferEventsJSON struct {
+	Token       apijson.Field
 	Amount      apijson.Field
 	Created     apijson.Field
 	Result      apijson.Field
-	Token       apijson.Field
 	Type        apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field

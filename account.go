@@ -78,6 +78,10 @@ func (r *AccountService) ListAutoPaging(ctx context.Context, query AccountListPa
 }
 
 type Account struct {
+	// Globally unique identifier for the account. This is the same as the
+	// account_token returned by the enroll endpoint. If using this parameter, do not
+	// include pagination.
+	Token string `json:"token,required" format:"uuid"`
 	// Spend limit information for the user containing the daily, monthly, and lifetime
 	// spend limit of the account. Any charges to a card owned by this account will be
 	// declined once their transaction volume has surpassed the value in the applicable
@@ -91,26 +95,22 @@ type Account struct {
 	//     set back to `ACTIVE`.
 	//   - `CLOSED` - Account will permanently not be able to transact or create new
 	//     cards.
-	State AccountState `json:"state,required"`
-	// Globally unique identifier for the account. This is the same as the
-	// account_token returned by the enroll endpoint. If using this parameter, do not
-	// include pagination.
-	Token string `json:"token,required" format:"uuid"`
+	State         AccountState         `json:"state,required"`
+	AccountHolder AccountAccountHolder `json:"account_holder"`
 	// List of identifiers for the Auth Rule(s) that are applied on the account.
 	AuthRuleTokens      []string                   `json:"auth_rule_tokens"`
 	VerificationAddress AccountVerificationAddress `json:"verification_address"`
-	AccountHolder       AccountAccountHolder       `json:"account_holder"`
 	JSON                accountJSON
 }
 
 // accountJSON contains the JSON metadata for the struct [Account]
 type accountJSON struct {
+	Token               apijson.Field
 	SpendLimit          apijson.Field
 	State               apijson.Field
-	Token               apijson.Field
+	AccountHolder       apijson.Field
 	AuthRuleTokens      apijson.Field
 	VerificationAddress apijson.Field
-	AccountHolder       apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
 }
@@ -127,19 +127,19 @@ func (r *Account) UnmarshalJSON(data []byte) (err error) {
 type AccountSpendLimit struct {
 	// Daily spend limit (in cents).
 	Daily int64 `json:"daily,required"`
-	// Monthly spend limit (in cents).
-	Monthly int64 `json:"monthly,required"`
 	// Total spend limit over account lifetime (in cents).
 	Lifetime int64 `json:"lifetime,required"`
-	JSON     accountSpendLimitJSON
+	// Monthly spend limit (in cents).
+	Monthly int64 `json:"monthly,required"`
+	JSON    accountSpendLimitJSON
 }
 
 // accountSpendLimitJSON contains the JSON metadata for the struct
 // [AccountSpendLimit]
 type accountSpendLimitJSON struct {
 	Daily       apijson.Field
-	Monthly     apijson.Field
 	Lifetime    apijson.Field
+	Monthly     apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -163,67 +163,67 @@ const (
 	AccountStateClosed AccountState = "CLOSED"
 )
 
-type AccountVerificationAddress struct {
-	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
-	// Unit or apartment number (if applicable).
-	Address2 string `json:"address2"`
-	// City name.
-	City string `json:"city,required"`
-	// Valid state code. Only USA state codes are currently supported, entered in
-	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state,required"`
-	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
-	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode string `json:"postal_code,required"`
-	// Country name. Only USA is currently supported.
-	Country string `json:"country,required"`
-	JSON    accountVerificationAddressJSON
-}
-
-// accountVerificationAddressJSON contains the JSON metadata for the struct
-// [AccountVerificationAddress]
-type accountVerificationAddressJSON struct {
-	Address1    apijson.Field
-	Address2    apijson.Field
-	City        apijson.Field
-	State       apijson.Field
-	PostalCode  apijson.Field
-	Country     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AccountVerificationAddress) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
 type AccountAccountHolder struct {
 	// Globally unique identifier for the account holder.
 	Token string `json:"token,required"`
-	// Phone number of the individual.
-	PhoneNumber string `json:"phone_number,required"`
-	// Email address.
-	Email string `json:"email,required"`
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
 	// users of businesses. Account_token of the enrolled business associated with an
 	// enrolled AUTHORIZED_USER individual.
 	BusinessAccountToken string `json:"business_account_token,required"`
-	JSON                 accountAccountHolderJSON
+	// Email address.
+	Email string `json:"email,required"`
+	// Phone number of the individual.
+	PhoneNumber string `json:"phone_number,required"`
+	JSON        accountAccountHolderJSON
 }
 
 // accountAccountHolderJSON contains the JSON metadata for the struct
 // [AccountAccountHolder]
 type accountAccountHolderJSON struct {
 	Token                apijson.Field
-	PhoneNumber          apijson.Field
-	Email                apijson.Field
 	BusinessAccountToken apijson.Field
+	Email                apijson.Field
+	PhoneNumber          apijson.Field
 	raw                  string
 	ExtraFields          map[string]apijson.Field
 }
 
 func (r *AccountAccountHolder) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type AccountVerificationAddress struct {
+	// Valid deliverable address (no PO boxes).
+	Address1 string `json:"address1,required"`
+	// City name.
+	City string `json:"city,required"`
+	// Country name. Only USA is currently supported.
+	Country string `json:"country,required"`
+	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
+	// five-digit ZIP or nine-digit ZIP+4.
+	PostalCode string `json:"postal_code,required"`
+	// Valid state code. Only USA state codes are currently supported, entered in
+	// uppercase ISO 3166-2 two-character format.
+	State string `json:"state,required"`
+	// Unit or apartment number (if applicable).
+	Address2 string `json:"address2"`
+	JSON     accountVerificationAddressJSON
+}
+
+// accountVerificationAddressJSON contains the JSON metadata for the struct
+// [AccountVerificationAddress]
+type accountVerificationAddressJSON struct {
+	Address1    apijson.Field
+	City        apijson.Field
+	Country     apijson.Field
+	PostalCode  apijson.Field
+	State       apijson.Field
+	Address2    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AccountVerificationAddress) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
@@ -267,9 +267,9 @@ type AccountUpdateParamsVerificationAddress struct {
 	Address1   param.Field[string] `json:"address1"`
 	Address2   param.Field[string] `json:"address2"`
 	City       param.Field[string] `json:"city"`
-	State      param.Field[string] `json:"state"`
-	PostalCode param.Field[string] `json:"postal_code"`
 	Country    param.Field[string] `json:"country"`
+	PostalCode param.Field[string] `json:"postal_code"`
+	State      param.Field[string] `json:"state"`
 }
 
 func (r AccountUpdateParamsVerificationAddress) MarshalJSON() (data []byte, err error) {

@@ -71,6 +71,10 @@ func (r *EventService) ListAutoPaging(ctx context.Context, query EventListParams
 type Event struct {
 	// Globally unique identifier.
 	Token string `json:"token,required"`
+	// An RFC 3339 timestamp for when the event was created. UTC time zone.
+	//
+	// If no timezone is specified, UTC will be used.
+	Created time.Time `json:"created,required" format:"date-time"`
 	// Event types:
 	//
 	//   - `card.created` - Notification that a card has been created.
@@ -86,19 +90,15 @@ type Event struct {
 	//     https://docs.lithic.com/docs/tokenization-control#digital-wallet-tokenization-auth-code.
 	EventType EventEventType         `json:"event_type,required"`
 	Payload   map[string]interface{} `json:"payload,required"`
-	// An RFC 3339 timestamp for when the event was created. UTC time zone.
-	//
-	// If no timezone is specified, UTC will be used.
-	Created time.Time `json:"created,required" format:"date-time"`
-	JSON    eventJSON
+	JSON      eventJSON
 }
 
 // eventJSON contains the JSON metadata for the struct [Event]
 type eventJSON struct {
 	Token       apijson.Field
+	Created     apijson.Field
 	EventType   apijson.Field
 	Payload     apijson.Field
-	Created     apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -133,25 +133,25 @@ const (
 
 // A subscription to specific event types.
 type EventSubscription struct {
+	// Globally unique identifier.
+	Token string `json:"token,required"`
 	// A description of the subscription.
 	Description string `json:"description,required"`
 	// Whether the subscription is disabled.
 	Disabled   bool                          `json:"disabled,required"`
 	EventTypes []EventSubscriptionEventTypes `json:"event_types,required,nullable"`
 	URL        string                        `json:"url,required" format:"uri"`
-	// Globally unique identifier.
-	Token string `json:"token,required"`
-	JSON  eventSubscriptionJSON
+	JSON       eventSubscriptionJSON
 }
 
 // eventSubscriptionJSON contains the JSON metadata for the struct
 // [EventSubscription]
 type eventSubscriptionJSON struct {
+	Token       apijson.Field
 	Description apijson.Field
 	Disabled    apijson.Field
 	EventTypes  apijson.Field
 	URL         apijson.Field
-	Token       apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }

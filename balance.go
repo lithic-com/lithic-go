@@ -58,6 +58,8 @@ func (r *BalanceService) ListAutoPaging(ctx context.Context, query BalanceListPa
 
 // Balance of a Financial Account
 type Balance struct {
+	// Globally unique identifier for the financial account that holds this balance.
+	Token string `json:"token,required" format:"uuid"`
 	// Funds available for spend in the currency's smallest unit (e.g., cents for USD)
 	AvailableAmount int64 `json:"available_amount,required"`
 	// Date and time for when the balance was first created.
@@ -73,8 +75,6 @@ type Balance struct {
 	// Funds not available for spend due to card authorizations or pending ACH release.
 	// Shown in the currency's smallest unit (e.g., cents for USD).
 	PendingAmount int64 `json:"pending_amount,required"`
-	// Globally unique identifier for the financial account that holds this balance.
-	Token string `json:"token,required" format:"uuid"`
 	// The sum of available and pending balance in the currency's smallest unit (e.g.,
 	// cents for USD).
 	TotalAmount int64 `json:"total_amount,required"`
@@ -87,13 +87,13 @@ type Balance struct {
 
 // balanceJSON contains the JSON metadata for the struct [Balance]
 type balanceJSON struct {
+	Token                     apijson.Field
 	AvailableAmount           apijson.Field
 	Created                   apijson.Field
 	Currency                  apijson.Field
 	LastTransactionEventToken apijson.Field
 	LastTransactionToken      apijson.Field
 	PendingAmount             apijson.Field
-	Token                     apijson.Field
 	TotalAmount               apijson.Field
 	Type                      apijson.Field
 	Updated                   apijson.Field
