@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.5.0](https://github.com/lithic-com/lithic-go/compare/v0.4.1...v0.5.0) (2023-06-29)
+
+
+### ⚠ BREAKING CHANGES
+
+* **types:** singularize array item types ([#63](https://github.com/lithic-com/lithic-go/issues/63))
+* rename some response types and remove unnecessary types from paginated endpoints ([#60](https://github.com/lithic-com/lithic-go/issues/60))
+
+### Features
+
+* generate `api.md` file ([#57](https://github.com/lithic-com/lithic-go/issues/57)) ([308263b](https://github.com/lithic-com/lithic-go/commit/308263b05e16a3643f6cfb7d69d97cfd2369337c))
+
+
+### Chores
+
+* **tests:** minor reformatting of docs and tests ([#52](https://github.com/lithic-com/lithic-go/issues/52)) ([4866ab5](https://github.com/lithic-com/lithic-go/commit/4866ab5ea5f8d22e96e6b205af481b1478830f1d))
+
+
+### Documentation
+
+* add comments to alias types ([#58](https://github.com/lithic-com/lithic-go/issues/58)) ([da81689](https://github.com/lithic-com/lithic-go/commit/da8168969e06c6d7a1244f5c61826cde5aa84aad))
+* add trailing newlines ([#61](https://github.com/lithic-com/lithic-go/issues/61)) ([0008e35](https://github.com/lithic-com/lithic-go/commit/0008e359774415942a67283ebb34e45d2cccef2e))
+* **api:** update account limits docstrings ([#55](https://github.com/lithic-com/lithic-go/issues/55)) ([d9efdfc](https://github.com/lithic-com/lithic-go/commit/d9efdfca37f8472cf0dee9edef229dd0bbf54a22))
+* **api:** update limits docstrings ([#59](https://github.com/lithic-com/lithic-go/issues/59)) ([4cd42ba](https://github.com/lithic-com/lithic-go/commit/4cd42baab7f9b7240324347b5393baaefcd93b92))
+
+
+### Styles
+
+* minor reordering of types and properties ([#62](https://github.com/lithic-com/lithic-go/issues/62)) ([89c502e](https://github.com/lithic-com/lithic-go/commit/89c502ec83740ab78f59bc39d2ab2a7dee110ff6))
+
+
+### Refactors
+
+* rename some response types and remove unnecessary types from paginated endpoints ([#60](https://github.com/lithic-com/lithic-go/issues/60)) ([7ada707](https://github.com/lithic-com/lithic-go/commit/7ada707cb5eb0365f7ae71ca3cefd47da9d85bcf))
+* **types:** singularize array item types ([#63](https://github.com/lithic-com/lithic-go/issues/63)) ([ac26936](https://github.com/lithic-com/lithic-go/commit/ac269367dee47d42267f26d10497deb4499f9d1c))
+
 ## [0.4.1](https://github.com/lithic-com/lithic-go/compare/v0.4.0...v0.4.1) (2023-06-19)
 
 
