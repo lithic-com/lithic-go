@@ -122,10 +122,6 @@ type AuthRule struct {
 	// Array of card_token(s) identifying the cards that the Auth Rule applies to. Note
 	// that only this field or `account_tokens` can be provided for a given Auth Rule.
 	CardTokens []string `json:"card_tokens"`
-	// Identifier for the Auth Rule(s) that a new Auth Rule replaced; will be returned
-	// only if an Auth Rule is applied to entities that previously already had one
-	// applied.
-	PreviousAuthRuleTokens []string `json:"previous_auth_rule_tokens"`
 	// Boolean indicating whether the Auth Rule is applied at the program level.
 	ProgramLevel bool `json:"program_level"`
 	// Indicates whether the Auth Rule is ACTIVE or INACTIVE
@@ -135,18 +131,17 @@ type AuthRule struct {
 
 // authRuleJSON contains the JSON metadata for the struct [AuthRule]
 type authRuleJSON struct {
-	Token                  apijson.Field
-	AccountTokens          apijson.Field
-	AllowedCountries       apijson.Field
-	AllowedMcc             apijson.Field
-	BlockedCountries       apijson.Field
-	BlockedMcc             apijson.Field
-	CardTokens             apijson.Field
-	PreviousAuthRuleTokens apijson.Field
-	ProgramLevel           apijson.Field
-	State                  apijson.Field
-	raw                    string
-	ExtraFields            map[string]apijson.Field
+	Token            apijson.Field
+	AccountTokens    apijson.Field
+	AllowedCountries apijson.Field
+	AllowedMcc       apijson.Field
+	BlockedCountries apijson.Field
+	BlockedMcc       apijson.Field
+	CardTokens       apijson.Field
+	ProgramLevel     apijson.Field
+	State            apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
 }
 
 func (r *AuthRule) UnmarshalJSON(data []byte) (err error) {
@@ -230,22 +225,20 @@ func (r *AuthRuleApplyResponse) UnmarshalJSON(data []byte) (err error) {
 }
 
 type AuthRuleRemoveResponse struct {
-	AccountTokens          []string `json:"account_tokens"`
-	CardTokens             []string `json:"card_tokens"`
-	PreviousAuthRuleTokens []string `json:"previous_auth_rule_tokens"`
-	ProgramLevel           bool     `json:"program_level"`
-	JSON                   authRuleRemoveResponseJSON
+	AccountTokens []string `json:"account_tokens"`
+	CardTokens    []string `json:"card_tokens"`
+	ProgramLevel  bool     `json:"program_level"`
+	JSON          authRuleRemoveResponseJSON
 }
 
 // authRuleRemoveResponseJSON contains the JSON metadata for the struct
 // [AuthRuleRemoveResponse]
 type authRuleRemoveResponseJSON struct {
-	AccountTokens          apijson.Field
-	CardTokens             apijson.Field
-	PreviousAuthRuleTokens apijson.Field
-	ProgramLevel           apijson.Field
-	raw                    string
-	ExtraFields            map[string]apijson.Field
+	AccountTokens apijson.Field
+	CardTokens    apijson.Field
+	ProgramLevel  apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
 }
 
 func (r *AuthRuleRemoveResponse) UnmarshalJSON(data []byte) (err error) {
