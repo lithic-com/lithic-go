@@ -125,9 +125,9 @@ func (r *CardService) Embed(ctx context.Context, query CardEmbedParams, opts ...
 	return
 }
 
-func (r *CardService) GetEmbedHTML(ctx context.Context, body CardGetEmbedHTMLParams, opts ...option.RequestOption) (res []byte, err error) {
+func (r *CardService) GetEmbedHTML(ctx context.Context, params CardGetEmbedHTMLParams, opts ...option.RequestOption) (res []byte, err error) {
 	opts = append(r.Options, opts...)
-	buf, err := body.MarshalJSON()
+	buf, err := params.MarshalJSON()
 	if err != nil {
 		return nil, err
 	}
@@ -179,8 +179,8 @@ func (r *CardService) GetEmbedHTML(ctx context.Context, body CardGetEmbedHTMLPar
 // the whole iframe) on the server or make an ajax call from your front end code,
 // but **do not ever embed your API key into front end code, as doing so introduces
 // a serious security vulnerability**.
-func (r *CardService) GetEmbedURL(ctx context.Context, body CardGetEmbedURLParams, opts ...option.RequestOption) (res *url.URL, err error) {
-	buf, err := body.MarshalJSON()
+func (r *CardService) GetEmbedURL(ctx context.Context, params CardGetEmbedURLParams, opts ...option.RequestOption) (res *url.URL, err error) {
+	buf, err := params.MarshalJSON()
 	if err != nil {
 		return nil, err
 	}
