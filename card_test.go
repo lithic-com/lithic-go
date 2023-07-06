@@ -121,6 +121,7 @@ func TestCardListWithOptionalParams(t *testing.T) {
 		End:          lithic.F(time.Now()),
 		Page:         lithic.F(int64(0)),
 		PageSize:     lithic.F(int64(1)),
+		State:        lithic.F(lithic.CardListParamsStateOpen),
 	})
 	if err != nil {
 		var apierr *lithic.Error
