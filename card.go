@@ -714,6 +714,8 @@ type CardListParams struct {
 	Page param.Field[int64] `query:"page"`
 	// Page size (for pagination).
 	PageSize param.Field[int64] `query:"page_size"`
+	// Returns cards with the specified state.
+	State param.Field[CardListParamsState] `query:"state"`
 }
 
 // URLQuery serializes [CardListParams]'s query parameters as `url.Values`.
@@ -723,6 +725,17 @@ func (r CardListParams) URLQuery() (v url.Values) {
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
 }
+
+// Returns cards with the specified state.
+type CardListParamsState string
+
+const (
+	CardListParamsStateOpen               CardListParamsState = "OPEN"
+	CardListParamsStatePaused             CardListParamsState = "PAUSED"
+	CardListParamsStateClosed             CardListParamsState = "CLOSED"
+	CardListParamsStatePendingFulfillment CardListParamsState = "PENDING_FULFILLMENT"
+	CardListParamsStatePendingActivation  CardListParamsState = "PENDING_ACTIVATION"
+)
 
 type CardEmbedParams struct {
 	// A base64 encoded JSON string of an EmbedRequest to specify which card to load.
