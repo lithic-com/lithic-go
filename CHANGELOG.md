@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.6.0](https://github.com/lithic-com/lithic-go/compare/v0.5.0...v0.6.0) (2023-07-07)
+
+
+### ⚠ BREAKING CHANGES
+
+* **api:** remove previous_auth_rule_tokens from auth rules ([#64](https://github.com/lithic-com/lithic-go/issues/64))
+
+### Features
+
+* **api:** add `state` query param for cards ([#67](https://github.com/lithic-com/lithic-go/issues/67)) ([6175a18](https://github.com/lithic-com/lithic-go/commit/6175a183cbbfead69e15623069fe9e7b68cc013b))
+
+
+### Refactors
+
+* **api:** remove previous_auth_rule_tokens from auth rules ([#64](https://github.com/lithic-com/lithic-go/issues/64)) ([4a81426](https://github.com/lithic-com/lithic-go/commit/4a814263872defd55597162dcc7500d437f2b27b))
+
+
+### Chores
+
+* **internal:** rename some parameter names ([#69](https://github.com/lithic-com/lithic-go/issues/69)) ([14fb9df](https://github.com/lithic-com/lithic-go/commit/14fb9dfc662fff39db9fb78985839baed70c8eb4))
+
 ## [0.5.0](https://github.com/lithic-com/lithic-go/compare/v0.4.1...v0.5.0) (2023-06-29)
 
 
