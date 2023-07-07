@@ -85,6 +85,8 @@ type Event struct {
 	//   - `dispute.updated` - A dispute has been updated.
 	//   - `digital_wallet.tokenization_approval_request` - Card network's request to
 	//     Lithic to activate a digital wallet token.
+	//   - `digital_wallet.tokenization_result` - Notification of the end result of a
+	//     tokenization, whether successful or failed.
 	//   - `digital_wallet.tokenization_two_factor_authentication_code` - A code to be
 	//     passed to an end user to complete digital wallet authentication. See
 	//     https://docs.lithic.com/docs/tokenization-control#digital-wallet-tokenization-auth-code.
@@ -117,6 +119,8 @@ func (r *Event) UnmarshalJSON(data []byte) (err error) {
 //   - `dispute.updated` - A dispute has been updated.
 //   - `digital_wallet.tokenization_approval_request` - Card network's request to
 //     Lithic to activate a digital wallet token.
+//   - `digital_wallet.tokenization_result` - Notification of the end result of a
+//     tokenization, whether successful or failed.
 //   - `digital_wallet.tokenization_two_factor_authentication_code` - A code to be
 //     passed to an end user to complete digital wallet authentication. See
 //     https://docs.lithic.com/docs/tokenization-control#digital-wallet-tokenization-auth-code.
@@ -127,6 +131,7 @@ const (
 	EventEventTypeCardShipped                                          EventEventType = "card.shipped"
 	EventEventTypeCardTransactionUpdated                               EventEventType = "card_transaction.updated"
 	EventEventTypeDigitalWalletTokenizationApprovalRequest             EventEventType = "digital_wallet.tokenization_approval_request"
+	EventEventTypeDigitalWalletTokenizationResult                      EventEventType = "digital_wallet.tokenization_result"
 	EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventEventTypeDisputeUpdated                                       EventEventType = "dispute.updated"
 )
@@ -167,6 +172,7 @@ const (
 	EventSubscriptionEventTypeCardShipped                                          EventSubscriptionEventType = "card.shipped"
 	EventSubscriptionEventTypeCardTransactionUpdated                               EventSubscriptionEventType = "card_transaction.updated"
 	EventSubscriptionEventTypeDigitalWalletTokenizationApprovalRequest             EventSubscriptionEventType = "digital_wallet.tokenization_approval_request"
+	EventSubscriptionEventTypeDigitalWalletTokenizationResult                      EventSubscriptionEventType = "digital_wallet.tokenization_result"
 	EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventSubscriptionEventTypeDisputeUpdated                                       EventSubscriptionEventType = "dispute.updated"
 )
@@ -205,6 +211,7 @@ const (
 	EventListParamsEventTypeCardShipped                                          EventListParamsEventType = "card.shipped"
 	EventListParamsEventTypeCardTransactionUpdated                               EventListParamsEventType = "card_transaction.updated"
 	EventListParamsEventTypeDigitalWalletTokenizationApprovalRequest             EventListParamsEventType = "digital_wallet.tokenization_approval_request"
+	EventListParamsEventTypeDigitalWalletTokenizationResult                      EventListParamsEventType = "digital_wallet.tokenization_result"
 	EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventListParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventListParamsEventTypeDisputeUpdated                                       EventListParamsEventType = "dispute.updated"
 )
