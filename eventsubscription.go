@@ -168,6 +168,7 @@ const (
 	EventSubscriptionNewParamsEventTypeCardShipped                                          EventSubscriptionNewParamsEventType = "card.shipped"
 	EventSubscriptionNewParamsEventTypeCardTransactionUpdated                               EventSubscriptionNewParamsEventType = "card_transaction.updated"
 	EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationApprovalRequest             EventSubscriptionNewParamsEventType = "digital_wallet.tokenization_approval_request"
+	EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationResult                      EventSubscriptionNewParamsEventType = "digital_wallet.tokenization_result"
 	EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionNewParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventSubscriptionNewParamsEventTypeDisputeUpdated                                       EventSubscriptionNewParamsEventType = "dispute.updated"
 )
@@ -195,6 +196,7 @@ const (
 	EventSubscriptionUpdateParamsEventTypeCardShipped                                          EventSubscriptionUpdateParamsEventType = "card.shipped"
 	EventSubscriptionUpdateParamsEventTypeCardTransactionUpdated                               EventSubscriptionUpdateParamsEventType = "card_transaction.updated"
 	EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationApprovalRequest             EventSubscriptionUpdateParamsEventType = "digital_wallet.tokenization_approval_request"
+	EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationResult                      EventSubscriptionUpdateParamsEventType = "digital_wallet.tokenization_result"
 	EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionUpdateParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventSubscriptionUpdateParamsEventTypeDisputeUpdated                                       EventSubscriptionUpdateParamsEventType = "dispute.updated"
 )
