@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/lithic-com/lithic-go/compare/v0.6.0...v0.6.1) (2023-07-12)
+
+
+### Features
+
+* **api:** add digital wallet tokenization result event type ([#70](https://github.com/lithic-com/lithic-go/issues/70)) ([37a2a2d](https://github.com/lithic-com/lithic-go/commit/37a2a2d76b3ce7e3f44c3a102fb6786eead73f37))
+
 ## [0.6.0](https://github.com/lithic-com/lithic-go/compare/v0.5.0...v0.6.0) (2023-07-07)
 
 
