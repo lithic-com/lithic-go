@@ -134,6 +134,9 @@ const (
 	EventEventTypeDigitalWalletTokenizationResult                      EventEventType = "digital_wallet.tokenization_result"
 	EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventEventTypeDisputeUpdated                                       EventEventType = "dispute.updated"
+	EventEventTypePaymentTransactionCreated                            EventEventType = "payment_transaction.created"
+	EventEventTypePaymentTransactionUpdated                            EventEventType = "payment_transaction.updated"
+	EventEventTypeTransferTransactionCreated                           EventEventType = "transfer_transaction.created"
 )
 
 // A subscription to specific event types.
@@ -175,6 +178,9 @@ const (
 	EventSubscriptionEventTypeDigitalWalletTokenizationResult                      EventSubscriptionEventType = "digital_wallet.tokenization_result"
 	EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventSubscriptionEventTypeDisputeUpdated                                       EventSubscriptionEventType = "dispute.updated"
+	EventSubscriptionEventTypePaymentTransactionCreated                            EventSubscriptionEventType = "payment_transaction.created"
+	EventSubscriptionEventTypePaymentTransactionUpdated                            EventSubscriptionEventType = "payment_transaction.updated"
+	EventSubscriptionEventTypeTransferTransactionCreated                           EventSubscriptionEventType = "transfer_transaction.created"
 )
 
 type EventListParams struct {
@@ -214,4 +220,7 @@ const (
 	EventListParamsEventTypeDigitalWalletTokenizationResult                      EventListParamsEventType = "digital_wallet.tokenization_result"
 	EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventListParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventListParamsEventTypeDisputeUpdated                                       EventListParamsEventType = "dispute.updated"
+	EventListParamsEventTypePaymentTransactionCreated                            EventListParamsEventType = "payment_transaction.created"
+	EventListParamsEventTypePaymentTransactionUpdated                            EventListParamsEventType = "payment_transaction.updated"
+	EventListParamsEventTypeTransferTransactionCreated                           EventListParamsEventType = "transfer_transaction.created"
 )

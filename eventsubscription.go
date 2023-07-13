@@ -171,6 +171,9 @@ const (
 	EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationResult                      EventSubscriptionNewParamsEventType = "digital_wallet.tokenization_result"
 	EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionNewParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventSubscriptionNewParamsEventTypeDisputeUpdated                                       EventSubscriptionNewParamsEventType = "dispute.updated"
+	EventSubscriptionNewParamsEventTypePaymentTransactionCreated                            EventSubscriptionNewParamsEventType = "payment_transaction.created"
+	EventSubscriptionNewParamsEventTypePaymentTransactionUpdated                            EventSubscriptionNewParamsEventType = "payment_transaction.updated"
+	EventSubscriptionNewParamsEventTypeTransferTransactionCreated                           EventSubscriptionNewParamsEventType = "transfer_transaction.created"
 )
 
 type EventSubscriptionUpdateParams struct {
@@ -199,6 +202,9 @@ const (
 	EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationResult                      EventSubscriptionUpdateParamsEventType = "digital_wallet.tokenization_result"
 	EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionUpdateParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventSubscriptionUpdateParamsEventTypeDisputeUpdated                                       EventSubscriptionUpdateParamsEventType = "dispute.updated"
+	EventSubscriptionUpdateParamsEventTypePaymentTransactionCreated                            EventSubscriptionUpdateParamsEventType = "payment_transaction.created"
+	EventSubscriptionUpdateParamsEventTypePaymentTransactionUpdated                            EventSubscriptionUpdateParamsEventType = "payment_transaction.updated"
+	EventSubscriptionUpdateParamsEventTypeTransferTransactionCreated                           EventSubscriptionUpdateParamsEventType = "transfer_transaction.created"
 )
 
 type EventSubscriptionListParams struct {
