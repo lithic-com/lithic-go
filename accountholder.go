@@ -457,8 +457,6 @@ type AccountHolderNewParamsKYB struct {
 	// legal agreements (e.g., cardholder terms) as agreed upon during API customer's
 	// implementation with Lithic.
 	TosTimestamp param.Field[string] `json:"tos_timestamp,required"`
-	// Company website URL.
-	WebsiteURL param.Field[string] `json:"website_url,required"`
 	// Specifies the type of KYB workflow to run.
 	Workflow param.Field[AccountHolderNewParamsKYBWorkflow] `json:"workflow,required"`
 	// An RFC 3339 timestamp indicating when precomputed KYC was completed on the
@@ -466,6 +464,8 @@ type AccountHolderNewParamsKYB struct {
 	//
 	// This field is required only if workflow type is `KYB_BYO`.
 	KYBPassedTimestamp param.Field[string] `json:"kyb_passed_timestamp"`
+	// Company website URL.
+	WebsiteURL param.Field[string] `json:"website_url"`
 }
 
 func (r AccountHolderNewParamsKYB) MarshalJSON() (data []byte, err error) {
