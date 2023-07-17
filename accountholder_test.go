@@ -144,9 +144,9 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 		}),
 		NatureOfBusiness:   lithic.F("Software company selling solutions to the restaurant industry"),
 		TosTimestamp:       lithic.F("2018-05-29T21:16:05Z"),
-		WebsiteURL:         lithic.F("www.mybusiness.com"),
 		Workflow:           lithic.F(lithic.AccountHolderNewParamsKYBWorkflowKYBBasic),
 		KYBPassedTimestamp: lithic.F("2018-05-29T21:16:05Z"),
+		WebsiteURL:         lithic.F("www.mybusiness.com"),
 	})
 	if err != nil {
 		var apierr *lithic.Error
