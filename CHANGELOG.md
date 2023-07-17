@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.2](https://github.com/lithic-com/lithic-go/compare/v0.6.1...v0.6.2) (2023-07-17)
+
+
+### Features
+
+* **api:** add more enum members to event types ([#73](https://github.com/lithic-com/lithic-go/issues/73)) ([7154eaa](https://github.com/lithic-com/lithic-go/commit/7154eaa9483bdf5735193b1d53651e2474bd30db))
+* **api:** no longer require `website_url` property on KYB object ([#76](https://github.com/lithic-com/lithic-go/issues/76)) ([929bb45](https://github.com/lithic-com/lithic-go/commit/929bb45ec6dc98c63b8f09de59688f40f19cee7f))
+
+
+### Chores
+
+* **internal:** add `codegen.log` to `.gitignore` ([#75](https://github.com/lithic-com/lithic-go/issues/75)) ([21eb800](https://github.com/lithic-com/lithic-go/commit/21eb800d9c7e63b14a43c6111269a49c6a17aa2d))
+
 ## [0.6.1](https://github.com/lithic-com/lithic-go/compare/v0.6.0...v0.6.1) (2023-07-12)
 
 
