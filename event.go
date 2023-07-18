@@ -67,6 +67,29 @@ func (r *EventService) ListAutoPaging(ctx context.Context, query EventListParams
 	return shared.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
+// List all the message attempts for a given event.
+func (r *EventService) ListAttempts(ctx context.Context, eventToken string, query EventListAttemptsParams, opts ...option.RequestOption) (res *shared.CursorPage[MessageAttempt], err error) {
+	var raw *http.Response
+	opts = append(r.Options, opts...)
+	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
+	path := fmt.Sprintf("events/%s/attempts", eventToken)
+	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
+	if err != nil {
+		return nil, err
+	}
+	err = cfg.Execute()
+	if err != nil {
+		return nil, err
+	}
+	res.SetPageConfig(cfg, raw)
+	return res, nil
+}
+
+// List all the message attempts for a given event.
+func (r *EventService) ListAttemptsAutoPaging(ctx context.Context, eventToken string, query EventListAttemptsParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[MessageAttempt] {
+	return shared.NewCursorPageAutoPager(r.ListAttempts(ctx, eventToken, query, opts...))
+}
+
 // A single event that affects the transaction state and lifecycle.
 type Event struct {
 	// Globally unique identifier.
@@ -183,6 +206,56 @@ const (
 	EventSubscriptionEventTypeTransferTransactionCreated                           EventSubscriptionEventType = "transfer_transaction.created"
 )
 
+// A subscription to specific event types.
+type MessageAttempt struct {
+	// Globally unique identifier.
+	Token string `json:"token,required"`
+	// An RFC 3339 timestamp for when the event was created. UTC time zone.
+	//
+	// If no timezone is specified, UTC will be used.
+	Created time.Time `json:"created,required" format:"date-time"`
+	// Globally unique identifier.
+	EventSubscriptionToken string `json:"event_subscription_token,required"`
+	// Globally unique identifier.
+	EventToken string `json:"event_token,required"`
+	// The response body from the event subscription's URL.
+	Response string `json:"response,required"`
+	// The response status code from the event subscription's URL.
+	ResponseStatusCode int64 `json:"response_status_code,required"`
+	// The status of the event attempt.
+	Status MessageAttemptStatus `json:"status,required"`
+	URL    string               `json:"url,required" format:"uri"`
+	JSON   messageAttemptJSON
+}
+
+// messageAttemptJSON contains the JSON metadata for the struct [MessageAttempt]
+type messageAttemptJSON struct {
+	Token                  apijson.Field
+	Created                apijson.Field
+	EventSubscriptionToken apijson.Field
+	EventToken             apijson.Field
+	Response               apijson.Field
+	ResponseStatusCode     apijson.Field
+	Status                 apijson.Field
+	URL                    apijson.Field
+	raw                    string
+	ExtraFields            map[string]apijson.Field
+}
+
+func (r *MessageAttempt) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+// The status of the event attempt.
+type MessageAttemptStatus string
+
+const (
+	MessageAttemptStatusFailed  MessageAttemptStatus = "FAILED"
+	MessageAttemptStatusPending MessageAttemptStatus = "PENDING"
+	MessageAttemptStatusSending MessageAttemptStatus = "SENDING"
+	MessageAttemptStatusSuccess MessageAttemptStatus = "SUCCESS"
+)
+
 type EventListParams struct {
 	// Date string in RFC 3339 format. Only entries created after the specified date
 	// will be included. UTC time zone.
@@ -223,4 +296,40 @@ const (
 	EventListParamsEventTypePaymentTransactionCreated                            EventListParamsEventType = "payment_transaction.created"
 	EventListParamsEventTypePaymentTransactionUpdated                            EventListParamsEventType = "payment_transaction.updated"
 	EventListParamsEventTypeTransferTransactionCreated                           EventListParamsEventType = "transfer_transaction.created"
+)
+
+type EventListAttemptsParams struct {
+	// Date string in RFC 3339 format. Only entries created after the specified date
+	// will be included. UTC time zone.
+	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
+	// Date string in RFC 3339 format. Only entries created before the specified date
+	// will be included. UTC time zone.
+	End param.Field[time.Time] `query:"end" format:"date-time"`
+	// A cursor representing an item's token before which a page of results should end.
+	// Used to retrieve the previous page of results before this item.
+	EndingBefore param.Field[string] `query:"ending_before"`
+	// Page size (for pagination).
+	PageSize param.Field[int64] `query:"page_size"`
+	// A cursor representing an item's token after which a page of results should
+	// begin. Used to retrieve the next page of results after this item.
+	StartingAfter param.Field[string]                        `query:"starting_after"`
+	Status        param.Field[EventListAttemptsParamsStatus] `query:"status"`
+}
+
+// URLQuery serializes [EventListAttemptsParams]'s query parameters as
+// `url.Values`.
+func (r EventListAttemptsParams) URLQuery() (v url.Values) {
+	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
+		ArrayFormat:  apiquery.ArrayQueryFormatComma,
+		NestedFormat: apiquery.NestedQueryFormatBrackets,
+	})
+}
+
+type EventListAttemptsParamsStatus string
+
+const (
+	EventListAttemptsParamsStatusFailed  EventListAttemptsParamsStatus = "FAILED"
+	EventListAttemptsParamsStatusPending EventListAttemptsParamsStatus = "PENDING"
+	EventListAttemptsParamsStatusSending EventListAttemptsParamsStatus = "SENDING"
+	EventListAttemptsParamsStatusSuccess EventListAttemptsParamsStatus = "SUCCESS"
 )

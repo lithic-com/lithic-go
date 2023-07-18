@@ -122,6 +122,35 @@ func TestEventSubscriptionDelete(t *testing.T) {
 	}
 }
 
+func TestEventSubscriptionListAttemptsWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
+	client := lithic.NewClient(
+		option.WithAPIKey("APIKey"),
+		option.WithBaseURL("http://127.0.0.1:4010"),
+	)
+	_, err := client.Events.Subscriptions.ListAttempts(
+		context.TODO(),
+		"string",
+		lithic.EventSubscriptionListAttemptsParams{
+			Begin:         lithic.F(time.Now()),
+			End:           lithic.F(time.Now()),
+			EndingBefore:  lithic.F("string"),
+			PageSize:      lithic.F(int64(1)),
+			StartingAfter: lithic.F("string"),
+			Status:        lithic.F(lithic.EventSubscriptionListAttemptsParamsStatusFailed),
+		},
+	)
+	if err != nil {
+		var apierr *lithic.Error
+		if errors.As(err, &apierr) {
+			t.Log(string(apierr.DumpRequest(true)))
+		}
+		t.Fatalf("err should be nil: %s", err.Error())
+	}
+}
+
 func TestEventSubscriptionRecoverWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
