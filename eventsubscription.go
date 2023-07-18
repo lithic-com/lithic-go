@@ -91,6 +91,29 @@ func (r *EventSubscriptionService) Delete(ctx context.Context, eventSubscription
 	return
 }
 
+// List all the message attempts for a given event subscription.
+func (r *EventSubscriptionService) ListAttempts(ctx context.Context, eventSubscriptionToken string, query EventSubscriptionListAttemptsParams, opts ...option.RequestOption) (res *shared.CursorPage[MessageAttempt], err error) {
+	var raw *http.Response
+	opts = append(r.Options, opts...)
+	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
+	path := fmt.Sprintf("event_subscriptions/%s/attempts", eventSubscriptionToken)
+	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
+	if err != nil {
+		return nil, err
+	}
+	err = cfg.Execute()
+	if err != nil {
+		return nil, err
+	}
+	res.SetPageConfig(cfg, raw)
+	return res, nil
+}
+
+// List all the message attempts for a given event subscription.
+func (r *EventSubscriptionService) ListAttemptsAutoPaging(ctx context.Context, eventSubscriptionToken string, query EventSubscriptionListAttemptsParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[MessageAttempt] {
+	return shared.NewCursorPageAutoPager(r.ListAttempts(ctx, eventSubscriptionToken, query, opts...))
+}
+
 // Resend all failed messages since a given time.
 func (r *EventSubscriptionService) Recover(ctx context.Context, eventSubscriptionToken string, body EventSubscriptionRecoverParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
@@ -226,6 +249,42 @@ func (r EventSubscriptionListParams) URLQuery() (v url.Values) {
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
 }
+
+type EventSubscriptionListAttemptsParams struct {
+	// Date string in RFC 3339 format. Only entries created after the specified date
+	// will be included. UTC time zone.
+	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
+	// Date string in RFC 3339 format. Only entries created before the specified date
+	// will be included. UTC time zone.
+	End param.Field[time.Time] `query:"end" format:"date-time"`
+	// A cursor representing an item's token before which a page of results should end.
+	// Used to retrieve the previous page of results before this item.
+	EndingBefore param.Field[string] `query:"ending_before"`
+	// Page size (for pagination).
+	PageSize param.Field[int64] `query:"page_size"`
+	// A cursor representing an item's token after which a page of results should
+	// begin. Used to retrieve the next page of results after this item.
+	StartingAfter param.Field[string]                                    `query:"starting_after"`
+	Status        param.Field[EventSubscriptionListAttemptsParamsStatus] `query:"status"`
+}
+
+// URLQuery serializes [EventSubscriptionListAttemptsParams]'s query parameters as
+// `url.Values`.
+func (r EventSubscriptionListAttemptsParams) URLQuery() (v url.Values) {
+	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
+		ArrayFormat:  apiquery.ArrayQueryFormatComma,
+		NestedFormat: apiquery.NestedQueryFormatBrackets,
+	})
+}
+
+type EventSubscriptionListAttemptsParamsStatus string
+
+const (
+	EventSubscriptionListAttemptsParamsStatusFailed  EventSubscriptionListAttemptsParamsStatus = "FAILED"
+	EventSubscriptionListAttemptsParamsStatusPending EventSubscriptionListAttemptsParamsStatus = "PENDING"
+	EventSubscriptionListAttemptsParamsStatusSending EventSubscriptionListAttemptsParamsStatus = "SENDING"
+	EventSubscriptionListAttemptsParamsStatusSuccess EventSubscriptionListAttemptsParamsStatus = "SUCCESS"
+)
 
 type EventSubscriptionRecoverParams struct {
 	// Date string in RFC 3339 format. Only entries created after the specified date
