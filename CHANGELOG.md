@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.3](https://github.com/lithic-com/lithic-go/compare/v0.6.2...v0.6.3) (2023-07-18)
+
+
+### Features
+
+* **api:** add event message attempts ([#78](https://github.com/lithic-com/lithic-go/issues/78)) ([2e70c1b](https://github.com/lithic-com/lithic-go/commit/2e70c1b62a32fabe67adbb40c8d8b956e0f522bd))
+
 ## [0.6.2](https://github.com/lithic-com/lithic-go/compare/v0.6.1...v0.6.2) (2023-07-17)
 
 
