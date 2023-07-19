@@ -273,6 +273,8 @@ type EventListParams struct {
 	// A cursor representing an item's token after which a page of results should
 	// begin. Used to retrieve the next page of results after this item.
 	StartingAfter param.Field[string] `query:"starting_after"`
+	// Whether to include the event payload content in the response.
+	WithContent param.Field[bool] `query:"with_content"`
 }
 
 // URLQuery serializes [EventListParams]'s query parameters as `url.Values`.

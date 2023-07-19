@@ -46,6 +46,7 @@ func TestEventListWithOptionalParams(t *testing.T) {
 		EventTypes:    lithic.F([]lithic.EventListParamsEventType{lithic.EventListParamsEventTypeCardCreated, lithic.EventListParamsEventTypeCardCreated, lithic.EventListParamsEventTypeCardCreated}),
 		PageSize:      lithic.F(int64(1)),
 		StartingAfter: lithic.F("string"),
+		WithContent:   lithic.F(true),
 	})
 	if err != nil {
 		var apierr *lithic.Error
