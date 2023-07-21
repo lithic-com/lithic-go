@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.4](https://github.com/lithic-com/lithic-go/compare/v0.6.3...v0.6.4) (2023-07-21)
+
+
+### Features
+
+* **api:** add `with_content` param ([#81](https://github.com/lithic-com/lithic-go/issues/81)) ([004cf68](https://github.com/lithic-com/lithic-go/commit/004cf68be7b1368a8288e72a41556a57fe42614f))
+
 ## [0.6.3](https://github.com/lithic-com/lithic-go/compare/v0.6.2...v0.6.3) (2023-07-18)
 
 
