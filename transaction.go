@@ -495,7 +495,6 @@ const (
 	TransactionStatusExpired  TransactionStatus = "EXPIRED"
 	TransactionStatusPending  TransactionStatus = "PENDING"
 	TransactionStatusSettled  TransactionStatus = "SETTLED"
-	TransactionStatusSettling TransactionStatus = "SETTLING"
 	TransactionStatusVoided   TransactionStatus = "VOIDED"
 )
 
