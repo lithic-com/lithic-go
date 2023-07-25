@@ -278,3 +278,51 @@ Methods:
 Custom Methods:
 
 - VerifySignature
+
+# ExternalBankAccounts
+
+Params Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountAddressParam">ExternalBankAccountAddressParam</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#OwnerType">OwnerType</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#VerificationMethod">VerificationMethod</a>
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountAddress">ExternalBankAccountAddress</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountNewResponse">ExternalBankAccountNewResponse</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountGetResponse">ExternalBankAccountGetResponse</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountUpdateResponse">ExternalBankAccountUpdateResponse</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountListResponse">ExternalBankAccountListResponse</a>
+
+Methods:
+
+- <code title="post /external_bank_accounts">client.ExternalBankAccounts.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountService.New">New</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountNewParams">ExternalBankAccountNewParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountNewResponse">ExternalBankAccountNewResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="get /external_bank_accounts/{external_bank_account_token}">client.ExternalBankAccounts.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, externalBankAccountToken <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountGetResponse">ExternalBankAccountGetResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="patch /external_bank_accounts/{external_bank_account_token}">client.ExternalBankAccounts.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountService.Update">Update</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, externalBankAccountToken <a href="https://pkg.go.dev/builtin#string">string</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountUpdateParams">ExternalBankAccountUpdateParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountUpdateResponse">ExternalBankAccountUpdateResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="get /external_bank_accounts">client.ExternalBankAccounts.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountService.List">List</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, query <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountListParams">ExternalBankAccountListParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared#CursorPage">CursorPage</a>[<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountListResponse">ExternalBankAccountListResponse</a>], <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
+## MicroDeposits
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountMicroDepositNewResponse">ExternalBankAccountMicroDepositNewResponse</a>
+
+Methods:
+
+- <code title="post /external_bank_accounts/{external_bank_account_token}/micro_deposits">client.ExternalBankAccounts.MicroDeposits.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountMicroDepositService.New">New</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, externalBankAccountToken <a href="https://pkg.go.dev/builtin#string">string</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountMicroDepositNewParams">ExternalBankAccountMicroDepositNewParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountMicroDepositNewResponse">ExternalBankAccountMicroDepositNewResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
+# Payments
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#Payment">Payment</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentNewResponse">PaymentNewResponse</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentSimulateReleaseResponse">PaymentSimulateReleaseResponse</a>
+
+Methods:
+
+- <code title="post /payments">client.Payments.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentService.New">New</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentNewParams">PaymentNewParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentNewResponse">PaymentNewResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="get /payments/{payment_token}">client.Payments.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, paymentToken <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#Payment">Payment</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="get /payments">client.Payments.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentService.List">List</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, query <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentListParams">PaymentListParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared#CursorPage">CursorPage</a>[<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#Payment">Payment</a>], <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="post /simulate/payments/release">client.Payments.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentService.SimulateRelease">SimulateRelease</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentSimulateReleaseParams">PaymentSimulateReleaseParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentSimulateReleaseResponse">PaymentSimulateReleaseResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
