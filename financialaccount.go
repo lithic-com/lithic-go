@@ -127,33 +127,33 @@ func (r FinancialAccountParam) MarshalJSON() (data []byte, err error) {
 
 type FinancialTransaction struct {
 	// Globally unique identifier.
-	Token string `json:"token" format:"uuid"`
+	Token string `json:"token,required" format:"uuid"`
 	// Status types:
 	//
 	//   - `CARD` - Issuing card transaction.
 	//   - `ACH` - Transaction over ACH.
 	//   - `TRANSFER` - Internal transfer of funds between financial accounts in your
 	//     program.
-	Category FinancialTransactionCategory `json:"category"`
+	Category FinancialTransactionCategory `json:"category,required"`
 	// Date and time when the financial transaction first occurred. UTC time zone.
-	Created time.Time `json:"created" format:"date-time"`
+	Created time.Time `json:"created,required" format:"date-time"`
 	// 3-digit alphabetic ISO 4217 code for the settling currency of the transaction.
-	Currency string `json:"currency"`
+	Currency string `json:"currency,required"`
 	// A string that provides a description of the financial transaction; may be useful
 	// to display to users.
-	Descriptor string `json:"descriptor"`
+	Descriptor string `json:"descriptor,required"`
 	// A list of all financial events that have modified this financial transaction.
-	Events []FinancialTransactionEvent `json:"events"`
+	Events []FinancialTransactionEvent `json:"events,required"`
 	// Pending amount of the transaction in the currency's smallest unit (e.g., cents),
 	// including any acquirer fees. The value of this field will go to zero over time
 	// once the financial transaction is settled.
-	PendingAmount int64 `json:"pending_amount"`
+	PendingAmount int64 `json:"pending_amount,required"`
 	// APPROVED transactions were successful while DECLINED transactions were declined
 	// by user, Lithic, or the network.
-	Result FinancialTransactionResult `json:"result"`
+	Result FinancialTransactionResult `json:"result,required"`
 	// Amount of the transaction that has been settled in the currency's smallest unit
 	// (e.g., cents), including any acquirer fees. This may change over time.
-	SettledAmount int64 `json:"settled_amount"`
+	SettledAmount int64 `json:"settled_amount,required"`
 	// Status types:
 	//
 	//   - `DECLINED` - The card transaction was declined.
@@ -163,9 +163,9 @@ type FinancialTransaction struct {
 	//     release from ACH hold period
 	//   - `SETTLED` - The financial transaction is completed.
 	//   - `VOIDED` - The merchant has voided the previously pending card authorization.
-	Status FinancialTransactionStatus `json:"status"`
+	Status FinancialTransactionStatus `json:"status,required"`
 	// Date and time when the financial transaction was last updated. UTC time zone.
-	Updated time.Time `json:"updated" format:"date-time"`
+	Updated time.Time `json:"updated,required" format:"date-time"`
 	JSON    financialTransactionJSON
 }
 

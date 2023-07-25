@@ -31,6 +31,8 @@ type Client struct {
 	Transactions            *TransactionService
 	ResponderEndpoints      *ResponderEndpointService
 	Webhooks                *WebhookService
+	ExternalBankAccounts    *ExternalBankAccountService
+	Payments                *PaymentService
 }
 
 // NewClient generates a new client with the default option read from the
@@ -64,6 +66,8 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.Transactions = NewTransactionService(opts...)
 	r.ResponderEndpoints = NewResponderEndpointService(opts...)
 	r.Webhooks = NewWebhookService(opts...)
+	r.ExternalBankAccounts = NewExternalBankAccountService(opts...)
+	r.Payments = NewPaymentService(opts...)
 
 	return
 }
