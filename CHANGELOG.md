@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.5](https://github.com/lithic-com/lithic-go/compare/v0.6.4...v0.6.5) (2023-07-27)
+
+
+### Features
+
+* add `Bool` param field helper ([#86](https://github.com/lithic-com/lithic-go/issues/86)) ([847e53d](https://github.com/lithic-com/lithic-go/commit/847e53d771cbe02110590b0c4bf609d5212945d0))
+* **api:** add payment and external bank accounts resource ([#84](https://github.com/lithic-com/lithic-go/issues/84)) ([98a36d5](https://github.com/lithic-com/lithic-go/commit/98a36d508e45f08767d480a53a6f5440f602a9f7))
+
 ## [0.6.4](https://github.com/lithic-com/lithic-go/compare/v0.6.3...v0.6.4) (2023-07-21)
 
 
