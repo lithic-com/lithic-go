@@ -17,8 +17,8 @@ func TestTokenizationDecisioningGetSecret(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.TokenizationDecisioning.GetSecret(context.TODO())
 	if err != nil {
@@ -35,8 +35,8 @@ func TestTokenizationDecisioningRotateSecret(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.TokenizationDecisioning.RotateSecret(context.TODO())
 	if err != nil {

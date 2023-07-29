@@ -18,8 +18,8 @@ func TestEventGet(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Events.Get(context.TODO(), "string")
 	if err != nil {
@@ -36,8 +36,8 @@ func TestEventListWithOptionalParams(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Events.List(context.TODO(), lithic.EventListParams{
 		Begin:         lithic.F(time.Now()),
@@ -62,8 +62,8 @@ func TestEventListAttemptsWithOptionalParams(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Events.ListAttempts(
 		context.TODO(),

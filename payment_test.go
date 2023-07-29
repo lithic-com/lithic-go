@@ -17,8 +17,8 @@ func TestPaymentNewWithOptionalParams(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Payments.New(context.TODO(), lithic.PaymentNewParams{
 		Amount:                   lithic.F(int64(1)),
@@ -47,8 +47,8 @@ func TestPaymentGet(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Payments.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 	if err != nil {
@@ -65,8 +65,8 @@ func TestPaymentListWithOptionalParams(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Payments.List(context.TODO(), lithic.PaymentListParams{
 		EndingBefore:          lithic.F("string"),
@@ -90,8 +90,8 @@ func TestPaymentSimulateRelease(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Payments.SimulateRelease(context.TODO(), lithic.PaymentSimulateReleaseParams{
 		PaymentToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
