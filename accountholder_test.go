@@ -18,8 +18,8 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.AccountHolders.New(context.TODO(), lithic.AccountHolderNewParamsKYB{
 		BeneficialOwnerEntities: lithic.F([]lithic.AccountHolderNewParamsKYBBeneficialOwnerEntity{{
@@ -162,8 +162,8 @@ func TestAccountHolderGet(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.AccountHolders.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 	if err != nil {
@@ -180,8 +180,8 @@ func TestAccountHolderUpdateWithOptionalParams(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.AccountHolders.Update(
 		context.TODO(),
@@ -206,8 +206,8 @@ func TestAccountHolderNewWebhook(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.AccountHolders.NewWebhook(context.TODO(), lithic.AccountHolderNewWebhookParams{
 		URL: lithic.F("string"),
@@ -226,8 +226,8 @@ func TestAccountHolderListDocuments(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.AccountHolders.ListDocuments(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 	if err != nil {
@@ -244,8 +244,8 @@ func TestAccountHolderResubmit(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.AccountHolders.Resubmit(
 		context.TODO(),
@@ -285,8 +285,8 @@ func TestAccountHolderGetDocument(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.AccountHolders.GetDocument(
 		context.TODO(),
@@ -307,8 +307,8 @@ func TestAccountHolderUploadDocument(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.AccountHolders.UploadDocument(
 		context.TODO(),

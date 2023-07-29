@@ -18,8 +18,8 @@ func TestTransactionGet(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Transactions.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 	if err != nil {
@@ -36,8 +36,8 @@ func TestTransactionListWithOptionalParams(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Transactions.List(context.TODO(), lithic.TransactionListParams{
 		AccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
@@ -62,8 +62,8 @@ func TestTransactionSimulateAuthorizationWithOptionalParams(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Transactions.SimulateAuthorization(context.TODO(), lithic.TransactionSimulateAuthorizationParams{
 		Amount:                 lithic.F(int64(0)),
@@ -90,8 +90,8 @@ func TestTransactionSimulateAuthorizationAdvice(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Transactions.SimulateAuthorizationAdvice(context.TODO(), lithic.TransactionSimulateAuthorizationAdviceParams{
 		Token:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
@@ -111,8 +111,8 @@ func TestTransactionSimulateClearingWithOptionalParams(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Transactions.SimulateClearing(context.TODO(), lithic.TransactionSimulateClearingParams{
 		Token:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
@@ -132,8 +132,8 @@ func TestTransactionSimulateCreditAuthorizationWithOptionalParams(t *testing.T) 
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Transactions.SimulateCreditAuthorization(context.TODO(), lithic.TransactionSimulateCreditAuthorizationParams{
 		Amount:             lithic.F(int64(0)),
@@ -156,8 +156,8 @@ func TestTransactionSimulateReturn(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Transactions.SimulateReturn(context.TODO(), lithic.TransactionSimulateReturnParams{
 		Amount:     lithic.F(int64(0)),
@@ -178,8 +178,8 @@ func TestTransactionSimulateReturnReversal(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Transactions.SimulateReturnReversal(context.TODO(), lithic.TransactionSimulateReturnReversalParams{
 		Token: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
@@ -198,8 +198,8 @@ func TestTransactionSimulateVoidWithOptionalParams(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Transactions.SimulateVoid(context.TODO(), lithic.TransactionSimulateVoidParams{
 		Token:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
