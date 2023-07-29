@@ -18,8 +18,8 @@ func TestAccountGet(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Accounts.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 	if err != nil {
@@ -37,8 +37,8 @@ func TestAccountUpdateWithOptionalParams(t *testing.T) {
 	}
 	t.Skip("Prism returns invalid data")
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Accounts.Update(
 		context.TODO(),
@@ -72,8 +72,8 @@ func TestAccountListWithOptionalParams(t *testing.T) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithAPIKey("APIKey"),
 		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Accounts.List(context.TODO(), lithic.AccountListParams{
 		Begin:    lithic.F(time.Now()),
