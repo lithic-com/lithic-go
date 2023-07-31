@@ -12,7 +12,7 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
-func TestThreeDSDescisioningGetSecret(t *testing.T) {
+func TestThreeDSDecisioningGetSecret(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
@@ -20,7 +20,7 @@ func TestThreeDSDescisioningGetSecret(t *testing.T) {
 		option.WithBaseURL("http://127.0.0.1:4010"),
 		option.WithAPIKey("APIKey"),
 	)
-	_, err := client.ThreeDS.Descisioning.GetSecret(context.TODO())
+	_, err := client.ThreeDS.Decisioning.GetSecret(context.TODO())
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
@@ -30,7 +30,7 @@ func TestThreeDSDescisioningGetSecret(t *testing.T) {
 	}
 }
 
-func TestThreeDSDescisioningRotateSecret(t *testing.T) {
+func TestThreeDSDecisioningRotateSecret(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return
 	}
@@ -38,7 +38,7 @@ func TestThreeDSDescisioningRotateSecret(t *testing.T) {
 		option.WithBaseURL("http://127.0.0.1:4010"),
 		option.WithAPIKey("APIKey"),
 	)
-	err := client.ThreeDS.Descisioning.RotateSecret(context.TODO())
+	err := client.ThreeDS.Decisioning.RotateSecret(context.TODO())
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {

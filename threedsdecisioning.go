@@ -11,20 +11,20 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 )
 
-// ThreeDSDescisioningService contains methods and other services that help with
+// ThreeDSDecisioningService contains methods and other services that help with
 // interacting with the lithic API. Note, unlike clients, this service does not
 // read variables from the environment automatically. You should not instantiate
-// this service directly, and instead use the [NewThreeDSDescisioningService]
-// method instead.
-type ThreeDSDescisioningService struct {
+// this service directly, and instead use the [NewThreeDSDecisioningService] method
+// instead.
+type ThreeDSDecisioningService struct {
 	Options []option.RequestOption
 }
 
-// NewThreeDSDescisioningService generates a new service that applies the given
+// NewThreeDSDecisioningService generates a new service that applies the given
 // options to each request. These options are applied after the parent client's
 // options (if there is one), and before any request-specific options.
-func NewThreeDSDescisioningService(opts ...option.RequestOption) (r *ThreeDSDescisioningService) {
-	r = &ThreeDSDescisioningService{}
+func NewThreeDSDecisioningService(opts ...option.RequestOption) (r *ThreeDSDecisioningService) {
+	r = &ThreeDSDecisioningService{}
 	r.Options = opts
 	return
 }
@@ -35,7 +35,7 @@ func NewThreeDSDescisioningService(opts ...option.RequestOption) (r *ThreeDSDesc
 // after calling this endpoint for the first time. See
 // [this page](https://docs.lithic.com/docs/3ds-decisioning#3ds-decisioning-hmac-secrets)
 // for more detail about verifying 3DS Decisioning requests.
-func (r *ThreeDSDescisioningService) GetSecret(ctx context.Context, opts ...option.RequestOption) (res *ThreeDSDescisioningGetSecretResponse, err error) {
+func (r *ThreeDSDecisioningService) GetSecret(ctx context.Context, opts ...option.RequestOption) (res *ThreeDSDecisioningGetSecretResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "three_ds_decisioning/secret"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
@@ -46,7 +46,7 @@ func (r *ThreeDSDescisioningService) GetSecret(ctx context.Context, opts ...opti
 // deactivated 24 hours after a successful request to this endpoint. Make a
 // [`GET /three_ds_decisioning/secret`](https://docs.lithic.com/reference/getthreedsdecisioningsecret)
 // request to retrieve the new secret key.
-func (r *ThreeDSDescisioningService) RotateSecret(ctx context.Context, opts ...option.RequestOption) (err error) {
+func (r *ThreeDSDecisioningService) RotateSecret(ctx context.Context, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := "three_ds_decisioning/secret/rotate"
@@ -54,20 +54,20 @@ func (r *ThreeDSDescisioningService) RotateSecret(ctx context.Context, opts ...o
 	return
 }
 
-type ThreeDSDescisioningGetSecretResponse struct {
+type ThreeDSDecisioningGetSecretResponse struct {
 	// The 3DS Decisioning HMAC secret
 	Secret string `json:"secret"`
-	JSON   threeDSDescisioningGetSecretResponseJSON
+	JSON   threeDSDecisioningGetSecretResponseJSON
 }
 
-// threeDSDescisioningGetSecretResponseJSON contains the JSON metadata for the
-// struct [ThreeDSDescisioningGetSecretResponse]
-type threeDSDescisioningGetSecretResponseJSON struct {
+// threeDSDecisioningGetSecretResponseJSON contains the JSON metadata for the
+// struct [ThreeDSDecisioningGetSecretResponse]
+type threeDSDecisioningGetSecretResponseJSON struct {
 	Secret      apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *ThreeDSDescisioningGetSecretResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *ThreeDSDecisioningGetSecretResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
