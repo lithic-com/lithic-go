@@ -326,3 +326,26 @@ Methods:
 - <code title="get /payments/{payment_token}">client.Payments.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, paymentToken <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#Payment">Payment</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 - <code title="get /payments">client.Payments.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentService.List">List</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, query <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentListParams">PaymentListParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared#CursorPage">CursorPage</a>[<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#Payment">Payment</a>], <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 - <code title="post /simulate/payments/release">client.Payments.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentService.SimulateRelease">SimulateRelease</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentSimulateReleaseParams">PaymentSimulateReleaseParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentSimulateReleaseResponse">PaymentSimulateReleaseResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
+# ThreeDS
+
+## Authentication
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSAuthenticationGetResponse">ThreeDSAuthenticationGetResponse</a>
+
+Methods:
+
+- <code title="get /three_ds_authentication/{three_ds_authentication_token}">client.ThreeDS.Authentication.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSAuthenticationService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, threeDSAuthenticationToken <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSAuthenticationGetResponse">ThreeDSAuthenticationGetResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
+## Descisioning
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDescisioningGetSecretResponse">ThreeDSDescisioningGetSecretResponse</a>
+
+Methods:
+
+- <code title="get /three_ds_decisioning/secret">client.ThreeDS.Descisioning.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDescisioningService.GetSecret">GetSecret</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDescisioningGetSecretResponse">ThreeDSDescisioningGetSecretResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="post /three_ds_decisioning/secret/rotate">client.ThreeDS.Descisioning.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDescisioningService.RotateSecret">RotateSecret</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>) <a href="https://pkg.go.dev/builtin#error">error</a></code>

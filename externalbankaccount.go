@@ -150,7 +150,7 @@ type ExternalBankAccountNewResponse struct {
 	// record of the association
 	Token string `json:"token,required" format:"uuid"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
-	// accept US bank accounts e.g., US
+	// accept USA bank accounts e.g., USA
 	Country string `json:"country,required"`
 	// An ISO 8601 string representing when this funding source was added to the Lithic
 	// account.
@@ -260,7 +260,7 @@ type ExternalBankAccountGetResponse struct {
 	// record of the association
 	Token string `json:"token,required" format:"uuid"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
-	// accept US bank accounts e.g., US
+	// accept USA bank accounts e.g., USA
 	Country string `json:"country,required"`
 	// An ISO 8601 string representing when this funding source was added to the Lithic
 	// account.
@@ -370,7 +370,7 @@ type ExternalBankAccountUpdateResponse struct {
 	// record of the association
 	Token string `json:"token,required" format:"uuid"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
-	// accept US bank accounts e.g., US
+	// accept USA bank accounts e.g., USA
 	Country string `json:"country,required"`
 	// An ISO 8601 string representing when this funding source was added to the Lithic
 	// account.
@@ -480,7 +480,7 @@ type ExternalBankAccountListResponse struct {
 	// record of the association
 	Token string `json:"token,required" format:"uuid"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
-	// accept US bank accounts e.g., US
+	// accept USA bank accounts e.g., USA
 	Country string `json:"country,required"`
 	// An ISO 8601 string representing when this funding source was added to the Lithic
 	// account.

@@ -112,6 +112,7 @@ type ResponderEndpointNewParamsType string
 
 const (
 	ResponderEndpointNewParamsTypeTokenizationDecisioning ResponderEndpointNewParamsType = "TOKENIZATION_DECISIONING"
+	ResponderEndpointNewParamsTypeThreeDSDecisioning      ResponderEndpointNewParamsType = "THREE_DS_DECISIONING"
 )
 
 type ResponderEndpointDeleteParams struct {
@@ -133,6 +134,7 @@ type ResponderEndpointDeleteParamsType string
 
 const (
 	ResponderEndpointDeleteParamsTypeTokenizationDecisioning ResponderEndpointDeleteParamsType = "TOKENIZATION_DECISIONING"
+	ResponderEndpointDeleteParamsTypeThreeDSDecisioning      ResponderEndpointDeleteParamsType = "THREE_DS_DECISIONING"
 )
 
 type ResponderEndpointCheckStatusParams struct {
@@ -154,4 +156,5 @@ type ResponderEndpointCheckStatusParamsType string
 
 const (
 	ResponderEndpointCheckStatusParamsTypeTokenizationDecisioning ResponderEndpointCheckStatusParamsType = "TOKENIZATION_DECISIONING"
+	ResponderEndpointCheckStatusParamsTypeThreeDSDecisioning      ResponderEndpointCheckStatusParamsType = "THREE_DS_DECISIONING"
 )

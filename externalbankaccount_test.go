@@ -76,7 +76,7 @@ func TestExternalBankAccountUpdateWithOptionalParams(t *testing.T) {
 				City:       lithic.F("x"),
 				State:      lithic.F("xx"),
 				PostalCode: lithic.F("11201"),
-				Country:    lithic.F("US"),
+				Country:    lithic.F("USD"),
 			}),
 			CompanyID:       lithic.F("x"),
 			Dob:             lithic.F(time.Now()),
