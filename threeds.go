@@ -13,7 +13,7 @@ import (
 type ThreeDSService struct {
 	Options        []option.RequestOption
 	Authentication *ThreeDSAuthenticationService
-	Descisioning   *ThreeDSDescisioningService
+	Decisioning    *ThreeDSDecisioningService
 }
 
 // NewThreeDSService generates a new service that applies the given options to each
@@ -23,6 +23,6 @@ func NewThreeDSService(opts ...option.RequestOption) (r *ThreeDSService) {
 	r = &ThreeDSService{}
 	r.Options = opts
 	r.Authentication = NewThreeDSAuthenticationService(opts...)
-	r.Descisioning = NewThreeDSDescisioningService(opts...)
+	r.Decisioning = NewThreeDSDecisioningService(opts...)
 	return
 }
