@@ -339,13 +339,13 @@ Methods:
 
 - <code title="get /three_ds_authentication/{three_ds_authentication_token}">client.ThreeDS.Authentication.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSAuthenticationService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, threeDSAuthenticationToken <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSAuthenticationGetResponse">ThreeDSAuthenticationGetResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 
-## Descisioning
+## Decisioning
 
 Response Types:
 
-- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDescisioningGetSecretResponse">ThreeDSDescisioningGetSecretResponse</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDecisioningGetSecretResponse">ThreeDSDecisioningGetSecretResponse</a>
 
 Methods:
 
-- <code title="get /three_ds_decisioning/secret">client.ThreeDS.Descisioning.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDescisioningService.GetSecret">GetSecret</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDescisioningGetSecretResponse">ThreeDSDescisioningGetSecretResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
-- <code title="post /three_ds_decisioning/secret/rotate">client.ThreeDS.Descisioning.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDescisioningService.RotateSecret">RotateSecret</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>) <a href="https://pkg.go.dev/builtin#error">error</a></code>
+- <code title="get /three_ds_decisioning/secret">client.ThreeDS.Decisioning.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDecisioningService.GetSecret">GetSecret</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDecisioningGetSecretResponse">ThreeDSDecisioningGetSecretResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="post /three_ds_decisioning/secret/rotate">client.ThreeDS.Decisioning.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDecisioningService.RotateSecret">RotateSecret</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>) <a href="https://pkg.go.dev/builtin#error">error</a></code>
