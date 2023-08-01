@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.6.6](https://github.com/lithic-com/lithic-go/compare/v0.6.5...v0.6.6) (2023-08-01)
+
+
+### Features
+
+* **api:** updates ([#90](https://github.com/lithic-com/lithic-go/issues/90)) ([7411302](https://github.com/lithic-com/lithic-go/commit/741130245a9146e443a76c9d5e9ce5aa1a885ef1))
+
+
+### Bug Fixes
+
+* adjust typo of 'descisioning' to 'decisioning' ([#91](https://github.com/lithic-com/lithic-go/issues/91)) ([a8a36a7](https://github.com/lithic-com/lithic-go/commit/a8a36a7df2f8955f819bcabd75a4911975536622))
+
+
+### Chores
+
+* **internal:** minor reformatting of code ([#88](https://github.com/lithic-com/lithic-go/issues/88)) ([f499c61](https://github.com/lithic-com/lithic-go/commit/f499c61c4a11c274a31bc86aa0abb5446764171c))
+
 ## [0.6.5](https://github.com/lithic-com/lithic-go/compare/v0.6.4...v0.6.5) (2023-07-27)
 
 
