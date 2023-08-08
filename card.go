@@ -522,7 +522,8 @@ type CardNewParams struct {
 	// In Sandbox, use 00000000-0000-0000-1000-000000000000 and
 	// 00000000-0000-0000-2000-000000000000 to test creating cards on specific card
 	// programs.
-	CardProgramToken param.Field[string] `json:"card_program_token" format:"uuid"`
+	CardProgramToken param.Field[string]              `json:"card_program_token" format:"uuid"`
+	Carrier          param.Field[shared.CarrierParam] `json:"carrier"`
 	// Specifies the digital card art to be displayed in the user’s digital wallet
 	// after tokenization. This artwork must be approved by Mastercard and configured
 	// by Lithic to use. See
@@ -838,6 +839,8 @@ const (
 )
 
 type CardReissueParams struct {
+	// If omitted, the previous carrier will be used.
+	Carrier param.Field[shared.CarrierParam] `json:"carrier"`
 	// Specifies the configuration (e.g. physical card art) that the card should be
 	// manufactured with, and only applies to cards of type `PHYSICAL`. This must be
 	// configured with Lithic before use.
