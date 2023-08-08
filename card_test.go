@@ -23,9 +23,12 @@ func TestCardNewWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Cards.New(context.TODO(), lithic.CardNewParams{
-		Type:                lithic.F(lithic.CardNewParamsTypeVirtual),
-		AccountToken:        lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-		CardProgramToken:    lithic.F("00000000-0000-0000-1000-000000000000"),
+		Type:             lithic.F(lithic.CardNewParamsTypeVirtual),
+		AccountToken:     lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		CardProgramToken: lithic.F("00000000-0000-0000-1000-000000000000"),
+		Carrier: lithic.F(shared.CarrierParam{
+			QrCodeURL: lithic.F("string"),
+		}),
 		DigitalCardArtToken: lithic.F("00000000-0000-0000-1000-000000000000"),
 		ExpMonth:            lithic.F("06"),
 		ExpYear:             lithic.F("2027"),
@@ -238,6 +241,9 @@ func TestCardReissueWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.CardReissueParams{
+			Carrier: lithic.F(shared.CarrierParam{
+				QrCodeURL: lithic.F("string"),
+			}),
 			ProductID: lithic.F("string"),
 			ShippingAddress: lithic.F(shared.ShippingAddressParam{
 				FirstName:   lithic.F("Michael"),

@@ -29,6 +29,15 @@ func (r AddressParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
+type CarrierParam struct {
+	// QR code url to display on the card carrier
+	QrCodeURL param.Field[string] `json:"qr_code_url"`
+}
+
+func (r CarrierParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
 type ShippingAddressParam struct {
 	// Valid USPS routable address.
 	Address1 param.Field[string] `json:"address1,required"`
