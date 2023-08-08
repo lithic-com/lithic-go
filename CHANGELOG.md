@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.7](https://github.com/lithic-com/lithic-go/compare/v0.6.6...v0.6.7) (2023-08-08)
+
+
+### Features
+
+* **api:** add carrier property to card create and reissue params ([#95](https://github.com/lithic-com/lithic-go/issues/95)) ([89f43dc](https://github.com/lithic-com/lithic-go/commit/89f43dcb4bae8fa556fe378742631555b7c8c71a))
+
+
+### Documentation
+
+* **readme:** remove beta status + document versioning policy ([#93](https://github.com/lithic-com/lithic-go/issues/93)) ([c622205](https://github.com/lithic-com/lithic-go/commit/c622205f8bbdab23116ef76608460bd5bcb5101e))
+
 ## [0.6.6](https://github.com/lithic-com/lithic-go/compare/v0.6.5...v0.6.6) (2023-08-01)
 
 
