@@ -13,4 +13,7 @@ type Error = apierror.Error
 type AddressParam = shared.AddressParam
 
 // This is an alias to an internal type.
+type CarrierParam = shared.CarrierParam
+
+// This is an alias to an internal type.
 type ShippingAddressParam = shared.ShippingAddressParam
