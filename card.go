@@ -554,6 +554,9 @@ type CardNewParams struct {
 	//     tracking
 	//   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
 	//     with tracking
+	//   - `PRIORITY` - USPS Priority, 1-3 day shipping, with tracking
+	//   - `EXPRESS` - FedEx Express, 3-day shipping, with tracking
+	//   - `2_DAY` - FedEx 2-day shipping, with tracking
 	//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
 	//     tracking
 	ShippingMethod param.Field[CardNewParamsShippingMethod] `json:"shipping_method"`
@@ -615,6 +618,9 @@ const (
 //     tracking
 //   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
 //     with tracking
+//   - `PRIORITY` - USPS Priority, 1-3 day shipping, with tracking
+//   - `EXPRESS` - FedEx Express, 3-day shipping, with tracking
+//   - `2_DAY` - FedEx 2-day shipping, with tracking
 //   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
 //     tracking
 type CardNewParamsShippingMethod string
@@ -622,6 +628,9 @@ type CardNewParamsShippingMethod string
 const (
 	CardNewParamsShippingMethodStandard             CardNewParamsShippingMethod = "STANDARD"
 	CardNewParamsShippingMethodStandardWithTracking CardNewParamsShippingMethod = "STANDARD_WITH_TRACKING"
+	CardNewParamsShippingMethodPriority             CardNewParamsShippingMethod = "PRIORITY"
+	CardNewParamsShippingMethodExpress              CardNewParamsShippingMethod = "EXPRESS"
+	CardNewParamsShippingMethod2Day                 CardNewParamsShippingMethod = "2_DAY"
 	CardNewParamsShippingMethodExpedited            CardNewParamsShippingMethod = "EXPEDITED"
 )
 
@@ -854,6 +863,9 @@ type CardReissueParams struct {
 	//     tracking
 	//   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
 	//     with tracking
+	//   - `PRIORITY` - USPS Priority, 1-3 day shipping, with tracking
+	//   - `EXPRESS` - FedEx Express, 3-day shipping, with tracking
+	//   - `2_DAY` - FedEx 2-day shipping, with tracking
 	//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
 	//     tracking
 	ShippingMethod param.Field[CardReissueParamsShippingMethod] `json:"shipping_method"`
@@ -870,6 +882,9 @@ func (r CardReissueParams) MarshalJSON() (data []byte, err error) {
 //     tracking
 //   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
 //     with tracking
+//   - `PRIORITY` - USPS Priority, 1-3 day shipping, with tracking
+//   - `EXPRESS` - FedEx Express, 3-day shipping, with tracking
+//   - `2_DAY` - FedEx 2-day shipping, with tracking
 //   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
 //     tracking
 type CardReissueParamsShippingMethod string
@@ -877,5 +892,8 @@ type CardReissueParamsShippingMethod string
 const (
 	CardReissueParamsShippingMethodStandard             CardReissueParamsShippingMethod = "STANDARD"
 	CardReissueParamsShippingMethodStandardWithTracking CardReissueParamsShippingMethod = "STANDARD_WITH_TRACKING"
+	CardReissueParamsShippingMethodPriority             CardReissueParamsShippingMethod = "PRIORITY"
+	CardReissueParamsShippingMethodExpress              CardReissueParamsShippingMethod = "EXPRESS"
+	CardReissueParamsShippingMethod2Day                 CardReissueParamsShippingMethod = "2-DAY"
 	CardReissueParamsShippingMethodExpedited            CardReissueParamsShippingMethod = "EXPEDITED"
 )
