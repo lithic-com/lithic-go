@@ -154,81 +154,23 @@ const (
 )
 
 type PaymentNewResponse struct {
-	Direction        PaymentNewResponseDirection        `json:"direction,required"`
-	Method           PaymentNewResponseMethod           `json:"method,required"`
-	MethodAttributes PaymentNewResponseMethodAttributes `json:"method_attributes,required"`
-	Source           PaymentNewResponseSource           `json:"source,required"`
 	// Balance of a Financial Account
-	Balance                  Balance `json:"balance"`
-	ExternalBankAccountToken string  `json:"external_bank_account_token" format:"uuid"`
-	UserDefinedID            string  `json:"user_defined_id"`
-	JSON                     paymentNewResponseJSON
-	FinancialTransaction
+	Balance Balance `json:"balance"`
+	JSON    paymentNewResponseJSON
+	Payment
 }
 
 // paymentNewResponseJSON contains the JSON metadata for the struct
 // [PaymentNewResponse]
 type paymentNewResponseJSON struct {
-	Direction                apijson.Field
-	Method                   apijson.Field
-	MethodAttributes         apijson.Field
-	Source                   apijson.Field
-	Balance                  apijson.Field
-	ExternalBankAccountToken apijson.Field
-	UserDefinedID            apijson.Field
-	raw                      string
-	ExtraFields              map[string]apijson.Field
+	Balance     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *PaymentNewResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
-
-type PaymentNewResponseDirection string
-
-const (
-	PaymentNewResponseDirectionCredit PaymentNewResponseDirection = "CREDIT"
-	PaymentNewResponseDirectionDebit  PaymentNewResponseDirection = "DEBIT"
-)
-
-type PaymentNewResponseMethod string
-
-const (
-	PaymentNewResponseMethodACHNextDay PaymentNewResponseMethod = "ACH_NEXT_DAY"
-	PaymentNewResponseMethodACHSameDay PaymentNewResponseMethod = "ACH_SAME_DAY"
-)
-
-type PaymentNewResponseMethodAttributes struct {
-	SecCode PaymentNewResponseMethodAttributesSecCode `json:"sec_code,required"`
-	JSON    paymentNewResponseMethodAttributesJSON
-}
-
-// paymentNewResponseMethodAttributesJSON contains the JSON metadata for the struct
-// [PaymentNewResponseMethodAttributes]
-type paymentNewResponseMethodAttributesJSON struct {
-	SecCode     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *PaymentNewResponseMethodAttributes) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type PaymentNewResponseMethodAttributesSecCode string
-
-const (
-	PaymentNewResponseMethodAttributesSecCodePpd PaymentNewResponseMethodAttributesSecCode = "PPD"
-	PaymentNewResponseMethodAttributesSecCodeCcd PaymentNewResponseMethodAttributesSecCode = "CCD"
-	PaymentNewResponseMethodAttributesSecCodeWeb PaymentNewResponseMethodAttributesSecCode = "WEB"
-)
-
-type PaymentNewResponseSource string
-
-const (
-	PaymentNewResponseSourceLithic   PaymentNewResponseSource = "LITHIC"
-	PaymentNewResponseSourceCustomer PaymentNewResponseSource = "CUSTOMER"
-)
 
 type PaymentSimulateReleaseResponse struct {
 	DebuggingRequestID    string                               `json:"debugging_request_id" format:"uuid"`
