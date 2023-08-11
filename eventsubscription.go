@@ -152,14 +152,15 @@ func (r *EventSubscriptionService) RotateSecret(ctx context.Context, eventSubscr
 }
 
 type EventSubscriptionGetSecretResponse struct {
-	Key  string `json:"key"`
-	JSON eventSubscriptionGetSecretResponseJSON
+	// The secret for the event subscription.
+	Secret string `json:"secret"`
+	JSON   eventSubscriptionGetSecretResponseJSON
 }
 
 // eventSubscriptionGetSecretResponseJSON contains the JSON metadata for the struct
 // [EventSubscriptionGetSecretResponse]
 type eventSubscriptionGetSecretResponseJSON struct {
-	Key         apijson.Field
+	Secret      apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
