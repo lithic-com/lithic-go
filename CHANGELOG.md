@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.8](https://github.com/lithic-com/lithic-go/compare/v0.6.7...v0.6.8) (2023-08-11)
+
+
+### Features
+
+* allOf models now have toXxx methods to access the separate allOf models ([#100](https://github.com/lithic-com/lithic-go/issues/100)) ([3018520](https://github.com/lithic-com/lithic-go/commit/3018520eb3c3d720cb15cb905de6c3e1e31241e9))
+* **api:** add card reissue shipping options ([#99](https://github.com/lithic-com/lithic-go/issues/99)) ([8aaa9d3](https://github.com/lithic-com/lithic-go/commit/8aaa9d34312ff43d6e96630b4584f93c67e2af63))
+
+
+### Bug Fixes
+
+* **client:** correctly set multipart form data boundary ([#97](https://github.com/lithic-com/lithic-go/issues/97)) ([5785e31](https://github.com/lithic-com/lithic-go/commit/5785e31de9b183ed55763f4b0d790e94d502ce4e))
+
 ## [0.6.7](https://github.com/lithic-com/lithic-go/compare/v0.6.6...v0.6.7) (2023-08-08)
 
 
