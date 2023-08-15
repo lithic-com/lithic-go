@@ -98,7 +98,7 @@ func NewRequestConfig(ctx context.Context, method string, u string, body interfa
 	if b != nil {
 		req.Header.Set("Content-Type", contentType)
 	}
-	req.Header.Set("Idempotency-Token", "stainless-go-"+uuid.New().String())
+	req.Header.Set("Idempotency-Key", "stainless-go-"+uuid.New().String())
 	req.Header.Set("Accept", "application/json")
 
 	for k, v := range getPlatformProperties() {
@@ -298,7 +298,7 @@ func (cfg *RequestConfig) Clone(ctx context.Context) *RequestConfig {
 		Request:    req,
 		HTTPClient: cfg.HTTPClient,
 	}
-	new.Request.Header.Set("Idempotency-Token", "stainless-go-"+uuid.New().String())
+	new.Request.Header.Set("Idempotency-Key", "stainless-go-"+uuid.New().String())
 	return new
 }
 
