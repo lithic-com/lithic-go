@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.7.0](https://github.com/lithic-com/lithic-go/compare/v0.6.8...v0.7.0) (2023-08-15)
+
+
+### ⚠ BREAKING CHANGES
+
+* **api:** change `key` to `secret` ([#102](https://github.com/lithic-com/lithic-go/issues/102))
+
+### Features
+
+* **api:** change `key` to `secret` ([#102](https://github.com/lithic-com/lithic-go/issues/102)) ([66a2271](https://github.com/lithic-com/lithic-go/commit/66a227152f0bb1db938c256db1764114137ae550))
+
+
+### Chores
+
+* assign default reviewers to release PRs ([#104](https://github.com/lithic-com/lithic-go/issues/104)) ([6f95aaa](https://github.com/lithic-com/lithic-go/commit/6f95aaaca4aed01adeb217b31ad80ce4454e2028))
+* **client:** send Idempotency-Key header ([#105](https://github.com/lithic-com/lithic-go/issues/105)) ([68b7e7f](https://github.com/lithic-com/lithic-go/commit/68b7e7fd330dbfac504398250ee9a4fce7976a17))
+
 ## [0.6.8](https://github.com/lithic-com/lithic-go/compare/v0.6.7...v0.6.8) (2023-08-11)
 
 
