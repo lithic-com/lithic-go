@@ -182,8 +182,9 @@ type ExternalBankAccountNewResponse struct {
 	Dob             time.Time `json:"dob" format:"date"`
 	DoingBusinessAs string    `json:"doing_business_as"`
 	// The nickname given to this record of External Bank Account
-	Name string `json:"name"`
-	JSON externalBankAccountNewResponseJSON
+	Name          string `json:"name"`
+	UserDefinedID string `json:"user_defined_id"`
+	JSON          externalBankAccountNewResponseJSON
 }
 
 // externalBankAccountNewResponseJSON contains the JSON metadata for the struct
@@ -207,6 +208,7 @@ type externalBankAccountNewResponseJSON struct {
 	Dob                apijson.Field
 	DoingBusinessAs    apijson.Field
 	Name               apijson.Field
+	UserDefinedID      apijson.Field
 	raw                string
 	ExtraFields        map[string]apijson.Field
 }
@@ -292,8 +294,9 @@ type ExternalBankAccountGetResponse struct {
 	Dob             time.Time `json:"dob" format:"date"`
 	DoingBusinessAs string    `json:"doing_business_as"`
 	// The nickname given to this record of External Bank Account
-	Name string `json:"name"`
-	JSON externalBankAccountGetResponseJSON
+	Name          string `json:"name"`
+	UserDefinedID string `json:"user_defined_id"`
+	JSON          externalBankAccountGetResponseJSON
 }
 
 // externalBankAccountGetResponseJSON contains the JSON metadata for the struct
@@ -317,6 +320,7 @@ type externalBankAccountGetResponseJSON struct {
 	Dob                apijson.Field
 	DoingBusinessAs    apijson.Field
 	Name               apijson.Field
+	UserDefinedID      apijson.Field
 	raw                string
 	ExtraFields        map[string]apijson.Field
 }
@@ -402,8 +406,9 @@ type ExternalBankAccountUpdateResponse struct {
 	Dob             time.Time `json:"dob" format:"date"`
 	DoingBusinessAs string    `json:"doing_business_as"`
 	// The nickname given to this record of External Bank Account
-	Name string `json:"name"`
-	JSON externalBankAccountUpdateResponseJSON
+	Name          string `json:"name"`
+	UserDefinedID string `json:"user_defined_id"`
+	JSON          externalBankAccountUpdateResponseJSON
 }
 
 // externalBankAccountUpdateResponseJSON contains the JSON metadata for the struct
@@ -427,6 +432,7 @@ type externalBankAccountUpdateResponseJSON struct {
 	Dob                apijson.Field
 	DoingBusinessAs    apijson.Field
 	Name               apijson.Field
+	UserDefinedID      apijson.Field
 	raw                string
 	ExtraFields        map[string]apijson.Field
 }
@@ -512,8 +518,9 @@ type ExternalBankAccountListResponse struct {
 	Dob             time.Time `json:"dob" format:"date"`
 	DoingBusinessAs string    `json:"doing_business_as"`
 	// The nickname given to this record of External Bank Account
-	Name string `json:"name"`
-	JSON externalBankAccountListResponseJSON
+	Name          string `json:"name"`
+	UserDefinedID string `json:"user_defined_id"`
+	JSON          externalBankAccountListResponseJSON
 }
 
 // externalBankAccountListResponseJSON contains the JSON metadata for the struct
@@ -537,6 +544,7 @@ type externalBankAccountListResponseJSON struct {
 	Dob                apijson.Field
 	DoingBusinessAs    apijson.Field
 	Name               apijson.Field
+	UserDefinedID      apijson.Field
 	raw                string
 	ExtraFields        map[string]apijson.Field
 }
@@ -600,6 +608,7 @@ type ExternalBankAccountNewParamsPlaidCreateBankAccountAPIRequest struct {
 	// Date of Birth of the Individual that owns the external bank account
 	Dob             param.Field[time.Time] `json:"dob" format:"date"`
 	DoingBusinessAs param.Field[string]    `json:"doing_business_as"`
+	UserDefinedID   param.Field[string]    `json:"user_defined_id"`
 }
 
 func (r ExternalBankAccountNewParamsPlaidCreateBankAccountAPIRequest) MarshalJSON() (data []byte, err error) {
@@ -628,6 +637,7 @@ type ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequest struct 
 	Dob             param.Field[time.Time] `json:"dob" format:"date"`
 	DoingBusinessAs param.Field[string]    `json:"doing_business_as"`
 	Name            param.Field[string]    `json:"name"`
+	UserDefinedID   param.Field[string]    `json:"user_defined_id"`
 	// Indicates whether verification was enforced for a given association record. For
 	// MICRO_DEPOSIT, option to disable verification if the external bank account has
 	// already been verified before. By default, verification will be required unless
@@ -661,6 +671,7 @@ type ExternalBankAccountUpdateParams struct {
 	Name            param.Field[string]    `json:"name"`
 	Owner           param.Field[string]    `json:"owner"`
 	OwnerType       param.Field[OwnerType] `json:"owner_type"`
+	UserDefinedID   param.Field[string]    `json:"user_defined_id"`
 }
 
 func (r ExternalBankAccountUpdateParams) MarshalJSON() (data []byte, err error) {
