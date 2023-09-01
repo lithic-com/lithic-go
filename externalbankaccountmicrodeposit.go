@@ -79,8 +79,9 @@ type ExternalBankAccountMicroDepositNewResponse struct {
 	Dob             time.Time `json:"dob" format:"date"`
 	DoingBusinessAs string    `json:"doing_business_as"`
 	// The nickname given to this record of External Bank Account
-	Name string `json:"name"`
-	JSON externalBankAccountMicroDepositNewResponseJSON
+	Name          string `json:"name"`
+	UserDefinedID string `json:"user_defined_id"`
+	JSON          externalBankAccountMicroDepositNewResponseJSON
 }
 
 // externalBankAccountMicroDepositNewResponseJSON contains the JSON metadata for
@@ -104,6 +105,7 @@ type externalBankAccountMicroDepositNewResponseJSON struct {
 	Dob                apijson.Field
 	DoingBusinessAs    apijson.Field
 	Name               apijson.Field
+	UserDefinedID      apijson.Field
 	raw                string
 	ExtraFields        map[string]apijson.Field
 }
