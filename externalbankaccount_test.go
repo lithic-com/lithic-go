@@ -30,6 +30,7 @@ func TestExternalBankAccountNewWithOptionalParams(t *testing.T) {
 		CompanyID:          lithic.F("x"),
 		Dob:                lithic.F(time.Now()),
 		DoingBusinessAs:    lithic.F("string"),
+		UserDefinedID:      lithic.F("string"),
 	})
 	if err != nil {
 		var apierr *lithic.Error
@@ -84,6 +85,7 @@ func TestExternalBankAccountUpdateWithOptionalParams(t *testing.T) {
 			Name:            lithic.F("x"),
 			Owner:           lithic.F("x"),
 			OwnerType:       lithic.F(lithic.OwnerTypeIndividual),
+			UserDefinedID:   lithic.F("string"),
 		},
 	)
 	if err != nil {

@@ -35,7 +35,7 @@ func NewTransactionService(opts ...option.RequestOption) (r *TransactionService)
 	return
 }
 
-// Get specific transaction.
+// Get specific card transaction.
 func (r *TransactionService) Get(ctx context.Context, transactionToken string, opts ...option.RequestOption) (res *Transaction, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("transactions/%s", transactionToken)
@@ -43,7 +43,7 @@ func (r *TransactionService) Get(ctx context.Context, transactionToken string, o
 	return
 }
 
-// List transactions.
+// List card transactions.
 func (r *TransactionService) List(ctx context.Context, query TransactionListParams, opts ...option.RequestOption) (res *shared.Page[Transaction], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
@@ -61,7 +61,7 @@ func (r *TransactionService) List(ctx context.Context, query TransactionListPara
 	return res, nil
 }
 
-// List transactions.
+// List card transactions.
 func (r *TransactionService) ListAutoPaging(ctx context.Context, query TransactionListParams, opts ...option.RequestOption) *shared.PageAutoPager[Transaction] {
 	return shared.NewPageAutoPager(r.List(ctx, query, opts...))
 }
