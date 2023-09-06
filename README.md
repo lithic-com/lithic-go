@@ -49,7 +49,7 @@ func main() {
 		option.WithEnvironmentSandbox(), // defaults to option.WithEnvironmentProduction()
 	)
 	card, err := client.Cards.New(context.TODO(), lithic.CardNewParams{
-		Type: lithic.F(lithic.CardNewParamsTypeVirtual),
+		Type: lithic.F(lithic.CardNewParamsTypeSingleUse),
 	})
 	if err != nil {
 		panic(err.Error())
@@ -198,7 +198,7 @@ To handle errors, we recommend that you use the `errors.As` pattern:
 
 ```go
 _, err := client.Cards.New(context.TODO(), lithic.CardNewParams{
-	Type: lithic.F(lithic.CardNewParamsTypeVirtual),
+	Type: lithic.F(lithic.CardNewParamsTypeAnIncorrectType),
 })
 if err != nil {
 	var apierr *lithic.Error

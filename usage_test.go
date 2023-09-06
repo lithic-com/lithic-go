@@ -20,7 +20,7 @@ func TestUsage(t *testing.T) {
 		option.WithAPIKey("APIKey"),
 	)
 	card, err := client.Cards.New(context.TODO(), lithic.CardNewParams{
-		Type: lithic.F(lithic.CardNewParamsTypeVirtual),
+		Type: lithic.F(lithic.CardNewParamsTypeSingleUse),
 	})
 	if err != nil {
 		t.Error(err)
