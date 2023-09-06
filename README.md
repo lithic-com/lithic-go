@@ -33,6 +33,8 @@ This library requires Go 1.18+.
 
 ## Usage
 
+The full API of this library can be found in [api.md](https://www.github.com/lithic-com/lithic-go/blob/main/api.md).
+
 ```go
 package main
 
