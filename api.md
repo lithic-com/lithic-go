@@ -94,6 +94,17 @@ Methods:
 - <code title="get /tokenization_decisioning/secret">client.TokenizationDecisioning.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TokenizationDecisioningService.GetSecret">GetSecret</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TokenizationSecret">TokenizationSecret</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 - <code title="post /tokenization_decisioning/secret/rotate">client.TokenizationDecisioning.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TokenizationDecisioningService.RotateSecret">RotateSecret</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TokenizationDecisioningRotateSecretResponse">TokenizationDecisioningRotateSecretResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 
+# Tokenizations
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#Tokenization">Tokenization</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TokenizationSimulateResponse">TokenizationSimulateResponse</a>
+
+Methods:
+
+- <code title="post /simulate/tokenizations">client.Tokenizations.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TokenizationService.Simulate">Simulate</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TokenizationSimulateParams">TokenizationSimulateParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TokenizationSimulateResponse">TokenizationSimulateResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
 # Cards
 
 Params Types:
