@@ -305,7 +305,7 @@ type ThreeDSAuthenticationGetResponseChannel string
 const (
 	ThreeDSAuthenticationGetResponseChannelAppBased                  ThreeDSAuthenticationGetResponseChannel = "APP_BASED"
 	ThreeDSAuthenticationGetResponseChannelBrowser                   ThreeDSAuthenticationGetResponseChannel = "BROWSER"
-	ThreeDSAuthenticationGetResponseChannelThreeRiRequesterInitiated ThreeDSAuthenticationGetResponseChannel = "THREE_RI_REQUESTER_INITIATED"
+	ThreeDSAuthenticationGetResponseChannelThreeDSRequestorInitiated ThreeDSAuthenticationGetResponseChannel = "THREE_DS_REQUESTOR_INITIATED"
 )
 
 // Entity that made the authentication decision.
