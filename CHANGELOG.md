@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.7.1 (2023-09-11)
+
+Full Changelog: [v0.7.0...v0.7.1](https://github.com/lithic-com/lithic-go/compare/v0.7.0...v0.7.1)
+
+### Features
+
+* **api:** add Simulate Return Payment endpoint ([#119](https://github.com/lithic-com/lithic-go/issues/119)) ([5e24144](https://github.com/lithic-com/lithic-go/commit/5e24144ad980f4f15e2577607fdeebe392ed1518))
+* **api:** add tokenizations.simulate and correct typo'd enum  ([#117](https://github.com/lithic-com/lithic-go/issues/117)) ([773c215](https://github.com/lithic-com/lithic-go/commit/773c2157cc66177fa08c175eac9bd85c50a767ec))
+* **api:** add user defined id ([#114](https://github.com/lithic-com/lithic-go/issues/114)) ([18b2fd6](https://github.com/lithic-com/lithic-go/commit/18b2fd60a1af8ee9d21e311dae2a6a1b731f8363))
+* fixes tests where an array has to have unique enum values ([#115](https://github.com/lithic-com/lithic-go/issues/115)) ([2d9beb3](https://github.com/lithic-com/lithic-go/commit/2d9beb3d3ba5625648f559d8fa19ddabbe4c3841))
+
+
+### Chores
+
+* **ci:** setup workflows to create releases and release PRs ([#109](https://github.com/lithic-com/lithic-go/issues/109)) ([5a5ac6d](https://github.com/lithic-com/lithic-go/commit/5a5ac6d39ce1df0d73b271152fa163802f83f3b3))
+* **internal:** cleanup test params ([#118](https://github.com/lithic-com/lithic-go/issues/118)) ([cfb99ae](https://github.com/lithic-com/lithic-go/commit/cfb99ae1aa764465194d53909073bbc894c04e9c))
+* **internal:** implement inline json unmarshalling ([#113](https://github.com/lithic-com/lithic-go/issues/113)) ([2fd86e1](https://github.com/lithic-com/lithic-go/commit/2fd86e1f564eb52417d30089c963b79fb959cf75))
+
+
+### Documentation
+
+* **readme:** add link to api.md ([#116](https://github.com/lithic-com/lithic-go/issues/116)) ([1aebf6b](https://github.com/lithic-com/lithic-go/commit/1aebf6bac01228564cbc8e84b9b216bc92c2d46e))
+
 ## [0.7.0](https://github.com/lithic-com/lithic-go/compare/v0.6.8...v0.7.0) (2023-08-15)
 
 
