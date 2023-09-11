@@ -104,3 +104,24 @@ func TestPaymentSimulateRelease(t *testing.T) {
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
 }
+
+func TestPaymentSimulateReturnWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
+	client := lithic.NewClient(
+		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
+	)
+	_, err := client.Payments.SimulateReturn(context.TODO(), lithic.PaymentSimulateReturnParams{
+		PaymentToken:     lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		ReturnReasonCode: lithic.F("string"),
+	})
+	if err != nil {
+		var apierr *lithic.Error
+		if errors.As(err, &apierr) {
+			t.Log(string(apierr.DumpRequest(true)))
+		}
+		t.Fatalf("err should be nil: %s", err.Error())
+	}
+}

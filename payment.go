@@ -80,6 +80,14 @@ func (r *PaymentService) SimulateRelease(ctx context.Context, body PaymentSimula
 	return
 }
 
+// Simulates a return of a Payment.
+func (r *PaymentService) SimulateReturn(ctx context.Context, body PaymentSimulateReturnParams, opts ...option.RequestOption) (res *PaymentSimulateReturnResponse, err error) {
+	opts = append(r.Options[:], opts...)
+	path := "simulate/payments/return"
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+	return
+}
+
 type Payment struct {
 	Direction                PaymentDirection        `json:"direction,required"`
 	Method                   PaymentMethod           `json:"method,required"`
@@ -200,6 +208,34 @@ const (
 	PaymentSimulateReleaseResponseResultDeclined PaymentSimulateReleaseResponseResult = "DECLINED"
 )
 
+type PaymentSimulateReturnResponse struct {
+	DebuggingRequestID    string                              `json:"debugging_request_id" format:"uuid"`
+	Result                PaymentSimulateReturnResponseResult `json:"result"`
+	TransactionEventToken string                              `json:"transaction_event_token" format:"uuid"`
+	JSON                  paymentSimulateReturnResponseJSON
+}
+
+// paymentSimulateReturnResponseJSON contains the JSON metadata for the struct
+// [PaymentSimulateReturnResponse]
+type paymentSimulateReturnResponseJSON struct {
+	DebuggingRequestID    apijson.Field
+	Result                apijson.Field
+	TransactionEventToken apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
+}
+
+func (r *PaymentSimulateReturnResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type PaymentSimulateReturnResponseResult string
+
+const (
+	PaymentSimulateReturnResponseResultApproved PaymentSimulateReturnResponseResult = "APPROVED"
+	PaymentSimulateReturnResponseResultDeclined PaymentSimulateReturnResponseResult = "DECLINED"
+)
+
 type PaymentNewParams struct {
 	Amount                   param.Field[int64]                            `json:"amount,required"`
 	ExternalBankAccountToken param.Field[string]                           `json:"external_bank_account_token,required" format:"uuid"`
@@ -290,5 +326,14 @@ type PaymentSimulateReleaseParams struct {
 }
 
 func (r PaymentSimulateReleaseParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+type PaymentSimulateReturnParams struct {
+	PaymentToken     param.Field[string] `json:"payment_token,required" format:"uuid"`
+	ReturnReasonCode param.Field[string] `json:"return_reason_code"`
+}
+
+func (r PaymentSimulateReturnParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
