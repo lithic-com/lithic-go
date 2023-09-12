@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.7.2 (2023-09-12)
+
+Full Changelog: [v0.7.1...v0.7.2](https://github.com/lithic-com/lithic-go/compare/v0.7.1...v0.7.2)
+
+### Bug Fixes
+
+* **core:** add null check to prevent segfault when canceling context ([#120](https://github.com/lithic-com/lithic-go/issues/120)) ([91276bc](https://github.com/lithic-com/lithic-go/commit/91276bcc574b4e5c2ffe1c3501142974b7b95dde))
+
+
+### Chores
+
+* **internal:** improve reliability of cancel delay test ([#122](https://github.com/lithic-com/lithic-go/issues/122)) ([69cbd7c](https://github.com/lithic-com/lithic-go/commit/69cbd7cb296670f4faf85da170e709ece9e2d4ad))
+
 ## 0.7.1 (2023-09-11)
 
 Full Changelog: [v0.7.0...v0.7.1](https://github.com/lithic-com/lithic-go/compare/v0.7.0...v0.7.1)
