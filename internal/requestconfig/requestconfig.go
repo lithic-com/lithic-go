@@ -187,6 +187,9 @@ func (cfg *RequestConfig) Execute() error {
 
 		req := cfg.Request.Clone(ctx)
 		res, err = handler(req)
+		if res == nil {
+			break
+		}
 
 		shouldRetry := err != nil ||
 			res.StatusCode == http.StatusConflict ||
