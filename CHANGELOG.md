@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.7.3 (2023-09-15)
+
+Full Changelog: [v0.7.2...v0.7.3](https://github.com/lithic-com/lithic-go/compare/v0.7.2...v0.7.3)
+
+### Features
+
+* retry on 408 Request Timeout ([#125](https://github.com/lithic-com/lithic-go/issues/125)) ([09f2dc7](https://github.com/lithic-com/lithic-go/commit/09f2dc765bd3e090f5efca803a34f56467977c11))
+
+
+### Bug Fixes
+
+* **core:** improve retry behavior and related docs ([#126](https://github.com/lithic-com/lithic-go/issues/126)) ([5b18ec6](https://github.com/lithic-com/lithic-go/commit/5b18ec69dbf9ef128961aa03abef986ca42ecaeb))
+
 ## 0.7.2 (2023-09-12)
 
 Full Changelog: [v0.7.1...v0.7.2](https://github.com/lithic-com/lithic-go/compare/v0.7.1...v0.7.2)
