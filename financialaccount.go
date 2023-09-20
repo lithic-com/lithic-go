@@ -105,26 +105,6 @@ const (
 	FinancialAccountTypeReserve FinancialAccountType = "RESERVE"
 )
 
-// Financial Account
-type FinancialAccountParam struct {
-	// Globally unique identifier for the financial account.
-	Token param.Field[string] `json:"token,required" format:"uuid"`
-	// Date and time for when the financial account was first created.
-	Created param.Field[time.Time] `json:"created,required" format:"date-time"`
-	// Type of financial account
-	Type param.Field[FinancialAccountType] `json:"type,required"`
-	// Date and time for when the financial account was last updated.
-	Updated param.Field[time.Time] `json:"updated,required" format:"date-time"`
-	// Account number for your Lithic-assigned bank account number, if applicable.
-	AccountNumber param.Field[string] `json:"account_number"`
-	// Routing number for your Lithic-assigned bank account number, if applicable.
-	RoutingNumber param.Field[string] `json:"routing_number"`
-}
-
-func (r FinancialAccountParam) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
-}
-
 type FinancialTransaction struct {
 	// Globally unique identifier.
 	Token string `json:"token,required" format:"uuid"`

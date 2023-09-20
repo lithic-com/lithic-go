@@ -35,7 +35,7 @@ func NewAuthRuleService(opts ...option.RequestOption) (r *AuthRuleService) {
 
 // Creates an authorization rule (Auth Rule) and applies it at the program,
 // account, or card level.
-func (r *AuthRuleService) New(ctx context.Context, body AuthRuleNewParams, opts ...option.RequestOption) (res *AuthRuleNewResponse, err error) {
+func (r *AuthRuleService) New(ctx context.Context, body AuthRuleNewParams, opts ...option.RequestOption) (res *AuthRule, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "auth_rules"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -53,7 +53,7 @@ func (r *AuthRuleService) Get(ctx context.Context, authRuleToken string, opts ..
 
 // Update the properties associated with an existing authorization rule (Auth
 // Rule).
-func (r *AuthRuleService) Update(ctx context.Context, authRuleToken string, body AuthRuleUpdateParams, opts ...option.RequestOption) (res *AuthRuleUpdateResponse, err error) {
+func (r *AuthRuleService) Update(ctx context.Context, authRuleToken string, body AuthRuleUpdateParams, opts ...option.RequestOption) (res *AuthRule, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("auth_rules/%s", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPut, path, body, &res, opts...)
@@ -85,7 +85,7 @@ func (r *AuthRuleService) ListAutoPaging(ctx context.Context, query AuthRuleList
 
 // Applies an existing authorization rule (Auth Rule) to an program, account, or
 // card level.
-func (r *AuthRuleService) Apply(ctx context.Context, authRuleToken string, body AuthRuleApplyParams, opts ...option.RequestOption) (res *AuthRuleApplyResponse, err error) {
+func (r *AuthRuleService) Apply(ctx context.Context, authRuleToken string, body AuthRuleApplyParams, opts ...option.RequestOption) (res *AuthRule, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("auth_rules/%s/apply", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -156,23 +156,6 @@ const (
 	AuthRuleStateInactive AuthRuleState = "INACTIVE"
 )
 
-type AuthRuleNewResponse struct {
-	Data AuthRule `json:"data"`
-	JSON authRuleNewResponseJSON
-}
-
-// authRuleNewResponseJSON contains the JSON metadata for the struct
-// [AuthRuleNewResponse]
-type authRuleNewResponseJSON struct {
-	Data        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleNewResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
 type AuthRuleGetResponse struct {
 	Data []AuthRule `json:"data"`
 	JSON authRuleGetResponseJSON
@@ -187,40 +170,6 @@ type authRuleGetResponseJSON struct {
 }
 
 func (r *AuthRuleGetResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type AuthRuleUpdateResponse struct {
-	Data AuthRule `json:"data"`
-	JSON authRuleUpdateResponseJSON
-}
-
-// authRuleUpdateResponseJSON contains the JSON metadata for the struct
-// [AuthRuleUpdateResponse]
-type authRuleUpdateResponseJSON struct {
-	Data        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleUpdateResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type AuthRuleApplyResponse struct {
-	Data AuthRule `json:"data"`
-	JSON authRuleApplyResponseJSON
-}
-
-// authRuleApplyResponseJSON contains the JSON metadata for the struct
-// [AuthRuleApplyResponse]
-type authRuleApplyResponseJSON struct {
-	Data        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleApplyResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
