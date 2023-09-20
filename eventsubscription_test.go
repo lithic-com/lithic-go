@@ -239,3 +239,27 @@ func TestEventSubscriptionRotateSecret(t *testing.T) {
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
 }
+
+func TestEventSubscriptionSendSimulatedExampleWithOptionalParams(t *testing.T) {
+	if !testutil.CheckTestServer(t) {
+		return
+	}
+	client := lithic.NewClient(
+		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithAPIKey("APIKey"),
+	)
+	err := client.Events.Subscriptions.SendSimulatedExample(
+		context.TODO(),
+		"string",
+		lithic.EventSubscriptionSendSimulatedExampleParams{
+			EventType: lithic.F(lithic.EventSubscriptionSendSimulatedExampleParamsEventTypeCardCreated),
+		},
+	)
+	if err != nil {
+		var apierr *lithic.Error
+		if errors.As(err, &apierr) {
+			t.Log(string(apierr.DumpRequest(true)))
+		}
+		t.Fatalf("err should be nil: %s", err.Error())
+	}
+}

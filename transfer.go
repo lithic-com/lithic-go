@@ -300,10 +300,11 @@ type TransferNewParams struct {
 	// Amount to be transferred in the currency’s smallest unit (e.g., cents for USD).
 	// This should always be a positive value.
 	Amount param.Field[int64] `json:"amount,required"`
-	// Financial Account
-	From param.Field[FinancialAccountParam] `json:"from,required"`
-	// Financial Account
-	To param.Field[FinancialAccountParam] `json:"to,required"`
+	// Globally unique identifier for the financial account that will send the funds.
+	From param.Field[string] `json:"from,required" format:"uuid"`
+	// Globally unique identifier for the financial account that will receive the
+	// funds.
+	To param.Field[string] `json:"to,required" format:"uuid"`
 	// Optional descriptor for the transfer.
 	Memo param.Field[string] `json:"memo"`
 	// Customer-provided transaction_token that will serve as an idempotency token.

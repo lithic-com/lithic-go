@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
+	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/option"
 )
@@ -36,6 +37,17 @@ func (r *ThreeDSAuthenticationService) Get(ctx context.Context, threeDSAuthentic
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("three_ds_authentication/%s", threeDSAuthenticationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
+	return
+}
+
+// Simulates a 3DS authentication request from the payment network as if it came
+// from an ACS. If you're configured for 3DS Customer Decisioning, simulating
+// authentications requires your customer decisioning endpoint to be set up
+// properly (respond with a valid JSON).
+func (r *ThreeDSAuthenticationService) Simulate(ctx context.Context, body ThreeDSAuthenticationSimulateParams, opts ...option.RequestOption) (res *ThreeDSAuthenticationSimulateResponse, err error) {
+	opts = append(r.Options[:], opts...)
+	path := "three_ds_authentication/simulate"
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -613,3 +625,66 @@ const (
 	ThreeDSAuthenticationGetResponseThreeRiRequestTypeDelayedShipment             ThreeDSAuthenticationGetResponseThreeRiRequestType = "DELAYED_SHIPMENT"
 	ThreeDSAuthenticationGetResponseThreeRiRequestTypeSplitPayment                ThreeDSAuthenticationGetResponseThreeRiRequestType = "SPLIT_PAYMENT"
 )
+
+type ThreeDSAuthenticationSimulateResponse struct {
+	// A unique token to reference this transaction with later calls to void or clear
+	// the authorization.
+	Token string `json:"token" format:"uuid"`
+	// Debugging request ID to share with Lithic Support team.
+	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
+	JSON               threeDSAuthenticationSimulateResponseJSON
+}
+
+// threeDSAuthenticationSimulateResponseJSON contains the JSON metadata for the
+// struct [ThreeDSAuthenticationSimulateResponse]
+type threeDSAuthenticationSimulateResponseJSON struct {
+	Token              apijson.Field
+	DebuggingRequestID apijson.Field
+	raw                string
+	ExtraFields        map[string]apijson.Field
+}
+
+func (r *ThreeDSAuthenticationSimulateResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type ThreeDSAuthenticationSimulateParams struct {
+	Merchant param.Field[ThreeDSAuthenticationSimulateParamsMerchant] `json:"merchant,required"`
+	// Sixteen digit card number.
+	Pan         param.Field[string]                                         `json:"pan,required"`
+	Transaction param.Field[ThreeDSAuthenticationSimulateParamsTransaction] `json:"transaction,required"`
+}
+
+func (r ThreeDSAuthenticationSimulateParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+type ThreeDSAuthenticationSimulateParamsMerchant struct {
+	// Unique identifier to identify the payment card acceptor. Corresponds to
+	// `merchant_acceptor_id` in authorization.
+	ID param.Field[string] `json:"id,required"`
+	// Country of the address provided by the cardholder in ISO 3166-1 alpha-3 format
+	// (e.g. USA)
+	Country param.Field[string] `json:"country,required"`
+	// Merchant category code for the transaction to be simulated. A four-digit number
+	// listed in ISO 18245. Supported merchant category codes can be found
+	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
+	Mcc param.Field[string] `json:"mcc,required"`
+	// Merchant descriptor, corresponds to `descriptor` in authorization.
+	Name param.Field[string] `json:"name,required"`
+}
+
+func (r ThreeDSAuthenticationSimulateParamsMerchant) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+type ThreeDSAuthenticationSimulateParamsTransaction struct {
+	// Amount (in cents) to authenticate.
+	Amount param.Field[int64] `json:"amount,required"`
+	// 3-digit alphabetic ISO 4217 currency code.
+	Currency param.Field[string] `json:"currency,required"`
+}
+
+func (r ThreeDSAuthenticationSimulateParamsTransaction) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
