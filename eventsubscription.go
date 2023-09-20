@@ -151,6 +151,15 @@ func (r *EventSubscriptionService) RotateSecret(ctx context.Context, eventSubscr
 	return
 }
 
+// Send an example message for event.
+func (r *EventSubscriptionService) SendSimulatedExample(ctx context.Context, eventSubscriptionToken string, body EventSubscriptionSendSimulatedExampleParams, opts ...option.RequestOption) (err error) {
+	opts = append(r.Options[:], opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	path := fmt.Sprintf("simulate/event_subscriptions/%s/send_example", eventSubscriptionToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
+	return
+}
+
 type EventSubscriptionGetSecretResponse struct {
 	// The secret for the event subscription.
 	Secret string `json:"secret"`
@@ -195,6 +204,8 @@ const (
 	EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationResult                      EventSubscriptionNewParamsEventType = "digital_wallet.tokenization_result"
 	EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionNewParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventSubscriptionNewParamsEventTypeDisputeUpdated                                       EventSubscriptionNewParamsEventType = "dispute.updated"
+	EventSubscriptionNewParamsEventTypeDisputeEvidenceUploadFailed                          EventSubscriptionNewParamsEventType = "dispute_evidence.upload_failed"
+	EventSubscriptionNewParamsEventTypeThreeDSAuthenticationCreated                         EventSubscriptionNewParamsEventType = "three_ds_authentication.created"
 	EventSubscriptionNewParamsEventTypePaymentTransactionCreated                            EventSubscriptionNewParamsEventType = "payment_transaction.created"
 	EventSubscriptionNewParamsEventTypePaymentTransactionUpdated                            EventSubscriptionNewParamsEventType = "payment_transaction.updated"
 	EventSubscriptionNewParamsEventTypeTransferTransactionCreated                           EventSubscriptionNewParamsEventType = "transfer_transaction.created"
@@ -226,6 +237,8 @@ const (
 	EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationResult                      EventSubscriptionUpdateParamsEventType = "digital_wallet.tokenization_result"
 	EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionUpdateParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventSubscriptionUpdateParamsEventTypeDisputeUpdated                                       EventSubscriptionUpdateParamsEventType = "dispute.updated"
+	EventSubscriptionUpdateParamsEventTypeDisputeEvidenceUploadFailed                          EventSubscriptionUpdateParamsEventType = "dispute_evidence.upload_failed"
+	EventSubscriptionUpdateParamsEventTypeThreeDSAuthenticationCreated                         EventSubscriptionUpdateParamsEventType = "three_ds_authentication.created"
 	EventSubscriptionUpdateParamsEventTypePaymentTransactionCreated                            EventSubscriptionUpdateParamsEventType = "payment_transaction.created"
 	EventSubscriptionUpdateParamsEventTypePaymentTransactionUpdated                            EventSubscriptionUpdateParamsEventType = "payment_transaction.updated"
 	EventSubscriptionUpdateParamsEventTypeTransferTransactionCreated                           EventSubscriptionUpdateParamsEventType = "transfer_transaction.created"
@@ -322,3 +335,30 @@ func (r EventSubscriptionReplayMissingParams) URLQuery() (v url.Values) {
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
 }
+
+type EventSubscriptionSendSimulatedExampleParams struct {
+	// Event type to send example message for.
+	EventType param.Field[EventSubscriptionSendSimulatedExampleParamsEventType] `json:"event_type"`
+}
+
+func (r EventSubscriptionSendSimulatedExampleParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// Event type to send example message for.
+type EventSubscriptionSendSimulatedExampleParamsEventType string
+
+const (
+	EventSubscriptionSendSimulatedExampleParamsEventTypeCardCreated                                          EventSubscriptionSendSimulatedExampleParamsEventType = "card.created"
+	EventSubscriptionSendSimulatedExampleParamsEventTypeCardShipped                                          EventSubscriptionSendSimulatedExampleParamsEventType = "card.shipped"
+	EventSubscriptionSendSimulatedExampleParamsEventTypeCardTransactionUpdated                               EventSubscriptionSendSimulatedExampleParamsEventType = "card_transaction.updated"
+	EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationApprovalRequest             EventSubscriptionSendSimulatedExampleParamsEventType = "digital_wallet.tokenization_approval_request"
+	EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationResult                      EventSubscriptionSendSimulatedExampleParamsEventType = "digital_wallet.tokenization_result"
+	EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionSendSimulatedExampleParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
+	EventSubscriptionSendSimulatedExampleParamsEventTypeDisputeUpdated                                       EventSubscriptionSendSimulatedExampleParamsEventType = "dispute.updated"
+	EventSubscriptionSendSimulatedExampleParamsEventTypeDisputeEvidenceUploadFailed                          EventSubscriptionSendSimulatedExampleParamsEventType = "dispute_evidence.upload_failed"
+	EventSubscriptionSendSimulatedExampleParamsEventTypeThreeDSAuthenticationCreated                         EventSubscriptionSendSimulatedExampleParamsEventType = "three_ds_authentication.created"
+	EventSubscriptionSendSimulatedExampleParamsEventTypePaymentTransactionCreated                            EventSubscriptionSendSimulatedExampleParamsEventType = "payment_transaction.created"
+	EventSubscriptionSendSimulatedExampleParamsEventTypePaymentTransactionUpdated                            EventSubscriptionSendSimulatedExampleParamsEventType = "payment_transaction.updated"
+	EventSubscriptionSendSimulatedExampleParamsEventTypeTransferTransactionCreated                           EventSubscriptionSendSimulatedExampleParamsEventType = "transfer_transaction.created"
+)
