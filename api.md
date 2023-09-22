@@ -4,7 +4,7 @@
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared#CarrierParam">CarrierParam</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared#ShippingAddressParam">ShippingAddressParam</a>
 
-# Top Level
+# lithic
 
 Response Types:
 
