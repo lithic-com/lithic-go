@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.7.4 (2023-09-25)
+
+Full Changelog: [v0.7.3...v0.7.4](https://github.com/lithic-com/lithic-go/compare/v0.7.3...v0.7.4)
+
+### Features
+
+* **api:** add simulation endpoints, event types, fix transfer request AuthRule ([#129](https://github.com/lithic-com/lithic-go/issues/129)) ([424b35d](https://github.com/lithic-com/lithic-go/commit/424b35d6fe03f5fa9b60cbd811b163256916c815))
+* improve retry behavior on context deadline ([#132](https://github.com/lithic-com/lithic-go/issues/132)) ([099165c](https://github.com/lithic-com/lithic-go/commit/099165c14901bb74d07445a1b98f157404041acc))
+
+
+### Documentation
+
+* **api.md:** rename Top Level to client name ([#130](https://github.com/lithic-com/lithic-go/issues/130)) ([68a64bd](https://github.com/lithic-com/lithic-go/commit/68a64bdf4d35f0ea6f5a63ca01a1419b24862c60))
+
 ## 0.7.3 (2023-09-15)
 
 Full Changelog: [v0.7.2...v0.7.3](https://github.com/lithic-com/lithic-go/compare/v0.7.2...v0.7.3)
