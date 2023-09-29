@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.8.0 (2023-09-29)
+
+Full Changelog: [v0.7.4...v0.8.0](https://github.com/lithic-com/lithic-go/compare/v0.7.4...v0.8.0)
+
+### ⚠ BREAKING CHANGES
+
+* **api:** remove `post /webhooks/account_holders` endpoint ([#133](https://github.com/lithic-com/lithic-go/issues/133))
+
+### Refactors
+
+* **api:** remove `post /webhooks/account_holders` endpoint ([#133](https://github.com/lithic-com/lithic-go/issues/133)) ([039145c](https://github.com/lithic-com/lithic-go/commit/039145c76c5e7b834df276e3fadf9f0e9d310c21))
+
 ## 0.7.4 (2023-09-25)
 
 Full Changelog: [v0.7.3...v0.7.4](https://github.com/lithic-com/lithic-go/compare/v0.7.3...v0.7.4)
