@@ -201,26 +201,6 @@ func TestAccountHolderUpdateWithOptionalParams(t *testing.T) {
 	}
 }
 
-func TestAccountHolderNewWebhook(t *testing.T) {
-	if !testutil.CheckTestServer(t) {
-		return
-	}
-	client := lithic.NewClient(
-		option.WithBaseURL("http://127.0.0.1:4010"),
-		option.WithAPIKey("APIKey"),
-	)
-	_, err := client.AccountHolders.NewWebhook(context.TODO(), lithic.AccountHolderNewWebhookParams{
-		URL: lithic.F("string"),
-	})
-	if err != nil {
-		var apierr *lithic.Error
-		if errors.As(err, &apierr) {
-			t.Log(string(apierr.DumpRequest(true)))
-		}
-		t.Fatalf("err should be nil: %s", err.Error())
-	}
-}
-
 func TestAccountHolderListDocuments(t *testing.T) {
 	if !testutil.CheckTestServer(t) {
 		return

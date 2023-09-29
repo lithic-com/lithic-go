@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/param"
@@ -62,27 +63,6 @@ func (r *AccountHolderService) Update(ctx context.Context, accountHolderToken st
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("account_holders/%s", accountHolderToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
-	return
-}
-
-// Create a webhook to receive KYC or KYB evaluation events.
-//
-// There are two types of account holder webhooks:
-//
-//   - `verification`: Webhook sent when the status of a KYC or KYB evaluation
-//     changes from `PENDING_DOCUMENT` (KYC) or `PENDING` (KYB) to `ACCEPTED` or
-//     `REJECTED`.
-//   - `document_upload_front`/`document_upload_back`: Webhook sent when a document
-//     upload fails.
-//
-// After a webhook has been created, this endpoint can be used to rotate a webhooks
-// HMAC token or modify the registered URL. Only a single webhook is allowed per
-// program. Since HMAC verification is available, the IP addresses from which
-// KYC/KYB webhooks are sent are subject to change.
-func (r *AccountHolderService) NewWebhook(ctx context.Context, body AccountHolderNewWebhookParams, opts ...option.RequestOption) (res *AccountHolderNewWebhookResponse, err error) {
-	opts = append(r.Options[:], opts...)
-	path := "webhooks/account_holders"
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -174,39 +154,290 @@ type AccountHolder struct {
 	Token string `json:"token" format:"uuid"`
 	// Globally unique identifier for the account.
 	AccountToken string `json:"account_token" format:"uuid"`
+	// Only present when user_type == "BUSINESS". List of all entities with >25%
+	// ownership in the company.
+	BeneficialOwnerEntities []AccountHolderBeneficialOwnerEntity `json:"beneficial_owner_entities"`
+	// Only present when user_type == "BUSINESS". List of all individuals with >25%
+	// ownership in the company.
+	BeneficialOwnerIndividuals []AccountHolderBeneficialOwnerIndividual `json:"beneficial_owner_individuals"`
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
 	// users of businesses. Pass the account_token of the enrolled business associated
 	// with the AUTHORIZED_USER in this field.
 	BusinessAccountToken string `json:"business_account_token" format:"uuid"`
-	// KYC and KYB evaluation states.
+	// Only present when user_type == "BUSINESS". Information about the business for
+	// which the account is being opened and KYB is being run.
+	BusinessEntity AccountHolderBusinessEntity `json:"business_entity"`
+	// Information about an individual associated with an account holder. A subset of
+	// the information provided via KYC. For example, we do not return the government
+	// id.
+	ControlPerson AccountHolderControlPerson `json:"control_person"`
+	// Timestamp of when the account holder was created.
+	Created time.Time `json:"created" format:"date-time"`
+	// < Deprecated. Use control_person.email when user_type == "BUSINESS". Use
+	// individual.phone_number when user_type == "INDIVIDUAL".
 	//
-	// Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
-	// `ADVANCED` workflow.
+	// > Primary email of Account Holder.
+	Email string `json:"email"`
+	// The type of KYC exemption for a KYC-Exempt Account Holder.
+	ExemptionType AccountHolderExemptionType `json:"exemption_type"`
+	// Customer-provided token that indicates a relationship with an object outside of
+	// the Lithic ecosystem.
+	ExternalID string `json:"external_id" format:"string"`
+	// Only present when user_type == "INDIVIDUAL". Information about the individual
+	// for which the account is being opened and KYC is being run.
+	Individual AccountHolderIndividual `json:"individual"`
+	// Only present when user_type == "BUSINESS". User-submitted description of the
+	// business.
+	NatureOfBusiness string `json:"nature_of_business" format:"string"`
+	// < Deprecated. Use control_person.phone_number when user_type == "BUSINESS". Use
+	// individual.phone_number when user_type == "INDIVIDUAL".
+	//
+	// > Primary phone of Account Holder, entered in E.164 format.
+	PhoneNumber string `json:"phone_number"`
+	// <Deprecated. Use verification_application.status instead> KYC and KYB evaluation
+	// states. Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for
+	// the `ADVANCED` workflow.
 	Status AccountHolderStatus `json:"status"`
-	// Reason for the evaluation status.
+	// <Deprecated. Use verification_application.status_reasons> Reason for the
+	// evaluation status.
 	StatusReasons []AccountHolderStatusReason `json:"status_reasons"`
-	JSON          accountHolderJSON
+	// The type of Account Holder. If the type is "INDIVIDUAL", the "individual"
+	// attribute will be present. If the type is "BUSINESS" then the "business_entity",
+	// "control_person", "beneficial_owner_individuals", "beneficial_owner_entities",
+	// "nature_of_business", and "website_url" attributes will be present.
+	UserType AccountHolderUserType `json:"user_type"`
+	// Information about the most recent identity verification attempt
+	VerificationApplication AccountHolderVerificationApplication `json:"verification_application"`
+	// Only present when user_type == "BUSINESS". Business's primary website.
+	WebsiteURL string `json:"website_url" format:"string"`
+	JSON       accountHolderJSON
 }
 
 // accountHolderJSON contains the JSON metadata for the struct [AccountHolder]
 type accountHolderJSON struct {
-	Token                apijson.Field
-	AccountToken         apijson.Field
-	BusinessAccountToken apijson.Field
-	Status               apijson.Field
-	StatusReasons        apijson.Field
-	raw                  string
-	ExtraFields          map[string]apijson.Field
+	Token                      apijson.Field
+	AccountToken               apijson.Field
+	BeneficialOwnerEntities    apijson.Field
+	BeneficialOwnerIndividuals apijson.Field
+	BusinessAccountToken       apijson.Field
+	BusinessEntity             apijson.Field
+	ControlPerson              apijson.Field
+	Created                    apijson.Field
+	Email                      apijson.Field
+	ExemptionType              apijson.Field
+	ExternalID                 apijson.Field
+	Individual                 apijson.Field
+	NatureOfBusiness           apijson.Field
+	PhoneNumber                apijson.Field
+	Status                     apijson.Field
+	StatusReasons              apijson.Field
+	UserType                   apijson.Field
+	VerificationApplication    apijson.Field
+	WebsiteURL                 apijson.Field
+	raw                        string
+	ExtraFields                map[string]apijson.Field
 }
 
 func (r *AccountHolder) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-// KYC and KYB evaluation states.
-//
-// Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
-// `ADVANCED` workflow.
+type AccountHolderBeneficialOwnerEntity struct {
+	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable.
+	Address shared.Address `json:"address,required"`
+	// Government-issued identification number. US Federal Employer Identification
+	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
+	// without hyphens.
+	GovernmentID string `json:"government_id,required"`
+	// Legal (formal) business name.
+	LegalBusinessName string `json:"legal_business_name,required"`
+	// One or more of the business's phone number(s), entered as a list in E.164
+	// format.
+	PhoneNumbers []string `json:"phone_numbers,required"`
+	// Any name that the business operates under that is not its legal business name
+	// (if applicable).
+	DbaBusinessName string `json:"dba_business_name"`
+	// Parent company name (if applicable).
+	ParentCompany string `json:"parent_company"`
+	JSON          accountHolderBeneficialOwnerEntityJSON
+}
+
+// accountHolderBeneficialOwnerEntityJSON contains the JSON metadata for the struct
+// [AccountHolderBeneficialOwnerEntity]
+type accountHolderBeneficialOwnerEntityJSON struct {
+	Address           apijson.Field
+	GovernmentID      apijson.Field
+	LegalBusinessName apijson.Field
+	PhoneNumbers      apijson.Field
+	DbaBusinessName   apijson.Field
+	ParentCompany     apijson.Field
+	raw               string
+	ExtraFields       map[string]apijson.Field
+}
+
+func (r *AccountHolderBeneficialOwnerEntity) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+// Information about an individual associated with an account holder. A subset of
+// the information provided via KYC. For example, we do not return the government
+// id.
+type AccountHolderBeneficialOwnerIndividual struct {
+	// Individual's current address
+	Address shared.Address `json:"address"`
+	// Individual's date of birth, as an RFC 3339 date.
+	Dob string `json:"dob"`
+	// Individual's email address.
+	Email string `json:"email"`
+	// Individual's first name, as it appears on government-issued identity documents.
+	FirstName string `json:"first_name"`
+	// Individual's last name, as it appears on government-issued identity documents.
+	LastName string `json:"last_name"`
+	// Individual's phone number, entered in E.164 format.
+	PhoneNumber string `json:"phone_number"`
+	JSON        accountHolderBeneficialOwnerIndividualJSON
+}
+
+// accountHolderBeneficialOwnerIndividualJSON contains the JSON metadata for the
+// struct [AccountHolderBeneficialOwnerIndividual]
+type accountHolderBeneficialOwnerIndividualJSON struct {
+	Address     apijson.Field
+	Dob         apijson.Field
+	Email       apijson.Field
+	FirstName   apijson.Field
+	LastName    apijson.Field
+	PhoneNumber apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AccountHolderBeneficialOwnerIndividual) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+// Only present when user_type == "BUSINESS". Information about the business for
+// which the account is being opened and KYB is being run.
+type AccountHolderBusinessEntity struct {
+	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable.
+	Address shared.Address `json:"address,required"`
+	// Government-issued identification number. US Federal Employer Identification
+	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
+	// without hyphens.
+	GovernmentID string `json:"government_id,required"`
+	// Legal (formal) business name.
+	LegalBusinessName string `json:"legal_business_name,required"`
+	// One or more of the business's phone number(s), entered as a list in E.164
+	// format.
+	PhoneNumbers []string `json:"phone_numbers,required"`
+	// Any name that the business operates under that is not its legal business name
+	// (if applicable).
+	DbaBusinessName string `json:"dba_business_name"`
+	// Parent company name (if applicable).
+	ParentCompany string `json:"parent_company"`
+	JSON          accountHolderBusinessEntityJSON
+}
+
+// accountHolderBusinessEntityJSON contains the JSON metadata for the struct
+// [AccountHolderBusinessEntity]
+type accountHolderBusinessEntityJSON struct {
+	Address           apijson.Field
+	GovernmentID      apijson.Field
+	LegalBusinessName apijson.Field
+	PhoneNumbers      apijson.Field
+	DbaBusinessName   apijson.Field
+	ParentCompany     apijson.Field
+	raw               string
+	ExtraFields       map[string]apijson.Field
+}
+
+func (r *AccountHolderBusinessEntity) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+// Information about an individual associated with an account holder. A subset of
+// the information provided via KYC. For example, we do not return the government
+// id.
+type AccountHolderControlPerson struct {
+	// Individual's current address
+	Address shared.Address `json:"address"`
+	// Individual's date of birth, as an RFC 3339 date.
+	Dob string `json:"dob"`
+	// Individual's email address.
+	Email string `json:"email"`
+	// Individual's first name, as it appears on government-issued identity documents.
+	FirstName string `json:"first_name"`
+	// Individual's last name, as it appears on government-issued identity documents.
+	LastName string `json:"last_name"`
+	// Individual's phone number, entered in E.164 format.
+	PhoneNumber string `json:"phone_number"`
+	JSON        accountHolderControlPersonJSON
+}
+
+// accountHolderControlPersonJSON contains the JSON metadata for the struct
+// [AccountHolderControlPerson]
+type accountHolderControlPersonJSON struct {
+	Address     apijson.Field
+	Dob         apijson.Field
+	Email       apijson.Field
+	FirstName   apijson.Field
+	LastName    apijson.Field
+	PhoneNumber apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AccountHolderControlPerson) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+// The type of KYC exemption for a KYC-Exempt Account Holder.
+type AccountHolderExemptionType string
+
+const (
+	AccountHolderExemptionTypeAuthorizedUser  AccountHolderExemptionType = "AUTHORIZED_USER"
+	AccountHolderExemptionTypePrepaidCardUser AccountHolderExemptionType = "PREPAID_CARD_USER"
+)
+
+// Only present when user_type == "INDIVIDUAL". Information about the individual
+// for which the account is being opened and KYC is being run.
+type AccountHolderIndividual struct {
+	// Individual's current address
+	Address shared.Address `json:"address"`
+	// Individual's date of birth, as an RFC 3339 date.
+	Dob string `json:"dob"`
+	// Individual's email address.
+	Email string `json:"email"`
+	// Individual's first name, as it appears on government-issued identity documents.
+	FirstName string `json:"first_name"`
+	// Individual's last name, as it appears on government-issued identity documents.
+	LastName string `json:"last_name"`
+	// Individual's phone number, entered in E.164 format.
+	PhoneNumber string `json:"phone_number"`
+	JSON        accountHolderIndividualJSON
+}
+
+// accountHolderIndividualJSON contains the JSON metadata for the struct
+// [AccountHolderIndividual]
+type accountHolderIndividualJSON struct {
+	Address     apijson.Field
+	Dob         apijson.Field
+	Email       apijson.Field
+	FirstName   apijson.Field
+	LastName    apijson.Field
+	PhoneNumber apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AccountHolderIndividual) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+// <Deprecated. Use verification_application.status instead> KYC and KYB evaluation
+// states. Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for
+// the `ADVANCED` workflow.
 type AccountHolderStatus string
 
 const (
@@ -230,6 +461,73 @@ const (
 	AccountHolderStatusReasonOtherVerificationFailure    AccountHolderStatusReason = "OTHER_VERIFICATION_FAILURE"
 	AccountHolderStatusReasonRiskThresholdFailure        AccountHolderStatusReason = "RISK_THRESHOLD_FAILURE"
 	AccountHolderStatusReasonWatchlistAlertFailure       AccountHolderStatusReason = "WATCHLIST_ALERT_FAILURE"
+)
+
+// The type of Account Holder. If the type is "INDIVIDUAL", the "individual"
+// attribute will be present. If the type is "BUSINESS" then the "business_entity",
+// "control_person", "beneficial_owner_individuals", "beneficial_owner_entities",
+// "nature_of_business", and "website_url" attributes will be present.
+type AccountHolderUserType string
+
+const (
+	AccountHolderUserTypeBusiness   AccountHolderUserType = "BUSINESS"
+	AccountHolderUserTypeIndividual AccountHolderUserType = "INDIVIDUAL"
+)
+
+// Information about the most recent identity verification attempt
+type AccountHolderVerificationApplication struct {
+	// Timestamp of when the application was created.
+	Created time.Time `json:"created" format:"date-time"`
+	// KYC and KYB evaluation states. Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT`
+	// are only applicable for the `ADVANCED` workflow.
+	Status AccountHolderVerificationApplicationStatus `json:"status"`
+	// Reason for the evaluation status.
+	StatusReasons []AccountHolderVerificationApplicationStatusReason `json:"status_reasons"`
+	// Timestamp of when the application was last updated.
+	Updated time.Time `json:"updated" format:"date-time"`
+	JSON    accountHolderVerificationApplicationJSON
+}
+
+// accountHolderVerificationApplicationJSON contains the JSON metadata for the
+// struct [AccountHolderVerificationApplication]
+type accountHolderVerificationApplicationJSON struct {
+	Created       apijson.Field
+	Status        apijson.Field
+	StatusReasons apijson.Field
+	Updated       apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
+}
+
+func (r *AccountHolderVerificationApplication) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+// KYC and KYB evaluation states. Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT`
+// are only applicable for the `ADVANCED` workflow.
+type AccountHolderVerificationApplicationStatus string
+
+const (
+	AccountHolderVerificationApplicationStatusAccepted        AccountHolderVerificationApplicationStatus = "ACCEPTED"
+	AccountHolderVerificationApplicationStatusRejected        AccountHolderVerificationApplicationStatus = "REJECTED"
+	AccountHolderVerificationApplicationStatusPendingResubmit AccountHolderVerificationApplicationStatus = "PENDING_RESUBMIT"
+	AccountHolderVerificationApplicationStatusPendingDocument AccountHolderVerificationApplicationStatus = "PENDING_DOCUMENT"
+)
+
+type AccountHolderVerificationApplicationStatusReason string
+
+const (
+	AccountHolderVerificationApplicationStatusReasonAddressVerificationFailure  AccountHolderVerificationApplicationStatusReason = "ADDRESS_VERIFICATION_FAILURE"
+	AccountHolderVerificationApplicationStatusReasonAgeThresholdFailure         AccountHolderVerificationApplicationStatusReason = "AGE_THRESHOLD_FAILURE"
+	AccountHolderVerificationApplicationStatusReasonCompleteVerificationFailure AccountHolderVerificationApplicationStatusReason = "COMPLETE_VERIFICATION_FAILURE"
+	AccountHolderVerificationApplicationStatusReasonDobVerificationFailure      AccountHolderVerificationApplicationStatusReason = "DOB_VERIFICATION_FAILURE"
+	AccountHolderVerificationApplicationStatusReasonIDVerificationFailure       AccountHolderVerificationApplicationStatusReason = "ID_VERIFICATION_FAILURE"
+	AccountHolderVerificationApplicationStatusReasonMaxDocumentAttempts         AccountHolderVerificationApplicationStatusReason = "MAX_DOCUMENT_ATTEMPTS"
+	AccountHolderVerificationApplicationStatusReasonMaxResubmissionAttempts     AccountHolderVerificationApplicationStatusReason = "MAX_RESUBMISSION_ATTEMPTS"
+	AccountHolderVerificationApplicationStatusReasonNameVerificationFailure     AccountHolderVerificationApplicationStatusReason = "NAME_VERIFICATION_FAILURE"
+	AccountHolderVerificationApplicationStatusReasonOtherVerificationFailure    AccountHolderVerificationApplicationStatusReason = "OTHER_VERIFICATION_FAILURE"
+	AccountHolderVerificationApplicationStatusReasonRiskThresholdFailure        AccountHolderVerificationApplicationStatusReason = "RISK_THRESHOLD_FAILURE"
+	AccountHolderVerificationApplicationStatusReasonWatchlistAlertFailure       AccountHolderVerificationApplicationStatusReason = "WATCHLIST_ALERT_FAILURE"
 )
 
 // Describes the document and the required document image uploads required to
@@ -358,42 +656,6 @@ type accountHolderUpdateResponseJSON struct {
 }
 
 func (r *AccountHolderUpdateResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type AccountHolderNewWebhookResponse struct {
-	Data AccountHolderNewWebhookResponseData `json:"data"`
-	JSON accountHolderNewWebhookResponseJSON
-}
-
-// accountHolderNewWebhookResponseJSON contains the JSON metadata for the struct
-// [AccountHolderNewWebhookResponse]
-type accountHolderNewWebhookResponseJSON struct {
-	Data        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AccountHolderNewWebhookResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-type AccountHolderNewWebhookResponseData struct {
-	// Shared secret which can optionally be used to validate the authenticity of
-	// incoming identity webhooks.
-	HmacToken string `json:"hmac_token" format:"uuid"`
-	JSON      accountHolderNewWebhookResponseDataJSON
-}
-
-// accountHolderNewWebhookResponseDataJSON contains the JSON metadata for the
-// struct [AccountHolderNewWebhookResponseData]
-type accountHolderNewWebhookResponseDataJSON struct {
-	HmacToken   apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AccountHolderNewWebhookResponseData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
@@ -717,15 +979,6 @@ type AccountHolderUpdateParams struct {
 }
 
 func (r AccountHolderUpdateParams) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
-}
-
-type AccountHolderNewWebhookParams struct {
-	// URL to receive webhook requests. Must be a valid HTTPS address.
-	URL param.Field[string] `json:"url,required"`
-}
-
-func (r AccountHolderNewWebhookParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
