@@ -197,6 +197,9 @@ func (r EventSubscriptionNewParams) MarshalJSON() (data []byte, err error) {
 type EventSubscriptionNewParamsEventType string
 
 const (
+	EventSubscriptionNewParamsEventTypeAccountHolderCreated                                 EventSubscriptionNewParamsEventType = "account_holder.created"
+	EventSubscriptionNewParamsEventTypeAccountHolderUpdated                                 EventSubscriptionNewParamsEventType = "account_holder.updated"
+	EventSubscriptionNewParamsEventTypeAccountHolderVerification                            EventSubscriptionNewParamsEventType = "account_holder.verification"
 	EventSubscriptionNewParamsEventTypeCardCreated                                          EventSubscriptionNewParamsEventType = "card.created"
 	EventSubscriptionNewParamsEventTypeCardShipped                                          EventSubscriptionNewParamsEventType = "card.shipped"
 	EventSubscriptionNewParamsEventTypeCardTransactionUpdated                               EventSubscriptionNewParamsEventType = "card_transaction.updated"
@@ -230,6 +233,9 @@ func (r EventSubscriptionUpdateParams) MarshalJSON() (data []byte, err error) {
 type EventSubscriptionUpdateParamsEventType string
 
 const (
+	EventSubscriptionUpdateParamsEventTypeAccountHolderCreated                                 EventSubscriptionUpdateParamsEventType = "account_holder.created"
+	EventSubscriptionUpdateParamsEventTypeAccountHolderUpdated                                 EventSubscriptionUpdateParamsEventType = "account_holder.updated"
+	EventSubscriptionUpdateParamsEventTypeAccountHolderVerification                            EventSubscriptionUpdateParamsEventType = "account_holder.verification"
 	EventSubscriptionUpdateParamsEventTypeCardCreated                                          EventSubscriptionUpdateParamsEventType = "card.created"
 	EventSubscriptionUpdateParamsEventTypeCardShipped                                          EventSubscriptionUpdateParamsEventType = "card.shipped"
 	EventSubscriptionUpdateParamsEventTypeCardTransactionUpdated                               EventSubscriptionUpdateParamsEventType = "card_transaction.updated"
@@ -349,6 +355,9 @@ func (r EventSubscriptionSendSimulatedExampleParams) MarshalJSON() (data []byte,
 type EventSubscriptionSendSimulatedExampleParamsEventType string
 
 const (
+	EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderCreated                                 EventSubscriptionSendSimulatedExampleParamsEventType = "account_holder.created"
+	EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderUpdated                                 EventSubscriptionSendSimulatedExampleParamsEventType = "account_holder.updated"
+	EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderVerification                            EventSubscriptionSendSimulatedExampleParamsEventType = "account_holder.verification"
 	EventSubscriptionSendSimulatedExampleParamsEventTypeCardCreated                                          EventSubscriptionSendSimulatedExampleParamsEventType = "card.created"
 	EventSubscriptionSendSimulatedExampleParamsEventTypeCardShipped                                          EventSubscriptionSendSimulatedExampleParamsEventType = "card.shipped"
 	EventSubscriptionSendSimulatedExampleParamsEventTypeCardTransactionUpdated                               EventSubscriptionSendSimulatedExampleParamsEventType = "card_transaction.updated"
