@@ -147,9 +147,12 @@ func (r *TransactionService) SimulateVoid(ctx context.Context, body TransactionS
 type Transaction struct {
 	// Globally unique identifier.
 	Token string `json:"token,required" format:"uuid"`
-	// A fixed-width 23-digit numeric identifier for the Transaction that may be set if
-	// the transaction originated from the Mastercard network. This number may be used
-	// for dispute tracking.
+	// Fee assessed by the merchant and paid for by the cardholder in the smallest unit
+	// of the currency. Will be zero if no fee is assessed. Rebates may be transmitted
+	// as a negative value to indicate credited fees.
+	AcquirerFee int64 `json:"acquirer_fee,required"`
+	// Unique identifier assigned to a transaction by the acquirer that can be used in
+	// dispute and chargeback filing.
 	AcquirerReferenceNumber string `json:"acquirer_reference_number,required,nullable"`
 	// Authorization amount of the transaction (in cents), including any acquirer fees.
 	// This may change over time, and will represent the settled amount once the
@@ -203,6 +206,7 @@ type Transaction struct {
 // transactionJSON contains the JSON metadata for the struct [Transaction]
 type transactionJSON struct {
 	Token                       apijson.Field
+	AcquirerFee                 apijson.Field
 	AcquirerReferenceNumber     apijson.Field
 	Amount                      apijson.Field
 	AuthorizationAmount         apijson.Field
@@ -499,14 +503,14 @@ const (
 )
 
 type TransactionCardholderAuthentication struct {
-	// 3-D Secure Protocol version. Possible values:
+	// 3-D Secure Protocol version. Possible enum values:
 	//
 	// - `1`: 3-D Secure Protocol version 1.x applied to the transaction.
 	// - `2`: 3-D Secure Protocol version 2.x applied to the transaction.
 	// - `null`: 3-D Secure was not used for the transaction
 	ThreeDSVersion string `json:"3ds_version,required,nullable"`
 	// Exemption applied by the ACS to authenticate the transaction without requesting
-	// a challenge. Possible values:
+	// a challenge. Possible enum values:
 	//
 	//   - `AUTHENTICATION_OUTAGE_EXCEPTION`: Authentication Outage Exception exemption.
 	//   - `LOW_VALUE`: Low Value Payment exemption.
@@ -521,8 +525,35 @@ type TransactionCardholderAuthentication struct {
 	//
 	// Maps to the 3-D Secure `transChallengeExemption` field.
 	AcquirerExemption TransactionCardholderAuthenticationAcquirerExemption `json:"acquirer_exemption,required"`
+	// Outcome of the 3DS authentication process. Possible enum values:
+	//
+	//   - `SUCCESS`: 3DS authentication was successful and the transaction is considered
+	//     authenticated.
+	//   - `DECLINE`: 3DS authentication was attempted but was unsuccessful — i.e., the
+	//     issuer declined to authenticate the cardholder; note that Lithic populates
+	//     this value on a best-effort basis based on common data across the 3DS
+	//     authentication and ASA data elements.
+	//   - `ATTEMPTS`: 3DS authentication was attempted but full authentication did not
+	//     occur. A proof of attempted authenticated is provided by the merchant.
+	//   - `NONE`: 3DS authentication was not performed on the transaction.
+	AuthenticationResult TransactionCardholderAuthenticationAuthenticationResult `json:"authentication_result,required"`
+	// Indicator for which party made the 3DS authentication decision. Possible enum
+	// values:
+	//
+	//   - `NETWORK`: A networks tand-in service decided on the outcome; for token
+	//     authentications (as indicated in the `liability_shift` attribute), this is the
+	//     default value
+	//   - `LITHIC_DEFAULT`: A default decision was made by Lithic, without running a
+	//     rules-based authentication; this value will be set on card programs that do
+	//     not participate in one of our two 3DS product tiers
+	//   - `LITHIC_RULES`: A rules-based authentication was conducted by Lithic and
+	//     Lithic decided on the outcome
+	//   - `CUSTOMER_ENDPOINT`: Lithic customer decided on the outcome based on a
+	//     real-time request sent to a configured endpoint
+	//   - `UNKNOWN`: Data on which party decided is unavailable
+	DecisionMadeBy TransactionCardholderAuthenticationDecisionMadeBy `json:"decision_made_by,required"`
 	// Indicates whether chargeback liability shift applies to the transaction.
-	// Possible values:
+	// Possible enum values:
 	//
 	//   - `3DS_AUTHENTICATED`: The transaction was fully authenticated through a 3-D
 	//     Secure flow, chargeback liability shift applies.
@@ -536,6 +567,10 @@ type TransactionCardholderAuthentication struct {
 	//     cryptography, possibly recurring. Chargeback liability shift to the issuer
 	//     applies.
 	LiabilityShift TransactionCardholderAuthenticationLiabilityShift `json:"liability_shift,required"`
+	// Unique identifier you can use to match a given 3DS authentication and the
+	// transaction. Note that in cases where liability shift does not occur, this token
+	// is matched to the transaction on a best-effort basis.
+	ThreeDSAuthenticationToken string `json:"three_ds_authentication_token,required" format:"uuid"`
 	// Verification attempted values:
 	//
 	//   - `APP_LOGIN`: Out-of-band login verification was attempted by the ACS.
@@ -585,13 +620,16 @@ type TransactionCardholderAuthentication struct {
 // transactionCardholderAuthenticationJSON contains the JSON metadata for the
 // struct [TransactionCardholderAuthentication]
 type transactionCardholderAuthenticationJSON struct {
-	ThreeDSVersion        apijson.Field
-	AcquirerExemption     apijson.Field
-	LiabilityShift        apijson.Field
-	VerificationAttempted apijson.Field
-	VerificationResult    apijson.Field
-	raw                   string
-	ExtraFields           map[string]apijson.Field
+	ThreeDSVersion             apijson.Field
+	AcquirerExemption          apijson.Field
+	AuthenticationResult       apijson.Field
+	DecisionMadeBy             apijson.Field
+	LiabilityShift             apijson.Field
+	ThreeDSAuthenticationToken apijson.Field
+	VerificationAttempted      apijson.Field
+	VerificationResult         apijson.Field
+	raw                        string
+	ExtraFields                map[string]apijson.Field
 }
 
 func (r *TransactionCardholderAuthentication) UnmarshalJSON(data []byte) (err error) {
@@ -599,7 +637,7 @@ func (r *TransactionCardholderAuthentication) UnmarshalJSON(data []byte) (err er
 }
 
 // Exemption applied by the ACS to authenticate the transaction without requesting
-// a challenge. Possible values:
+// a challenge. Possible enum values:
 //
 //   - `AUTHENTICATION_OUTAGE_EXCEPTION`: Authentication Outage Exception exemption.
 //   - `LOW_VALUE`: Low Value Payment exemption.
@@ -626,8 +664,52 @@ const (
 	TransactionCardholderAuthenticationAcquirerExemptionTransactionRiskAnalysis                TransactionCardholderAuthenticationAcquirerExemption = "TRANSACTION_RISK_ANALYSIS"
 )
 
+// Outcome of the 3DS authentication process. Possible enum values:
+//
+//   - `SUCCESS`: 3DS authentication was successful and the transaction is considered
+//     authenticated.
+//   - `DECLINE`: 3DS authentication was attempted but was unsuccessful — i.e., the
+//     issuer declined to authenticate the cardholder; note that Lithic populates
+//     this value on a best-effort basis based on common data across the 3DS
+//     authentication and ASA data elements.
+//   - `ATTEMPTS`: 3DS authentication was attempted but full authentication did not
+//     occur. A proof of attempted authenticated is provided by the merchant.
+//   - `NONE`: 3DS authentication was not performed on the transaction.
+type TransactionCardholderAuthenticationAuthenticationResult string
+
+const (
+	TransactionCardholderAuthenticationAuthenticationResultSuccess  TransactionCardholderAuthenticationAuthenticationResult = "SUCCESS"
+	TransactionCardholderAuthenticationAuthenticationResultDecline  TransactionCardholderAuthenticationAuthenticationResult = "DECLINE"
+	TransactionCardholderAuthenticationAuthenticationResultAttempts TransactionCardholderAuthenticationAuthenticationResult = "ATTEMPTS"
+	TransactionCardholderAuthenticationAuthenticationResultNone     TransactionCardholderAuthenticationAuthenticationResult = "NONE"
+)
+
+// Indicator for which party made the 3DS authentication decision. Possible enum
+// values:
+//
+//   - `NETWORK`: A networks tand-in service decided on the outcome; for token
+//     authentications (as indicated in the `liability_shift` attribute), this is the
+//     default value
+//   - `LITHIC_DEFAULT`: A default decision was made by Lithic, without running a
+//     rules-based authentication; this value will be set on card programs that do
+//     not participate in one of our two 3DS product tiers
+//   - `LITHIC_RULES`: A rules-based authentication was conducted by Lithic and
+//     Lithic decided on the outcome
+//   - `CUSTOMER_ENDPOINT`: Lithic customer decided on the outcome based on a
+//     real-time request sent to a configured endpoint
+//   - `UNKNOWN`: Data on which party decided is unavailable
+type TransactionCardholderAuthenticationDecisionMadeBy string
+
+const (
+	TransactionCardholderAuthenticationDecisionMadeByNetwork          TransactionCardholderAuthenticationDecisionMadeBy = "NETWORK"
+	TransactionCardholderAuthenticationDecisionMadeByLithicDefault    TransactionCardholderAuthenticationDecisionMadeBy = "LITHIC_DEFAULT"
+	TransactionCardholderAuthenticationDecisionMadeByLithicRules      TransactionCardholderAuthenticationDecisionMadeBy = "LITHIC_RULES"
+	TransactionCardholderAuthenticationDecisionMadeByCustomerEndpoint TransactionCardholderAuthenticationDecisionMadeBy = "CUSTOMER_ENDPOINT"
+	TransactionCardholderAuthenticationDecisionMadeByUnknown          TransactionCardholderAuthenticationDecisionMadeBy = "UNKNOWN"
+)
+
 // Indicates whether chargeback liability shift applies to the transaction.
-// Possible values:
+// Possible enum values:
 //
 //   - `3DS_AUTHENTICATED`: The transaction was fully authenticated through a 3-D
 //     Secure flow, chargeback liability shift applies.

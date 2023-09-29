@@ -7,6 +7,41 @@ import (
 	"github.com/lithic-com/lithic-go/internal/param"
 )
 
+type Address struct {
+	// Valid deliverable address (no PO boxes).
+	Address1 string `json:"address1,required"`
+	// Name of city.
+	City string `json:"city,required"`
+	// Valid country code. Only USA is currently supported, entered in uppercase ISO
+	// 3166-1 alpha-3 three-character format.
+	Country string `json:"country,required"`
+	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
+	// five-digit ZIP or nine-digit ZIP+4.
+	PostalCode string `json:"postal_code,required"`
+	// Valid state code. Only USA state codes are currently supported, entered in
+	// uppercase ISO 3166-2 two-character format.
+	State string `json:"state,required"`
+	// Unit or apartment number (if applicable).
+	Address2 string `json:"address2"`
+	JSON     addressJSON
+}
+
+// addressJSON contains the JSON metadata for the struct [Address]
+type addressJSON struct {
+	Address1    apijson.Field
+	City        apijson.Field
+	Country     apijson.Field
+	PostalCode  apijson.Field
+	State       apijson.Field
+	Address2    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *Address) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
 type AddressParam struct {
 	// Valid deliverable address (no PO boxes).
 	Address1 param.Field[string] `json:"address1,required"`

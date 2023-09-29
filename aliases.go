@@ -10,6 +10,9 @@ import (
 type Error = apierror.Error
 
 // This is an alias to an internal type.
+type Address = shared.Address
+
+// This is an alias to an internal type.
 type AddressParam = shared.AddressParam
 
 // This is an alias to an internal type.

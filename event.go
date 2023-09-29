@@ -100,6 +100,11 @@ type Event struct {
 	Created time.Time `json:"created,required" format:"date-time"`
 	// Event types:
 	//
+	//   - `account_holder.created` - Notification that a new account holder has been
+	//     created and was not rejected.
+	//   - `account_holder.updated` - Notification that an account holder was updated.
+	//   - `account_holder.verification` - Notification than an account holder's identity
+	//     verification is complete.
 	//   - `card.created` - Notification that a card has been created.
 	//   - `card.shipped` - Physical card shipment notification. See
 	//     https://docs.lithic.com/docs/cards#physical-card-shipped-webhook.
@@ -134,6 +139,11 @@ func (r *Event) UnmarshalJSON(data []byte) (err error) {
 
 // Event types:
 //
+//   - `account_holder.created` - Notification that a new account holder has been
+//     created and was not rejected.
+//   - `account_holder.updated` - Notification that an account holder was updated.
+//   - `account_holder.verification` - Notification than an account holder's identity
+//     verification is complete.
 //   - `card.created` - Notification that a card has been created.
 //   - `card.shipped` - Physical card shipment notification. See
 //     https://docs.lithic.com/docs/cards#physical-card-shipped-webhook.
@@ -150,6 +160,9 @@ func (r *Event) UnmarshalJSON(data []byte) (err error) {
 type EventEventType string
 
 const (
+	EventEventTypeAccountHolderCreated                                 EventEventType = "account_holder.created"
+	EventEventTypeAccountHolderUpdated                                 EventEventType = "account_holder.updated"
+	EventEventTypeAccountHolderVerification                            EventEventType = "account_holder.verification"
 	EventEventTypeCardCreated                                          EventEventType = "card.created"
 	EventEventTypeCardShipped                                          EventEventType = "card.shipped"
 	EventEventTypeCardTransactionUpdated                               EventEventType = "card_transaction.updated"
@@ -196,6 +209,9 @@ func (r *EventSubscription) UnmarshalJSON(data []byte) (err error) {
 type EventSubscriptionEventType string
 
 const (
+	EventSubscriptionEventTypeAccountHolderCreated                                 EventSubscriptionEventType = "account_holder.created"
+	EventSubscriptionEventTypeAccountHolderUpdated                                 EventSubscriptionEventType = "account_holder.updated"
+	EventSubscriptionEventTypeAccountHolderVerification                            EventSubscriptionEventType = "account_holder.verification"
 	EventSubscriptionEventTypeCardCreated                                          EventSubscriptionEventType = "card.created"
 	EventSubscriptionEventTypeCardShipped                                          EventSubscriptionEventType = "card.shipped"
 	EventSubscriptionEventTypeCardTransactionUpdated                               EventSubscriptionEventType = "card_transaction.updated"
@@ -292,6 +308,9 @@ func (r EventListParams) URLQuery() (v url.Values) {
 type EventListParamsEventType string
 
 const (
+	EventListParamsEventTypeAccountHolderCreated                                 EventListParamsEventType = "account_holder.created"
+	EventListParamsEventTypeAccountHolderUpdated                                 EventListParamsEventType = "account_holder.updated"
+	EventListParamsEventTypeAccountHolderVerification                            EventListParamsEventType = "account_holder.verification"
 	EventListParamsEventTypeCardCreated                                          EventListParamsEventType = "card.created"
 	EventListParamsEventTypeCardShipped                                          EventListParamsEventType = "card.shipped"
 	EventListParamsEventTypeCardTransactionUpdated                               EventListParamsEventType = "card_transaction.updated"
