@@ -6,16 +6,25 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"testing"
 	"time"
 
 	"github.com/lithic-com/lithic-go"
+	"github.com/lithic-com/lithic-go/internal/testutil"
 	"github.com/lithic-com/lithic-go/option"
 )
 
 func TestContextCancel(t *testing.T) {
+	baseURL := "http://localhost:4010"
+	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+		baseURL = envURL
+	}
+	if !testutil.CheckTestServer(t, baseURL) {
+		return
+	}
 	client := lithic.NewClient(
-		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithBaseURL(baseURL),
 		option.WithAPIKey("APIKey"),
 	)
 	cancelCtx, cancel := context.WithCancel(context.Background())
@@ -37,8 +46,15 @@ func (t *neverTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 }
 
 func TestContextCancelDelay(t *testing.T) {
+	baseURL := "http://localhost:4010"
+	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+		baseURL = envURL
+	}
+	if !testutil.CheckTestServer(t, baseURL) {
+		return
+	}
 	client := lithic.NewClient(
-		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithBaseURL(baseURL),
 		option.WithAPIKey("APIKey"),
 		option.WithHTTPClient(&http.Client{Transport: &neverTransport{}}),
 	)
@@ -56,6 +72,14 @@ func TestContextCancelDelay(t *testing.T) {
 }
 
 func TestContextDeadline(t *testing.T) {
+	baseURL := "http://localhost:4010"
+	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+		baseURL = envURL
+	}
+	if !testutil.CheckTestServer(t, baseURL) {
+		return
+	}
+
 	testTimeout := time.After(3 * time.Second)
 	testDone := make(chan bool)
 
@@ -65,7 +89,7 @@ func TestContextDeadline(t *testing.T) {
 
 	go func() {
 		client := lithic.NewClient(
-			option.WithBaseURL("http://127.0.0.1:4010"),
+			option.WithBaseURL(baseURL),
 			option.WithAPIKey("APIKey"),
 			option.WithHTTPClient(&http.Client{Transport: &neverTransport{}}),
 		)

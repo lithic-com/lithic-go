@@ -5,6 +5,7 @@ package lithic_test
 import (
 	"context"
 	"errors"
+	"os"
 	"testing"
 
 	"github.com/lithic-com/lithic-go"
@@ -13,11 +14,15 @@ import (
 )
 
 func TestResponderEndpointNewWithOptionalParams(t *testing.T) {
-	if !testutil.CheckTestServer(t) {
+	baseURL := "http://localhost:4010"
+	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+		baseURL = envURL
+	}
+	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithBaseURL(baseURL),
 		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.ResponderEndpoints.New(context.TODO(), lithic.ResponderEndpointNewParams{
@@ -34,12 +39,16 @@ func TestResponderEndpointNewWithOptionalParams(t *testing.T) {
 }
 
 func TestResponderEndpointDelete(t *testing.T) {
-	if !testutil.CheckTestServer(t) {
+	baseURL := "http://localhost:4010"
+	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+		baseURL = envURL
+	}
+	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
 	t.Skip("Prism errors when accept header set but no request body is defined")
 	client := lithic.NewClient(
-		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithBaseURL(baseURL),
 		option.WithAPIKey("APIKey"),
 	)
 	err := client.ResponderEndpoints.Delete(context.TODO(), lithic.ResponderEndpointDeleteParams{
@@ -55,11 +64,15 @@ func TestResponderEndpointDelete(t *testing.T) {
 }
 
 func TestResponderEndpointCheckStatus(t *testing.T) {
-	if !testutil.CheckTestServer(t) {
+	baseURL := "http://localhost:4010"
+	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+		baseURL = envURL
+	}
+	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
 	client := lithic.NewClient(
-		option.WithBaseURL("http://127.0.0.1:4010"),
+		option.WithBaseURL(baseURL),
 		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.ResponderEndpoints.CheckStatus(context.TODO(), lithic.ResponderEndpointCheckStatusParams{
