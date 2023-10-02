@@ -57,9 +57,6 @@
       "hidden": true
     }
   ],
-  "reviewers": [
-    "marcel-stainless"
-  ],
   "release-type": "go",
   "extra-files": [
     "internal/version.go",
