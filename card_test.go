@@ -54,8 +54,8 @@ func TestCardNewWithOptionalParams(t *testing.T) {
 			PhoneNumber: lithic.F("+12124007676"),
 		}),
 		ShippingMethod:     lithic.F(lithic.CardNewParamsShippingMethodStandard),
-		SpendLimit:         lithic.F(int64(0)),
-		SpendLimitDuration: lithic.F(lithic.SpendLimitDurationAnnually),
+		SpendLimit:         lithic.F(int64(1000)),
+		SpendLimitDuration: lithic.F(lithic.SpendLimitDurationTransaction),
 		State:              lithic.F(lithic.CardNewParamsStateOpen),
 	})
 	if err != nil {
@@ -107,11 +107,11 @@ func TestCardUpdateWithOptionalParams(t *testing.T) {
 		lithic.CardUpdateParams{
 			AuthRuleToken:       lithic.F("string"),
 			DigitalCardArtToken: lithic.F("00000000-0000-0000-1000-000000000000"),
-			Memo:                lithic.F("New Card"),
+			Memo:                lithic.F("Updated Name"),
 			Pin:                 lithic.F("string"),
-			SpendLimit:          lithic.F(int64(0)),
-			SpendLimitDuration:  lithic.F(lithic.SpendLimitDurationAnnually),
-			State:               lithic.F(lithic.CardUpdateParamsStateClosed),
+			SpendLimit:          lithic.F(int64(100)),
+			SpendLimitDuration:  lithic.F(lithic.SpendLimitDurationForever),
+			State:               lithic.F(lithic.CardUpdateParamsStateOpen),
 		},
 	)
 	if err != nil {
@@ -248,7 +248,7 @@ func TestCardProvisionWithOptionalParams(t *testing.T) {
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.CardProvisionParams{
 			Certificate:    lithic.F("U3RhaW5sZXNzIHJvY2tz"),
-			DigitalWallet:  lithic.F(lithic.CardProvisionParamsDigitalWalletApplePay),
+			DigitalWallet:  lithic.F(lithic.CardProvisionParamsDigitalWalletGooglePay),
 			Nonce:          lithic.F("U3RhaW5sZXNzIHJvY2tz"),
 			NonceSignature: lithic.F("U3RhaW5sZXNzIHJvY2tz"),
 		},
