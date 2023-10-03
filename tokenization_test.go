@@ -27,11 +27,11 @@ func TestTokenizationSimulateWithOptionalParams(t *testing.T) {
 	)
 	_, err := client.Tokenizations.Simulate(context.TODO(), lithic.TokenizationSimulateParams{
 		Cvv:                       lithic.F("776"),
-		ExpirationDate:            lithic.F("xxxxx"),
+		ExpirationDate:            lithic.F("08/29"),
 		Pan:                       lithic.F("4111111289144142"),
 		TokenizationSource:        lithic.F(lithic.TokenizationSimulateParamsTokenizationSourceApplePay),
-		AccountScore:              lithic.F(int64(0)),
-		DeviceScore:               lithic.F(int64(0)),
+		AccountScore:              lithic.F(int64(5)),
+		DeviceScore:               lithic.F(int64(5)),
 		WalletRecommendedDecision: lithic.F(lithic.TokenizationSimulateParamsWalletRecommendedDecisionApproved),
 	})
 	if err != nil {

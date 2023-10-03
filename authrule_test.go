@@ -81,8 +81,8 @@ func TestAuthRuleUpdateWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.AuthRuleUpdateParams{
-			AllowedCountries: lithic.F([]string{"string", "string", "string"}),
-			AllowedMcc:       lithic.F([]string{"string", "string", "string"}),
+			AllowedCountries: lithic.F([]string{"USA"}),
+			AllowedMcc:       lithic.F([]string{"3000", "3001"}),
 			BlockedCountries: lithic.F([]string{"string", "string", "string"}),
 			BlockedMcc:       lithic.F([]string{"string", "string", "string"}),
 		},
@@ -138,7 +138,7 @@ func TestAuthRuleApplyWithOptionalParams(t *testing.T) {
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.AuthRuleApplyParams{
 			AccountTokens: lithic.F([]string{"string", "string", "string"}),
-			CardTokens:    lithic.F([]string{"string", "string", "string"}),
+			CardTokens:    lithic.F([]string{"df942c4e-9130-4ab5-b067-778a2c55b357", "1336a403-2447-4b36-a009-6fbb852ee675"}),
 			ProgramLevel:  lithic.F(true),
 		},
 	)
@@ -166,7 +166,7 @@ func TestAuthRuleRemoveWithOptionalParams(t *testing.T) {
 	_, err := client.AuthRules.Remove(context.TODO(), lithic.AuthRuleRemoveParams{
 		AccountTokens: lithic.F([]string{"string", "string", "string"}),
 		CardTokens:    lithic.F([]string{"string", "string", "string"}),
-		ProgramLevel:  lithic.F(true),
+		ProgramLevel:  lithic.F(false),
 	})
 	if err != nil {
 		var apierr *lithic.Error
