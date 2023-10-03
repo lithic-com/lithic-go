@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.8.1 (2023-10-03)
+
+Full Changelog: [v0.8.0...v0.8.1](https://github.com/lithic-com/lithic-go/compare/v0.8.0...v0.8.1)
+
+### Bug Fixes
+
+* prevent index out of range bug during auto-pagination ([#139](https://github.com/lithic-com/lithic-go/issues/139)) ([84ad5e7](https://github.com/lithic-com/lithic-go/commit/84ad5e7025ca45e1b76354930f5f723e06f9a610))
+
+
+### Chores
+
+* **ci:** remove reviewer ([#137](https://github.com/lithic-com/lithic-go/issues/137)) ([3aa48ba](https://github.com/lithic-com/lithic-go/commit/3aa48bad524652597b418d4dcbbad4373ecf712e))
+* **tests:** update test examples ([#140](https://github.com/lithic-com/lithic-go/issues/140)) ([805a28b](https://github.com/lithic-com/lithic-go/commit/805a28b29355776ce1e6a404133e1bda5ea0163d))
+
 ## 0.8.0 (2023-09-29)
 
 Full Changelog: [v0.7.4...v0.8.0](https://github.com/lithic-com/lithic-go/compare/v0.7.4...v0.8.0)
