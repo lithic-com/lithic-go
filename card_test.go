@@ -136,12 +136,13 @@ func TestCardListWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Cards.List(context.TODO(), lithic.CardListParams{
-		AccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-		Begin:        lithic.F(time.Now()),
-		End:          lithic.F(time.Now()),
-		Page:         lithic.F(int64(0)),
-		PageSize:     lithic.F(int64(1)),
-		State:        lithic.F(lithic.CardListParamsStateOpen),
+		AccountToken:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		Begin:         lithic.F(time.Now()),
+		End:           lithic.F(time.Now()),
+		EndingBefore:  lithic.F("string"),
+		PageSize:      lithic.F(int64(1)),
+		StartingAfter: lithic.F("string"),
+		State:         lithic.F(lithic.CardListParamsStateOpen),
 	})
 	if err != nil {
 		var apierr *lithic.Error
