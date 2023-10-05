@@ -89,10 +89,11 @@ func TestAccountListWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Accounts.List(context.TODO(), lithic.AccountListParams{
-		Begin:    lithic.F(time.Now()),
-		End:      lithic.F(time.Now()),
-		Page:     lithic.F(int64(0)),
-		PageSize: lithic.F(int64(1)),
+		Begin:         lithic.F(time.Now()),
+		End:           lithic.F(time.Now()),
+		EndingBefore:  lithic.F("string"),
+		PageSize:      lithic.F(int64(1)),
+		StartingAfter: lithic.F("string"),
 	})
 	if err != nil {
 		var apierr *lithic.Error

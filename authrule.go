@@ -61,7 +61,7 @@ func (r *AuthRuleService) Update(ctx context.Context, authRuleToken string, body
 }
 
 // Return all of the Auth Rules under the program.
-func (r *AuthRuleService) List(ctx context.Context, query AuthRuleListParams, opts ...option.RequestOption) (res *shared.Page[AuthRule], err error) {
+func (r *AuthRuleService) List(ctx context.Context, query AuthRuleListParams, opts ...option.RequestOption) (res *shared.CursorPage[AuthRule], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -79,8 +79,8 @@ func (r *AuthRuleService) List(ctx context.Context, query AuthRuleListParams, op
 }
 
 // Return all of the Auth Rules under the program.
-func (r *AuthRuleService) ListAutoPaging(ctx context.Context, query AuthRuleListParams, opts ...option.RequestOption) *shared.PageAutoPager[AuthRule] {
-	return shared.NewPageAutoPager(r.List(ctx, query, opts...))
+func (r *AuthRuleService) ListAutoPaging(ctx context.Context, query AuthRuleListParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[AuthRule] {
+	return shared.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
 // Applies an existing authorization rule (Auth Rule) to an program, account, or
@@ -103,7 +103,9 @@ func (r *AuthRuleService) Remove(ctx context.Context, body AuthRuleRemoveParams,
 
 type AuthRule struct {
 	// Globally unique identifier.
-	Token string `json:"token" format:"uuid"`
+	Token string `json:"token,required" format:"uuid"`
+	// Indicates whether the Auth Rule is ACTIVE or INACTIVE
+	State AuthRuleState `json:"state,required"`
 	// Array of account_token(s) identifying the accounts that the Auth Rule applies
 	// to. Note that only this field or `card_tokens` can be provided for a given Auth
 	// Rule.
@@ -124,14 +126,13 @@ type AuthRule struct {
 	CardTokens []string `json:"card_tokens"`
 	// Boolean indicating whether the Auth Rule is applied at the program level.
 	ProgramLevel bool `json:"program_level"`
-	// Indicates whether the Auth Rule is ACTIVE or INACTIVE
-	State AuthRuleState `json:"state"`
-	JSON  authRuleJSON
+	JSON         authRuleJSON
 }
 
 // authRuleJSON contains the JSON metadata for the struct [AuthRule]
 type authRuleJSON struct {
 	Token            apijson.Field
+	State            apijson.Field
 	AccountTokens    apijson.Field
 	AllowedCountries apijson.Field
 	AllowedMcc       apijson.Field
@@ -139,7 +140,6 @@ type authRuleJSON struct {
 	BlockedMcc       apijson.Field
 	CardTokens       apijson.Field
 	ProgramLevel     apijson.Field
-	State            apijson.Field
 	raw              string
 	ExtraFields      map[string]apijson.Field
 }
@@ -244,10 +244,14 @@ func (r AuthRuleUpdateParams) MarshalJSON() (data []byte, err error) {
 }
 
 type AuthRuleListParams struct {
-	// Page (for pagination).
-	Page param.Field[int64] `query:"page"`
+	// A cursor representing an item's token before which a page of results should end.
+	// Used to retrieve the previous page of results before this item.
+	EndingBefore param.Field[string] `query:"ending_before"`
 	// Page size (for pagination).
 	PageSize param.Field[int64] `query:"page_size"`
+	// A cursor representing an item's token after which a page of results should
+	// begin. Used to retrieve the next page of results after this item.
+	StartingAfter param.Field[string] `query:"starting_after"`
 }
 
 // URLQuery serializes [AuthRuleListParams]'s query parameters as `url.Values`.

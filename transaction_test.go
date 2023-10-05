@@ -49,13 +49,14 @@ func TestTransactionListWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.Transactions.List(context.TODO(), lithic.TransactionListParams{
-		AccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-		Begin:        lithic.F(time.Now()),
-		CardToken:    lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-		End:          lithic.F(time.Now()),
-		Page:         lithic.F(int64(0)),
-		PageSize:     lithic.F(int64(1)),
-		Result:       lithic.F(lithic.TransactionListParamsResultApproved),
+		AccountToken:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		Begin:         lithic.F(time.Now()),
+		CardToken:     lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		End:           lithic.F(time.Now()),
+		EndingBefore:  lithic.F("string"),
+		PageSize:      lithic.F(int64(1)),
+		Result:        lithic.F(lithic.TransactionListParamsResultApproved),
+		StartingAfter: lithic.F("string"),
 	})
 	if err != nil {
 		var apierr *lithic.Error

@@ -109,8 +109,9 @@ func TestAuthRuleListWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("APIKey"),
 	)
 	_, err := client.AuthRules.List(context.TODO(), lithic.AuthRuleListParams{
-		Page:     lithic.F(int64(0)),
-		PageSize: lithic.F(int64(1)),
+		EndingBefore:  lithic.F("string"),
+		PageSize:      lithic.F(int64(1)),
+		StartingAfter: lithic.F("string"),
 	})
 	if err != nil {
 		var apierr *lithic.Error

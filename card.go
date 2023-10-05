@@ -67,7 +67,7 @@ func (r *CardService) Update(ctx context.Context, cardToken string, body CardUpd
 }
 
 // List cards.
-func (r *CardService) List(ctx context.Context, query CardListParams, opts ...option.RequestOption) (res *shared.Page[Card], err error) {
+func (r *CardService) List(ctx context.Context, query CardListParams, opts ...option.RequestOption) (res *shared.CursorPage[Card], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -85,8 +85,8 @@ func (r *CardService) List(ctx context.Context, query CardListParams, opts ...op
 }
 
 // List cards.
-func (r *CardService) ListAutoPaging(ctx context.Context, query CardListParams, opts ...option.RequestOption) *shared.PageAutoPager[Card] {
-	return shared.NewPageAutoPager(r.List(ctx, query, opts...))
+func (r *CardService) ListAutoPaging(ctx context.Context, query CardListParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[Card] {
+	return shared.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
 // Handling full card PANs and CVV codes requires that you comply with the Payment
@@ -720,10 +720,14 @@ type CardListParams struct {
 	// Date string in RFC 3339 format. Only entries created before the specified date
 	// will be included. UTC time zone.
 	End param.Field[time.Time] `query:"end" format:"date-time"`
-	// Page (for pagination).
-	Page param.Field[int64] `query:"page"`
+	// A cursor representing an item's token before which a page of results should end.
+	// Used to retrieve the previous page of results before this item.
+	EndingBefore param.Field[string] `query:"ending_before"`
 	// Page size (for pagination).
 	PageSize param.Field[int64] `query:"page_size"`
+	// A cursor representing an item's token after which a page of results should
+	// begin. Used to retrieve the next page of results after this item.
+	StartingAfter param.Field[string] `query:"starting_after"`
 	// Returns cards with the specified state.
 	State param.Field[CardListParamsState] `query:"state"`
 }
