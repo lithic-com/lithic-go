@@ -55,7 +55,7 @@ func (r *AccountService) Update(ctx context.Context, accountToken string, body A
 }
 
 // List account configurations.
-func (r *AccountService) List(ctx context.Context, query AccountListParams, opts ...option.RequestOption) (res *shared.Page[Account], err error) {
+func (r *AccountService) List(ctx context.Context, query AccountListParams, opts ...option.RequestOption) (res *shared.CursorPage[Account], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -73,8 +73,8 @@ func (r *AccountService) List(ctx context.Context, query AccountListParams, opts
 }
 
 // List account configurations.
-func (r *AccountService) ListAutoPaging(ctx context.Context, query AccountListParams, opts ...option.RequestOption) *shared.PageAutoPager[Account] {
-	return shared.NewPageAutoPager(r.List(ctx, query, opts...))
+func (r *AccountService) ListAutoPaging(ctx context.Context, query AccountListParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[Account] {
+	return shared.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
 type Account struct {
@@ -283,10 +283,14 @@ type AccountListParams struct {
 	// Date string in RFC 3339 format. Only entries created before the specified date
 	// will be included. UTC time zone.
 	End param.Field[time.Time] `query:"end" format:"date-time"`
-	// Page (for pagination).
-	Page param.Field[int64] `query:"page"`
+	// A cursor representing an item's token before which a page of results should end.
+	// Used to retrieve the previous page of results before this item.
+	EndingBefore param.Field[string] `query:"ending_before"`
 	// Page size (for pagination).
 	PageSize param.Field[int64] `query:"page_size"`
+	// A cursor representing an item's token after which a page of results should
+	// begin. Used to retrieve the next page of results after this item.
+	StartingAfter param.Field[string] `query:"starting_after"`
 }
 
 // URLQuery serializes [AccountListParams]'s query parameters as `url.Values`.
