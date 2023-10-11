@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.3 (2023-10-11)
+
+Full Changelog: [v0.8.2...v0.8.3](https://github.com/lithic-com/lithic-go/compare/v0.8.2...v0.8.3)
+
 ## 0.8.2 (2023-10-05)
 
 Full Changelog: [v0.8.1...v0.8.2](https://github.com/lithic-com/lithic-go/compare/v0.8.1...v0.8.2)
