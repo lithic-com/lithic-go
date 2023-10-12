@@ -24,7 +24,7 @@ func TestDisputeNewWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Disputes.New(context.TODO(), lithic.DisputeNewParams{
 		Amount:            lithic.F(int64(0)),
@@ -52,7 +52,7 @@ func TestDisputeGet(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Disputes.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 	if err != nil {
@@ -74,7 +74,7 @@ func TestDisputeUpdateWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Disputes.Update(
 		context.TODO(),
@@ -105,7 +105,7 @@ func TestDisputeListWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Disputes.List(context.TODO(), lithic.DisputeListParams{
 		Begin:             lithic.F(time.Now()),
@@ -135,7 +135,7 @@ func TestDisputeDelete(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Disputes.Delete(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 	if err != nil {
@@ -157,7 +157,7 @@ func TestDisputeDeleteEvidence(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Disputes.DeleteEvidence(
 		context.TODO(),
@@ -183,7 +183,7 @@ func TestDisputeInitiateEvidenceUploadWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Disputes.InitiateEvidenceUpload(
 		context.TODO(),
@@ -211,7 +211,7 @@ func TestDisputeListEvidencesWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Disputes.ListEvidences(
 		context.TODO(),
@@ -243,7 +243,7 @@ func TestDisputeGetEvidence(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Disputes.GetEvidence(
 		context.TODO(),

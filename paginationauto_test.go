@@ -22,7 +22,7 @@ func TestAutoPagination(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	iter := client.Cards.ListAutoPaging(context.TODO(), lithic.CardListParams{})
 	// Prism mock isn't going to give us real pagination

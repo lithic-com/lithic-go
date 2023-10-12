@@ -24,7 +24,7 @@ func TestFinancialAccountBalanceListWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.FinancialAccounts.Balances.List(
 		context.TODO(),

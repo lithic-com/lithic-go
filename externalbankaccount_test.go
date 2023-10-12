@@ -24,7 +24,7 @@ func TestExternalBankAccountNewWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.ExternalBankAccounts.New(context.TODO(), lithic.ExternalBankAccountNewParamsPlaidCreateBankAccountAPIRequest{
 		Owner:              lithic.F("x"),
@@ -56,7 +56,7 @@ func TestExternalBankAccountGet(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.ExternalBankAccounts.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 	if err != nil {
@@ -78,7 +78,7 @@ func TestExternalBankAccountUpdateWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.ExternalBankAccounts.Update(
 		context.TODO(),
@@ -120,7 +120,7 @@ func TestExternalBankAccountListWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.ExternalBankAccounts.List(context.TODO(), lithic.ExternalBankAccountListParams{
 		AccountToken:       lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),

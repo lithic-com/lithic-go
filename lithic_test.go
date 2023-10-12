@@ -23,7 +23,7 @@ func TestLithicAPIStatus(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.APIStatus(context.TODO())
 	if err != nil {

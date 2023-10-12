@@ -24,7 +24,7 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AccountHolders.New(context.TODO(), lithic.AccountHolderNewParamsKYB{
 		BeneficialOwnerEntities: lithic.F([]lithic.AccountHolderNewParamsKYBBeneficialOwnerEntity{{
@@ -172,7 +172,7 @@ func TestAccountHolderGet(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AccountHolders.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 	if err != nil {
@@ -194,7 +194,7 @@ func TestAccountHolderUpdateWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AccountHolders.Update(
 		context.TODO(),
@@ -224,7 +224,7 @@ func TestAccountHolderListDocuments(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AccountHolders.ListDocuments(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 	if err != nil {
@@ -246,7 +246,7 @@ func TestAccountHolderResubmit(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AccountHolders.Resubmit(
 		context.TODO(),
@@ -291,7 +291,7 @@ func TestAccountHolderGetDocument(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AccountHolders.GetDocument(
 		context.TODO(),
@@ -317,7 +317,7 @@ func TestAccountHolderUploadDocument(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AccountHolders.UploadDocument(
 		context.TODO(),
