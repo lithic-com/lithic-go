@@ -23,7 +23,7 @@ func TestAuthRuleNewWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AuthRules.New(context.TODO(), lithic.AuthRuleNewParams{
 		AccountTokens:    lithic.F([]string{"3fa85f64-5717-4562-b3fc-2c963f66afa6"}),
@@ -53,7 +53,7 @@ func TestAuthRuleGet(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AuthRules.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 	if err != nil {
@@ -75,7 +75,7 @@ func TestAuthRuleUpdateWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AuthRules.Update(
 		context.TODO(),
@@ -106,7 +106,7 @@ func TestAuthRuleListWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AuthRules.List(context.TODO(), lithic.AuthRuleListParams{
 		EndingBefore:  lithic.F("string"),
@@ -132,7 +132,7 @@ func TestAuthRuleApplyWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AuthRules.Apply(
 		context.TODO(),
@@ -162,7 +162,7 @@ func TestAuthRuleRemoveWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AuthRules.Remove(context.TODO(), lithic.AuthRuleRemoveParams{
 		AccountTokens: lithic.F([]string{"string", "string", "string"}),

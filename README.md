@@ -47,8 +47,8 @@ import (
 
 func main() {
 	client := lithic.NewClient(
-		option.WithAPIKey("my api key"), // defaults to os.LookupEnv("LITHIC_API_KEY")
-		option.WithEnvironmentSandbox(), // defaults to option.WithEnvironmentProduction()
+		option.WithAPIKey("My Lithic API Key"), // defaults to os.LookupEnv("LITHIC_API_KEY")
+		option.WithEnvironmentSandbox(),        // defaults to option.WithEnvironmentProduction()
 	)
 	card, err := client.Cards.New(context.TODO(), lithic.CardNewParams{
 		Type: lithic.F(lithic.CardNewParamsTypeSingleUse),

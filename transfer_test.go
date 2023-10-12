@@ -23,7 +23,7 @@ func TestTransferNewWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Transfers.New(context.TODO(), lithic.TransferNewParams{
 		Amount:           lithic.F(int64(0)),

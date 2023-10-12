@@ -23,7 +23,7 @@ func TestPaymentNewWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Payments.New(context.TODO(), lithic.PaymentNewParams{
 		Amount:                   lithic.F(int64(1)),
@@ -57,7 +57,7 @@ func TestPaymentGet(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Payments.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 	if err != nil {
@@ -79,7 +79,7 @@ func TestPaymentListWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Payments.List(context.TODO(), lithic.PaymentListParams{
 		EndingBefore:          lithic.F("string"),
@@ -108,7 +108,7 @@ func TestPaymentSimulateRelease(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Payments.SimulateRelease(context.TODO(), lithic.PaymentSimulateReleaseParams{
 		PaymentToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
@@ -132,7 +132,7 @@ func TestPaymentSimulateReturnWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Payments.SimulateReturn(context.TODO(), lithic.PaymentSimulateReturnParams{
 		PaymentToken:     lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),

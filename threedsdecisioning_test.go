@@ -23,7 +23,7 @@ func TestThreeDSDecisioningGetSecret(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.ThreeDS.Decisioning.GetSecret(context.TODO())
 	if err != nil {
@@ -45,7 +45,7 @@ func TestThreeDSDecisioningRotateSecret(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	err := client.ThreeDS.Decisioning.RotateSecret(context.TODO())
 	if err != nil {
