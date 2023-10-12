@@ -23,7 +23,7 @@ func TestTokenizationSimulateWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Tokenizations.Simulate(context.TODO(), lithic.TokenizationSimulateParams{
 		Cvv:                       lithic.F("776"),

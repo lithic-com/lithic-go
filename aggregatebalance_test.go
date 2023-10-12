@@ -23,7 +23,7 @@ func TestAggregateBalanceListWithOptionalParams(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AggregateBalances.List(context.TODO(), lithic.AggregateBalanceListParams{
 		FinancialAccountType: lithic.F(lithic.AggregateBalanceListParamsFinancialAccountTypeIssuing),

@@ -23,7 +23,7 @@ func TestThreeDSAuthenticationGet(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.ThreeDS.Authentication.Get(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 	if err != nil {
@@ -45,7 +45,7 @@ func TestThreeDSAuthenticationSimulate(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.ThreeDS.Authentication.Simulate(context.TODO(), lithic.ThreeDSAuthenticationSimulateParams{
 		Merchant: lithic.F(lithic.ThreeDSAuthenticationSimulateParamsMerchant{

@@ -23,7 +23,7 @@ func TestAuthStreamEnrollmentGet(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AuthStreamEnrollment.Get(context.TODO())
 	if err != nil {
@@ -46,7 +46,7 @@ func TestAuthStreamEnrollmentDisenroll(t *testing.T) {
 	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	err := client.AuthStreamEnrollment.Disenroll(context.TODO())
 	if err != nil {
@@ -69,7 +69,7 @@ func TestAuthStreamEnrollmentEnrollWithOptionalParams(t *testing.T) {
 	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	err := client.AuthStreamEnrollment.Enroll(context.TODO(), lithic.AuthStreamEnrollmentEnrollParams{
 		WebhookURL: lithic.F("https://example.com"),
@@ -93,7 +93,7 @@ func TestAuthStreamEnrollmentGetSecret(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AuthStreamEnrollment.GetSecret(context.TODO())
 	if err != nil {
@@ -115,7 +115,7 @@ func TestAuthStreamEnrollmentRotateSecret(t *testing.T) {
 	}
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
-		option.WithAPIKey("APIKey"),
+		option.WithAPIKey("My Lithic API Key"),
 	)
 	err := client.AuthStreamEnrollment.RotateSecret(context.TODO())
 	if err != nil {
