@@ -125,11 +125,8 @@ Methods:
 - <code title="get /embed/card">client.Cards.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardService.Embed">Embed</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, query <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardEmbedParams">CardEmbedParams</a>) (<a href="https://pkg.go.dev/builtin#string">string</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 - <code title="post /cards/{card_token}/provision">client.Cards.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardService.Provision">Provision</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, cardToken <a href="https://pkg.go.dev/builtin#string">string</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardProvisionParams">CardProvisionParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardProvisionResponse">CardProvisionResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 - <code title="post /cards/{card_token}/reissue">client.Cards.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardService.Reissue">Reissue</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, cardToken <a href="https://pkg.go.dev/builtin#string">string</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardReissueParams">CardReissueParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#Card">Card</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
-
-Custom Methods:
-
-- GetEmbedHTML
-- GetEmbedURL
+- <code>client.Cards.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardService.GetEmbedHTML">GetEmbedHTML</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, params <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardGetEmbedHTMLParams">CardGetEmbedHTMLParams</a>) ([]byte, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code>client.Cards.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardService.GetEmbedURL">GetEmbedURL</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, params <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardGetEmbedURLParams">CardGetEmbedURLParams</a>) (\*url.URL, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 
 # Balances
 
@@ -169,10 +166,7 @@ Methods:
 - <code title="post /disputes/{dispute_token}/evidences">client.Disputes.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DisputeService.InitiateEvidenceUpload">InitiateEvidenceUpload</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, disputeToken <a href="https://pkg.go.dev/builtin#string">string</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DisputeInitiateEvidenceUploadParams">DisputeInitiateEvidenceUploadParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DisputeEvidence">DisputeEvidence</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 - <code title="get /disputes/{dispute_token}/evidences">client.Disputes.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DisputeService.ListEvidences">ListEvidences</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, disputeToken <a href="https://pkg.go.dev/builtin#string">string</a>, query <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DisputeListEvidencesParams">DisputeListEvidencesParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared#CursorPage">CursorPage</a>[<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DisputeEvidence">DisputeEvidence</a>], <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 - <code title="get /disputes/{dispute_token}/evidences/{evidence_token}">client.Disputes.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DisputeService.GetEvidence">GetEvidence</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, disputeToken <a href="https://pkg.go.dev/builtin#string">string</a>, evidenceToken <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DisputeEvidence">DisputeEvidence</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
-
-Custom Methods:
-
-- UploadEvidence
+- <code>client.Disputes.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DisputeService.UploadEvidence">UploadEvidence</a>(ctx context.Context, disputeToken string, file io.Reader, opts ...option.RequestOption) <a href="https://pkg.go.dev/builtin#error">error</a></code>
 
 # Events
 
@@ -283,9 +277,9 @@ Methods:
 
 # Webhooks
 
-Custom Methods:
+Methods:
 
-- VerifySignature
+- <code>client.Webhooks.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#WebhookService.VerifySignature">VerifySignature</a>(payload []byte, headers http.Header, secret string, now time.Time) <a href="https://pkg.go.dev/builtin#error">error</a></code>
 
 # ExternalBankAccounts
 
