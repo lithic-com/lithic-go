@@ -409,25 +409,6 @@ const (
 	CardFundingTypeDepositorySavings  CardFundingType = "DEPOSITORY_SAVINGS"
 )
 
-// Spend limit duration values:
-//
-//   - `ANNUALLY` - Card will authorize transactions up to spend limit in a calendar
-//     year.
-//   - `FOREVER` - Card will authorize only up to spend limit for the entire lifetime
-//     of the card.
-//   - `MONTHLY` - Card will authorize transactions up to spend limit for the
-//     trailing month. Month is calculated as this calendar date one month prior.
-//   - `TRANSACTION` - Card will authorize multiple transactions if each individual
-//     transaction is under the spend limit.
-type SpendLimitDuration string
-
-const (
-	SpendLimitDurationAnnually    SpendLimitDuration = "ANNUALLY"
-	SpendLimitDurationForever     SpendLimitDuration = "FOREVER"
-	SpendLimitDurationMonthly     SpendLimitDuration = "MONTHLY"
-	SpendLimitDurationTransaction SpendLimitDuration = "TRANSACTION"
-)
-
 // Card state values:
 //
 //   - `CLOSED` - Card will no longer approve authorizations. Closing a card cannot
@@ -478,6 +459,25 @@ const (
 	CardTypePhysical       CardType = "PHYSICAL"
 	CardTypeMerchantLocked CardType = "MERCHANT_LOCKED"
 	CardTypeSingleUse      CardType = "SINGLE_USE"
+)
+
+// Spend limit duration values:
+//
+//   - `ANNUALLY` - Card will authorize transactions up to spend limit in a calendar
+//     year.
+//   - `FOREVER` - Card will authorize only up to spend limit for the entire lifetime
+//     of the card.
+//   - `MONTHLY` - Card will authorize transactions up to spend limit for the
+//     trailing month. Month is calculated as this calendar date one month prior.
+//   - `TRANSACTION` - Card will authorize multiple transactions if each individual
+//     transaction is under the spend limit.
+type SpendLimitDuration string
+
+const (
+	SpendLimitDurationAnnually    SpendLimitDuration = "ANNUALLY"
+	SpendLimitDurationForever     SpendLimitDuration = "FOREVER"
+	SpendLimitDurationMonthly     SpendLimitDuration = "MONTHLY"
+	SpendLimitDurationTransaction SpendLimitDuration = "TRANSACTION"
 )
 
 type CardProvisionResponse struct {
