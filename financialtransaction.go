@@ -67,12 +67,12 @@ func (r *FinancialAccountFinancialTransactionService) ListAutoPaging(ctx context
 }
 
 type FinancialTransactionListParams struct {
-	// Date string in RFC 3339 format. Only entries created after the specified date
+	// Date string in RFC 3339 format. Only entries created after the specified time
 	// will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Financial Transaction category to be returned.
 	Category param.Field[FinancialTransactionListParamsCategory] `query:"category"`
-	// Date string in RFC 3339 format. Only entries created before the specified date
+	// Date string in RFC 3339 format. Only entries created before the specified time
 	// will be included. UTC time zone.
 	End param.Field[time.Time] `query:"end" format:"date-time"`
 	// A cursor representing an item's token before which a page of results should end.
@@ -120,6 +120,7 @@ const (
 	FinancialTransactionListParamsStatusDeclined FinancialTransactionListParamsStatus = "DECLINED"
 	FinancialTransactionListParamsStatusExpired  FinancialTransactionListParamsStatus = "EXPIRED"
 	FinancialTransactionListParamsStatusPending  FinancialTransactionListParamsStatus = "PENDING"
+	FinancialTransactionListParamsStatusReturned FinancialTransactionListParamsStatus = "RETURNED"
 	FinancialTransactionListParamsStatusSettled  FinancialTransactionListParamsStatus = "SETTLED"
 	FinancialTransactionListParamsStatusVoided   FinancialTransactionListParamsStatus = "VOIDED"
 )

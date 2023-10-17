@@ -274,10 +274,10 @@ func (r EventSubscriptionListParams) URLQuery() (v url.Values) {
 }
 
 type EventSubscriptionListAttemptsParams struct {
-	// Date string in RFC 3339 format. Only entries created after the specified date
+	// Date string in RFC 3339 format. Only entries created after the specified time
 	// will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
-	// Date string in RFC 3339 format. Only entries created before the specified date
+	// Date string in RFC 3339 format. Only entries created before the specified time
 	// will be included. UTC time zone.
 	End param.Field[time.Time] `query:"end" format:"date-time"`
 	// A cursor representing an item's token before which a page of results should end.
@@ -310,10 +310,10 @@ const (
 )
 
 type EventSubscriptionRecoverParams struct {
-	// Date string in RFC 3339 format. Only entries created after the specified date
+	// Date string in RFC 3339 format. Only entries created after the specified time
 	// will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
-	// Date string in RFC 3339 format. Only entries created before the specified date
+	// Date string in RFC 3339 format. Only entries created before the specified time
 	// will be included. UTC time zone.
 	End param.Field[time.Time] `query:"end" format:"date-time"`
 }
@@ -328,10 +328,10 @@ func (r EventSubscriptionRecoverParams) URLQuery() (v url.Values) {
 }
 
 type EventSubscriptionReplayMissingParams struct {
-	// Date string in RFC 3339 format. Only entries created after the specified date
+	// Date string in RFC 3339 format. Only entries created after the specified time
 	// will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
-	// Date string in RFC 3339 format. Only entries created before the specified date
+	// Date string in RFC 3339 format. Only entries created before the specified time
 	// will be included. UTC time zone.
 	End param.Field[time.Time] `query:"end" format:"date-time"`
 }

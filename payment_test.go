@@ -31,7 +31,9 @@ func TestPaymentNewWithOptionalParams(t *testing.T) {
 		FinancialAccountToken:    lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Method:                   lithic.F(lithic.PaymentNewParamsMethodACHNextDay),
 		MethodAttributes: lithic.F(lithic.PaymentNewParamsMethodAttributes{
-			SecCode: lithic.F(lithic.PaymentNewParamsMethodAttributesSecCodePpd),
+			Retries:          lithic.F(int64(0)),
+			ReturnReasonCode: lithic.F("string"),
+			SecCode:          lithic.F(lithic.PaymentNewParamsMethodAttributesSecCodePpd),
 		}),
 		Type:          lithic.F(lithic.PaymentNewParamsTypePayment),
 		Token:         lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
@@ -89,6 +91,28 @@ func TestPaymentListWithOptionalParams(t *testing.T) {
 		StartingAfter:         lithic.F("string"),
 		Status:                lithic.F(lithic.PaymentListParamsStatusPending),
 	})
+	if err != nil {
+		var apierr *lithic.Error
+		if errors.As(err, &apierr) {
+			t.Log(string(apierr.DumpRequest(true)))
+		}
+		t.Fatalf("err should be nil: %s", err.Error())
+	}
+}
+
+func TestPaymentRetry(t *testing.T) {
+	baseURL := "http://localhost:4010"
+	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+		baseURL = envURL
+	}
+	if !testutil.CheckTestServer(t, baseURL) {
+		return
+	}
+	client := lithic.NewClient(
+		option.WithBaseURL(baseURL),
+		option.WithAPIKey("My Lithic API Key"),
+	)
+	_, err := client.Payments.Retry(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {

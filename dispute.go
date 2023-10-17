@@ -528,10 +528,10 @@ const (
 )
 
 type DisputeListParams struct {
-	// Date string in RFC 3339 format. Only entries created after the specified date
+	// Date string in RFC 3339 format. Only entries created after the specified time
 	// will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
-	// Date string in RFC 3339 format. Only entries created before the specified date
+	// Date string in RFC 3339 format. Only entries created before the specified time
 	// will be included. UTC time zone.
 	End param.Field[time.Time] `query:"end" format:"date-time"`
 	// A cursor representing an item's token before which a page of results should end.
@@ -580,10 +580,10 @@ func (r DisputeInitiateEvidenceUploadParams) MarshalJSON() (data []byte, err err
 }
 
 type DisputeListEvidencesParams struct {
-	// Date string in RFC 3339 format. Only entries created after the specified date
+	// Date string in RFC 3339 format. Only entries created after the specified time
 	// will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
-	// Date string in RFC 3339 format. Only entries created before the specified date
+	// Date string in RFC 3339 format. Only entries created before the specified time
 	// will be included. UTC time zone.
 	End param.Field[time.Time] `query:"end" format:"date-time"`
 	// A cursor representing an item's token before which a page of results should end.

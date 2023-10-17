@@ -72,6 +72,14 @@ func (r *PaymentService) ListAutoPaging(ctx context.Context, query PaymentListPa
 	return shared.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
+// Retry an origination which has been returned.
+func (r *PaymentService) Retry(ctx context.Context, paymentToken string, opts ...option.RequestOption) (res *PaymentRetryResponse, err error) {
+	opts = append(r.Options[:], opts...)
+	path := fmt.Sprintf("payments/%s/retry", paymentToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
+	return
+}
+
 // Simulates a release of a Payment.
 func (r *PaymentService) SimulateRelease(ctx context.Context, body PaymentSimulateReleaseParams, opts ...option.RequestOption) (res *PaymentSimulateReleaseResponse, err error) {
 	opts = append(r.Options[:], opts...)
@@ -130,16 +138,20 @@ const (
 )
 
 type PaymentMethodAttributes struct {
-	SecCode PaymentMethodAttributesSecCode `json:"sec_code,required"`
-	JSON    paymentMethodAttributesJSON
+	SecCode          PaymentMethodAttributesSecCode `json:"sec_code,required"`
+	Retries          int64                          `json:"retries"`
+	ReturnReasonCode string                         `json:"return_reason_code"`
+	JSON             paymentMethodAttributesJSON
 }
 
 // paymentMethodAttributesJSON contains the JSON metadata for the struct
 // [PaymentMethodAttributes]
 type paymentMethodAttributesJSON struct {
-	SecCode     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+	SecCode          apijson.Field
+	Retries          apijson.Field
+	ReturnReasonCode apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
 }
 
 func (r *PaymentMethodAttributes) UnmarshalJSON(data []byte) (err error) {
@@ -177,6 +189,25 @@ type paymentNewResponseJSON struct {
 }
 
 func (r *PaymentNewResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type PaymentRetryResponse struct {
+	// Balance of a Financial Account
+	Balance Balance `json:"balance"`
+	JSON    paymentRetryResponseJSON
+	Payment
+}
+
+// paymentRetryResponseJSON contains the JSON metadata for the struct
+// [PaymentRetryResponse]
+type paymentRetryResponseJSON struct {
+	Balance     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *PaymentRetryResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
@@ -260,7 +291,9 @@ const (
 )
 
 type PaymentNewParamsMethodAttributes struct {
-	SecCode param.Field[PaymentNewParamsMethodAttributesSecCode] `json:"sec_code,required"`
+	SecCode          param.Field[PaymentNewParamsMethodAttributesSecCode] `json:"sec_code,required"`
+	Retries          param.Field[int64]                                   `json:"retries"`
+	ReturnReasonCode param.Field[string]                                  `json:"return_reason_code"`
 }
 
 func (r PaymentNewParamsMethodAttributes) MarshalJSON() (data []byte, err error) {
