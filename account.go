@@ -22,7 +22,8 @@ import (
 // from the environment automatically. You should not instantiate this service
 // directly, and instead use the [NewAccountService] method instead.
 type AccountService struct {
-	Options []option.RequestOption
+	Options              []option.RequestOption
+	CreditConfigurations *AccountCreditConfigurationService
 }
 
 // NewAccountService generates a new service that applies the given options to each
@@ -31,6 +32,7 @@ type AccountService struct {
 func NewAccountService(opts ...option.RequestOption) (r *AccountService) {
 	r = &AccountService{}
 	r.Options = opts
+	r.CreditConfigurations = NewAccountCreditConfigurationService(opts...)
 	return
 }
 
@@ -227,6 +229,52 @@ func (r *AccountVerificationAddress) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+type BusinessAccount struct {
+	// Account token
+	Token                    string                                  `json:"token,required" format:"uuid"`
+	CollectionsConfiguration BusinessAccountCollectionsConfiguration `json:"collections_configuration"`
+	// Credit limit extended to the Account
+	CreditLimit int64 `json:"credit_limit"`
+	JSON        businessAccountJSON
+}
+
+// businessAccountJSON contains the JSON metadata for the struct [BusinessAccount]
+type businessAccountJSON struct {
+	Token                    apijson.Field
+	CollectionsConfiguration apijson.Field
+	CreditLimit              apijson.Field
+	raw                      string
+	ExtraFields              map[string]apijson.Field
+}
+
+func (r *BusinessAccount) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type BusinessAccountCollectionsConfiguration struct {
+	// Number of days within the billing period
+	BillingPeriod int64 `json:"billing_period,required"`
+	// Number of days after the billing period ends that a payment is required
+	PaymentPeriod int64 `json:"payment_period,required"`
+	// The external bank account token to use for auto-collections
+	ExternalBankAccountToken string `json:"external_bank_account_token" format:"uuid"`
+	JSON                     businessAccountCollectionsConfigurationJSON
+}
+
+// businessAccountCollectionsConfigurationJSON contains the JSON metadata for the
+// struct [BusinessAccountCollectionsConfiguration]
+type businessAccountCollectionsConfigurationJSON struct {
+	BillingPeriod            apijson.Field
+	PaymentPeriod            apijson.Field
+	ExternalBankAccountToken apijson.Field
+	raw                      string
+	ExtraFields              map[string]apijson.Field
+}
+
+func (r *BusinessAccountCollectionsConfiguration) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
 type AccountUpdateParams struct {
 	// Amount (in cents) for the account's daily spend limit. By default the daily
 	// spend limit is set to $1,250.
@@ -277,10 +325,10 @@ func (r AccountUpdateParamsVerificationAddress) MarshalJSON() (data []byte, err 
 }
 
 type AccountListParams struct {
-	// Date string in RFC 3339 format. Only entries created after the specified date
+	// Date string in RFC 3339 format. Only entries created after the specified time
 	// will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
-	// Date string in RFC 3339 format. Only entries created before the specified date
+	// Date string in RFC 3339 format. Only entries created before the specified time
 	// will be included. UTC time zone.
 	End param.Field[time.Time] `query:"end" format:"date-time"`
 	// A cursor representing an item's token before which a page of results should end.

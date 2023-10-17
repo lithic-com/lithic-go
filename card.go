@@ -25,7 +25,10 @@ import (
 // the environment automatically. You should not instantiate this service directly,
 // and instead use the [NewCardService] method instead.
 type CardService struct {
-	Options []option.RequestOption
+	Options               []option.RequestOption
+	AggregateBalances     *CardAggregateBalanceService
+	Balances              *CardBalanceService
+	FinancialTransactions *CardFinancialTransactionService
 }
 
 // NewCardService generates a new service that applies the given options to each
@@ -34,6 +37,9 @@ type CardService struct {
 func NewCardService(opts ...option.RequestOption) (r *CardService) {
 	r = &CardService{}
 	r.Options = opts
+	r.AggregateBalances = NewCardAggregateBalanceService(opts...)
+	r.Balances = NewCardBalanceService(opts...)
+	r.FinancialTransactions = NewCardFinancialTransactionService(opts...)
 	return
 }
 
@@ -714,10 +720,10 @@ const (
 type CardListParams struct {
 	// Returns cards associated with the specified account.
 	AccountToken param.Field[string] `query:"account_token" format:"uuid"`
-	// Date string in RFC 3339 format. Only entries created after the specified date
+	// Date string in RFC 3339 format. Only entries created after the specified time
 	// will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
-	// Date string in RFC 3339 format. Only entries created before the specified date
+	// Date string in RFC 3339 format. Only entries created before the specified time
 	// will be included. UTC time zone.
 	End param.Field[time.Time] `query:"end" format:"date-time"`
 	// A cursor representing an item's token before which a page of results should end.

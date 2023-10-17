@@ -57,10 +57,6 @@ type ThreeDSAuthenticationGetResponse struct {
 	// Type of account/card that is being used for the transaction. Maps to EMV 3DS
 	// field acctType.
 	AccountType ThreeDSAuthenticationGetResponseAccountType `json:"account_type,required,nullable"`
-	// Object containing additional data about the 3DS request that is beyond the EMV
-	// 3DS standard spec (e.g., specific fields that only certain card networks send
-	// but are not required across all 3DS requests).
-	AdditionalData ThreeDSAuthenticationGetResponseAdditionalData `json:"additional_data,required"`
 	// Indicates the outcome of the 3DS authentication process.
 	AuthenticationResult ThreeDSAuthenticationGetResponseAuthenticationResult `json:"authentication_result,required,nullable"`
 	// Indicates whether the expiration date provided by the cardholder during checkout
@@ -80,9 +76,14 @@ type ThreeDSAuthenticationGetResponse struct {
 	// Object containing data about the merchant involved in the e-commerce
 	// transaction.
 	Merchant ThreeDSAuthenticationGetResponseMerchant `json:"merchant,required"`
-	// Object containing data about the e-commerce transaction for which the merchant
-	// is requesting authentication.
-	Transaction ThreeDSAuthenticationGetResponseTransaction `json:"transaction,required"`
+	// Either PAYMENT_AUTHENTICATION or NON_PAYMENT_AUTHENTICATION. For
+	// NON_PAYMENT_AUTHENTICATION, additional_data and transaction fields are not
+	// populated.
+	MessageCategory ThreeDSAuthenticationGetResponseMessageCategory `json:"message_category,required"`
+	// Object containing additional data about the 3DS request that is beyond the EMV
+	// 3DS standard spec (e.g., specific fields that only certain card networks send
+	// but are not required across all 3DS requests).
+	AdditionalData ThreeDSAuthenticationGetResponseAdditionalData `json:"additional_data,nullable"`
 	// Object containing data about the app used in the e-commerce transaction. Present
 	// if the channel is 'APP_BASED'.
 	App ThreeDSAuthenticationGetResponseApp `json:"app"`
@@ -99,7 +100,10 @@ type ThreeDSAuthenticationGetResponse struct {
 	// for a recurring transaction such as a pay TV subscription or a utility bill.
 	// Maps to EMV 3DS field threeRIInd.
 	ThreeRiRequestType ThreeDSAuthenticationGetResponseThreeRiRequestType `json:"three_ri_request_type,nullable"`
-	JSON               threeDSAuthenticationGetResponseJSON
+	// Object containing data about the e-commerce transaction for which the merchant
+	// is requesting authentication.
+	Transaction ThreeDSAuthenticationGetResponseTransaction `json:"transaction,nullable"`
+	JSON        threeDSAuthenticationGetResponseJSON
 }
 
 // threeDSAuthenticationGetResponseJSON contains the JSON metadata for the struct
@@ -107,7 +111,6 @@ type ThreeDSAuthenticationGetResponse struct {
 type threeDSAuthenticationGetResponseJSON struct {
 	Token                     apijson.Field
 	AccountType               apijson.Field
-	AdditionalData            apijson.Field
 	AuthenticationResult      apijson.Field
 	CardExpiryCheck           apijson.Field
 	CardToken                 apijson.Field
@@ -116,11 +119,13 @@ type threeDSAuthenticationGetResponseJSON struct {
 	Created                   apijson.Field
 	DecisionMadeBy            apijson.Field
 	Merchant                  apijson.Field
-	Transaction               apijson.Field
+	MessageCategory           apijson.Field
+	AdditionalData            apijson.Field
 	App                       apijson.Field
 	AuthenticationRequestType apijson.Field
 	Browser                   apijson.Field
 	ThreeRiRequestType        apijson.Field
+	Transaction               apijson.Field
 	raw                       string
 	ExtraFields               map[string]apijson.Field
 }
@@ -137,41 +142,6 @@ const (
 	ThreeDSAuthenticationGetResponseAccountTypeNotApplicable ThreeDSAuthenticationGetResponseAccountType = "NOT_APPLICABLE"
 	ThreeDSAuthenticationGetResponseAccountTypeCredit        ThreeDSAuthenticationGetResponseAccountType = "CREDIT"
 	ThreeDSAuthenticationGetResponseAccountTypeDebit         ThreeDSAuthenticationGetResponseAccountType = "DEBIT"
-)
-
-// Object containing additional data about the 3DS request that is beyond the EMV
-// 3DS standard spec (e.g., specific fields that only certain card networks send
-// but are not required across all 3DS requests).
-type ThreeDSAuthenticationGetResponseAdditionalData struct {
-	// Mastercard only: Indicates whether the network would have considered the
-	// authentication request to be low risk or not.
-	NetworkDecision ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecision `json:"network_decision,nullable"`
-	// Mastercard only: Assessment by the network of the authentication risk level,
-	// with a higher value indicating a higher amount of risk.
-	NetworkRiskScore float64 `json:"network_risk_score,nullable"`
-	JSON             threeDSAuthenticationGetResponseAdditionalDataJSON
-}
-
-// threeDSAuthenticationGetResponseAdditionalDataJSON contains the JSON metadata
-// for the struct [ThreeDSAuthenticationGetResponseAdditionalData]
-type threeDSAuthenticationGetResponseAdditionalDataJSON struct {
-	NetworkDecision  apijson.Field
-	NetworkRiskScore apijson.Field
-	raw              string
-	ExtraFields      map[string]apijson.Field
-}
-
-func (r *ThreeDSAuthenticationGetResponseAdditionalData) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-// Mastercard only: Indicates whether the network would have considered the
-// authentication request to be low risk or not.
-type ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecision string
-
-const (
-	ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecisionLowRisk    ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecision = "LOW_RISK"
-	ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecisionNotLowRisk ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecision = "NOT_LOW_RISK"
 )
 
 // Indicates the outcome of the 3DS authentication process.
@@ -468,52 +438,49 @@ const (
 	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodLockerDelivery             ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod = "LOCKER_DELIVERY"
 )
 
-// Object containing data about the e-commerce transaction for which the merchant
-// is requesting authentication.
-type ThreeDSAuthenticationGetResponseTransaction struct {
-	// Amount of the purchase in minor units of currency with all punctuation removed.
-	// Maps to EMV 3DS field purchaseAmount.
-	Amount float64 `json:"amount,required"`
-	// Currency of the purchase. Maps to EMV 3DS field purchaseCurrency.
-	Currency string `json:"currency,required"`
-	// Minor units of currency, as specified in ISO 4217 currency exponent. Maps to EMV
-	// 3DS field purchaseExponent.
-	CurrencyExponent float64 `json:"currency_exponent,required"`
-	// Date and time when the authentication was generated by the merchant/acquirer's
-	// 3DS server. Maps to EMV 3DS field purchaseDate.
-	DateTime time.Time `json:"date_time,required" format:"date-time"`
-	// Type of the transaction for which a 3DS authentication request is occurring.
-	// Maps to EMV 3DS field transType.
-	Type ThreeDSAuthenticationGetResponseTransactionType `json:"type,required,nullable"`
-	JSON threeDSAuthenticationGetResponseTransactionJSON
+// Either PAYMENT_AUTHENTICATION or NON_PAYMENT_AUTHENTICATION. For
+// NON_PAYMENT_AUTHENTICATION, additional_data and transaction fields are not
+// populated.
+type ThreeDSAuthenticationGetResponseMessageCategory string
+
+const (
+	ThreeDSAuthenticationGetResponseMessageCategoryPaymentAuthentication    ThreeDSAuthenticationGetResponseMessageCategory = "PAYMENT_AUTHENTICATION"
+	ThreeDSAuthenticationGetResponseMessageCategoryNonPaymentAuthentication ThreeDSAuthenticationGetResponseMessageCategory = "NON_PAYMENT_AUTHENTICATION"
+)
+
+// Object containing additional data about the 3DS request that is beyond the EMV
+// 3DS standard spec (e.g., specific fields that only certain card networks send
+// but are not required across all 3DS requests).
+type ThreeDSAuthenticationGetResponseAdditionalData struct {
+	// Mastercard only: Indicates whether the network would have considered the
+	// authentication request to be low risk or not.
+	NetworkDecision ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecision `json:"network_decision,nullable"`
+	// Mastercard only: Assessment by the network of the authentication risk level,
+	// with a higher value indicating a higher amount of risk.
+	NetworkRiskScore float64 `json:"network_risk_score,nullable"`
+	JSON             threeDSAuthenticationGetResponseAdditionalDataJSON
 }
 
-// threeDSAuthenticationGetResponseTransactionJSON contains the JSON metadata for
-// the struct [ThreeDSAuthenticationGetResponseTransaction]
-type threeDSAuthenticationGetResponseTransactionJSON struct {
-	Amount           apijson.Field
-	Currency         apijson.Field
-	CurrencyExponent apijson.Field
-	DateTime         apijson.Field
-	Type             apijson.Field
+// threeDSAuthenticationGetResponseAdditionalDataJSON contains the JSON metadata
+// for the struct [ThreeDSAuthenticationGetResponseAdditionalData]
+type threeDSAuthenticationGetResponseAdditionalDataJSON struct {
+	NetworkDecision  apijson.Field
+	NetworkRiskScore apijson.Field
 	raw              string
 	ExtraFields      map[string]apijson.Field
 }
 
-func (r *ThreeDSAuthenticationGetResponseTransaction) UnmarshalJSON(data []byte) (err error) {
+func (r *ThreeDSAuthenticationGetResponseAdditionalData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-// Type of the transaction for which a 3DS authentication request is occurring.
-// Maps to EMV 3DS field transType.
-type ThreeDSAuthenticationGetResponseTransactionType string
+// Mastercard only: Indicates whether the network would have considered the
+// authentication request to be low risk or not.
+type ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecision string
 
 const (
-	ThreeDSAuthenticationGetResponseTransactionTypeGoodsServicePurchase     ThreeDSAuthenticationGetResponseTransactionType = "GOODS_SERVICE_PURCHASE"
-	ThreeDSAuthenticationGetResponseTransactionTypeCheckAcceptance          ThreeDSAuthenticationGetResponseTransactionType = "CHECK_ACCEPTANCE"
-	ThreeDSAuthenticationGetResponseTransactionTypeAccountFunding           ThreeDSAuthenticationGetResponseTransactionType = "ACCOUNT_FUNDING"
-	ThreeDSAuthenticationGetResponseTransactionTypeQuasiCashTransaction     ThreeDSAuthenticationGetResponseTransactionType = "QUASI_CASH_TRANSACTION"
-	ThreeDSAuthenticationGetResponseTransactionTypePrepaidActivationAndLoad ThreeDSAuthenticationGetResponseTransactionType = "PREPAID_ACTIVATION_AND_LOAD"
+	ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecisionLowRisk    ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecision = "LOW_RISK"
+	ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecisionNotLowRisk ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecision = "NOT_LOW_RISK"
 )
 
 // Object containing data about the app used in the e-commerce transaction. Present
@@ -624,6 +591,54 @@ const (
 	ThreeDSAuthenticationGetResponseThreeRiRequestTypeCardSecurityCodeStatusCheck ThreeDSAuthenticationGetResponseThreeRiRequestType = "CARD_SECURITY_CODE_STATUS_CHECK"
 	ThreeDSAuthenticationGetResponseThreeRiRequestTypeDelayedShipment             ThreeDSAuthenticationGetResponseThreeRiRequestType = "DELAYED_SHIPMENT"
 	ThreeDSAuthenticationGetResponseThreeRiRequestTypeSplitPayment                ThreeDSAuthenticationGetResponseThreeRiRequestType = "SPLIT_PAYMENT"
+)
+
+// Object containing data about the e-commerce transaction for which the merchant
+// is requesting authentication.
+type ThreeDSAuthenticationGetResponseTransaction struct {
+	// Amount of the purchase in minor units of currency with all punctuation removed.
+	// Maps to EMV 3DS field purchaseAmount.
+	Amount float64 `json:"amount,required"`
+	// Currency of the purchase. Maps to EMV 3DS field purchaseCurrency.
+	Currency string `json:"currency,required"`
+	// Minor units of currency, as specified in ISO 4217 currency exponent. Maps to EMV
+	// 3DS field purchaseExponent.
+	CurrencyExponent float64 `json:"currency_exponent,required"`
+	// Date and time when the authentication was generated by the merchant/acquirer's
+	// 3DS server. Maps to EMV 3DS field purchaseDate.
+	DateTime time.Time `json:"date_time,required" format:"date-time"`
+	// Type of the transaction for which a 3DS authentication request is occurring.
+	// Maps to EMV 3DS field transType.
+	Type ThreeDSAuthenticationGetResponseTransactionType `json:"type,required,nullable"`
+	JSON threeDSAuthenticationGetResponseTransactionJSON
+}
+
+// threeDSAuthenticationGetResponseTransactionJSON contains the JSON metadata for
+// the struct [ThreeDSAuthenticationGetResponseTransaction]
+type threeDSAuthenticationGetResponseTransactionJSON struct {
+	Amount           apijson.Field
+	Currency         apijson.Field
+	CurrencyExponent apijson.Field
+	DateTime         apijson.Field
+	Type             apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
+}
+
+func (r *ThreeDSAuthenticationGetResponseTransaction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+// Type of the transaction for which a 3DS authentication request is occurring.
+// Maps to EMV 3DS field transType.
+type ThreeDSAuthenticationGetResponseTransactionType string
+
+const (
+	ThreeDSAuthenticationGetResponseTransactionTypeGoodsServicePurchase     ThreeDSAuthenticationGetResponseTransactionType = "GOODS_SERVICE_PURCHASE"
+	ThreeDSAuthenticationGetResponseTransactionTypeCheckAcceptance          ThreeDSAuthenticationGetResponseTransactionType = "CHECK_ACCEPTANCE"
+	ThreeDSAuthenticationGetResponseTransactionTypeAccountFunding           ThreeDSAuthenticationGetResponseTransactionType = "ACCOUNT_FUNDING"
+	ThreeDSAuthenticationGetResponseTransactionTypeQuasiCashTransaction     ThreeDSAuthenticationGetResponseTransactionType = "QUASI_CASH_TRANSACTION"
+	ThreeDSAuthenticationGetResponseTransactionTypePrepaidActivationAndLoad ThreeDSAuthenticationGetResponseTransactionType = "PREPAID_ACTIVATION_AND_LOAD"
 )
 
 type ThreeDSAuthenticationSimulateResponse struct {
