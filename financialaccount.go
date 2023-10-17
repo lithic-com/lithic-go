@@ -25,6 +25,7 @@ type FinancialAccountService struct {
 	Options               []option.RequestOption
 	Balances              *FinancialAccountBalanceService
 	FinancialTransactions *FinancialAccountFinancialTransactionService
+	Statements            *FinancialAccountStatementService
 }
 
 // NewFinancialAccountService generates a new service that applies the given
@@ -35,6 +36,7 @@ func NewFinancialAccountService(opts ...option.RequestOption) (r *FinancialAccou
 	r.Options = opts
 	r.Balances = NewFinancialAccountBalanceService(opts...)
 	r.FinancialTransactions = NewFinancialAccountFinancialTransactionService(opts...)
+	r.Statements = NewFinancialAccountStatementService(opts...)
 	return
 }
 
