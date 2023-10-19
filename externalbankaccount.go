@@ -184,33 +184,38 @@ type ExternalBankAccountNewResponse struct {
 	// The nickname given to this record of External Bank Account
 	Name          string `json:"name"`
 	UserDefinedID string `json:"user_defined_id"`
-	JSON          externalBankAccountNewResponseJSON
+	// Optional free text description of the reason for the failed verification. For
+	// ACH micro-deposits returned, this field will display the reason return code sent
+	// by the ACH network
+	VerificationFailedReason string `json:"verification_failed_reason"`
+	JSON                     externalBankAccountNewResponseJSON
 }
 
 // externalBankAccountNewResponseJSON contains the JSON metadata for the struct
 // [ExternalBankAccountNewResponse]
 type externalBankAccountNewResponseJSON struct {
-	Token              apijson.Field
-	Country            apijson.Field
-	Created            apijson.Field
-	Currency           apijson.Field
-	LastFour           apijson.Field
-	Owner              apijson.Field
-	OwnerType          apijson.Field
-	RoutingNumber      apijson.Field
-	State              apijson.Field
-	Type               apijson.Field
-	VerificationMethod apijson.Field
-	VerificationState  apijson.Field
-	AccountToken       apijson.Field
-	Address            apijson.Field
-	CompanyID          apijson.Field
-	Dob                apijson.Field
-	DoingBusinessAs    apijson.Field
-	Name               apijson.Field
-	UserDefinedID      apijson.Field
-	raw                string
-	ExtraFields        map[string]apijson.Field
+	Token                    apijson.Field
+	Country                  apijson.Field
+	Created                  apijson.Field
+	Currency                 apijson.Field
+	LastFour                 apijson.Field
+	Owner                    apijson.Field
+	OwnerType                apijson.Field
+	RoutingNumber            apijson.Field
+	State                    apijson.Field
+	Type                     apijson.Field
+	VerificationMethod       apijson.Field
+	VerificationState        apijson.Field
+	AccountToken             apijson.Field
+	Address                  apijson.Field
+	CompanyID                apijson.Field
+	Dob                      apijson.Field
+	DoingBusinessAs          apijson.Field
+	Name                     apijson.Field
+	UserDefinedID            apijson.Field
+	VerificationFailedReason apijson.Field
+	raw                      string
+	ExtraFields              map[string]apijson.Field
 }
 
 func (r *ExternalBankAccountNewResponse) UnmarshalJSON(data []byte) (err error) {
@@ -296,33 +301,38 @@ type ExternalBankAccountGetResponse struct {
 	// The nickname given to this record of External Bank Account
 	Name          string `json:"name"`
 	UserDefinedID string `json:"user_defined_id"`
-	JSON          externalBankAccountGetResponseJSON
+	// Optional free text description of the reason for the failed verification. For
+	// ACH micro-deposits returned, this field will display the reason return code sent
+	// by the ACH network
+	VerificationFailedReason string `json:"verification_failed_reason"`
+	JSON                     externalBankAccountGetResponseJSON
 }
 
 // externalBankAccountGetResponseJSON contains the JSON metadata for the struct
 // [ExternalBankAccountGetResponse]
 type externalBankAccountGetResponseJSON struct {
-	Token              apijson.Field
-	Country            apijson.Field
-	Created            apijson.Field
-	Currency           apijson.Field
-	LastFour           apijson.Field
-	Owner              apijson.Field
-	OwnerType          apijson.Field
-	RoutingNumber      apijson.Field
-	State              apijson.Field
-	Type               apijson.Field
-	VerificationMethod apijson.Field
-	VerificationState  apijson.Field
-	AccountToken       apijson.Field
-	Address            apijson.Field
-	CompanyID          apijson.Field
-	Dob                apijson.Field
-	DoingBusinessAs    apijson.Field
-	Name               apijson.Field
-	UserDefinedID      apijson.Field
-	raw                string
-	ExtraFields        map[string]apijson.Field
+	Token                    apijson.Field
+	Country                  apijson.Field
+	Created                  apijson.Field
+	Currency                 apijson.Field
+	LastFour                 apijson.Field
+	Owner                    apijson.Field
+	OwnerType                apijson.Field
+	RoutingNumber            apijson.Field
+	State                    apijson.Field
+	Type                     apijson.Field
+	VerificationMethod       apijson.Field
+	VerificationState        apijson.Field
+	AccountToken             apijson.Field
+	Address                  apijson.Field
+	CompanyID                apijson.Field
+	Dob                      apijson.Field
+	DoingBusinessAs          apijson.Field
+	Name                     apijson.Field
+	UserDefinedID            apijson.Field
+	VerificationFailedReason apijson.Field
+	raw                      string
+	ExtraFields              map[string]apijson.Field
 }
 
 func (r *ExternalBankAccountGetResponse) UnmarshalJSON(data []byte) (err error) {
@@ -408,33 +418,38 @@ type ExternalBankAccountUpdateResponse struct {
 	// The nickname given to this record of External Bank Account
 	Name          string `json:"name"`
 	UserDefinedID string `json:"user_defined_id"`
-	JSON          externalBankAccountUpdateResponseJSON
+	// Optional free text description of the reason for the failed verification. For
+	// ACH micro-deposits returned, this field will display the reason return code sent
+	// by the ACH network
+	VerificationFailedReason string `json:"verification_failed_reason"`
+	JSON                     externalBankAccountUpdateResponseJSON
 }
 
 // externalBankAccountUpdateResponseJSON contains the JSON metadata for the struct
 // [ExternalBankAccountUpdateResponse]
 type externalBankAccountUpdateResponseJSON struct {
-	Token              apijson.Field
-	Country            apijson.Field
-	Created            apijson.Field
-	Currency           apijson.Field
-	LastFour           apijson.Field
-	Owner              apijson.Field
-	OwnerType          apijson.Field
-	RoutingNumber      apijson.Field
-	State              apijson.Field
-	Type               apijson.Field
-	VerificationMethod apijson.Field
-	VerificationState  apijson.Field
-	AccountToken       apijson.Field
-	Address            apijson.Field
-	CompanyID          apijson.Field
-	Dob                apijson.Field
-	DoingBusinessAs    apijson.Field
-	Name               apijson.Field
-	UserDefinedID      apijson.Field
-	raw                string
-	ExtraFields        map[string]apijson.Field
+	Token                    apijson.Field
+	Country                  apijson.Field
+	Created                  apijson.Field
+	Currency                 apijson.Field
+	LastFour                 apijson.Field
+	Owner                    apijson.Field
+	OwnerType                apijson.Field
+	RoutingNumber            apijson.Field
+	State                    apijson.Field
+	Type                     apijson.Field
+	VerificationMethod       apijson.Field
+	VerificationState        apijson.Field
+	AccountToken             apijson.Field
+	Address                  apijson.Field
+	CompanyID                apijson.Field
+	Dob                      apijson.Field
+	DoingBusinessAs          apijson.Field
+	Name                     apijson.Field
+	UserDefinedID            apijson.Field
+	VerificationFailedReason apijson.Field
+	raw                      string
+	ExtraFields              map[string]apijson.Field
 }
 
 func (r *ExternalBankAccountUpdateResponse) UnmarshalJSON(data []byte) (err error) {
@@ -520,33 +535,38 @@ type ExternalBankAccountListResponse struct {
 	// The nickname given to this record of External Bank Account
 	Name          string `json:"name"`
 	UserDefinedID string `json:"user_defined_id"`
-	JSON          externalBankAccountListResponseJSON
+	// Optional free text description of the reason for the failed verification. For
+	// ACH micro-deposits returned, this field will display the reason return code sent
+	// by the ACH network
+	VerificationFailedReason string `json:"verification_failed_reason"`
+	JSON                     externalBankAccountListResponseJSON
 }
 
 // externalBankAccountListResponseJSON contains the JSON metadata for the struct
 // [ExternalBankAccountListResponse]
 type externalBankAccountListResponseJSON struct {
-	Token              apijson.Field
-	Country            apijson.Field
-	Created            apijson.Field
-	Currency           apijson.Field
-	LastFour           apijson.Field
-	Owner              apijson.Field
-	OwnerType          apijson.Field
-	RoutingNumber      apijson.Field
-	State              apijson.Field
-	Type               apijson.Field
-	VerificationMethod apijson.Field
-	VerificationState  apijson.Field
-	AccountToken       apijson.Field
-	Address            apijson.Field
-	CompanyID          apijson.Field
-	Dob                apijson.Field
-	DoingBusinessAs    apijson.Field
-	Name               apijson.Field
-	UserDefinedID      apijson.Field
-	raw                string
-	ExtraFields        map[string]apijson.Field
+	Token                    apijson.Field
+	Country                  apijson.Field
+	Created                  apijson.Field
+	Currency                 apijson.Field
+	LastFour                 apijson.Field
+	Owner                    apijson.Field
+	OwnerType                apijson.Field
+	RoutingNumber            apijson.Field
+	State                    apijson.Field
+	Type                     apijson.Field
+	VerificationMethod       apijson.Field
+	VerificationState        apijson.Field
+	AccountToken             apijson.Field
+	Address                  apijson.Field
+	CompanyID                apijson.Field
+	Dob                      apijson.Field
+	DoingBusinessAs          apijson.Field
+	Name                     apijson.Field
+	UserDefinedID            apijson.Field
+	VerificationFailedReason apijson.Field
+	raw                      string
+	ExtraFields              map[string]apijson.Field
 }
 
 func (r *ExternalBankAccountListResponse) UnmarshalJSON(data []byte) (err error) {

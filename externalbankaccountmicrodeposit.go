@@ -81,33 +81,38 @@ type ExternalBankAccountMicroDepositNewResponse struct {
 	// The nickname given to this record of External Bank Account
 	Name          string `json:"name"`
 	UserDefinedID string `json:"user_defined_id"`
-	JSON          externalBankAccountMicroDepositNewResponseJSON
+	// Optional free text description of the reason for the failed verification. For
+	// ACH micro-deposits returned, this field will display the reason return code sent
+	// by the ACH network
+	VerificationFailedReason string `json:"verification_failed_reason"`
+	JSON                     externalBankAccountMicroDepositNewResponseJSON
 }
 
 // externalBankAccountMicroDepositNewResponseJSON contains the JSON metadata for
 // the struct [ExternalBankAccountMicroDepositNewResponse]
 type externalBankAccountMicroDepositNewResponseJSON struct {
-	Token              apijson.Field
-	Country            apijson.Field
-	Created            apijson.Field
-	Currency           apijson.Field
-	LastFour           apijson.Field
-	Owner              apijson.Field
-	OwnerType          apijson.Field
-	RoutingNumber      apijson.Field
-	State              apijson.Field
-	Type               apijson.Field
-	VerificationMethod apijson.Field
-	VerificationState  apijson.Field
-	AccountToken       apijson.Field
-	Address            apijson.Field
-	CompanyID          apijson.Field
-	Dob                apijson.Field
-	DoingBusinessAs    apijson.Field
-	Name               apijson.Field
-	UserDefinedID      apijson.Field
-	raw                string
-	ExtraFields        map[string]apijson.Field
+	Token                    apijson.Field
+	Country                  apijson.Field
+	Created                  apijson.Field
+	Currency                 apijson.Field
+	LastFour                 apijson.Field
+	Owner                    apijson.Field
+	OwnerType                apijson.Field
+	RoutingNumber            apijson.Field
+	State                    apijson.Field
+	Type                     apijson.Field
+	VerificationMethod       apijson.Field
+	VerificationState        apijson.Field
+	AccountToken             apijson.Field
+	Address                  apijson.Field
+	CompanyID                apijson.Field
+	Dob                      apijson.Field
+	DoingBusinessAs          apijson.Field
+	Name                     apijson.Field
+	UserDefinedID            apijson.Field
+	VerificationFailedReason apijson.Field
+	raw                      string
+	ExtraFields              map[string]apijson.Field
 }
 
 func (r *ExternalBankAccountMicroDepositNewResponse) UnmarshalJSON(data []byte) (err error) {
