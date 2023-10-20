@@ -26,7 +26,7 @@ func TestResponderEndpointNewWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.ResponderEndpoints.New(context.TODO(), lithic.ResponderEndpointNewParams{
-		Type: lithic.F(lithic.ResponderEndpointNewParamsTypeTokenizationDecisioning),
+		Type: lithic.F(lithic.ResponderEndpointNewParamsTypeAuthStreamAccess),
 		URL:  lithic.F("https://example.com"),
 	})
 	if err != nil {
@@ -52,7 +52,7 @@ func TestResponderEndpointDelete(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	err := client.ResponderEndpoints.Delete(context.TODO(), lithic.ResponderEndpointDeleteParams{
-		Type: lithic.F(lithic.ResponderEndpointDeleteParamsTypeTokenizationDecisioning),
+		Type: lithic.F(lithic.ResponderEndpointDeleteParamsTypeAuthStreamAccess),
 	})
 	if err != nil {
 		var apierr *lithic.Error
@@ -76,7 +76,7 @@ func TestResponderEndpointCheckStatus(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.ResponderEndpoints.CheckStatus(context.TODO(), lithic.ResponderEndpointCheckStatusParams{
-		Type: lithic.F(lithic.ResponderEndpointCheckStatusParamsTypeTokenizationDecisioning),
+		Type: lithic.F(lithic.ResponderEndpointCheckStatusParamsTypeAuthStreamAccess),
 	})
 	if err != nil {
 		var apierr *lithic.Error
