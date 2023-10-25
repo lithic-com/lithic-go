@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.9.0 (2023-10-25)
+
+Full Changelog: [v0.8.3...v0.9.0](https://github.com/lithic-com/lithic-go/compare/v0.8.3...v0.9.0)
+
+### Features
+
+* **api:** add AUTH_STREAM_ACCESS to responder endpoints ([#154](https://github.com/lithic-com/lithic-go/issues/154)) ([479ed5c](https://github.com/lithic-com/lithic-go/commit/479ed5cbbb145f12dd99fb2eaa867467598083f9))
+* **api:** add verification_failed_reason ([#153](https://github.com/lithic-com/lithic-go/issues/153)) ([21318a2](https://github.com/lithic-com/lithic-go/commit/21318a2f4112fbfc7985ff88ba0ba424c64b2950))
+* **api:** updates ([#152](https://github.com/lithic-com/lithic-go/issues/152)) ([f04846c](https://github.com/lithic-com/lithic-go/commit/f04846c1b17dc8a37d9febb64a7b2a7fd68c149e))
+* **client:** adjust retry behavior ([#155](https://github.com/lithic-com/lithic-go/issues/155)) ([da9d8df](https://github.com/lithic-com/lithic-go/commit/da9d8df3aa6e44b0c1dd0fb28acb3f13ce7d99b9))
+
+
+### Chores
+
+* **internal:** rearrange client arguments ([#147](https://github.com/lithic-com/lithic-go/issues/147)) ([1d6367b](https://github.com/lithic-com/lithic-go/commit/1d6367be119cc184e3bcbe17d946a940bd9bf1ae))
+* **internal:** reorder code ([#150](https://github.com/lithic-com/lithic-go/issues/150)) ([19d089b](https://github.com/lithic-com/lithic-go/commit/19d089b19af5cbe0407eef8957982470af0f2673))
+* update README ([#145](https://github.com/lithic-com/lithic-go/issues/145)) ([0db60d6](https://github.com/lithic-com/lithic-go/commit/0db60d6f126e8178637444ac7a0afe4510624963))
+
+
+### Documentation
+
+* **api.md:** improve formatting of webhook helpers ([#149](https://github.com/lithic-com/lithic-go/issues/149)) ([1181762](https://github.com/lithic-com/lithic-go/commit/11817620261cbb0a8797665890254f94202cdccb))
+* organisation -&gt; organization (UK to US English) ([#151](https://github.com/lithic-com/lithic-go/issues/151)) ([3741c37](https://github.com/lithic-com/lithic-go/commit/3741c37d66794baa44cfcb348df185f6724ff943))
+
 ## 0.8.3 (2023-10-11)
 
 Full Changelog: [v0.8.2...v0.8.3](https://github.com/lithic-com/lithic-go/compare/v0.8.2...v0.8.3)
