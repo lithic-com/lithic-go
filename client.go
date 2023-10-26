@@ -37,6 +37,8 @@ type Client struct {
 	ThreeDS                 *ThreeDSService
 	Reports                 *ReportService
 	CardProduct             *CardProductService
+	CardPrograms            *CardProgramService
+	DigitalCardArt          *DigitalCardArtService
 }
 
 // NewClient generates a new client with the default option read from the
@@ -76,6 +78,8 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.ThreeDS = NewThreeDSService(opts...)
 	r.Reports = NewReportService(opts...)
 	r.CardProduct = NewCardProductService(opts...)
+	r.CardPrograms = NewCardProgramService(opts...)
+	r.DigitalCardArt = NewDigitalCardArtService(opts...)
 
 	return
 }

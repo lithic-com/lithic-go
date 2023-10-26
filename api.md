@@ -438,3 +438,24 @@ Response Types:
 Methods:
 
 - <code title="get /card_product/credit_detail">client.CardProduct.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardProductService.CreditDetail">CreditDetail</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardProductCreditDetailResponse">CardProductCreditDetailResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
+# CardPrograms
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardProgram">CardProgram</a>
+
+Methods:
+
+- <code title="get /card_programs/{card_program_token}">client.CardPrograms.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardProgramService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, cardProgramToken <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardProgram">CardProgram</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="get /card_programs">client.CardPrograms.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardProgramService.List">List</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, query <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardProgramListParams">CardProgramListParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared#CursorPage">CursorPage</a>[<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardProgram">CardProgram</a>], <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
+# DigitalCardArt
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DigitalCardArt">DigitalCardArt</a>
+
+Methods:
+
+- <code title="get /digital_card_art">client.DigitalCardArt.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DigitalCardArtService.List">List</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, query <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DigitalCardArtListParams">DigitalCardArtListParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared#CursorPage">CursorPage</a>[<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DigitalCardArt">DigitalCardArt</a>], <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
