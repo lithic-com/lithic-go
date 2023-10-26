@@ -30,7 +30,8 @@ func NewTransferService(opts ...option.RequestOption) (r *TransferService) {
 	return
 }
 
-// Transfer funds between two financial accounts
+// ransfer funds between two financial accounts or between a financial account and
+// card
 func (r *TransferService) New(ctx context.Context, body TransferNewParams, opts ...option.RequestOption) (res *TransferNewResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "transfer"
@@ -300,10 +301,11 @@ type TransferNewParams struct {
 	// Amount to be transferred in the currency’s smallest unit (e.g., cents for USD).
 	// This should always be a positive value.
 	Amount param.Field[int64] `json:"amount,required"`
-	// Globally unique identifier for the financial account that will send the funds.
+	// Globally unique identifier for the financial account or card that will send the
+	// funds. Accepted type dependent on the program's use case.
 	From param.Field[string] `json:"from,required" format:"uuid"`
-	// Globally unique identifier for the financial account that will receive the
-	// funds.
+	// Globally unique identifier for the financial account or card that will receive
+	// the funds. Accepted type dependent on the program's use case.
 	To param.Field[string] `json:"to,required" format:"uuid"`
 	// Optional descriptor for the transfer.
 	Memo param.Field[string] `json:"memo"`
