@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.10.0 (2023-10-26)
+
+Full Changelog: [v0.9.0...v0.10.0](https://github.com/lithic-com/lithic-go/compare/v0.9.0...v0.10.0)
+
+### Features
+
+* **api:** add CardProgram and DigitalCardArt resources ([#159](https://github.com/lithic-com/lithic-go/issues/159)) ([b7fd9fd](https://github.com/lithic-com/lithic-go/commit/b7fd9fd605c93c525312835ed6e088c123ab5440))
+
 ## 0.9.0 (2023-10-24)
 
 Full Changelog: [v0.8.3...v0.9.0](https://github.com/lithic-com/lithic-go/compare/v0.8.3...v0.9.0)
