@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.11.0 (2023-11-02)
+
+Full Changelog: [v0.10.0...v0.11.0](https://github.com/lithic-com/lithic-go/compare/v0.10.0...v0.11.0)
+
+### Features
+
+* **api:** add verification_attempts response property ([#164](https://github.com/lithic-com/lithic-go/issues/164)) ([d2ae13c](https://github.com/lithic-com/lithic-go/commit/d2ae13c10acee6397896751040da3f8e81fff059))
+* **github:** include a devcontainer setup ([#163](https://github.com/lithic-com/lithic-go/issues/163)) ([d4f0c8a](https://github.com/lithic-com/lithic-go/commit/d4f0c8a08fdf99569c327adfda9eb92e2837938e))
+
+
+### Chores
+
+* **internal:** update gitignore ([#161](https://github.com/lithic-com/lithic-go/issues/161)) ([74c6247](https://github.com/lithic-com/lithic-go/commit/74c6247a00f12b4b6559ffa7ea09c55d65456a23))
+
 ## 0.10.0 (2023-10-26)
 
 Full Changelog: [v0.9.0...v0.10.0](https://github.com/lithic-com/lithic-go/compare/v0.9.0...v0.10.0)
