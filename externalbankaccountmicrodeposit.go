@@ -59,13 +59,15 @@ type ExternalBankAccountMicroDepositNewResponse struct {
 	LastFour string `json:"last_four,required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner              string                                                       `json:"owner,required"`
-	OwnerType          ExternalBankAccountMicroDepositNewResponseOwnerType          `json:"owner_type,required"`
-	RoutingNumber      string                                                       `json:"routing_number,required"`
-	State              ExternalBankAccountMicroDepositNewResponseState              `json:"state,required"`
-	Type               ExternalBankAccountMicroDepositNewResponseType               `json:"type,required"`
-	VerificationMethod ExternalBankAccountMicroDepositNewResponseVerificationMethod `json:"verification_method,required"`
-	VerificationState  ExternalBankAccountMicroDepositNewResponseVerificationState  `json:"verification_state,required"`
+	Owner         string                                              `json:"owner,required"`
+	OwnerType     ExternalBankAccountMicroDepositNewResponseOwnerType `json:"owner_type,required"`
+	RoutingNumber string                                              `json:"routing_number,required"`
+	State         ExternalBankAccountMicroDepositNewResponseState     `json:"state,required"`
+	Type          ExternalBankAccountMicroDepositNewResponseType      `json:"type,required"`
+	// The number of attempts at verification
+	VerificationAttempts int64                                                        `json:"verification_attempts,required"`
+	VerificationMethod   ExternalBankAccountMicroDepositNewResponseVerificationMethod `json:"verification_method,required"`
+	VerificationState    ExternalBankAccountMicroDepositNewResponseVerificationState  `json:"verification_state,required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
@@ -101,6 +103,7 @@ type externalBankAccountMicroDepositNewResponseJSON struct {
 	RoutingNumber            apijson.Field
 	State                    apijson.Field
 	Type                     apijson.Field
+	VerificationAttempts     apijson.Field
 	VerificationMethod       apijson.Field
 	VerificationState        apijson.Field
 	AccountToken             apijson.Field
