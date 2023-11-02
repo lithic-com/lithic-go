@@ -162,13 +162,15 @@ type ExternalBankAccountNewResponse struct {
 	LastFour string `json:"last_four,required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner              string                                           `json:"owner,required"`
-	OwnerType          ExternalBankAccountNewResponseOwnerType          `json:"owner_type,required"`
-	RoutingNumber      string                                           `json:"routing_number,required"`
-	State              ExternalBankAccountNewResponseState              `json:"state,required"`
-	Type               ExternalBankAccountNewResponseType               `json:"type,required"`
-	VerificationMethod ExternalBankAccountNewResponseVerificationMethod `json:"verification_method,required"`
-	VerificationState  ExternalBankAccountNewResponseVerificationState  `json:"verification_state,required"`
+	Owner         string                                  `json:"owner,required"`
+	OwnerType     ExternalBankAccountNewResponseOwnerType `json:"owner_type,required"`
+	RoutingNumber string                                  `json:"routing_number,required"`
+	State         ExternalBankAccountNewResponseState     `json:"state,required"`
+	Type          ExternalBankAccountNewResponseType      `json:"type,required"`
+	// The number of attempts at verification
+	VerificationAttempts int64                                            `json:"verification_attempts,required"`
+	VerificationMethod   ExternalBankAccountNewResponseVerificationMethod `json:"verification_method,required"`
+	VerificationState    ExternalBankAccountNewResponseVerificationState  `json:"verification_state,required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
@@ -204,6 +206,7 @@ type externalBankAccountNewResponseJSON struct {
 	RoutingNumber            apijson.Field
 	State                    apijson.Field
 	Type                     apijson.Field
+	VerificationAttempts     apijson.Field
 	VerificationMethod       apijson.Field
 	VerificationState        apijson.Field
 	AccountToken             apijson.Field
@@ -279,13 +282,15 @@ type ExternalBankAccountGetResponse struct {
 	LastFour string `json:"last_four,required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner              string                                           `json:"owner,required"`
-	OwnerType          ExternalBankAccountGetResponseOwnerType          `json:"owner_type,required"`
-	RoutingNumber      string                                           `json:"routing_number,required"`
-	State              ExternalBankAccountGetResponseState              `json:"state,required"`
-	Type               ExternalBankAccountGetResponseType               `json:"type,required"`
-	VerificationMethod ExternalBankAccountGetResponseVerificationMethod `json:"verification_method,required"`
-	VerificationState  ExternalBankAccountGetResponseVerificationState  `json:"verification_state,required"`
+	Owner         string                                  `json:"owner,required"`
+	OwnerType     ExternalBankAccountGetResponseOwnerType `json:"owner_type,required"`
+	RoutingNumber string                                  `json:"routing_number,required"`
+	State         ExternalBankAccountGetResponseState     `json:"state,required"`
+	Type          ExternalBankAccountGetResponseType      `json:"type,required"`
+	// The number of attempts at verification
+	VerificationAttempts int64                                            `json:"verification_attempts,required"`
+	VerificationMethod   ExternalBankAccountGetResponseVerificationMethod `json:"verification_method,required"`
+	VerificationState    ExternalBankAccountGetResponseVerificationState  `json:"verification_state,required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
@@ -321,6 +326,7 @@ type externalBankAccountGetResponseJSON struct {
 	RoutingNumber            apijson.Field
 	State                    apijson.Field
 	Type                     apijson.Field
+	VerificationAttempts     apijson.Field
 	VerificationMethod       apijson.Field
 	VerificationState        apijson.Field
 	AccountToken             apijson.Field
@@ -396,13 +402,15 @@ type ExternalBankAccountUpdateResponse struct {
 	LastFour string `json:"last_four,required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner              string                                              `json:"owner,required"`
-	OwnerType          ExternalBankAccountUpdateResponseOwnerType          `json:"owner_type,required"`
-	RoutingNumber      string                                              `json:"routing_number,required"`
-	State              ExternalBankAccountUpdateResponseState              `json:"state,required"`
-	Type               ExternalBankAccountUpdateResponseType               `json:"type,required"`
-	VerificationMethod ExternalBankAccountUpdateResponseVerificationMethod `json:"verification_method,required"`
-	VerificationState  ExternalBankAccountUpdateResponseVerificationState  `json:"verification_state,required"`
+	Owner         string                                     `json:"owner,required"`
+	OwnerType     ExternalBankAccountUpdateResponseOwnerType `json:"owner_type,required"`
+	RoutingNumber string                                     `json:"routing_number,required"`
+	State         ExternalBankAccountUpdateResponseState     `json:"state,required"`
+	Type          ExternalBankAccountUpdateResponseType      `json:"type,required"`
+	// The number of attempts at verification
+	VerificationAttempts int64                                               `json:"verification_attempts,required"`
+	VerificationMethod   ExternalBankAccountUpdateResponseVerificationMethod `json:"verification_method,required"`
+	VerificationState    ExternalBankAccountUpdateResponseVerificationState  `json:"verification_state,required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
@@ -438,6 +446,7 @@ type externalBankAccountUpdateResponseJSON struct {
 	RoutingNumber            apijson.Field
 	State                    apijson.Field
 	Type                     apijson.Field
+	VerificationAttempts     apijson.Field
 	VerificationMethod       apijson.Field
 	VerificationState        apijson.Field
 	AccountToken             apijson.Field
@@ -513,13 +522,15 @@ type ExternalBankAccountListResponse struct {
 	LastFour string `json:"last_four,required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner              string                                            `json:"owner,required"`
-	OwnerType          ExternalBankAccountListResponseOwnerType          `json:"owner_type,required"`
-	RoutingNumber      string                                            `json:"routing_number,required"`
-	State              ExternalBankAccountListResponseState              `json:"state,required"`
-	Type               ExternalBankAccountListResponseType               `json:"type,required"`
-	VerificationMethod ExternalBankAccountListResponseVerificationMethod `json:"verification_method,required"`
-	VerificationState  ExternalBankAccountListResponseVerificationState  `json:"verification_state,required"`
+	Owner         string                                   `json:"owner,required"`
+	OwnerType     ExternalBankAccountListResponseOwnerType `json:"owner_type,required"`
+	RoutingNumber string                                   `json:"routing_number,required"`
+	State         ExternalBankAccountListResponseState     `json:"state,required"`
+	Type          ExternalBankAccountListResponseType      `json:"type,required"`
+	// The number of attempts at verification
+	VerificationAttempts int64                                             `json:"verification_attempts,required"`
+	VerificationMethod   ExternalBankAccountListResponseVerificationMethod `json:"verification_method,required"`
+	VerificationState    ExternalBankAccountListResponseVerificationState  `json:"verification_state,required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
@@ -555,6 +566,7 @@ type externalBankAccountListResponseJSON struct {
 	RoutingNumber            apijson.Field
 	State                    apijson.Field
 	Type                     apijson.Field
+	VerificationAttempts     apijson.Field
 	VerificationMethod       apijson.Field
 	VerificationState        apijson.Field
 	AccountToken             apijson.Field
