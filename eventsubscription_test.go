@@ -121,6 +121,7 @@ func TestEventSubscriptionListWithOptionalParams(t *testing.T) {
 }
 
 func TestEventSubscriptionDelete(t *testing.T) {
+	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -128,7 +129,6 @@ func TestEventSubscriptionDelete(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My Lithic API Key"),
@@ -177,6 +177,7 @@ func TestEventSubscriptionListAttemptsWithOptionalParams(t *testing.T) {
 }
 
 func TestEventSubscriptionRecoverWithOptionalParams(t *testing.T) {
+	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -184,7 +185,6 @@ func TestEventSubscriptionRecoverWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My Lithic API Key"),
@@ -207,6 +207,7 @@ func TestEventSubscriptionRecoverWithOptionalParams(t *testing.T) {
 }
 
 func TestEventSubscriptionReplayMissingWithOptionalParams(t *testing.T) {
+	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -214,7 +215,6 @@ func TestEventSubscriptionReplayMissingWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My Lithic API Key"),
@@ -259,6 +259,7 @@ func TestEventSubscriptionGetSecret(t *testing.T) {
 }
 
 func TestEventSubscriptionRotateSecret(t *testing.T) {
+	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -266,7 +267,6 @@ func TestEventSubscriptionRotateSecret(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My Lithic API Key"),

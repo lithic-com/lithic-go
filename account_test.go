@@ -37,6 +37,7 @@ func TestAccountGet(t *testing.T) {
 }
 
 func TestAccountUpdateWithOptionalParams(t *testing.T) {
+	t.Skip("Prism returns invalid data")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -44,7 +45,6 @@ func TestAccountUpdateWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	t.Skip("Prism returns invalid data")
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My Lithic API Key"),
