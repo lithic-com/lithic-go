@@ -36,6 +36,7 @@ func TestAuthStreamEnrollmentGet(t *testing.T) {
 }
 
 func TestAuthStreamEnrollmentDisenroll(t *testing.T) {
+	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -43,7 +44,6 @@ func TestAuthStreamEnrollmentDisenroll(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My Lithic API Key"),
@@ -59,6 +59,7 @@ func TestAuthStreamEnrollmentDisenroll(t *testing.T) {
 }
 
 func TestAuthStreamEnrollmentEnrollWithOptionalParams(t *testing.T) {
+	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -66,7 +67,6 @@ func TestAuthStreamEnrollmentEnrollWithOptionalParams(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My Lithic API Key"),
