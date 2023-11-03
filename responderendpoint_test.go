@@ -39,6 +39,7 @@ func TestResponderEndpointNewWithOptionalParams(t *testing.T) {
 }
 
 func TestResponderEndpointDelete(t *testing.T) {
+	t.Skip("Prism errors when accept header set but no request body is defined")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -46,7 +47,6 @@ func TestResponderEndpointDelete(t *testing.T) {
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
 	}
-	t.Skip("Prism errors when accept header set but no request body is defined")
 	client := lithic.NewClient(
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My Lithic API Key"),
