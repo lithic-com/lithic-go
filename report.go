@@ -47,7 +47,7 @@ type SettlementDetail struct {
 	// The total gross amount of disputes settlements.
 	DisputesGrossAmount int64 `json:"disputes_gross_amount,required"`
 	// Globally unique identifiers denoting the Events associated with this settlement.
-	EventTokens []interface{} `json:"event_tokens,required"`
+	EventTokens []string `json:"event_tokens,required"`
 	// The most granular ID the network settles with (e.g., ICA for Mastercard, FTSRE
 	// for Visa).
 	Institution string `json:"institution,required"`
@@ -115,16 +115,14 @@ const (
 
 // The total gross amount of other fees by type.
 type SettlementDetailOtherFeesDetails struct {
-	Title interface{} `json:"title"`
-	Type  interface{} `json:"type"`
-	JSON  settlementDetailOtherFeesDetailsJSON
+	Isa  int64 `json:"ISA"`
+	JSON settlementDetailOtherFeesDetailsJSON
 }
 
 // settlementDetailOtherFeesDetailsJSON contains the JSON metadata for the struct
 // [SettlementDetailOtherFeesDetails]
 type settlementDetailOtherFeesDetailsJSON struct {
-	Title       apijson.Field
-	Type        apijson.Field
+	Isa         apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
