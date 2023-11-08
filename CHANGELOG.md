@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.12.0 (2023-11-08)
+
+Full Changelog: [v0.11.0...v0.12.0](https://github.com/lithic-com/lithic-go/compare/v0.11.0...v0.12.0)
+
+### Features
+
+* **client:** allow binary returns ([#165](https://github.com/lithic-com/lithic-go/issues/165)) ([b291e7a](https://github.com/lithic-com/lithic-go/commit/b291e7a351c26ef3271be706e7befbb8b708b73b))
+
+
+### Bug Fixes
+
+* **api:** correct type for other fees details ([#169](https://github.com/lithic-com/lithic-go/issues/169)) ([9b24f3f](https://github.com/lithic-com/lithic-go/commit/9b24f3f67b5a0e254d010cf76998e732652be808))
+
+
+### Documentation
+
+* improve account holder control person documentation ([#167](https://github.com/lithic-com/lithic-go/issues/167)) ([99615cd](https://github.com/lithic-com/lithic-go/commit/99615cdec543967c9e2c28234d29f8dd1914afa9))
+* **readme:** improve example snippets ([#168](https://github.com/lithic-com/lithic-go/issues/168)) ([4d6add2](https://github.com/lithic-com/lithic-go/commit/4d6add26c820292d762090ffe6b615711f2ca9b9))
+
 ## 0.11.0 (2023-11-02)
 
 Full Changelog: [v0.10.0...v0.11.0](https://github.com/lithic-com/lithic-go/compare/v0.10.0...v0.11.0)
