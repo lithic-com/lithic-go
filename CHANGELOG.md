@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.13.0 (2023-11-09)
+
+Full Changelog: [v0.12.1...v0.13.0](https://github.com/lithic-com/lithic-go/compare/v0.12.1...v0.13.0)
+
+### Features
+
+* **api:** updates ([#172](https://github.com/lithic-com/lithic-go/issues/172)) ([f5f964b](https://github.com/lithic-com/lithic-go/commit/f5f964be2caa9118feebe77dac4458ba7e1f41a9))
+
 ## 0.12.1 (2023-11-08)
 
 Full Changelog: [v0.12.0...v0.12.1](https://github.com/lithic-com/lithic-go/compare/v0.12.0...v0.12.1)
