@@ -27,9 +27,9 @@ func TestDisputeNewWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Disputes.New(context.TODO(), lithic.DisputeNewParams{
-		Amount:            lithic.F(int64(0)),
-		Reason:            lithic.F(lithic.DisputeNewParamsReasonAtmCashMisdispense),
-		TransactionToken:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		Amount:            lithic.F(int64(10000)),
+		Reason:            lithic.F(lithic.DisputeNewParamsReasonFraudCardPresent),
+		TransactionToken:  lithic.F("12345624-aa69-4cbc-a946-30d90181b621"),
 		CustomerFiledDate: lithic.F(time.Now()),
 		CustomerNote:      lithic.F("string"),
 	})
