@@ -137,7 +137,7 @@ func TestTransactionSimulateClearingWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Transactions.SimulateClearing(context.TODO(), lithic.TransactionSimulateClearingParams{
-		Token:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		Token:  lithic.F("fabd829d-7f7b-4432-a8f2-07ea4889aaac"),
 		Amount: lithic.F(int64(0)),
 	})
 	if err != nil {

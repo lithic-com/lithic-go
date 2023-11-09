@@ -185,8 +185,8 @@ type EventSubscription struct {
 	Description string `json:"description,required"`
 	// Whether the subscription is disabled.
 	Disabled   bool                         `json:"disabled,required"`
-	EventTypes []EventSubscriptionEventType `json:"event_types,required,nullable"`
 	URL        string                       `json:"url,required" format:"uri"`
+	EventTypes []EventSubscriptionEventType `json:"event_types,nullable"`
 	JSON       eventSubscriptionJSON
 }
 
@@ -196,8 +196,8 @@ type eventSubscriptionJSON struct {
 	Token       apijson.Field
 	Description apijson.Field
 	Disabled    apijson.Field
-	EventTypes  apijson.Field
 	URL         apijson.Field
+	EventTypes  apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
