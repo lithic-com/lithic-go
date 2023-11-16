@@ -78,8 +78,8 @@ type FinancialAccount struct {
 	// Account number for your Lithic-assigned bank account number, if applicable.
 	AccountNumber string `json:"account_number"`
 	// Routing number for your Lithic-assigned bank account number, if applicable.
-	RoutingNumber string `json:"routing_number"`
-	JSON          financialAccountJSON
+	RoutingNumber string               `json:"routing_number"`
+	JSON          financialAccountJSON `json:"-"`
 }
 
 // financialAccountJSON contains the JSON metadata for the struct
@@ -147,8 +147,8 @@ type FinancialTransaction struct {
 	//   - `VOIDED` - The merchant has voided the previously pending card authorization.
 	Status FinancialTransactionStatus `json:"status,required"`
 	// Date and time when the financial transaction was last updated. UTC time zone.
-	Updated time.Time `json:"updated,required" format:"date-time"`
-	JSON    financialTransactionJSON
+	Updated time.Time                `json:"updated,required" format:"date-time"`
+	JSON    financialTransactionJSON `json:"-"`
 }
 
 // financialTransactionJSON contains the JSON metadata for the struct
@@ -235,7 +235,7 @@ type FinancialTransactionEvent struct {
 	//   - `TRANSFER_INSUFFICIENT_FUNDS` - Declined internl transfer of funds due to
 	//     insufficient balance of the sender.
 	Type FinancialTransactionEventsType `json:"type"`
-	JSON financialTransactionEventJSON
+	JSON financialTransactionEventJSON  `json:"-"`
 }
 
 // financialTransactionEventJSON contains the JSON metadata for the struct

@@ -125,8 +125,8 @@ type AuthRule struct {
 	// that only this field or `account_tokens` can be provided for a given Auth Rule.
 	CardTokens []string `json:"card_tokens"`
 	// Boolean indicating whether the Auth Rule is applied at the program level.
-	ProgramLevel bool `json:"program_level"`
-	JSON         authRuleJSON
+	ProgramLevel bool         `json:"program_level"`
+	JSON         authRuleJSON `json:"-"`
 }
 
 // authRuleJSON contains the JSON metadata for the struct [AuthRule]
@@ -157,8 +157,8 @@ const (
 )
 
 type AuthRuleGetResponse struct {
-	Data []AuthRule `json:"data"`
-	JSON authRuleGetResponseJSON
+	Data []AuthRule              `json:"data"`
+	JSON authRuleGetResponseJSON `json:"-"`
 }
 
 // authRuleGetResponseJSON contains the JSON metadata for the struct
@@ -174,10 +174,10 @@ func (r *AuthRuleGetResponse) UnmarshalJSON(data []byte) (err error) {
 }
 
 type AuthRuleRemoveResponse struct {
-	AccountTokens []string `json:"account_tokens"`
-	CardTokens    []string `json:"card_tokens"`
-	ProgramLevel  bool     `json:"program_level"`
-	JSON          authRuleRemoveResponseJSON
+	AccountTokens []string                   `json:"account_tokens"`
+	CardTokens    []string                   `json:"card_tokens"`
+	ProgramLevel  bool                       `json:"program_level"`
+	JSON          authRuleRemoveResponseJSON `json:"-"`
 }
 
 // authRuleRemoveResponseJSON contains the JSON metadata for the struct

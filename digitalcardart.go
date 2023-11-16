@@ -70,7 +70,7 @@ type DigitalCardArt struct {
 	IsEnabled bool `json:"is_enabled,required"`
 	// Card network.
 	Network DigitalCardArtNetwork `json:"network,required"`
-	JSON    digitalCardArtJSON
+	JSON    digitalCardArtJSON    `json:"-"`
 }
 
 // digitalCardArtJSON contains the JSON metadata for the struct [DigitalCardArt]

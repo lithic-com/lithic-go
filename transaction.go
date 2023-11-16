@@ -200,7 +200,7 @@ type Transaction struct {
 	//   - `VOIDED` - The merchant has voided the previously pending authorization.
 	Status                   TransactionStatus                   `json:"status,required"`
 	CardholderAuthentication TransactionCardholderAuthentication `json:"cardholder_authentication,nullable"`
-	JSON                     transactionJSON
+	JSON                     transactionJSON                     `json:"-"`
 }
 
 // transactionJSON contains the JSON metadata for the struct [Transaction]
@@ -294,7 +294,7 @@ type TransactionEvent struct {
 	//   - `RETURN_REVERSAL` - A refund has been reversed (e.g., when a merchant reverses
 	//     an incorrect refund).
 	Type TransactionEventsType `json:"type,required"`
-	JSON transactionEventJSON
+	JSON transactionEventJSON  `json:"-"`
 }
 
 // transactionEventJSON contains the JSON metadata for the struct
@@ -423,8 +423,8 @@ type TransactionMerchant struct {
 	// used to classify a business by the types of goods or services it provides.
 	Mcc string `json:"mcc"`
 	// Geographic state of card acceptor (see ISO 8583 specs).
-	State string `json:"state"`
-	JSON  transactionMerchantJSON
+	State string                  `json:"state"`
+	JSON  transactionMerchantJSON `json:"-"`
 }
 
 // transactionMerchantJSON contains the JSON metadata for the struct
@@ -614,7 +614,7 @@ type TransactionCardholderAuthentication struct {
 	// - `I`: Informational only
 	// - `S`: Challenge using Secure Payment Confirmation (SPC)
 	VerificationResult TransactionCardholderAuthenticationVerificationResult `json:"verification_result,required"`
-	JSON               transactionCardholderAuthenticationJSON
+	JSON               transactionCardholderAuthenticationJSON               `json:"-"`
 }
 
 // transactionCardholderAuthenticationJSON contains the JSON metadata for the
@@ -798,8 +798,8 @@ type TransactionSimulateAuthorizationResponse struct {
 	// the authorization.
 	Token string `json:"token" format:"uuid"`
 	// Debugging request ID to share with Lithic Support team.
-	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
-	JSON               transactionSimulateAuthorizationResponseJSON
+	DebuggingRequestID string                                       `json:"debugging_request_id" format:"uuid"`
+	JSON               transactionSimulateAuthorizationResponseJSON `json:"-"`
 }
 
 // transactionSimulateAuthorizationResponseJSON contains the JSON metadata for the
@@ -819,8 +819,8 @@ type TransactionSimulateAuthorizationAdviceResponse struct {
 	// A unique token to reference this transaction.
 	Token string `json:"token" format:"uuid"`
 	// Debugging request ID to share with Lithic Support team.
-	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
-	JSON               transactionSimulateAuthorizationAdviceResponseJSON
+	DebuggingRequestID string                                             `json:"debugging_request_id" format:"uuid"`
+	JSON               transactionSimulateAuthorizationAdviceResponseJSON `json:"-"`
 }
 
 // transactionSimulateAuthorizationAdviceResponseJSON contains the JSON metadata
@@ -838,8 +838,8 @@ func (r *TransactionSimulateAuthorizationAdviceResponse) UnmarshalJSON(data []by
 
 type TransactionSimulateClearingResponse struct {
 	// Debugging request ID to share with Lithic Support team.
-	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
-	JSON               transactionSimulateClearingResponseJSON
+	DebuggingRequestID string                                  `json:"debugging_request_id" format:"uuid"`
+	JSON               transactionSimulateClearingResponseJSON `json:"-"`
 }
 
 // transactionSimulateClearingResponseJSON contains the JSON metadata for the
@@ -858,8 +858,8 @@ type TransactionSimulateCreditAuthorizationResponse struct {
 	// A unique token to reference this transaction.
 	Token string `json:"token" format:"uuid"`
 	// Debugging request ID to share with Lithic Support team.
-	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
-	JSON               transactionSimulateCreditAuthorizationResponseJSON
+	DebuggingRequestID string                                             `json:"debugging_request_id" format:"uuid"`
+	JSON               transactionSimulateCreditAuthorizationResponseJSON `json:"-"`
 }
 
 // transactionSimulateCreditAuthorizationResponseJSON contains the JSON metadata
@@ -879,8 +879,8 @@ type TransactionSimulateReturnResponse struct {
 	// A unique token to reference this transaction.
 	Token string `json:"token" format:"uuid"`
 	// Debugging request ID to share with Lithic Support team.
-	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
-	JSON               transactionSimulateReturnResponseJSON
+	DebuggingRequestID string                                `json:"debugging_request_id" format:"uuid"`
+	JSON               transactionSimulateReturnResponseJSON `json:"-"`
 }
 
 // transactionSimulateReturnResponseJSON contains the JSON metadata for the struct
@@ -898,8 +898,8 @@ func (r *TransactionSimulateReturnResponse) UnmarshalJSON(data []byte) (err erro
 
 type TransactionSimulateReturnReversalResponse struct {
 	// Debugging request ID to share with Lithic Support team.
-	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
-	JSON               transactionSimulateReturnReversalResponseJSON
+	DebuggingRequestID string                                        `json:"debugging_request_id" format:"uuid"`
+	JSON               transactionSimulateReturnReversalResponseJSON `json:"-"`
 }
 
 // transactionSimulateReturnReversalResponseJSON contains the JSON metadata for the
@@ -916,8 +916,8 @@ func (r *TransactionSimulateReturnReversalResponse) UnmarshalJSON(data []byte) (
 
 type TransactionSimulateVoidResponse struct {
 	// Debugging request ID to share with Lithic Support team.
-	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
-	JSON               transactionSimulateVoidResponseJSON
+	DebuggingRequestID string                              `json:"debugging_request_id" format:"uuid"`
+	JSON               transactionSimulateVoidResponseJSON `json:"-"`
 }
 
 // transactionSimulateVoidResponseJSON contains the JSON metadata for the struct

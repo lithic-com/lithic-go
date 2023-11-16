@@ -309,8 +309,8 @@ type Card struct {
 	// Primary Account Number (PAN) (i.e. the card number). Customers must be PCI
 	// compliant to have PAN returned as a field in production. Please contact
 	// [support@lithic.com](mailto:support@lithic.com) for questions.
-	Pan  string `json:"pan"`
-	JSON cardJSON
+	Pan  string   `json:"pan"`
+	JSON cardJSON `json:"-"`
 }
 
 // cardJSON contains the JSON metadata for the struct [Card]
@@ -366,8 +366,8 @@ type CardFunding struct {
 	// Account name identifying the funding source. This may be `null`.
 	AccountName string `json:"account_name"`
 	// The nickname given to the `FundingAccount` or `null` if it has no nickname.
-	Nickname string `json:"nickname"`
-	JSON     cardFundingJSON
+	Nickname string          `json:"nickname"`
+	JSON     cardFundingJSON `json:"-"`
 }
 
 // cardFundingJSON contains the JSON metadata for the struct [CardFunding]
@@ -487,8 +487,8 @@ const (
 )
 
 type CardProvisionResponse struct {
-	ProvisioningPayload string `json:"provisioning_payload"`
-	JSON                cardProvisionResponseJSON
+	ProvisioningPayload string                    `json:"provisioning_payload"`
+	JSON                cardProvisionResponseJSON `json:"-"`
 }
 
 // cardProvisionResponseJSON contains the JSON metadata for the struct

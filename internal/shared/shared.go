@@ -22,8 +22,8 @@ type Address struct {
 	// uppercase ISO 3166-2 two-character format.
 	State string `json:"state,required"`
 	// Unit or apartment number (if applicable).
-	Address2 string `json:"address2"`
-	JSON     addressJSON
+	Address2 string      `json:"address2"`
+	JSON     addressJSON `json:"-"`
 }
 
 // addressJSON contains the JSON metadata for the struct [Address]

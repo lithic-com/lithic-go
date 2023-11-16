@@ -76,8 +76,8 @@ type CardProgram struct {
 	// The first digits of the card number that this card program ends with.
 	PanRangeEnd string `json:"pan_range_end,required"`
 	// The first digits of the card number that this card program starts with.
-	PanRangeStart string `json:"pan_range_start,required"`
-	JSON          cardProgramJSON
+	PanRangeStart string          `json:"pan_range_start,required"`
+	JSON          cardProgramJSON `json:"-"`
 }
 
 // cardProgramJSON contains the JSON metadata for the struct [CardProgram]

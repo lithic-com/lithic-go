@@ -58,8 +58,8 @@ type Tokenization struct {
 	// The network's unique reference for the tokenization.
 	TokenUniqueReference string `json:"token_unique_reference,required"`
 	// Latest date and time when the tokenization was updated. UTC time zone.
-	UpdatedAt time.Time `json:"updated_at,required" format:"date-time"`
-	JSON      tokenizationJSON
+	UpdatedAt time.Time        `json:"updated_at,required" format:"date-time"`
+	JSON      tokenizationJSON `json:"-"`
 }
 
 // tokenizationJSON contains the JSON metadata for the struct [Tokenization]
@@ -99,8 +99,8 @@ const (
 )
 
 type TokenizationSimulateResponse struct {
-	Data []Tokenization `json:"data"`
-	JSON tokenizationSimulateResponseJSON
+	Data []Tokenization                   `json:"data"`
+	JSON tokenizationSimulateResponseJSON `json:"-"`
 }
 
 // tokenizationSimulateResponseJSON contains the JSON metadata for the struct
