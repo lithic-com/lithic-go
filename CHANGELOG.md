@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.14.0 (2023-11-16)
+
+Full Changelog: [v0.13.0...v0.14.0](https://github.com/lithic-com/lithic-go/compare/v0.13.0...v0.14.0)
+
+### Features
+
+* **api:** updates ([#176](https://github.com/lithic-com/lithic-go/issues/176)) ([341e188](https://github.com/lithic-com/lithic-go/commit/341e1884699b2073ac93266a1066fee86f5a3df0))
+
+
+### Refactors
+
+* do not include `JSON` fields when serialising back to json ([#174](https://github.com/lithic-com/lithic-go/issues/174)) ([62660b3](https://github.com/lithic-com/lithic-go/commit/62660b3b27a5a2d09e5067ebef13fe26f8f5e3de))
+
 ## 0.13.0 (2023-11-09)
 
 Full Changelog: [v0.12.1...v0.13.0](https://github.com/lithic-com/lithic-go/compare/v0.12.1...v0.13.0)
