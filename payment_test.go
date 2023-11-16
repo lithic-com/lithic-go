@@ -7,6 +7,7 @@ import (
 	"errors"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/lithic-com/lithic-go"
 	"github.com/lithic-com/lithic-go/internal/testutil"
@@ -86,12 +87,14 @@ func TestPaymentListWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Payments.List(context.TODO(), lithic.PaymentListParams{
+		Begin:                 lithic.F(time.Now()),
+		End:                   lithic.F(time.Now()),
 		EndingBefore:          lithic.F("string"),
 		FinancialAccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		PageSize:              lithic.F(int64(1)),
 		Result:                lithic.F(lithic.PaymentListParamsResultApproved),
 		StartingAfter:         lithic.F("string"),
-		Status:                lithic.F(lithic.PaymentListParamsStatusPending),
+		Status:                lithic.F(lithic.PaymentListParamsStatusDeclined),
 	})
 	if err != nil {
 		var apierr *lithic.Error
