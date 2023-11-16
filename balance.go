@@ -81,8 +81,8 @@ type Balance struct {
 	// Type of financial account.
 	Type BalanceType `json:"type,required"`
 	// Date and time for when the balance was last updated.
-	Updated time.Time `json:"updated,required" format:"date-time"`
-	JSON    balanceJSON
+	Updated time.Time   `json:"updated,required" format:"date-time"`
+	JSON    balanceJSON `json:"-"`
 }
 
 // balanceJSON contains the JSON metadata for the struct [Balance]

@@ -84,8 +84,8 @@ type AggregateBalance struct {
 	// cents for USD)
 	TotalAmount int64 `json:"total_amount,required"`
 	// Date and time for when the balance was last updated.
-	Updated time.Time `json:"updated,required" format:"date-time"`
-	JSON    aggregateBalanceJSON
+	Updated time.Time            `json:"updated,required" format:"date-time"`
+	JSON    aggregateBalanceJSON `json:"-"`
 }
 
 // aggregateBalanceJSON contains the JSON metadata for the struct

@@ -61,8 +61,8 @@ type ResponderEndpointStatus struct {
 	// True if the instance has an endpoint enrolled.
 	Enrolled bool `json:"enrolled"`
 	// The URL of the currently enrolled endpoint or null.
-	URL  string `json:"url,nullable" format:"uri"`
-	JSON responderEndpointStatusJSON
+	URL  string                      `json:"url,nullable" format:"uri"`
+	JSON responderEndpointStatusJSON `json:"-"`
 }
 
 // responderEndpointStatusJSON contains the JSON metadata for the struct
@@ -80,8 +80,8 @@ func (r *ResponderEndpointStatus) UnmarshalJSON(data []byte) (err error) {
 
 type ResponderEndpointNewResponse struct {
 	// True if the endpoint was enrolled successfully.
-	Enrolled bool `json:"enrolled"`
-	JSON     responderEndpointNewResponseJSON
+	Enrolled bool                             `json:"enrolled"`
+	JSON     responderEndpointNewResponseJSON `json:"-"`
 }
 
 // responderEndpointNewResponseJSON contains the JSON metadata for the struct

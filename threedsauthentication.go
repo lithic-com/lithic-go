@@ -103,7 +103,7 @@ type ThreeDSAuthenticationGetResponse struct {
 	// Object containing data about the e-commerce transaction for which the merchant
 	// is requesting authentication.
 	Transaction ThreeDSAuthenticationGetResponseTransaction `json:"transaction,nullable"`
-	JSON        threeDSAuthenticationGetResponseJSON
+	JSON        threeDSAuthenticationGetResponseJSON        `json:"-"`
 }
 
 // threeDSAuthenticationGetResponseJSON contains the JSON metadata for the struct
@@ -187,7 +187,7 @@ type ThreeDSAuthenticationGetResponseCardholder struct {
 	PhoneNumberWork string `json:"phone_number_work,nullable"`
 	// Object containing data on the shipping address provided during the transaction.
 	ShippingAddress ThreeDSAuthenticationGetResponseCardholderShippingAddress `json:"shipping_address"`
-	JSON            threeDSAuthenticationGetResponseCardholderJSON
+	JSON            threeDSAuthenticationGetResponseCardholderJSON            `json:"-"`
 }
 
 // threeDSAuthenticationGetResponseCardholderJSON contains the JSON metadata for
@@ -223,8 +223,8 @@ type ThreeDSAuthenticationGetResponseCardholderBillingAddress struct {
 	// (e.g. USA)
 	Country string `json:"country,nullable"`
 	// Postal code (e.g., ZIP code) of the address provided by the cardholder
-	PostalCode string `json:"postal_code,nullable"`
-	JSON       threeDSAuthenticationGetResponseCardholderBillingAddressJSON
+	PostalCode string                                                       `json:"postal_code,nullable"`
+	JSON       threeDSAuthenticationGetResponseCardholderBillingAddressJSON `json:"-"`
 }
 
 // threeDSAuthenticationGetResponseCardholderBillingAddressJSON contains the JSON
@@ -259,8 +259,8 @@ type ThreeDSAuthenticationGetResponseCardholderShippingAddress struct {
 	// (e.g. USA)
 	Country string `json:"country,nullable"`
 	// Postal code (e.g., ZIP code) of the address provided by the cardholder
-	PostalCode string `json:"postal_code,nullable"`
-	JSON       threeDSAuthenticationGetResponseCardholderShippingAddressJSON
+	PostalCode string                                                        `json:"postal_code,nullable"`
+	JSON       threeDSAuthenticationGetResponseCardholderShippingAddressJSON `json:"-"`
 }
 
 // threeDSAuthenticationGetResponseCardholderShippingAddressJSON contains the JSON
@@ -318,7 +318,7 @@ type ThreeDSAuthenticationGetResponseMerchant struct {
 	// Object containing additional data indicating additional risk factors related to
 	// the e-commerce transaction.
 	RiskIndicator ThreeDSAuthenticationGetResponseMerchantRiskIndicator `json:"risk_indicator,required"`
-	JSON          threeDSAuthenticationGetResponseMerchantJSON
+	JSON          threeDSAuthenticationGetResponseMerchantJSON          `json:"-"`
 }
 
 // threeDSAuthenticationGetResponseMerchantJSON contains the JSON metadata for the
@@ -370,7 +370,7 @@ type ThreeDSAuthenticationGetResponseMerchantRiskIndicator struct {
 	// purchase only includes digital goods, this indicator is used to describe the
 	// most expensive item purchased. Maps to EMV 3DS field shipIndicator.
 	ShippingMethod ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod `json:"shipping_method,nullable"`
-	JSON           threeDSAuthenticationGetResponseMerchantRiskIndicatorJSON
+	JSON           threeDSAuthenticationGetResponseMerchantRiskIndicatorJSON           `json:"-"`
 }
 
 // threeDSAuthenticationGetResponseMerchantRiskIndicatorJSON contains the JSON
@@ -459,8 +459,8 @@ type ThreeDSAuthenticationGetResponseAdditionalData struct {
 	NetworkDecision ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecision `json:"network_decision,nullable"`
 	// Mastercard only: Assessment by the network of the authentication risk level,
 	// with a higher value indicating a higher amount of risk.
-	NetworkRiskScore float64 `json:"network_risk_score,nullable"`
-	JSON             threeDSAuthenticationGetResponseAdditionalDataJSON
+	NetworkRiskScore float64                                            `json:"network_risk_score,nullable"`
+	JSON             threeDSAuthenticationGetResponseAdditionalDataJSON `json:"-"`
 }
 
 // threeDSAuthenticationGetResponseAdditionalDataJSON contains the JSON metadata
@@ -493,8 +493,8 @@ type ThreeDSAuthenticationGetResponseApp struct {
 	DeviceInfo string `json:"device_info,nullable"`
 	// External IP address used by the app generating the 3DS authentication request.
 	// Maps to EMV 3DS field appIp.
-	Ip   string `json:"ip"`
-	JSON threeDSAuthenticationGetResponseAppJSON
+	Ip   string                                  `json:"ip"`
+	JSON threeDSAuthenticationGetResponseAppJSON `json:"-"`
 }
 
 // threeDSAuthenticationGetResponseAppJSON contains the JSON metadata for the
@@ -548,8 +548,8 @@ type ThreeDSAuthenticationGetResponseBrowser struct {
 	// behind UTC and negative if it is ahead. Maps to EMV 3DS field browserTz.
 	TimeZone string `json:"time_zone,nullable"`
 	// Content of the HTTP user-agent header. Maps to EMV 3DS field browserUserAgent.
-	UserAgent string `json:"user_agent,nullable"`
-	JSON      threeDSAuthenticationGetResponseBrowserJSON
+	UserAgent string                                      `json:"user_agent,nullable"`
+	JSON      threeDSAuthenticationGetResponseBrowserJSON `json:"-"`
 }
 
 // threeDSAuthenticationGetResponseBrowserJSON contains the JSON metadata for the
@@ -612,7 +612,7 @@ type ThreeDSAuthenticationGetResponseTransaction struct {
 	// Type of the transaction for which a 3DS authentication request is occurring.
 	// Maps to EMV 3DS field transType.
 	Type ThreeDSAuthenticationGetResponseTransactionType `json:"type,required,nullable"`
-	JSON threeDSAuthenticationGetResponseTransactionJSON
+	JSON threeDSAuthenticationGetResponseTransactionJSON `json:"-"`
 }
 
 // threeDSAuthenticationGetResponseTransactionJSON contains the JSON metadata for
@@ -648,8 +648,8 @@ type ThreeDSAuthenticationSimulateResponse struct {
 	// the authorization.
 	Token string `json:"token" format:"uuid"`
 	// Debugging request ID to share with Lithic Support team.
-	DebuggingRequestID string `json:"debugging_request_id" format:"uuid"`
-	JSON               threeDSAuthenticationSimulateResponseJSON
+	DebuggingRequestID string                                    `json:"debugging_request_id" format:"uuid"`
+	JSON               threeDSAuthenticationSimulateResponseJSON `json:"-"`
 }
 
 // threeDSAuthenticationSimulateResponseJSON contains the JSON metadata for the

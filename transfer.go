@@ -79,8 +79,8 @@ type Transfer struct {
 	// The updated balance of the receiving financial account.
 	ToBalance []Balance `json:"to_balance"`
 	// Date and time when the financial transaction was last updated. UTC time zone.
-	Updated time.Time `json:"updated" format:"date-time"`
-	JSON    transferJSON
+	Updated time.Time    `json:"updated" format:"date-time"`
+	JSON    transferJSON `json:"-"`
 }
 
 // transferJSON contains the JSON metadata for the struct [Transfer]
@@ -164,7 +164,7 @@ type TransferEvent struct {
 	//   - `TRANSFER_INSUFFICIENT_FUNDS` - Declined internl transfer of funds due to
 	//     insufficient balance of the sender.
 	Type TransferEventsType `json:"type"`
-	JSON transferEventJSON
+	JSON transferEventJSON  `json:"-"`
 }
 
 // transferEventJSON contains the JSON metadata for the struct [TransferEvent]
@@ -281,8 +281,8 @@ const (
 )
 
 type TransferNewResponse struct {
-	Data Transfer `json:"data"`
-	JSON transferNewResponseJSON
+	Data Transfer                `json:"data"`
+	JSON transferNewResponseJSON `json:"-"`
 }
 
 // transferNewResponseJSON contains the JSON metadata for the struct

@@ -7,8 +7,8 @@ import (
 )
 
 type APIStatus struct {
-	Message string `json:"message"`
-	JSON    apiStatusJSON
+	Message string        `json:"message"`
+	JSON    apiStatusJSON `json:"-"`
 }
 
 // apiStatusJSON contains the JSON metadata for the struct [APIStatus]

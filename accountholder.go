@@ -212,8 +212,8 @@ type AccountHolder struct {
 	// Information about the most recent identity verification attempt
 	VerificationApplication AccountHolderVerificationApplication `json:"verification_application"`
 	// Only present when user_type == "BUSINESS". Business's primary website.
-	WebsiteURL string `json:"website_url" format:"string"`
-	JSON       accountHolderJSON
+	WebsiteURL string            `json:"website_url" format:"string"`
+	JSON       accountHolderJSON `json:"-"`
 }
 
 // accountHolderJSON contains the JSON metadata for the struct [AccountHolder]
@@ -262,8 +262,8 @@ type AccountHolderBeneficialOwnerEntity struct {
 	// (if applicable).
 	DbaBusinessName string `json:"dba_business_name"`
 	// Parent company name (if applicable).
-	ParentCompany string `json:"parent_company"`
-	JSON          accountHolderBeneficialOwnerEntityJSON
+	ParentCompany string                                 `json:"parent_company"`
+	JSON          accountHolderBeneficialOwnerEntityJSON `json:"-"`
 }
 
 // accountHolderBeneficialOwnerEntityJSON contains the JSON metadata for the struct
@@ -298,8 +298,8 @@ type AccountHolderBeneficialOwnerIndividual struct {
 	// Individual's last name, as it appears on government-issued identity documents.
 	LastName string `json:"last_name"`
 	// Individual's phone number, entered in E.164 format.
-	PhoneNumber string `json:"phone_number"`
-	JSON        accountHolderBeneficialOwnerIndividualJSON
+	PhoneNumber string                                     `json:"phone_number"`
+	JSON        accountHolderBeneficialOwnerIndividualJSON `json:"-"`
 }
 
 // accountHolderBeneficialOwnerIndividualJSON contains the JSON metadata for the
@@ -338,8 +338,8 @@ type AccountHolderBusinessEntity struct {
 	// (if applicable).
 	DbaBusinessName string `json:"dba_business_name"`
 	// Parent company name (if applicable).
-	ParentCompany string `json:"parent_company"`
-	JSON          accountHolderBusinessEntityJSON
+	ParentCompany string                          `json:"parent_company"`
+	JSON          accountHolderBusinessEntityJSON `json:"-"`
 }
 
 // accountHolderBusinessEntityJSON contains the JSON metadata for the struct
@@ -377,8 +377,8 @@ type AccountHolderControlPerson struct {
 	// Individual's last name, as it appears on government-issued identity documents.
 	LastName string `json:"last_name"`
 	// Individual's phone number, entered in E.164 format.
-	PhoneNumber string `json:"phone_number"`
-	JSON        accountHolderControlPersonJSON
+	PhoneNumber string                         `json:"phone_number"`
+	JSON        accountHolderControlPersonJSON `json:"-"`
 }
 
 // accountHolderControlPersonJSON contains the JSON metadata for the struct
@@ -420,8 +420,8 @@ type AccountHolderIndividual struct {
 	// Individual's last name, as it appears on government-issued identity documents.
 	LastName string `json:"last_name"`
 	// Individual's phone number, entered in E.164 format.
-	PhoneNumber string `json:"phone_number"`
-	JSON        accountHolderIndividualJSON
+	PhoneNumber string                      `json:"phone_number"`
+	JSON        accountHolderIndividualJSON `json:"-"`
 }
 
 // accountHolderIndividualJSON contains the JSON metadata for the struct
@@ -490,8 +490,8 @@ type AccountHolderVerificationApplication struct {
 	// Reason for the evaluation status.
 	StatusReasons []AccountHolderVerificationApplicationStatusReason `json:"status_reasons"`
 	// Timestamp of when the application was last updated.
-	Updated time.Time `json:"updated" format:"date-time"`
-	JSON    accountHolderVerificationApplicationJSON
+	Updated time.Time                                `json:"updated" format:"date-time"`
+	JSON    accountHolderVerificationApplicationJSON `json:"-"`
 }
 
 // accountHolderVerificationApplicationJSON contains the JSON metadata for the
@@ -546,7 +546,7 @@ type AccountHolderDocument struct {
 	// Type of documentation to be submitted for verification.
 	DocumentType            AccountHolderDocumentDocumentType             `json:"document_type"`
 	RequiredDocumentUploads []AccountHolderDocumentRequiredDocumentUpload `json:"required_document_uploads"`
-	JSON                    accountHolderDocumentJSON
+	JSON                    accountHolderDocumentJSON                     `json:"-"`
 }
 
 // accountHolderDocumentJSON contains the JSON metadata for the struct
@@ -587,8 +587,8 @@ type AccountHolderDocumentRequiredDocumentUpload struct {
 	// Note that the upload URLs expire after 7 days. If an upload URL expires, you can
 	// refresh the URLs by retrieving the document upload from
 	// `GET /account_holders/{account_holder_token}/documents`.
-	UploadURL string `json:"upload_url"`
-	JSON      accountHolderDocumentRequiredDocumentUploadJSON
+	UploadURL string                                          `json:"upload_url"`
+	JSON      accountHolderDocumentRequiredDocumentUploadJSON `json:"-"`
 }
 
 // accountHolderDocumentRequiredDocumentUploadJSON contains the JSON metadata for
@@ -646,8 +646,8 @@ type AccountHolderUpdateResponse struct {
 	// The newly updated email for the account holder
 	Email string `json:"email"`
 	// The newly updated phone_number for the account holder
-	PhoneNumber string `json:"phone_number"`
-	JSON        accountHolderUpdateResponseJSON
+	PhoneNumber string                          `json:"phone_number"`
+	JSON        accountHolderUpdateResponseJSON `json:"-"`
 }
 
 // accountHolderUpdateResponseJSON contains the JSON metadata for the struct
@@ -666,8 +666,8 @@ func (r *AccountHolderUpdateResponse) UnmarshalJSON(data []byte) (err error) {
 }
 
 type AccountHolderListDocumentsResponse struct {
-	Data []AccountHolderDocument `json:"data"`
-	JSON accountHolderListDocumentsResponseJSON
+	Data []AccountHolderDocument                `json:"data"`
+	JSON accountHolderListDocumentsResponseJSON `json:"-"`
 }
 
 // accountHolderListDocumentsResponseJSON contains the JSON metadata for the struct

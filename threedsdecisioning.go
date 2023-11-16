@@ -56,8 +56,8 @@ func (r *ThreeDSDecisioningService) RotateSecret(ctx context.Context, opts ...op
 
 type ThreeDSDecisioningGetSecretResponse struct {
 	// The 3DS Decisioning HMAC secret
-	Secret string `json:"secret"`
-	JSON   threeDSDecisioningGetSecretResponseJSON
+	Secret string                                  `json:"secret"`
+	JSON   threeDSDecisioningGetSecretResponseJSON `json:"-"`
 }
 
 // threeDSDecisioningGetSecretResponseJSON contains the JSON metadata for the

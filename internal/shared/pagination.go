@@ -12,9 +12,9 @@ import (
 )
 
 type CursorPage[T any] struct {
-	Data    []T  `json:"data,required"`
-	HasMore bool `json:"has_more,required"`
-	JSON    cursorPageJSON
+	Data    []T            `json:"data,required"`
+	HasMore bool           `json:"has_more,required"`
+	JSON    cursorPageJSON `json:"-"`
 	cfg     *requestconfig.RequestConfig
 	res     *http.Response
 }
@@ -106,8 +106,8 @@ func (r *CursorPageAutoPager[T]) Index() int {
 type SinglePage[T any] struct {
 	Data []T `json:"data,required"`
 	// More data exists.
-	HasMore bool `json:"has_more,required"`
-	JSON    singlePageJSON
+	HasMore bool           `json:"has_more,required"`
+	JSON    singlePageJSON `json:"-"`
 	cfg     *requestconfig.RequestConfig
 	res     *http.Response
 }

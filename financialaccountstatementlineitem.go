@@ -111,9 +111,9 @@ type FinancialAccountStatementLineItemListResponse struct {
 	// Date that the transaction settled
 	SettledDate time.Time `json:"settled_date,required" format:"date"`
 	// Globally unique identifier for a card
-	CardToken  string `json:"card_token" format:"uuid"`
-	Descriptor string `json:"descriptor"`
-	JSON       financialAccountStatementLineItemListResponseJSON
+	CardToken  string                                            `json:"card_token" format:"uuid"`
+	Descriptor string                                            `json:"descriptor"`
+	JSON       financialAccountStatementLineItemListResponseJSON `json:"-"`
 }
 
 // financialAccountStatementLineItemListResponseJSON contains the JSON metadata for

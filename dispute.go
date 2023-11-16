@@ -259,8 +259,8 @@ type Dispute struct {
 	Status DisputeStatus `json:"status,required"`
 	// The transaction that is being disputed. A transaction can only be disputed once
 	// but may have multiple dispute cases.
-	TransactionToken string `json:"transaction_token,required" format:"uuid"`
-	JSON             disputeJSON
+	TransactionToken string      `json:"transaction_token,required" format:"uuid"`
+	JSON             disputeJSON `json:"-"`
 }
 
 // disputeJSON contains the JSON metadata for the struct [Dispute]
@@ -417,8 +417,8 @@ type DisputeEvidence struct {
 	// identifier.
 	Filename string `json:"filename"`
 	// URL to upload evidence. Only shown when `upload_status` is `PENDING`.
-	UploadURL string `json:"upload_url"`
-	JSON      disputeEvidenceJSON
+	UploadURL string              `json:"upload_url"`
+	JSON      disputeEvidenceJSON `json:"-"`
 }
 
 // disputeEvidenceJSON contains the JSON metadata for the struct [DisputeEvidence]

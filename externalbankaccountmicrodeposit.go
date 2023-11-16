@@ -86,8 +86,8 @@ type ExternalBankAccountMicroDepositNewResponse struct {
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
 	// by the ACH network
-	VerificationFailedReason string `json:"verification_failed_reason"`
-	JSON                     externalBankAccountMicroDepositNewResponseJSON
+	VerificationFailedReason string                                         `json:"verification_failed_reason"`
+	JSON                     externalBankAccountMicroDepositNewResponseJSON `json:"-"`
 }
 
 // externalBankAccountMicroDepositNewResponseJSON contains the JSON metadata for
