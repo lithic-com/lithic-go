@@ -165,8 +165,8 @@ func (r *EventSubscriptionService) SendSimulatedExample(ctx context.Context, eve
 
 type EventSubscriptionGetSecretResponse struct {
 	// The secret for the event subscription.
-	Secret string `json:"secret"`
-	JSON   eventSubscriptionGetSecretResponseJSON
+	Secret string                                 `json:"secret"`
+	JSON   eventSubscriptionGetSecretResponseJSON `json:"-"`
 }
 
 // eventSubscriptionGetSecretResponseJSON contains the JSON metadata for the struct

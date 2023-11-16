@@ -95,8 +95,8 @@ func (r *AuthStreamEnrollmentService) RotateSecret(ctx context.Context, opts ...
 
 type AuthStreamEnrollment struct {
 	// Whether ASA is enrolled.
-	Enrolled bool `json:"enrolled"`
-	JSON     authStreamEnrollmentJSON
+	Enrolled bool                     `json:"enrolled"`
+	JSON     authStreamEnrollmentJSON `json:"-"`
 }
 
 // authStreamEnrollmentJSON contains the JSON metadata for the struct
@@ -113,8 +113,8 @@ func (r *AuthStreamEnrollment) UnmarshalJSON(data []byte) (err error) {
 
 type AuthStreamSecret struct {
 	// The shared HMAC ASA secret
-	Secret string `json:"secret"`
-	JSON   authStreamSecretJSON
+	Secret string               `json:"secret"`
+	JSON   authStreamSecretJSON `json:"-"`
 }
 
 // authStreamSecretJSON contains the JSON metadata for the struct

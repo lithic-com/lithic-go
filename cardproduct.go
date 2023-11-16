@@ -41,8 +41,8 @@ type CardProductCreditDetailResponse struct {
 	// The amount of credit extended within the program
 	CreditExtended int64 `json:"credit_extended,required"`
 	// The total credit limit of the program
-	CreditLimit int64 `json:"credit_limit,required"`
-	JSON        cardProductCreditDetailResponseJSON
+	CreditLimit int64                               `json:"credit_limit,required"`
+	JSON        cardProductCreditDetailResponseJSON `json:"-"`
 }
 
 // cardProductCreditDetailResponseJSON contains the JSON metadata for the struct

@@ -102,7 +102,7 @@ type Account struct {
 	// List of identifiers for the Auth Rule(s) that are applied on the account.
 	AuthRuleTokens      []string                   `json:"auth_rule_tokens"`
 	VerificationAddress AccountVerificationAddress `json:"verification_address"`
-	JSON                accountJSON
+	JSON                accountJSON                `json:"-"`
 }
 
 // accountJSON contains the JSON metadata for the struct [Account]
@@ -132,8 +132,8 @@ type AccountSpendLimit struct {
 	// Total spend limit over account lifetime (in cents).
 	Lifetime int64 `json:"lifetime,required"`
 	// Monthly spend limit (in cents).
-	Monthly int64 `json:"monthly,required"`
-	JSON    accountSpendLimitJSON
+	Monthly int64                 `json:"monthly,required"`
+	JSON    accountSpendLimitJSON `json:"-"`
 }
 
 // accountSpendLimitJSON contains the JSON metadata for the struct
@@ -175,8 +175,8 @@ type AccountAccountHolder struct {
 	// Email address.
 	Email string `json:"email,required"`
 	// Phone number of the individual.
-	PhoneNumber string `json:"phone_number,required"`
-	JSON        accountAccountHolderJSON
+	PhoneNumber string                   `json:"phone_number,required"`
+	JSON        accountAccountHolderJSON `json:"-"`
 }
 
 // accountAccountHolderJSON contains the JSON metadata for the struct
@@ -208,8 +208,8 @@ type AccountVerificationAddress struct {
 	// uppercase ISO 3166-2 two-character format.
 	State string `json:"state,required"`
 	// Unit or apartment number (if applicable).
-	Address2 string `json:"address2"`
-	JSON     accountVerificationAddressJSON
+	Address2 string                         `json:"address2"`
+	JSON     accountVerificationAddressJSON `json:"-"`
 }
 
 // accountVerificationAddressJSON contains the JSON metadata for the struct
@@ -234,8 +234,8 @@ type BusinessAccount struct {
 	Token                    string                                  `json:"token,required" format:"uuid"`
 	CollectionsConfiguration BusinessAccountCollectionsConfiguration `json:"collections_configuration"`
 	// Credit limit extended to the Account
-	CreditLimit int64 `json:"credit_limit"`
-	JSON        businessAccountJSON
+	CreditLimit int64               `json:"credit_limit"`
+	JSON        businessAccountJSON `json:"-"`
 }
 
 // businessAccountJSON contains the JSON metadata for the struct [BusinessAccount]
@@ -257,8 +257,8 @@ type BusinessAccountCollectionsConfiguration struct {
 	// Number of days after the billing period ends that a payment is required
 	PaymentPeriod int64 `json:"payment_period,required"`
 	// The external bank account token to use for auto-collections
-	ExternalBankAccountToken string `json:"external_bank_account_token" format:"uuid"`
-	JSON                     businessAccountCollectionsConfigurationJSON
+	ExternalBankAccountToken string                                      `json:"external_bank_account_token" format:"uuid"`
+	JSON                     businessAccountCollectionsConfigurationJSON `json:"-"`
 }
 
 // businessAccountCollectionsConfigurationJSON contains the JSON metadata for the

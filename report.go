@@ -69,8 +69,8 @@ type SettlementDetail struct {
 	// fees, and disputes).
 	TransactionsGrossAmount int64 `json:"transactions_gross_amount,required"`
 	// Date and time when the transaction first occurred. UTC time zone.
-	Updated time.Time `json:"updated,required" format:"date-time"`
-	JSON    settlementDetailJSON
+	Updated time.Time            `json:"updated,required" format:"date-time"`
+	JSON    settlementDetailJSON `json:"-"`
 }
 
 // settlementDetailJSON contains the JSON metadata for the struct
@@ -115,8 +115,8 @@ const (
 
 // The total gross amount of other fees by type.
 type SettlementDetailOtherFeesDetails struct {
-	Isa  int64 `json:"ISA"`
-	JSON settlementDetailOtherFeesDetailsJSON
+	Isa  int64                                `json:"ISA"`
+	JSON settlementDetailOtherFeesDetailsJSON `json:"-"`
 }
 
 // settlementDetailOtherFeesDetailsJSON contains the JSON metadata for the struct
@@ -152,8 +152,8 @@ type SettlementReport struct {
 	// fees, and disputes).
 	TransactionsGrossAmount int64 `json:"transactions_gross_amount,required"`
 	// Date and time when the transaction first occurred. UTC time zone.
-	Updated time.Time `json:"updated,required" format:"date-time"`
-	JSON    settlementReportJSON
+	Updated time.Time            `json:"updated,required" format:"date-time"`
+	JSON    settlementReportJSON `json:"-"`
 }
 
 // settlementReportJSON contains the JSON metadata for the struct
@@ -194,8 +194,8 @@ type SettlementSummaryDetails struct {
 	SettledNetAmount int64 `json:"settled_net_amount"`
 	// The total amount of settlement impacting transactions (excluding interchange,
 	// fees, and disputes).
-	TransactionsGrossAmount int64 `json:"transactions_gross_amount"`
-	JSON                    settlementSummaryDetailsJSON
+	TransactionsGrossAmount int64                        `json:"transactions_gross_amount"`
+	JSON                    settlementSummaryDetailsJSON `json:"-"`
 }
 
 // settlementSummaryDetailsJSON contains the JSON metadata for the struct

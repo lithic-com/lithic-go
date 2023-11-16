@@ -87,13 +87,13 @@ func (r *ExternalBankAccountService) ListAutoPaging(ctx context.Context, query E
 // Address used during Address Verification Service (AVS) checks during
 // transactions if enabled via Auth Rules.
 type ExternalBankAccountAddress struct {
-	Address1   string `json:"address1,required"`
-	City       string `json:"city,required"`
-	Country    string `json:"country,required"`
-	PostalCode string `json:"postal_code,required"`
-	State      string `json:"state,required"`
-	Address2   string `json:"address2"`
-	JSON       externalBankAccountAddressJSON
+	Address1   string                         `json:"address1,required"`
+	City       string                         `json:"city,required"`
+	Country    string                         `json:"country,required"`
+	PostalCode string                         `json:"postal_code,required"`
+	State      string                         `json:"state,required"`
+	Address2   string                         `json:"address2"`
+	JSON       externalBankAccountAddressJSON `json:"-"`
 }
 
 // externalBankAccountAddressJSON contains the JSON metadata for the struct
@@ -189,8 +189,8 @@ type ExternalBankAccountNewResponse struct {
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
 	// by the ACH network
-	VerificationFailedReason string `json:"verification_failed_reason"`
-	JSON                     externalBankAccountNewResponseJSON
+	VerificationFailedReason string                             `json:"verification_failed_reason"`
+	JSON                     externalBankAccountNewResponseJSON `json:"-"`
 }
 
 // externalBankAccountNewResponseJSON contains the JSON metadata for the struct
@@ -309,8 +309,8 @@ type ExternalBankAccountGetResponse struct {
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
 	// by the ACH network
-	VerificationFailedReason string `json:"verification_failed_reason"`
-	JSON                     externalBankAccountGetResponseJSON
+	VerificationFailedReason string                             `json:"verification_failed_reason"`
+	JSON                     externalBankAccountGetResponseJSON `json:"-"`
 }
 
 // externalBankAccountGetResponseJSON contains the JSON metadata for the struct
@@ -429,8 +429,8 @@ type ExternalBankAccountUpdateResponse struct {
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
 	// by the ACH network
-	VerificationFailedReason string `json:"verification_failed_reason"`
-	JSON                     externalBankAccountUpdateResponseJSON
+	VerificationFailedReason string                                `json:"verification_failed_reason"`
+	JSON                     externalBankAccountUpdateResponseJSON `json:"-"`
 }
 
 // externalBankAccountUpdateResponseJSON contains the JSON metadata for the struct
@@ -549,8 +549,8 @@ type ExternalBankAccountListResponse struct {
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
 	// by the ACH network
-	VerificationFailedReason string `json:"verification_failed_reason"`
-	JSON                     externalBankAccountListResponseJSON
+	VerificationFailedReason string                              `json:"verification_failed_reason"`
+	JSON                     externalBankAccountListResponseJSON `json:"-"`
 }
 
 // externalBankAccountListResponseJSON contains the JSON metadata for the struct

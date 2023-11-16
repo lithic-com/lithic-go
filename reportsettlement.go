@@ -67,8 +67,8 @@ func (r *ReportSettlementService) Summary(ctx context.Context, reportDate time.T
 }
 
 type ReportSettlementSummaryResponse struct {
-	Data []SettlementReport `json:"data,required"`
-	JSON reportSettlementSummaryResponseJSON
+	Data []SettlementReport                  `json:"data,required"`
+	JSON reportSettlementSummaryResponseJSON `json:"-"`
 }
 
 // reportSettlementSummaryResponseJSON contains the JSON metadata for the struct

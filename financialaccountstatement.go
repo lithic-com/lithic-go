@@ -112,8 +112,8 @@ type Statement struct {
 	// Date when the billing period began
 	StatementStartDate time.Time `json:"statement_start_date,required" format:"date"`
 	// Timestamp of when the statement was updated
-	Updated time.Time `json:"updated,required" format:"date-time"`
-	JSON    statementJSON
+	Updated time.Time     `json:"updated,required" format:"date-time"`
+	JSON    statementJSON `json:"-"`
 }
 
 // statementJSON contains the JSON metadata for the struct [Statement]

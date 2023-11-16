@@ -120,7 +120,7 @@ type Event struct {
 	//     https://docs.lithic.com/docs/tokenization-control#digital-wallet-tokenization-auth-code.
 	EventType EventEventType         `json:"event_type,required"`
 	Payload   map[string]interface{} `json:"payload,required"`
-	JSON      eventJSON
+	JSON      eventJSON              `json:"-"`
 }
 
 // eventJSON contains the JSON metadata for the struct [Event]
@@ -187,7 +187,7 @@ type EventSubscription struct {
 	Disabled   bool                         `json:"disabled,required"`
 	URL        string                       `json:"url,required" format:"uri"`
 	EventTypes []EventSubscriptionEventType `json:"event_types,nullable"`
-	JSON       eventSubscriptionJSON
+	JSON       eventSubscriptionJSON        `json:"-"`
 }
 
 // eventSubscriptionJSON contains the JSON metadata for the struct
@@ -245,7 +245,7 @@ type MessageAttempt struct {
 	// The status of the event attempt.
 	Status MessageAttemptStatus `json:"status,required"`
 	URL    string               `json:"url,required" format:"uri"`
-	JSON   messageAttemptJSON
+	JSON   messageAttemptJSON   `json:"-"`
 }
 
 // messageAttemptJSON contains the JSON metadata for the struct [MessageAttempt]

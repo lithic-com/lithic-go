@@ -54,8 +54,8 @@ func (r *TokenizationDecisioningService) RotateSecret(ctx context.Context, opts 
 
 type TokenizationSecret struct {
 	// The Tokenization Decisioning HMAC secret
-	Secret string `json:"secret"`
-	JSON   tokenizationSecretJSON
+	Secret string                 `json:"secret"`
+	JSON   tokenizationSecretJSON `json:"-"`
 }
 
 // tokenizationSecretJSON contains the JSON metadata for the struct
@@ -72,8 +72,8 @@ func (r *TokenizationSecret) UnmarshalJSON(data []byte) (err error) {
 
 type TokenizationDecisioningRotateSecretResponse struct {
 	// The new Tokenization Decisioning HMAC secret
-	Secret string `json:"secret"`
-	JSON   tokenizationDecisioningRotateSecretResponseJSON
+	Secret string                                          `json:"secret"`
+	JSON   tokenizationDecisioningRotateSecretResponseJSON `json:"-"`
 }
 
 // tokenizationDecisioningRotateSecretResponseJSON contains the JSON metadata for

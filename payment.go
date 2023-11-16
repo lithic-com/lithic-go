@@ -103,7 +103,7 @@ type Payment struct {
 	Source                   PaymentSource           `json:"source,required"`
 	ExternalBankAccountToken string                  `json:"external_bank_account_token" format:"uuid"`
 	UserDefinedID            string                  `json:"user_defined_id"`
-	JSON                     paymentJSON
+	JSON                     paymentJSON             `json:"-"`
 	FinancialTransaction
 }
 
@@ -143,7 +143,7 @@ type PaymentMethodAttributes struct {
 	ReceiptRoutingNumber string                         `json:"receipt_routing_number"`
 	Retries              int64                          `json:"retries"`
 	ReturnReasonCode     string                         `json:"return_reason_code"`
-	JSON                 paymentMethodAttributesJSON
+	JSON                 paymentMethodAttributesJSON    `json:"-"`
 }
 
 // paymentMethodAttributesJSON contains the JSON metadata for the struct
@@ -179,8 +179,8 @@ const (
 
 type PaymentNewResponse struct {
 	// Balance of a Financial Account
-	Balance Balance `json:"balance"`
-	JSON    paymentNewResponseJSON
+	Balance Balance                `json:"balance"`
+	JSON    paymentNewResponseJSON `json:"-"`
 	Payment
 }
 
@@ -198,8 +198,8 @@ func (r *PaymentNewResponse) UnmarshalJSON(data []byte) (err error) {
 
 type PaymentRetryResponse struct {
 	// Balance of a Financial Account
-	Balance Balance `json:"balance"`
-	JSON    paymentRetryResponseJSON
+	Balance Balance                  `json:"balance"`
+	JSON    paymentRetryResponseJSON `json:"-"`
 	Payment
 }
 
@@ -219,7 +219,7 @@ type PaymentSimulateReleaseResponse struct {
 	DebuggingRequestID    string                               `json:"debugging_request_id" format:"uuid"`
 	Result                PaymentSimulateReleaseResponseResult `json:"result"`
 	TransactionEventToken string                               `json:"transaction_event_token" format:"uuid"`
-	JSON                  paymentSimulateReleaseResponseJSON
+	JSON                  paymentSimulateReleaseResponseJSON   `json:"-"`
 }
 
 // paymentSimulateReleaseResponseJSON contains the JSON metadata for the struct
@@ -247,7 +247,7 @@ type PaymentSimulateReturnResponse struct {
 	DebuggingRequestID    string                              `json:"debugging_request_id" format:"uuid"`
 	Result                PaymentSimulateReturnResponseResult `json:"result"`
 	TransactionEventToken string                              `json:"transaction_event_token" format:"uuid"`
-	JSON                  paymentSimulateReturnResponseJSON
+	JSON                  paymentSimulateReturnResponseJSON   `json:"-"`
 }
 
 // paymentSimulateReturnResponseJSON contains the JSON metadata for the struct
