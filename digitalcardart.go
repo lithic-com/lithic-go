@@ -70,19 +70,22 @@ type DigitalCardArt struct {
 	IsEnabled bool `json:"is_enabled,required"`
 	// Card network.
 	Network DigitalCardArtNetwork `json:"network,required"`
-	JSON    digitalCardArtJSON    `json:"-"`
+	// Whether the card art is the default card art to be added upon tokenization.
+	IsCardProgramDefault bool               `json:"is_card_program_default"`
+	JSON                 digitalCardArtJSON `json:"-"`
 }
 
 // digitalCardArtJSON contains the JSON metadata for the struct [DigitalCardArt]
 type digitalCardArtJSON struct {
-	Token            apijson.Field
-	CardProgramToken apijson.Field
-	Created          apijson.Field
-	Description      apijson.Field
-	IsEnabled        apijson.Field
-	Network          apijson.Field
-	raw              string
-	ExtraFields      map[string]apijson.Field
+	Token                apijson.Field
+	CardProgramToken     apijson.Field
+	Created              apijson.Field
+	Description          apijson.Field
+	IsEnabled            apijson.Field
+	Network              apijson.Field
+	IsCardProgramDefault apijson.Field
+	raw                  string
+	ExtraFields          map[string]apijson.Field
 }
 
 func (r *DigitalCardArt) UnmarshalJSON(data []byte) (err error) {
