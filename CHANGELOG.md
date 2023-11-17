@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.14.1 (2023-11-17)
+
+Full Changelog: [v0.14.0...v0.14.1](https://github.com/lithic-com/lithic-go/compare/v0.14.0...v0.14.1)
+
+### Bug Fixes
+
+* stop sending default idempotency headers with GET requests ([#179](https://github.com/lithic-com/lithic-go/issues/179)) ([6dc4ba1](https://github.com/lithic-com/lithic-go/commit/6dc4ba1eea0404c372f1892117a175816c354c5a))
+
+
+### Chores
+
+* **internal:** update stats file ([#177](https://github.com/lithic-com/lithic-go/issues/177)) ([8f78112](https://github.com/lithic-com/lithic-go/commit/8f7811238c22c2a97cf705dbfdc5e3ef16ea1dd1))
+
 ## 0.14.0 (2023-11-16)
 
 Full Changelog: [v0.13.0...v0.14.0](https://github.com/lithic-com/lithic-go/compare/v0.13.0...v0.14.0)
