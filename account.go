@@ -79,6 +79,18 @@ func (r *AccountService) ListAutoPaging(ctx context.Context, query AccountListPa
 	return shared.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
+// Get an Account's available spend limits, which is based on the spend limit
+// configured on the Account and the amount already spent over the spend limit's
+// duration. For example, if the Account has a daily spend limit of $1000
+// configured, and has spent $600 in the last 24 hours, the available spend limit
+// returned would be $400.
+func (r *AccountService) GetSpendLimits(ctx context.Context, accountToken string, opts ...option.RequestOption) (res *AccountSpendLimits, err error) {
+	opts = append(r.Options[:], opts...)
+	path := fmt.Sprintf("accounts/%s/spend_limits", accountToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
+	return
+}
+
 type Account struct {
 	// Globally unique identifier for the account. This is the same as the
 	// account_token returned by the enroll endpoint. If using this parameter, do not
@@ -226,6 +238,51 @@ type accountVerificationAddressJSON struct {
 }
 
 func (r *AccountVerificationAddress) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type AccountSpendLimits struct {
+	AvailableSpendLimit AccountSpendLimitsAvailableSpendLimit `json:"available_spend_limit"`
+	Required            interface{}                           `json:"required"`
+	JSON                accountSpendLimitsJSON                `json:"-"`
+}
+
+// accountSpendLimitsJSON contains the JSON metadata for the struct
+// [AccountSpendLimits]
+type accountSpendLimitsJSON struct {
+	AvailableSpendLimit apijson.Field
+	Required            apijson.Field
+	raw                 string
+	ExtraFields         map[string]apijson.Field
+}
+
+func (r *AccountSpendLimits) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type AccountSpendLimitsAvailableSpendLimit struct {
+	// The available spend limit relative to the daily limit configured on the Account.
+	Daily int64 `json:"daily"`
+	// The available spend limit relative to the lifetime limit configured on the
+	// Account.
+	Lifetime int64 `json:"lifetime"`
+	// The available spend limit relative to the monthly limit configured on the
+	// Account.
+	Monthly int64                                     `json:"monthly"`
+	JSON    accountSpendLimitsAvailableSpendLimitJSON `json:"-"`
+}
+
+// accountSpendLimitsAvailableSpendLimitJSON contains the JSON metadata for the
+// struct [AccountSpendLimitsAvailableSpendLimit]
+type accountSpendLimitsAvailableSpendLimitJSON struct {
+	Daily       apijson.Field
+	Lifetime    apijson.Field
+	Monthly     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AccountSpendLimitsAvailableSpendLimit) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
