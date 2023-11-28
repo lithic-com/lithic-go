@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.15.0 (2023-11-28)
+
+Full Changelog: [v0.14.1...v0.15.0](https://github.com/lithic-com/lithic-go/compare/v0.14.1...v0.15.0)
+
+### Features
+
+* **api:** add `get spend_limits` endpoints to `cards` and `accounts` ([#180](https://github.com/lithic-com/lithic-go/issues/180)) ([134e699](https://github.com/lithic-com/lithic-go/commit/134e699e8a32113ba3f894a153d3d37403b22c79))
+
 ## 0.14.1 (2023-11-17)
 
 Full Changelog: [v0.14.0...v0.14.1](https://github.com/lithic-com/lithic-go/compare/v0.14.0...v0.14.1)
