@@ -107,8 +107,6 @@ type Account struct {
 	//   - `ACTIVE` - Account is able to transact and create new cards.
 	//   - `PAUSED` - Account will not be able to transact or create new cards. It can be
 	//     set back to `ACTIVE`.
-	//   - `CLOSED` - Account will permanently not be able to transact or create new
-	//     cards.
 	State         AccountState         `json:"state,required"`
 	AccountHolder AccountAccountHolder `json:"account_holder"`
 	// List of identifiers for the Auth Rule(s) that are applied on the account.
@@ -167,14 +165,11 @@ func (r *AccountSpendLimit) UnmarshalJSON(data []byte) (err error) {
 //   - `ACTIVE` - Account is able to transact and create new cards.
 //   - `PAUSED` - Account will not be able to transact or create new cards. It can be
 //     set back to `ACTIVE`.
-//   - `CLOSED` - Account will permanently not be able to transact or create new
-//     cards.
 type AccountState string
 
 const (
 	AccountStateActive AccountState = "ACTIVE"
 	AccountStatePaused AccountState = "PAUSED"
-	AccountStateClosed AccountState = "CLOSED"
 )
 
 type AccountAccountHolder struct {
