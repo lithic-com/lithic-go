@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.16.0 (2023-12-05)
+
+Full Changelog: [v0.15.0...v0.16.0](https://github.com/lithic-com/lithic-go/compare/v0.15.0...v0.16.0)
+
+### Features
+
+* **api:** remove `CLOSED` account enum and update docstrings ([#184](https://github.com/lithic-com/lithic-go/issues/184)) ([60b3df2](https://github.com/lithic-com/lithic-go/commit/60b3df2099fac7f0932d1e62799c742483efa0c7))
+
 ## 0.15.0 (2023-11-28)
 
 Full Changelog: [v0.14.1...v0.15.0](https://github.com/lithic-com/lithic-go/compare/v0.14.1...v0.15.0)
