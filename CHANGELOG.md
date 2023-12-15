@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.17.0 (2023-12-15)
+
+Full Changelog: [v0.16.0...v0.17.0](https://github.com/lithic-com/lithic-go/compare/v0.16.0...v0.17.0)
+
+### Features
+
+* **api:** rename `token` and `type` to `financial_account_token` and `financial_account_type` ([#188](https://github.com/lithic-com/lithic-go/issues/188)) ([e031830](https://github.com/lithic-com/lithic-go/commit/e031830fa7295d76f449d1becf4bd83dc5f76003))
+* **internal:** fallback to json serialization if no serialization methods are defined ([#187](https://github.com/lithic-com/lithic-go/issues/187)) ([7a227de](https://github.com/lithic-com/lithic-go/commit/7a227de3c83785068395225f22ead2fb48e74d77))
+
 ## 0.16.0 (2023-12-05)
 
 Full Changelog: [v0.15.0...v0.16.0](https://github.com/lithic-com/lithic-go/compare/v0.15.0...v0.16.0)
