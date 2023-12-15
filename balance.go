@@ -58,14 +58,16 @@ func (r *BalanceService) ListAutoPaging(ctx context.Context, query BalanceListPa
 
 // Balance of a Financial Account
 type Balance struct {
-	// Globally unique identifier for the financial account that holds this balance.
-	Token string `json:"token,required" format:"uuid"`
 	// Funds available for spend in the currency's smallest unit (e.g., cents for USD)
 	AvailableAmount int64 `json:"available_amount,required"`
 	// Date and time for when the balance was first created.
 	Created time.Time `json:"created,required" format:"date-time"`
 	// 3-digit alphabetic ISO 4217 code for the local currency of the balance.
 	Currency string `json:"currency,required"`
+	// Globally unique identifier for the financial account that holds this balance.
+	FinancialAccountToken string `json:"financial_account_token,required" format:"uuid"`
+	// Type of financial account.
+	FinancialAccountType BalanceFinancialAccountType `json:"financial_account_type,required"`
 	// Globally unique identifier for the last financial transaction event that
 	// impacted this balance.
 	LastTransactionEventToken string `json:"last_transaction_event_token,required" format:"uuid"`
@@ -78,8 +80,6 @@ type Balance struct {
 	// The sum of available and pending balance in the currency's smallest unit (e.g.,
 	// cents for USD).
 	TotalAmount int64 `json:"total_amount,required"`
-	// Type of financial account.
-	Type BalanceType `json:"type,required"`
 	// Date and time for when the balance was last updated.
 	Updated time.Time   `json:"updated,required" format:"date-time"`
 	JSON    balanceJSON `json:"-"`
@@ -87,15 +87,15 @@ type Balance struct {
 
 // balanceJSON contains the JSON metadata for the struct [Balance]
 type balanceJSON struct {
-	Token                     apijson.Field
 	AvailableAmount           apijson.Field
 	Created                   apijson.Field
 	Currency                  apijson.Field
+	FinancialAccountToken     apijson.Field
+	FinancialAccountType      apijson.Field
 	LastTransactionEventToken apijson.Field
 	LastTransactionToken      apijson.Field
 	PendingAmount             apijson.Field
 	TotalAmount               apijson.Field
-	Type                      apijson.Field
 	Updated                   apijson.Field
 	raw                       string
 	ExtraFields               map[string]apijson.Field
@@ -106,11 +106,11 @@ func (r *Balance) UnmarshalJSON(data []byte) (err error) {
 }
 
 // Type of financial account.
-type BalanceType string
+type BalanceFinancialAccountType string
 
 const (
-	BalanceTypeIssuing BalanceType = "ISSUING"
-	BalanceTypeReserve BalanceType = "RESERVE"
+	BalanceFinancialAccountTypeIssuing BalanceFinancialAccountType = "ISSUING"
+	BalanceFinancialAccountTypeReserve BalanceFinancialAccountType = "RESERVE"
 )
 
 type BalanceListParams struct {
