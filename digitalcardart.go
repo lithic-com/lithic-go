@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/url"
 	"time"
@@ -31,6 +32,14 @@ type DigitalCardArtService struct {
 func NewDigitalCardArtService(opts ...option.RequestOption) (r *DigitalCardArtService) {
 	r = &DigitalCardArtService{}
 	r.Options = opts
+	return
+}
+
+// Get digital card art by token.
+func (r *DigitalCardArtService) Get(ctx context.Context, digitalCardArtToken string, opts ...option.RequestOption) (res *DigitalCardArt, err error) {
+	opts = append(r.Options[:], opts...)
+	path := fmt.Sprintf("digital_card_art/%s", digitalCardArtToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
 
