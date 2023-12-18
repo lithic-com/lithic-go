@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.18.0 (2023-12-18)
+
+Full Changelog: [v0.17.0...v0.18.0](https://github.com/lithic-com/lithic-go/compare/v0.17.0...v0.18.0)
+
+### Features
+
+* **api:** remove /auth_stream enrollment endpoints ([#191](https://github.com/lithic-com/lithic-go/issues/191)) ([72e530b](https://github.com/lithic-com/lithic-go/commit/72e530b17745df6fcc4b3dc52f12bce0aad0242b))
+
+
+### Chores
+
+* **ci:** run release workflow once per day ([#189](https://github.com/lithic-com/lithic-go/issues/189)) ([ee96175](https://github.com/lithic-com/lithic-go/commit/ee96175b780f4994810e4228eaa20234894b573b))
+
 ## 0.17.0 (2023-12-15)
 
 Full Changelog: [v0.16.0...v0.17.0](https://github.com/lithic-com/lithic-go/compare/v0.16.0...v0.17.0)
