@@ -7,7 +7,6 @@ import (
 	"net/http"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
-	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/option"
 )
@@ -27,44 +26,6 @@ type AuthStreamEnrollmentService struct {
 func NewAuthStreamEnrollmentService(opts ...option.RequestOption) (r *AuthStreamEnrollmentService) {
 	r = &AuthStreamEnrollmentService{}
 	r.Options = opts
-	return
-}
-
-// Check status for whether you have enrolled in Authorization Stream Access (ASA)
-// for your program in Sandbox.
-func (r *AuthStreamEnrollmentService) Get(ctx context.Context, opts ...option.RequestOption) (res *AuthStreamEnrollment, err error) {
-	opts = append(r.Options[:], opts...)
-	path := "auth_stream"
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
-}
-
-// Disenroll Authorization Stream Access (ASA) in Sandbox.
-func (r *AuthStreamEnrollmentService) Disenroll(ctx context.Context, opts ...option.RequestOption) (err error) {
-	opts = append(r.Options[:], opts...)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
-	path := "auth_stream"
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, nil, opts...)
-	return
-}
-
-// Authorization Stream Access (ASA) provides the ability to make custom
-// transaction approval decisions through an HTTP interface to the ISO 8583 message
-// stream.
-//
-// ASA requests are delivered as an HTTP POST during authorization. The ASA request
-// body adheres to the Lithic transaction schema, with some additional fields added
-// for use in decisioning. A response should be sent with HTTP response code 200
-// and the approval decision in the response body. This response is converted by
-// Lithic back into ISO 8583 format and forwarded to the network.
-//
-// In Sandbox, users can self-enroll and disenroll in ASA. In production,
-// onboarding requires manual approval and setup.
-func (r *AuthStreamEnrollmentService) Enroll(ctx context.Context, body AuthStreamEnrollmentEnrollParams, opts ...option.RequestOption) (err error) {
-	opts = append(r.Options[:], opts...)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
-	path := "auth_stream"
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
 	return
 }
 
@@ -93,24 +54,6 @@ func (r *AuthStreamEnrollmentService) RotateSecret(ctx context.Context, opts ...
 	return
 }
 
-type AuthStreamEnrollment struct {
-	// Whether ASA is enrolled.
-	Enrolled bool                     `json:"enrolled"`
-	JSON     authStreamEnrollmentJSON `json:"-"`
-}
-
-// authStreamEnrollmentJSON contains the JSON metadata for the struct
-// [AuthStreamEnrollment]
-type authStreamEnrollmentJSON struct {
-	Enrolled    apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthStreamEnrollment) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
 type AuthStreamSecret struct {
 	// The shared HMAC ASA secret
 	Secret string               `json:"secret"`
@@ -127,13 +70,4 @@ type authStreamSecretJSON struct {
 
 func (r *AuthStreamSecret) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
-}
-
-type AuthStreamEnrollmentEnrollParams struct {
-	// A user-specified url to receive and respond to ASA request.
-	WebhookURL param.Field[string] `json:"webhook_url" format:"uri"`
-}
-
-func (r AuthStreamEnrollmentEnrollParams) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
 }

@@ -80,14 +80,10 @@ Methods:
 
 Response Types:
 
-- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthStreamEnrollment">AuthStreamEnrollment</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthStreamSecret">AuthStreamSecret</a>
 
 Methods:
 
-- <code title="get /auth_stream">client.AuthStreamEnrollment.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthStreamEnrollmentService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthStreamEnrollment">AuthStreamEnrollment</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
-- <code title="delete /auth_stream">client.AuthStreamEnrollment.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthStreamEnrollmentService.Disenroll">Disenroll</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>) <a href="https://pkg.go.dev/builtin#error">error</a></code>
-- <code title="post /auth_stream">client.AuthStreamEnrollment.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthStreamEnrollmentService.Enroll">Enroll</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthStreamEnrollmentEnrollParams">AuthStreamEnrollmentEnrollParams</a>) <a href="https://pkg.go.dev/builtin#error">error</a></code>
 - <code title="get /auth_stream/secret">client.AuthStreamEnrollment.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthStreamEnrollmentService.GetSecret">GetSecret</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthStreamSecret">AuthStreamSecret</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 - <code title="post /auth_stream/secret/rotate">client.AuthStreamEnrollment.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthStreamEnrollmentService.RotateSecret">RotateSecret</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>) <a href="https://pkg.go.dev/builtin#error">error</a></code>
 
