@@ -169,7 +169,6 @@ func (r *DisputeService) UploadEvidence(ctx context.Context, disputeToken string
 	}
 	_, err = http.DefaultClient.Do(req)
 	return
-
 }
 
 // Dispute.
