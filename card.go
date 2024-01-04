@@ -154,7 +154,6 @@ func (r *CardService) GetEmbedHTML(ctx context.Context, params CardGetEmbedHTMLP
 	}
 	err = cfg.Execute()
 	return
-
 }
 
 // Handling full card PANs and CVV codes requires that you comply with the Payment
@@ -205,7 +204,6 @@ func (r *CardService) GetEmbedURL(ctx context.Context, params CardGetEmbedURLPar
 		return nil, err
 	}
 	return cfg.Request.URL, nil
-
 }
 
 // Allow your cardholders to directly add payment cards to the device's digital
