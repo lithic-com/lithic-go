@@ -325,8 +325,8 @@ const (
 	DisputeReasonMissingAuth                      DisputeReason = "MISSING_AUTH"
 	DisputeReasonOther                            DisputeReason = "OTHER"
 	DisputeReasonProcessingError                  DisputeReason = "PROCESSING_ERROR"
-	DisputeReasonRefundNotProcessed               DisputeReason = "REFUND_NOT_PROCESSED"
 	DisputeReasonRecurringTransactionNotCancelled DisputeReason = "RECURRING_TRANSACTION_NOT_CANCELLED"
+	DisputeReasonRefundNotProcessed               DisputeReason = "REFUND_NOT_PROCESSED"
 )
 
 // Reason for the dispute resolution:
@@ -384,14 +384,14 @@ const (
 type DisputeStatus string
 
 const (
+	DisputeStatusArbitration     DisputeStatus = "ARBITRATION"
+	DisputeStatusCaseClosed      DisputeStatus = "CASE_CLOSED"
+	DisputeStatusCaseWon         DisputeStatus = "CASE_WON"
 	DisputeStatusNew             DisputeStatus = "NEW"
 	DisputeStatusPendingCustomer DisputeStatus = "PENDING_CUSTOMER"
-	DisputeStatusSubmitted       DisputeStatus = "SUBMITTED"
-	DisputeStatusRepresentment   DisputeStatus = "REPRESENTMENT"
 	DisputeStatusPrearbitration  DisputeStatus = "PREARBITRATION"
-	DisputeStatusArbitration     DisputeStatus = "ARBITRATION"
-	DisputeStatusCaseWon         DisputeStatus = "CASE_WON"
-	DisputeStatusCaseClosed      DisputeStatus = "CASE_CLOSED"
+	DisputeStatusRepresentment   DisputeStatus = "REPRESENTMENT"
+	DisputeStatusSubmitted       DisputeStatus = "SUBMITTED"
 )
 
 // Dispute evidence.
@@ -487,8 +487,8 @@ const (
 	DisputeNewParamsReasonMissingAuth                      DisputeNewParamsReason = "MISSING_AUTH"
 	DisputeNewParamsReasonOther                            DisputeNewParamsReason = "OTHER"
 	DisputeNewParamsReasonProcessingError                  DisputeNewParamsReason = "PROCESSING_ERROR"
-	DisputeNewParamsReasonRefundNotProcessed               DisputeNewParamsReason = "REFUND_NOT_PROCESSED"
 	DisputeNewParamsReasonRecurringTransactionNotCancelled DisputeNewParamsReason = "RECURRING_TRANSACTION_NOT_CANCELLED"
+	DisputeNewParamsReasonRefundNotProcessed               DisputeNewParamsReason = "REFUND_NOT_PROCESSED"
 )
 
 type DisputeUpdateParams struct {
@@ -559,14 +559,14 @@ func (r DisputeListParams) URLQuery() (v url.Values) {
 type DisputeListParamsStatus string
 
 const (
+	DisputeListParamsStatusArbitration     DisputeListParamsStatus = "ARBITRATION"
+	DisputeListParamsStatusCaseClosed      DisputeListParamsStatus = "CASE_CLOSED"
+	DisputeListParamsStatusCaseWon         DisputeListParamsStatus = "CASE_WON"
 	DisputeListParamsStatusNew             DisputeListParamsStatus = "NEW"
 	DisputeListParamsStatusPendingCustomer DisputeListParamsStatus = "PENDING_CUSTOMER"
-	DisputeListParamsStatusSubmitted       DisputeListParamsStatus = "SUBMITTED"
-	DisputeListParamsStatusRepresentment   DisputeListParamsStatus = "REPRESENTMENT"
 	DisputeListParamsStatusPrearbitration  DisputeListParamsStatus = "PREARBITRATION"
-	DisputeListParamsStatusArbitration     DisputeListParamsStatus = "ARBITRATION"
-	DisputeListParamsStatusCaseWon         DisputeListParamsStatus = "CASE_WON"
-	DisputeListParamsStatusCaseClosed      DisputeListParamsStatus = "CASE_CLOSED"
+	DisputeListParamsStatusRepresentment   DisputeListParamsStatus = "REPRESENTMENT"
+	DisputeListParamsStatusSubmitted       DisputeListParamsStatus = "SUBMITTED"
 )
 
 type DisputeInitiateEvidenceUploadParams struct {

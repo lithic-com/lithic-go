@@ -141,8 +141,8 @@ func (r *FinancialAccountStatementLineItemListResponse) UnmarshalJSON(data []byt
 type FinancialAccountStatementLineItemListResponseCategory string
 
 const (
-	FinancialAccountStatementLineItemListResponseCategoryCard     FinancialAccountStatementLineItemListResponseCategory = "CARD"
 	FinancialAccountStatementLineItemListResponseCategoryACH      FinancialAccountStatementLineItemListResponseCategory = "ACH"
+	FinancialAccountStatementLineItemListResponseCategoryCard     FinancialAccountStatementLineItemListResponseCategory = "CARD"
 	FinancialAccountStatementLineItemListResponseCategoryTransfer FinancialAccountStatementLineItemListResponseCategory = "TRANSFER"
 )
 
@@ -197,8 +197,8 @@ const (
 	FinancialAccountStatementLineItemListResponseEventTypeAuthorizationReversal        FinancialAccountStatementLineItemListResponseEventType = "AUTHORIZATION_REVERSAL"
 	FinancialAccountStatementLineItemListResponseEventTypeBalanceInquiry               FinancialAccountStatementLineItemListResponseEventType = "BALANCE_INQUIRY"
 	FinancialAccountStatementLineItemListResponseEventTypeClearing                     FinancialAccountStatementLineItemListResponseEventType = "CLEARING"
-	FinancialAccountStatementLineItemListResponseEventTypeCorrectionDebit              FinancialAccountStatementLineItemListResponseEventType = "CORRECTION_DEBIT"
 	FinancialAccountStatementLineItemListResponseEventTypeCorrectionCredit             FinancialAccountStatementLineItemListResponseEventType = "CORRECTION_CREDIT"
+	FinancialAccountStatementLineItemListResponseEventTypeCorrectionDebit              FinancialAccountStatementLineItemListResponseEventType = "CORRECTION_DEBIT"
 	FinancialAccountStatementLineItemListResponseEventTypeCreditAuthorization          FinancialAccountStatementLineItemListResponseEventType = "CREDIT_AUTHORIZATION"
 	FinancialAccountStatementLineItemListResponseEventTypeCreditAuthorizationAdvice    FinancialAccountStatementLineItemListResponseEventType = "CREDIT_AUTHORIZATION_ADVICE"
 	FinancialAccountStatementLineItemListResponseEventTypeFinancialAuthorization       FinancialAccountStatementLineItemListResponseEventType = "FINANCIAL_AUTHORIZATION"

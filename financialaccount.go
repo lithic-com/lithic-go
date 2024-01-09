@@ -182,8 +182,8 @@ func (r *FinancialTransaction) UnmarshalJSON(data []byte) (err error) {
 type FinancialTransactionCategory string
 
 const (
-	FinancialTransactionCategoryCard     FinancialTransactionCategory = "CARD"
 	FinancialTransactionCategoryACH      FinancialTransactionCategory = "ACH"
+	FinancialTransactionCategoryCard     FinancialTransactionCategory = "CARD"
 	FinancialTransactionCategoryTransfer FinancialTransactionCategory = "TRANSFER"
 )
 
@@ -314,8 +314,8 @@ const (
 	FinancialTransactionEventsTypeAuthorizationReversal        FinancialTransactionEventsType = "AUTHORIZATION_REVERSAL"
 	FinancialTransactionEventsTypeBalanceInquiry               FinancialTransactionEventsType = "BALANCE_INQUIRY"
 	FinancialTransactionEventsTypeClearing                     FinancialTransactionEventsType = "CLEARING"
-	FinancialTransactionEventsTypeCorrectionDebit              FinancialTransactionEventsType = "CORRECTION_DEBIT"
 	FinancialTransactionEventsTypeCorrectionCredit             FinancialTransactionEventsType = "CORRECTION_CREDIT"
+	FinancialTransactionEventsTypeCorrectionDebit              FinancialTransactionEventsType = "CORRECTION_DEBIT"
 	FinancialTransactionEventsTypeCreditAuthorization          FinancialTransactionEventsType = "CREDIT_AUTHORIZATION"
 	FinancialTransactionEventsTypeCreditAuthorizationAdvice    FinancialTransactionEventsType = "CREDIT_AUTHORIZATION_ADVICE"
 	FinancialTransactionEventsTypeFinancialAuthorization       FinancialTransactionEventsType = "FINANCIAL_AUTHORIZATION"

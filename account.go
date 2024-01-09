@@ -237,8 +237,7 @@ func (r *AccountVerificationAddress) UnmarshalJSON(data []byte) (err error) {
 }
 
 type AccountSpendLimits struct {
-	AvailableSpendLimit AccountSpendLimitsAvailableSpendLimit `json:"available_spend_limit"`
-	Required            interface{}                           `json:"required"`
+	AvailableSpendLimit AccountSpendLimitsAvailableSpendLimit `json:"available_spend_limit,required"`
 	JSON                accountSpendLimitsJSON                `json:"-"`
 }
 
@@ -246,7 +245,6 @@ type AccountSpendLimits struct {
 // [AccountSpendLimits]
 type accountSpendLimitsJSON struct {
 	AvailableSpendLimit apijson.Field
-	Required            apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
 }

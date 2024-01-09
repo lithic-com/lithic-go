@@ -84,7 +84,7 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	return
 }
 
-// API status check
+// Status of api
 func (r *Client) APIStatus(ctx context.Context, opts ...option.RequestOption) (res *APIStatus, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "status"

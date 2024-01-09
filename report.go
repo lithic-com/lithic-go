@@ -106,11 +106,11 @@ func (r *SettlementDetail) UnmarshalJSON(data []byte) (err error) {
 type SettlementDetailNetwork string
 
 const (
-	SettlementDetailNetworkMastercard SettlementDetailNetwork = "MASTERCARD"
-	SettlementDetailNetworkVisa       SettlementDetailNetwork = "VISA"
 	SettlementDetailNetworkInterlink  SettlementDetailNetwork = "INTERLINK"
 	SettlementDetailNetworkMaestro    SettlementDetailNetwork = "MAESTRO"
+	SettlementDetailNetworkMastercard SettlementDetailNetwork = "MASTERCARD"
 	SettlementDetailNetworkUnknown    SettlementDetailNetwork = "UNKNOWN"
+	SettlementDetailNetworkVisa       SettlementDetailNetwork = "VISA"
 )
 
 // The total gross amount of other fees by type.
@@ -220,9 +220,9 @@ func (r *SettlementSummaryDetails) UnmarshalJSON(data []byte) (err error) {
 type SettlementSummaryDetailsNetwork string
 
 const (
-	SettlementSummaryDetailsNetworkMastercard SettlementSummaryDetailsNetwork = "MASTERCARD"
-	SettlementSummaryDetailsNetworkVisa       SettlementSummaryDetailsNetwork = "VISA"
 	SettlementSummaryDetailsNetworkInterlink  SettlementSummaryDetailsNetwork = "INTERLINK"
 	SettlementSummaryDetailsNetworkMaestro    SettlementSummaryDetailsNetwork = "MAESTRO"
+	SettlementSummaryDetailsNetworkMastercard SettlementSummaryDetailsNetwork = "MASTERCARD"
 	SettlementSummaryDetailsNetworkUnknown    SettlementSummaryDetailsNetwork = "UNKNOWN"
+	SettlementSummaryDetailsNetworkVisa       SettlementSummaryDetailsNetwork = "VISA"
 )
