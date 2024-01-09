@@ -26,16 +26,30 @@ func TestExternalBankAccountNewWithOptionalParams(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My Lithic API Key"),
 	)
-	_, err := client.ExternalBankAccounts.New(context.TODO(), lithic.ExternalBankAccountNewParamsPlaidCreateBankAccountAPIRequest{
+	_, err := client.ExternalBankAccounts.New(context.TODO(), lithic.ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequest{
+		AccountNumber:      lithic.F("string"),
+		Country:            lithic.F("USD"),
+		Currency:           lithic.F("USD"),
 		Owner:              lithic.F("x"),
-		OwnerType:          lithic.F(lithic.OwnerTypeIndividual),
-		ProcessorToken:     lithic.F("x"),
+		OwnerType:          lithic.F(lithic.OwnerTypeBusiness),
+		RoutingNumber:      lithic.F("123456789"),
+		Type:               lithic.F(lithic.ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestTypeChecking),
 		VerificationMethod: lithic.F(lithic.VerificationMethodManual),
 		AccountToken:       lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-		CompanyID:          lithic.F("x"),
-		Dob:                lithic.F(time.Now()),
-		DoingBusinessAs:    lithic.F("string"),
-		UserDefinedID:      lithic.F("string"),
+		Address: lithic.F(lithic.ExternalBankAccountAddressParam{
+			Address1:   lithic.F("x"),
+			Address2:   lithic.F("x"),
+			City:       lithic.F("x"),
+			Country:    lithic.F("USD"),
+			PostalCode: lithic.F("11201"),
+			State:      lithic.F("xx"),
+		}),
+		CompanyID:               lithic.F("x"),
+		Dob:                     lithic.F(time.Now()),
+		DoingBusinessAs:         lithic.F("string"),
+		Name:                    lithic.F("x"),
+		UserDefinedID:           lithic.F("string"),
+		VerificationEnforcement: lithic.F(true),
 	})
 	if err != nil {
 		var apierr *lithic.Error
@@ -88,16 +102,16 @@ func TestExternalBankAccountUpdateWithOptionalParams(t *testing.T) {
 				Address1:   lithic.F("x"),
 				Address2:   lithic.F("x"),
 				City:       lithic.F("x"),
-				State:      lithic.F("xx"),
-				PostalCode: lithic.F("11201"),
 				Country:    lithic.F("USD"),
+				PostalCode: lithic.F("11201"),
+				State:      lithic.F("xx"),
 			}),
 			CompanyID:       lithic.F("x"),
 			Dob:             lithic.F(time.Now()),
 			DoingBusinessAs: lithic.F("string"),
 			Name:            lithic.F("x"),
 			Owner:           lithic.F("x"),
-			OwnerType:       lithic.F(lithic.OwnerTypeIndividual),
+			OwnerType:       lithic.F(lithic.OwnerTypeBusiness),
 			UserDefinedID:   lithic.F("string"),
 		},
 	)
@@ -127,11 +141,11 @@ func TestExternalBankAccountListWithOptionalParams(t *testing.T) {
 		AccountTypes:       lithic.F([]lithic.ExternalBankAccountListParamsAccountType{lithic.ExternalBankAccountListParamsAccountTypeChecking, lithic.ExternalBankAccountListParamsAccountTypeSavings}),
 		Countries:          lithic.F([]string{"string", "string", "string"}),
 		EndingBefore:       lithic.F("string"),
-		OwnerTypes:         lithic.F([]lithic.OwnerType{lithic.OwnerTypeIndividual, lithic.OwnerTypeBusiness}),
+		OwnerTypes:         lithic.F([]lithic.OwnerType{lithic.OwnerTypeBusiness, lithic.OwnerTypeIndividual}),
 		PageSize:           lithic.F(int64(1)),
 		StartingAfter:      lithic.F("string"),
-		States:             lithic.F([]lithic.ExternalBankAccountListParamsState{lithic.ExternalBankAccountListParamsStateEnabled, lithic.ExternalBankAccountListParamsStateClosed, lithic.ExternalBankAccountListParamsStatePaused}),
-		VerificationStates: lithic.F([]lithic.ExternalBankAccountListParamsVerificationState{lithic.ExternalBankAccountListParamsVerificationStatePending, lithic.ExternalBankAccountListParamsVerificationStateEnabled, lithic.ExternalBankAccountListParamsVerificationStateFailedVerification}),
+		States:             lithic.F([]lithic.ExternalBankAccountListParamsState{lithic.ExternalBankAccountListParamsStateClosed, lithic.ExternalBankAccountListParamsStateEnabled, lithic.ExternalBankAccountListParamsStatePaused}),
+		VerificationStates: lithic.F([]lithic.ExternalBankAccountListParamsVerificationState{lithic.ExternalBankAccountListParamsVerificationStateEnabled, lithic.ExternalBankAccountListParamsVerificationStateFailedVerification, lithic.ExternalBankAccountListParamsVerificationStatePending}),
 	})
 	if err != nil {
 		var apierr *lithic.Error

@@ -61,9 +61,9 @@ func TestAccountUpdateWithOptionalParams(t *testing.T) {
 				Address1:   lithic.F("string"),
 				Address2:   lithic.F("string"),
 				City:       lithic.F("string"),
-				State:      lithic.F("string"),
-				PostalCode: lithic.F("string"),
 				Country:    lithic.F("string"),
+				PostalCode: lithic.F("string"),
+				State:      lithic.F("string"),
 			}),
 		},
 	)

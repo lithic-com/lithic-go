@@ -242,8 +242,8 @@ const (
 	TransferEventsTypeAuthorizationReversal        TransferEventsType = "AUTHORIZATION_REVERSAL"
 	TransferEventsTypeBalanceInquiry               TransferEventsType = "BALANCE_INQUIRY"
 	TransferEventsTypeClearing                     TransferEventsType = "CLEARING"
-	TransferEventsTypeCorrectionDebit              TransferEventsType = "CORRECTION_DEBIT"
 	TransferEventsTypeCorrectionCredit             TransferEventsType = "CORRECTION_CREDIT"
+	TransferEventsTypeCorrectionDebit              TransferEventsType = "CORRECTION_DEBIT"
 	TransferEventsTypeCreditAuthorization          TransferEventsType = "CREDIT_AUTHORIZATION"
 	TransferEventsTypeCreditAuthorizationAdvice    TransferEventsType = "CREDIT_AUTHORIZATION_ADVICE"
 	TransferEventsTypeFinancialAuthorization       TransferEventsType = "FINANCIAL_AUTHORIZATION"
@@ -307,10 +307,11 @@ type TransferNewParams struct {
 	// Globally unique identifier for the financial account or card that will receive
 	// the funds. Accepted type dependent on the program's use case.
 	To param.Field[string] `json:"to,required" format:"uuid"`
+	// Customer-provided token that will serve as an idempotency token. This token will
+	// become the transaction token.
+	Token param.Field[string] `json:"token" format:"uuid"`
 	// Optional descriptor for the transfer.
 	Memo param.Field[string] `json:"memo"`
-	// Customer-provided transaction_token that will serve as an idempotency token.
-	TransactionToken param.Field[string] `json:"transaction_token" format:"uuid"`
 }
 
 func (r TransferNewParams) MarshalJSON() (data []byte, err error) {

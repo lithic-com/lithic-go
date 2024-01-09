@@ -40,20 +40,21 @@ func TestCardNewWithOptionalParams(t *testing.T) {
 		Memo:                lithic.F("New Card"),
 		Pin:                 lithic.F("string"),
 		ProductID:           lithic.F("1"),
+		ReplacementFor:      lithic.F("00000000-0000-0000-1000-000000000000"),
 		ShippingAddress: lithic.F(shared.ShippingAddressParam{
-			FirstName:   lithic.F("Michael"),
-			LastName:    lithic.F("Bluth"),
-			Line2Text:   lithic.F("The Bluth Company"),
 			Address1:    lithic.F("5 Broad Street"),
 			Address2:    lithic.F("Unit 25A"),
 			City:        lithic.F("NEW YORK"),
-			State:       lithic.F("NY"),
-			PostalCode:  lithic.F("10001-1809"),
 			Country:     lithic.F("USA"),
 			Email:       lithic.F("johnny@appleseed.com"),
+			FirstName:   lithic.F("Michael"),
+			LastName:    lithic.F("Bluth"),
+			Line2Text:   lithic.F("The Bluth Company"),
 			PhoneNumber: lithic.F("+12124007676"),
+			PostalCode:  lithic.F("10001-1809"),
+			State:       lithic.F("NY"),
 		}),
-		ShippingMethod:     lithic.F(lithic.CardNewParamsShippingMethodStandard),
+		ShippingMethod:     lithic.F(lithic.CardNewParamsShippingMethod2Day),
 		SpendLimit:         lithic.F(int64(1000)),
 		SpendLimitDuration: lithic.F(lithic.SpendLimitDurationTransaction),
 		State:              lithic.F(lithic.CardNewParamsStateOpen),
@@ -142,7 +143,7 @@ func TestCardListWithOptionalParams(t *testing.T) {
 		EndingBefore:  lithic.F("string"),
 		PageSize:      lithic.F(int64(1)),
 		StartingAfter: lithic.F("string"),
-		State:         lithic.F(lithic.CardListParamsStateOpen),
+		State:         lithic.F(lithic.CardListParamsStateClosed),
 	})
 	if err != nil {
 		var apierr *lithic.Error
@@ -284,19 +285,66 @@ func TestCardReissueWithOptionalParams(t *testing.T) {
 			}),
 			ProductID: lithic.F("100"),
 			ShippingAddress: lithic.F(shared.ShippingAddressParam{
-				FirstName:   lithic.F("Janet"),
-				LastName:    lithic.F("Yellen"),
-				Line2Text:   lithic.F("The Bluth Company"),
 				Address1:    lithic.F("5 Broad Street"),
 				Address2:    lithic.F("Unit 5A"),
 				City:        lithic.F("NEW YORK"),
-				State:       lithic.F("NY"),
-				PostalCode:  lithic.F("10001"),
 				Country:     lithic.F("USA"),
 				Email:       lithic.F("johnny@appleseed.com"),
+				FirstName:   lithic.F("Janet"),
+				LastName:    lithic.F("Yellen"),
+				Line2Text:   lithic.F("The Bluth Company"),
 				PhoneNumber: lithic.F("+12124007676"),
+				PostalCode:  lithic.F("10001"),
+				State:       lithic.F("NY"),
 			}),
 			ShippingMethod: lithic.F(lithic.CardReissueParamsShippingMethodStandard),
+		},
+	)
+	if err != nil {
+		var apierr *lithic.Error
+		if errors.As(err, &apierr) {
+			t.Log(string(apierr.DumpRequest(true)))
+		}
+		t.Fatalf("err should be nil: %s", err.Error())
+	}
+}
+
+func TestCardRenewWithOptionalParams(t *testing.T) {
+	baseURL := "http://localhost:4010"
+	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+		baseURL = envURL
+	}
+	if !testutil.CheckTestServer(t, baseURL) {
+		return
+	}
+	client := lithic.NewClient(
+		option.WithBaseURL(baseURL),
+		option.WithAPIKey("My Lithic API Key"),
+	)
+	_, err := client.Cards.Renew(
+		context.TODO(),
+		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+		lithic.CardRenewParams{
+			ShippingAddress: lithic.F(shared.ShippingAddressParam{
+				Address1:    lithic.F("5 Broad Street"),
+				Address2:    lithic.F("Unit 5A"),
+				City:        lithic.F("NEW YORK"),
+				Country:     lithic.F("USA"),
+				Email:       lithic.F("johnny@appleseed.com"),
+				FirstName:   lithic.F("Janet"),
+				LastName:    lithic.F("Yellen"),
+				Line2Text:   lithic.F("The Bluth Company"),
+				PhoneNumber: lithic.F("+12124007676"),
+				PostalCode:  lithic.F("10001"),
+				State:       lithic.F("NY"),
+			}),
+			Carrier: lithic.F(shared.CarrierParam{
+				QrCodeURL: lithic.F("https://lithic.com/activate-card/1"),
+			}),
+			ExpMonth:       lithic.F("06"),
+			ExpYear:        lithic.F("2027"),
+			ProductID:      lithic.F("100"),
+			ShippingMethod: lithic.F(lithic.CardRenewParamsShippingMethodStandard),
 		},
 	)
 	if err != nil {

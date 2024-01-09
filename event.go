@@ -106,6 +106,7 @@ type Event struct {
 	//   - `account_holder.verification` - Notification than an account holder's identity
 	//     verification is complete.
 	//   - `card.created` - Notification that a card has been created.
+	//   - `card.renewed` - Notification that a card has been renewed.
 	//   - `card.shipped` - Physical card shipment notification. See
 	//     https://docs.lithic.com/docs/cards#physical-card-shipped-webhook.
 	//   - `card_transaction.updated` - Transaction Lifecycle webhook. See
@@ -145,6 +146,7 @@ func (r *Event) UnmarshalJSON(data []byte) (err error) {
 //   - `account_holder.verification` - Notification than an account holder's identity
 //     verification is complete.
 //   - `card.created` - Notification that a card has been created.
+//   - `card.renewed` - Notification that a card has been renewed.
 //   - `card.shipped` - Physical card shipment notification. See
 //     https://docs.lithic.com/docs/cards#physical-card-shipped-webhook.
 //   - `card_transaction.updated` - Transaction Lifecycle webhook. See
@@ -163,7 +165,9 @@ const (
 	EventEventTypeAccountHolderCreated                                 EventEventType = "account_holder.created"
 	EventEventTypeAccountHolderUpdated                                 EventEventType = "account_holder.updated"
 	EventEventTypeAccountHolderVerification                            EventEventType = "account_holder.verification"
+	EventEventTypeBalanceUpdated                                       EventEventType = "balance.updated"
 	EventEventTypeCardCreated                                          EventEventType = "card.created"
+	EventEventTypeCardRenewed                                          EventEventType = "card.renewed"
 	EventEventTypeCardShipped                                          EventEventType = "card.shipped"
 	EventEventTypeCardTransactionUpdated                               EventEventType = "card_transaction.updated"
 	EventEventTypeDigitalWalletTokenizationApprovalRequest             EventEventType = "digital_wallet.tokenization_approval_request"
@@ -171,9 +175,9 @@ const (
 	EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventEventTypeDisputeUpdated                                       EventEventType = "dispute.updated"
 	EventEventTypeDisputeEvidenceUploadFailed                          EventEventType = "dispute_evidence.upload_failed"
-	EventEventTypeThreeDSAuthenticationCreated                         EventEventType = "three_ds_authentication.created"
 	EventEventTypePaymentTransactionCreated                            EventEventType = "payment_transaction.created"
 	EventEventTypePaymentTransactionUpdated                            EventEventType = "payment_transaction.updated"
+	EventEventTypeThreeDSAuthenticationCreated                         EventEventType = "three_ds_authentication.created"
 	EventEventTypeTransferTransactionCreated                           EventEventType = "transfer_transaction.created"
 )
 
@@ -212,7 +216,9 @@ const (
 	EventSubscriptionEventTypeAccountHolderCreated                                 EventSubscriptionEventType = "account_holder.created"
 	EventSubscriptionEventTypeAccountHolderUpdated                                 EventSubscriptionEventType = "account_holder.updated"
 	EventSubscriptionEventTypeAccountHolderVerification                            EventSubscriptionEventType = "account_holder.verification"
+	EventSubscriptionEventTypeBalanceUpdated                                       EventSubscriptionEventType = "balance.updated"
 	EventSubscriptionEventTypeCardCreated                                          EventSubscriptionEventType = "card.created"
+	EventSubscriptionEventTypeCardRenewed                                          EventSubscriptionEventType = "card.renewed"
 	EventSubscriptionEventTypeCardShipped                                          EventSubscriptionEventType = "card.shipped"
 	EventSubscriptionEventTypeCardTransactionUpdated                               EventSubscriptionEventType = "card_transaction.updated"
 	EventSubscriptionEventTypeDigitalWalletTokenizationApprovalRequest             EventSubscriptionEventType = "digital_wallet.tokenization_approval_request"
@@ -220,9 +226,9 @@ const (
 	EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventSubscriptionEventTypeDisputeUpdated                                       EventSubscriptionEventType = "dispute.updated"
 	EventSubscriptionEventTypeDisputeEvidenceUploadFailed                          EventSubscriptionEventType = "dispute_evidence.upload_failed"
-	EventSubscriptionEventTypeThreeDSAuthenticationCreated                         EventSubscriptionEventType = "three_ds_authentication.created"
 	EventSubscriptionEventTypePaymentTransactionCreated                            EventSubscriptionEventType = "payment_transaction.created"
 	EventSubscriptionEventTypePaymentTransactionUpdated                            EventSubscriptionEventType = "payment_transaction.updated"
+	EventSubscriptionEventTypeThreeDSAuthenticationCreated                         EventSubscriptionEventType = "three_ds_authentication.created"
 	EventSubscriptionEventTypeTransferTransactionCreated                           EventSubscriptionEventType = "transfer_transaction.created"
 )
 
@@ -311,7 +317,9 @@ const (
 	EventListParamsEventTypeAccountHolderCreated                                 EventListParamsEventType = "account_holder.created"
 	EventListParamsEventTypeAccountHolderUpdated                                 EventListParamsEventType = "account_holder.updated"
 	EventListParamsEventTypeAccountHolderVerification                            EventListParamsEventType = "account_holder.verification"
+	EventListParamsEventTypeBalanceUpdated                                       EventListParamsEventType = "balance.updated"
 	EventListParamsEventTypeCardCreated                                          EventListParamsEventType = "card.created"
+	EventListParamsEventTypeCardRenewed                                          EventListParamsEventType = "card.renewed"
 	EventListParamsEventTypeCardShipped                                          EventListParamsEventType = "card.shipped"
 	EventListParamsEventTypeCardTransactionUpdated                               EventListParamsEventType = "card_transaction.updated"
 	EventListParamsEventTypeDigitalWalletTokenizationApprovalRequest             EventListParamsEventType = "digital_wallet.tokenization_approval_request"
@@ -319,9 +327,9 @@ const (
 	EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventListParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventListParamsEventTypeDisputeUpdated                                       EventListParamsEventType = "dispute.updated"
 	EventListParamsEventTypeDisputeEvidenceUploadFailed                          EventListParamsEventType = "dispute_evidence.upload_failed"
-	EventListParamsEventTypeThreeDSAuthenticationCreated                         EventListParamsEventType = "three_ds_authentication.created"
 	EventListParamsEventTypePaymentTransactionCreated                            EventListParamsEventType = "payment_transaction.created"
 	EventListParamsEventTypePaymentTransactionUpdated                            EventListParamsEventType = "payment_transaction.updated"
+	EventListParamsEventTypeThreeDSAuthenticationCreated                         EventListParamsEventType = "three_ds_authentication.created"
 	EventListParamsEventTypeTransferTransactionCreated                           EventListParamsEventType = "transfer_transaction.created"
 )
 

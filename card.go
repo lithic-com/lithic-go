@@ -229,6 +229,16 @@ func (r *CardService) Reissue(ctx context.Context, cardToken string, body CardRe
 	return
 }
 
+// Initiate print and shipment of a renewed physical card.
+//
+// Only applies to cards of type `PHYSICAL`.
+func (r *CardService) Renew(ctx context.Context, cardToken string, body CardRenewParams, opts ...option.RequestOption) (res *Card, err error) {
+	opts = append(r.Options[:], opts...)
+	path := fmt.Sprintf("cards/%s/renew", cardToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+	return
+}
+
 // Get a Card's available spend limit, which is based on the spend limit configured
 // on the Card and the amount already spent over the spend limit's duration. For
 // example, if the Card has a monthly spend limit of $1000 configured, and has
@@ -408,9 +418,9 @@ func (r *CardFunding) UnmarshalJSON(data []byte) (err error) {
 type CardFundingState string
 
 const (
+	CardFundingStateDeleted CardFundingState = "DELETED"
 	CardFundingStateEnabled CardFundingState = "ENABLED"
 	CardFundingStatePending CardFundingState = "PENDING"
-	CardFundingStateDeleted CardFundingState = "DELETED"
 )
 
 // Types of funding source:
@@ -470,22 +480,20 @@ const (
 type CardType string
 
 const (
-	CardTypeVirtual        CardType = "VIRTUAL"
-	CardTypePhysical       CardType = "PHYSICAL"
 	CardTypeMerchantLocked CardType = "MERCHANT_LOCKED"
+	CardTypePhysical       CardType = "PHYSICAL"
 	CardTypeSingleUse      CardType = "SINGLE_USE"
+	CardTypeVirtual        CardType = "VIRTUAL"
 )
 
 type CardSpendLimits struct {
-	AvailableSpendLimit CardSpendLimitsAvailableSpendLimit `json:"available_spend_limit"`
-	Required            interface{}                        `json:"required"`
+	AvailableSpendLimit CardSpendLimitsAvailableSpendLimit `json:"available_spend_limit,required"`
 	JSON                cardSpendLimitsJSON                `json:"-"`
 }
 
 // cardSpendLimitsJSON contains the JSON metadata for the struct [CardSpendLimits]
 type cardSpendLimitsJSON struct {
 	AvailableSpendLimit apijson.Field
-	Required            apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
 }
@@ -602,7 +610,10 @@ type CardNewParams struct {
 	// Only applicable to cards of type `PHYSICAL`. This must be configured with Lithic
 	// before use. Specifies the configuration (i.e., physical card art) that the card
 	// should be manufactured with.
-	ProductID       param.Field[string]                      `json:"product_id"`
+	ProductID param.Field[string] `json:"product_id"`
+	// Only applicable to cards of type `PHYSICAL`. Globally unique identifier for the
+	// card that this physical card will replace.
+	ReplacementFor  param.Field[string]                      `json:"replacement_for" format:"uuid"`
 	ShippingAddress param.Field[shared.ShippingAddressParam] `json:"shipping_address"`
 	// Shipping method for the card. Only applies to cards of type PHYSICAL. Use of
 	// options besides `STANDARD` require additional permissions.
@@ -662,10 +673,10 @@ func (r CardNewParams) MarshalJSON() (data []byte, err error) {
 type CardNewParamsType string
 
 const (
-	CardNewParamsTypeVirtual        CardNewParamsType = "VIRTUAL"
-	CardNewParamsTypePhysical       CardNewParamsType = "PHYSICAL"
 	CardNewParamsTypeMerchantLocked CardNewParamsType = "MERCHANT_LOCKED"
+	CardNewParamsTypePhysical       CardNewParamsType = "PHYSICAL"
 	CardNewParamsTypeSingleUse      CardNewParamsType = "SINGLE_USE"
+	CardNewParamsTypeVirtual        CardNewParamsType = "VIRTUAL"
 )
 
 // Shipping method for the card. Only applies to cards of type PHYSICAL. Use of
@@ -683,12 +694,12 @@ const (
 type CardNewParamsShippingMethod string
 
 const (
-	CardNewParamsShippingMethodStandard             CardNewParamsShippingMethod = "STANDARD"
-	CardNewParamsShippingMethodStandardWithTracking CardNewParamsShippingMethod = "STANDARD_WITH_TRACKING"
-	CardNewParamsShippingMethodPriority             CardNewParamsShippingMethod = "PRIORITY"
-	CardNewParamsShippingMethodExpress              CardNewParamsShippingMethod = "EXPRESS"
 	CardNewParamsShippingMethod2Day                 CardNewParamsShippingMethod = "2_DAY"
 	CardNewParamsShippingMethodExpedited            CardNewParamsShippingMethod = "EXPEDITED"
+	CardNewParamsShippingMethodExpress              CardNewParamsShippingMethod = "EXPRESS"
+	CardNewParamsShippingMethodPriority             CardNewParamsShippingMethod = "PRIORITY"
+	CardNewParamsShippingMethodStandard             CardNewParamsShippingMethod = "STANDARD"
+	CardNewParamsShippingMethodStandardWithTracking CardNewParamsShippingMethod = "STANDARD_WITH_TRACKING"
 )
 
 // Card state values:
@@ -801,11 +812,11 @@ func (r CardListParams) URLQuery() (v url.Values) {
 type CardListParamsState string
 
 const (
+	CardListParamsStateClosed             CardListParamsState = "CLOSED"
 	CardListParamsStateOpen               CardListParamsState = "OPEN"
 	CardListParamsStatePaused             CardListParamsState = "PAUSED"
-	CardListParamsStateClosed             CardListParamsState = "CLOSED"
-	CardListParamsStatePendingFulfillment CardListParamsState = "PENDING_FULFILLMENT"
 	CardListParamsStatePendingActivation  CardListParamsState = "PENDING_ACTIVATION"
+	CardListParamsStatePendingFulfillment CardListParamsState = "PENDING_FULFILLMENT"
 )
 
 type CardEmbedParams struct {
@@ -951,10 +962,67 @@ func (r CardReissueParams) MarshalJSON() (data []byte, err error) {
 type CardReissueParamsShippingMethod string
 
 const (
-	CardReissueParamsShippingMethodStandard             CardReissueParamsShippingMethod = "STANDARD"
-	CardReissueParamsShippingMethodStandardWithTracking CardReissueParamsShippingMethod = "STANDARD_WITH_TRACKING"
-	CardReissueParamsShippingMethodPriority             CardReissueParamsShippingMethod = "PRIORITY"
-	CardReissueParamsShippingMethodExpress              CardReissueParamsShippingMethod = "EXPRESS"
 	CardReissueParamsShippingMethod2Day                 CardReissueParamsShippingMethod = "2-DAY"
 	CardReissueParamsShippingMethodExpedited            CardReissueParamsShippingMethod = "EXPEDITED"
+	CardReissueParamsShippingMethodExpress              CardReissueParamsShippingMethod = "EXPRESS"
+	CardReissueParamsShippingMethodPriority             CardReissueParamsShippingMethod = "PRIORITY"
+	CardReissueParamsShippingMethodStandard             CardReissueParamsShippingMethod = "STANDARD"
+	CardReissueParamsShippingMethodStandardWithTracking CardReissueParamsShippingMethod = "STANDARD_WITH_TRACKING"
+)
+
+type CardRenewParams struct {
+	// The shipping address this card will be sent to.
+	ShippingAddress param.Field[shared.ShippingAddressParam] `json:"shipping_address,required"`
+	// If omitted, the previous carrier will be used.
+	Carrier param.Field[shared.CarrierParam] `json:"carrier"`
+	// Two digit (MM) expiry month. If neither `exp_month` nor `exp_year` is provided,
+	// an expiration date six years in the future will be generated.
+	ExpMonth param.Field[string] `json:"exp_month"`
+	// Four digit (yyyy) expiry year. If neither `exp_month` nor `exp_year` is
+	// provided, an expiration date six years in the future will be generated.
+	ExpYear param.Field[string] `json:"exp_year"`
+	// Specifies the configuration (e.g. physical card art) that the card should be
+	// manufactured with, and only applies to cards of type `PHYSICAL`. This must be
+	// configured with Lithic before use.
+	ProductID param.Field[string] `json:"product_id"`
+	// Shipping method for the card. Use of options besides `STANDARD` require
+	// additional permissions.
+	//
+	//   - `STANDARD` - USPS regular mail or similar international option, with no
+	//     tracking
+	//   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
+	//     with tracking
+	//   - `PRIORITY` - USPS Priority, 1-3 day shipping, with tracking
+	//   - `EXPRESS` - FedEx Express, 3-day shipping, with tracking
+	//   - `2_DAY` - FedEx 2-day shipping, with tracking
+	//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
+	//     tracking
+	ShippingMethod param.Field[CardRenewParamsShippingMethod] `json:"shipping_method"`
+}
+
+func (r CardRenewParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// Shipping method for the card. Use of options besides `STANDARD` require
+// additional permissions.
+//
+//   - `STANDARD` - USPS regular mail or similar international option, with no
+//     tracking
+//   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
+//     with tracking
+//   - `PRIORITY` - USPS Priority, 1-3 day shipping, with tracking
+//   - `EXPRESS` - FedEx Express, 3-day shipping, with tracking
+//   - `2_DAY` - FedEx 2-day shipping, with tracking
+//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
+//     tracking
+type CardRenewParamsShippingMethod string
+
+const (
+	CardRenewParamsShippingMethod2Day                 CardRenewParamsShippingMethod = "2-DAY"
+	CardRenewParamsShippingMethodExpedited            CardRenewParamsShippingMethod = "EXPEDITED"
+	CardRenewParamsShippingMethodExpress              CardRenewParamsShippingMethod = "EXPRESS"
+	CardRenewParamsShippingMethodPriority             CardRenewParamsShippingMethod = "PRIORITY"
+	CardRenewParamsShippingMethodStandard             CardRenewParamsShippingMethod = "STANDARD"
+	CardRenewParamsShippingMethodStandardWithTracking CardRenewParamsShippingMethod = "STANDARD_WITH_TRACKING"
 )

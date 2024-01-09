@@ -9,7 +9,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
@@ -59,28 +58,11 @@ func (r *ReportSettlementService) ListDetailsAutoPaging(ctx context.Context, rep
 }
 
 // Get the settlement report for a specified report date.
-func (r *ReportSettlementService) Summary(ctx context.Context, reportDate time.Time, opts ...option.RequestOption) (res *ReportSettlementSummaryResponse, err error) {
+func (r *ReportSettlementService) Summary(ctx context.Context, reportDate time.Time, opts ...option.RequestOption) (res *SettlementReport, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("reports/settlement/summary/%s", reportDate.Format("2006-01-02"))
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
-}
-
-type ReportSettlementSummaryResponse struct {
-	Data []SettlementReport                  `json:"data,required"`
-	JSON reportSettlementSummaryResponseJSON `json:"-"`
-}
-
-// reportSettlementSummaryResponseJSON contains the JSON metadata for the struct
-// [ReportSettlementSummaryResponse]
-type reportSettlementSummaryResponseJSON struct {
-	Data        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *ReportSettlementSummaryResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
 }
 
 type ReportSettlementListDetailsParams struct {

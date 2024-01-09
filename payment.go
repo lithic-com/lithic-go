@@ -166,16 +166,16 @@ func (r *PaymentMethodAttributes) UnmarshalJSON(data []byte) (err error) {
 type PaymentMethodAttributesSecCode string
 
 const (
-	PaymentMethodAttributesSecCodePpd PaymentMethodAttributesSecCode = "PPD"
 	PaymentMethodAttributesSecCodeCcd PaymentMethodAttributesSecCode = "CCD"
+	PaymentMethodAttributesSecCodePpd PaymentMethodAttributesSecCode = "PPD"
 	PaymentMethodAttributesSecCodeWeb PaymentMethodAttributesSecCode = "WEB"
 )
 
 type PaymentSource string
 
 const (
-	PaymentSourceLithic   PaymentSource = "LITHIC"
 	PaymentSourceCustomer PaymentSource = "CUSTOMER"
+	PaymentSourceLithic   PaymentSource = "LITHIC"
 )
 
 type PaymentNewResponse struct {
@@ -279,9 +279,11 @@ type PaymentNewParams struct {
 	Method                   param.Field[PaymentNewParamsMethod]           `json:"method,required"`
 	MethodAttributes         param.Field[PaymentNewParamsMethodAttributes] `json:"method_attributes,required"`
 	Type                     param.Field[PaymentNewParamsType]             `json:"type,required"`
-	Token                    param.Field[string]                           `json:"token" format:"uuid"`
-	Memo                     param.Field[string]                           `json:"memo"`
-	UserDefinedID            param.Field[string]                           `json:"user_defined_id"`
+	// Customer-provided token that will serve as an idempotency token. This token will
+	// become the transaction token.
+	Token         param.Field[string] `json:"token" format:"uuid"`
+	Memo          param.Field[string] `json:"memo"`
+	UserDefinedID param.Field[string] `json:"user_defined_id"`
 }
 
 func (r PaymentNewParams) MarshalJSON() (data []byte, err error) {
@@ -310,16 +312,16 @@ func (r PaymentNewParamsMethodAttributes) MarshalJSON() (data []byte, err error)
 type PaymentNewParamsMethodAttributesSecCode string
 
 const (
-	PaymentNewParamsMethodAttributesSecCodePpd PaymentNewParamsMethodAttributesSecCode = "PPD"
 	PaymentNewParamsMethodAttributesSecCodeCcd PaymentNewParamsMethodAttributesSecCode = "CCD"
+	PaymentNewParamsMethodAttributesSecCodePpd PaymentNewParamsMethodAttributesSecCode = "PPD"
 	PaymentNewParamsMethodAttributesSecCodeWeb PaymentNewParamsMethodAttributesSecCode = "WEB"
 )
 
 type PaymentNewParamsType string
 
 const (
-	PaymentNewParamsTypePayment    PaymentNewParamsType = "PAYMENT"
 	PaymentNewParamsTypeCollection PaymentNewParamsType = "COLLECTION"
+	PaymentNewParamsTypePayment    PaymentNewParamsType = "PAYMENT"
 )
 
 type PaymentListParams struct {

@@ -125,15 +125,15 @@ func (r *ExternalBankAccountMicroDepositNewResponse) UnmarshalJSON(data []byte) 
 type ExternalBankAccountMicroDepositNewResponseOwnerType string
 
 const (
-	ExternalBankAccountMicroDepositNewResponseOwnerTypeIndividual ExternalBankAccountMicroDepositNewResponseOwnerType = "INDIVIDUAL"
 	ExternalBankAccountMicroDepositNewResponseOwnerTypeBusiness   ExternalBankAccountMicroDepositNewResponseOwnerType = "BUSINESS"
+	ExternalBankAccountMicroDepositNewResponseOwnerTypeIndividual ExternalBankAccountMicroDepositNewResponseOwnerType = "INDIVIDUAL"
 )
 
 type ExternalBankAccountMicroDepositNewResponseState string
 
 const (
-	ExternalBankAccountMicroDepositNewResponseStateEnabled ExternalBankAccountMicroDepositNewResponseState = "ENABLED"
 	ExternalBankAccountMicroDepositNewResponseStateClosed  ExternalBankAccountMicroDepositNewResponseState = "CLOSED"
+	ExternalBankAccountMicroDepositNewResponseStateEnabled ExternalBankAccountMicroDepositNewResponseState = "ENABLED"
 	ExternalBankAccountMicroDepositNewResponseStatePaused  ExternalBankAccountMicroDepositNewResponseState = "PAUSED"
 )
 
@@ -155,9 +155,9 @@ const (
 type ExternalBankAccountMicroDepositNewResponseVerificationState string
 
 const (
-	ExternalBankAccountMicroDepositNewResponseVerificationStatePending            ExternalBankAccountMicroDepositNewResponseVerificationState = "PENDING"
 	ExternalBankAccountMicroDepositNewResponseVerificationStateEnabled            ExternalBankAccountMicroDepositNewResponseVerificationState = "ENABLED"
 	ExternalBankAccountMicroDepositNewResponseVerificationStateFailedVerification ExternalBankAccountMicroDepositNewResponseVerificationState = "FAILED_VERIFICATION"
+	ExternalBankAccountMicroDepositNewResponseVerificationStatePending            ExternalBankAccountMicroDepositNewResponseVerificationState = "PENDING"
 )
 
 type ExternalBankAccountMicroDepositNewParams struct {

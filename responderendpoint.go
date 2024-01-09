@@ -112,8 +112,8 @@ type ResponderEndpointNewParamsType string
 
 const (
 	ResponderEndpointNewParamsTypeAuthStreamAccess        ResponderEndpointNewParamsType = "AUTH_STREAM_ACCESS"
-	ResponderEndpointNewParamsTypeTokenizationDecisioning ResponderEndpointNewParamsType = "TOKENIZATION_DECISIONING"
 	ResponderEndpointNewParamsTypeThreeDSDecisioning      ResponderEndpointNewParamsType = "THREE_DS_DECISIONING"
+	ResponderEndpointNewParamsTypeTokenizationDecisioning ResponderEndpointNewParamsType = "TOKENIZATION_DECISIONING"
 )
 
 type ResponderEndpointDeleteParams struct {
@@ -135,8 +135,8 @@ type ResponderEndpointDeleteParamsType string
 
 const (
 	ResponderEndpointDeleteParamsTypeAuthStreamAccess        ResponderEndpointDeleteParamsType = "AUTH_STREAM_ACCESS"
-	ResponderEndpointDeleteParamsTypeTokenizationDecisioning ResponderEndpointDeleteParamsType = "TOKENIZATION_DECISIONING"
 	ResponderEndpointDeleteParamsTypeThreeDSDecisioning      ResponderEndpointDeleteParamsType = "THREE_DS_DECISIONING"
+	ResponderEndpointDeleteParamsTypeTokenizationDecisioning ResponderEndpointDeleteParamsType = "TOKENIZATION_DECISIONING"
 )
 
 type ResponderEndpointCheckStatusParams struct {
@@ -158,6 +158,6 @@ type ResponderEndpointCheckStatusParamsType string
 
 const (
 	ResponderEndpointCheckStatusParamsTypeAuthStreamAccess        ResponderEndpointCheckStatusParamsType = "AUTH_STREAM_ACCESS"
-	ResponderEndpointCheckStatusParamsTypeTokenizationDecisioning ResponderEndpointCheckStatusParamsType = "TOKENIZATION_DECISIONING"
 	ResponderEndpointCheckStatusParamsTypeThreeDSDecisioning      ResponderEndpointCheckStatusParamsType = "THREE_DS_DECISIONING"
+	ResponderEndpointCheckStatusParamsTypeTokenizationDecisioning ResponderEndpointCheckStatusParamsType = "TOKENIZATION_DECISIONING"
 )
