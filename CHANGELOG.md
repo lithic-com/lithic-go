@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.19.0 (2024-01-09)
+
+Full Changelog: [v0.18.0...v0.19.0](https://github.com/lithic-com/lithic-go/compare/v0.18.0...v0.19.0)
+
+### Features
+
+* **api:** add card renew endpoint ([#198](https://github.com/lithic-com/lithic-go/issues/198)) ([c37e540](https://github.com/lithic-com/lithic-go/commit/c37e540afcb9799aa1de648898c86a77cb75cb05))
+
+
+### Chores
+
+* add .keep files for examples and custom code directories ([#197](https://github.com/lithic-com/lithic-go/issues/197)) ([182d57a](https://github.com/lithic-com/lithic-go/commit/182d57a9996c02db2ed592615322f3b69e485cb6))
+* **internal:** bump license ([#194](https://github.com/lithic-com/lithic-go/issues/194)) ([1267146](https://github.com/lithic-com/lithic-go/commit/1267146acf1efd9971287c036848e2d36d998ac5))
+* **internal:** minor updates to pagination ([#195](https://github.com/lithic-com/lithic-go/issues/195)) ([80148a3](https://github.com/lithic-com/lithic-go/commit/80148a3aa0025ebda035e072cd4d93b55aa90242))
+
+
+### Documentation
+
+* **options:** fix link to readme ([#192](https://github.com/lithic-com/lithic-go/issues/192)) ([37f4590](https://github.com/lithic-com/lithic-go/commit/37f45903423d68297c5f415338527af5b4b6e2ec))
+
+
+### Refactors
+
+* remove excess whitespace ([#196](https://github.com/lithic-com/lithic-go/issues/196)) ([492ca26](https://github.com/lithic-com/lithic-go/commit/492ca26551b95231bc96900f87d5eb8ab2c92fee))
+
 ## 0.18.0 (2023-12-18)
 
 Full Changelog: [v0.17.0...v0.18.0](https://github.com/lithic-com/lithic-go/compare/v0.17.0...v0.18.0)
