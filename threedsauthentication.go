@@ -139,17 +139,17 @@ func (r *ThreeDSAuthenticationGetResponse) UnmarshalJSON(data []byte) (err error
 type ThreeDSAuthenticationGetResponseAccountType string
 
 const (
-	ThreeDSAuthenticationGetResponseAccountTypeNotApplicable ThreeDSAuthenticationGetResponseAccountType = "NOT_APPLICABLE"
 	ThreeDSAuthenticationGetResponseAccountTypeCredit        ThreeDSAuthenticationGetResponseAccountType = "CREDIT"
 	ThreeDSAuthenticationGetResponseAccountTypeDebit         ThreeDSAuthenticationGetResponseAccountType = "DEBIT"
+	ThreeDSAuthenticationGetResponseAccountTypeNotApplicable ThreeDSAuthenticationGetResponseAccountType = "NOT_APPLICABLE"
 )
 
 // Indicates the outcome of the 3DS authentication process.
 type ThreeDSAuthenticationGetResponseAuthenticationResult string
 
 const (
-	ThreeDSAuthenticationGetResponseAuthenticationResultSuccess ThreeDSAuthenticationGetResponseAuthenticationResult = "SUCCESS"
 	ThreeDSAuthenticationGetResponseAuthenticationResultDecline ThreeDSAuthenticationGetResponseAuthenticationResult = "DECLINE"
+	ThreeDSAuthenticationGetResponseAuthenticationResultSuccess ThreeDSAuthenticationGetResponseAuthenticationResult = "SUCCESS"
 )
 
 // Indicates whether the expiration date provided by the cardholder during checkout
@@ -294,10 +294,10 @@ const (
 type ThreeDSAuthenticationGetResponseDecisionMadeBy string
 
 const (
-	ThreeDSAuthenticationGetResponseDecisionMadeByNetwork          ThreeDSAuthenticationGetResponseDecisionMadeBy = "NETWORK"
+	ThreeDSAuthenticationGetResponseDecisionMadeByCustomerEndpoint ThreeDSAuthenticationGetResponseDecisionMadeBy = "CUSTOMER_ENDPOINT"
 	ThreeDSAuthenticationGetResponseDecisionMadeByLithicDefault    ThreeDSAuthenticationGetResponseDecisionMadeBy = "LITHIC_DEFAULT"
 	ThreeDSAuthenticationGetResponseDecisionMadeByLithicRules      ThreeDSAuthenticationGetResponseDecisionMadeBy = "LITHIC_RULES"
-	ThreeDSAuthenticationGetResponseDecisionMadeByCustomerEndpoint ThreeDSAuthenticationGetResponseDecisionMadeBy = "CUSTOMER_ENDPOINT"
+	ThreeDSAuthenticationGetResponseDecisionMadeByNetwork          ThreeDSAuthenticationGetResponseDecisionMadeBy = "NETWORK"
 	ThreeDSAuthenticationGetResponseDecisionMadeByUnknown          ThreeDSAuthenticationGetResponseDecisionMadeBy = "UNKNOWN"
 )
 
@@ -399,8 +399,8 @@ type ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrame stri
 
 const (
 	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrameElectronicDelivery   ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrame = "ELECTRONIC_DELIVERY"
-	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrameSameDayShipping      ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrame = "SAME_DAY_SHIPPING"
 	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrameOvernightShipping    ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrame = "OVERNIGHT_SHIPPING"
+	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrameSameDayShipping      ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrame = "SAME_DAY_SHIPPING"
 	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrameTwoDayOrMoreShipping ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrame = "TWO_DAY_OR_MORE_SHIPPING"
 )
 
@@ -409,8 +409,8 @@ const (
 type ThreeDSAuthenticationGetResponseMerchantRiskIndicatorOrderAvailability string
 
 const (
-	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorOrderAvailabilityMerchandiseAvailable ThreeDSAuthenticationGetResponseMerchantRiskIndicatorOrderAvailability = "MERCHANDISE_AVAILABLE"
 	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorOrderAvailabilityFutureAvailability   ThreeDSAuthenticationGetResponseMerchantRiskIndicatorOrderAvailability = "FUTURE_AVAILABILITY"
+	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorOrderAvailabilityMerchandiseAvailable ThreeDSAuthenticationGetResponseMerchantRiskIndicatorOrderAvailability = "MERCHANDISE_AVAILABLE"
 )
 
 // Indicates whether the cardholder is reordering previously purchased merchandise.
@@ -429,15 +429,15 @@ const (
 type ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod string
 
 const (
-	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodShipToBillingAddress       ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod = "SHIP_TO_BILLING_ADDRESS"
-	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodShipToOtherVerifiedAddress ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod = "SHIP_TO_OTHER_VERIFIED_ADDRESS"
-	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodShipToNonBillingAddress    ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod = "SHIP_TO_NON_BILLING_ADDRESS"
-	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodShipToStore                ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod = "SHIP_TO_STORE"
 	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodDigitalGoods               ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod = "DIGITAL_GOODS"
-	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodTravelAndEventTickets      ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod = "TRAVEL_AND_EVENT_TICKETS"
+	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodLockerDelivery             ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod = "LOCKER_DELIVERY"
 	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodOther                      ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod = "OTHER"
 	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodPickUpAndGoDelivery        ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod = "PICK_UP_AND_GO_DELIVERY"
-	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodLockerDelivery             ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod = "LOCKER_DELIVERY"
+	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodShipToBillingAddress       ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod = "SHIP_TO_BILLING_ADDRESS"
+	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodShipToNonBillingAddress    ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod = "SHIP_TO_NON_BILLING_ADDRESS"
+	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodShipToOtherVerifiedAddress ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod = "SHIP_TO_OTHER_VERIFIED_ADDRESS"
+	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodShipToStore                ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod = "SHIP_TO_STORE"
+	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodTravelAndEventTickets      ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod = "TRAVEL_AND_EVENT_TICKETS"
 )
 
 // Either PAYMENT_AUTHENTICATION or NON_PAYMENT_AUTHENTICATION. For
@@ -446,8 +446,8 @@ const (
 type ThreeDSAuthenticationGetResponseMessageCategory string
 
 const (
-	ThreeDSAuthenticationGetResponseMessageCategoryPaymentAuthentication    ThreeDSAuthenticationGetResponseMessageCategory = "PAYMENT_AUTHENTICATION"
 	ThreeDSAuthenticationGetResponseMessageCategoryNonPaymentAuthentication ThreeDSAuthenticationGetResponseMessageCategory = "NON_PAYMENT_AUTHENTICATION"
+	ThreeDSAuthenticationGetResponseMessageCategoryPaymentAuthentication    ThreeDSAuthenticationGetResponseMessageCategory = "PAYMENT_AUTHENTICATION"
 )
 
 // Object containing additional data about the 3DS request that is beyond the EMV
@@ -516,16 +516,16 @@ func (r *ThreeDSAuthenticationGetResponseApp) UnmarshalJSON(data []byte) (err er
 type ThreeDSAuthenticationGetResponseAuthenticationRequestType string
 
 const (
+	ThreeDSAuthenticationGetResponseAuthenticationRequestTypeAddCard                        ThreeDSAuthenticationGetResponseAuthenticationRequestType = "ADD_CARD"
+	ThreeDSAuthenticationGetResponseAuthenticationRequestTypeBillingAgreement               ThreeDSAuthenticationGetResponseAuthenticationRequestType = "BILLING_AGREEMENT"
+	ThreeDSAuthenticationGetResponseAuthenticationRequestTypeDelayedShipment                ThreeDSAuthenticationGetResponseAuthenticationRequestType = "DELAYED_SHIPMENT"
+	ThreeDSAuthenticationGetResponseAuthenticationRequestTypeEmvTokenCardholderVerification ThreeDSAuthenticationGetResponseAuthenticationRequestType = "EMV_TOKEN_CARDHOLDER_VERIFICATION"
+	ThreeDSAuthenticationGetResponseAuthenticationRequestTypeInstallmentTransaction         ThreeDSAuthenticationGetResponseAuthenticationRequestType = "INSTALLMENT_TRANSACTION"
+	ThreeDSAuthenticationGetResponseAuthenticationRequestTypeMaintainCard                   ThreeDSAuthenticationGetResponseAuthenticationRequestType = "MAINTAIN_CARD"
 	ThreeDSAuthenticationGetResponseAuthenticationRequestTypePaymentTransaction             ThreeDSAuthenticationGetResponseAuthenticationRequestType = "PAYMENT_TRANSACTION"
 	ThreeDSAuthenticationGetResponseAuthenticationRequestTypeRecurringTransaction           ThreeDSAuthenticationGetResponseAuthenticationRequestType = "RECURRING_TRANSACTION"
-	ThreeDSAuthenticationGetResponseAuthenticationRequestTypeInstallmentTransaction         ThreeDSAuthenticationGetResponseAuthenticationRequestType = "INSTALLMENT_TRANSACTION"
-	ThreeDSAuthenticationGetResponseAuthenticationRequestTypeAddCard                        ThreeDSAuthenticationGetResponseAuthenticationRequestType = "ADD_CARD"
-	ThreeDSAuthenticationGetResponseAuthenticationRequestTypeMaintainCard                   ThreeDSAuthenticationGetResponseAuthenticationRequestType = "MAINTAIN_CARD"
-	ThreeDSAuthenticationGetResponseAuthenticationRequestTypeEmvTokenCardholderVerification ThreeDSAuthenticationGetResponseAuthenticationRequestType = "EMV_TOKEN_CARDHOLDER_VERIFICATION"
-	ThreeDSAuthenticationGetResponseAuthenticationRequestTypeBillingAgreement               ThreeDSAuthenticationGetResponseAuthenticationRequestType = "BILLING_AGREEMENT"
-	ThreeDSAuthenticationGetResponseAuthenticationRequestTypeSplitShipment                  ThreeDSAuthenticationGetResponseAuthenticationRequestType = "SPLIT_SHIPMENT"
-	ThreeDSAuthenticationGetResponseAuthenticationRequestTypeDelayedShipment                ThreeDSAuthenticationGetResponseAuthenticationRequestType = "DELAYED_SHIPMENT"
 	ThreeDSAuthenticationGetResponseAuthenticationRequestTypeSplitPayment                   ThreeDSAuthenticationGetResponseAuthenticationRequestType = "SPLIT_PAYMENT"
+	ThreeDSAuthenticationGetResponseAuthenticationRequestTypeSplitShipment                  ThreeDSAuthenticationGetResponseAuthenticationRequestType = "SPLIT_SHIPMENT"
 )
 
 // Object containing data about the browser used in the e-commerce transaction.
@@ -577,22 +577,22 @@ func (r *ThreeDSAuthenticationGetResponseBrowser) UnmarshalJSON(data []byte) (er
 type ThreeDSAuthenticationGetResponseThreeRiRequestType string
 
 const (
-	ThreeDSAuthenticationGetResponseThreeRiRequestTypeRecurringTransaction        ThreeDSAuthenticationGetResponseThreeRiRequestType = "RECURRING_TRANSACTION"
-	ThreeDSAuthenticationGetResponseThreeRiRequestTypeInstallmentTransaction      ThreeDSAuthenticationGetResponseThreeRiRequestType = "INSTALLMENT_TRANSACTION"
-	ThreeDSAuthenticationGetResponseThreeRiRequestTypeAddCard                     ThreeDSAuthenticationGetResponseThreeRiRequestType = "ADD_CARD"
-	ThreeDSAuthenticationGetResponseThreeRiRequestTypeMaintainCardInfo            ThreeDSAuthenticationGetResponseThreeRiRequestType = "MAINTAIN_CARD_INFO"
 	ThreeDSAuthenticationGetResponseThreeRiRequestTypeAccountVerification         ThreeDSAuthenticationGetResponseThreeRiRequestType = "ACCOUNT_VERIFICATION"
-	ThreeDSAuthenticationGetResponseThreeRiRequestTypeSplitShipment               ThreeDSAuthenticationGetResponseThreeRiRequestType = "SPLIT_SHIPMENT"
-	ThreeDSAuthenticationGetResponseThreeRiRequestTypeTopUp                       ThreeDSAuthenticationGetResponseThreeRiRequestType = "TOP_UP"
-	ThreeDSAuthenticationGetResponseThreeRiRequestTypeMailOrder                   ThreeDSAuthenticationGetResponseThreeRiRequestType = "MAIL_ORDER"
-	ThreeDSAuthenticationGetResponseThreeRiRequestTypeTelephoneOrder              ThreeDSAuthenticationGetResponseThreeRiRequestType = "TELEPHONE_ORDER"
-	ThreeDSAuthenticationGetResponseThreeRiRequestTypeTrustListStatusCheck        ThreeDSAuthenticationGetResponseThreeRiRequestType = "TRUST_LIST_STATUS_CHECK"
-	ThreeDSAuthenticationGetResponseThreeRiRequestTypeOtherPayment                ThreeDSAuthenticationGetResponseThreeRiRequestType = "OTHER_PAYMENT"
+	ThreeDSAuthenticationGetResponseThreeRiRequestTypeAddCard                     ThreeDSAuthenticationGetResponseThreeRiRequestType = "ADD_CARD"
 	ThreeDSAuthenticationGetResponseThreeRiRequestTypeBillingAgreement            ThreeDSAuthenticationGetResponseThreeRiRequestType = "BILLING_AGREEMENT"
-	ThreeDSAuthenticationGetResponseThreeRiRequestTypeDeviceBindingStatusCheck    ThreeDSAuthenticationGetResponseThreeRiRequestType = "DEVICE_BINDING_STATUS_CHECK"
 	ThreeDSAuthenticationGetResponseThreeRiRequestTypeCardSecurityCodeStatusCheck ThreeDSAuthenticationGetResponseThreeRiRequestType = "CARD_SECURITY_CODE_STATUS_CHECK"
 	ThreeDSAuthenticationGetResponseThreeRiRequestTypeDelayedShipment             ThreeDSAuthenticationGetResponseThreeRiRequestType = "DELAYED_SHIPMENT"
+	ThreeDSAuthenticationGetResponseThreeRiRequestTypeDeviceBindingStatusCheck    ThreeDSAuthenticationGetResponseThreeRiRequestType = "DEVICE_BINDING_STATUS_CHECK"
+	ThreeDSAuthenticationGetResponseThreeRiRequestTypeInstallmentTransaction      ThreeDSAuthenticationGetResponseThreeRiRequestType = "INSTALLMENT_TRANSACTION"
+	ThreeDSAuthenticationGetResponseThreeRiRequestTypeMailOrder                   ThreeDSAuthenticationGetResponseThreeRiRequestType = "MAIL_ORDER"
+	ThreeDSAuthenticationGetResponseThreeRiRequestTypeMaintainCardInfo            ThreeDSAuthenticationGetResponseThreeRiRequestType = "MAINTAIN_CARD_INFO"
+	ThreeDSAuthenticationGetResponseThreeRiRequestTypeOtherPayment                ThreeDSAuthenticationGetResponseThreeRiRequestType = "OTHER_PAYMENT"
+	ThreeDSAuthenticationGetResponseThreeRiRequestTypeRecurringTransaction        ThreeDSAuthenticationGetResponseThreeRiRequestType = "RECURRING_TRANSACTION"
 	ThreeDSAuthenticationGetResponseThreeRiRequestTypeSplitPayment                ThreeDSAuthenticationGetResponseThreeRiRequestType = "SPLIT_PAYMENT"
+	ThreeDSAuthenticationGetResponseThreeRiRequestTypeSplitShipment               ThreeDSAuthenticationGetResponseThreeRiRequestType = "SPLIT_SHIPMENT"
+	ThreeDSAuthenticationGetResponseThreeRiRequestTypeTelephoneOrder              ThreeDSAuthenticationGetResponseThreeRiRequestType = "TELEPHONE_ORDER"
+	ThreeDSAuthenticationGetResponseThreeRiRequestTypeTopUp                       ThreeDSAuthenticationGetResponseThreeRiRequestType = "TOP_UP"
+	ThreeDSAuthenticationGetResponseThreeRiRequestTypeTrustListStatusCheck        ThreeDSAuthenticationGetResponseThreeRiRequestType = "TRUST_LIST_STATUS_CHECK"
 )
 
 // Object containing data about the e-commerce transaction for which the merchant
@@ -636,11 +636,11 @@ func (r *ThreeDSAuthenticationGetResponseTransaction) UnmarshalJSON(data []byte)
 type ThreeDSAuthenticationGetResponseTransactionType string
 
 const (
-	ThreeDSAuthenticationGetResponseTransactionTypeGoodsServicePurchase     ThreeDSAuthenticationGetResponseTransactionType = "GOODS_SERVICE_PURCHASE"
-	ThreeDSAuthenticationGetResponseTransactionTypeCheckAcceptance          ThreeDSAuthenticationGetResponseTransactionType = "CHECK_ACCEPTANCE"
 	ThreeDSAuthenticationGetResponseTransactionTypeAccountFunding           ThreeDSAuthenticationGetResponseTransactionType = "ACCOUNT_FUNDING"
-	ThreeDSAuthenticationGetResponseTransactionTypeQuasiCashTransaction     ThreeDSAuthenticationGetResponseTransactionType = "QUASI_CASH_TRANSACTION"
+	ThreeDSAuthenticationGetResponseTransactionTypeCheckAcceptance          ThreeDSAuthenticationGetResponseTransactionType = "CHECK_ACCEPTANCE"
+	ThreeDSAuthenticationGetResponseTransactionTypeGoodsServicePurchase     ThreeDSAuthenticationGetResponseTransactionType = "GOODS_SERVICE_PURCHASE"
 	ThreeDSAuthenticationGetResponseTransactionTypePrepaidActivationAndLoad ThreeDSAuthenticationGetResponseTransactionType = "PREPAID_ACTIVATION_AND_LOAD"
+	ThreeDSAuthenticationGetResponseTransactionTypeQuasiCashTransaction     ThreeDSAuthenticationGetResponseTransactionType = "QUASI_CASH_TRANSACTION"
 )
 
 type ThreeDSAuthenticationSimulateResponse struct {

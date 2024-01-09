@@ -29,7 +29,7 @@ func TestAuthRuleNewWithOptionalParams(t *testing.T) {
 		AccountTokens:    lithic.F([]string{"3fa85f64-5717-4562-b3fc-2c963f66afa6"}),
 		AllowedCountries: lithic.F([]string{"MEX"}),
 		AllowedMcc:       lithic.F([]string{"3000"}),
-		BlockedCountries: lithic.F([]string{"USA", "CAN"}),
+		BlockedCountries: lithic.F([]string{"CAN", "USA"}),
 		BlockedMcc:       lithic.F([]string{"5811", "5812"}),
 		CardTokens:       lithic.F([]string{"3fa85f64-5717-4562-b3fc-2c963f66afa6"}),
 		ProgramLevel:     lithic.F(false),
@@ -139,7 +139,7 @@ func TestAuthRuleApplyWithOptionalParams(t *testing.T) {
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.AuthRuleApplyParams{
 			AccountTokens: lithic.F([]string{"string", "string", "string"}),
-			CardTokens:    lithic.F([]string{"df942c4e-9130-4ab5-b067-778a2c55b357", "1336a403-2447-4b36-a009-6fbb852ee675"}),
+			CardTokens:    lithic.F([]string{"1336a403-2447-4b36-a009-6fbb852ee675", "df942c4e-9130-4ab5-b067-778a2c55b357"}),
 			ProgramLevel:  lithic.F(true),
 		},
 	)

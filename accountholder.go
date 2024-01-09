@@ -448,9 +448,9 @@ type AccountHolderStatus string
 
 const (
 	AccountHolderStatusAccepted        AccountHolderStatus = "ACCEPTED"
-	AccountHolderStatusRejected        AccountHolderStatus = "REJECTED"
-	AccountHolderStatusPendingResubmit AccountHolderStatus = "PENDING_RESUBMIT"
 	AccountHolderStatusPendingDocument AccountHolderStatus = "PENDING_DOCUMENT"
+	AccountHolderStatusPendingResubmit AccountHolderStatus = "PENDING_RESUBMIT"
+	AccountHolderStatusRejected        AccountHolderStatus = "REJECTED"
 )
 
 type AccountHolderStatusReason string
@@ -515,9 +515,9 @@ type AccountHolderVerificationApplicationStatus string
 
 const (
 	AccountHolderVerificationApplicationStatusAccepted        AccountHolderVerificationApplicationStatus = "ACCEPTED"
-	AccountHolderVerificationApplicationStatusRejected        AccountHolderVerificationApplicationStatus = "REJECTED"
-	AccountHolderVerificationApplicationStatusPendingResubmit AccountHolderVerificationApplicationStatus = "PENDING_RESUBMIT"
 	AccountHolderVerificationApplicationStatusPendingDocument AccountHolderVerificationApplicationStatus = "PENDING_DOCUMENT"
+	AccountHolderVerificationApplicationStatusPendingResubmit AccountHolderVerificationApplicationStatus = "PENDING_RESUBMIT"
+	AccountHolderVerificationApplicationStatusRejected        AccountHolderVerificationApplicationStatus = "REJECTED"
 )
 
 type AccountHolderVerificationApplicationStatusReason string
@@ -768,6 +768,7 @@ func (r AccountHolderNewParamsKYBBeneficialOwnerEntity) MarshalJSON() (data []by
 	return apijson.MarshalRoot(r)
 }
 
+// Individuals associated with a KYB application. Phone number is optional.
 type AccountHolderNewParamsKYBBeneficialOwnerIndividual struct {
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
@@ -787,7 +788,7 @@ type AccountHolderNewParamsKYBBeneficialOwnerIndividual struct {
 	// Individual's last name, as it appears on government-issued identity documents.
 	LastName param.Field[string] `json:"last_name,required"`
 	// Individual's phone number, entered in E.164 format.
-	PhoneNumber param.Field[string] `json:"phone_number,required"`
+	PhoneNumber param.Field[string] `json:"phone_number"`
 }
 
 func (r AccountHolderNewParamsKYBBeneficialOwnerIndividual) MarshalJSON() (data []byte, err error) {
@@ -847,7 +848,7 @@ type AccountHolderNewParamsKYBControlPerson struct {
 	// Individual's last name, as it appears on government-issued identity documents.
 	LastName param.Field[string] `json:"last_name,required"`
 	// Individual's phone number, entered in E.164 format.
-	PhoneNumber param.Field[string] `json:"phone_number,required"`
+	PhoneNumber param.Field[string] `json:"phone_number"`
 }
 
 func (r AccountHolderNewParamsKYBControlPerson) MarshalJSON() (data []byte, err error) {

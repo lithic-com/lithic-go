@@ -131,8 +131,8 @@ func (r ExternalBankAccountAddressParam) MarshalJSON() (data []byte, err error) 
 type OwnerType string
 
 const (
-	OwnerTypeIndividual OwnerType = "INDIVIDUAL"
 	OwnerTypeBusiness   OwnerType = "BUSINESS"
+	OwnerTypeIndividual OwnerType = "INDIVIDUAL"
 )
 
 type VerificationMethod string
@@ -228,15 +228,15 @@ func (r *ExternalBankAccountNewResponse) UnmarshalJSON(data []byte) (err error) 
 type ExternalBankAccountNewResponseOwnerType string
 
 const (
-	ExternalBankAccountNewResponseOwnerTypeIndividual ExternalBankAccountNewResponseOwnerType = "INDIVIDUAL"
 	ExternalBankAccountNewResponseOwnerTypeBusiness   ExternalBankAccountNewResponseOwnerType = "BUSINESS"
+	ExternalBankAccountNewResponseOwnerTypeIndividual ExternalBankAccountNewResponseOwnerType = "INDIVIDUAL"
 )
 
 type ExternalBankAccountNewResponseState string
 
 const (
-	ExternalBankAccountNewResponseStateEnabled ExternalBankAccountNewResponseState = "ENABLED"
 	ExternalBankAccountNewResponseStateClosed  ExternalBankAccountNewResponseState = "CLOSED"
+	ExternalBankAccountNewResponseStateEnabled ExternalBankAccountNewResponseState = "ENABLED"
 	ExternalBankAccountNewResponseStatePaused  ExternalBankAccountNewResponseState = "PAUSED"
 )
 
@@ -258,9 +258,9 @@ const (
 type ExternalBankAccountNewResponseVerificationState string
 
 const (
-	ExternalBankAccountNewResponseVerificationStatePending            ExternalBankAccountNewResponseVerificationState = "PENDING"
 	ExternalBankAccountNewResponseVerificationStateEnabled            ExternalBankAccountNewResponseVerificationState = "ENABLED"
 	ExternalBankAccountNewResponseVerificationStateFailedVerification ExternalBankAccountNewResponseVerificationState = "FAILED_VERIFICATION"
+	ExternalBankAccountNewResponseVerificationStatePending            ExternalBankAccountNewResponseVerificationState = "PENDING"
 )
 
 type ExternalBankAccountGetResponse struct {
@@ -348,15 +348,15 @@ func (r *ExternalBankAccountGetResponse) UnmarshalJSON(data []byte) (err error) 
 type ExternalBankAccountGetResponseOwnerType string
 
 const (
-	ExternalBankAccountGetResponseOwnerTypeIndividual ExternalBankAccountGetResponseOwnerType = "INDIVIDUAL"
 	ExternalBankAccountGetResponseOwnerTypeBusiness   ExternalBankAccountGetResponseOwnerType = "BUSINESS"
+	ExternalBankAccountGetResponseOwnerTypeIndividual ExternalBankAccountGetResponseOwnerType = "INDIVIDUAL"
 )
 
 type ExternalBankAccountGetResponseState string
 
 const (
-	ExternalBankAccountGetResponseStateEnabled ExternalBankAccountGetResponseState = "ENABLED"
 	ExternalBankAccountGetResponseStateClosed  ExternalBankAccountGetResponseState = "CLOSED"
+	ExternalBankAccountGetResponseStateEnabled ExternalBankAccountGetResponseState = "ENABLED"
 	ExternalBankAccountGetResponseStatePaused  ExternalBankAccountGetResponseState = "PAUSED"
 )
 
@@ -378,9 +378,9 @@ const (
 type ExternalBankAccountGetResponseVerificationState string
 
 const (
-	ExternalBankAccountGetResponseVerificationStatePending            ExternalBankAccountGetResponseVerificationState = "PENDING"
 	ExternalBankAccountGetResponseVerificationStateEnabled            ExternalBankAccountGetResponseVerificationState = "ENABLED"
 	ExternalBankAccountGetResponseVerificationStateFailedVerification ExternalBankAccountGetResponseVerificationState = "FAILED_VERIFICATION"
+	ExternalBankAccountGetResponseVerificationStatePending            ExternalBankAccountGetResponseVerificationState = "PENDING"
 )
 
 type ExternalBankAccountUpdateResponse struct {
@@ -468,15 +468,15 @@ func (r *ExternalBankAccountUpdateResponse) UnmarshalJSON(data []byte) (err erro
 type ExternalBankAccountUpdateResponseOwnerType string
 
 const (
-	ExternalBankAccountUpdateResponseOwnerTypeIndividual ExternalBankAccountUpdateResponseOwnerType = "INDIVIDUAL"
 	ExternalBankAccountUpdateResponseOwnerTypeBusiness   ExternalBankAccountUpdateResponseOwnerType = "BUSINESS"
+	ExternalBankAccountUpdateResponseOwnerTypeIndividual ExternalBankAccountUpdateResponseOwnerType = "INDIVIDUAL"
 )
 
 type ExternalBankAccountUpdateResponseState string
 
 const (
-	ExternalBankAccountUpdateResponseStateEnabled ExternalBankAccountUpdateResponseState = "ENABLED"
 	ExternalBankAccountUpdateResponseStateClosed  ExternalBankAccountUpdateResponseState = "CLOSED"
+	ExternalBankAccountUpdateResponseStateEnabled ExternalBankAccountUpdateResponseState = "ENABLED"
 	ExternalBankAccountUpdateResponseStatePaused  ExternalBankAccountUpdateResponseState = "PAUSED"
 )
 
@@ -498,9 +498,9 @@ const (
 type ExternalBankAccountUpdateResponseVerificationState string
 
 const (
-	ExternalBankAccountUpdateResponseVerificationStatePending            ExternalBankAccountUpdateResponseVerificationState = "PENDING"
 	ExternalBankAccountUpdateResponseVerificationStateEnabled            ExternalBankAccountUpdateResponseVerificationState = "ENABLED"
 	ExternalBankAccountUpdateResponseVerificationStateFailedVerification ExternalBankAccountUpdateResponseVerificationState = "FAILED_VERIFICATION"
+	ExternalBankAccountUpdateResponseVerificationStatePending            ExternalBankAccountUpdateResponseVerificationState = "PENDING"
 )
 
 type ExternalBankAccountListResponse struct {
@@ -588,15 +588,15 @@ func (r *ExternalBankAccountListResponse) UnmarshalJSON(data []byte) (err error)
 type ExternalBankAccountListResponseOwnerType string
 
 const (
-	ExternalBankAccountListResponseOwnerTypeIndividual ExternalBankAccountListResponseOwnerType = "INDIVIDUAL"
 	ExternalBankAccountListResponseOwnerTypeBusiness   ExternalBankAccountListResponseOwnerType = "BUSINESS"
+	ExternalBankAccountListResponseOwnerTypeIndividual ExternalBankAccountListResponseOwnerType = "INDIVIDUAL"
 )
 
 type ExternalBankAccountListResponseState string
 
 const (
-	ExternalBankAccountListResponseStateEnabled ExternalBankAccountListResponseState = "ENABLED"
 	ExternalBankAccountListResponseStateClosed  ExternalBankAccountListResponseState = "CLOSED"
+	ExternalBankAccountListResponseStateEnabled ExternalBankAccountListResponseState = "ENABLED"
 	ExternalBankAccountListResponseStatePaused  ExternalBankAccountListResponseState = "PAUSED"
 )
 
@@ -618,37 +618,16 @@ const (
 type ExternalBankAccountListResponseVerificationState string
 
 const (
-	ExternalBankAccountListResponseVerificationStatePending            ExternalBankAccountListResponseVerificationState = "PENDING"
 	ExternalBankAccountListResponseVerificationStateEnabled            ExternalBankAccountListResponseVerificationState = "ENABLED"
 	ExternalBankAccountListResponseVerificationStateFailedVerification ExternalBankAccountListResponseVerificationState = "FAILED_VERIFICATION"
+	ExternalBankAccountListResponseVerificationStatePending            ExternalBankAccountListResponseVerificationState = "PENDING"
 )
 
 // This interface is a union satisfied by one of the following:
-// [ExternalBankAccountNewParamsPlaidCreateBankAccountAPIRequest],
-// [ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequest].
+// [ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequest],
+// [ExternalBankAccountNewParamsPlaidCreateBankAccountAPIRequest].
 type ExternalBankAccountNewParams interface {
 	ImplementsExternalBankAccountNewParams()
-}
-
-type ExternalBankAccountNewParamsPlaidCreateBankAccountAPIRequest struct {
-	Owner              param.Field[string]             `json:"owner,required"`
-	OwnerType          param.Field[OwnerType]          `json:"owner_type,required"`
-	ProcessorToken     param.Field[string]             `json:"processor_token,required"`
-	VerificationMethod param.Field[VerificationMethod] `json:"verification_method,required"`
-	AccountToken       param.Field[string]             `json:"account_token" format:"uuid"`
-	CompanyID          param.Field[string]             `json:"company_id"`
-	// Date of Birth of the Individual that owns the external bank account
-	Dob             param.Field[time.Time] `json:"dob" format:"date"`
-	DoingBusinessAs param.Field[string]    `json:"doing_business_as"`
-	UserDefinedID   param.Field[string]    `json:"user_defined_id"`
-}
-
-func (r ExternalBankAccountNewParamsPlaidCreateBankAccountAPIRequest) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
-}
-
-func (ExternalBankAccountNewParamsPlaidCreateBankAccountAPIRequest) ImplementsExternalBankAccountNewParams() {
-
 }
 
 type ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequest struct {
@@ -691,6 +670,27 @@ const (
 	ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestTypeChecking ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestType = "CHECKING"
 	ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestTypeSavings  ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestType = "SAVINGS"
 )
+
+type ExternalBankAccountNewParamsPlaidCreateBankAccountAPIRequest struct {
+	Owner              param.Field[string]             `json:"owner,required"`
+	OwnerType          param.Field[OwnerType]          `json:"owner_type,required"`
+	ProcessorToken     param.Field[string]             `json:"processor_token,required"`
+	VerificationMethod param.Field[VerificationMethod] `json:"verification_method,required"`
+	AccountToken       param.Field[string]             `json:"account_token" format:"uuid"`
+	CompanyID          param.Field[string]             `json:"company_id"`
+	// Date of Birth of the Individual that owns the external bank account
+	Dob             param.Field[time.Time] `json:"dob" format:"date"`
+	DoingBusinessAs param.Field[string]    `json:"doing_business_as"`
+	UserDefinedID   param.Field[string]    `json:"user_defined_id"`
+}
+
+func (r ExternalBankAccountNewParamsPlaidCreateBankAccountAPIRequest) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (ExternalBankAccountNewParamsPlaidCreateBankAccountAPIRequest) ImplementsExternalBankAccountNewParams() {
+
+}
 
 type ExternalBankAccountUpdateParams struct {
 	// Address used during Address Verification Service (AVS) checks during
@@ -746,15 +746,15 @@ const (
 type ExternalBankAccountListParamsState string
 
 const (
-	ExternalBankAccountListParamsStateEnabled ExternalBankAccountListParamsState = "ENABLED"
 	ExternalBankAccountListParamsStateClosed  ExternalBankAccountListParamsState = "CLOSED"
+	ExternalBankAccountListParamsStateEnabled ExternalBankAccountListParamsState = "ENABLED"
 	ExternalBankAccountListParamsStatePaused  ExternalBankAccountListParamsState = "PAUSED"
 )
 
 type ExternalBankAccountListParamsVerificationState string
 
 const (
-	ExternalBankAccountListParamsVerificationStatePending            ExternalBankAccountListParamsVerificationState = "PENDING"
 	ExternalBankAccountListParamsVerificationStateEnabled            ExternalBankAccountListParamsVerificationState = "ENABLED"
 	ExternalBankAccountListParamsVerificationStateFailedVerification ExternalBankAccountListParamsVerificationState = "FAILED_VERIFICATION"
+	ExternalBankAccountListParamsVerificationStatePending            ExternalBankAccountListParamsVerificationState = "PENDING"
 )

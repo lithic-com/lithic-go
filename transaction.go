@@ -239,7 +239,8 @@ type TransactionEvent struct {
 	// Amount of the transaction event (in cents), including any acquirer fees.
 	Amount int64 `json:"amount,required"`
 	// RFC 3339 date and time this event entered the system. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created         time.Time                         `json:"created,required" format:"date-time"`
+	DetailedResults []TransactionEventsDetailedResult `json:"detailed_results,required"`
 	// `APPROVED` or decline reason.
 	//
 	// Result types:
@@ -300,18 +301,71 @@ type TransactionEvent struct {
 // transactionEventJSON contains the JSON metadata for the struct
 // [TransactionEvent]
 type transactionEventJSON struct {
-	Token       apijson.Field
-	Amount      apijson.Field
-	Created     apijson.Field
-	Result      apijson.Field
-	Type        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+	Token           apijson.Field
+	Amount          apijson.Field
+	Created         apijson.Field
+	DetailedResults apijson.Field
+	Result          apijson.Field
+	Type            apijson.Field
+	raw             string
+	ExtraFields     map[string]apijson.Field
 }
 
 func (r *TransactionEvent) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
+
+type TransactionEventsDetailedResult string
+
+const (
+	TransactionEventsDetailedResultAccountDailySpendLimitExceeded              TransactionEventsDetailedResult = "ACCOUNT_DAILY_SPEND_LIMIT_EXCEEDED"
+	TransactionEventsDetailedResultAccountInactive                             TransactionEventsDetailedResult = "ACCOUNT_INACTIVE"
+	TransactionEventsDetailedResultAccountLifetimeSpendLimitExceeded           TransactionEventsDetailedResult = "ACCOUNT_LIFETIME_SPEND_LIMIT_EXCEEDED"
+	TransactionEventsDetailedResultAccountMonthlySpendLimitExceeded            TransactionEventsDetailedResult = "ACCOUNT_MONTHLY_SPEND_LIMIT_EXCEEDED"
+	TransactionEventsDetailedResultAccountUnderReview                          TransactionEventsDetailedResult = "ACCOUNT_UNDER_REVIEW"
+	TransactionEventsDetailedResultAddressIncorrect                            TransactionEventsDetailedResult = "ADDRESS_INCORRECT"
+	TransactionEventsDetailedResultApproved                                    TransactionEventsDetailedResult = "APPROVED"
+	TransactionEventsDetailedResultAuthRuleAllowedCountry                      TransactionEventsDetailedResult = "AUTH_RULE_ALLOWED_COUNTRY"
+	TransactionEventsDetailedResultAuthRuleAllowedMcc                          TransactionEventsDetailedResult = "AUTH_RULE_ALLOWED_MCC"
+	TransactionEventsDetailedResultAuthRuleBlockedCountry                      TransactionEventsDetailedResult = "AUTH_RULE_BLOCKED_COUNTRY"
+	TransactionEventsDetailedResultAuthRuleBlockedMcc                          TransactionEventsDetailedResult = "AUTH_RULE_BLOCKED_MCC"
+	TransactionEventsDetailedResultCardClosed                                  TransactionEventsDetailedResult = "CARD_CLOSED"
+	TransactionEventsDetailedResultCardCryptogramValidationFailure             TransactionEventsDetailedResult = "CARD_CRYPTOGRAM_VALIDATION_FAILURE"
+	TransactionEventsDetailedResultCardExpired                                 TransactionEventsDetailedResult = "CARD_EXPIRED"
+	TransactionEventsDetailedResultCardExpiryDateIncorrect                     TransactionEventsDetailedResult = "CARD_EXPIRY_DATE_INCORRECT"
+	TransactionEventsDetailedResultCardInvalid                                 TransactionEventsDetailedResult = "CARD_INVALID"
+	TransactionEventsDetailedResultCardPaused                                  TransactionEventsDetailedResult = "CARD_PAUSED"
+	TransactionEventsDetailedResultCardPinIncorrect                            TransactionEventsDetailedResult = "CARD_PIN_INCORRECT"
+	TransactionEventsDetailedResultCardRestricted                              TransactionEventsDetailedResult = "CARD_RESTRICTED"
+	TransactionEventsDetailedResultCardSecurityCodeIncorrect                   TransactionEventsDetailedResult = "CARD_SECURITY_CODE_INCORRECT"
+	TransactionEventsDetailedResultCardSpendLimitExceeded                      TransactionEventsDetailedResult = "CARD_SPEND_LIMIT_EXCEEDED"
+	TransactionEventsDetailedResultContactCardIssuer                           TransactionEventsDetailedResult = "CONTACT_CARD_ISSUER"
+	TransactionEventsDetailedResultCustomerAsaTimeout                          TransactionEventsDetailedResult = "CUSTOMER_ASA_TIMEOUT"
+	TransactionEventsDetailedResultCustomAsaResult                             TransactionEventsDetailedResult = "CUSTOM_ASA_RESULT"
+	TransactionEventsDetailedResultDeclined                                    TransactionEventsDetailedResult = "DECLINED"
+	TransactionEventsDetailedResultDoNotHonor                                  TransactionEventsDetailedResult = "DO_NOT_HONOR"
+	TransactionEventsDetailedResultFormatError                                 TransactionEventsDetailedResult = "FORMAT_ERROR"
+	TransactionEventsDetailedResultInsufficientFundingSourceBalance            TransactionEventsDetailedResult = "INSUFFICIENT_FUNDING_SOURCE_BALANCE"
+	TransactionEventsDetailedResultInsufficientFunds                           TransactionEventsDetailedResult = "INSUFFICIENT_FUNDS"
+	TransactionEventsDetailedResultLithicSystemError                           TransactionEventsDetailedResult = "LITHIC_SYSTEM_ERROR"
+	TransactionEventsDetailedResultLithicSystemRateLimit                       TransactionEventsDetailedResult = "LITHIC_SYSTEM_RATE_LIMIT"
+	TransactionEventsDetailedResultMalformedAsaResponse                        TransactionEventsDetailedResult = "MALFORMED_ASA_RESPONSE"
+	TransactionEventsDetailedResultMerchantInvalid                             TransactionEventsDetailedResult = "MERCHANT_INVALID"
+	TransactionEventsDetailedResultMerchantLockedCardAttemptedElsewhere        TransactionEventsDetailedResult = "MERCHANT_LOCKED_CARD_ATTEMPTED_ELSEWHERE"
+	TransactionEventsDetailedResultMerchantNotPermitted                        TransactionEventsDetailedResult = "MERCHANT_NOT_PERMITTED"
+	TransactionEventsDetailedResultOverReversalAttempted                       TransactionEventsDetailedResult = "OVER_REVERSAL_ATTEMPTED"
+	TransactionEventsDetailedResultProgramCardSpendLimitExceeded               TransactionEventsDetailedResult = "PROGRAM_CARD_SPEND_LIMIT_EXCEEDED"
+	TransactionEventsDetailedResultProgramSuspended                            TransactionEventsDetailedResult = "PROGRAM_SUSPENDED"
+	TransactionEventsDetailedResultProgramUsageRestriction                     TransactionEventsDetailedResult = "PROGRAM_USAGE_RESTRICTION"
+	TransactionEventsDetailedResultReversalUnmatched                           TransactionEventsDetailedResult = "REVERSAL_UNMATCHED"
+	TransactionEventsDetailedResultSecurityViolation                           TransactionEventsDetailedResult = "SECURITY_VIOLATION"
+	TransactionEventsDetailedResultSingleUseCardReattempted                    TransactionEventsDetailedResult = "SINGLE_USE_CARD_REATTEMPTED"
+	TransactionEventsDetailedResultTransactionInvalid                          TransactionEventsDetailedResult = "TRANSACTION_INVALID"
+	TransactionEventsDetailedResultTransactionNotPermittedToAcquirerOrTerminal TransactionEventsDetailedResult = "TRANSACTION_NOT_PERMITTED_TO_ACQUIRER_OR_TERMINAL"
+	TransactionEventsDetailedResultTransactionNotPermittedToIssuerOrCardholder TransactionEventsDetailedResult = "TRANSACTION_NOT_PERMITTED_TO_ISSUER_OR_CARDHOLDER"
+	TransactionEventsDetailedResultTransactionPreviouslyCompleted              TransactionEventsDetailedResult = "TRANSACTION_PREVIOUSLY_COMPLETED"
+	TransactionEventsDetailedResultUnauthorizedMerchant                        TransactionEventsDetailedResult = "UNAUTHORIZED_MERCHANT"
+)
 
 // `APPROVED` or decline reason.
 //
@@ -354,13 +408,13 @@ const (
 	TransactionEventsResultCardClosed              TransactionEventsResult = "CARD_CLOSED"
 	TransactionEventsResultCardPaused              TransactionEventsResult = "CARD_PAUSED"
 	TransactionEventsResultFraudAdvice             TransactionEventsResult = "FRAUD_ADVICE"
+	TransactionEventsResultGlobalMonthlyLimit      TransactionEventsResult = "GLOBAL_MONTHLY_LIMIT"
 	TransactionEventsResultGlobalTransactionLimit  TransactionEventsResult = "GLOBAL_TRANSACTION_LIMIT"
 	TransactionEventsResultGlobalWeeklyLimit       TransactionEventsResult = "GLOBAL_WEEKLY_LIMIT"
-	TransactionEventsResultGlobalMonthlyLimit      TransactionEventsResult = "GLOBAL_MONTHLY_LIMIT"
 	TransactionEventsResultInactiveAccount         TransactionEventsResult = "INACTIVE_ACCOUNT"
 	TransactionEventsResultIncorrectPin            TransactionEventsResult = "INCORRECT_PIN"
-	TransactionEventsResultInvalidCardDetails      TransactionEventsResult = "INVALID_CARD_DETAILS"
 	TransactionEventsResultInsufficientFunds       TransactionEventsResult = "INSUFFICIENT_FUNDS"
+	TransactionEventsResultInvalidCardDetails      TransactionEventsResult = "INVALID_CARD_DETAILS"
 	TransactionEventsResultMerchantBlacklist       TransactionEventsResult = "MERCHANT_BLACKLIST"
 	TransactionEventsResultSingleUseRecharged      TransactionEventsResult = "SINGLE_USE_RECHARGED"
 	TransactionEventsResultSwitchInoperativeAdvice TransactionEventsResult = "SWITCH_INOPERATIVE_ADVICE"
@@ -399,8 +453,8 @@ const (
 	TransactionEventsTypeAuthorizationReversal        TransactionEventsType = "AUTHORIZATION_REVERSAL"
 	TransactionEventsTypeBalanceInquiry               TransactionEventsType = "BALANCE_INQUIRY"
 	TransactionEventsTypeClearing                     TransactionEventsType = "CLEARING"
-	TransactionEventsTypeCorrectionDebit              TransactionEventsType = "CORRECTION_DEBIT"
 	TransactionEventsTypeCorrectionCredit             TransactionEventsType = "CORRECTION_CREDIT"
+	TransactionEventsTypeCorrectionDebit              TransactionEventsType = "CORRECTION_DEBIT"
 	TransactionEventsTypeCreditAuthorization          TransactionEventsType = "CREDIT_AUTHORIZATION"
 	TransactionEventsTypeCreditAuthorizationAdvice    TransactionEventsType = "CREDIT_AUTHORIZATION_ADVICE"
 	TransactionEventsTypeFinancialAuthorization       TransactionEventsType = "FINANCIAL_AUTHORIZATION"
@@ -453,8 +507,8 @@ const (
 	TransactionNetworkInterlink  TransactionNetwork = "INTERLINK"
 	TransactionNetworkMaestro    TransactionNetwork = "MAESTRO"
 	TransactionNetworkMastercard TransactionNetwork = "MASTERCARD"
-	TransactionNetworkVisa       TransactionNetwork = "VISA"
 	TransactionNetworkUnknown    TransactionNetwork = "UNKNOWN"
+	TransactionNetworkVisa       TransactionNetwork = "VISA"
 )
 
 // `APPROVED` or decline reason. See Event result types
@@ -468,13 +522,13 @@ const (
 	TransactionResultCardClosed              TransactionResult = "CARD_CLOSED"
 	TransactionResultCardPaused              TransactionResult = "CARD_PAUSED"
 	TransactionResultFraudAdvice             TransactionResult = "FRAUD_ADVICE"
+	TransactionResultGlobalMonthlyLimit      TransactionResult = "GLOBAL_MONTHLY_LIMIT"
 	TransactionResultGlobalTransactionLimit  TransactionResult = "GLOBAL_TRANSACTION_LIMIT"
 	TransactionResultGlobalWeeklyLimit       TransactionResult = "GLOBAL_WEEKLY_LIMIT"
-	TransactionResultGlobalMonthlyLimit      TransactionResult = "GLOBAL_MONTHLY_LIMIT"
 	TransactionResultInactiveAccount         TransactionResult = "INACTIVE_ACCOUNT"
 	TransactionResultIncorrectPin            TransactionResult = "INCORRECT_PIN"
-	TransactionResultInvalidCardDetails      TransactionResult = "INVALID_CARD_DETAILS"
 	TransactionResultInsufficientFunds       TransactionResult = "INSUFFICIENT_FUNDS"
+	TransactionResultInvalidCardDetails      TransactionResult = "INVALID_CARD_DETAILS"
 	TransactionResultMerchantBlacklist       TransactionResult = "MERCHANT_BLACKLIST"
 	TransactionResultSingleUseRecharged      TransactionResult = "SINGLE_USE_RECHARGED"
 	TransactionResultSwitchInoperativeAdvice TransactionResult = "SWITCH_INOPERATIVE_ADVICE"
@@ -678,10 +732,10 @@ const (
 type TransactionCardholderAuthenticationAuthenticationResult string
 
 const (
-	TransactionCardholderAuthenticationAuthenticationResultSuccess  TransactionCardholderAuthenticationAuthenticationResult = "SUCCESS"
-	TransactionCardholderAuthenticationAuthenticationResultDecline  TransactionCardholderAuthenticationAuthenticationResult = "DECLINE"
 	TransactionCardholderAuthenticationAuthenticationResultAttempts TransactionCardholderAuthenticationAuthenticationResult = "ATTEMPTS"
+	TransactionCardholderAuthenticationAuthenticationResultDecline  TransactionCardholderAuthenticationAuthenticationResult = "DECLINE"
 	TransactionCardholderAuthenticationAuthenticationResultNone     TransactionCardholderAuthenticationAuthenticationResult = "NONE"
+	TransactionCardholderAuthenticationAuthenticationResultSuccess  TransactionCardholderAuthenticationAuthenticationResult = "SUCCESS"
 )
 
 // Indicator for which party made the 3DS authentication decision. Possible enum
@@ -701,10 +755,10 @@ const (
 type TransactionCardholderAuthenticationDecisionMadeBy string
 
 const (
-	TransactionCardholderAuthenticationDecisionMadeByNetwork          TransactionCardholderAuthenticationDecisionMadeBy = "NETWORK"
+	TransactionCardholderAuthenticationDecisionMadeByCustomerEndpoint TransactionCardholderAuthenticationDecisionMadeBy = "CUSTOMER_ENDPOINT"
 	TransactionCardholderAuthenticationDecisionMadeByLithicDefault    TransactionCardholderAuthenticationDecisionMadeBy = "LITHIC_DEFAULT"
 	TransactionCardholderAuthenticationDecisionMadeByLithicRules      TransactionCardholderAuthenticationDecisionMadeBy = "LITHIC_RULES"
-	TransactionCardholderAuthenticationDecisionMadeByCustomerEndpoint TransactionCardholderAuthenticationDecisionMadeBy = "CUSTOMER_ENDPOINT"
+	TransactionCardholderAuthenticationDecisionMadeByNetwork          TransactionCardholderAuthenticationDecisionMadeBy = "NETWORK"
 	TransactionCardholderAuthenticationDecisionMadeByUnknown          TransactionCardholderAuthenticationDecisionMadeBy = "UNKNOWN"
 )
 
