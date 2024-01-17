@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.19.2 (2024-01-17)
+
+Full Changelog: [v0.19.1...v0.19.2](https://github.com/lithic-com/lithic-go/compare/v0.19.1...v0.19.2)
+
+### Bug Fixes
+
+* **test:** avoid test failures when SKIP_MOCK_TESTS is not set ([#204](https://github.com/lithic-com/lithic-go/issues/204)) ([e100ac3](https://github.com/lithic-com/lithic-go/commit/e100ac3662f42c6b9ea3e1058278b7dbf58ff3cd))
+
+
+### Chores
+
+* **internal:** speculative retry-after-ms support ([#203](https://github.com/lithic-com/lithic-go/issues/203)) ([aa805ee](https://github.com/lithic-com/lithic-go/commit/aa805eecb9d1c023d3128a00ddef9ed65cdb6ffc))
+
 ## 0.19.1 (2024-01-17)
 
 Full Changelog: [v0.19.0...v0.19.1](https://github.com/lithic-com/lithic-go/compare/v0.19.0...v0.19.1)
