@@ -30,7 +30,7 @@ func NewTransferService(opts ...option.RequestOption) (r *TransferService) {
 	return
 }
 
-// ransfer funds between two financial accounts or between a financial account and
+// Transfer funds between two financial accounts or between a financial account and
 // card
 func (r *TransferService) New(ctx context.Context, body TransferNewParams, opts ...option.RequestOption) (res *TransferNewResponse, err error) {
 	opts = append(r.Options[:], opts...)

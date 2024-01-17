@@ -6,9 +6,11 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
+	"github.com/lithic-com/lithic-go/internal/apiquery"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/internal/shared"
@@ -64,6 +66,31 @@ func (r *AccountHolderService) Update(ctx context.Context, accountHolderToken st
 	path := fmt.Sprintf("account_holders/%s", accountHolderToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
+}
+
+// Get a list of individual or business account holders and their KYC or KYB
+// evaluation status.
+func (r *AccountHolderService) List(ctx context.Context, query AccountHolderListParams, opts ...option.RequestOption) (res *shared.SinglePage[AccountHolder], err error) {
+	var raw *http.Response
+	opts = append(r.Options, opts...)
+	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
+	path := "account_holders"
+	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
+	if err != nil {
+		return nil, err
+	}
+	err = cfg.Execute()
+	if err != nil {
+		return nil, err
+	}
+	res.SetPageConfig(cfg, raw)
+	return res, nil
+}
+
+// Get a list of individual or business account holders and their KYC or KYB
+// evaluation status.
+func (r *AccountHolderService) ListAutoPaging(ctx context.Context, query AccountHolderListParams, opts ...option.RequestOption) *shared.SinglePageAutoPager[AccountHolder] {
+	return shared.NewSinglePageAutoPager(r.List(ctx, query, opts...))
 }
 
 // Retrieve the status of account holder document uploads, or retrieve the upload
@@ -151,7 +178,7 @@ func (r *AccountHolderService) UploadDocument(ctx context.Context, accountHolder
 
 type AccountHolder struct {
 	// Globally unique identifier for the account holder.
-	Token string `json:"token" format:"uuid"`
+	Token string `json:"token,required" format:"uuid"`
 	// Globally unique identifier for the account.
 	AccountToken string `json:"account_token" format:"uuid"`
 	// Only present when user_type == "BUSINESS". List of all entities with >25%
@@ -987,6 +1014,28 @@ type AccountHolderUpdateParams struct {
 
 func (r AccountHolderUpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
+}
+
+type AccountHolderListParams struct {
+	// A cursor representing an item's token before which a page of results should end.
+	// Used to retrieve the previous page of results before this item.
+	EndingBefore param.Field[string] `query:"ending_before"`
+	// If applicable, represents the external_id associated with the account_holder.
+	ExternalID param.Field[string] `query:"external_id" format:"uuid"`
+	// The number of account_holders to limit the response to.
+	Limit param.Field[int64] `query:"limit"`
+	// A cursor representing an item's token after which a page of results should
+	// begin. Used to retrieve the next page of results after this item.
+	StartingAfter param.Field[string] `query:"starting_after"`
+}
+
+// URLQuery serializes [AccountHolderListParams]'s query parameters as
+// `url.Values`.
+func (r AccountHolderListParams) URLQuery() (v url.Values) {
+	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
+		ArrayFormat:  apiquery.ArrayQueryFormatComma,
+		NestedFormat: apiquery.NestedQueryFormatBrackets,
+	})
 }
 
 type AccountHolderResubmitParams struct {
