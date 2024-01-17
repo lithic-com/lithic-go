@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.19.1 (2024-01-17)
+
+Full Changelog: [v0.19.0...v0.19.1](https://github.com/lithic-com/lithic-go/compare/v0.19.0...v0.19.1)
+
+### Features
+
+* **api:** updates ([#201](https://github.com/lithic-com/lithic-go/issues/201)) ([0be0a85](https://github.com/lithic-com/lithic-go/commit/0be0a85d06c1d4ec377a96d47726b990d5ca42a7))
+
+
+### Documentation
+
+* **readme:** improve api reference ([#199](https://github.com/lithic-com/lithic-go/issues/199)) ([1cecf89](https://github.com/lithic-com/lithic-go/commit/1cecf89c28f7dd6e343ea5cc66273860862ee776))
+
 ## 0.19.0 (2024-01-09)
 
 Full Changelog: [v0.18.0...v0.19.0](https://github.com/lithic-com/lithic-go/compare/v0.18.0...v0.19.0)
