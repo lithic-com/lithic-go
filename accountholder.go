@@ -41,10 +41,10 @@ func NewAccountHolderService(opts ...option.RequestOption) (r *AccountHolderServ
 // immediate response - though in some cases, the response may indicate the
 // workflow is under review or further action will be needed to complete the
 // account creation process. This endpoint can only be used on accounts that are
-// part of the program the calling API key manages.
+// part of the program that the calling API key manages.
 //
 // Note: If you choose to set a timeout for this request, we recommend 5 minutes.
-func (r *AccountHolderService) New(ctx context.Context, body AccountHolderNewParams, opts ...option.RequestOption) (res *AccountHolder, err error) {
+func (r *AccountHolderService) New(ctx context.Context, body AccountHolderNewParams, opts ...option.RequestOption) (res *AccountHolderNewResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "account_holders"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -663,6 +663,68 @@ const (
 	AccountHolderDocumentRequiredDocumentUploadsStatusReasonUnknownError     AccountHolderDocumentRequiredDocumentUploadsStatusReason = "UNKNOWN_ERROR"
 )
 
+type AccountHolderNewResponse struct {
+	// Globally unique identifier for the account holder.
+	Token string `json:"token,required" format:"uuid"`
+	// Globally unique identifier for the account.
+	AccountToken string `json:"account_token,required" format:"uuid"`
+	// KYC and KYB evaluation states. Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT`
+	// are only applicable for the `ADVANCED` workflow.
+	Status AccountHolderNewResponseStatus `json:"status,required"`
+	// Reason for the evaluation status.
+	StatusReasons []AccountHolderNewResponseStatusReason `json:"status_reasons,required"`
+	// Timestamp of when the account holder was created.
+	Created time.Time `json:"created" format:"date-time"`
+	// Customer-provided token that indicates a relationship with an object outside of
+	// the Lithic ecosystem.
+	ExternalID string                       `json:"external_id" format:"string"`
+	JSON       accountHolderNewResponseJSON `json:"-"`
+}
+
+// accountHolderNewResponseJSON contains the JSON metadata for the struct
+// [AccountHolderNewResponse]
+type accountHolderNewResponseJSON struct {
+	Token         apijson.Field
+	AccountToken  apijson.Field
+	Status        apijson.Field
+	StatusReasons apijson.Field
+	Created       apijson.Field
+	ExternalID    apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
+}
+
+func (r *AccountHolderNewResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+// KYC and KYB evaluation states. Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT`
+// are only applicable for the `ADVANCED` workflow.
+type AccountHolderNewResponseStatus string
+
+const (
+	AccountHolderNewResponseStatusAccepted        AccountHolderNewResponseStatus = "ACCEPTED"
+	AccountHolderNewResponseStatusPendingDocument AccountHolderNewResponseStatus = "PENDING_DOCUMENT"
+	AccountHolderNewResponseStatusPendingResubmit AccountHolderNewResponseStatus = "PENDING_RESUBMIT"
+	AccountHolderNewResponseStatusRejected        AccountHolderNewResponseStatus = "REJECTED"
+)
+
+type AccountHolderNewResponseStatusReason string
+
+const (
+	AccountHolderNewResponseStatusReasonAddressVerificationFailure  AccountHolderNewResponseStatusReason = "ADDRESS_VERIFICATION_FAILURE"
+	AccountHolderNewResponseStatusReasonAgeThresholdFailure         AccountHolderNewResponseStatusReason = "AGE_THRESHOLD_FAILURE"
+	AccountHolderNewResponseStatusReasonCompleteVerificationFailure AccountHolderNewResponseStatusReason = "COMPLETE_VERIFICATION_FAILURE"
+	AccountHolderNewResponseStatusReasonDobVerificationFailure      AccountHolderNewResponseStatusReason = "DOB_VERIFICATION_FAILURE"
+	AccountHolderNewResponseStatusReasonIDVerificationFailure       AccountHolderNewResponseStatusReason = "ID_VERIFICATION_FAILURE"
+	AccountHolderNewResponseStatusReasonMaxDocumentAttempts         AccountHolderNewResponseStatusReason = "MAX_DOCUMENT_ATTEMPTS"
+	AccountHolderNewResponseStatusReasonMaxResubmissionAttempts     AccountHolderNewResponseStatusReason = "MAX_RESUBMISSION_ATTEMPTS"
+	AccountHolderNewResponseStatusReasonNameVerificationFailure     AccountHolderNewResponseStatusReason = "NAME_VERIFICATION_FAILURE"
+	AccountHolderNewResponseStatusReasonOtherVerificationFailure    AccountHolderNewResponseStatusReason = "OTHER_VERIFICATION_FAILURE"
+	AccountHolderNewResponseStatusReasonRiskThresholdFailure        AccountHolderNewResponseStatusReason = "RISK_THRESHOLD_FAILURE"
+	AccountHolderNewResponseStatusReasonWatchlistAlertFailure       AccountHolderNewResponseStatusReason = "WATCHLIST_ALERT_FAILURE"
+)
+
 type AccountHolderUpdateResponse struct {
 	// The token for the account holder that was updated
 	Token string `json:"token"`
@@ -754,6 +816,9 @@ type AccountHolderNewParamsKYB struct {
 	TosTimestamp param.Field[string] `json:"tos_timestamp,required"`
 	// Specifies the type of KYB workflow to run.
 	Workflow param.Field[AccountHolderNewParamsKYBWorkflow] `json:"workflow,required"`
+	// A user provided id that can be used to link an account holder with an external
+	// system
+	ExternalID param.Field[string] `json:"external_id"`
 	// An RFC 3339 timestamp indicating when precomputed KYC was completed on the
 	// business with a pass result.
 	//
@@ -900,6 +965,9 @@ type AccountHolderNewParamsKYC struct {
 	TosTimestamp param.Field[string] `json:"tos_timestamp,required"`
 	// Specifies the type of KYC workflow to run.
 	Workflow param.Field[AccountHolderNewParamsKYCWorkflow] `json:"workflow,required"`
+	// A user provided id that can be used to link an account holder with an external
+	// system
+	ExternalID param.Field[string] `json:"external_id"`
 	// An RFC 3339 timestamp indicating when precomputed KYC was completed on the
 	// individual with a pass result.
 	//
@@ -972,6 +1040,9 @@ type AccountHolderNewParamsKYCExempt struct {
 	// users of businesses. Pass the account_token of the enrolled business associated
 	// with the AUTHORIZED_USER in this field.
 	BusinessAccountToken param.Field[string] `json:"business_account_token"`
+	// A user provided id that can be used to link an account holder with an external
+	// system
+	ExternalID param.Field[string] `json:"external_id"`
 }
 
 func (r AccountHolderNewParamsKYCExempt) MarshalJSON() (data []byte, err error) {
