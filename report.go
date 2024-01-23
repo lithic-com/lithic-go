@@ -51,6 +51,8 @@ type SettlementDetail struct {
 	// The most granular ID the network settles with (e.g., ICA for Mastercard, FTSRE
 	// for Visa).
 	Institution string `json:"institution,required"`
+	// The total amount of interchange in six-digit extended precision.
+	InterchangeFeeExtendedPrecision int64 `json:"interchange_fee_extended_precision,required"`
 	// The total amount of interchange.
 	InterchangeGrossAmount int64 `json:"interchange_gross_amount,required"`
 	// Card network where the transaction took place.
@@ -68,6 +70,8 @@ type SettlementDetail struct {
 	// The total amount of settlement impacting transactions (excluding interchange,
 	// fees, and disputes).
 	TransactionsGrossAmount int64 `json:"transactions_gross_amount,required"`
+	// The type of settlement record.
+	Type SettlementDetailType `json:"type,required"`
 	// Date and time when the transaction first occurred. UTC time zone.
 	Updated time.Time            `json:"updated,required" format:"date-time"`
 	JSON    settlementDetailJSON `json:"-"`
@@ -76,26 +80,28 @@ type SettlementDetail struct {
 // settlementDetailJSON contains the JSON metadata for the struct
 // [SettlementDetail]
 type settlementDetailJSON struct {
-	Token                   apijson.Field
-	AccountToken            apijson.Field
-	CardProgramToken        apijson.Field
-	CardToken               apijson.Field
-	Created                 apijson.Field
-	Currency                apijson.Field
-	DisputesGrossAmount     apijson.Field
-	EventTokens             apijson.Field
-	Institution             apijson.Field
-	InterchangeGrossAmount  apijson.Field
-	Network                 apijson.Field
-	OtherFeesDetails        apijson.Field
-	OtherFeesGrossAmount    apijson.Field
-	ReportDate              apijson.Field
-	SettlementDate          apijson.Field
-	TransactionToken        apijson.Field
-	TransactionsGrossAmount apijson.Field
-	Updated                 apijson.Field
-	raw                     string
-	ExtraFields             map[string]apijson.Field
+	Token                           apijson.Field
+	AccountToken                    apijson.Field
+	CardProgramToken                apijson.Field
+	CardToken                       apijson.Field
+	Created                         apijson.Field
+	Currency                        apijson.Field
+	DisputesGrossAmount             apijson.Field
+	EventTokens                     apijson.Field
+	Institution                     apijson.Field
+	InterchangeFeeExtendedPrecision apijson.Field
+	InterchangeGrossAmount          apijson.Field
+	Network                         apijson.Field
+	OtherFeesDetails                apijson.Field
+	OtherFeesGrossAmount            apijson.Field
+	ReportDate                      apijson.Field
+	SettlementDate                  apijson.Field
+	TransactionToken                apijson.Field
+	TransactionsGrossAmount         apijson.Field
+	Type                            apijson.Field
+	Updated                         apijson.Field
+	raw                             string
+	ExtraFields                     map[string]apijson.Field
 }
 
 func (r *SettlementDetail) UnmarshalJSON(data []byte) (err error) {
@@ -130,6 +136,21 @@ type settlementDetailOtherFeesDetailsJSON struct {
 func (r *SettlementDetailOtherFeesDetails) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
+
+// The type of settlement record.
+type SettlementDetailType string
+
+const (
+	SettlementDetailTypeClearing       SettlementDetailType = "CLEARING"
+	SettlementDetailTypeFinancial      SettlementDetailType = "FINANCIAL"
+	SettlementDetailTypeNonFinancial   SettlementDetailType = "NON-FINANCIAL"
+	SettlementDetailTypeAdjustment     SettlementDetailType = "ADJUSTMENT"
+	SettlementDetailTypeChargeback     SettlementDetailType = "CHARGEBACK"
+	SettlementDetailTypeRepresentment  SettlementDetailType = "REPRESENTMENT"
+	SettlementDetailTypePrearbitration SettlementDetailType = "PREARBITRATION"
+	SettlementDetailTypeArbitration    SettlementDetailType = "ARBITRATION"
+	SettlementDetailTypeFee            SettlementDetailType = "FEE"
+)
 
 type SettlementReport struct {
 	// Date and time when the transaction first occurred. UTC time zone.
