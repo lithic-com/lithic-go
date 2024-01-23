@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.20.0 (2024-01-23)
+
+Full Changelog: [v0.19.2...v0.20.0](https://github.com/lithic-com/lithic-go/compare/v0.19.2...v0.20.0)
+
+### ⚠ BREAKING CHANGES
+
+* **api:** change account holder creation response, new settlement detail type ([#207](https://github.com/lithic-com/lithic-go/issues/207))
+
+### Features
+
+* **api:** change account holder creation response, new settlement detail type ([#207](https://github.com/lithic-com/lithic-go/issues/207)) ([fe8b9f5](https://github.com/lithic-com/lithic-go/commit/fe8b9f541612fbc7a4ee0d299a47721516475e1f))
+
+
+### Chores
+
+* **ci:** rely on Stainless GitHub App for releases ([#205](https://github.com/lithic-com/lithic-go/issues/205)) ([a249b28](https://github.com/lithic-com/lithic-go/commit/a249b28e94adbc63ce68aaea25780b7753762e56))
+
 ## 0.19.2 (2024-01-17)
 
 Full Changelog: [v0.19.1...v0.19.2](https://github.com/lithic-com/lithic-go/compare/v0.19.1...v0.19.2)
