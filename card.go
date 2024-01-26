@@ -250,6 +250,18 @@ func (r *CardService) GetSpendLimits(ctx context.Context, cardToken string, opts
 	return
 }
 
+// Get card configuration such as spend limit and state. Customers must be PCI
+// compliant to use this endpoint. Please contact
+// [support@lithic.com](mailto:support@lithic.com) for questions. _Note: this is a
+// `POST` endpoint because it is more secure to send sensitive data in a request
+// body than in a URL._
+func (r *CardService) SearchByPan(ctx context.Context, body CardSearchByPanParams, opts ...option.RequestOption) (res *Card, err error) {
+	opts = append(r.Options[:], opts...)
+	path := "cards/search_by_pan"
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+	return
+}
+
 type Card struct {
 	// Globally unique identifier.
 	Token string `json:"token,required" format:"uuid"`
@@ -1026,3 +1038,12 @@ const (
 	CardRenewParamsShippingMethodStandard             CardRenewParamsShippingMethod = "STANDARD"
 	CardRenewParamsShippingMethodStandardWithTracking CardRenewParamsShippingMethod = "STANDARD_WITH_TRACKING"
 )
+
+type CardSearchByPanParams struct {
+	// The PAN for the card being retrieved.
+	Pan param.Field[string] `json:"pan,required"`
+}
+
+func (r CardSearchByPanParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
