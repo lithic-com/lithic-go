@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.21.0 (2024-01-29)
+
+Full Changelog: [v0.20.0...v0.21.0](https://github.com/lithic-com/lithic-go/compare/v0.20.0...v0.21.0)
+
+### Features
+
+* **api:** add search_by_pan endpoint ([#208](https://github.com/lithic-com/lithic-go/issues/208)) ([468d95b](https://github.com/lithic-com/lithic-go/commit/468d95b6f654a47d2bf1dac018ac67d52632f798))
+
+
+### Bug Fixes
+
+* parse date-time strings more leniently ([#210](https://github.com/lithic-com/lithic-go/issues/210)) ([96b2359](https://github.com/lithic-com/lithic-go/commit/96b2359c878ac95fc7c5143febed0f1824c6ead0))
+
 ## 0.20.0 (2024-01-23)
 
 Full Changelog: [v0.19.2...v0.20.0](https://github.com/lithic-com/lithic-go/compare/v0.19.2...v0.20.0)
