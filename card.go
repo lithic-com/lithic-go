@@ -265,6 +265,10 @@ func (r *CardService) SearchByPan(ctx context.Context, body CardSearchByPanParam
 type Card struct {
 	// Globally unique identifier.
 	Token string `json:"token,required" format:"uuid"`
+	// Globally unique identifier for the account to which the card belongs.
+	AccountToken string `json:"account_token,required" format:"uuid"`
+	// Globally unique identifier for the card program on which the card exists.
+	CardProgramToken string `json:"card_program_token,required" format:"uuid"`
 	// An RFC 3339 timestamp for when the card was created. UTC time zone.
 	Created time.Time   `json:"created,required" format:"date-time"`
 	Funding CardFunding `json:"funding,required"`
@@ -347,6 +351,8 @@ type Card struct {
 // cardJSON contains the JSON metadata for the struct [Card]
 type cardJSON struct {
 	Token               apijson.Field
+	AccountToken        apijson.Field
+	CardProgramToken    apijson.Field
 	Created             apijson.Field
 	Funding             apijson.Field
 	LastFour            apijson.Field
