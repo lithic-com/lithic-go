@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.22.0 (2024-01-31)
+
+Full Changelog: [v0.21.0...v0.22.0](https://github.com/lithic-com/lithic-go/compare/v0.21.0...v0.22.0)
+
+### Features
+
+* remove idempotency headers ([#213](https://github.com/lithic-com/lithic-go/issues/213)) ([6847554](https://github.com/lithic-com/lithic-go/commit/68475543a479ce56c8fadfcec99326949f16c04a))
+
+
+### Chores
+
+* **internal:** support pre-release versioning ([#211](https://github.com/lithic-com/lithic-go/issues/211)) ([4feaa28](https://github.com/lithic-com/lithic-go/commit/4feaa28aa0df2ab2bcb55e322eff4c570bcdef42))
+
 ## 0.21.0 (2024-01-29)
 
 Full Changelog: [v0.20.0...v0.21.0](https://github.com/lithic-com/lithic-go/compare/v0.20.0...v0.21.0)
