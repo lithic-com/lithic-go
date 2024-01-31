@@ -17,7 +17,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/lithic-com/lithic-go/internal"
 	"github.com/lithic-com/lithic-go/internal/apierror"
 	"github.com/lithic-com/lithic-go/internal/apiform"
@@ -114,10 +113,7 @@ func NewRequestConfig(ctx context.Context, method string, u string, body interfa
 	if b != nil {
 		req.Header.Set("Content-Type", contentType)
 	}
-	if method != http.MethodGet {
-		// Note this can be overridden with `WithHeader("Idempotency-Key", myIdempotencyKey)`
-		req.Header.Set("Idempotency-Key", "stainless-go-"+uuid.New().String())
-	}
+
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("X-Lithic-Pagination", "cursor")
 	for k, v := range getPlatformProperties() {
@@ -411,7 +407,7 @@ func (cfg *RequestConfig) Clone(ctx context.Context) *RequestConfig {
 		Request:    req,
 		HTTPClient: cfg.HTTPClient,
 	}
-	new.Request.Header.Set("Idempotency-Key", "stainless-go-"+uuid.New().String())
+
 	return new
 }
 
