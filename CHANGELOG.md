@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.23.0 (2024-02-06)
+
+Full Changelog: [v0.22.0...v0.23.0](https://github.com/lithic-com/lithic-go/compare/v0.22.0...v0.23.0)
+
+### Features
+
+* **api:** add `account_token` and `card_program_token` to `Card` ([#214](https://github.com/lithic-com/lithic-go/issues/214)) ([4b08af3](https://github.com/lithic-com/lithic-go/commit/4b08af38f6055c6f16f363ea11ac6789c13a64e4))
+
+
+### Chores
+
+* **interal:** make link to api.md relative ([#216](https://github.com/lithic-com/lithic-go/issues/216)) ([a8187ea](https://github.com/lithic-com/lithic-go/commit/a8187ea13cdda8aab9c26fdb1da55f70b41d8505))
+* **internal:** adjust formatting ([#217](https://github.com/lithic-com/lithic-go/issues/217)) ([db8cb51](https://github.com/lithic-com/lithic-go/commit/db8cb512e118aa8d46de5b14c4a517ce2d71f350))
+
 ## 0.22.0 (2024-01-31)
 
 Full Changelog: [v0.21.0...v0.22.0](https://github.com/lithic-com/lithic-go/compare/v0.21.0...v0.22.0)
