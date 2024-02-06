@@ -41,6 +41,7 @@ package main
 import (
 	"context"
 	"fmt"
+
 	"github.com/lithic-com/lithic-go"
 	"github.com/lithic-com/lithic-go/option"
 )
