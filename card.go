@@ -344,8 +344,12 @@ type Card struct {
 	// Primary Account Number (PAN) (i.e. the card number). Customers must be PCI
 	// compliant to have PAN returned as a field in production. Please contact
 	// [support@lithic.com](mailto:support@lithic.com) for questions.
-	Pan  string   `json:"pan"`
-	JSON cardJSON `json:"-"`
+	Pan string `json:"pan"`
+	// Only applicable to cards of type `PHYSICAL`. This must be configured with Lithic
+	// before use. Specifies the configuration (i.e., physical card art) that the card
+	// should be manufactured with.
+	ProductID string   `json:"product_id"`
+	JSON      cardJSON `json:"-"`
 }
 
 // cardJSON contains the JSON metadata for the struct [Card]
@@ -368,6 +372,7 @@ type cardJSON struct {
 	Hostname            apijson.Field
 	Memo                apijson.Field
 	Pan                 apijson.Field
+	ProductID           apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
 }
