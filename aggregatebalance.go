@@ -113,8 +113,9 @@ func (r *AggregateBalance) UnmarshalJSON(data []byte) (err error) {
 type AggregateBalanceFinancialAccountType string
 
 const (
-	AggregateBalanceFinancialAccountTypeIssuing AggregateBalanceFinancialAccountType = "ISSUING"
-	AggregateBalanceFinancialAccountTypeReserve AggregateBalanceFinancialAccountType = "RESERVE"
+	AggregateBalanceFinancialAccountTypeIssuing   AggregateBalanceFinancialAccountType = "ISSUING"
+	AggregateBalanceFinancialAccountTypeReserve   AggregateBalanceFinancialAccountType = "RESERVE"
+	AggregateBalanceFinancialAccountTypeOperating AggregateBalanceFinancialAccountType = "OPERATING"
 )
 
 type AggregateBalanceListParams struct {

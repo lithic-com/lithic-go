@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/url"
 	"time"
@@ -37,6 +38,22 @@ func NewFinancialAccountService(opts ...option.RequestOption) (r *FinancialAccou
 	r.Balances = NewFinancialAccountBalanceService(opts...)
 	r.FinancialTransactions = NewFinancialAccountFinancialTransactionService(opts...)
 	r.Statements = NewFinancialAccountStatementService(opts...)
+	return
+}
+
+// Get a financial account
+func (r *FinancialAccountService) Get(ctx context.Context, financialAccountToken string, opts ...option.RequestOption) (res *FinancialAccount, err error) {
+	opts = append(r.Options[:], opts...)
+	path := fmt.Sprintf("financial_accounts/%s", financialAccountToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
+	return
+}
+
+// Update a financial account
+func (r *FinancialAccountService) Update(ctx context.Context, financialAccountToken string, body FinancialAccountUpdateParams, opts ...option.RequestOption) (res *FinancialAccount, err error) {
+	opts = append(r.Options[:], opts...)
+	path := fmt.Sprintf("financial_accounts/%s", financialAccountToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
 }
 
@@ -77,6 +94,8 @@ type FinancialAccount struct {
 	Updated time.Time `json:"updated,required" format:"date-time"`
 	// Account number for your Lithic-assigned bank account number, if applicable.
 	AccountNumber string `json:"account_number"`
+	// User-defined nickname for the financial account.
+	Nickname string `json:"nickname"`
 	// Routing number for your Lithic-assigned bank account number, if applicable.
 	RoutingNumber string               `json:"routing_number"`
 	JSON          financialAccountJSON `json:"-"`
@@ -90,6 +109,7 @@ type financialAccountJSON struct {
 	Type          apijson.Field
 	Updated       apijson.Field
 	AccountNumber apijson.Field
+	Nickname      apijson.Field
 	RoutingNumber apijson.Field
 	raw           string
 	ExtraFields   map[string]apijson.Field
@@ -103,8 +123,9 @@ func (r *FinancialAccount) UnmarshalJSON(data []byte) (err error) {
 type FinancialAccountType string
 
 const (
-	FinancialAccountTypeIssuing FinancialAccountType = "ISSUING"
-	FinancialAccountTypeReserve FinancialAccountType = "RESERVE"
+	FinancialAccountTypeIssuing   FinancialAccountType = "ISSUING"
+	FinancialAccountTypeReserve   FinancialAccountType = "RESERVE"
+	FinancialAccountTypeOperating FinancialAccountType = "OPERATING"
 )
 
 type FinancialTransaction struct {
@@ -354,9 +375,19 @@ const (
 	FinancialTransactionStatusVoided   FinancialTransactionStatus = "VOIDED"
 )
 
+type FinancialAccountUpdateParams struct {
+	Nickname param.Field[string] `json:"nickname"`
+}
+
+func (r FinancialAccountUpdateParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
 type FinancialAccountListParams struct {
-	// List financial accounts for a given account_token
+	// List financial accounts for a given account_token or business_account_token
 	AccountToken param.Field[string] `query:"account_token" format:"uuid"`
+	// List financial accounts for a given business_account_token
+	BusinessAccountToken param.Field[string] `query:"business_account_token" format:"uuid"`
 	// List financial accounts of a given type
 	Type param.Field[FinancialAccountListParamsType] `query:"type"`
 }
@@ -374,6 +405,7 @@ func (r FinancialAccountListParams) URLQuery() (v url.Values) {
 type FinancialAccountListParamsType string
 
 const (
-	FinancialAccountListParamsTypeIssuing FinancialAccountListParamsType = "ISSUING"
-	FinancialAccountListParamsTypeReserve FinancialAccountListParamsType = "RESERVE"
+	FinancialAccountListParamsTypeIssuing   FinancialAccountListParamsType = "ISSUING"
+	FinancialAccountListParamsTypeReserve   FinancialAccountListParamsType = "RESERVE"
+	FinancialAccountListParamsTypeOperating FinancialAccountListParamsType = "OPERATING"
 )
