@@ -109,8 +109,9 @@ func (r *Balance) UnmarshalJSON(data []byte) (err error) {
 type BalanceFinancialAccountType string
 
 const (
-	BalanceFinancialAccountTypeIssuing BalanceFinancialAccountType = "ISSUING"
-	BalanceFinancialAccountTypeReserve BalanceFinancialAccountType = "RESERVE"
+	BalanceFinancialAccountTypeIssuing   BalanceFinancialAccountType = "ISSUING"
+	BalanceFinancialAccountTypeReserve   BalanceFinancialAccountType = "RESERVE"
+	BalanceFinancialAccountTypeOperating BalanceFinancialAccountType = "OPERATING"
 )
 
 type BalanceListParams struct {
