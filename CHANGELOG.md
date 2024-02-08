@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.24.0 (2024-02-08)
+
+Full Changelog: [v0.23.0...v0.24.0](https://github.com/lithic-com/lithic-go/compare/v0.23.0...v0.24.0)
+
+### Features
+
+* **api:** updates ([#218](https://github.com/lithic-com/lithic-go/issues/218)) ([88f852f](https://github.com/lithic-com/lithic-go/commit/88f852f31286177ef8ed19053cd8601b40778f76))
+
+
+### Chores
+
+* **tests:** add integration test for pagination ([#220](https://github.com/lithic-com/lithic-go/issues/220)) ([95776ad](https://github.com/lithic-com/lithic-go/commit/95776ad7a03481054d52a70ebb00c4d32a361148))
+
 ## 0.23.0 (2024-02-06)
 
 Full Changelog: [v0.22.0...v0.23.0](https://github.com/lithic-com/lithic-go/compare/v0.22.0...v0.23.0)
