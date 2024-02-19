@@ -124,8 +124,8 @@ type FinancialAccountType string
 
 const (
 	FinancialAccountTypeIssuing   FinancialAccountType = "ISSUING"
-	FinancialAccountTypeReserve   FinancialAccountType = "RESERVE"
 	FinancialAccountTypeOperating FinancialAccountType = "OPERATING"
+	FinancialAccountTypeReserve   FinancialAccountType = "RESERVE"
 )
 
 type FinancialTransaction struct {
@@ -406,6 +406,6 @@ type FinancialAccountListParamsType string
 
 const (
 	FinancialAccountListParamsTypeIssuing   FinancialAccountListParamsType = "ISSUING"
-	FinancialAccountListParamsTypeReserve   FinancialAccountListParamsType = "RESERVE"
 	FinancialAccountListParamsTypeOperating FinancialAccountListParamsType = "OPERATING"
+	FinancialAccountListParamsTypeReserve   FinancialAccountListParamsType = "RESERVE"
 )

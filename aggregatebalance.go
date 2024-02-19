@@ -114,8 +114,8 @@ type AggregateBalanceFinancialAccountType string
 
 const (
 	AggregateBalanceFinancialAccountTypeIssuing   AggregateBalanceFinancialAccountType = "ISSUING"
-	AggregateBalanceFinancialAccountTypeReserve   AggregateBalanceFinancialAccountType = "RESERVE"
 	AggregateBalanceFinancialAccountTypeOperating AggregateBalanceFinancialAccountType = "OPERATING"
+	AggregateBalanceFinancialAccountTypeReserve   AggregateBalanceFinancialAccountType = "RESERVE"
 )
 
 type AggregateBalanceListParams struct {
@@ -136,6 +136,7 @@ func (r AggregateBalanceListParams) URLQuery() (v url.Values) {
 type AggregateBalanceListParamsFinancialAccountType string
 
 const (
-	AggregateBalanceListParamsFinancialAccountTypeIssuing AggregateBalanceListParamsFinancialAccountType = "ISSUING"
-	AggregateBalanceListParamsFinancialAccountTypeReserve AggregateBalanceListParamsFinancialAccountType = "RESERVE"
+	AggregateBalanceListParamsFinancialAccountTypeIssuing   AggregateBalanceListParamsFinancialAccountType = "ISSUING"
+	AggregateBalanceListParamsFinancialAccountTypeOperating AggregateBalanceListParamsFinancialAccountType = "OPERATING"
+	AggregateBalanceListParamsFinancialAccountTypeReserve   AggregateBalanceListParamsFinancialAccountType = "RESERVE"
 )
