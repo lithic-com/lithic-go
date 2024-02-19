@@ -110,8 +110,8 @@ type BalanceFinancialAccountType string
 
 const (
 	BalanceFinancialAccountTypeIssuing   BalanceFinancialAccountType = "ISSUING"
-	BalanceFinancialAccountTypeReserve   BalanceFinancialAccountType = "RESERVE"
 	BalanceFinancialAccountTypeOperating BalanceFinancialAccountType = "OPERATING"
+	BalanceFinancialAccountTypeReserve   BalanceFinancialAccountType = "RESERVE"
 )
 
 type BalanceListParams struct {
@@ -136,6 +136,7 @@ func (r BalanceListParams) URLQuery() (v url.Values) {
 type BalanceListParamsFinancialAccountType string
 
 const (
-	BalanceListParamsFinancialAccountTypeIssuing BalanceListParamsFinancialAccountType = "ISSUING"
-	BalanceListParamsFinancialAccountTypeReserve BalanceListParamsFinancialAccountType = "RESERVE"
+	BalanceListParamsFinancialAccountTypeIssuing   BalanceListParamsFinancialAccountType = "ISSUING"
+	BalanceListParamsFinancialAccountTypeOperating BalanceListParamsFinancialAccountType = "OPERATING"
+	BalanceListParamsFinancialAccountTypeReserve   BalanceListParamsFinancialAccountType = "RESERVE"
 )
