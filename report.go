@@ -141,15 +141,15 @@ func (r *SettlementDetailOtherFeesDetails) UnmarshalJSON(data []byte) (err error
 type SettlementDetailType string
 
 const (
+	SettlementDetailTypeAdjustment     SettlementDetailType = "ADJUSTMENT"
+	SettlementDetailTypeArbitration    SettlementDetailType = "ARBITRATION"
+	SettlementDetailTypeChargeback     SettlementDetailType = "CHARGEBACK"
 	SettlementDetailTypeClearing       SettlementDetailType = "CLEARING"
+	SettlementDetailTypeFee            SettlementDetailType = "FEE"
 	SettlementDetailTypeFinancial      SettlementDetailType = "FINANCIAL"
 	SettlementDetailTypeNonFinancial   SettlementDetailType = "NON-FINANCIAL"
-	SettlementDetailTypeAdjustment     SettlementDetailType = "ADJUSTMENT"
-	SettlementDetailTypeChargeback     SettlementDetailType = "CHARGEBACK"
-	SettlementDetailTypeRepresentment  SettlementDetailType = "REPRESENTMENT"
 	SettlementDetailTypePrearbitration SettlementDetailType = "PREARBITRATION"
-	SettlementDetailTypeArbitration    SettlementDetailType = "ARBITRATION"
-	SettlementDetailTypeFee            SettlementDetailType = "FEE"
+	SettlementDetailTypeRepresentment  SettlementDetailType = "REPRESENTMENT"
 )
 
 type SettlementReport struct {
