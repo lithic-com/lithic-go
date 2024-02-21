@@ -41,6 +41,14 @@ func NewFinancialAccountService(opts ...option.RequestOption) (r *FinancialAccou
 	return
 }
 
+// Create a new financial account
+func (r *FinancialAccountService) New(ctx context.Context, params FinancialAccountNewParams, opts ...option.RequestOption) (res *FinancialAccount, err error) {
+	opts = append(r.Options[:], opts...)
+	path := "financial_accounts"
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, params, &res, opts...)
+	return
+}
+
 // Get a financial account
 func (r *FinancialAccountService) Get(ctx context.Context, financialAccountToken string, opts ...option.RequestOption) (res *FinancialAccount, err error) {
 	opts = append(r.Options[:], opts...)
@@ -373,6 +381,23 @@ const (
 	FinancialTransactionStatusPending  FinancialTransactionStatus = "PENDING"
 	FinancialTransactionStatusSettled  FinancialTransactionStatus = "SETTLED"
 	FinancialTransactionStatusVoided   FinancialTransactionStatus = "VOIDED"
+)
+
+type FinancialAccountNewParams struct {
+	Nickname       param.Field[string]                        `json:"nickname,required"`
+	Type           param.Field[FinancialAccountNewParamsType] `json:"type,required"`
+	AccountToken   param.Field[string]                        `json:"account_token" format:"uuid"`
+	IdempotencyKey param.Field[string]                        `header:"Idempotency-Key" format:"uuid"`
+}
+
+func (r FinancialAccountNewParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+type FinancialAccountNewParamsType string
+
+const (
+	FinancialAccountNewParamsTypeOperating FinancialAccountNewParamsType = "OPERATING"
 )
 
 type FinancialAccountUpdateParams struct {
