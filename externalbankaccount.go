@@ -84,6 +84,14 @@ func (r *ExternalBankAccountService) ListAutoPaging(ctx context.Context, query E
 	return shared.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
+// Retry external bank account micro deposit verification.
+func (r *ExternalBankAccountService) RetryMicroDeposits(ctx context.Context, externalBankAccountToken string, opts ...option.RequestOption) (res *ExternalBankAccountRetryMicroDepositsResponse, err error) {
+	opts = append(r.Options[:], opts...)
+	path := fmt.Sprintf("external_bank_accounts/%s/retry_micro_deposits", externalBankAccountToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
+	return
+}
+
 // Address used during Address Verification Service (AVS) checks during
 // transactions if enabled via Auth Rules.
 type ExternalBankAccountAddress struct {
@@ -141,6 +149,7 @@ const (
 	VerificationMethodManual       VerificationMethod = "MANUAL"
 	VerificationMethodMicroDeposit VerificationMethod = "MICRO_DEPOSIT"
 	VerificationMethodPlaid        VerificationMethod = "PLAID"
+	VerificationMethodPrenote      VerificationMethod = "PRENOTE"
 )
 
 type ExternalBankAccountNewResponse struct {
@@ -253,6 +262,7 @@ const (
 	ExternalBankAccountNewResponseVerificationMethodManual       ExternalBankAccountNewResponseVerificationMethod = "MANUAL"
 	ExternalBankAccountNewResponseVerificationMethodMicroDeposit ExternalBankAccountNewResponseVerificationMethod = "MICRO_DEPOSIT"
 	ExternalBankAccountNewResponseVerificationMethodPlaid        ExternalBankAccountNewResponseVerificationMethod = "PLAID"
+	ExternalBankAccountNewResponseVerificationMethodPrenote      ExternalBankAccountNewResponseVerificationMethod = "PRENOTE"
 )
 
 type ExternalBankAccountNewResponseVerificationState string
@@ -260,6 +270,7 @@ type ExternalBankAccountNewResponseVerificationState string
 const (
 	ExternalBankAccountNewResponseVerificationStateEnabled            ExternalBankAccountNewResponseVerificationState = "ENABLED"
 	ExternalBankAccountNewResponseVerificationStateFailedVerification ExternalBankAccountNewResponseVerificationState = "FAILED_VERIFICATION"
+	ExternalBankAccountNewResponseVerificationStateInsufficientFunds  ExternalBankAccountNewResponseVerificationState = "INSUFFICIENT_FUNDS"
 	ExternalBankAccountNewResponseVerificationStatePending            ExternalBankAccountNewResponseVerificationState = "PENDING"
 )
 
@@ -373,6 +384,7 @@ const (
 	ExternalBankAccountGetResponseVerificationMethodManual       ExternalBankAccountGetResponseVerificationMethod = "MANUAL"
 	ExternalBankAccountGetResponseVerificationMethodMicroDeposit ExternalBankAccountGetResponseVerificationMethod = "MICRO_DEPOSIT"
 	ExternalBankAccountGetResponseVerificationMethodPlaid        ExternalBankAccountGetResponseVerificationMethod = "PLAID"
+	ExternalBankAccountGetResponseVerificationMethodPrenote      ExternalBankAccountGetResponseVerificationMethod = "PRENOTE"
 )
 
 type ExternalBankAccountGetResponseVerificationState string
@@ -380,6 +392,7 @@ type ExternalBankAccountGetResponseVerificationState string
 const (
 	ExternalBankAccountGetResponseVerificationStateEnabled            ExternalBankAccountGetResponseVerificationState = "ENABLED"
 	ExternalBankAccountGetResponseVerificationStateFailedVerification ExternalBankAccountGetResponseVerificationState = "FAILED_VERIFICATION"
+	ExternalBankAccountGetResponseVerificationStateInsufficientFunds  ExternalBankAccountGetResponseVerificationState = "INSUFFICIENT_FUNDS"
 	ExternalBankAccountGetResponseVerificationStatePending            ExternalBankAccountGetResponseVerificationState = "PENDING"
 )
 
@@ -493,6 +506,7 @@ const (
 	ExternalBankAccountUpdateResponseVerificationMethodManual       ExternalBankAccountUpdateResponseVerificationMethod = "MANUAL"
 	ExternalBankAccountUpdateResponseVerificationMethodMicroDeposit ExternalBankAccountUpdateResponseVerificationMethod = "MICRO_DEPOSIT"
 	ExternalBankAccountUpdateResponseVerificationMethodPlaid        ExternalBankAccountUpdateResponseVerificationMethod = "PLAID"
+	ExternalBankAccountUpdateResponseVerificationMethodPrenote      ExternalBankAccountUpdateResponseVerificationMethod = "PRENOTE"
 )
 
 type ExternalBankAccountUpdateResponseVerificationState string
@@ -500,6 +514,7 @@ type ExternalBankAccountUpdateResponseVerificationState string
 const (
 	ExternalBankAccountUpdateResponseVerificationStateEnabled            ExternalBankAccountUpdateResponseVerificationState = "ENABLED"
 	ExternalBankAccountUpdateResponseVerificationStateFailedVerification ExternalBankAccountUpdateResponseVerificationState = "FAILED_VERIFICATION"
+	ExternalBankAccountUpdateResponseVerificationStateInsufficientFunds  ExternalBankAccountUpdateResponseVerificationState = "INSUFFICIENT_FUNDS"
 	ExternalBankAccountUpdateResponseVerificationStatePending            ExternalBankAccountUpdateResponseVerificationState = "PENDING"
 )
 
@@ -613,6 +628,7 @@ const (
 	ExternalBankAccountListResponseVerificationMethodManual       ExternalBankAccountListResponseVerificationMethod = "MANUAL"
 	ExternalBankAccountListResponseVerificationMethodMicroDeposit ExternalBankAccountListResponseVerificationMethod = "MICRO_DEPOSIT"
 	ExternalBankAccountListResponseVerificationMethodPlaid        ExternalBankAccountListResponseVerificationMethod = "PLAID"
+	ExternalBankAccountListResponseVerificationMethodPrenote      ExternalBankAccountListResponseVerificationMethod = "PRENOTE"
 )
 
 type ExternalBankAccountListResponseVerificationState string
@@ -620,7 +636,130 @@ type ExternalBankAccountListResponseVerificationState string
 const (
 	ExternalBankAccountListResponseVerificationStateEnabled            ExternalBankAccountListResponseVerificationState = "ENABLED"
 	ExternalBankAccountListResponseVerificationStateFailedVerification ExternalBankAccountListResponseVerificationState = "FAILED_VERIFICATION"
+	ExternalBankAccountListResponseVerificationStateInsufficientFunds  ExternalBankAccountListResponseVerificationState = "INSUFFICIENT_FUNDS"
 	ExternalBankAccountListResponseVerificationStatePending            ExternalBankAccountListResponseVerificationState = "PENDING"
+)
+
+type ExternalBankAccountRetryMicroDepositsResponse struct {
+	// A globally unique identifier for this record of an external bank account
+	// association. If a program links an external bank account to more than one
+	// end-user or to both the program and the end-user, then Lithic will return each
+	// record of the association
+	Token string `json:"token,required" format:"uuid"`
+	// The country that the bank account is located in using ISO 3166-1. We will only
+	// accept USA bank accounts e.g., USA
+	Country string `json:"country,required"`
+	// An ISO 8601 string representing when this funding source was added to the Lithic
+	// account.
+	Created time.Time `json:"created,required" format:"date-time"`
+	// currency of the external account 3-digit alphabetic ISO 4217 code
+	Currency string `json:"currency,required"`
+	// The last 4 digits of the bank account. Derived by Lithic from the account number
+	// passed
+	LastFour string `json:"last_four,required"`
+	// Legal Name of the business or individual who owns the external account. This
+	// will appear in statements
+	Owner         string                                                 `json:"owner,required"`
+	OwnerType     ExternalBankAccountRetryMicroDepositsResponseOwnerType `json:"owner_type,required"`
+	RoutingNumber string                                                 `json:"routing_number,required"`
+	State         ExternalBankAccountRetryMicroDepositsResponseState     `json:"state,required"`
+	Type          ExternalBankAccountRetryMicroDepositsResponseType      `json:"type,required"`
+	// The number of attempts at verification
+	VerificationAttempts int64                                                           `json:"verification_attempts,required"`
+	VerificationMethod   ExternalBankAccountRetryMicroDepositsResponseVerificationMethod `json:"verification_method,required"`
+	VerificationState    ExternalBankAccountRetryMicroDepositsResponseVerificationState  `json:"verification_state,required"`
+	// Indicates which Lithic account the external account is associated with. For
+	// external accounts that are associated with the program, account_token field
+	// returned will be null
+	AccountToken string `json:"account_token" format:"uuid"`
+	// Address used during Address Verification Service (AVS) checks during
+	// transactions if enabled via Auth Rules.
+	Address ExternalBankAccountAddress `json:"address"`
+	// Optional field that helps identify bank accounts in receipts
+	CompanyID string `json:"company_id"`
+	// Date of Birth of the Individual that owns the external bank account
+	Dob             time.Time `json:"dob" format:"date"`
+	DoingBusinessAs string    `json:"doing_business_as"`
+	// The nickname given to this record of External Bank Account
+	Name          string `json:"name"`
+	UserDefinedID string `json:"user_defined_id"`
+	// Optional free text description of the reason for the failed verification. For
+	// ACH micro-deposits returned, this field will display the reason return code sent
+	// by the ACH network
+	VerificationFailedReason string                                            `json:"verification_failed_reason"`
+	JSON                     externalBankAccountRetryMicroDepositsResponseJSON `json:"-"`
+}
+
+// externalBankAccountRetryMicroDepositsResponseJSON contains the JSON metadata for
+// the struct [ExternalBankAccountRetryMicroDepositsResponse]
+type externalBankAccountRetryMicroDepositsResponseJSON struct {
+	Token                    apijson.Field
+	Country                  apijson.Field
+	Created                  apijson.Field
+	Currency                 apijson.Field
+	LastFour                 apijson.Field
+	Owner                    apijson.Field
+	OwnerType                apijson.Field
+	RoutingNumber            apijson.Field
+	State                    apijson.Field
+	Type                     apijson.Field
+	VerificationAttempts     apijson.Field
+	VerificationMethod       apijson.Field
+	VerificationState        apijson.Field
+	AccountToken             apijson.Field
+	Address                  apijson.Field
+	CompanyID                apijson.Field
+	Dob                      apijson.Field
+	DoingBusinessAs          apijson.Field
+	Name                     apijson.Field
+	UserDefinedID            apijson.Field
+	VerificationFailedReason apijson.Field
+	raw                      string
+	ExtraFields              map[string]apijson.Field
+}
+
+func (r *ExternalBankAccountRetryMicroDepositsResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type ExternalBankAccountRetryMicroDepositsResponseOwnerType string
+
+const (
+	ExternalBankAccountRetryMicroDepositsResponseOwnerTypeBusiness   ExternalBankAccountRetryMicroDepositsResponseOwnerType = "BUSINESS"
+	ExternalBankAccountRetryMicroDepositsResponseOwnerTypeIndividual ExternalBankAccountRetryMicroDepositsResponseOwnerType = "INDIVIDUAL"
+)
+
+type ExternalBankAccountRetryMicroDepositsResponseState string
+
+const (
+	ExternalBankAccountRetryMicroDepositsResponseStateClosed  ExternalBankAccountRetryMicroDepositsResponseState = "CLOSED"
+	ExternalBankAccountRetryMicroDepositsResponseStateEnabled ExternalBankAccountRetryMicroDepositsResponseState = "ENABLED"
+	ExternalBankAccountRetryMicroDepositsResponseStatePaused  ExternalBankAccountRetryMicroDepositsResponseState = "PAUSED"
+)
+
+type ExternalBankAccountRetryMicroDepositsResponseType string
+
+const (
+	ExternalBankAccountRetryMicroDepositsResponseTypeChecking ExternalBankAccountRetryMicroDepositsResponseType = "CHECKING"
+	ExternalBankAccountRetryMicroDepositsResponseTypeSavings  ExternalBankAccountRetryMicroDepositsResponseType = "SAVINGS"
+)
+
+type ExternalBankAccountRetryMicroDepositsResponseVerificationMethod string
+
+const (
+	ExternalBankAccountRetryMicroDepositsResponseVerificationMethodManual       ExternalBankAccountRetryMicroDepositsResponseVerificationMethod = "MANUAL"
+	ExternalBankAccountRetryMicroDepositsResponseVerificationMethodMicroDeposit ExternalBankAccountRetryMicroDepositsResponseVerificationMethod = "MICRO_DEPOSIT"
+	ExternalBankAccountRetryMicroDepositsResponseVerificationMethodPlaid        ExternalBankAccountRetryMicroDepositsResponseVerificationMethod = "PLAID"
+	ExternalBankAccountRetryMicroDepositsResponseVerificationMethodPrenote      ExternalBankAccountRetryMicroDepositsResponseVerificationMethod = "PRENOTE"
+)
+
+type ExternalBankAccountRetryMicroDepositsResponseVerificationState string
+
+const (
+	ExternalBankAccountRetryMicroDepositsResponseVerificationStateEnabled            ExternalBankAccountRetryMicroDepositsResponseVerificationState = "ENABLED"
+	ExternalBankAccountRetryMicroDepositsResponseVerificationStateFailedVerification ExternalBankAccountRetryMicroDepositsResponseVerificationState = "FAILED_VERIFICATION"
+	ExternalBankAccountRetryMicroDepositsResponseVerificationStateInsufficientFunds  ExternalBankAccountRetryMicroDepositsResponseVerificationState = "INSUFFICIENT_FUNDS"
+	ExternalBankAccountRetryMicroDepositsResponseVerificationStatePending            ExternalBankAccountRetryMicroDepositsResponseVerificationState = "PENDING"
 )
 
 // This interface is a union satisfied by one of the following:
@@ -756,5 +895,6 @@ type ExternalBankAccountListParamsVerificationState string
 const (
 	ExternalBankAccountListParamsVerificationStateEnabled            ExternalBankAccountListParamsVerificationState = "ENABLED"
 	ExternalBankAccountListParamsVerificationStateFailedVerification ExternalBankAccountListParamsVerificationState = "FAILED_VERIFICATION"
+	ExternalBankAccountListParamsVerificationStateInsufficientFunds  ExternalBankAccountListParamsVerificationState = "INSUFFICIENT_FUNDS"
 	ExternalBankAccountListParamsVerificationStatePending            ExternalBankAccountListParamsVerificationState = "PENDING"
 )

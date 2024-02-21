@@ -150,6 +150,7 @@ const (
 	ExternalBankAccountMicroDepositNewResponseVerificationMethodManual       ExternalBankAccountMicroDepositNewResponseVerificationMethod = "MANUAL"
 	ExternalBankAccountMicroDepositNewResponseVerificationMethodMicroDeposit ExternalBankAccountMicroDepositNewResponseVerificationMethod = "MICRO_DEPOSIT"
 	ExternalBankAccountMicroDepositNewResponseVerificationMethodPlaid        ExternalBankAccountMicroDepositNewResponseVerificationMethod = "PLAID"
+	ExternalBankAccountMicroDepositNewResponseVerificationMethodPrenote      ExternalBankAccountMicroDepositNewResponseVerificationMethod = "PRENOTE"
 )
 
 type ExternalBankAccountMicroDepositNewResponseVerificationState string
@@ -157,6 +158,7 @@ type ExternalBankAccountMicroDepositNewResponseVerificationState string
 const (
 	ExternalBankAccountMicroDepositNewResponseVerificationStateEnabled            ExternalBankAccountMicroDepositNewResponseVerificationState = "ENABLED"
 	ExternalBankAccountMicroDepositNewResponseVerificationStateFailedVerification ExternalBankAccountMicroDepositNewResponseVerificationState = "FAILED_VERIFICATION"
+	ExternalBankAccountMicroDepositNewResponseVerificationStateInsufficientFunds  ExternalBankAccountMicroDepositNewResponseVerificationState = "INSUFFICIENT_FUNDS"
 	ExternalBankAccountMicroDepositNewResponseVerificationStatePending            ExternalBankAccountMicroDepositNewResponseVerificationState = "PENDING"
 )
 
