@@ -164,7 +164,8 @@ type Transaction struct {
 	AuthorizationAmount int64 `json:"authorization_amount,required"`
 	// A fixed-width 6-digit numeric identifier that can be used to identify a
 	// transaction with networks.
-	AuthorizationCode string `json:"authorization_code,required"`
+	AuthorizationCode string         `json:"authorization_code,required"`
+	Avs               TransactionAvs `json:"avs,required"`
 	// Token for the card used in this transaction.
 	CardToken string `json:"card_token,required" format:"uuid"`
 	// Date and time when the transaction first occurred. UTC time zone.
@@ -185,6 +186,16 @@ type Transaction struct {
 	// `VISA`, or `UNKNOWN`. Value is `UNKNOWN` when Lithic cannot determine the
 	// network code from the upstream provider.
 	Network TransactionNetwork `json:"network,required,nullable"`
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	//
+	// A score may not be available for all authorizations, and where it is not, this
+	// field will be set to null.
+	NetworkRiskScore float64        `json:"network_risk_score,required"`
+	Pos              TransactionPos `json:"pos,required"`
 	// `APPROVED` or decline reason. See Event result types
 	Result TransactionResult `json:"result,required"`
 	// Amount of the transaction that has been settled (in cents), including any
@@ -199,6 +210,7 @@ type Transaction struct {
 	//   - `SETTLED` - The transaction is complete.
 	//   - `VOIDED` - The merchant has voided the previously pending authorization.
 	Status                   TransactionStatus                   `json:"status,required"`
+	TokenInfo                TransactionTokenInfo                `json:"token_info,required"`
 	CardholderAuthentication TransactionCardholderAuthentication `json:"cardholder_authentication,nullable"`
 	JSON                     transactionJSON                     `json:"-"`
 }
@@ -211,6 +223,7 @@ type transactionJSON struct {
 	Amount                      apijson.Field
 	AuthorizationAmount         apijson.Field
 	AuthorizationCode           apijson.Field
+	Avs                         apijson.Field
 	CardToken                   apijson.Field
 	Created                     apijson.Field
 	Events                      apijson.Field
@@ -219,15 +232,38 @@ type transactionJSON struct {
 	MerchantAuthorizationAmount apijson.Field
 	MerchantCurrency            apijson.Field
 	Network                     apijson.Field
+	NetworkRiskScore            apijson.Field
+	Pos                         apijson.Field
 	Result                      apijson.Field
 	SettledAmount               apijson.Field
 	Status                      apijson.Field
+	TokenInfo                   apijson.Field
 	CardholderAuthentication    apijson.Field
 	raw                         string
 	ExtraFields                 map[string]apijson.Field
 }
 
 func (r *Transaction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type TransactionAvs struct {
+	// Cardholder address
+	Address string `json:"address"`
+	// Cardholder ZIP code
+	Zipcode string             `json:"zipcode"`
+	JSON    transactionAvsJSON `json:"-"`
+}
+
+// transactionAvsJSON contains the JSON metadata for the struct [TransactionAvs]
+type transactionAvsJSON struct {
+	Address     apijson.Field
+	Zipcode     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *TransactionAvs) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
@@ -253,12 +289,6 @@ type TransactionEvent struct {
 	//   - `CARD_CLOSED` - Card state was closed at the time of authorization.
 	//   - `CARD_PAUSED` - Card state was paused at the time of authorization.
 	//   - `FRAUD_ADVICE` - Transaction declined due to risk.
-	//   - `GLOBAL_TRANSACTION_LIMIT` - Platform spend limit exceeded, contact
-	//     [support@lithic.com](mailto:support@lithic.com).
-	//   - `GLOBAL_WEEKLY_LIMIT` - Platform spend limit exceeded, contact
-	//     [support@lithic.com](mailto:support@lithic.com).
-	//   - `GLOBAL_MONTHLY_LIMIT` - Platform spend limit exceeded, contact
-	//     [support@lithic.com](mailto:support@lithic.com).
 	//   - `INACTIVE_ACCOUNT` - Account is inactive. Contact
 	//     [support@lithic.com](mailto:support@lithic.com).
 	//   - `INCORRECT_PIN` - PIN verification failed.
@@ -379,12 +409,6 @@ const (
 //   - `CARD_CLOSED` - Card state was closed at the time of authorization.
 //   - `CARD_PAUSED` - Card state was paused at the time of authorization.
 //   - `FRAUD_ADVICE` - Transaction declined due to risk.
-//   - `GLOBAL_TRANSACTION_LIMIT` - Platform spend limit exceeded, contact
-//     [support@lithic.com](mailto:support@lithic.com).
-//   - `GLOBAL_WEEKLY_LIMIT` - Platform spend limit exceeded, contact
-//     [support@lithic.com](mailto:support@lithic.com).
-//   - `GLOBAL_MONTHLY_LIMIT` - Platform spend limit exceeded, contact
-//     [support@lithic.com](mailto:support@lithic.com).
 //   - `INACTIVE_ACCOUNT` - Account is inactive. Contact
 //     [support@lithic.com](mailto:support@lithic.com).
 //   - `INCORRECT_PIN` - PIN verification failed.
@@ -401,16 +425,13 @@ const (
 type TransactionEventsResult string
 
 const (
-	TransactionEventsResultAccountStateTransaction TransactionEventsResult = "ACCOUNT_STATE_TRANSACTION"
 	TransactionEventsResultApproved                TransactionEventsResult = "APPROVED"
 	TransactionEventsResultBankConnectionError     TransactionEventsResult = "BANK_CONNECTION_ERROR"
 	TransactionEventsResultBankNotVerified         TransactionEventsResult = "BANK_NOT_VERIFIED"
 	TransactionEventsResultCardClosed              TransactionEventsResult = "CARD_CLOSED"
 	TransactionEventsResultCardPaused              TransactionEventsResult = "CARD_PAUSED"
+	TransactionEventsResultDeclined                TransactionEventsResult = "DECLINED"
 	TransactionEventsResultFraudAdvice             TransactionEventsResult = "FRAUD_ADVICE"
-	TransactionEventsResultGlobalMonthlyLimit      TransactionEventsResult = "GLOBAL_MONTHLY_LIMIT"
-	TransactionEventsResultGlobalTransactionLimit  TransactionEventsResult = "GLOBAL_TRANSACTION_LIMIT"
-	TransactionEventsResultGlobalWeeklyLimit       TransactionEventsResult = "GLOBAL_WEEKLY_LIMIT"
 	TransactionEventsResultInactiveAccount         TransactionEventsResult = "INACTIVE_ACCOUNT"
 	TransactionEventsResultIncorrectPin            TransactionEventsResult = "INCORRECT_PIN"
 	TransactionEventsResultInsufficientFunds       TransactionEventsResult = "INSUFFICIENT_FUNDS"
@@ -511,20 +532,196 @@ const (
 	TransactionNetworkVisa       TransactionNetwork = "VISA"
 )
 
+type TransactionPos struct {
+	EntryMode TransactionPosEntryMode `json:"entry_mode,required"`
+	Terminal  TransactionPosTerminal  `json:"terminal,required"`
+	JSON      transactionPosJSON      `json:"-"`
+}
+
+// transactionPosJSON contains the JSON metadata for the struct [TransactionPos]
+type transactionPosJSON struct {
+	EntryMode   apijson.Field
+	Terminal    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *TransactionPos) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+type TransactionPosEntryMode struct {
+	// Card status
+	Card TransactionPosEntryModeCard `json:"card,required"`
+	// Cardholder Presence status
+	Cardholder TransactionPosEntryModeCardholder `json:"cardholder,required"`
+	// Method of entry for the PAN
+	Pan TransactionPosEntryModePan `json:"pan,required"`
+	// True if the PIN was entered
+	PinEntered bool                        `json:"pin_entered,required"`
+	JSON       transactionPosEntryModeJSON `json:"-"`
+}
+
+// transactionPosEntryModeJSON contains the JSON metadata for the struct
+// [TransactionPosEntryMode]
+type transactionPosEntryModeJSON struct {
+	Card        apijson.Field
+	Cardholder  apijson.Field
+	Pan         apijson.Field
+	PinEntered  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *TransactionPosEntryMode) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+// Card status
+type TransactionPosEntryModeCard string
+
+const (
+	TransactionPosEntryModeCardNotPresent    TransactionPosEntryModeCard = "NOT_PRESENT"
+	TransactionPosEntryModeCardPreauthorized TransactionPosEntryModeCard = "PREAUTHORIZED"
+	TransactionPosEntryModeCardPresent       TransactionPosEntryModeCard = "PRESENT"
+	TransactionPosEntryModeCardUnknown       TransactionPosEntryModeCard = "UNKNOWN"
+)
+
+// Cardholder Presence status
+type TransactionPosEntryModeCardholder string
+
+const (
+	TransactionPosEntryModeCardholderDeferredBilling TransactionPosEntryModeCardholder = "DEFERRED_BILLING"
+	TransactionPosEntryModeCardholderElectronicOrder TransactionPosEntryModeCardholder = "ELECTRONIC_ORDER"
+	TransactionPosEntryModeCardholderInstallment     TransactionPosEntryModeCardholder = "INSTALLMENT"
+	TransactionPosEntryModeCardholderMailOrder       TransactionPosEntryModeCardholder = "MAIL_ORDER"
+	TransactionPosEntryModeCardholderNotPresent      TransactionPosEntryModeCardholder = "NOT_PRESENT"
+	TransactionPosEntryModeCardholderPreauthorized   TransactionPosEntryModeCardholder = "PREAUTHORIZED"
+	TransactionPosEntryModeCardholderPresent         TransactionPosEntryModeCardholder = "PRESENT"
+	TransactionPosEntryModeCardholderReoccurring     TransactionPosEntryModeCardholder = "REOCCURRING"
+	TransactionPosEntryModeCardholderTelephoneOrder  TransactionPosEntryModeCardholder = "TELEPHONE_ORDER"
+	TransactionPosEntryModeCardholderUnknown         TransactionPosEntryModeCardholder = "UNKNOWN"
+)
+
+// Method of entry for the PAN
+type TransactionPosEntryModePan string
+
+const (
+	TransactionPosEntryModePanAutoEntry           TransactionPosEntryModePan = "AUTO_ENTRY"
+	TransactionPosEntryModePanBarCode             TransactionPosEntryModePan = "BAR_CODE"
+	TransactionPosEntryModePanContactless         TransactionPosEntryModePan = "CONTACTLESS"
+	TransactionPosEntryModePanCredentialOnFile    TransactionPosEntryModePan = "CREDENTIAL_ON_FILE"
+	TransactionPosEntryModePanEcommerce           TransactionPosEntryModePan = "ECOMMERCE"
+	TransactionPosEntryModePanErrorKeyed          TransactionPosEntryModePan = "ERROR_KEYED"
+	TransactionPosEntryModePanErrorMagneticStripe TransactionPosEntryModePan = "ERROR_MAGNETIC_STRIPE"
+	TransactionPosEntryModePanIcc                 TransactionPosEntryModePan = "ICC"
+	TransactionPosEntryModePanKeyEntered          TransactionPosEntryModePan = "KEY_ENTERED"
+	TransactionPosEntryModePanMagneticStripe      TransactionPosEntryModePan = "MAGNETIC_STRIPE"
+	TransactionPosEntryModePanManual              TransactionPosEntryModePan = "MANUAL"
+	TransactionPosEntryModePanOcr                 TransactionPosEntryModePan = "OCR"
+	TransactionPosEntryModePanSecureCardless      TransactionPosEntryModePan = "SECURE_CARDLESS"
+	TransactionPosEntryModePanUnknown             TransactionPosEntryModePan = "UNKNOWN"
+	TransactionPosEntryModePanUnspecified         TransactionPosEntryModePan = "UNSPECIFIED"
+)
+
+type TransactionPosTerminal struct {
+	// True if a clerk is present at the sale.
+	Attended bool `json:"attended,required"`
+	// True if the terminal is capable of partial approval. Partial approval is when
+	// part of a transaction is approved and another payment must be used for the
+	// remainder. Example scenario: A $40 transaction is attempted on a prepaid card
+	// with a $25 balance. If partial approval is enabled, $25 can be authorized, at
+	// which point the POS will prompt the user for an additional payment of $15.
+	CardRetentionCapable bool `json:"card_retention_capable,required"`
+	// True if the sale was made at the place of business (vs. mobile).
+	OnPremise bool `json:"on_premise,required"`
+	// The person that is designed to swipe the card
+	Operator TransactionPosTerminalOperator `json:"operator,required"`
+	// Status of whether the POS is able to accept PINs
+	PinCapability TransactionPosTerminalPinCapability `json:"pin_capability,required"`
+	// POS Type
+	Type TransactionPosTerminalType `json:"type,required"`
+	JSON transactionPosTerminalJSON `json:"-"`
+}
+
+// transactionPosTerminalJSON contains the JSON metadata for the struct
+// [TransactionPosTerminal]
+type transactionPosTerminalJSON struct {
+	Attended             apijson.Field
+	CardRetentionCapable apijson.Field
+	OnPremise            apijson.Field
+	Operator             apijson.Field
+	PinCapability        apijson.Field
+	Type                 apijson.Field
+	raw                  string
+	ExtraFields          map[string]apijson.Field
+}
+
+func (r *TransactionPosTerminal) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+// The person that is designed to swipe the card
+type TransactionPosTerminalOperator string
+
+const (
+	TransactionPosTerminalOperatorAdministrative TransactionPosTerminalOperator = "ADMINISTRATIVE"
+	TransactionPosTerminalOperatorCardholder     TransactionPosTerminalOperator = "CARDHOLDER"
+	TransactionPosTerminalOperatorCardAcceptor   TransactionPosTerminalOperator = "CARD_ACCEPTOR"
+	TransactionPosTerminalOperatorUnknown        TransactionPosTerminalOperator = "UNKNOWN"
+)
+
+// Status of whether the POS is able to accept PINs
+type TransactionPosTerminalPinCapability string
+
+const (
+	TransactionPosTerminalPinCapabilityCapable     TransactionPosTerminalPinCapability = "CAPABLE"
+	TransactionPosTerminalPinCapabilityInoperative TransactionPosTerminalPinCapability = "INOPERATIVE"
+	TransactionPosTerminalPinCapabilityNotCapable  TransactionPosTerminalPinCapability = "NOT_CAPABLE"
+	TransactionPosTerminalPinCapabilityUnspecified TransactionPosTerminalPinCapability = "UNSPECIFIED"
+)
+
+// POS Type
+type TransactionPosTerminalType string
+
+const (
+	TransactionPosTerminalTypeAdministrative        TransactionPosTerminalType = "ADMINISTRATIVE"
+	TransactionPosTerminalTypeAtm                   TransactionPosTerminalType = "ATM"
+	TransactionPosTerminalTypeAuthorization         TransactionPosTerminalType = "AUTHORIZATION"
+	TransactionPosTerminalTypeCouponMachine         TransactionPosTerminalType = "COUPON_MACHINE"
+	TransactionPosTerminalTypeDialTerminal          TransactionPosTerminalType = "DIAL_TERMINAL"
+	TransactionPosTerminalTypeEcommerce             TransactionPosTerminalType = "ECOMMERCE"
+	TransactionPosTerminalTypeEcr                   TransactionPosTerminalType = "ECR"
+	TransactionPosTerminalTypeFuelMachine           TransactionPosTerminalType = "FUEL_MACHINE"
+	TransactionPosTerminalTypeHomeTerminal          TransactionPosTerminalType = "HOME_TERMINAL"
+	TransactionPosTerminalTypeMicr                  TransactionPosTerminalType = "MICR"
+	TransactionPosTerminalTypeOffPremise            TransactionPosTerminalType = "OFF_PREMISE"
+	TransactionPosTerminalTypePayment               TransactionPosTerminalType = "PAYMENT"
+	TransactionPosTerminalTypePda                   TransactionPosTerminalType = "PDA"
+	TransactionPosTerminalTypePhone                 TransactionPosTerminalType = "PHONE"
+	TransactionPosTerminalTypePoint                 TransactionPosTerminalType = "POINT"
+	TransactionPosTerminalTypePosTerminal           TransactionPosTerminalType = "POS_TERMINAL"
+	TransactionPosTerminalTypePublicUtility         TransactionPosTerminalType = "PUBLIC_UTILITY"
+	TransactionPosTerminalTypeSelfService           TransactionPosTerminalType = "SELF_SERVICE"
+	TransactionPosTerminalTypeTelevision            TransactionPosTerminalType = "TELEVISION"
+	TransactionPosTerminalTypeTeller                TransactionPosTerminalType = "TELLER"
+	TransactionPosTerminalTypeTravelersCheckMachine TransactionPosTerminalType = "TRAVELERS_CHECK_MACHINE"
+	TransactionPosTerminalTypeUnknown               TransactionPosTerminalType = "UNKNOWN"
+	TransactionPosTerminalTypeVending               TransactionPosTerminalType = "VENDING"
+	TransactionPosTerminalTypeVoice                 TransactionPosTerminalType = "VOICE"
+)
+
 // `APPROVED` or decline reason. See Event result types
 type TransactionResult string
 
 const (
-	TransactionResultAccountStateTransaction TransactionResult = "ACCOUNT_STATE_TRANSACTION"
 	TransactionResultApproved                TransactionResult = "APPROVED"
 	TransactionResultBankConnectionError     TransactionResult = "BANK_CONNECTION_ERROR"
 	TransactionResultBankNotVerified         TransactionResult = "BANK_NOT_VERIFIED"
 	TransactionResultCardClosed              TransactionResult = "CARD_CLOSED"
 	TransactionResultCardPaused              TransactionResult = "CARD_PAUSED"
+	TransactionResultDeclined                TransactionResult = "DECLINED"
 	TransactionResultFraudAdvice             TransactionResult = "FRAUD_ADVICE"
-	TransactionResultGlobalMonthlyLimit      TransactionResult = "GLOBAL_MONTHLY_LIMIT"
-	TransactionResultGlobalTransactionLimit  TransactionResult = "GLOBAL_TRANSACTION_LIMIT"
-	TransactionResultGlobalWeeklyLimit       TransactionResult = "GLOBAL_WEEKLY_LIMIT"
 	TransactionResultInactiveAccount         TransactionResult = "INACTIVE_ACCOUNT"
 	TransactionResultIncorrectPin            TransactionResult = "INCORRECT_PIN"
 	TransactionResultInsufficientFunds       TransactionResult = "INSUFFICIENT_FUNDS"
@@ -548,12 +745,41 @@ const (
 type TransactionStatus string
 
 const (
-	TransactionStatusBounced  TransactionStatus = "BOUNCED"
 	TransactionStatusDeclined TransactionStatus = "DECLINED"
 	TransactionStatusExpired  TransactionStatus = "EXPIRED"
 	TransactionStatusPending  TransactionStatus = "PENDING"
 	TransactionStatusSettled  TransactionStatus = "SETTLED"
 	TransactionStatusVoided   TransactionStatus = "VOIDED"
+)
+
+type TransactionTokenInfo struct {
+	// Source of the token
+	WalletType TransactionTokenInfoWalletType `json:"wallet_type"`
+	JSON       transactionTokenInfoJSON       `json:"-"`
+}
+
+// transactionTokenInfoJSON contains the JSON metadata for the struct
+// [TransactionTokenInfo]
+type transactionTokenInfoJSON struct {
+	WalletType  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *TransactionTokenInfo) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+// Source of the token
+type TransactionTokenInfoWalletType string
+
+const (
+	TransactionTokenInfoWalletTypeApplePay   TransactionTokenInfoWalletType = "APPLE_PAY"
+	TransactionTokenInfoWalletTypeGooglePay  TransactionTokenInfoWalletType = "GOOGLE_PAY"
+	TransactionTokenInfoWalletTypeMasterpass TransactionTokenInfoWalletType = "MASTERPASS"
+	TransactionTokenInfoWalletTypeMerchant   TransactionTokenInfoWalletType = "MERCHANT"
+	TransactionTokenInfoWalletTypeOther      TransactionTokenInfoWalletType = "OTHER"
+	TransactionTokenInfoWalletTypeSamsungPay TransactionTokenInfoWalletType = "SAMSUNG_PAY"
 )
 
 type TransactionCardholderAuthentication struct {
