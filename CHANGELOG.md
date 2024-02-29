@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.25.0 (2024-02-29)
+
+Full Changelog: [v0.24.0...v0.25.0](https://github.com/lithic-com/lithic-go/compare/v0.24.0...v0.25.0)
+
+### Features
+
+* **api:** create financial account and retry microdeposits endpoints ([#226](https://github.com/lithic-com/lithic-go/issues/226)) ([c52f602](https://github.com/lithic-com/lithic-go/commit/c52f602fbc00e252a693cf01306eebb707ef0278))
+* **api:** tokenizations ([#228](https://github.com/lithic-com/lithic-go/issues/228)) ([957d974](https://github.com/lithic-com/lithic-go/commit/957d974fa6a613ed73bca32913a8dcd56de2f69c))
+* **api:** update financial_account_type and documentation ([#225](https://github.com/lithic-com/lithic-go/issues/225)) ([e81a342](https://github.com/lithic-com/lithic-go/commit/e81a342fa9f1450b53ef6e4749405ef72e3072ed))
+* **api:** updates ([#229](https://github.com/lithic-com/lithic-go/issues/229)) ([825ff7e](https://github.com/lithic-com/lithic-go/commit/825ff7e599dfa1b03b39e87ab74c7f64f6dcf9a1))
+
+
+### Chores
+
+* **internal:** bump timeout threshold in tests ([#221](https://github.com/lithic-com/lithic-go/issues/221)) ([87470fd](https://github.com/lithic-com/lithic-go/commit/87470fdbb0c4d8a25710a9d39a28cdd1e8c4bce5))
+* **internal:** refactor release environment script ([#223](https://github.com/lithic-com/lithic-go/issues/223)) ([5dfab6d](https://github.com/lithic-com/lithic-go/commit/5dfab6d5879ec2c9e74738963918dece70eb82d2))
+* **internal:** update deps ([#227](https://github.com/lithic-com/lithic-go/issues/227)) ([c9fc50f](https://github.com/lithic-com/lithic-go/commit/c9fc50f92bd758a2e5f699ad78715cbac130ce2e))
+
+
+### Documentation
+
+* **readme:** improve wording ([#230](https://github.com/lithic-com/lithic-go/issues/230)) ([dc0dceb](https://github.com/lithic-com/lithic-go/commit/dc0dcebcfed1775186543dac372f63c4ca3b43a8))
+
 ## 0.24.0 (2024-02-08)
 
 Full Changelog: [v0.23.0...v0.24.0](https://github.com/lithic-com/lithic-go/compare/v0.23.0...v0.24.0)
