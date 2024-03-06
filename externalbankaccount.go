@@ -121,6 +121,10 @@ func (r *ExternalBankAccountAddress) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r externalBankAccountAddressJSON) RawJSON() string {
+	return r.raw
+}
+
 // Address used during Address Verification Service (AVS) checks during
 // transactions if enabled via Auth Rules.
 type ExternalBankAccountAddressParam struct {
@@ -232,6 +236,10 @@ type externalBankAccountNewResponseJSON struct {
 
 func (r *ExternalBankAccountNewResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r externalBankAccountNewResponseJSON) RawJSON() string {
+	return r.raw
 }
 
 type ExternalBankAccountNewResponseOwnerType string
@@ -356,6 +364,10 @@ func (r *ExternalBankAccountGetResponse) UnmarshalJSON(data []byte) (err error) 
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r externalBankAccountGetResponseJSON) RawJSON() string {
+	return r.raw
+}
+
 type ExternalBankAccountGetResponseOwnerType string
 
 const (
@@ -476,6 +488,10 @@ type externalBankAccountUpdateResponseJSON struct {
 
 func (r *ExternalBankAccountUpdateResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r externalBankAccountUpdateResponseJSON) RawJSON() string {
+	return r.raw
 }
 
 type ExternalBankAccountUpdateResponseOwnerType string
@@ -600,6 +616,10 @@ func (r *ExternalBankAccountListResponse) UnmarshalJSON(data []byte) (err error)
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r externalBankAccountListResponseJSON) RawJSON() string {
+	return r.raw
+}
+
 type ExternalBankAccountListResponseOwnerType string
 
 const (
@@ -720,6 +740,10 @@ type externalBankAccountRetryMicroDepositsResponseJSON struct {
 
 func (r *ExternalBankAccountRetryMicroDepositsResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r externalBankAccountRetryMicroDepositsResponseJSON) RawJSON() string {
+	return r.raw
 }
 
 type ExternalBankAccountRetryMicroDepositsResponseOwnerType string

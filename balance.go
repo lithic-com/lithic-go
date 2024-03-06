@@ -105,6 +105,10 @@ func (r *Balance) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r balanceJSON) RawJSON() string {
+	return r.raw
+}
+
 // Type of financial account.
 type BalanceFinancialAccountType string
 

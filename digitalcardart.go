@@ -101,6 +101,10 @@ func (r *DigitalCardArt) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r digitalCardArtJSON) RawJSON() string {
+	return r.raw
+}
+
 // Card network.
 type DigitalCardArtNetwork string
 

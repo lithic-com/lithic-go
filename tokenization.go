@@ -116,6 +116,10 @@ func (r *Tokenization) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r tokenizationJSON) RawJSON() string {
+	return r.raw
+}
+
 // The status of the tokenization request
 type TokenizationStatus string
 
@@ -171,6 +175,10 @@ func (r *TokenizationEvent) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r tokenizationEventJSON) RawJSON() string {
+	return r.raw
+}
+
 // Enum representing the result of the tokenization event
 type TokenizationEventsResult string
 
@@ -216,6 +224,10 @@ func (r *TokenizationGetResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r tokenizationGetResponseJSON) RawJSON() string {
+	return r.raw
+}
+
 type TokenizationSimulateResponse struct {
 	Data []Tokenization                   `json:"data"`
 	JSON tokenizationSimulateResponseJSON `json:"-"`
@@ -231,6 +243,10 @@ type tokenizationSimulateResponseJSON struct {
 
 func (r *TokenizationSimulateResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r tokenizationSimulateResponseJSON) RawJSON() string {
+	return r.raw
 }
 
 type TokenizationListParams struct {

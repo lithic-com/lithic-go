@@ -127,6 +127,10 @@ func (r *FinancialAccount) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r financialAccountJSON) RawJSON() string {
+	return r.raw
+}
+
 // Type of financial account
 type FinancialAccountType string
 
@@ -200,6 +204,10 @@ type financialTransactionJSON struct {
 
 func (r *FinancialTransaction) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r financialTransactionJSON) RawJSON() string {
+	return r.raw
 }
 
 // Status types:
@@ -281,6 +289,10 @@ type financialTransactionEventJSON struct {
 
 func (r *FinancialTransactionEvent) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r financialTransactionEventJSON) RawJSON() string {
+	return r.raw
 }
 
 // APPROVED financial events were successful while DECLINED financial events were

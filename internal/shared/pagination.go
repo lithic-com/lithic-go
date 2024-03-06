@@ -31,6 +31,10 @@ func (r *CursorPage[T]) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r cursorPageJSON) RawJSON() string {
+	return r.raw
+}
+
 // NextPage returns the next page as defined by this pagination style. When there
 // is no next page, this function will return a 'nil' for the page value, but will
 // not return an error
@@ -121,6 +125,10 @@ type singlePageJSON struct {
 
 func (r *SinglePage[T]) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r singlePageJSON) RawJSON() string {
+	return r.raw
 }
 
 // NextPage returns the next page as defined by this pagination style. When there

@@ -272,6 +272,10 @@ func (r *AccountHolder) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r accountHolderJSON) RawJSON() string {
+	return r.raw
+}
+
 type AccountHolderBeneficialOwnerEntity struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
@@ -310,6 +314,10 @@ func (r *AccountHolderBeneficialOwnerEntity) UnmarshalJSON(data []byte) (err err
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r accountHolderBeneficialOwnerEntityJSON) RawJSON() string {
+	return r.raw
+}
+
 // Information about an individual associated with an account holder. A subset of
 // the information provided via KYC. For example, we do not return the government
 // id.
@@ -344,6 +352,10 @@ type accountHolderBeneficialOwnerIndividualJSON struct {
 
 func (r *AccountHolderBeneficialOwnerIndividual) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountHolderBeneficialOwnerIndividualJSON) RawJSON() string {
+	return r.raw
 }
 
 // Only present when user_type == "BUSINESS". Information about the business for
@@ -386,6 +398,10 @@ func (r *AccountHolderBusinessEntity) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r accountHolderBusinessEntityJSON) RawJSON() string {
+	return r.raw
+}
+
 // Only present when user_type == "BUSINESS". An individual with significant
 // responsibility for managing the legal entity (e.g., a Chief Executive Officer,
 // Chief Financial Officer, Chief Operating Officer, Managing Member, General
@@ -423,6 +439,10 @@ type accountHolderControlPersonJSON struct {
 
 func (r *AccountHolderControlPerson) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountHolderControlPersonJSON) RawJSON() string {
+	return r.raw
 }
 
 // The type of KYC exemption for a KYC-Exempt Account Holder.
@@ -466,6 +486,10 @@ type accountHolderIndividualJSON struct {
 
 func (r *AccountHolderIndividual) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountHolderIndividualJSON) RawJSON() string {
+	return r.raw
 }
 
 // <Deprecated. Use verification_application.status instead> KYC and KYB evaluation
@@ -536,6 +560,10 @@ func (r *AccountHolderVerificationApplication) UnmarshalJSON(data []byte) (err e
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r accountHolderVerificationApplicationJSON) RawJSON() string {
+	return r.raw
+}
+
 // KYC and KYB evaluation states. Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT`
 // are only applicable for the `ADVANCED` workflow.
 type AccountHolderVerificationApplicationStatus string
@@ -591,6 +619,10 @@ func (r *AccountHolderDocument) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r accountHolderDocumentJSON) RawJSON() string {
+	return r.raw
+}
+
 // Type of documentation to be submitted for verification.
 type AccountHolderDocumentDocumentType string
 
@@ -631,6 +663,10 @@ type accountHolderDocumentRequiredDocumentUploadJSON struct {
 
 func (r *AccountHolderDocumentRequiredDocumentUpload) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountHolderDocumentRequiredDocumentUploadJSON) RawJSON() string {
+	return r.raw
 }
 
 // Type of image to upload.
@@ -698,6 +734,10 @@ func (r *AccountHolderNewResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r accountHolderNewResponseJSON) RawJSON() string {
+	return r.raw
+}
+
 // KYC and KYB evaluation states. Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT`
 // are only applicable for the `ADVANCED` workflow.
 type AccountHolderNewResponseStatus string
@@ -754,6 +794,10 @@ func (r *AccountHolderUpdateResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r accountHolderUpdateResponseJSON) RawJSON() string {
+	return r.raw
+}
+
 type AccountHolderListDocumentsResponse struct {
 	Data []AccountHolderDocument                `json:"data"`
 	JSON accountHolderListDocumentsResponseJSON `json:"-"`
@@ -769,6 +813,10 @@ type accountHolderListDocumentsResponseJSON struct {
 
 func (r *AccountHolderListDocumentsResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountHolderListDocumentsResponseJSON) RawJSON() string {
+	return r.raw
 }
 
 // This interface is a union satisfied by one of the following:

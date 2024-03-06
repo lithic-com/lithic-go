@@ -95,6 +95,10 @@ func (r *CardProgram) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r cardProgramJSON) RawJSON() string {
+	return r.raw
+}
+
 type CardProgramListParams struct {
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.

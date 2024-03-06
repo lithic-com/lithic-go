@@ -131,6 +131,10 @@ func (r *Account) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r accountJSON) RawJSON() string {
+	return r.raw
+}
+
 // Spend limit information for the user containing the daily, monthly, and lifetime
 // spend limit of the account. Any charges to a card owned by this account will be
 // declined once their transaction volume has surpassed the value in the applicable
@@ -158,6 +162,10 @@ type accountSpendLimitJSON struct {
 
 func (r *AccountSpendLimit) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountSpendLimitJSON) RawJSON() string {
+	return r.raw
 }
 
 // Account state:
@@ -201,6 +209,10 @@ func (r *AccountAccountHolder) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r accountAccountHolderJSON) RawJSON() string {
+	return r.raw
+}
+
 type AccountVerificationAddress struct {
 	// Valid deliverable address (no PO boxes).
 	Address1 string `json:"address1,required"`
@@ -236,6 +248,10 @@ func (r *AccountVerificationAddress) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r accountVerificationAddressJSON) RawJSON() string {
+	return r.raw
+}
+
 type AccountSpendLimits struct {
 	AvailableSpendLimit AccountSpendLimitsAvailableSpendLimit `json:"available_spend_limit,required"`
 	JSON                accountSpendLimitsJSON                `json:"-"`
@@ -251,6 +267,10 @@ type accountSpendLimitsJSON struct {
 
 func (r *AccountSpendLimits) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountSpendLimitsJSON) RawJSON() string {
+	return r.raw
 }
 
 type AccountSpendLimitsAvailableSpendLimit struct {
@@ -279,6 +299,10 @@ func (r *AccountSpendLimitsAvailableSpendLimit) UnmarshalJSON(data []byte) (err 
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r accountSpendLimitsAvailableSpendLimitJSON) RawJSON() string {
+	return r.raw
+}
+
 type BusinessAccount struct {
 	// Account token
 	Token                    string                                  `json:"token,required" format:"uuid"`
@@ -299,6 +323,10 @@ type businessAccountJSON struct {
 
 func (r *BusinessAccount) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r businessAccountJSON) RawJSON() string {
+	return r.raw
 }
 
 type BusinessAccountCollectionsConfiguration struct {
@@ -323,6 +351,10 @@ type businessAccountCollectionsConfigurationJSON struct {
 
 func (r *BusinessAccountCollectionsConfiguration) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r businessAccountCollectionsConfigurationJSON) RawJSON() string {
+	return r.raw
 }
 
 type AccountUpdateParams struct {

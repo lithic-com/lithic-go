@@ -148,6 +148,10 @@ func (r *AuthRule) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r authRuleJSON) RawJSON() string {
+	return r.raw
+}
+
 // Indicates whether the Auth Rule is ACTIVE or INACTIVE
 type AuthRuleState string
 
@@ -173,6 +177,10 @@ func (r *AuthRuleGetResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r authRuleGetResponseJSON) RawJSON() string {
+	return r.raw
+}
+
 type AuthRuleRemoveResponse struct {
 	AccountTokens []string                   `json:"account_tokens"`
 	CardTokens    []string                   `json:"card_tokens"`
@@ -192,6 +200,10 @@ type authRuleRemoveResponseJSON struct {
 
 func (r *AuthRuleRemoveResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleRemoveResponseJSON) RawJSON() string {
+	return r.raw
 }
 
 type AuthRuleNewParams struct {
