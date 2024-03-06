@@ -106,6 +106,10 @@ func (r *Transfer) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r transferJSON) RawJSON() string {
+	return r.raw
+}
+
 // Status types:
 //
 //   - `TRANSFER` - Internal transfer of funds between financial accounts in your
@@ -180,6 +184,10 @@ type transferEventJSON struct {
 
 func (r *TransferEvent) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transferEventJSON) RawJSON() string {
+	return r.raw
 }
 
 // APPROVED financial events were successful while DECLINED financial events were
@@ -295,6 +303,10 @@ type transferNewResponseJSON struct {
 
 func (r *TransferNewResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transferNewResponseJSON) RawJSON() string {
+	return r.raw
 }
 
 type TransferNewParams struct {

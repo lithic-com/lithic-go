@@ -291,6 +291,10 @@ func (r *Dispute) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r disputeJSON) RawJSON() string {
+	return r.raw
+}
+
 // Dispute reason:
 //
 //   - `ATM_CASH_MISDISPENSE`: ATM cash misdispense.
@@ -435,6 +439,10 @@ type disputeEvidenceJSON struct {
 
 func (r *DisputeEvidence) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r disputeEvidenceJSON) RawJSON() string {
+	return r.raw
 }
 
 // Upload status types:

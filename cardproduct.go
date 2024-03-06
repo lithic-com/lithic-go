@@ -57,3 +57,7 @@ type cardProductCreditDetailResponseJSON struct {
 func (r *CardProductCreditDetailResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
+
+func (r cardProductCreditDetailResponseJSON) RawJSON() string {
+	return r.raw
+}

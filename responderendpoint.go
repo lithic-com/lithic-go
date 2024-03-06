@@ -78,6 +78,10 @@ func (r *ResponderEndpointStatus) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r responderEndpointStatusJSON) RawJSON() string {
+	return r.raw
+}
+
 type ResponderEndpointNewResponse struct {
 	// True if the endpoint was enrolled successfully.
 	Enrolled bool                             `json:"enrolled"`
@@ -94,6 +98,10 @@ type responderEndpointNewResponseJSON struct {
 
 func (r *ResponderEndpointNewResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r responderEndpointNewResponseJSON) RawJSON() string {
+	return r.raw
 }
 
 type ResponderEndpointNewParams struct {

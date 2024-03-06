@@ -71,3 +71,7 @@ type threeDSDecisioningGetSecretResponseJSON struct {
 func (r *ThreeDSDecisioningGetSecretResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
+
+func (r threeDSDecisioningGetSecretResponseJSON) RawJSON() string {
+	return r.raw
+}

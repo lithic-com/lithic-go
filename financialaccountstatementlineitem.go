@@ -138,6 +138,10 @@ func (r *FinancialAccountStatementLineItemListResponse) UnmarshalJSON(data []byt
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r financialAccountStatementLineItemListResponseJSON) RawJSON() string {
+	return r.raw
+}
+
 type FinancialAccountStatementLineItemListResponseCategory string
 
 const (

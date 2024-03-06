@@ -181,6 +181,10 @@ func (r *EventSubscriptionGetSecretResponse) UnmarshalJSON(data []byte) (err err
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r eventSubscriptionGetSecretResponseJSON) RawJSON() string {
+	return r.raw
+}
+
 type EventSubscriptionNewParams struct {
 	// URL to which event webhooks will be sent. URL must be a valid HTTPS address.
 	URL param.Field[string] `json:"url,required" format:"uri"`

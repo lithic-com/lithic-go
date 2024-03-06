@@ -247,6 +247,10 @@ func (r *Transaction) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r transactionJSON) RawJSON() string {
+	return r.raw
+}
+
 type TransactionAvs struct {
 	// Cardholder address
 	Address string `json:"address"`
@@ -265,6 +269,10 @@ type transactionAvsJSON struct {
 
 func (r *TransactionAvs) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionAvsJSON) RawJSON() string {
+	return r.raw
 }
 
 // A single card transaction may include multiple events that affect the
@@ -343,6 +351,10 @@ type transactionEventJSON struct {
 
 func (r *TransactionEvent) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionEventJSON) RawJSON() string {
+	return r.raw
 }
 
 type TransactionEventsDetailedResult string
@@ -519,6 +531,10 @@ func (r *TransactionMerchant) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r transactionMerchantJSON) RawJSON() string {
+	return r.raw
+}
+
 // Card network of the authorization. Can be `INTERLINK`, `MAESTRO`, `MASTERCARD`,
 // `VISA`, or `UNKNOWN`. Value is `UNKNOWN` when Lithic cannot determine the
 // network code from the upstream provider.
@@ -550,6 +566,10 @@ func (r *TransactionPos) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r transactionPosJSON) RawJSON() string {
+	return r.raw
+}
+
 type TransactionPosEntryMode struct {
 	// Card status
 	Card TransactionPosEntryModeCard `json:"card,required"`
@@ -575,6 +595,10 @@ type transactionPosEntryModeJSON struct {
 
 func (r *TransactionPosEntryMode) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionPosEntryModeJSON) RawJSON() string {
+	return r.raw
 }
 
 // Card status
@@ -659,6 +683,10 @@ type transactionPosTerminalJSON struct {
 
 func (r *TransactionPosTerminal) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionPosTerminalJSON) RawJSON() string {
+	return r.raw
 }
 
 // The person that is designed to swipe the card
@@ -768,6 +796,10 @@ type transactionTokenInfoJSON struct {
 
 func (r *TransactionTokenInfo) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionTokenInfoJSON) RawJSON() string {
+	return r.raw
 }
 
 // Source of the token
@@ -914,6 +946,10 @@ type transactionCardholderAuthenticationJSON struct {
 
 func (r *TransactionCardholderAuthentication) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionCardholderAuthenticationJSON) RawJSON() string {
+	return r.raw
 }
 
 // Exemption applied by the ACS to authenticate the transaction without requesting
@@ -1095,6 +1131,10 @@ func (r *TransactionSimulateAuthorizationResponse) UnmarshalJSON(data []byte) (e
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r transactionSimulateAuthorizationResponseJSON) RawJSON() string {
+	return r.raw
+}
+
 type TransactionSimulateAuthorizationAdviceResponse struct {
 	// A unique token to reference this transaction.
 	Token string `json:"token" format:"uuid"`
@@ -1116,6 +1156,10 @@ func (r *TransactionSimulateAuthorizationAdviceResponse) UnmarshalJSON(data []by
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r transactionSimulateAuthorizationAdviceResponseJSON) RawJSON() string {
+	return r.raw
+}
+
 type TransactionSimulateClearingResponse struct {
 	// Debugging request ID to share with Lithic Support team.
 	DebuggingRequestID string                                  `json:"debugging_request_id" format:"uuid"`
@@ -1132,6 +1176,10 @@ type transactionSimulateClearingResponseJSON struct {
 
 func (r *TransactionSimulateClearingResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionSimulateClearingResponseJSON) RawJSON() string {
+	return r.raw
 }
 
 type TransactionSimulateCreditAuthorizationResponse struct {
@@ -1155,6 +1203,10 @@ func (r *TransactionSimulateCreditAuthorizationResponse) UnmarshalJSON(data []by
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r transactionSimulateCreditAuthorizationResponseJSON) RawJSON() string {
+	return r.raw
+}
+
 type TransactionSimulateReturnResponse struct {
 	// A unique token to reference this transaction.
 	Token string `json:"token" format:"uuid"`
@@ -1176,6 +1228,10 @@ func (r *TransactionSimulateReturnResponse) UnmarshalJSON(data []byte) (err erro
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r transactionSimulateReturnResponseJSON) RawJSON() string {
+	return r.raw
+}
+
 type TransactionSimulateReturnReversalResponse struct {
 	// Debugging request ID to share with Lithic Support team.
 	DebuggingRequestID string                                        `json:"debugging_request_id" format:"uuid"`
@@ -1194,6 +1250,10 @@ func (r *TransactionSimulateReturnReversalResponse) UnmarshalJSON(data []byte) (
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r transactionSimulateReturnReversalResponseJSON) RawJSON() string {
+	return r.raw
+}
+
 type TransactionSimulateVoidResponse struct {
 	// Debugging request ID to share with Lithic Support team.
 	DebuggingRequestID string                              `json:"debugging_request_id" format:"uuid"`
@@ -1210,6 +1270,10 @@ type transactionSimulateVoidResponseJSON struct {
 
 func (r *TransactionSimulateVoidResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionSimulateVoidResponseJSON) RawJSON() string {
+	return r.raw
 }
 
 type TransactionListParams struct {

@@ -70,6 +70,10 @@ func (r *TokenizationSecret) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r tokenizationSecretJSON) RawJSON() string {
+	return r.raw
+}
+
 type TokenizationDecisioningRotateSecretResponse struct {
 	// The new Tokenization Decisioning HMAC secret
 	Secret string                                          `json:"secret"`
@@ -86,4 +90,8 @@ type tokenizationDecisioningRotateSecretResponseJSON struct {
 
 func (r *TokenizationDecisioningRotateSecretResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r tokenizationDecisioningRotateSecretResponseJSON) RawJSON() string {
+	return r.raw
 }

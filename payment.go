@@ -124,6 +124,10 @@ func (r *Payment) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r paymentJSON) RawJSON() string {
+	return r.raw
+}
+
 type PaymentDirection string
 
 const (
@@ -163,6 +167,10 @@ func (r *PaymentMethodAttributes) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r paymentMethodAttributesJSON) RawJSON() string {
+	return r.raw
+}
+
 type PaymentMethodAttributesSecCode string
 
 const (
@@ -197,6 +205,10 @@ func (r *PaymentNewResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r paymentNewResponseJSON) RawJSON() string {
+	return r.raw
+}
+
 type PaymentRetryResponse struct {
 	// Balance of a Financial Account
 	Balance Balance                  `json:"balance"`
@@ -214,6 +226,10 @@ type paymentRetryResponseJSON struct {
 
 func (r *PaymentRetryResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r paymentRetryResponseJSON) RawJSON() string {
+	return r.raw
 }
 
 type PaymentSimulateReleaseResponse struct {
@@ -235,6 +251,10 @@ type paymentSimulateReleaseResponseJSON struct {
 
 func (r *PaymentSimulateReleaseResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r paymentSimulateReleaseResponseJSON) RawJSON() string {
+	return r.raw
 }
 
 type PaymentSimulateReleaseResponseResult string
@@ -263,6 +283,10 @@ type paymentSimulateReturnResponseJSON struct {
 
 func (r *PaymentSimulateReturnResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r paymentSimulateReturnResponseJSON) RawJSON() string {
+	return r.raw
 }
 
 type PaymentSimulateReturnResponseResult string

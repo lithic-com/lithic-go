@@ -71,3 +71,7 @@ type authStreamSecretJSON struct {
 func (r *AuthStreamSecret) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
+
+func (r authStreamSecretJSON) RawJSON() string {
+	return r.raw
+}

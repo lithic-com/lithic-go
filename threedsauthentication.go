@@ -134,6 +134,10 @@ func (r *ThreeDSAuthenticationGetResponse) UnmarshalJSON(data []byte) (err error
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r threeDSAuthenticationGetResponseJSON) RawJSON() string {
+	return r.raw
+}
+
 // Type of account/card that is being used for the transaction. Maps to EMV 3DS
 // field acctType.
 type ThreeDSAuthenticationGetResponseAccountType string
@@ -209,6 +213,10 @@ func (r *ThreeDSAuthenticationGetResponseCardholder) UnmarshalJSON(data []byte) 
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r threeDSAuthenticationGetResponseCardholderJSON) RawJSON() string {
+	return r.raw
+}
+
 // Object containing data on the billing address provided during the transaction.
 type ThreeDSAuthenticationGetResponseCardholderBillingAddress struct {
 	// First line of the street address provided by the cardholder.
@@ -245,6 +253,10 @@ func (r *ThreeDSAuthenticationGetResponseCardholderBillingAddress) UnmarshalJSON
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r threeDSAuthenticationGetResponseCardholderBillingAddressJSON) RawJSON() string {
+	return r.raw
+}
+
 // Object containing data on the shipping address provided during the transaction.
 type ThreeDSAuthenticationGetResponseCardholderShippingAddress struct {
 	// First line of the street address provided by the cardholder.
@@ -279,6 +291,10 @@ type threeDSAuthenticationGetResponseCardholderShippingAddressJSON struct {
 
 func (r *ThreeDSAuthenticationGetResponseCardholderShippingAddress) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r threeDSAuthenticationGetResponseCardholderShippingAddressJSON) RawJSON() string {
+	return r.raw
 }
 
 // Channel in which the authentication occurs. Maps to EMV 3DS field deviceChannel.
@@ -337,6 +353,10 @@ func (r *ThreeDSAuthenticationGetResponseMerchant) UnmarshalJSON(data []byte) (e
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r threeDSAuthenticationGetResponseMerchantJSON) RawJSON() string {
+	return r.raw
+}
+
 // Object containing additional data indicating additional risk factors related to
 // the e-commerce transaction.
 type ThreeDSAuthenticationGetResponseMerchantRiskIndicator struct {
@@ -391,6 +411,10 @@ type threeDSAuthenticationGetResponseMerchantRiskIndicatorJSON struct {
 
 func (r *ThreeDSAuthenticationGetResponseMerchantRiskIndicator) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r threeDSAuthenticationGetResponseMerchantRiskIndicatorJSON) RawJSON() string {
+	return r.raw
 }
 
 // The delivery time frame for the merchandise. Maps to EMV 3DS field
@@ -476,6 +500,10 @@ func (r *ThreeDSAuthenticationGetResponseAdditionalData) UnmarshalJSON(data []by
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r threeDSAuthenticationGetResponseAdditionalDataJSON) RawJSON() string {
+	return r.raw
+}
+
 // Mastercard only: Indicates whether the network would have considered the
 // authentication request to be low risk or not.
 type ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecision string
@@ -508,6 +536,10 @@ type threeDSAuthenticationGetResponseAppJSON struct {
 
 func (r *ThreeDSAuthenticationGetResponseApp) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r threeDSAuthenticationGetResponseAppJSON) RawJSON() string {
+	return r.raw
 }
 
 // Type of authentication request - i.e., the type of transaction or interaction is
@@ -567,6 +599,10 @@ type threeDSAuthenticationGetResponseBrowserJSON struct {
 
 func (r *ThreeDSAuthenticationGetResponseBrowser) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r threeDSAuthenticationGetResponseBrowserJSON) RawJSON() string {
+	return r.raw
 }
 
 // Type of 3DS Requestor Initiated (3RI) request i.e., a 3DS authentication that
@@ -631,6 +667,10 @@ func (r *ThreeDSAuthenticationGetResponseTransaction) UnmarshalJSON(data []byte)
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r threeDSAuthenticationGetResponseTransactionJSON) RawJSON() string {
+	return r.raw
+}
+
 // Type of the transaction for which a 3DS authentication request is occurring.
 // Maps to EMV 3DS field transType.
 type ThreeDSAuthenticationGetResponseTransactionType string
@@ -663,6 +703,10 @@ type threeDSAuthenticationSimulateResponseJSON struct {
 
 func (r *ThreeDSAuthenticationSimulateResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r threeDSAuthenticationSimulateResponseJSON) RawJSON() string {
+	return r.raw
 }
 
 type ThreeDSAuthenticationSimulateParams struct {
