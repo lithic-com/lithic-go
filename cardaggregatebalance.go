@@ -104,6 +104,10 @@ func (r *CardAggregateBalanceListResponse) UnmarshalJSON(data []byte) (err error
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r cardAggregateBalanceListResponseJSON) RawJSON() string {
+	return r.raw
+}
+
 type CardAggregateBalanceListParams struct {
 	// Cardholder to retrieve aggregate balances for.
 	AccountToken param.Field[string] `query:"account_token"`

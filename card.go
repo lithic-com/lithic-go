@@ -383,6 +383,10 @@ func (r *Card) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r cardJSON) RawJSON() string {
+	return r.raw
+}
+
 type CardFunding struct {
 	// A globally unique identifier for this FundingAccount.
 	Token string `json:"token,required" format:"uuid"`
@@ -429,6 +433,10 @@ type cardFundingJSON struct {
 
 func (r *CardFunding) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardFundingJSON) RawJSON() string {
+	return r.raw
 }
 
 // State of funding source.
@@ -527,6 +535,10 @@ func (r *CardSpendLimits) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r cardSpendLimitsJSON) RawJSON() string {
+	return r.raw
+}
+
 type CardSpendLimitsAvailableSpendLimit struct {
 	// The available spend limit relative to the annual limit configured on the Card.
 	Annually int64 `json:"annually"`
@@ -549,6 +561,10 @@ type cardSpendLimitsAvailableSpendLimitJSON struct {
 
 func (r *CardSpendLimitsAvailableSpendLimit) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardSpendLimitsAvailableSpendLimitJSON) RawJSON() string {
+	return r.raw
 }
 
 // Spend limit duration values:
@@ -587,6 +603,10 @@ type cardProvisionResponseJSON struct {
 
 func (r *CardProvisionResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardProvisionResponseJSON) RawJSON() string {
+	return r.raw
 }
 
 type CardNewParams struct {

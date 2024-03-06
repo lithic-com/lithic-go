@@ -122,6 +122,10 @@ func (r *ExternalBankAccountMicroDepositNewResponse) UnmarshalJSON(data []byte) 
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r externalBankAccountMicroDepositNewResponseJSON) RawJSON() string {
+	return r.raw
+}
+
 type ExternalBankAccountMicroDepositNewResponseOwnerType string
 
 const (

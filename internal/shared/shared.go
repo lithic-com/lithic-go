@@ -42,6 +42,10 @@ func (r *Address) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r addressJSON) RawJSON() string {
+	return r.raw
+}
+
 type AddressParam struct {
 	// Valid deliverable address (no PO boxes).
 	Address1 param.Field[string] `json:"address1,required"`

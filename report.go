@@ -108,6 +108,10 @@ func (r *SettlementDetail) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r settlementDetailJSON) RawJSON() string {
+	return r.raw
+}
+
 // Card network where the transaction took place.
 type SettlementDetailNetwork string
 
@@ -135,6 +139,10 @@ type settlementDetailOtherFeesDetailsJSON struct {
 
 func (r *SettlementDetailOtherFeesDetails) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r settlementDetailOtherFeesDetailsJSON) RawJSON() string {
+	return r.raw
 }
 
 // The type of settlement record.
@@ -198,6 +206,10 @@ func (r *SettlementReport) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r settlementReportJSON) RawJSON() string {
+	return r.raw
+}
+
 type SettlementSummaryDetails struct {
 	// The total gross amount of disputes settlements.
 	DisputesGrossAmount int64 `json:"disputes_gross_amount"`
@@ -235,6 +247,10 @@ type settlementSummaryDetailsJSON struct {
 
 func (r *SettlementSummaryDetails) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r settlementSummaryDetailsJSON) RawJSON() string {
+	return r.raw
 }
 
 // Card network where the transaction took place

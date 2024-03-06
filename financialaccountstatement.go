@@ -145,6 +145,10 @@ func (r *Statement) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r statementJSON) RawJSON() string {
+	return r.raw
+}
+
 type FinancialAccountStatementListParams struct {
 	// Date string in RFC 3339 format. Only entries created after the specified date
 	// will be included.

@@ -21,3 +21,7 @@ type apiStatusJSON struct {
 func (r *APIStatus) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
+
+func (r apiStatusJSON) RawJSON() string {
+	return r.raw
+}

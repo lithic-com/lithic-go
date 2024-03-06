@@ -138,6 +138,10 @@ func (r *Event) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r eventJSON) RawJSON() string {
+	return r.raw
+}
+
 // Event types:
 //
 //   - `account_holder.created` - Notification that a new account holder has been
@@ -210,6 +214,10 @@ func (r *EventSubscription) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
+func (r eventSubscriptionJSON) RawJSON() string {
+	return r.raw
+}
+
 type EventSubscriptionEventType string
 
 const (
@@ -270,6 +278,10 @@ type messageAttemptJSON struct {
 
 func (r *MessageAttempt) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r messageAttemptJSON) RawJSON() string {
+	return r.raw
 }
 
 // The status of the event attempt.
