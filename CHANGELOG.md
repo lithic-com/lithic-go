@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.26.0 (2024-03-12)
+
+Full Changelog: [v0.25.0...v0.26.0](https://github.com/lithic-com/lithic-go/compare/v0.25.0...v0.26.0)
+
+### Features
+
+* implement public RawJSON of response structs ([#231](https://github.com/lithic-com/lithic-go/issues/231)) ([df76ab0](https://github.com/lithic-com/lithic-go/commit/df76ab0abebdda1ee03e85288d051f4eef23b670))
+
+
+### Bug Fixes
+
+* fix String() behavior of param.Field ([#235](https://github.com/lithic-com/lithic-go/issues/235)) ([df2d179](https://github.com/lithic-com/lithic-go/commit/df2d179c5a4b6899816cc45cd57ca826a8edfd0c))
+
+
+### Chores
+
+* **internal:** improve union deserialization logic ([#233](https://github.com/lithic-com/lithic-go/issues/233)) ([b969527](https://github.com/lithic-com/lithic-go/commit/b969527514f57b8ec7abff1da1d0d0ed50f5ab88))
+
+
+### Documentation
+
+* **contributing:** add a CONTRIBUTING.md ([#234](https://github.com/lithic-com/lithic-go/issues/234)) ([a3347c8](https://github.com/lithic-com/lithic-go/commit/a3347c8e42a0997070f56c87f9fabcc4b4cc8a7b))
+
 ## 0.25.0 (2024-02-29)
 
 Full Changelog: [v0.24.0...v0.25.0](https://github.com/lithic-com/lithic-go/compare/v0.24.0...v0.25.0)
