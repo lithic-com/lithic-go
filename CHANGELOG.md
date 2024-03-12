@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.26.1 (2024-03-12)
+
+Full Changelog: [v0.26.0...v0.26.1](https://github.com/lithic-com/lithic-go/compare/v0.26.0...v0.26.1)
+
+### Bug Fixes
+
+* **client:** don't include ? in path unless necessary ([#236](https://github.com/lithic-com/lithic-go/issues/236)) ([c3ab277](https://github.com/lithic-com/lithic-go/commit/c3ab277a354e094bf3ad8f2d4cfa94ebbbf9704f))
+
 ## 0.26.0 (2024-03-12)
 
 Full Changelog: [v0.25.0...v0.26.0](https://github.com/lithic-com/lithic-go/compare/v0.25.0...v0.26.0)
