@@ -4,11 +4,13 @@ package lithic_test
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"testing"
 	"time"
 
 	"github.com/lithic-com/lithic-go"
+	"github.com/lithic-com/lithic-go/internal"
 	"github.com/lithic-com/lithic-go/option"
 )
 
@@ -18,6 +20,28 @@ type closureTransport struct {
 
 func (t *closureTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return t.fn(req)
+}
+
+func TestUserAgentHeader(t *testing.T) {
+	var userAgent string
+	client := lithic.NewClient(
+		option.WithHTTPClient(&http.Client{
+			Transport: &closureTransport{
+				fn: func(req *http.Request) (*http.Response, error) {
+					userAgent = req.Header.Get("User-Agent")
+					return &http.Response{
+						StatusCode: http.StatusOK,
+					}, nil
+				},
+			},
+		}),
+	)
+	client.Cards.New(context.Background(), lithic.CardNewParams{
+		Type: lithic.F(lithic.CardNewParamsTypeSingleUse),
+	})
+	if userAgent != fmt.Sprintf("Lithic/Go %s", internal.PackageVersion) {
+		t.Errorf("Expected User-Agent to be correct, but got: %#v", userAgent)
+	}
 }
 
 func TestRetryAfter(t *testing.T) {
