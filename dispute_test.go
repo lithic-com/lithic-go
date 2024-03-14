@@ -258,7 +258,3 @@ func TestDisputeGetEvidence(t *testing.T) {
 		t.Fatalf("err should be nil: %s", err.Error())
 	}
 }
-
-func TestDisputesUploadEvidence(t *testing.T) {
-	t.Skip("TODO")
-}
