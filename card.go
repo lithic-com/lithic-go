@@ -4,6 +4,9 @@ package lithic
 
 import (
 	"context"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -126,6 +129,81 @@ func (r *CardService) Embed(ctx context.Context, query CardEmbedParams, opts ...
 	path := "embed/card"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
 	return
+}
+
+func (r *CardService) GetEmbedHTML(ctx context.Context, params CardGetEmbedHTMLParams, opts ...option.RequestOption) (res []byte, err error) {
+	opts = append(r.Options, opts...)
+	buf, err := params.MarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	cfg, err := requestconfig.NewRequestConfig(ctx, "GET", "embed/card", nil, &res, opts...)
+	if err != nil {
+		return nil, err
+	}
+	mac := hmac.New(sha256.New, []byte(cfg.APIKey))
+	mac.Write(buf)
+	sign := mac.Sum(nil)
+	err = cfg.Apply(
+		option.WithHeader("Accept", "text/html"),
+		option.WithQuery("hmac", base64.StdEncoding.EncodeToString(sign)),
+		option.WithQuery("embed_request", base64.StdEncoding.EncodeToString(buf)),
+	)
+	if err != nil {
+		return nil, err
+	}
+	err = cfg.Execute()
+	return
+}
+
+// Handling full card PANs and CVV codes requires that you comply with the Payment
+// Card Industry Data Security Standards (PCI DSS). Some clients choose to reduce
+// their compliance obligations by leveraging our embedded card UI solution
+// documented below.
+//
+// In this setup, PANs and CVV codes are presented to the end-user via a card UI
+// that we provide, optionally styled in the customer's branding using a specified
+// css stylesheet. A user's browser makes the request directly to api.lithic.com,
+// so card PANs and CVVs never touch the API customer's servers while full card
+// data is displayed to their end-users. The response contains an HTML document.
+// This means that the url for the request can be inserted straight into the `src`
+// attribute of an iframe.
+//
+// ```html
+// <iframe
+//
+//	id="card-iframe"
+//	src="https://sandbox.lithic.com/v1/embed/card?embed_request=eyJjc3MiO...;hmac=r8tx1..."
+//	allow="clipboard-write"
+//	class="content"
+//
+// ></iframe>
+// ```
+//
+// You should compute the request payload on the server side. You can render it (or
+// the whole iframe) on the server or make an ajax call from your front end code,
+// but **do not ever embed your API key into front end code, as doing so introduces
+// a serious security vulnerability**.
+func (r *CardService) GetEmbedURL(ctx context.Context, params CardGetEmbedURLParams, opts ...option.RequestOption) (res *url.URL, err error) {
+	buf, err := params.MarshalJSON()
+	if err != nil {
+		return nil, err
+	}
+	cfg, err := requestconfig.NewRequestConfig(ctx, "GET", "embed/card", nil, &res, opts...)
+	if err != nil {
+		return nil, err
+	}
+	mac := hmac.New(sha256.New, []byte(cfg.APIKey))
+	mac.Write(buf)
+	sign := mac.Sum(nil)
+	err = cfg.Apply(
+		option.WithQuery("hmac", base64.StdEncoding.EncodeToString(sign)),
+		option.WithQuery("embed_request", base64.StdEncoding.EncodeToString(buf)),
+	)
+	if err != nil {
+		return nil, err
+	}
+	return cfg.Request.URL, nil
 }
 
 // Allow your cardholders to directly add payment cards to the device's digital
@@ -805,6 +883,60 @@ func (r CardEmbedParams) URLQuery() (v url.Values) {
 		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
+}
+
+type CardGetEmbedHTMLParams struct {
+	// Globally unique identifier for the card to be displayed.
+	Token param.Field[string] `json:"token,required" format:"uuid"`
+	// A publicly available URI, so the white-labeled card element can be styled with
+	// the client's branding.
+	Css param.Field[string] `json:"css"`
+	// An RFC 3339 timestamp for when the request should expire. UTC time zone.
+	//
+	// If no timezone is specified, UTC will be used. If payload does not contain an
+	// expiration, the request will never expire.
+	//
+	// Using an `expiration` reduces the risk of a
+	// [replay attack](https://en.wikipedia.org/wiki/Replay_attack). Without supplying
+	// the `expiration`, in the event that a malicious user gets a copy of your request
+	// in transit, they will be able to obtain the response data indefinitely.
+	Expiration param.Field[time.Time] `json:"expiration" format:"date-time"`
+	// Required if you want to post the element clicked to the parent iframe.
+	//
+	// If you supply this param, you can also capture click events in the parent iframe
+	// by adding an event listener.
+	TargetOrigin param.Field[string] `json:"target_origin"`
+}
+
+func (r CardGetEmbedHTMLParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+type CardGetEmbedURLParams struct {
+	// Globally unique identifier for the card to be displayed.
+	Token param.Field[string] `json:"token,required" format:"uuid"`
+	// A publicly available URI, so the white-labeled card element can be styled with
+	// the client's branding.
+	Css param.Field[string] `json:"css"`
+	// An RFC 3339 timestamp for when the request should expire. UTC time zone.
+	//
+	// If no timezone is specified, UTC will be used. If payload does not contain an
+	// expiration, the request will never expire.
+	//
+	// Using an `expiration` reduces the risk of a
+	// [replay attack](https://en.wikipedia.org/wiki/Replay_attack). Without supplying
+	// the `expiration`, in the event that a malicious user gets a copy of your request
+	// in transit, they will be able to obtain the response data indefinitely.
+	Expiration param.Field[time.Time] `json:"expiration" format:"date-time"`
+	// Required if you want to post the element clicked to the parent iframe.
+	//
+	// If you supply this param, you can also capture click events in the parent iframe
+	// by adding an event listener.
+	TargetOrigin param.Field[string] `json:"target_origin"`
+}
+
+func (r CardGetEmbedURLParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }
 
 type CardProvisionParams struct {
