@@ -3,11 +3,8 @@
 package lithic
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"io"
-	"mime/multipart"
 	"net/http"
 	"net/url"
 	"time"
@@ -141,33 +138,6 @@ func (r *DisputeService) GetEvidence(ctx context.Context, disputeToken string, e
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("disputes/%s/evidences/%s", disputeToken, evidenceToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
-}
-
-func (r *DisputeService) UploadEvidence(ctx context.Context, disputeToken string, file io.Reader, opts ...option.RequestOption) (err error) {
-	payload, err := r.InitiateEvidenceUpload(ctx, disputeToken, DisputeInitiateEvidenceUploadParams{}, opts...)
-	if err != nil {
-		return err
-	}
-
-	body := bytes.NewBuffer(nil)
-	writer := multipart.NewWriter(body)
-	defer writer.Close()
-	name := "anonymous_file"
-	if nameable, ok := file.(interface{ Name() string }); ok {
-		name = nameable.Name()
-	}
-	part, err := writer.CreateFormFile("file", name)
-	if err != nil {
-		return err
-	}
-	io.Copy(part, file)
-
-	req, err := http.NewRequestWithContext(ctx, "PUT", payload.UploadURL, body)
-	if err != nil {
-		return err
-	}
-	_, err = http.DefaultClient.Do(req)
 	return
 }
 
@@ -610,7 +580,4 @@ func (r DisputeListEvidencesParams) URLQuery() (v url.Values) {
 		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
-}
-
-type DisputeUploadEvidenceParams struct {
 }
