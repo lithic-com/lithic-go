@@ -147,6 +147,14 @@ const (
 	OwnerTypeIndividual OwnerType = "INDIVIDUAL"
 )
 
+func (r OwnerType) IsKnown() bool {
+	switch r {
+	case OwnerTypeBusiness, OwnerTypeIndividual:
+		return true
+	}
+	return false
+}
+
 type VerificationMethod string
 
 const (
@@ -155,6 +163,14 @@ const (
 	VerificationMethodPlaid        VerificationMethod = "PLAID"
 	VerificationMethodPrenote      VerificationMethod = "PRENOTE"
 )
+
+func (r VerificationMethod) IsKnown() bool {
+	switch r {
+	case VerificationMethodManual, VerificationMethodMicroDeposit, VerificationMethodPlaid, VerificationMethodPrenote:
+		return true
+	}
+	return false
+}
 
 type ExternalBankAccountNewResponse struct {
 	// A globally unique identifier for this record of an external bank account
@@ -249,6 +265,14 @@ const (
 	ExternalBankAccountNewResponseOwnerTypeIndividual ExternalBankAccountNewResponseOwnerType = "INDIVIDUAL"
 )
 
+func (r ExternalBankAccountNewResponseOwnerType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountNewResponseOwnerTypeBusiness, ExternalBankAccountNewResponseOwnerTypeIndividual:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountNewResponseState string
 
 const (
@@ -257,12 +281,28 @@ const (
 	ExternalBankAccountNewResponseStatePaused  ExternalBankAccountNewResponseState = "PAUSED"
 )
 
+func (r ExternalBankAccountNewResponseState) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountNewResponseStateClosed, ExternalBankAccountNewResponseStateEnabled, ExternalBankAccountNewResponseStatePaused:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountNewResponseType string
 
 const (
 	ExternalBankAccountNewResponseTypeChecking ExternalBankAccountNewResponseType = "CHECKING"
 	ExternalBankAccountNewResponseTypeSavings  ExternalBankAccountNewResponseType = "SAVINGS"
 )
+
+func (r ExternalBankAccountNewResponseType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountNewResponseTypeChecking, ExternalBankAccountNewResponseTypeSavings:
+		return true
+	}
+	return false
+}
 
 type ExternalBankAccountNewResponseVerificationMethod string
 
@@ -273,6 +313,14 @@ const (
 	ExternalBankAccountNewResponseVerificationMethodPrenote      ExternalBankAccountNewResponseVerificationMethod = "PRENOTE"
 )
 
+func (r ExternalBankAccountNewResponseVerificationMethod) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountNewResponseVerificationMethodManual, ExternalBankAccountNewResponseVerificationMethodMicroDeposit, ExternalBankAccountNewResponseVerificationMethodPlaid, ExternalBankAccountNewResponseVerificationMethodPrenote:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountNewResponseVerificationState string
 
 const (
@@ -281,6 +329,14 @@ const (
 	ExternalBankAccountNewResponseVerificationStateInsufficientFunds  ExternalBankAccountNewResponseVerificationState = "INSUFFICIENT_FUNDS"
 	ExternalBankAccountNewResponseVerificationStatePending            ExternalBankAccountNewResponseVerificationState = "PENDING"
 )
+
+func (r ExternalBankAccountNewResponseVerificationState) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountNewResponseVerificationStateEnabled, ExternalBankAccountNewResponseVerificationStateFailedVerification, ExternalBankAccountNewResponseVerificationStateInsufficientFunds, ExternalBankAccountNewResponseVerificationStatePending:
+		return true
+	}
+	return false
+}
 
 type ExternalBankAccountGetResponse struct {
 	// A globally unique identifier for this record of an external bank account
@@ -375,6 +431,14 @@ const (
 	ExternalBankAccountGetResponseOwnerTypeIndividual ExternalBankAccountGetResponseOwnerType = "INDIVIDUAL"
 )
 
+func (r ExternalBankAccountGetResponseOwnerType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountGetResponseOwnerTypeBusiness, ExternalBankAccountGetResponseOwnerTypeIndividual:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountGetResponseState string
 
 const (
@@ -383,12 +447,28 @@ const (
 	ExternalBankAccountGetResponseStatePaused  ExternalBankAccountGetResponseState = "PAUSED"
 )
 
+func (r ExternalBankAccountGetResponseState) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountGetResponseStateClosed, ExternalBankAccountGetResponseStateEnabled, ExternalBankAccountGetResponseStatePaused:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountGetResponseType string
 
 const (
 	ExternalBankAccountGetResponseTypeChecking ExternalBankAccountGetResponseType = "CHECKING"
 	ExternalBankAccountGetResponseTypeSavings  ExternalBankAccountGetResponseType = "SAVINGS"
 )
+
+func (r ExternalBankAccountGetResponseType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountGetResponseTypeChecking, ExternalBankAccountGetResponseTypeSavings:
+		return true
+	}
+	return false
+}
 
 type ExternalBankAccountGetResponseVerificationMethod string
 
@@ -399,6 +479,14 @@ const (
 	ExternalBankAccountGetResponseVerificationMethodPrenote      ExternalBankAccountGetResponseVerificationMethod = "PRENOTE"
 )
 
+func (r ExternalBankAccountGetResponseVerificationMethod) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountGetResponseVerificationMethodManual, ExternalBankAccountGetResponseVerificationMethodMicroDeposit, ExternalBankAccountGetResponseVerificationMethodPlaid, ExternalBankAccountGetResponseVerificationMethodPrenote:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountGetResponseVerificationState string
 
 const (
@@ -407,6 +495,14 @@ const (
 	ExternalBankAccountGetResponseVerificationStateInsufficientFunds  ExternalBankAccountGetResponseVerificationState = "INSUFFICIENT_FUNDS"
 	ExternalBankAccountGetResponseVerificationStatePending            ExternalBankAccountGetResponseVerificationState = "PENDING"
 )
+
+func (r ExternalBankAccountGetResponseVerificationState) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountGetResponseVerificationStateEnabled, ExternalBankAccountGetResponseVerificationStateFailedVerification, ExternalBankAccountGetResponseVerificationStateInsufficientFunds, ExternalBankAccountGetResponseVerificationStatePending:
+		return true
+	}
+	return false
+}
 
 type ExternalBankAccountUpdateResponse struct {
 	// A globally unique identifier for this record of an external bank account
@@ -501,6 +597,14 @@ const (
 	ExternalBankAccountUpdateResponseOwnerTypeIndividual ExternalBankAccountUpdateResponseOwnerType = "INDIVIDUAL"
 )
 
+func (r ExternalBankAccountUpdateResponseOwnerType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountUpdateResponseOwnerTypeBusiness, ExternalBankAccountUpdateResponseOwnerTypeIndividual:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountUpdateResponseState string
 
 const (
@@ -509,12 +613,28 @@ const (
 	ExternalBankAccountUpdateResponseStatePaused  ExternalBankAccountUpdateResponseState = "PAUSED"
 )
 
+func (r ExternalBankAccountUpdateResponseState) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountUpdateResponseStateClosed, ExternalBankAccountUpdateResponseStateEnabled, ExternalBankAccountUpdateResponseStatePaused:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountUpdateResponseType string
 
 const (
 	ExternalBankAccountUpdateResponseTypeChecking ExternalBankAccountUpdateResponseType = "CHECKING"
 	ExternalBankAccountUpdateResponseTypeSavings  ExternalBankAccountUpdateResponseType = "SAVINGS"
 )
+
+func (r ExternalBankAccountUpdateResponseType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountUpdateResponseTypeChecking, ExternalBankAccountUpdateResponseTypeSavings:
+		return true
+	}
+	return false
+}
 
 type ExternalBankAccountUpdateResponseVerificationMethod string
 
@@ -525,6 +645,14 @@ const (
 	ExternalBankAccountUpdateResponseVerificationMethodPrenote      ExternalBankAccountUpdateResponseVerificationMethod = "PRENOTE"
 )
 
+func (r ExternalBankAccountUpdateResponseVerificationMethod) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountUpdateResponseVerificationMethodManual, ExternalBankAccountUpdateResponseVerificationMethodMicroDeposit, ExternalBankAccountUpdateResponseVerificationMethodPlaid, ExternalBankAccountUpdateResponseVerificationMethodPrenote:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountUpdateResponseVerificationState string
 
 const (
@@ -533,6 +661,14 @@ const (
 	ExternalBankAccountUpdateResponseVerificationStateInsufficientFunds  ExternalBankAccountUpdateResponseVerificationState = "INSUFFICIENT_FUNDS"
 	ExternalBankAccountUpdateResponseVerificationStatePending            ExternalBankAccountUpdateResponseVerificationState = "PENDING"
 )
+
+func (r ExternalBankAccountUpdateResponseVerificationState) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountUpdateResponseVerificationStateEnabled, ExternalBankAccountUpdateResponseVerificationStateFailedVerification, ExternalBankAccountUpdateResponseVerificationStateInsufficientFunds, ExternalBankAccountUpdateResponseVerificationStatePending:
+		return true
+	}
+	return false
+}
 
 type ExternalBankAccountListResponse struct {
 	// A globally unique identifier for this record of an external bank account
@@ -627,6 +763,14 @@ const (
 	ExternalBankAccountListResponseOwnerTypeIndividual ExternalBankAccountListResponseOwnerType = "INDIVIDUAL"
 )
 
+func (r ExternalBankAccountListResponseOwnerType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountListResponseOwnerTypeBusiness, ExternalBankAccountListResponseOwnerTypeIndividual:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountListResponseState string
 
 const (
@@ -635,12 +779,28 @@ const (
 	ExternalBankAccountListResponseStatePaused  ExternalBankAccountListResponseState = "PAUSED"
 )
 
+func (r ExternalBankAccountListResponseState) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountListResponseStateClosed, ExternalBankAccountListResponseStateEnabled, ExternalBankAccountListResponseStatePaused:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountListResponseType string
 
 const (
 	ExternalBankAccountListResponseTypeChecking ExternalBankAccountListResponseType = "CHECKING"
 	ExternalBankAccountListResponseTypeSavings  ExternalBankAccountListResponseType = "SAVINGS"
 )
+
+func (r ExternalBankAccountListResponseType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountListResponseTypeChecking, ExternalBankAccountListResponseTypeSavings:
+		return true
+	}
+	return false
+}
 
 type ExternalBankAccountListResponseVerificationMethod string
 
@@ -651,6 +811,14 @@ const (
 	ExternalBankAccountListResponseVerificationMethodPrenote      ExternalBankAccountListResponseVerificationMethod = "PRENOTE"
 )
 
+func (r ExternalBankAccountListResponseVerificationMethod) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountListResponseVerificationMethodManual, ExternalBankAccountListResponseVerificationMethodMicroDeposit, ExternalBankAccountListResponseVerificationMethodPlaid, ExternalBankAccountListResponseVerificationMethodPrenote:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountListResponseVerificationState string
 
 const (
@@ -659,6 +827,14 @@ const (
 	ExternalBankAccountListResponseVerificationStateInsufficientFunds  ExternalBankAccountListResponseVerificationState = "INSUFFICIENT_FUNDS"
 	ExternalBankAccountListResponseVerificationStatePending            ExternalBankAccountListResponseVerificationState = "PENDING"
 )
+
+func (r ExternalBankAccountListResponseVerificationState) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountListResponseVerificationStateEnabled, ExternalBankAccountListResponseVerificationStateFailedVerification, ExternalBankAccountListResponseVerificationStateInsufficientFunds, ExternalBankAccountListResponseVerificationStatePending:
+		return true
+	}
+	return false
+}
 
 type ExternalBankAccountRetryMicroDepositsResponse struct {
 	// A globally unique identifier for this record of an external bank account
@@ -753,6 +929,14 @@ const (
 	ExternalBankAccountRetryMicroDepositsResponseOwnerTypeIndividual ExternalBankAccountRetryMicroDepositsResponseOwnerType = "INDIVIDUAL"
 )
 
+func (r ExternalBankAccountRetryMicroDepositsResponseOwnerType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountRetryMicroDepositsResponseOwnerTypeBusiness, ExternalBankAccountRetryMicroDepositsResponseOwnerTypeIndividual:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountRetryMicroDepositsResponseState string
 
 const (
@@ -761,12 +945,28 @@ const (
 	ExternalBankAccountRetryMicroDepositsResponseStatePaused  ExternalBankAccountRetryMicroDepositsResponseState = "PAUSED"
 )
 
+func (r ExternalBankAccountRetryMicroDepositsResponseState) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountRetryMicroDepositsResponseStateClosed, ExternalBankAccountRetryMicroDepositsResponseStateEnabled, ExternalBankAccountRetryMicroDepositsResponseStatePaused:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountRetryMicroDepositsResponseType string
 
 const (
 	ExternalBankAccountRetryMicroDepositsResponseTypeChecking ExternalBankAccountRetryMicroDepositsResponseType = "CHECKING"
 	ExternalBankAccountRetryMicroDepositsResponseTypeSavings  ExternalBankAccountRetryMicroDepositsResponseType = "SAVINGS"
 )
+
+func (r ExternalBankAccountRetryMicroDepositsResponseType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountRetryMicroDepositsResponseTypeChecking, ExternalBankAccountRetryMicroDepositsResponseTypeSavings:
+		return true
+	}
+	return false
+}
 
 type ExternalBankAccountRetryMicroDepositsResponseVerificationMethod string
 
@@ -777,6 +977,14 @@ const (
 	ExternalBankAccountRetryMicroDepositsResponseVerificationMethodPrenote      ExternalBankAccountRetryMicroDepositsResponseVerificationMethod = "PRENOTE"
 )
 
+func (r ExternalBankAccountRetryMicroDepositsResponseVerificationMethod) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountRetryMicroDepositsResponseVerificationMethodManual, ExternalBankAccountRetryMicroDepositsResponseVerificationMethodMicroDeposit, ExternalBankAccountRetryMicroDepositsResponseVerificationMethodPlaid, ExternalBankAccountRetryMicroDepositsResponseVerificationMethodPrenote:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountRetryMicroDepositsResponseVerificationState string
 
 const (
@@ -785,6 +993,14 @@ const (
 	ExternalBankAccountRetryMicroDepositsResponseVerificationStateInsufficientFunds  ExternalBankAccountRetryMicroDepositsResponseVerificationState = "INSUFFICIENT_FUNDS"
 	ExternalBankAccountRetryMicroDepositsResponseVerificationStatePending            ExternalBankAccountRetryMicroDepositsResponseVerificationState = "PENDING"
 )
+
+func (r ExternalBankAccountRetryMicroDepositsResponseVerificationState) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountRetryMicroDepositsResponseVerificationStateEnabled, ExternalBankAccountRetryMicroDepositsResponseVerificationStateFailedVerification, ExternalBankAccountRetryMicroDepositsResponseVerificationStateInsufficientFunds, ExternalBankAccountRetryMicroDepositsResponseVerificationStatePending:
+		return true
+	}
+	return false
+}
 
 // This interface is a union satisfied by one of the following:
 // [ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequest],
@@ -833,6 +1049,14 @@ const (
 	ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestTypeChecking ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestType = "CHECKING"
 	ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestTypeSavings  ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestType = "SAVINGS"
 )
+
+func (r ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestTypeChecking, ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestTypeSavings:
+		return true
+	}
+	return false
+}
 
 type ExternalBankAccountNewParamsPlaidCreateBankAccountAPIRequest struct {
 	Owner              param.Field[string]             `json:"owner,required"`
@@ -906,6 +1130,14 @@ const (
 	ExternalBankAccountListParamsAccountTypeSavings  ExternalBankAccountListParamsAccountType = "SAVINGS"
 )
 
+func (r ExternalBankAccountListParamsAccountType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountListParamsAccountTypeChecking, ExternalBankAccountListParamsAccountTypeSavings:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountListParamsState string
 
 const (
@@ -913,6 +1145,14 @@ const (
 	ExternalBankAccountListParamsStateEnabled ExternalBankAccountListParamsState = "ENABLED"
 	ExternalBankAccountListParamsStatePaused  ExternalBankAccountListParamsState = "PAUSED"
 )
+
+func (r ExternalBankAccountListParamsState) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountListParamsStateClosed, ExternalBankAccountListParamsStateEnabled, ExternalBankAccountListParamsStatePaused:
+		return true
+	}
+	return false
+}
 
 type ExternalBankAccountListParamsVerificationState string
 
@@ -922,3 +1162,11 @@ const (
 	ExternalBankAccountListParamsVerificationStateInsufficientFunds  ExternalBankAccountListParamsVerificationState = "INSUFFICIENT_FUNDS"
 	ExternalBankAccountListParamsVerificationStatePending            ExternalBankAccountListParamsVerificationState = "PENDING"
 )
+
+func (r ExternalBankAccountListParamsVerificationState) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountListParamsVerificationStateEnabled, ExternalBankAccountListParamsVerificationStateFailedVerification, ExternalBankAccountListParamsVerificationStateInsufficientFunds, ExternalBankAccountListParamsVerificationStatePending:
+		return true
+	}
+	return false
+}

@@ -124,6 +124,14 @@ const (
 	ResponderEndpointNewParamsTypeTokenizationDecisioning ResponderEndpointNewParamsType = "TOKENIZATION_DECISIONING"
 )
 
+func (r ResponderEndpointNewParamsType) IsKnown() bool {
+	switch r {
+	case ResponderEndpointNewParamsTypeAuthStreamAccess, ResponderEndpointNewParamsTypeThreeDSDecisioning, ResponderEndpointNewParamsTypeTokenizationDecisioning:
+		return true
+	}
+	return false
+}
+
 type ResponderEndpointDeleteParams struct {
 	// The type of the endpoint.
 	Type param.Field[ResponderEndpointDeleteParamsType] `query:"type,required"`
@@ -147,6 +155,14 @@ const (
 	ResponderEndpointDeleteParamsTypeTokenizationDecisioning ResponderEndpointDeleteParamsType = "TOKENIZATION_DECISIONING"
 )
 
+func (r ResponderEndpointDeleteParamsType) IsKnown() bool {
+	switch r {
+	case ResponderEndpointDeleteParamsTypeAuthStreamAccess, ResponderEndpointDeleteParamsTypeThreeDSDecisioning, ResponderEndpointDeleteParamsTypeTokenizationDecisioning:
+		return true
+	}
+	return false
+}
+
 type ResponderEndpointCheckStatusParams struct {
 	// The type of the endpoint.
 	Type param.Field[ResponderEndpointCheckStatusParamsType] `query:"type,required"`
@@ -169,3 +185,11 @@ const (
 	ResponderEndpointCheckStatusParamsTypeThreeDSDecisioning      ResponderEndpointCheckStatusParamsType = "THREE_DS_DECISIONING"
 	ResponderEndpointCheckStatusParamsTypeTokenizationDecisioning ResponderEndpointCheckStatusParamsType = "TOKENIZATION_DECISIONING"
 )
+
+func (r ResponderEndpointCheckStatusParamsType) IsKnown() bool {
+	switch r {
+	case ResponderEndpointCheckStatusParamsTypeAuthStreamAccess, ResponderEndpointCheckStatusParamsTypeThreeDSDecisioning, ResponderEndpointCheckStatusParamsTypeTokenizationDecisioning:
+		return true
+	}
+	return false
+}

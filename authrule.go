@@ -160,6 +160,14 @@ const (
 	AuthRuleStateInactive AuthRuleState = "INACTIVE"
 )
 
+func (r AuthRuleState) IsKnown() bool {
+	switch r {
+	case AuthRuleStateActive, AuthRuleStateInactive:
+		return true
+	}
+	return false
+}
+
 type AuthRuleGetResponse struct {
 	Data []AuthRule              `json:"data"`
 	JSON authRuleGetResponseJSON `json:"-"`
