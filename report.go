@@ -123,6 +123,14 @@ const (
 	SettlementDetailNetworkVisa       SettlementDetailNetwork = "VISA"
 )
 
+func (r SettlementDetailNetwork) IsKnown() bool {
+	switch r {
+	case SettlementDetailNetworkInterlink, SettlementDetailNetworkMaestro, SettlementDetailNetworkMastercard, SettlementDetailNetworkUnknown, SettlementDetailNetworkVisa:
+		return true
+	}
+	return false
+}
+
 // The total gross amount of other fees by type.
 type SettlementDetailOtherFeesDetails struct {
 	Isa  int64                                `json:"ISA"`
@@ -159,6 +167,14 @@ const (
 	SettlementDetailTypePrearbitration SettlementDetailType = "PREARBITRATION"
 	SettlementDetailTypeRepresentment  SettlementDetailType = "REPRESENTMENT"
 )
+
+func (r SettlementDetailType) IsKnown() bool {
+	switch r {
+	case SettlementDetailTypeAdjustment, SettlementDetailTypeArbitration, SettlementDetailTypeChargeback, SettlementDetailTypeClearing, SettlementDetailTypeFee, SettlementDetailTypeFinancial, SettlementDetailTypeNonFinancial, SettlementDetailTypePrearbitration, SettlementDetailTypeRepresentment:
+		return true
+	}
+	return false
+}
 
 type SettlementReport struct {
 	// Date and time when the transaction first occurred. UTC time zone.
@@ -263,3 +279,11 @@ const (
 	SettlementSummaryDetailsNetworkUnknown    SettlementSummaryDetailsNetwork = "UNKNOWN"
 	SettlementSummaryDetailsNetworkVisa       SettlementSummaryDetailsNetwork = "VISA"
 )
+
+func (r SettlementSummaryDetailsNetwork) IsKnown() bool {
+	switch r {
+	case SettlementSummaryDetailsNetworkInterlink, SettlementSummaryDetailsNetworkMaestro, SettlementSummaryDetailsNetworkMastercard, SettlementSummaryDetailsNetworkUnknown, SettlementSummaryDetailsNetworkVisa:
+		return true
+	}
+	return false
+}

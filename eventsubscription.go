@@ -223,6 +223,14 @@ const (
 	EventSubscriptionNewParamsEventTypeTransferTransactionCreated                           EventSubscriptionNewParamsEventType = "transfer_transaction.created"
 )
 
+func (r EventSubscriptionNewParamsEventType) IsKnown() bool {
+	switch r {
+	case EventSubscriptionNewParamsEventTypeAccountHolderCreated, EventSubscriptionNewParamsEventTypeAccountHolderUpdated, EventSubscriptionNewParamsEventTypeAccountHolderVerification, EventSubscriptionNewParamsEventTypeBalanceUpdated, EventSubscriptionNewParamsEventTypeCardCreated, EventSubscriptionNewParamsEventTypeCardRenewed, EventSubscriptionNewParamsEventTypeCardShipped, EventSubscriptionNewParamsEventTypeCardTransactionUpdated, EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationResult, EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionNewParamsEventTypeDisputeUpdated, EventSubscriptionNewParamsEventTypeDisputeEvidenceUploadFailed, EventSubscriptionNewParamsEventTypePaymentTransactionCreated, EventSubscriptionNewParamsEventTypePaymentTransactionUpdated, EventSubscriptionNewParamsEventTypeThreeDSAuthenticationCreated, EventSubscriptionNewParamsEventTypeTransferTransactionCreated:
+		return true
+	}
+	return false
+}
+
 type EventSubscriptionUpdateParams struct {
 	// URL to which event webhooks will be sent. URL must be a valid HTTPS address.
 	URL param.Field[string] `json:"url,required" format:"uri"`
@@ -260,6 +268,14 @@ const (
 	EventSubscriptionUpdateParamsEventTypeThreeDSAuthenticationCreated                         EventSubscriptionUpdateParamsEventType = "three_ds_authentication.created"
 	EventSubscriptionUpdateParamsEventTypeTransferTransactionCreated                           EventSubscriptionUpdateParamsEventType = "transfer_transaction.created"
 )
+
+func (r EventSubscriptionUpdateParamsEventType) IsKnown() bool {
+	switch r {
+	case EventSubscriptionUpdateParamsEventTypeAccountHolderCreated, EventSubscriptionUpdateParamsEventTypeAccountHolderUpdated, EventSubscriptionUpdateParamsEventTypeAccountHolderVerification, EventSubscriptionUpdateParamsEventTypeBalanceUpdated, EventSubscriptionUpdateParamsEventTypeCardCreated, EventSubscriptionUpdateParamsEventTypeCardRenewed, EventSubscriptionUpdateParamsEventTypeCardShipped, EventSubscriptionUpdateParamsEventTypeCardTransactionUpdated, EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationResult, EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionUpdateParamsEventTypeDisputeUpdated, EventSubscriptionUpdateParamsEventTypeDisputeEvidenceUploadFailed, EventSubscriptionUpdateParamsEventTypePaymentTransactionCreated, EventSubscriptionUpdateParamsEventTypePaymentTransactionUpdated, EventSubscriptionUpdateParamsEventTypeThreeDSAuthenticationCreated, EventSubscriptionUpdateParamsEventTypeTransferTransactionCreated:
+		return true
+	}
+	return false
+}
 
 type EventSubscriptionListParams struct {
 	// A cursor representing an item's token before which a page of results should end.
@@ -316,6 +332,14 @@ const (
 	EventSubscriptionListAttemptsParamsStatusSending EventSubscriptionListAttemptsParamsStatus = "SENDING"
 	EventSubscriptionListAttemptsParamsStatusSuccess EventSubscriptionListAttemptsParamsStatus = "SUCCESS"
 )
+
+func (r EventSubscriptionListAttemptsParamsStatus) IsKnown() bool {
+	switch r {
+	case EventSubscriptionListAttemptsParamsStatusFailed, EventSubscriptionListAttemptsParamsStatusPending, EventSubscriptionListAttemptsParamsStatusSending, EventSubscriptionListAttemptsParamsStatusSuccess:
+		return true
+	}
+	return false
+}
 
 type EventSubscriptionRecoverParams struct {
 	// Date string in RFC 3339 format. Only entries created after the specified time
@@ -384,3 +408,11 @@ const (
 	EventSubscriptionSendSimulatedExampleParamsEventTypeThreeDSAuthenticationCreated                         EventSubscriptionSendSimulatedExampleParamsEventType = "three_ds_authentication.created"
 	EventSubscriptionSendSimulatedExampleParamsEventTypeTransferTransactionCreated                           EventSubscriptionSendSimulatedExampleParamsEventType = "transfer_transaction.created"
 )
+
+func (r EventSubscriptionSendSimulatedExampleParamsEventType) IsKnown() bool {
+	switch r {
+	case EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderVerification, EventSubscriptionSendSimulatedExampleParamsEventTypeBalanceUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeCardCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeCardRenewed, EventSubscriptionSendSimulatedExampleParamsEventTypeCardShipped, EventSubscriptionSendSimulatedExampleParamsEventTypeCardTransactionUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationResult, EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionSendSimulatedExampleParamsEventTypeDisputeUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeDisputeEvidenceUploadFailed, EventSubscriptionSendSimulatedExampleParamsEventTypePaymentTransactionCreated, EventSubscriptionSendSimulatedExampleParamsEventTypePaymentTransactionUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeThreeDSAuthenticationCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeTransferTransactionCreated:
+		return true
+	}
+	return false
+}

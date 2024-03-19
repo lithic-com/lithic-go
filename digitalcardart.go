@@ -113,6 +113,14 @@ const (
 	DigitalCardArtNetworkVisa       DigitalCardArtNetwork = "VISA"
 )
 
+func (r DigitalCardArtNetwork) IsKnown() bool {
+	switch r {
+	case DigitalCardArtNetworkMastercard, DigitalCardArtNetworkVisa:
+		return true
+	}
+	return false
+}
+
 type DigitalCardArtListParams struct {
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.

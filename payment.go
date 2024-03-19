@@ -135,12 +135,28 @@ const (
 	PaymentDirectionDebit  PaymentDirection = "DEBIT"
 )
 
+func (r PaymentDirection) IsKnown() bool {
+	switch r {
+	case PaymentDirectionCredit, PaymentDirectionDebit:
+		return true
+	}
+	return false
+}
+
 type PaymentMethod string
 
 const (
 	PaymentMethodACHNextDay PaymentMethod = "ACH_NEXT_DAY"
 	PaymentMethodACHSameDay PaymentMethod = "ACH_SAME_DAY"
 )
+
+func (r PaymentMethod) IsKnown() bool {
+	switch r {
+	case PaymentMethodACHNextDay, PaymentMethodACHSameDay:
+		return true
+	}
+	return false
+}
 
 type PaymentMethodAttributes struct {
 	SecCode              PaymentMethodAttributesSecCode `json:"sec_code,required"`
@@ -179,12 +195,28 @@ const (
 	PaymentMethodAttributesSecCodeWeb PaymentMethodAttributesSecCode = "WEB"
 )
 
+func (r PaymentMethodAttributesSecCode) IsKnown() bool {
+	switch r {
+	case PaymentMethodAttributesSecCodeCcd, PaymentMethodAttributesSecCodePpd, PaymentMethodAttributesSecCodeWeb:
+		return true
+	}
+	return false
+}
+
 type PaymentSource string
 
 const (
 	PaymentSourceCustomer PaymentSource = "CUSTOMER"
 	PaymentSourceLithic   PaymentSource = "LITHIC"
 )
+
+func (r PaymentSource) IsKnown() bool {
+	switch r {
+	case PaymentSourceCustomer, PaymentSourceLithic:
+		return true
+	}
+	return false
+}
 
 type PaymentNewResponse struct {
 	// Balance of a Financial Account
@@ -264,6 +296,14 @@ const (
 	PaymentSimulateReleaseResponseResultDeclined PaymentSimulateReleaseResponseResult = "DECLINED"
 )
 
+func (r PaymentSimulateReleaseResponseResult) IsKnown() bool {
+	switch r {
+	case PaymentSimulateReleaseResponseResultApproved, PaymentSimulateReleaseResponseResultDeclined:
+		return true
+	}
+	return false
+}
+
 type PaymentSimulateReturnResponse struct {
 	DebuggingRequestID    string                              `json:"debugging_request_id" format:"uuid"`
 	Result                PaymentSimulateReturnResponseResult `json:"result"`
@@ -296,6 +336,14 @@ const (
 	PaymentSimulateReturnResponseResultDeclined PaymentSimulateReturnResponseResult = "DECLINED"
 )
 
+func (r PaymentSimulateReturnResponseResult) IsKnown() bool {
+	switch r {
+	case PaymentSimulateReturnResponseResultApproved, PaymentSimulateReturnResponseResultDeclined:
+		return true
+	}
+	return false
+}
+
 type PaymentNewParams struct {
 	Amount                   param.Field[int64]                            `json:"amount,required"`
 	ExternalBankAccountToken param.Field[string]                           `json:"external_bank_account_token,required" format:"uuid"`
@@ -321,6 +369,14 @@ const (
 	PaymentNewParamsMethodACHSameDay PaymentNewParamsMethod = "ACH_SAME_DAY"
 )
 
+func (r PaymentNewParamsMethod) IsKnown() bool {
+	switch r {
+	case PaymentNewParamsMethodACHNextDay, PaymentNewParamsMethodACHSameDay:
+		return true
+	}
+	return false
+}
+
 type PaymentNewParamsMethodAttributes struct {
 	SecCode              param.Field[PaymentNewParamsMethodAttributesSecCode] `json:"sec_code,required"`
 	CompanyID            param.Field[string]                                  `json:"company_id"`
@@ -341,12 +397,28 @@ const (
 	PaymentNewParamsMethodAttributesSecCodeWeb PaymentNewParamsMethodAttributesSecCode = "WEB"
 )
 
+func (r PaymentNewParamsMethodAttributesSecCode) IsKnown() bool {
+	switch r {
+	case PaymentNewParamsMethodAttributesSecCodeCcd, PaymentNewParamsMethodAttributesSecCodePpd, PaymentNewParamsMethodAttributesSecCodeWeb:
+		return true
+	}
+	return false
+}
+
 type PaymentNewParamsType string
 
 const (
 	PaymentNewParamsTypeCollection PaymentNewParamsType = "COLLECTION"
 	PaymentNewParamsTypePayment    PaymentNewParamsType = "PAYMENT"
 )
+
+func (r PaymentNewParamsType) IsKnown() bool {
+	switch r {
+	case PaymentNewParamsTypeCollection, PaymentNewParamsTypePayment:
+		return true
+	}
+	return false
+}
 
 type PaymentListParams struct {
 	// Date string in RFC 3339 format. Only entries created after the specified time
@@ -383,6 +455,14 @@ const (
 	PaymentListParamsResultDeclined PaymentListParamsResult = "DECLINED"
 )
 
+func (r PaymentListParamsResult) IsKnown() bool {
+	switch r {
+	case PaymentListParamsResultApproved, PaymentListParamsResultDeclined:
+		return true
+	}
+	return false
+}
+
 type PaymentListParamsStatus string
 
 const (
@@ -391,6 +471,14 @@ const (
 	PaymentListParamsStatusReturned PaymentListParamsStatus = "RETURNED"
 	PaymentListParamsStatusSettled  PaymentListParamsStatus = "SETTLED"
 )
+
+func (r PaymentListParamsStatus) IsKnown() bool {
+	switch r {
+	case PaymentListParamsStatusDeclined, PaymentListParamsStatusPending, PaymentListParamsStatusReturned, PaymentListParamsStatusSettled:
+		return true
+	}
+	return false
+}
 
 type PaymentSimulateReleaseParams struct {
 	PaymentToken param.Field[string] `json:"payment_token,required" format:"uuid"`

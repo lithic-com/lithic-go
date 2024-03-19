@@ -303,6 +303,14 @@ const (
 	DisputeReasonRefundNotProcessed               DisputeReason = "REFUND_NOT_PROCESSED"
 )
 
+func (r DisputeReason) IsKnown() bool {
+	switch r {
+	case DisputeReasonAtmCashMisdispense, DisputeReasonCancelled, DisputeReasonDuplicated, DisputeReasonFraudCardNotPresent, DisputeReasonFraudCardPresent, DisputeReasonFraudOther, DisputeReasonGoodsServicesNotAsDescribed, DisputeReasonGoodsServicesNotReceived, DisputeReasonIncorrectAmount, DisputeReasonMissingAuth, DisputeReasonOther, DisputeReasonProcessingError, DisputeReasonRecurringTransactionNotCancelled, DisputeReasonRefundNotProcessed:
+		return true
+	}
+	return false
+}
+
 // Reason for the dispute resolution:
 //
 // - `CASE_LOST`: This case was lost at final arbitration.
@@ -344,6 +352,14 @@ const (
 	DisputeResolutionReasonWonPrearbitration             DisputeResolutionReason = "WON_PREARBITRATION"
 )
 
+func (r DisputeResolutionReason) IsKnown() bool {
+	switch r {
+	case DisputeResolutionReasonCaseLost, DisputeResolutionReasonNetworkRejected, DisputeResolutionReasonNoDisputeRights3DS, DisputeResolutionReasonNoDisputeRightsBelowThreshold, DisputeResolutionReasonNoDisputeRightsContactless, DisputeResolutionReasonNoDisputeRightsHybrid, DisputeResolutionReasonNoDisputeRightsMaxChargebacks, DisputeResolutionReasonNoDisputeRightsOther, DisputeResolutionReasonPastFilingDate, DisputeResolutionReasonPrearbitrationRejected, DisputeResolutionReasonProcessorRejectedOther, DisputeResolutionReasonRefunded, DisputeResolutionReasonRefundedAfterChargeback, DisputeResolutionReasonWithdrawn, DisputeResolutionReasonWonArbitration, DisputeResolutionReasonWonFirstChargeback, DisputeResolutionReasonWonPrearbitration:
+		return true
+	}
+	return false
+}
+
 // Status types:
 //
 //   - `NEW` - New dispute case is opened.
@@ -367,6 +383,14 @@ const (
 	DisputeStatusRepresentment   DisputeStatus = "REPRESENTMENT"
 	DisputeStatusSubmitted       DisputeStatus = "SUBMITTED"
 )
+
+func (r DisputeStatus) IsKnown() bool {
+	switch r {
+	case DisputeStatusArbitration, DisputeStatusCaseClosed, DisputeStatusCaseWon, DisputeStatusNew, DisputeStatusPendingCustomer, DisputeStatusPrearbitration, DisputeStatusRepresentment, DisputeStatusSubmitted:
+		return true
+	}
+	return false
+}
 
 // Dispute evidence.
 type DisputeEvidence struct {
@@ -432,6 +456,14 @@ const (
 	DisputeEvidenceUploadStatusUploaded DisputeEvidenceUploadStatus = "UPLOADED"
 )
 
+func (r DisputeEvidenceUploadStatus) IsKnown() bool {
+	switch r {
+	case DisputeEvidenceUploadStatusDeleted, DisputeEvidenceUploadStatusError, DisputeEvidenceUploadStatusPending, DisputeEvidenceUploadStatusRejected, DisputeEvidenceUploadStatusUploaded:
+		return true
+	}
+	return false
+}
+
 type DisputeNewParams struct {
 	// Amount to dispute
 	Amount param.Field[int64] `json:"amount,required"`
@@ -469,6 +501,14 @@ const (
 	DisputeNewParamsReasonRefundNotProcessed               DisputeNewParamsReason = "REFUND_NOT_PROCESSED"
 )
 
+func (r DisputeNewParamsReason) IsKnown() bool {
+	switch r {
+	case DisputeNewParamsReasonAtmCashMisdispense, DisputeNewParamsReasonCancelled, DisputeNewParamsReasonDuplicated, DisputeNewParamsReasonFraudCardNotPresent, DisputeNewParamsReasonFraudCardPresent, DisputeNewParamsReasonFraudOther, DisputeNewParamsReasonGoodsServicesNotAsDescribed, DisputeNewParamsReasonGoodsServicesNotReceived, DisputeNewParamsReasonIncorrectAmount, DisputeNewParamsReasonMissingAuth, DisputeNewParamsReasonOther, DisputeNewParamsReasonProcessingError, DisputeNewParamsReasonRecurringTransactionNotCancelled, DisputeNewParamsReasonRefundNotProcessed:
+		return true
+	}
+	return false
+}
+
 type DisputeUpdateParams struct {
 	// Amount to dispute
 	Amount param.Field[int64] `json:"amount"`
@@ -503,6 +543,14 @@ const (
 	DisputeUpdateParamsReasonRecurringTransactionNotCancelled DisputeUpdateParamsReason = "RECURRING_TRANSACTION_NOT_CANCELLED"
 	DisputeUpdateParamsReasonRefundNotProcessed               DisputeUpdateParamsReason = "REFUND_NOT_PROCESSED"
 )
+
+func (r DisputeUpdateParamsReason) IsKnown() bool {
+	switch r {
+	case DisputeUpdateParamsReasonAtmCashMisdispense, DisputeUpdateParamsReasonCancelled, DisputeUpdateParamsReasonDuplicated, DisputeUpdateParamsReasonFraudCardNotPresent, DisputeUpdateParamsReasonFraudCardPresent, DisputeUpdateParamsReasonFraudOther, DisputeUpdateParamsReasonGoodsServicesNotAsDescribed, DisputeUpdateParamsReasonGoodsServicesNotReceived, DisputeUpdateParamsReasonIncorrectAmount, DisputeUpdateParamsReasonMissingAuth, DisputeUpdateParamsReasonOther, DisputeUpdateParamsReasonProcessingError, DisputeUpdateParamsReasonRecurringTransactionNotCancelled, DisputeUpdateParamsReasonRefundNotProcessed:
+		return true
+	}
+	return false
+}
 
 type DisputeListParams struct {
 	// Date string in RFC 3339 format. Only entries created after the specified time
@@ -546,6 +594,14 @@ const (
 	DisputeListParamsStatusRepresentment   DisputeListParamsStatus = "REPRESENTMENT"
 	DisputeListParamsStatusSubmitted       DisputeListParamsStatus = "SUBMITTED"
 )
+
+func (r DisputeListParamsStatus) IsKnown() bool {
+	switch r {
+	case DisputeListParamsStatusArbitration, DisputeListParamsStatusCaseClosed, DisputeListParamsStatusCaseWon, DisputeListParamsStatusNew, DisputeListParamsStatusPendingCustomer, DisputeListParamsStatusPrearbitration, DisputeListParamsStatusRepresentment, DisputeListParamsStatusSubmitted:
+		return true
+	}
+	return false
+}
 
 type DisputeInitiateEvidenceUploadParams struct {
 	// Filename of the evidence.

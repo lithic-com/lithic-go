@@ -122,6 +122,14 @@ const (
 	AggregateBalanceFinancialAccountTypeReserve   AggregateBalanceFinancialAccountType = "RESERVE"
 )
 
+func (r AggregateBalanceFinancialAccountType) IsKnown() bool {
+	switch r {
+	case AggregateBalanceFinancialAccountTypeIssuing, AggregateBalanceFinancialAccountTypeOperating, AggregateBalanceFinancialAccountTypeReserve:
+		return true
+	}
+	return false
+}
+
 type AggregateBalanceListParams struct {
 	// Get the aggregate balance for a given Financial Account type.
 	FinancialAccountType param.Field[AggregateBalanceListParamsFinancialAccountType] `query:"financial_account_type"`
@@ -144,3 +152,11 @@ const (
 	AggregateBalanceListParamsFinancialAccountTypeOperating AggregateBalanceListParamsFinancialAccountType = "OPERATING"
 	AggregateBalanceListParamsFinancialAccountTypeReserve   AggregateBalanceListParamsFinancialAccountType = "RESERVE"
 )
+
+func (r AggregateBalanceListParamsFinancialAccountType) IsKnown() bool {
+	switch r {
+	case AggregateBalanceListParamsFinancialAccountTypeIssuing, AggregateBalanceListParamsFinancialAccountTypeOperating, AggregateBalanceListParamsFinancialAccountTypeReserve:
+		return true
+	}
+	return false
+}

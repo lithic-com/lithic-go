@@ -185,6 +185,14 @@ const (
 	EventEventTypeTransferTransactionCreated                           EventEventType = "transfer_transaction.created"
 )
 
+func (r EventEventType) IsKnown() bool {
+	switch r {
+	case EventEventTypeAccountHolderCreated, EventEventTypeAccountHolderUpdated, EventEventTypeAccountHolderVerification, EventEventTypeBalanceUpdated, EventEventTypeCardCreated, EventEventTypeCardRenewed, EventEventTypeCardShipped, EventEventTypeCardTransactionUpdated, EventEventTypeDigitalWalletTokenizationApprovalRequest, EventEventTypeDigitalWalletTokenizationResult, EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventEventTypeDisputeUpdated, EventEventTypeDisputeEvidenceUploadFailed, EventEventTypePaymentTransactionCreated, EventEventTypePaymentTransactionUpdated, EventEventTypeThreeDSAuthenticationCreated, EventEventTypeTransferTransactionCreated:
+		return true
+	}
+	return false
+}
+
 // A subscription to specific event types.
 type EventSubscription struct {
 	// Globally unique identifier.
@@ -240,6 +248,14 @@ const (
 	EventSubscriptionEventTypeTransferTransactionCreated                           EventSubscriptionEventType = "transfer_transaction.created"
 )
 
+func (r EventSubscriptionEventType) IsKnown() bool {
+	switch r {
+	case EventSubscriptionEventTypeAccountHolderCreated, EventSubscriptionEventTypeAccountHolderUpdated, EventSubscriptionEventTypeAccountHolderVerification, EventSubscriptionEventTypeBalanceUpdated, EventSubscriptionEventTypeCardCreated, EventSubscriptionEventTypeCardRenewed, EventSubscriptionEventTypeCardShipped, EventSubscriptionEventTypeCardTransactionUpdated, EventSubscriptionEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionEventTypeDigitalWalletTokenizationResult, EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionEventTypeDisputeUpdated, EventSubscriptionEventTypeDisputeEvidenceUploadFailed, EventSubscriptionEventTypePaymentTransactionCreated, EventSubscriptionEventTypePaymentTransactionUpdated, EventSubscriptionEventTypeThreeDSAuthenticationCreated, EventSubscriptionEventTypeTransferTransactionCreated:
+		return true
+	}
+	return false
+}
+
 // A subscription to specific event types.
 type MessageAttempt struct {
 	// Globally unique identifier.
@@ -294,6 +310,14 @@ const (
 	MessageAttemptStatusSuccess MessageAttemptStatus = "SUCCESS"
 )
 
+func (r MessageAttemptStatus) IsKnown() bool {
+	switch r {
+	case MessageAttemptStatusFailed, MessageAttemptStatusPending, MessageAttemptStatusSending, MessageAttemptStatusSuccess:
+		return true
+	}
+	return false
+}
+
 type EventListParams struct {
 	// Date string in RFC 3339 format. Only entries created after the specified time
 	// will be included. UTC time zone.
@@ -345,6 +369,14 @@ const (
 	EventListParamsEventTypeTransferTransactionCreated                           EventListParamsEventType = "transfer_transaction.created"
 )
 
+func (r EventListParamsEventType) IsKnown() bool {
+	switch r {
+	case EventListParamsEventTypeAccountHolderCreated, EventListParamsEventTypeAccountHolderUpdated, EventListParamsEventTypeAccountHolderVerification, EventListParamsEventTypeBalanceUpdated, EventListParamsEventTypeCardCreated, EventListParamsEventTypeCardRenewed, EventListParamsEventTypeCardShipped, EventListParamsEventTypeCardTransactionUpdated, EventListParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventListParamsEventTypeDigitalWalletTokenizationResult, EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventListParamsEventTypeDisputeUpdated, EventListParamsEventTypeDisputeEvidenceUploadFailed, EventListParamsEventTypePaymentTransactionCreated, EventListParamsEventTypePaymentTransactionUpdated, EventListParamsEventTypeThreeDSAuthenticationCreated, EventListParamsEventTypeTransferTransactionCreated:
+		return true
+	}
+	return false
+}
+
 type EventListAttemptsParams struct {
 	// Date string in RFC 3339 format. Only entries created after the specified time
 	// will be included. UTC time zone.
@@ -380,3 +412,11 @@ const (
 	EventListAttemptsParamsStatusSending EventListAttemptsParamsStatus = "SENDING"
 	EventListAttemptsParamsStatusSuccess EventListAttemptsParamsStatus = "SUCCESS"
 )
+
+func (r EventListAttemptsParamsStatus) IsKnown() bool {
+	switch r {
+	case EventListAttemptsParamsStatusFailed, EventListAttemptsParamsStatusPending, EventListAttemptsParamsStatusSending, EventListAttemptsParamsStatusSuccess:
+		return true
+	}
+	return false
+}
