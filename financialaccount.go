@@ -140,6 +140,14 @@ const (
 	FinancialAccountTypeReserve   FinancialAccountType = "RESERVE"
 )
 
+func (r FinancialAccountType) IsKnown() bool {
+	switch r {
+	case FinancialAccountTypeIssuing, FinancialAccountTypeOperating, FinancialAccountTypeReserve:
+		return true
+	}
+	return false
+}
+
 type FinancialTransaction struct {
 	// Globally unique identifier.
 	Token string `json:"token,required" format:"uuid"`
@@ -224,6 +232,14 @@ const (
 	FinancialTransactionCategoryTransfer FinancialTransactionCategory = "TRANSFER"
 )
 
+func (r FinancialTransactionCategory) IsKnown() bool {
+	switch r {
+	case FinancialTransactionCategoryACH, FinancialTransactionCategoryCard, FinancialTransactionCategoryTransfer:
+		return true
+	}
+	return false
+}
+
 type FinancialTransactionEvent struct {
 	// Globally unique identifier.
 	Token string `json:"token" format:"uuid"`
@@ -304,6 +320,14 @@ const (
 	FinancialTransactionEventsResultDeclined FinancialTransactionEventsResult = "DECLINED"
 )
 
+func (r FinancialTransactionEventsResult) IsKnown() bool {
+	switch r {
+	case FinancialTransactionEventsResultApproved, FinancialTransactionEventsResultDeclined:
+		return true
+	}
+	return false
+}
+
 // Event types:
 //
 //   - `ACH_INSUFFICIENT_FUNDS` - Attempted ACH origination declined due to
@@ -367,6 +391,14 @@ const (
 	FinancialTransactionEventsTypeTransferInsufficientFunds    FinancialTransactionEventsType = "TRANSFER_INSUFFICIENT_FUNDS"
 )
 
+func (r FinancialTransactionEventsType) IsKnown() bool {
+	switch r {
+	case FinancialTransactionEventsTypeACHInsufficientFunds, FinancialTransactionEventsTypeACHOriginationPending, FinancialTransactionEventsTypeACHOriginationReleased, FinancialTransactionEventsTypeACHReceiptPending, FinancialTransactionEventsTypeACHReceiptReleased, FinancialTransactionEventsTypeACHReturn, FinancialTransactionEventsTypeAuthorization, FinancialTransactionEventsTypeAuthorizationAdvice, FinancialTransactionEventsTypeAuthorizationExpiry, FinancialTransactionEventsTypeAuthorizationReversal, FinancialTransactionEventsTypeBalanceInquiry, FinancialTransactionEventsTypeClearing, FinancialTransactionEventsTypeCorrectionCredit, FinancialTransactionEventsTypeCorrectionDebit, FinancialTransactionEventsTypeCreditAuthorization, FinancialTransactionEventsTypeCreditAuthorizationAdvice, FinancialTransactionEventsTypeFinancialAuthorization, FinancialTransactionEventsTypeFinancialCreditAuthorization, FinancialTransactionEventsTypeReturn, FinancialTransactionEventsTypeReturnReversal, FinancialTransactionEventsTypeTransfer, FinancialTransactionEventsTypeTransferInsufficientFunds:
+		return true
+	}
+	return false
+}
+
 // APPROVED transactions were successful while DECLINED transactions were declined
 // by user, Lithic, or the network.
 type FinancialTransactionResult string
@@ -375,6 +407,14 @@ const (
 	FinancialTransactionResultApproved FinancialTransactionResult = "APPROVED"
 	FinancialTransactionResultDeclined FinancialTransactionResult = "DECLINED"
 )
+
+func (r FinancialTransactionResult) IsKnown() bool {
+	switch r {
+	case FinancialTransactionResultApproved, FinancialTransactionResultDeclined:
+		return true
+	}
+	return false
+}
 
 // Status types:
 //
@@ -395,6 +435,14 @@ const (
 	FinancialTransactionStatusVoided   FinancialTransactionStatus = "VOIDED"
 )
 
+func (r FinancialTransactionStatus) IsKnown() bool {
+	switch r {
+	case FinancialTransactionStatusDeclined, FinancialTransactionStatusExpired, FinancialTransactionStatusPending, FinancialTransactionStatusSettled, FinancialTransactionStatusVoided:
+		return true
+	}
+	return false
+}
+
 type FinancialAccountNewParams struct {
 	Nickname       param.Field[string]                        `json:"nickname,required"`
 	Type           param.Field[FinancialAccountNewParamsType] `json:"type,required"`
@@ -411,6 +459,14 @@ type FinancialAccountNewParamsType string
 const (
 	FinancialAccountNewParamsTypeOperating FinancialAccountNewParamsType = "OPERATING"
 )
+
+func (r FinancialAccountNewParamsType) IsKnown() bool {
+	switch r {
+	case FinancialAccountNewParamsTypeOperating:
+		return true
+	}
+	return false
+}
 
 type FinancialAccountUpdateParams struct {
 	Nickname param.Field[string] `json:"nickname"`
@@ -446,3 +502,11 @@ const (
 	FinancialAccountListParamsTypeOperating FinancialAccountListParamsType = "OPERATING"
 	FinancialAccountListParamsTypeReserve   FinancialAccountListParamsType = "RESERVE"
 )
+
+func (r FinancialAccountListParamsType) IsKnown() bool {
+	switch r {
+	case FinancialAccountListParamsTypeIssuing, FinancialAccountListParamsTypeOperating, FinancialAccountListParamsTypeReserve:
+		return true
+	}
+	return false
+}

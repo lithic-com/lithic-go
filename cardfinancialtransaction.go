@@ -103,6 +103,14 @@ const (
 	CardFinancialTransactionListParamsCategoryTransfer CardFinancialTransactionListParamsCategory = "TRANSFER"
 )
 
+func (r CardFinancialTransactionListParamsCategory) IsKnown() bool {
+	switch r {
+	case CardFinancialTransactionListParamsCategoryCard, CardFinancialTransactionListParamsCategoryTransfer:
+		return true
+	}
+	return false
+}
+
 // Financial Transaction result to be returned.
 type CardFinancialTransactionListParamsResult string
 
@@ -110,6 +118,14 @@ const (
 	CardFinancialTransactionListParamsResultApproved CardFinancialTransactionListParamsResult = "APPROVED"
 	CardFinancialTransactionListParamsResultDeclined CardFinancialTransactionListParamsResult = "DECLINED"
 )
+
+func (r CardFinancialTransactionListParamsResult) IsKnown() bool {
+	switch r {
+	case CardFinancialTransactionListParamsResultApproved, CardFinancialTransactionListParamsResultDeclined:
+		return true
+	}
+	return false
+}
 
 // Financial Transaction status to be returned.
 type CardFinancialTransactionListParamsStatus string
@@ -122,3 +138,11 @@ const (
 	CardFinancialTransactionListParamsStatusSettled  CardFinancialTransactionListParamsStatus = "SETTLED"
 	CardFinancialTransactionListParamsStatusVoided   CardFinancialTransactionListParamsStatus = "VOIDED"
 )
+
+func (r CardFinancialTransactionListParamsStatus) IsKnown() bool {
+	switch r {
+	case CardFinancialTransactionListParamsStatusDeclined, CardFinancialTransactionListParamsStatusExpired, CardFinancialTransactionListParamsStatusPending, CardFinancialTransactionListParamsStatusReturned, CardFinancialTransactionListParamsStatusSettled, CardFinancialTransactionListParamsStatusVoided:
+		return true
+	}
+	return false
+}
