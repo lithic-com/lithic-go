@@ -453,6 +453,14 @@ const (
 	AccountHolderExemptionTypePrepaidCardUser AccountHolderExemptionType = "PREPAID_CARD_USER"
 )
 
+func (r AccountHolderExemptionType) IsKnown() bool {
+	switch r {
+	case AccountHolderExemptionTypeAuthorizedUser, AccountHolderExemptionTypePrepaidCardUser:
+		return true
+	}
+	return false
+}
+
 // Only present when user_type == "INDIVIDUAL". Information about the individual
 // for which the account is being opened and KYC is being run.
 type AccountHolderIndividual struct {
@@ -504,6 +512,14 @@ const (
 	AccountHolderStatusRejected        AccountHolderStatus = "REJECTED"
 )
 
+func (r AccountHolderStatus) IsKnown() bool {
+	switch r {
+	case AccountHolderStatusAccepted, AccountHolderStatusPendingDocument, AccountHolderStatusPendingResubmit, AccountHolderStatusRejected:
+		return true
+	}
+	return false
+}
+
 type AccountHolderStatusReason string
 
 const (
@@ -520,6 +536,14 @@ const (
 	AccountHolderStatusReasonWatchlistAlertFailure       AccountHolderStatusReason = "WATCHLIST_ALERT_FAILURE"
 )
 
+func (r AccountHolderStatusReason) IsKnown() bool {
+	switch r {
+	case AccountHolderStatusReasonAddressVerificationFailure, AccountHolderStatusReasonAgeThresholdFailure, AccountHolderStatusReasonCompleteVerificationFailure, AccountHolderStatusReasonDobVerificationFailure, AccountHolderStatusReasonIDVerificationFailure, AccountHolderStatusReasonMaxDocumentAttempts, AccountHolderStatusReasonMaxResubmissionAttempts, AccountHolderStatusReasonNameVerificationFailure, AccountHolderStatusReasonOtherVerificationFailure, AccountHolderStatusReasonRiskThresholdFailure, AccountHolderStatusReasonWatchlistAlertFailure:
+		return true
+	}
+	return false
+}
+
 // The type of Account Holder. If the type is "INDIVIDUAL", the "individual"
 // attribute will be present. If the type is "BUSINESS" then the "business_entity",
 // "control_person", "beneficial_owner_individuals", "beneficial_owner_entities",
@@ -530,6 +554,14 @@ const (
 	AccountHolderUserTypeBusiness   AccountHolderUserType = "BUSINESS"
 	AccountHolderUserTypeIndividual AccountHolderUserType = "INDIVIDUAL"
 )
+
+func (r AccountHolderUserType) IsKnown() bool {
+	switch r {
+	case AccountHolderUserTypeBusiness, AccountHolderUserTypeIndividual:
+		return true
+	}
+	return false
+}
 
 // Information about the most recent identity verification attempt
 type AccountHolderVerificationApplication struct {
@@ -575,6 +607,14 @@ const (
 	AccountHolderVerificationApplicationStatusRejected        AccountHolderVerificationApplicationStatus = "REJECTED"
 )
 
+func (r AccountHolderVerificationApplicationStatus) IsKnown() bool {
+	switch r {
+	case AccountHolderVerificationApplicationStatusAccepted, AccountHolderVerificationApplicationStatusPendingDocument, AccountHolderVerificationApplicationStatusPendingResubmit, AccountHolderVerificationApplicationStatusRejected:
+		return true
+	}
+	return false
+}
+
 type AccountHolderVerificationApplicationStatusReason string
 
 const (
@@ -590,6 +630,14 @@ const (
 	AccountHolderVerificationApplicationStatusReasonRiskThresholdFailure        AccountHolderVerificationApplicationStatusReason = "RISK_THRESHOLD_FAILURE"
 	AccountHolderVerificationApplicationStatusReasonWatchlistAlertFailure       AccountHolderVerificationApplicationStatusReason = "WATCHLIST_ALERT_FAILURE"
 )
+
+func (r AccountHolderVerificationApplicationStatusReason) IsKnown() bool {
+	switch r {
+	case AccountHolderVerificationApplicationStatusReasonAddressVerificationFailure, AccountHolderVerificationApplicationStatusReasonAgeThresholdFailure, AccountHolderVerificationApplicationStatusReasonCompleteVerificationFailure, AccountHolderVerificationApplicationStatusReasonDobVerificationFailure, AccountHolderVerificationApplicationStatusReasonIDVerificationFailure, AccountHolderVerificationApplicationStatusReasonMaxDocumentAttempts, AccountHolderVerificationApplicationStatusReasonMaxResubmissionAttempts, AccountHolderVerificationApplicationStatusReasonNameVerificationFailure, AccountHolderVerificationApplicationStatusReasonOtherVerificationFailure, AccountHolderVerificationApplicationStatusReasonRiskThresholdFailure, AccountHolderVerificationApplicationStatusReasonWatchlistAlertFailure:
+		return true
+	}
+	return false
+}
 
 // Describes the document and the required document image uploads required to
 // re-run KYC.
@@ -634,6 +682,14 @@ const (
 	AccountHolderDocumentDocumentTypeVisa              AccountHolderDocumentDocumentType = "visa"
 )
 
+func (r AccountHolderDocumentDocumentType) IsKnown() bool {
+	switch r {
+	case AccountHolderDocumentDocumentTypeCommercialLicense, AccountHolderDocumentDocumentTypeDriversLicense, AccountHolderDocumentDocumentTypePassport, AccountHolderDocumentDocumentTypePassportCard, AccountHolderDocumentDocumentTypeVisa:
+		return true
+	}
+	return false
+}
+
 // Represents a single image of the document to upload.
 type AccountHolderDocumentRequiredDocumentUpload struct {
 	// Type of image to upload.
@@ -677,6 +733,14 @@ const (
 	AccountHolderDocumentRequiredDocumentUploadsImageTypeFront AccountHolderDocumentRequiredDocumentUploadsImageType = "front"
 )
 
+func (r AccountHolderDocumentRequiredDocumentUploadsImageType) IsKnown() bool {
+	switch r {
+	case AccountHolderDocumentRequiredDocumentUploadsImageTypeBack, AccountHolderDocumentRequiredDocumentUploadsImageTypeFront:
+		return true
+	}
+	return false
+}
+
 // Status of document image upload.
 type AccountHolderDocumentRequiredDocumentUploadsStatus string
 
@@ -686,6 +750,14 @@ const (
 	AccountHolderDocumentRequiredDocumentUploadsStatusPending   AccountHolderDocumentRequiredDocumentUploadsStatus = "PENDING"
 	AccountHolderDocumentRequiredDocumentUploadsStatusUploaded  AccountHolderDocumentRequiredDocumentUploadsStatus = "UPLOADED"
 )
+
+func (r AccountHolderDocumentRequiredDocumentUploadsStatus) IsKnown() bool {
+	switch r {
+	case AccountHolderDocumentRequiredDocumentUploadsStatusCompleted, AccountHolderDocumentRequiredDocumentUploadsStatusFailed, AccountHolderDocumentRequiredDocumentUploadsStatusPending, AccountHolderDocumentRequiredDocumentUploadsStatusUploaded:
+		return true
+	}
+	return false
+}
 
 // Reasons for document image upload status.
 type AccountHolderDocumentRequiredDocumentUploadsStatusReason string
@@ -698,6 +770,14 @@ const (
 	AccountHolderDocumentRequiredDocumentUploadsStatusReasonInvalidFileType  AccountHolderDocumentRequiredDocumentUploadsStatusReason = "INVALID_FILE_TYPE"
 	AccountHolderDocumentRequiredDocumentUploadsStatusReasonUnknownError     AccountHolderDocumentRequiredDocumentUploadsStatusReason = "UNKNOWN_ERROR"
 )
+
+func (r AccountHolderDocumentRequiredDocumentUploadsStatusReason) IsKnown() bool {
+	switch r {
+	case AccountHolderDocumentRequiredDocumentUploadsStatusReasonBackImageBlurry, AccountHolderDocumentRequiredDocumentUploadsStatusReasonFileSizeTooLarge, AccountHolderDocumentRequiredDocumentUploadsStatusReasonFrontImageBlurry, AccountHolderDocumentRequiredDocumentUploadsStatusReasonFrontImageGlare, AccountHolderDocumentRequiredDocumentUploadsStatusReasonInvalidFileType, AccountHolderDocumentRequiredDocumentUploadsStatusReasonUnknownError:
+		return true
+	}
+	return false
+}
 
 type AccountHolderNewResponse struct {
 	// Globally unique identifier for the account holder.
@@ -749,6 +829,14 @@ const (
 	AccountHolderNewResponseStatusRejected        AccountHolderNewResponseStatus = "REJECTED"
 )
 
+func (r AccountHolderNewResponseStatus) IsKnown() bool {
+	switch r {
+	case AccountHolderNewResponseStatusAccepted, AccountHolderNewResponseStatusPendingDocument, AccountHolderNewResponseStatusPendingResubmit, AccountHolderNewResponseStatusRejected:
+		return true
+	}
+	return false
+}
+
 type AccountHolderNewResponseStatusReason string
 
 const (
@@ -764,6 +852,14 @@ const (
 	AccountHolderNewResponseStatusReasonRiskThresholdFailure        AccountHolderNewResponseStatusReason = "RISK_THRESHOLD_FAILURE"
 	AccountHolderNewResponseStatusReasonWatchlistAlertFailure       AccountHolderNewResponseStatusReason = "WATCHLIST_ALERT_FAILURE"
 )
+
+func (r AccountHolderNewResponseStatusReason) IsKnown() bool {
+	switch r {
+	case AccountHolderNewResponseStatusReasonAddressVerificationFailure, AccountHolderNewResponseStatusReasonAgeThresholdFailure, AccountHolderNewResponseStatusReasonCompleteVerificationFailure, AccountHolderNewResponseStatusReasonDobVerificationFailure, AccountHolderNewResponseStatusReasonIDVerificationFailure, AccountHolderNewResponseStatusReasonMaxDocumentAttempts, AccountHolderNewResponseStatusReasonMaxResubmissionAttempts, AccountHolderNewResponseStatusReasonNameVerificationFailure, AccountHolderNewResponseStatusReasonOtherVerificationFailure, AccountHolderNewResponseStatusReasonRiskThresholdFailure, AccountHolderNewResponseStatusReasonWatchlistAlertFailure:
+		return true
+	}
+	return false
+}
 
 type AccountHolderUpdateResponse struct {
 	// The token for the account holder that was updated
@@ -1003,6 +1099,14 @@ const (
 	AccountHolderNewParamsKYBWorkflowKYBByo   AccountHolderNewParamsKYBWorkflow = "KYB_BYO"
 )
 
+func (r AccountHolderNewParamsKYBWorkflow) IsKnown() bool {
+	switch r {
+	case AccountHolderNewParamsKYBWorkflowKYBBasic, AccountHolderNewParamsKYBWorkflowKYBByo:
+		return true
+	}
+	return false
+}
+
 type AccountHolderNewParamsKYC struct {
 	// Information on individual for whom the account is being opened and KYC is being
 	// run.
@@ -1068,6 +1172,14 @@ const (
 	AccountHolderNewParamsKYCWorkflowKYCByo      AccountHolderNewParamsKYCWorkflow = "KYC_BYO"
 )
 
+func (r AccountHolderNewParamsKYCWorkflow) IsKnown() bool {
+	switch r {
+	case AccountHolderNewParamsKYCWorkflowKYCAdvanced, AccountHolderNewParamsKYCWorkflowKYCBasic, AccountHolderNewParamsKYCWorkflowKYCByo:
+		return true
+	}
+	return false
+}
+
 type AccountHolderNewParamsKYCExempt struct {
 	// The KYC Exempt user's email
 	Email param.Field[string] `json:"email,required"`
@@ -1109,12 +1221,28 @@ const (
 	AccountHolderNewParamsKYCExemptKYCExemptionTypePrepaidCardUser AccountHolderNewParamsKYCExemptKYCExemptionType = "PREPAID_CARD_USER"
 )
 
+func (r AccountHolderNewParamsKYCExemptKYCExemptionType) IsKnown() bool {
+	switch r {
+	case AccountHolderNewParamsKYCExemptKYCExemptionTypeAuthorizedUser, AccountHolderNewParamsKYCExemptKYCExemptionTypePrepaidCardUser:
+		return true
+	}
+	return false
+}
+
 // Specifies the workflow type. This must be 'KYC_EXEMPT'
 type AccountHolderNewParamsKYCExemptWorkflow string
 
 const (
 	AccountHolderNewParamsKYCExemptWorkflowKYCExempt AccountHolderNewParamsKYCExemptWorkflow = "KYC_EXEMPT"
 )
+
+func (r AccountHolderNewParamsKYCExemptWorkflow) IsKnown() bool {
+	switch r {
+	case AccountHolderNewParamsKYCExemptWorkflowKYCExempt:
+		return true
+	}
+	return false
+}
 
 type AccountHolderUpdateParams struct {
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
@@ -1206,6 +1334,14 @@ const (
 	AccountHolderResubmitParamsWorkflowKYCAdvanced AccountHolderResubmitParamsWorkflow = "KYC_ADVANCED"
 )
 
+func (r AccountHolderResubmitParamsWorkflow) IsKnown() bool {
+	switch r {
+	case AccountHolderResubmitParamsWorkflowKYCAdvanced:
+		return true
+	}
+	return false
+}
+
 type AccountHolderUploadDocumentParams struct {
 	// Type of the document to upload.
 	DocumentType param.Field[AccountHolderUploadDocumentParamsDocumentType] `json:"document_type,required"`
@@ -1225,3 +1361,11 @@ const (
 	AccountHolderUploadDocumentParamsDocumentTypePassportCard      AccountHolderUploadDocumentParamsDocumentType = "passport_card"
 	AccountHolderUploadDocumentParamsDocumentTypeVisa              AccountHolderUploadDocumentParamsDocumentType = "visa"
 )
+
+func (r AccountHolderUploadDocumentParamsDocumentType) IsKnown() bool {
+	switch r {
+	case AccountHolderUploadDocumentParamsDocumentTypeCommercialLicense, AccountHolderUploadDocumentParamsDocumentTypeDriversLicense, AccountHolderUploadDocumentParamsDocumentTypePassport, AccountHolderUploadDocumentParamsDocumentTypePassportCard, AccountHolderUploadDocumentParamsDocumentTypeVisa:
+		return true
+	}
+	return false
+}

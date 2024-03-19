@@ -456,6 +456,14 @@ const (
 	CardFundingStatePending CardFundingState = "PENDING"
 )
 
+func (r CardFundingState) IsKnown() bool {
+	switch r {
+	case CardFundingStateDeleted, CardFundingStateEnabled, CardFundingStatePending:
+		return true
+	}
+	return false
+}
+
 // Types of funding source:
 //
 // - `DEPOSITORY_CHECKING` - Bank checking account.
@@ -466,6 +474,14 @@ const (
 	CardFundingTypeDepositoryChecking CardFundingType = "DEPOSITORY_CHECKING"
 	CardFundingTypeDepositorySavings  CardFundingType = "DEPOSITORY_SAVINGS"
 )
+
+func (r CardFundingType) IsKnown() bool {
+	switch r {
+	case CardFundingTypeDepositoryChecking, CardFundingTypeDepositorySavings:
+		return true
+	}
+	return false
+}
 
 // Card state values:
 //
@@ -498,6 +514,14 @@ const (
 	CardStatePendingFulfillment CardState = "PENDING_FULFILLMENT"
 )
 
+func (r CardState) IsKnown() bool {
+	switch r {
+	case CardStateClosed, CardStateOpen, CardStatePaused, CardStatePendingActivation, CardStatePendingFulfillment:
+		return true
+	}
+	return false
+}
+
 // Card types:
 //
 //   - `VIRTUAL` - Card will authorize at any merchant and can be added to a digital
@@ -518,6 +542,14 @@ const (
 	CardTypeSingleUse      CardType = "SINGLE_USE"
 	CardTypeVirtual        CardType = "VIRTUAL"
 )
+
+func (r CardType) IsKnown() bool {
+	switch r {
+	case CardTypeMerchantLocked, CardTypePhysical, CardTypeSingleUse, CardTypeVirtual:
+		return true
+	}
+	return false
+}
 
 type CardSpendLimits struct {
 	AvailableSpendLimit CardSpendLimitsAvailableSpendLimit `json:"available_spend_limit,required"`
@@ -587,6 +619,14 @@ const (
 	SpendLimitDurationMonthly     SpendLimitDuration = "MONTHLY"
 	SpendLimitDurationTransaction SpendLimitDuration = "TRANSACTION"
 )
+
+func (r SpendLimitDuration) IsKnown() bool {
+	switch r {
+	case SpendLimitDurationAnnually, SpendLimitDurationForever, SpendLimitDurationMonthly, SpendLimitDurationTransaction:
+		return true
+	}
+	return false
+}
 
 type CardProvisionResponse struct {
 	ProvisioningPayload string                    `json:"provisioning_payload"`
@@ -728,6 +768,14 @@ const (
 	CardNewParamsTypeVirtual        CardNewParamsType = "VIRTUAL"
 )
 
+func (r CardNewParamsType) IsKnown() bool {
+	switch r {
+	case CardNewParamsTypeMerchantLocked, CardNewParamsTypePhysical, CardNewParamsTypeSingleUse, CardNewParamsTypeVirtual:
+		return true
+	}
+	return false
+}
+
 // Shipping method for the card. Only applies to cards of type PHYSICAL. Use of
 // options besides `STANDARD` require additional permissions.
 //
@@ -751,6 +799,14 @@ const (
 	CardNewParamsShippingMethodStandardWithTracking CardNewParamsShippingMethod = "STANDARD_WITH_TRACKING"
 )
 
+func (r CardNewParamsShippingMethod) IsKnown() bool {
+	switch r {
+	case CardNewParamsShippingMethod2Day, CardNewParamsShippingMethodExpedited, CardNewParamsShippingMethodExpress, CardNewParamsShippingMethodPriority, CardNewParamsShippingMethodStandard, CardNewParamsShippingMethodStandardWithTracking:
+		return true
+	}
+	return false
+}
+
 // Card state values:
 //
 //   - `OPEN` - Card will approve authorizations (if they match card and account
@@ -763,6 +819,14 @@ const (
 	CardNewParamsStateOpen   CardNewParamsState = "OPEN"
 	CardNewParamsStatePaused CardNewParamsState = "PAUSED"
 )
+
+func (r CardNewParamsState) IsKnown() bool {
+	switch r {
+	case CardNewParamsStateOpen, CardNewParamsStatePaused:
+		return true
+	}
+	return false
+}
 
 type CardUpdateParams struct {
 	// Identifier for any Auth Rules that will be applied to transactions taking place
@@ -830,6 +894,14 @@ const (
 	CardUpdateParamsStatePaused CardUpdateParamsState = "PAUSED"
 )
 
+func (r CardUpdateParamsState) IsKnown() bool {
+	switch r {
+	case CardUpdateParamsStateClosed, CardUpdateParamsStateOpen, CardUpdateParamsStatePaused:
+		return true
+	}
+	return false
+}
+
 type CardListParams struct {
 	// Returns cards associated with the specified account.
 	AccountToken param.Field[string] `query:"account_token" format:"uuid"`
@@ -869,6 +941,14 @@ const (
 	CardListParamsStatePendingActivation  CardListParamsState = "PENDING_ACTIVATION"
 	CardListParamsStatePendingFulfillment CardListParamsState = "PENDING_FULFILLMENT"
 )
+
+func (r CardListParamsState) IsKnown() bool {
+	switch r {
+	case CardListParamsStateClosed, CardListParamsStateOpen, CardListParamsStatePaused, CardListParamsStatePendingActivation, CardListParamsStatePendingFulfillment:
+		return true
+	}
+	return false
+}
 
 type CardEmbedParams struct {
 	// A base64 encoded JSON string of an EmbedRequest to specify which card to load.
@@ -970,6 +1050,14 @@ const (
 	CardProvisionParamsDigitalWalletSamsungPay CardProvisionParamsDigitalWallet = "SAMSUNG_PAY"
 )
 
+func (r CardProvisionParamsDigitalWallet) IsKnown() bool {
+	switch r {
+	case CardProvisionParamsDigitalWalletApplePay, CardProvisionParamsDigitalWalletGooglePay, CardProvisionParamsDigitalWalletSamsungPay:
+		return true
+	}
+	return false
+}
+
 type CardReissueParams struct {
 	// If omitted, the previous carrier will be used.
 	Carrier param.Field[shared.CarrierParam] `json:"carrier"`
@@ -1020,6 +1108,14 @@ const (
 	CardReissueParamsShippingMethodStandard             CardReissueParamsShippingMethod = "STANDARD"
 	CardReissueParamsShippingMethodStandardWithTracking CardReissueParamsShippingMethod = "STANDARD_WITH_TRACKING"
 )
+
+func (r CardReissueParamsShippingMethod) IsKnown() bool {
+	switch r {
+	case CardReissueParamsShippingMethod2Day, CardReissueParamsShippingMethodExpedited, CardReissueParamsShippingMethodExpress, CardReissueParamsShippingMethodPriority, CardReissueParamsShippingMethodStandard, CardReissueParamsShippingMethodStandardWithTracking:
+		return true
+	}
+	return false
+}
 
 type CardRenewParams struct {
 	// The shipping address this card will be sent to.
@@ -1077,6 +1173,14 @@ const (
 	CardRenewParamsShippingMethodStandard             CardRenewParamsShippingMethod = "STANDARD"
 	CardRenewParamsShippingMethodStandardWithTracking CardRenewParamsShippingMethod = "STANDARD_WITH_TRACKING"
 )
+
+func (r CardRenewParamsShippingMethod) IsKnown() bool {
+	switch r {
+	case CardRenewParamsShippingMethod2Day, CardRenewParamsShippingMethodExpedited, CardRenewParamsShippingMethodExpress, CardRenewParamsShippingMethodPriority, CardRenewParamsShippingMethodStandard, CardRenewParamsShippingMethodStandardWithTracking:
+		return true
+	}
+	return false
+}
 
 type CardSearchByPanParams struct {
 	// The PAN for the card being retrieved.

@@ -409,6 +409,14 @@ const (
 	TransactionEventsDetailedResultUnauthorizedMerchant                        TransactionEventsDetailedResult = "UNAUTHORIZED_MERCHANT"
 )
 
+func (r TransactionEventsDetailedResult) IsKnown() bool {
+	switch r {
+	case TransactionEventsDetailedResultAccountDailySpendLimitExceeded, TransactionEventsDetailedResultAccountInactive, TransactionEventsDetailedResultAccountLifetimeSpendLimitExceeded, TransactionEventsDetailedResultAccountMonthlySpendLimitExceeded, TransactionEventsDetailedResultAccountUnderReview, TransactionEventsDetailedResultAddressIncorrect, TransactionEventsDetailedResultApproved, TransactionEventsDetailedResultAuthRuleAllowedCountry, TransactionEventsDetailedResultAuthRuleAllowedMcc, TransactionEventsDetailedResultAuthRuleBlockedCountry, TransactionEventsDetailedResultAuthRuleBlockedMcc, TransactionEventsDetailedResultCardClosed, TransactionEventsDetailedResultCardCryptogramValidationFailure, TransactionEventsDetailedResultCardExpired, TransactionEventsDetailedResultCardExpiryDateIncorrect, TransactionEventsDetailedResultCardInvalid, TransactionEventsDetailedResultCardPaused, TransactionEventsDetailedResultCardPinIncorrect, TransactionEventsDetailedResultCardRestricted, TransactionEventsDetailedResultCardSecurityCodeIncorrect, TransactionEventsDetailedResultCardSpendLimitExceeded, TransactionEventsDetailedResultContactCardIssuer, TransactionEventsDetailedResultCustomerAsaTimeout, TransactionEventsDetailedResultCustomAsaResult, TransactionEventsDetailedResultDeclined, TransactionEventsDetailedResultDoNotHonor, TransactionEventsDetailedResultFormatError, TransactionEventsDetailedResultInsufficientFundingSourceBalance, TransactionEventsDetailedResultInsufficientFunds, TransactionEventsDetailedResultLithicSystemError, TransactionEventsDetailedResultLithicSystemRateLimit, TransactionEventsDetailedResultMalformedAsaResponse, TransactionEventsDetailedResultMerchantInvalid, TransactionEventsDetailedResultMerchantLockedCardAttemptedElsewhere, TransactionEventsDetailedResultMerchantNotPermitted, TransactionEventsDetailedResultOverReversalAttempted, TransactionEventsDetailedResultProgramCardSpendLimitExceeded, TransactionEventsDetailedResultProgramSuspended, TransactionEventsDetailedResultProgramUsageRestriction, TransactionEventsDetailedResultReversalUnmatched, TransactionEventsDetailedResultSecurityViolation, TransactionEventsDetailedResultSingleUseCardReattempted, TransactionEventsDetailedResultTransactionInvalid, TransactionEventsDetailedResultTransactionNotPermittedToAcquirerOrTerminal, TransactionEventsDetailedResultTransactionNotPermittedToIssuerOrCardholder, TransactionEventsDetailedResultTransactionPreviouslyCompleted, TransactionEventsDetailedResultUnauthorizedMerchant:
+		return true
+	}
+	return false
+}
+
 // `APPROVED` or decline reason.
 //
 // Result types:
@@ -456,6 +464,14 @@ const (
 	TransactionEventsResultUserTransactionLimit    TransactionEventsResult = "USER_TRANSACTION_LIMIT"
 )
 
+func (r TransactionEventsResult) IsKnown() bool {
+	switch r {
+	case TransactionEventsResultApproved, TransactionEventsResultBankConnectionError, TransactionEventsResultBankNotVerified, TransactionEventsResultCardClosed, TransactionEventsResultCardPaused, TransactionEventsResultDeclined, TransactionEventsResultFraudAdvice, TransactionEventsResultInactiveAccount, TransactionEventsResultIncorrectPin, TransactionEventsResultInsufficientFunds, TransactionEventsResultInvalidCardDetails, TransactionEventsResultMerchantBlacklist, TransactionEventsResultSingleUseRecharged, TransactionEventsResultSwitchInoperativeAdvice, TransactionEventsResultUnauthorizedMerchant, TransactionEventsResultUnknownHostTimeout, TransactionEventsResultUserTransactionLimit:
+		return true
+	}
+	return false
+}
+
 // Event types:
 //
 //   - `AUTHORIZATION` - Authorize a transaction.
@@ -496,6 +512,14 @@ const (
 	TransactionEventsTypeReturnReversal               TransactionEventsType = "RETURN_REVERSAL"
 	TransactionEventsTypeVoid                         TransactionEventsType = "VOID"
 )
+
+func (r TransactionEventsType) IsKnown() bool {
+	switch r {
+	case TransactionEventsTypeAuthorization, TransactionEventsTypeAuthorizationAdvice, TransactionEventsTypeAuthorizationExpiry, TransactionEventsTypeAuthorizationReversal, TransactionEventsTypeBalanceInquiry, TransactionEventsTypeClearing, TransactionEventsTypeCorrectionCredit, TransactionEventsTypeCorrectionDebit, TransactionEventsTypeCreditAuthorization, TransactionEventsTypeCreditAuthorizationAdvice, TransactionEventsTypeFinancialAuthorization, TransactionEventsTypeFinancialCreditAuthorization, TransactionEventsTypeReturn, TransactionEventsTypeReturnReversal, TransactionEventsTypeVoid:
+		return true
+	}
+	return false
+}
 
 type TransactionMerchant struct {
 	// Unique identifier to identify the payment card acceptor.
@@ -547,6 +571,14 @@ const (
 	TransactionNetworkUnknown    TransactionNetwork = "UNKNOWN"
 	TransactionNetworkVisa       TransactionNetwork = "VISA"
 )
+
+func (r TransactionNetwork) IsKnown() bool {
+	switch r {
+	case TransactionNetworkInterlink, TransactionNetworkMaestro, TransactionNetworkMastercard, TransactionNetworkUnknown, TransactionNetworkVisa:
+		return true
+	}
+	return false
+}
 
 type TransactionPos struct {
 	EntryMode TransactionPosEntryMode `json:"entry_mode,required"`
@@ -611,6 +643,14 @@ const (
 	TransactionPosEntryModeCardUnknown       TransactionPosEntryModeCard = "UNKNOWN"
 )
 
+func (r TransactionPosEntryModeCard) IsKnown() bool {
+	switch r {
+	case TransactionPosEntryModeCardNotPresent, TransactionPosEntryModeCardPreauthorized, TransactionPosEntryModeCardPresent, TransactionPosEntryModeCardUnknown:
+		return true
+	}
+	return false
+}
+
 // Cardholder Presence status
 type TransactionPosEntryModeCardholder string
 
@@ -626,6 +666,14 @@ const (
 	TransactionPosEntryModeCardholderTelephoneOrder  TransactionPosEntryModeCardholder = "TELEPHONE_ORDER"
 	TransactionPosEntryModeCardholderUnknown         TransactionPosEntryModeCardholder = "UNKNOWN"
 )
+
+func (r TransactionPosEntryModeCardholder) IsKnown() bool {
+	switch r {
+	case TransactionPosEntryModeCardholderDeferredBilling, TransactionPosEntryModeCardholderElectronicOrder, TransactionPosEntryModeCardholderInstallment, TransactionPosEntryModeCardholderMailOrder, TransactionPosEntryModeCardholderNotPresent, TransactionPosEntryModeCardholderPreauthorized, TransactionPosEntryModeCardholderPresent, TransactionPosEntryModeCardholderReoccurring, TransactionPosEntryModeCardholderTelephoneOrder, TransactionPosEntryModeCardholderUnknown:
+		return true
+	}
+	return false
+}
 
 // Method of entry for the PAN
 type TransactionPosEntryModePan string
@@ -647,6 +695,14 @@ const (
 	TransactionPosEntryModePanUnknown             TransactionPosEntryModePan = "UNKNOWN"
 	TransactionPosEntryModePanUnspecified         TransactionPosEntryModePan = "UNSPECIFIED"
 )
+
+func (r TransactionPosEntryModePan) IsKnown() bool {
+	switch r {
+	case TransactionPosEntryModePanAutoEntry, TransactionPosEntryModePanBarCode, TransactionPosEntryModePanContactless, TransactionPosEntryModePanCredentialOnFile, TransactionPosEntryModePanEcommerce, TransactionPosEntryModePanErrorKeyed, TransactionPosEntryModePanErrorMagneticStripe, TransactionPosEntryModePanIcc, TransactionPosEntryModePanKeyEntered, TransactionPosEntryModePanMagneticStripe, TransactionPosEntryModePanManual, TransactionPosEntryModePanOcr, TransactionPosEntryModePanSecureCardless, TransactionPosEntryModePanUnknown, TransactionPosEntryModePanUnspecified:
+		return true
+	}
+	return false
+}
 
 type TransactionPosTerminal struct {
 	// True if a clerk is present at the sale.
@@ -699,6 +755,14 @@ const (
 	TransactionPosTerminalOperatorUnknown        TransactionPosTerminalOperator = "UNKNOWN"
 )
 
+func (r TransactionPosTerminalOperator) IsKnown() bool {
+	switch r {
+	case TransactionPosTerminalOperatorAdministrative, TransactionPosTerminalOperatorCardholder, TransactionPosTerminalOperatorCardAcceptor, TransactionPosTerminalOperatorUnknown:
+		return true
+	}
+	return false
+}
+
 // Status of whether the POS is able to accept PINs
 type TransactionPosTerminalPinCapability string
 
@@ -708,6 +772,14 @@ const (
 	TransactionPosTerminalPinCapabilityNotCapable  TransactionPosTerminalPinCapability = "NOT_CAPABLE"
 	TransactionPosTerminalPinCapabilityUnspecified TransactionPosTerminalPinCapability = "UNSPECIFIED"
 )
+
+func (r TransactionPosTerminalPinCapability) IsKnown() bool {
+	switch r {
+	case TransactionPosTerminalPinCapabilityCapable, TransactionPosTerminalPinCapabilityInoperative, TransactionPosTerminalPinCapabilityNotCapable, TransactionPosTerminalPinCapabilityUnspecified:
+		return true
+	}
+	return false
+}
 
 // POS Type
 type TransactionPosTerminalType string
@@ -739,6 +811,14 @@ const (
 	TransactionPosTerminalTypeVoice                 TransactionPosTerminalType = "VOICE"
 )
 
+func (r TransactionPosTerminalType) IsKnown() bool {
+	switch r {
+	case TransactionPosTerminalTypeAdministrative, TransactionPosTerminalTypeAtm, TransactionPosTerminalTypeAuthorization, TransactionPosTerminalTypeCouponMachine, TransactionPosTerminalTypeDialTerminal, TransactionPosTerminalTypeEcommerce, TransactionPosTerminalTypeEcr, TransactionPosTerminalTypeFuelMachine, TransactionPosTerminalTypeHomeTerminal, TransactionPosTerminalTypeMicr, TransactionPosTerminalTypeOffPremise, TransactionPosTerminalTypePayment, TransactionPosTerminalTypePda, TransactionPosTerminalTypePhone, TransactionPosTerminalTypePoint, TransactionPosTerminalTypePosTerminal, TransactionPosTerminalTypePublicUtility, TransactionPosTerminalTypeSelfService, TransactionPosTerminalTypeTelevision, TransactionPosTerminalTypeTeller, TransactionPosTerminalTypeTravelersCheckMachine, TransactionPosTerminalTypeUnknown, TransactionPosTerminalTypeVending, TransactionPosTerminalTypeVoice:
+		return true
+	}
+	return false
+}
+
 // `APPROVED` or decline reason. See Event result types
 type TransactionResult string
 
@@ -762,6 +842,14 @@ const (
 	TransactionResultUserTransactionLimit    TransactionResult = "USER_TRANSACTION_LIMIT"
 )
 
+func (r TransactionResult) IsKnown() bool {
+	switch r {
+	case TransactionResultApproved, TransactionResultBankConnectionError, TransactionResultBankNotVerified, TransactionResultCardClosed, TransactionResultCardPaused, TransactionResultDeclined, TransactionResultFraudAdvice, TransactionResultInactiveAccount, TransactionResultIncorrectPin, TransactionResultInsufficientFunds, TransactionResultInvalidCardDetails, TransactionResultMerchantBlacklist, TransactionResultSingleUseRecharged, TransactionResultSwitchInoperativeAdvice, TransactionResultUnauthorizedMerchant, TransactionResultUnknownHostTimeout, TransactionResultUserTransactionLimit:
+		return true
+	}
+	return false
+}
+
 // Status types:
 //
 //   - `DECLINED` - The transaction was declined.
@@ -779,6 +867,14 @@ const (
 	TransactionStatusSettled  TransactionStatus = "SETTLED"
 	TransactionStatusVoided   TransactionStatus = "VOIDED"
 )
+
+func (r TransactionStatus) IsKnown() bool {
+	switch r {
+	case TransactionStatusDeclined, TransactionStatusExpired, TransactionStatusPending, TransactionStatusSettled, TransactionStatusVoided:
+		return true
+	}
+	return false
+}
 
 type TransactionTokenInfo struct {
 	// Source of the token
@@ -813,6 +909,14 @@ const (
 	TransactionTokenInfoWalletTypeOther      TransactionTokenInfoWalletType = "OTHER"
 	TransactionTokenInfoWalletTypeSamsungPay TransactionTokenInfoWalletType = "SAMSUNG_PAY"
 )
+
+func (r TransactionTokenInfoWalletType) IsKnown() bool {
+	switch r {
+	case TransactionTokenInfoWalletTypeApplePay, TransactionTokenInfoWalletTypeGooglePay, TransactionTokenInfoWalletTypeMasterpass, TransactionTokenInfoWalletTypeMerchant, TransactionTokenInfoWalletTypeOther, TransactionTokenInfoWalletTypeSamsungPay:
+		return true
+	}
+	return false
+}
 
 type TransactionCardholderAuthentication struct {
 	// 3-D Secure Protocol version. Possible enum values:
@@ -980,6 +1084,14 @@ const (
 	TransactionCardholderAuthenticationAcquirerExemptionTransactionRiskAnalysis                TransactionCardholderAuthenticationAcquirerExemption = "TRANSACTION_RISK_ANALYSIS"
 )
 
+func (r TransactionCardholderAuthenticationAcquirerExemption) IsKnown() bool {
+	switch r {
+	case TransactionCardholderAuthenticationAcquirerExemptionAuthenticationOutageException, TransactionCardholderAuthenticationAcquirerExemptionLowValue, TransactionCardholderAuthenticationAcquirerExemptionMerchantInitiatedTransaction, TransactionCardholderAuthenticationAcquirerExemptionNone, TransactionCardholderAuthenticationAcquirerExemptionRecurringPayment, TransactionCardholderAuthenticationAcquirerExemptionSecureCorporatePayment, TransactionCardholderAuthenticationAcquirerExemptionStrongCustomerAuthenticationDelegation, TransactionCardholderAuthenticationAcquirerExemptionTransactionRiskAnalysis:
+		return true
+	}
+	return false
+}
+
 // Outcome of the 3DS authentication process. Possible enum values:
 //
 //   - `SUCCESS`: 3DS authentication was successful and the transaction is considered
@@ -999,6 +1111,14 @@ const (
 	TransactionCardholderAuthenticationAuthenticationResultNone     TransactionCardholderAuthenticationAuthenticationResult = "NONE"
 	TransactionCardholderAuthenticationAuthenticationResultSuccess  TransactionCardholderAuthenticationAuthenticationResult = "SUCCESS"
 )
+
+func (r TransactionCardholderAuthenticationAuthenticationResult) IsKnown() bool {
+	switch r {
+	case TransactionCardholderAuthenticationAuthenticationResultAttempts, TransactionCardholderAuthenticationAuthenticationResultDecline, TransactionCardholderAuthenticationAuthenticationResultNone, TransactionCardholderAuthenticationAuthenticationResultSuccess:
+		return true
+	}
+	return false
+}
 
 // Indicator for which party made the 3DS authentication decision. Possible enum
 // values:
@@ -1024,6 +1144,14 @@ const (
 	TransactionCardholderAuthenticationDecisionMadeByUnknown          TransactionCardholderAuthenticationDecisionMadeBy = "UNKNOWN"
 )
 
+func (r TransactionCardholderAuthenticationDecisionMadeBy) IsKnown() bool {
+	switch r {
+	case TransactionCardholderAuthenticationDecisionMadeByCustomerEndpoint, TransactionCardholderAuthenticationDecisionMadeByLithicDefault, TransactionCardholderAuthenticationDecisionMadeByLithicRules, TransactionCardholderAuthenticationDecisionMadeByNetwork, TransactionCardholderAuthenticationDecisionMadeByUnknown:
+		return true
+	}
+	return false
+}
+
 // Indicates whether chargeback liability shift applies to the transaction.
 // Possible enum values:
 //
@@ -1047,6 +1175,14 @@ const (
 	TransactionCardholderAuthenticationLiabilityShiftTokenAuthenticated TransactionCardholderAuthenticationLiabilityShift = "TOKEN_AUTHENTICATED"
 )
 
+func (r TransactionCardholderAuthenticationLiabilityShift) IsKnown() bool {
+	switch r {
+	case TransactionCardholderAuthenticationLiabilityShift3DSAuthenticated, TransactionCardholderAuthenticationLiabilityShiftAcquirerExemption, TransactionCardholderAuthenticationLiabilityShiftNone, TransactionCardholderAuthenticationLiabilityShiftTokenAuthenticated:
+		return true
+	}
+	return false
+}
+
 // Verification attempted values:
 //
 //   - `APP_LOGIN`: Out-of-band login verification was attempted by the ACS.
@@ -1066,6 +1202,14 @@ const (
 	TransactionCardholderAuthenticationVerificationAttemptedOther     TransactionCardholderAuthenticationVerificationAttempted = "OTHER"
 	TransactionCardholderAuthenticationVerificationAttemptedOtp       TransactionCardholderAuthenticationVerificationAttempted = "OTP"
 )
+
+func (r TransactionCardholderAuthenticationVerificationAttempted) IsKnown() bool {
+	switch r {
+	case TransactionCardholderAuthenticationVerificationAttemptedAppLogin, TransactionCardholderAuthenticationVerificationAttemptedBiometric, TransactionCardholderAuthenticationVerificationAttemptedNone, TransactionCardholderAuthenticationVerificationAttemptedOther, TransactionCardholderAuthenticationVerificationAttemptedOtp:
+		return true
+	}
+	return false
+}
 
 // This field partially maps to the `transStatus` field in the
 // [EMVCo 3-D Secure specification](https://www.emvco.com/emv-technologies/3d-secure/)
@@ -1108,6 +1252,14 @@ const (
 	TransactionCardholderAuthenticationVerificationResultRejected     TransactionCardholderAuthenticationVerificationResult = "REJECTED"
 	TransactionCardholderAuthenticationVerificationResultSuccess      TransactionCardholderAuthenticationVerificationResult = "SUCCESS"
 )
+
+func (r TransactionCardholderAuthenticationVerificationResult) IsKnown() bool {
+	switch r {
+	case TransactionCardholderAuthenticationVerificationResultCancelled, TransactionCardholderAuthenticationVerificationResultFailed, TransactionCardholderAuthenticationVerificationResultFrictionless, TransactionCardholderAuthenticationVerificationResultNotAttempted, TransactionCardholderAuthenticationVerificationResultRejected, TransactionCardholderAuthenticationVerificationResultSuccess:
+		return true
+	}
+	return false
+}
 
 type TransactionSimulateAuthorizationResponse struct {
 	// A unique token to reference this transaction with later calls to void or clear
@@ -1317,6 +1469,14 @@ const (
 	TransactionListParamsResultDeclined TransactionListParamsResult = "DECLINED"
 )
 
+func (r TransactionListParamsResult) IsKnown() bool {
+	switch r {
+	case TransactionListParamsResultApproved, TransactionListParamsResultDeclined:
+		return true
+	}
+	return false
+}
+
 type TransactionSimulateAuthorizationParams struct {
 	// Amount (in cents) to authorize. For credit authorizations and financial credit
 	// authorizations, any value entered will be converted into a negative amount in
@@ -1391,6 +1551,14 @@ const (
 	TransactionSimulateAuthorizationParamsStatusFinancialAuthorization       TransactionSimulateAuthorizationParamsStatus = "FINANCIAL_AUTHORIZATION"
 	TransactionSimulateAuthorizationParamsStatusFinancialCreditAuthorization TransactionSimulateAuthorizationParamsStatus = "FINANCIAL_CREDIT_AUTHORIZATION"
 )
+
+func (r TransactionSimulateAuthorizationParamsStatus) IsKnown() bool {
+	switch r {
+	case TransactionSimulateAuthorizationParamsStatusAuthorization, TransactionSimulateAuthorizationParamsStatusBalanceInquiry, TransactionSimulateAuthorizationParamsStatusCreditAuthorization, TransactionSimulateAuthorizationParamsStatusFinancialAuthorization, TransactionSimulateAuthorizationParamsStatusFinancialCreditAuthorization:
+		return true
+	}
+	return false
+}
 
 type TransactionSimulateAuthorizationAdviceParams struct {
 	// The transaction token returned from the /v1/simulate/authorize response.
@@ -1492,3 +1660,11 @@ const (
 	TransactionSimulateVoidParamsTypeAuthorizationExpiry   TransactionSimulateVoidParamsType = "AUTHORIZATION_EXPIRY"
 	TransactionSimulateVoidParamsTypeAuthorizationReversal TransactionSimulateVoidParamsType = "AUTHORIZATION_REVERSAL"
 )
+
+func (r TransactionSimulateVoidParamsType) IsKnown() bool {
+	switch r {
+	case TransactionSimulateVoidParamsTypeAuthorizationExpiry, TransactionSimulateVoidParamsTypeAuthorizationReversal:
+		return true
+	}
+	return false
+}

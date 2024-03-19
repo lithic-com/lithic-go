@@ -105,6 +105,14 @@ const (
 	FinancialTransactionListParamsCategoryTransfer FinancialTransactionListParamsCategory = "TRANSFER"
 )
 
+func (r FinancialTransactionListParamsCategory) IsKnown() bool {
+	switch r {
+	case FinancialTransactionListParamsCategoryACH, FinancialTransactionListParamsCategoryCard, FinancialTransactionListParamsCategoryTransfer:
+		return true
+	}
+	return false
+}
+
 // Financial Transaction result to be returned.
 type FinancialTransactionListParamsResult string
 
@@ -112,6 +120,14 @@ const (
 	FinancialTransactionListParamsResultApproved FinancialTransactionListParamsResult = "APPROVED"
 	FinancialTransactionListParamsResultDeclined FinancialTransactionListParamsResult = "DECLINED"
 )
+
+func (r FinancialTransactionListParamsResult) IsKnown() bool {
+	switch r {
+	case FinancialTransactionListParamsResultApproved, FinancialTransactionListParamsResultDeclined:
+		return true
+	}
+	return false
+}
 
 // Financial Transaction status to be returned.
 type FinancialTransactionListParamsStatus string
@@ -124,3 +140,11 @@ const (
 	FinancialTransactionListParamsStatusSettled  FinancialTransactionListParamsStatus = "SETTLED"
 	FinancialTransactionListParamsStatusVoided   FinancialTransactionListParamsStatus = "VOIDED"
 )
+
+func (r FinancialTransactionListParamsStatus) IsKnown() bool {
+	switch r {
+	case FinancialTransactionListParamsStatusDeclined, FinancialTransactionListParamsStatusExpired, FinancialTransactionListParamsStatusPending, FinancialTransactionListParamsStatusReturned, FinancialTransactionListParamsStatusSettled, FinancialTransactionListParamsStatusVoided:
+		return true
+	}
+	return false
+}

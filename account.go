@@ -180,6 +180,14 @@ const (
 	AccountStatePaused AccountState = "PAUSED"
 )
 
+func (r AccountState) IsKnown() bool {
+	switch r {
+	case AccountStateActive, AccountStatePaused:
+		return true
+	}
+	return false
+}
+
 type AccountAccountHolder struct {
 	// Globally unique identifier for the account holder.
 	Token string `json:"token,required"`
@@ -390,6 +398,14 @@ const (
 	AccountUpdateParamsStateActive AccountUpdateParamsState = "ACTIVE"
 	AccountUpdateParamsStatePaused AccountUpdateParamsState = "PAUSED"
 )
+
+func (r AccountUpdateParamsState) IsKnown() bool {
+	switch r {
+	case AccountUpdateParamsStateActive, AccountUpdateParamsStatePaused:
+		return true
+	}
+	return false
+}
 
 // Address used during Address Verification Service (AVS) checks during
 // transactions if enabled via Auth Rules.

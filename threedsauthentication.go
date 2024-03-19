@@ -148,6 +148,14 @@ const (
 	ThreeDSAuthenticationGetResponseAccountTypeNotApplicable ThreeDSAuthenticationGetResponseAccountType = "NOT_APPLICABLE"
 )
 
+func (r ThreeDSAuthenticationGetResponseAccountType) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseAccountTypeCredit, ThreeDSAuthenticationGetResponseAccountTypeDebit, ThreeDSAuthenticationGetResponseAccountTypeNotApplicable:
+		return true
+	}
+	return false
+}
+
 // Indicates the outcome of the 3DS authentication process.
 type ThreeDSAuthenticationGetResponseAuthenticationResult string
 
@@ -155,6 +163,14 @@ const (
 	ThreeDSAuthenticationGetResponseAuthenticationResultDecline ThreeDSAuthenticationGetResponseAuthenticationResult = "DECLINE"
 	ThreeDSAuthenticationGetResponseAuthenticationResultSuccess ThreeDSAuthenticationGetResponseAuthenticationResult = "SUCCESS"
 )
+
+func (r ThreeDSAuthenticationGetResponseAuthenticationResult) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseAuthenticationResultDecline, ThreeDSAuthenticationGetResponseAuthenticationResultSuccess:
+		return true
+	}
+	return false
+}
 
 // Indicates whether the expiration date provided by the cardholder during checkout
 // matches Lithic's record of the card's expiration date.
@@ -165,6 +181,14 @@ const (
 	ThreeDSAuthenticationGetResponseCardExpiryCheckMismatch   ThreeDSAuthenticationGetResponseCardExpiryCheck = "MISMATCH"
 	ThreeDSAuthenticationGetResponseCardExpiryCheckNotPresent ThreeDSAuthenticationGetResponseCardExpiryCheck = "NOT_PRESENT"
 )
+
+func (r ThreeDSAuthenticationGetResponseCardExpiryCheck) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseCardExpiryCheckMatch, ThreeDSAuthenticationGetResponseCardExpiryCheckMismatch, ThreeDSAuthenticationGetResponseCardExpiryCheckNotPresent:
+		return true
+	}
+	return false
+}
 
 // Object containing data about the cardholder provided during the transaction.
 type ThreeDSAuthenticationGetResponseCardholder struct {
@@ -306,6 +330,14 @@ const (
 	ThreeDSAuthenticationGetResponseChannelThreeDSRequestorInitiated ThreeDSAuthenticationGetResponseChannel = "THREE_DS_REQUESTOR_INITIATED"
 )
 
+func (r ThreeDSAuthenticationGetResponseChannel) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseChannelAppBased, ThreeDSAuthenticationGetResponseChannelBrowser, ThreeDSAuthenticationGetResponseChannelThreeDSRequestorInitiated:
+		return true
+	}
+	return false
+}
+
 // Entity that made the authentication decision.
 type ThreeDSAuthenticationGetResponseDecisionMadeBy string
 
@@ -316,6 +348,14 @@ const (
 	ThreeDSAuthenticationGetResponseDecisionMadeByNetwork          ThreeDSAuthenticationGetResponseDecisionMadeBy = "NETWORK"
 	ThreeDSAuthenticationGetResponseDecisionMadeByUnknown          ThreeDSAuthenticationGetResponseDecisionMadeBy = "UNKNOWN"
 )
+
+func (r ThreeDSAuthenticationGetResponseDecisionMadeBy) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseDecisionMadeByCustomerEndpoint, ThreeDSAuthenticationGetResponseDecisionMadeByLithicDefault, ThreeDSAuthenticationGetResponseDecisionMadeByLithicRules, ThreeDSAuthenticationGetResponseDecisionMadeByNetwork, ThreeDSAuthenticationGetResponseDecisionMadeByUnknown:
+		return true
+	}
+	return false
+}
 
 // Object containing data about the merchant involved in the e-commerce
 // transaction.
@@ -428,6 +468,14 @@ const (
 	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrameTwoDayOrMoreShipping ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrame = "TWO_DAY_OR_MORE_SHIPPING"
 )
 
+func (r ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrame) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrameElectronicDelivery, ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrameOvernightShipping, ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrameSameDayShipping, ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrameTwoDayOrMoreShipping:
+		return true
+	}
+	return false
+}
+
 // Indicates whether the purchase is for merchandise that is available now or at a
 // future date. Maps to EMV 3DS field preOrderPurchaseInd.
 type ThreeDSAuthenticationGetResponseMerchantRiskIndicatorOrderAvailability string
@@ -437,6 +485,14 @@ const (
 	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorOrderAvailabilityMerchandiseAvailable ThreeDSAuthenticationGetResponseMerchantRiskIndicatorOrderAvailability = "MERCHANDISE_AVAILABLE"
 )
 
+func (r ThreeDSAuthenticationGetResponseMerchantRiskIndicatorOrderAvailability) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseMerchantRiskIndicatorOrderAvailabilityFutureAvailability, ThreeDSAuthenticationGetResponseMerchantRiskIndicatorOrderAvailabilityMerchandiseAvailable:
+		return true
+	}
+	return false
+}
+
 // Indicates whether the cardholder is reordering previously purchased merchandise.
 // Maps to EMV 3DS field reorderItemsInd.
 type ThreeDSAuthenticationGetResponseMerchantRiskIndicatorReorderItems string
@@ -445,6 +501,14 @@ const (
 	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorReorderItemsFirstTimeOrdered ThreeDSAuthenticationGetResponseMerchantRiskIndicatorReorderItems = "FIRST_TIME_ORDERED"
 	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorReorderItemsReordered        ThreeDSAuthenticationGetResponseMerchantRiskIndicatorReorderItems = "REORDERED"
 )
+
+func (r ThreeDSAuthenticationGetResponseMerchantRiskIndicatorReorderItems) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseMerchantRiskIndicatorReorderItemsFirstTimeOrdered, ThreeDSAuthenticationGetResponseMerchantRiskIndicatorReorderItemsReordered:
+		return true
+	}
+	return false
+}
 
 // Shipping method that the cardholder chose for the transaction. If purchase
 // includes one or more item, this indicator is used for the physical goods; if the
@@ -464,6 +528,14 @@ const (
 	ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodTravelAndEventTickets      ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod = "TRAVEL_AND_EVENT_TICKETS"
 )
 
+func (r ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodDigitalGoods, ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodLockerDelivery, ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodOther, ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodPickUpAndGoDelivery, ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodShipToBillingAddress, ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodShipToNonBillingAddress, ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodShipToOtherVerifiedAddress, ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodShipToStore, ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethodTravelAndEventTickets:
+		return true
+	}
+	return false
+}
+
 // Either PAYMENT_AUTHENTICATION or NON_PAYMENT_AUTHENTICATION. For
 // NON_PAYMENT_AUTHENTICATION, additional_data and transaction fields are not
 // populated.
@@ -473,6 +545,14 @@ const (
 	ThreeDSAuthenticationGetResponseMessageCategoryNonPaymentAuthentication ThreeDSAuthenticationGetResponseMessageCategory = "NON_PAYMENT_AUTHENTICATION"
 	ThreeDSAuthenticationGetResponseMessageCategoryPaymentAuthentication    ThreeDSAuthenticationGetResponseMessageCategory = "PAYMENT_AUTHENTICATION"
 )
+
+func (r ThreeDSAuthenticationGetResponseMessageCategory) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseMessageCategoryNonPaymentAuthentication, ThreeDSAuthenticationGetResponseMessageCategoryPaymentAuthentication:
+		return true
+	}
+	return false
+}
 
 // Object containing additional data about the 3DS request that is beyond the EMV
 // 3DS standard spec (e.g., specific fields that only certain card networks send
@@ -512,6 +592,14 @@ const (
 	ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecisionLowRisk    ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecision = "LOW_RISK"
 	ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecisionNotLowRisk ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecision = "NOT_LOW_RISK"
 )
+
+func (r ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecision) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecisionLowRisk, ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecisionNotLowRisk:
+		return true
+	}
+	return false
+}
 
 // Object containing data about the app used in the e-commerce transaction. Present
 // if the channel is 'APP_BASED'.
@@ -559,6 +647,14 @@ const (
 	ThreeDSAuthenticationGetResponseAuthenticationRequestTypeSplitPayment                   ThreeDSAuthenticationGetResponseAuthenticationRequestType = "SPLIT_PAYMENT"
 	ThreeDSAuthenticationGetResponseAuthenticationRequestTypeSplitShipment                  ThreeDSAuthenticationGetResponseAuthenticationRequestType = "SPLIT_SHIPMENT"
 )
+
+func (r ThreeDSAuthenticationGetResponseAuthenticationRequestType) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseAuthenticationRequestTypeAddCard, ThreeDSAuthenticationGetResponseAuthenticationRequestTypeBillingAgreement, ThreeDSAuthenticationGetResponseAuthenticationRequestTypeDelayedShipment, ThreeDSAuthenticationGetResponseAuthenticationRequestTypeEmvTokenCardholderVerification, ThreeDSAuthenticationGetResponseAuthenticationRequestTypeInstallmentTransaction, ThreeDSAuthenticationGetResponseAuthenticationRequestTypeMaintainCard, ThreeDSAuthenticationGetResponseAuthenticationRequestTypePaymentTransaction, ThreeDSAuthenticationGetResponseAuthenticationRequestTypeRecurringTransaction, ThreeDSAuthenticationGetResponseAuthenticationRequestTypeSplitPayment, ThreeDSAuthenticationGetResponseAuthenticationRequestTypeSplitShipment:
+		return true
+	}
+	return false
+}
 
 // Object containing data about the browser used in the e-commerce transaction.
 // Present if the channel is 'BROWSER'.
@@ -631,6 +727,14 @@ const (
 	ThreeDSAuthenticationGetResponseThreeRiRequestTypeTrustListStatusCheck        ThreeDSAuthenticationGetResponseThreeRiRequestType = "TRUST_LIST_STATUS_CHECK"
 )
 
+func (r ThreeDSAuthenticationGetResponseThreeRiRequestType) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseThreeRiRequestTypeAccountVerification, ThreeDSAuthenticationGetResponseThreeRiRequestTypeAddCard, ThreeDSAuthenticationGetResponseThreeRiRequestTypeBillingAgreement, ThreeDSAuthenticationGetResponseThreeRiRequestTypeCardSecurityCodeStatusCheck, ThreeDSAuthenticationGetResponseThreeRiRequestTypeDelayedShipment, ThreeDSAuthenticationGetResponseThreeRiRequestTypeDeviceBindingStatusCheck, ThreeDSAuthenticationGetResponseThreeRiRequestTypeInstallmentTransaction, ThreeDSAuthenticationGetResponseThreeRiRequestTypeMailOrder, ThreeDSAuthenticationGetResponseThreeRiRequestTypeMaintainCardInfo, ThreeDSAuthenticationGetResponseThreeRiRequestTypeOtherPayment, ThreeDSAuthenticationGetResponseThreeRiRequestTypeRecurringTransaction, ThreeDSAuthenticationGetResponseThreeRiRequestTypeSplitPayment, ThreeDSAuthenticationGetResponseThreeRiRequestTypeSplitShipment, ThreeDSAuthenticationGetResponseThreeRiRequestTypeTelephoneOrder, ThreeDSAuthenticationGetResponseThreeRiRequestTypeTopUp, ThreeDSAuthenticationGetResponseThreeRiRequestTypeTrustListStatusCheck:
+		return true
+	}
+	return false
+}
+
 // Object containing data about the e-commerce transaction for which the merchant
 // is requesting authentication.
 type ThreeDSAuthenticationGetResponseTransaction struct {
@@ -682,6 +786,14 @@ const (
 	ThreeDSAuthenticationGetResponseTransactionTypePrepaidActivationAndLoad ThreeDSAuthenticationGetResponseTransactionType = "PREPAID_ACTIVATION_AND_LOAD"
 	ThreeDSAuthenticationGetResponseTransactionTypeQuasiCashTransaction     ThreeDSAuthenticationGetResponseTransactionType = "QUASI_CASH_TRANSACTION"
 )
+
+func (r ThreeDSAuthenticationGetResponseTransactionType) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseTransactionTypeAccountFunding, ThreeDSAuthenticationGetResponseTransactionTypeCheckAcceptance, ThreeDSAuthenticationGetResponseTransactionTypeGoodsServicePurchase, ThreeDSAuthenticationGetResponseTransactionTypePrepaidActivationAndLoad, ThreeDSAuthenticationGetResponseTransactionTypeQuasiCashTransaction:
+		return true
+	}
+	return false
+}
 
 type ThreeDSAuthenticationSimulateResponse struct {
 	// A unique token to reference this transaction with later calls to void or clear

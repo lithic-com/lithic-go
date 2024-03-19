@@ -133,6 +133,14 @@ const (
 	TokenizationStatusUnknown           TokenizationStatus = "UNKNOWN"
 )
 
+func (r TokenizationStatus) IsKnown() bool {
+	switch r {
+	case TokenizationStatusActive, TokenizationStatusDeactivated, TokenizationStatusInactive, TokenizationStatusPaused, TokenizationStatusPending2Fa, TokenizationStatusPendingActivation, TokenizationStatusUnknown:
+		return true
+	}
+	return false
+}
+
 // The entity that is requested the tokenization. Represents a Digital Wallet.
 type TokenizationTokenRequestorName string
 
@@ -147,6 +155,14 @@ const (
 	TokenizationTokenRequestorNameUnknown      TokenizationTokenRequestorName = "UNKNOWN"
 	TokenizationTokenRequestorNameVisaCheckout TokenizationTokenRequestorName = "VISA_CHECKOUT"
 )
+
+func (r TokenizationTokenRequestorName) IsKnown() bool {
+	switch r {
+	case TokenizationTokenRequestorNameAmazonOne, TokenizationTokenRequestorNameAndroidPay, TokenizationTokenRequestorNameApplePay, TokenizationTokenRequestorNameFitbitPay, TokenizationTokenRequestorNameGarminPay, TokenizationTokenRequestorNameMicrosoftPay, TokenizationTokenRequestorNameSamsungPay, TokenizationTokenRequestorNameUnknown, TokenizationTokenRequestorNameVisaCheckout:
+		return true
+	}
+	return false
+}
 
 type TokenizationEvent struct {
 	// Globally unique identifier for a Tokenization Event
@@ -196,6 +212,14 @@ const (
 	TokenizationEventsResultTokenUpdated                    TokenizationEventsResult = "TOKEN_UPDATED"
 )
 
+func (r TokenizationEventsResult) IsKnown() bool {
+	switch r {
+	case TokenizationEventsResultApproved, TokenizationEventsResultDeclined, TokenizationEventsResultNotificationDelivered, TokenizationEventsResultRequireAdditionalAuthentication, TokenizationEventsResultTokenActivated, TokenizationEventsResultTokenCreated, TokenizationEventsResultTokenDeactivated, TokenizationEventsResultTokenInactive, TokenizationEventsResultTokenStateUnknown, TokenizationEventsResultTokenSuspended, TokenizationEventsResultTokenUpdated:
+		return true
+	}
+	return false
+}
+
 // Enum representing the type of tokenization event that occurred
 type TokenizationEventsType string
 
@@ -206,6 +230,14 @@ const (
 	TokenizationEventsTypeTokenizationEligibilityCheck TokenizationEventsType = "TOKENIZATION_ELIGIBILITY_CHECK"
 	TokenizationEventsTypeTokenizationUpdated          TokenizationEventsType = "TOKENIZATION_UPDATED"
 )
+
+func (r TokenizationEventsType) IsKnown() bool {
+	switch r {
+	case TokenizationEventsTypeTokenization2Fa, TokenizationEventsTypeTokenizationAuthorization, TokenizationEventsTypeTokenizationDecisioning, TokenizationEventsTypeTokenizationEligibilityCheck, TokenizationEventsTypeTokenizationUpdated:
+		return true
+	}
+	return false
+}
 
 type TokenizationGetResponse struct {
 	Data Tokenization                `json:"data"`
@@ -308,6 +340,14 @@ const (
 	TokenizationSimulateParamsTokenizationSourceSamsungPay TokenizationSimulateParamsTokenizationSource = "SAMSUNG_PAY"
 )
 
+func (r TokenizationSimulateParamsTokenizationSource) IsKnown() bool {
+	switch r {
+	case TokenizationSimulateParamsTokenizationSourceApplePay, TokenizationSimulateParamsTokenizationSourceGoogle, TokenizationSimulateParamsTokenizationSourceSamsungPay:
+		return true
+	}
+	return false
+}
+
 // The decision that the Digital Wallet's recommend
 type TokenizationSimulateParamsWalletRecommendedDecision string
 
@@ -316,3 +356,11 @@ const (
 	TokenizationSimulateParamsWalletRecommendedDecisionDeclined                        TokenizationSimulateParamsWalletRecommendedDecision = "DECLINED"
 	TokenizationSimulateParamsWalletRecommendedDecisionRequireAdditionalAuthentication TokenizationSimulateParamsWalletRecommendedDecision = "REQUIRE_ADDITIONAL_AUTHENTICATION"
 )
+
+func (r TokenizationSimulateParamsWalletRecommendedDecision) IsKnown() bool {
+	switch r {
+	case TokenizationSimulateParamsWalletRecommendedDecisionApproved, TokenizationSimulateParamsWalletRecommendedDecisionDeclined, TokenizationSimulateParamsWalletRecommendedDecisionRequireAdditionalAuthentication:
+		return true
+	}
+	return false
+}

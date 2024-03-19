@@ -133,6 +133,14 @@ const (
 	ExternalBankAccountMicroDepositNewResponseOwnerTypeIndividual ExternalBankAccountMicroDepositNewResponseOwnerType = "INDIVIDUAL"
 )
 
+func (r ExternalBankAccountMicroDepositNewResponseOwnerType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountMicroDepositNewResponseOwnerTypeBusiness, ExternalBankAccountMicroDepositNewResponseOwnerTypeIndividual:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountMicroDepositNewResponseState string
 
 const (
@@ -141,12 +149,28 @@ const (
 	ExternalBankAccountMicroDepositNewResponseStatePaused  ExternalBankAccountMicroDepositNewResponseState = "PAUSED"
 )
 
+func (r ExternalBankAccountMicroDepositNewResponseState) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountMicroDepositNewResponseStateClosed, ExternalBankAccountMicroDepositNewResponseStateEnabled, ExternalBankAccountMicroDepositNewResponseStatePaused:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountMicroDepositNewResponseType string
 
 const (
 	ExternalBankAccountMicroDepositNewResponseTypeChecking ExternalBankAccountMicroDepositNewResponseType = "CHECKING"
 	ExternalBankAccountMicroDepositNewResponseTypeSavings  ExternalBankAccountMicroDepositNewResponseType = "SAVINGS"
 )
+
+func (r ExternalBankAccountMicroDepositNewResponseType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountMicroDepositNewResponseTypeChecking, ExternalBankAccountMicroDepositNewResponseTypeSavings:
+		return true
+	}
+	return false
+}
 
 type ExternalBankAccountMicroDepositNewResponseVerificationMethod string
 
@@ -157,6 +181,14 @@ const (
 	ExternalBankAccountMicroDepositNewResponseVerificationMethodPrenote      ExternalBankAccountMicroDepositNewResponseVerificationMethod = "PRENOTE"
 )
 
+func (r ExternalBankAccountMicroDepositNewResponseVerificationMethod) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountMicroDepositNewResponseVerificationMethodManual, ExternalBankAccountMicroDepositNewResponseVerificationMethodMicroDeposit, ExternalBankAccountMicroDepositNewResponseVerificationMethodPlaid, ExternalBankAccountMicroDepositNewResponseVerificationMethodPrenote:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountMicroDepositNewResponseVerificationState string
 
 const (
@@ -165,6 +197,14 @@ const (
 	ExternalBankAccountMicroDepositNewResponseVerificationStateInsufficientFunds  ExternalBankAccountMicroDepositNewResponseVerificationState = "INSUFFICIENT_FUNDS"
 	ExternalBankAccountMicroDepositNewResponseVerificationStatePending            ExternalBankAccountMicroDepositNewResponseVerificationState = "PENDING"
 )
+
+func (r ExternalBankAccountMicroDepositNewResponseVerificationState) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountMicroDepositNewResponseVerificationStateEnabled, ExternalBankAccountMicroDepositNewResponseVerificationStateFailedVerification, ExternalBankAccountMicroDepositNewResponseVerificationStateInsufficientFunds, ExternalBankAccountMicroDepositNewResponseVerificationStatePending:
+		return true
+	}
+	return false
+}
 
 type ExternalBankAccountMicroDepositNewParams struct {
 	MicroDeposits param.Field[[]int64] `json:"micro_deposits,required"`

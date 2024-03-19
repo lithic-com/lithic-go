@@ -118,6 +118,14 @@ const (
 	BalanceFinancialAccountTypeReserve   BalanceFinancialAccountType = "RESERVE"
 )
 
+func (r BalanceFinancialAccountType) IsKnown() bool {
+	switch r {
+	case BalanceFinancialAccountTypeIssuing, BalanceFinancialAccountTypeOperating, BalanceFinancialAccountTypeReserve:
+		return true
+	}
+	return false
+}
+
 type BalanceListParams struct {
 	// List balances for all financial accounts of a given account_token.
 	AccountToken param.Field[string] `query:"account_token" format:"uuid"`
@@ -144,3 +152,11 @@ const (
 	BalanceListParamsFinancialAccountTypeOperating BalanceListParamsFinancialAccountType = "OPERATING"
 	BalanceListParamsFinancialAccountTypeReserve   BalanceListParamsFinancialAccountType = "RESERVE"
 )
+
+func (r BalanceListParamsFinancialAccountType) IsKnown() bool {
+	switch r {
+	case BalanceListParamsFinancialAccountTypeIssuing, BalanceListParamsFinancialAccountTypeOperating, BalanceListParamsFinancialAccountTypeReserve:
+		return true
+	}
+	return false
+}

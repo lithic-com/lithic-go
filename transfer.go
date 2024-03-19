@@ -120,6 +120,14 @@ const (
 	TransferCategoryTransfer TransferCategory = "TRANSFER"
 )
 
+func (r TransferCategory) IsKnown() bool {
+	switch r {
+	case TransferCategoryTransfer:
+		return true
+	}
+	return false
+}
+
 type TransferEvent struct {
 	// Globally unique identifier.
 	Token string `json:"token" format:"uuid"`
@@ -199,6 +207,14 @@ const (
 	TransferEventsResultDeclined TransferEventsResult = "DECLINED"
 )
 
+func (r TransferEventsResult) IsKnown() bool {
+	switch r {
+	case TransferEventsResultApproved, TransferEventsResultDeclined:
+		return true
+	}
+	return false
+}
+
 // Event types:
 //
 //   - `ACH_INSUFFICIENT_FUNDS` - Attempted ACH origination declined due to
@@ -262,6 +278,14 @@ const (
 	TransferEventsTypeTransferInsufficientFunds    TransferEventsType = "TRANSFER_INSUFFICIENT_FUNDS"
 )
 
+func (r TransferEventsType) IsKnown() bool {
+	switch r {
+	case TransferEventsTypeACHInsufficientFunds, TransferEventsTypeACHOriginationPending, TransferEventsTypeACHOriginationReleased, TransferEventsTypeACHReceiptPending, TransferEventsTypeACHReceiptReleased, TransferEventsTypeACHReturn, TransferEventsTypeAuthorization, TransferEventsTypeAuthorizationAdvice, TransferEventsTypeAuthorizationExpiry, TransferEventsTypeAuthorizationReversal, TransferEventsTypeBalanceInquiry, TransferEventsTypeClearing, TransferEventsTypeCorrectionCredit, TransferEventsTypeCorrectionDebit, TransferEventsTypeCreditAuthorization, TransferEventsTypeCreditAuthorizationAdvice, TransferEventsTypeFinancialAuthorization, TransferEventsTypeFinancialCreditAuthorization, TransferEventsTypeReturn, TransferEventsTypeReturnReversal, TransferEventsTypeTransfer, TransferEventsTypeTransferInsufficientFunds:
+		return true
+	}
+	return false
+}
+
 // APPROVED transactions were successful while DECLINED transactions were declined
 // by user, Lithic, or the network.
 type TransferResult string
@@ -270,6 +294,14 @@ const (
 	TransferResultApproved TransferResult = "APPROVED"
 	TransferResultDeclined TransferResult = "DECLINED"
 )
+
+func (r TransferResult) IsKnown() bool {
+	switch r {
+	case TransferResultApproved, TransferResultDeclined:
+		return true
+	}
+	return false
+}
 
 // Status types:
 //
@@ -287,6 +319,14 @@ const (
 	TransferStatusSettled  TransferStatus = "SETTLED"
 	TransferStatusVoided   TransferStatus = "VOIDED"
 )
+
+func (r TransferStatus) IsKnown() bool {
+	switch r {
+	case TransferStatusDeclined, TransferStatusExpired, TransferStatusPending, TransferStatusSettled, TransferStatusVoided:
+		return true
+	}
+	return false
+}
 
 type TransferNewResponse struct {
 	Data Transfer                `json:"data"`
