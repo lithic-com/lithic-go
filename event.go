@@ -179,15 +179,19 @@ const (
 	EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventEventTypeDisputeUpdated                                       EventEventType = "dispute.updated"
 	EventEventTypeDisputeEvidenceUploadFailed                          EventEventType = "dispute_evidence.upload_failed"
+	EventEventTypeExternalBankAccountCreated                           EventEventType = "external_bank_account.created"
+	EventEventTypeExternalBankAccountUpdated                           EventEventType = "external_bank_account.updated"
+	EventEventTypeFinancialAccountCreated                              EventEventType = "financial_account.created"
 	EventEventTypePaymentTransactionCreated                            EventEventType = "payment_transaction.created"
 	EventEventTypePaymentTransactionUpdated                            EventEventType = "payment_transaction.updated"
+	EventEventTypeStatementsCreated                                    EventEventType = "statements.created"
 	EventEventTypeThreeDSAuthenticationCreated                         EventEventType = "three_ds_authentication.created"
 	EventEventTypeTransferTransactionCreated                           EventEventType = "transfer_transaction.created"
 )
 
 func (r EventEventType) IsKnown() bool {
 	switch r {
-	case EventEventTypeAccountHolderCreated, EventEventTypeAccountHolderUpdated, EventEventTypeAccountHolderVerification, EventEventTypeBalanceUpdated, EventEventTypeCardCreated, EventEventTypeCardRenewed, EventEventTypeCardShipped, EventEventTypeCardTransactionUpdated, EventEventTypeDigitalWalletTokenizationApprovalRequest, EventEventTypeDigitalWalletTokenizationResult, EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventEventTypeDisputeUpdated, EventEventTypeDisputeEvidenceUploadFailed, EventEventTypePaymentTransactionCreated, EventEventTypePaymentTransactionUpdated, EventEventTypeThreeDSAuthenticationCreated, EventEventTypeTransferTransactionCreated:
+	case EventEventTypeAccountHolderCreated, EventEventTypeAccountHolderUpdated, EventEventTypeAccountHolderVerification, EventEventTypeBalanceUpdated, EventEventTypeCardCreated, EventEventTypeCardRenewed, EventEventTypeCardShipped, EventEventTypeCardTransactionUpdated, EventEventTypeDigitalWalletTokenizationApprovalRequest, EventEventTypeDigitalWalletTokenizationResult, EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventEventTypeDisputeUpdated, EventEventTypeDisputeEvidenceUploadFailed, EventEventTypeExternalBankAccountCreated, EventEventTypeExternalBankAccountUpdated, EventEventTypeFinancialAccountCreated, EventEventTypePaymentTransactionCreated, EventEventTypePaymentTransactionUpdated, EventEventTypeStatementsCreated, EventEventTypeThreeDSAuthenticationCreated, EventEventTypeTransferTransactionCreated:
 		return true
 	}
 	return false
@@ -242,15 +246,19 @@ const (
 	EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventSubscriptionEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventSubscriptionEventTypeDisputeUpdated                                       EventSubscriptionEventType = "dispute.updated"
 	EventSubscriptionEventTypeDisputeEvidenceUploadFailed                          EventSubscriptionEventType = "dispute_evidence.upload_failed"
+	EventSubscriptionEventTypeExternalBankAccountCreated                           EventSubscriptionEventType = "external_bank_account.created"
+	EventSubscriptionEventTypeExternalBankAccountUpdated                           EventSubscriptionEventType = "external_bank_account.updated"
+	EventSubscriptionEventTypeFinancialAccountCreated                              EventSubscriptionEventType = "financial_account.created"
 	EventSubscriptionEventTypePaymentTransactionCreated                            EventSubscriptionEventType = "payment_transaction.created"
 	EventSubscriptionEventTypePaymentTransactionUpdated                            EventSubscriptionEventType = "payment_transaction.updated"
+	EventSubscriptionEventTypeStatementsCreated                                    EventSubscriptionEventType = "statements.created"
 	EventSubscriptionEventTypeThreeDSAuthenticationCreated                         EventSubscriptionEventType = "three_ds_authentication.created"
 	EventSubscriptionEventTypeTransferTransactionCreated                           EventSubscriptionEventType = "transfer_transaction.created"
 )
 
 func (r EventSubscriptionEventType) IsKnown() bool {
 	switch r {
-	case EventSubscriptionEventTypeAccountHolderCreated, EventSubscriptionEventTypeAccountHolderUpdated, EventSubscriptionEventTypeAccountHolderVerification, EventSubscriptionEventTypeBalanceUpdated, EventSubscriptionEventTypeCardCreated, EventSubscriptionEventTypeCardRenewed, EventSubscriptionEventTypeCardShipped, EventSubscriptionEventTypeCardTransactionUpdated, EventSubscriptionEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionEventTypeDigitalWalletTokenizationResult, EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionEventTypeDisputeUpdated, EventSubscriptionEventTypeDisputeEvidenceUploadFailed, EventSubscriptionEventTypePaymentTransactionCreated, EventSubscriptionEventTypePaymentTransactionUpdated, EventSubscriptionEventTypeThreeDSAuthenticationCreated, EventSubscriptionEventTypeTransferTransactionCreated:
+	case EventSubscriptionEventTypeAccountHolderCreated, EventSubscriptionEventTypeAccountHolderUpdated, EventSubscriptionEventTypeAccountHolderVerification, EventSubscriptionEventTypeBalanceUpdated, EventSubscriptionEventTypeCardCreated, EventSubscriptionEventTypeCardRenewed, EventSubscriptionEventTypeCardShipped, EventSubscriptionEventTypeCardTransactionUpdated, EventSubscriptionEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionEventTypeDigitalWalletTokenizationResult, EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionEventTypeDisputeUpdated, EventSubscriptionEventTypeDisputeEvidenceUploadFailed, EventSubscriptionEventTypeExternalBankAccountCreated, EventSubscriptionEventTypeExternalBankAccountUpdated, EventSubscriptionEventTypeFinancialAccountCreated, EventSubscriptionEventTypePaymentTransactionCreated, EventSubscriptionEventTypePaymentTransactionUpdated, EventSubscriptionEventTypeStatementsCreated, EventSubscriptionEventTypeThreeDSAuthenticationCreated, EventSubscriptionEventTypeTransferTransactionCreated:
 		return true
 	}
 	return false
@@ -363,15 +371,19 @@ const (
 	EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode EventListParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventListParamsEventTypeDisputeUpdated                                       EventListParamsEventType = "dispute.updated"
 	EventListParamsEventTypeDisputeEvidenceUploadFailed                          EventListParamsEventType = "dispute_evidence.upload_failed"
+	EventListParamsEventTypeExternalBankAccountCreated                           EventListParamsEventType = "external_bank_account.created"
+	EventListParamsEventTypeExternalBankAccountUpdated                           EventListParamsEventType = "external_bank_account.updated"
+	EventListParamsEventTypeFinancialAccountCreated                              EventListParamsEventType = "financial_account.created"
 	EventListParamsEventTypePaymentTransactionCreated                            EventListParamsEventType = "payment_transaction.created"
 	EventListParamsEventTypePaymentTransactionUpdated                            EventListParamsEventType = "payment_transaction.updated"
+	EventListParamsEventTypeStatementsCreated                                    EventListParamsEventType = "statements.created"
 	EventListParamsEventTypeThreeDSAuthenticationCreated                         EventListParamsEventType = "three_ds_authentication.created"
 	EventListParamsEventTypeTransferTransactionCreated                           EventListParamsEventType = "transfer_transaction.created"
 )
 
 func (r EventListParamsEventType) IsKnown() bool {
 	switch r {
-	case EventListParamsEventTypeAccountHolderCreated, EventListParamsEventTypeAccountHolderUpdated, EventListParamsEventTypeAccountHolderVerification, EventListParamsEventTypeBalanceUpdated, EventListParamsEventTypeCardCreated, EventListParamsEventTypeCardRenewed, EventListParamsEventTypeCardShipped, EventListParamsEventTypeCardTransactionUpdated, EventListParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventListParamsEventTypeDigitalWalletTokenizationResult, EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventListParamsEventTypeDisputeUpdated, EventListParamsEventTypeDisputeEvidenceUploadFailed, EventListParamsEventTypePaymentTransactionCreated, EventListParamsEventTypePaymentTransactionUpdated, EventListParamsEventTypeThreeDSAuthenticationCreated, EventListParamsEventTypeTransferTransactionCreated:
+	case EventListParamsEventTypeAccountHolderCreated, EventListParamsEventTypeAccountHolderUpdated, EventListParamsEventTypeAccountHolderVerification, EventListParamsEventTypeBalanceUpdated, EventListParamsEventTypeCardCreated, EventListParamsEventTypeCardRenewed, EventListParamsEventTypeCardShipped, EventListParamsEventTypeCardTransactionUpdated, EventListParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventListParamsEventTypeDigitalWalletTokenizationResult, EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventListParamsEventTypeDisputeUpdated, EventListParamsEventTypeDisputeEvidenceUploadFailed, EventListParamsEventTypeExternalBankAccountCreated, EventListParamsEventTypeExternalBankAccountUpdated, EventListParamsEventTypeFinancialAccountCreated, EventListParamsEventTypePaymentTransactionCreated, EventListParamsEventTypePaymentTransactionUpdated, EventListParamsEventTypeStatementsCreated, EventListParamsEventTypeThreeDSAuthenticationCreated, EventListParamsEventTypeTransferTransactionCreated:
 		return true
 	}
 	return false

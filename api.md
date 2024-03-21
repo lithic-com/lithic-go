@@ -245,11 +245,10 @@ Methods:
 Response Types:
 
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#Transfer">Transfer</a>
-- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TransferNewResponse">TransferNewResponse</a>
 
 Methods:
 
-- <code title="post /transfer">client.Transfers.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TransferService.New">New</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TransferNewParams">TransferNewParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TransferNewResponse">TransferNewResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="post /transfer">client.Transfers.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TransferService.New">New</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TransferNewParams">TransferNewParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#Transfer">Transfer</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 
 # FinancialAccounts
 
