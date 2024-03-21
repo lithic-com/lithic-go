@@ -106,7 +106,9 @@ type Account struct {
 	//
 	//   - `ACTIVE` - Account is able to transact and create new cards.
 	//   - `PAUSED` - Account will not be able to transact or create new cards. It can be
-	//     set back to `ACTIVE`.
+	//     set back to `ACTIVE`. `CLOSED` - Account will not be able to transact or
+	//     create new cards. `CLOSED` cards are also unable to be transitioned to
+	//     `ACTIVE` or `PAUSED` states.
 	State         AccountState         `json:"state,required"`
 	AccountHolder AccountAccountHolder `json:"account_holder"`
 	// List of identifiers for the Auth Rule(s) that are applied on the account.
@@ -172,17 +174,20 @@ func (r accountSpendLimitJSON) RawJSON() string {
 //
 //   - `ACTIVE` - Account is able to transact and create new cards.
 //   - `PAUSED` - Account will not be able to transact or create new cards. It can be
-//     set back to `ACTIVE`.
+//     set back to `ACTIVE`. `CLOSED` - Account will not be able to transact or
+//     create new cards. `CLOSED` cards are also unable to be transitioned to
+//     `ACTIVE` or `PAUSED` states.
 type AccountState string
 
 const (
 	AccountStateActive AccountState = "ACTIVE"
 	AccountStatePaused AccountState = "PAUSED"
+	AccountStateClosed AccountState = "CLOSED"
 )
 
 func (r AccountState) IsKnown() bool {
 	switch r {
-	case AccountStateActive, AccountStatePaused:
+	case AccountStateActive, AccountStatePaused, AccountStateClosed:
 		return true
 	}
 	return false
