@@ -27,7 +27,7 @@ func TestExternalBankAccountNewWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.ExternalBankAccounts.New(context.TODO(), lithic.ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequest{
-		AccountNumber:      lithic.F("string"),
+		AccountNumber:      lithic.F("12345678901234567"),
 		Country:            lithic.F("USD"),
 		Currency:           lithic.F("USD"),
 		Owner:              lithic.F("x"),
@@ -47,6 +47,7 @@ func TestExternalBankAccountNewWithOptionalParams(t *testing.T) {
 		CompanyID:               lithic.F("x"),
 		Dob:                     lithic.F(time.Now()),
 		DoingBusinessAs:         lithic.F("string"),
+		FinancialAccountToken:   lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Name:                    lithic.F("x"),
 		UserDefinedID:           lithic.F("string"),
 		VerificationEnforcement: lithic.F(true),

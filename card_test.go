@@ -195,10 +195,12 @@ func TestCardProvisionWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.CardProvisionParams{
-			Certificate:    lithic.F("U3RhaW5sZXNzIHJvY2tz"),
-			DigitalWallet:  lithic.F(lithic.CardProvisionParamsDigitalWalletGooglePay),
-			Nonce:          lithic.F("U3RhaW5sZXNzIHJvY2tz"),
-			NonceSignature: lithic.F("U3RhaW5sZXNzIHJvY2tz"),
+			Certificate:           lithic.F("U3RhaW5sZXNzIHJvY2tz"),
+			ClientDeviceID:        lithic.F("string"),
+			ClientWalletAccountID: lithic.F("string"),
+			DigitalWallet:         lithic.F(lithic.CardProvisionParamsDigitalWalletGooglePay),
+			Nonce:                 lithic.F("U3RhaW5sZXNzIHJvY2tz"),
+			NonceSignature:        lithic.F("U3RhaW5sZXNzIHJvY2tz"),
 		},
 	)
 	if err != nil {

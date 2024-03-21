@@ -32,7 +32,7 @@ func NewTransferService(opts ...option.RequestOption) (r *TransferService) {
 
 // Transfer funds between two financial accounts or between a financial account and
 // card
-func (r *TransferService) New(ctx context.Context, body TransferNewParams, opts ...option.RequestOption) (res *TransferNewResponse, err error) {
+func (r *TransferService) New(ctx context.Context, body TransferNewParams, opts ...option.RequestOption) (res *Transfer, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "transfer"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -254,12 +254,16 @@ func (r TransferEventsResult) IsKnown() bool {
 type TransferEventsType string
 
 const (
+	TransferEventsTypeACHExceededThreshold         TransferEventsType = "ACH_EXCEEDED_THRESHOLD"
 	TransferEventsTypeACHInsufficientFunds         TransferEventsType = "ACH_INSUFFICIENT_FUNDS"
+	TransferEventsTypeACHInvalidAccount            TransferEventsType = "ACH_INVALID_ACCOUNT"
 	TransferEventsTypeACHOriginationPending        TransferEventsType = "ACH_ORIGINATION_PENDING"
+	TransferEventsTypeACHOriginationProcessed      TransferEventsType = "ACH_ORIGINATION_PROCESSED"
 	TransferEventsTypeACHOriginationReleased       TransferEventsType = "ACH_ORIGINATION_RELEASED"
 	TransferEventsTypeACHReceiptPending            TransferEventsType = "ACH_RECEIPT_PENDING"
 	TransferEventsTypeACHReceiptReleased           TransferEventsType = "ACH_RECEIPT_RELEASED"
 	TransferEventsTypeACHReturn                    TransferEventsType = "ACH_RETURN"
+	TransferEventsTypeACHReturnPending             TransferEventsType = "ACH_RETURN_PENDING"
 	TransferEventsTypeAuthorization                TransferEventsType = "AUTHORIZATION"
 	TransferEventsTypeAuthorizationAdvice          TransferEventsType = "AUTHORIZATION_ADVICE"
 	TransferEventsTypeAuthorizationExpiry          TransferEventsType = "AUTHORIZATION_EXPIRY"
@@ -280,7 +284,7 @@ const (
 
 func (r TransferEventsType) IsKnown() bool {
 	switch r {
-	case TransferEventsTypeACHInsufficientFunds, TransferEventsTypeACHOriginationPending, TransferEventsTypeACHOriginationReleased, TransferEventsTypeACHReceiptPending, TransferEventsTypeACHReceiptReleased, TransferEventsTypeACHReturn, TransferEventsTypeAuthorization, TransferEventsTypeAuthorizationAdvice, TransferEventsTypeAuthorizationExpiry, TransferEventsTypeAuthorizationReversal, TransferEventsTypeBalanceInquiry, TransferEventsTypeClearing, TransferEventsTypeCorrectionCredit, TransferEventsTypeCorrectionDebit, TransferEventsTypeCreditAuthorization, TransferEventsTypeCreditAuthorizationAdvice, TransferEventsTypeFinancialAuthorization, TransferEventsTypeFinancialCreditAuthorization, TransferEventsTypeReturn, TransferEventsTypeReturnReversal, TransferEventsTypeTransfer, TransferEventsTypeTransferInsufficientFunds:
+	case TransferEventsTypeACHExceededThreshold, TransferEventsTypeACHInsufficientFunds, TransferEventsTypeACHInvalidAccount, TransferEventsTypeACHOriginationPending, TransferEventsTypeACHOriginationProcessed, TransferEventsTypeACHOriginationReleased, TransferEventsTypeACHReceiptPending, TransferEventsTypeACHReceiptReleased, TransferEventsTypeACHReturn, TransferEventsTypeACHReturnPending, TransferEventsTypeAuthorization, TransferEventsTypeAuthorizationAdvice, TransferEventsTypeAuthorizationExpiry, TransferEventsTypeAuthorizationReversal, TransferEventsTypeBalanceInquiry, TransferEventsTypeClearing, TransferEventsTypeCorrectionCredit, TransferEventsTypeCorrectionDebit, TransferEventsTypeCreditAuthorization, TransferEventsTypeCreditAuthorizationAdvice, TransferEventsTypeFinancialAuthorization, TransferEventsTypeFinancialCreditAuthorization, TransferEventsTypeReturn, TransferEventsTypeReturnReversal, TransferEventsTypeTransfer, TransferEventsTypeTransferInsufficientFunds:
 		return true
 	}
 	return false
@@ -326,27 +330,6 @@ func (r TransferStatus) IsKnown() bool {
 		return true
 	}
 	return false
-}
-
-type TransferNewResponse struct {
-	Data Transfer                `json:"data"`
-	JSON transferNewResponseJSON `json:"-"`
-}
-
-// transferNewResponseJSON contains the JSON metadata for the struct
-// [TransferNewResponse]
-type transferNewResponseJSON struct {
-	Data        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *TransferNewResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r transferNewResponseJSON) RawJSON() string {
-	return r.raw
 }
 
 type TransferNewParams struct {
