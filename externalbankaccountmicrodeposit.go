@@ -80,6 +80,8 @@ type ExternalBankAccountMicroDepositNewResponse struct {
 	// Date of Birth of the Individual that owns the external bank account
 	Dob             time.Time `json:"dob" format:"date"`
 	DoingBusinessAs string    `json:"doing_business_as"`
+	// The financial account token of the operating account used to verify the account
+	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
 	// The nickname given to this record of External Bank Account
 	Name          string `json:"name"`
 	UserDefinedID string `json:"user_defined_id"`
@@ -111,6 +113,7 @@ type externalBankAccountMicroDepositNewResponseJSON struct {
 	CompanyID                apijson.Field
 	Dob                      apijson.Field
 	DoingBusinessAs          apijson.Field
+	FinancialAccountToken    apijson.Field
 	Name                     apijson.Field
 	UserDefinedID            apijson.Field
 	VerificationFailedReason apijson.Field

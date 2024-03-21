@@ -893,6 +893,14 @@ type CardProvisionParams struct {
 	// encoded in PEM format with headers `(-----BEGIN CERTIFICATE-----)` and trailers
 	// omitted. Provided by the device's wallet.
 	Certificate param.Field[string] `json:"certificate" format:"byte"`
+	// Only applicable if `digital_wallet` is `GOOGLE_PAY` or `SAMSUNG_PAY` and the
+	// card is on the Visa network. Stable device identification set by the wallet
+	// provider.
+	ClientDeviceID param.Field[string] `json:"client_device_id"`
+	// Only applicable if `digital_wallet` is `GOOGLE_PAY` or `SAMSUNG_PAY` and the
+	// card is on the Visa network. Consumer ID that identifies the wallet account
+	// holder entity.
+	ClientWalletAccountID param.Field[string] `json:"client_wallet_account_id"`
 	// Name of digital wallet provider.
 	DigitalWallet param.Field[CardProvisionParamsDigitalWallet] `json:"digital_wallet"`
 	// Only applicable if `digital_wallet` is `APPLE_PAY`. Omit to receive only

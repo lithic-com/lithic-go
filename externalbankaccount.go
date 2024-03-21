@@ -212,6 +212,8 @@ type ExternalBankAccountNewResponse struct {
 	// Date of Birth of the Individual that owns the external bank account
 	Dob             time.Time `json:"dob" format:"date"`
 	DoingBusinessAs string    `json:"doing_business_as"`
+	// The financial account token of the operating account used to verify the account
+	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
 	// The nickname given to this record of External Bank Account
 	Name          string `json:"name"`
 	UserDefinedID string `json:"user_defined_id"`
@@ -243,6 +245,7 @@ type externalBankAccountNewResponseJSON struct {
 	CompanyID                apijson.Field
 	Dob                      apijson.Field
 	DoingBusinessAs          apijson.Field
+	FinancialAccountToken    apijson.Field
 	Name                     apijson.Field
 	UserDefinedID            apijson.Field
 	VerificationFailedReason apijson.Field
@@ -378,6 +381,8 @@ type ExternalBankAccountGetResponse struct {
 	// Date of Birth of the Individual that owns the external bank account
 	Dob             time.Time `json:"dob" format:"date"`
 	DoingBusinessAs string    `json:"doing_business_as"`
+	// The financial account token of the operating account used to verify the account
+	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
 	// The nickname given to this record of External Bank Account
 	Name          string `json:"name"`
 	UserDefinedID string `json:"user_defined_id"`
@@ -409,6 +414,7 @@ type externalBankAccountGetResponseJSON struct {
 	CompanyID                apijson.Field
 	Dob                      apijson.Field
 	DoingBusinessAs          apijson.Field
+	FinancialAccountToken    apijson.Field
 	Name                     apijson.Field
 	UserDefinedID            apijson.Field
 	VerificationFailedReason apijson.Field
@@ -544,6 +550,8 @@ type ExternalBankAccountUpdateResponse struct {
 	// Date of Birth of the Individual that owns the external bank account
 	Dob             time.Time `json:"dob" format:"date"`
 	DoingBusinessAs string    `json:"doing_business_as"`
+	// The financial account token of the operating account used to verify the account
+	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
 	// The nickname given to this record of External Bank Account
 	Name          string `json:"name"`
 	UserDefinedID string `json:"user_defined_id"`
@@ -575,6 +583,7 @@ type externalBankAccountUpdateResponseJSON struct {
 	CompanyID                apijson.Field
 	Dob                      apijson.Field
 	DoingBusinessAs          apijson.Field
+	FinancialAccountToken    apijson.Field
 	Name                     apijson.Field
 	UserDefinedID            apijson.Field
 	VerificationFailedReason apijson.Field
@@ -710,6 +719,8 @@ type ExternalBankAccountListResponse struct {
 	// Date of Birth of the Individual that owns the external bank account
 	Dob             time.Time `json:"dob" format:"date"`
 	DoingBusinessAs string    `json:"doing_business_as"`
+	// The financial account token of the operating account used to verify the account
+	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
 	// The nickname given to this record of External Bank Account
 	Name          string `json:"name"`
 	UserDefinedID string `json:"user_defined_id"`
@@ -741,6 +752,7 @@ type externalBankAccountListResponseJSON struct {
 	CompanyID                apijson.Field
 	Dob                      apijson.Field
 	DoingBusinessAs          apijson.Field
+	FinancialAccountToken    apijson.Field
 	Name                     apijson.Field
 	UserDefinedID            apijson.Field
 	VerificationFailedReason apijson.Field
@@ -876,6 +888,8 @@ type ExternalBankAccountRetryMicroDepositsResponse struct {
 	// Date of Birth of the Individual that owns the external bank account
 	Dob             time.Time `json:"dob" format:"date"`
 	DoingBusinessAs string    `json:"doing_business_as"`
+	// The financial account token of the operating account used to verify the account
+	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
 	// The nickname given to this record of External Bank Account
 	Name          string `json:"name"`
 	UserDefinedID string `json:"user_defined_id"`
@@ -907,6 +921,7 @@ type externalBankAccountRetryMicroDepositsResponseJSON struct {
 	CompanyID                apijson.Field
 	Dob                      apijson.Field
 	DoingBusinessAs          apijson.Field
+	FinancialAccountToken    apijson.Field
 	Name                     apijson.Field
 	UserDefinedID            apijson.Field
 	VerificationFailedReason apijson.Field
@@ -1026,8 +1041,10 @@ type ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequest struct 
 	// Date of Birth of the Individual that owns the external bank account
 	Dob             param.Field[time.Time] `json:"dob" format:"date"`
 	DoingBusinessAs param.Field[string]    `json:"doing_business_as"`
-	Name            param.Field[string]    `json:"name"`
-	UserDefinedID   param.Field[string]    `json:"user_defined_id"`
+	// The financial account token of the operating account used to verify the account
+	FinancialAccountToken param.Field[string] `json:"financial_account_token" format:"uuid"`
+	Name                  param.Field[string] `json:"name"`
+	UserDefinedID         param.Field[string] `json:"user_defined_id"`
 	// Indicates whether verification was enforced for a given association record. For
 	// MICRO_DEPOSIT, option to disable verification if the external bank account has
 	// already been verified before. By default, verification will be required unless
