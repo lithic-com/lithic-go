@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.27.0 (2024-03-21)
+
+Full Changelog: [v0.26.1...v0.27.0](https://github.com/lithic-com/lithic-go/compare/v0.26.1...v0.27.0)
+
+### Features
+
+* add IsKnown method to enums ([#244](https://github.com/lithic-com/lithic-go/issues/244)) ([40a5087](https://github.com/lithic-com/lithic-go/commit/40a5087aed7e1837963ec6b4ed9cf60cf753a730))
+* **api:** adds closed state ([#247](https://github.com/lithic-com/lithic-go/issues/247)) ([4d2c127](https://github.com/lithic-com/lithic-go/commit/4d2c1272d29d85396a6761e7fae3948e8a3cce73))
+* **api:** updates ([#246](https://github.com/lithic-com/lithic-go/issues/246)) ([57dab3a](https://github.com/lithic-com/lithic-go/commit/57dab3ad77824e4b13fff8efc7e2320f773993bc))
+* set user-agent header by default when making requests ([#238](https://github.com/lithic-com/lithic-go/issues/238)) ([58da383](https://github.com/lithic-com/lithic-go/commit/58da3834006479f1b9fd1c4f8e26062957de61fc))
+
+
+### Chores
+
+* add back examples ([dc9c260](https://github.com/lithic-com/lithic-go/commit/dc9c260a686eb9ca92ed4400eb6b676a63140ba4))
+* add back removed code ([c46da60](https://github.com/lithic-com/lithic-go/commit/c46da609cd7a9f2b514e9c4d2451824237eef986))
+* **internal:** update generated pragma comment ([#243](https://github.com/lithic-com/lithic-go/issues/243)) ([4671964](https://github.com/lithic-com/lithic-go/commit/4671964bb0355d3b4c05f1a9d865f4967a402079))
+* temporarily remove examples for migration ([0fe6406](https://github.com/lithic-com/lithic-go/commit/0fe64063882e32404db75192517c2f1528c96b24))
+* temporarily remove various code as part of refactor ([#241](https://github.com/lithic-com/lithic-go/issues/241)) ([9766a3a](https://github.com/lithic-com/lithic-go/commit/9766a3a6839cdf63f55c5b9818c5e95796aa2474))
+
+
+### Documentation
+
+* fix typo in CONTRIBUTING.md ([#242](https://github.com/lithic-com/lithic-go/issues/242)) ([7d03703](https://github.com/lithic-com/lithic-go/commit/7d03703f3725f3516aeddef2d7bcf7efda851896))
+* **readme:** consistent use of sentence case in headings ([#245](https://github.com/lithic-com/lithic-go/issues/245)) ([526f33f](https://github.com/lithic-com/lithic-go/commit/526f33fb3606261cc2accda2a6f0a45c9825e873))
+
 ## 0.26.1 (2024-03-12)
 
 Full Changelog: [v0.26.0...v0.26.1](https://github.com/lithic-com/lithic-go/compare/v0.26.0...v0.26.1)
