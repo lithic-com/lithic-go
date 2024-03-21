@@ -609,7 +609,7 @@ type ThreeDSAuthenticationGetResponseApp struct {
 	DeviceInfo string `json:"device_info,nullable"`
 	// External IP address used by the app generating the 3DS authentication request.
 	// Maps to EMV 3DS field appIp.
-	IP   string                                  `json:"ip"`
+	Ip   string                                  `json:"ip"`
 	JSON threeDSAuthenticationGetResponseAppJSON `json:"-"`
 }
 
@@ -617,7 +617,7 @@ type ThreeDSAuthenticationGetResponseApp struct {
 // struct [ThreeDSAuthenticationGetResponseApp]
 type threeDSAuthenticationGetResponseAppJSON struct {
 	DeviceInfo  apijson.Field
-	IP          apijson.Field
+	Ip          apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -661,7 +661,7 @@ func (r ThreeDSAuthenticationGetResponseAuthenticationRequestType) IsKnown() boo
 type ThreeDSAuthenticationGetResponseBrowser struct {
 	// IP address of the browser as returned by the HTTP headers to the 3DS requestor
 	// (e.g., merchant or digital wallet). Maps to EMV 3DS field browserIP.
-	IP string `json:"ip,nullable"`
+	Ip string `json:"ip,nullable"`
 	// Indicates whether the cardholder's browser has the ability to execute Java. Maps
 	// to EMV 3DS field browserJavaEnabled.
 	JavaEnabled bool `json:"java_enabled,nullable"`
@@ -683,7 +683,7 @@ type ThreeDSAuthenticationGetResponseBrowser struct {
 // threeDSAuthenticationGetResponseBrowserJSON contains the JSON metadata for the
 // struct [ThreeDSAuthenticationGetResponseBrowser]
 type threeDSAuthenticationGetResponseBrowserJSON struct {
-	IP                apijson.Field
+	Ip                apijson.Field
 	JavaEnabled       apijson.Field
 	JavascriptEnabled apijson.Field
 	Language          apijson.Field

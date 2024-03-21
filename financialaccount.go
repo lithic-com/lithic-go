@@ -102,6 +102,8 @@ type FinancialAccount struct {
 	Updated time.Time `json:"updated,required" format:"date-time"`
 	// Account number for your Lithic-assigned bank account number, if applicable.
 	AccountNumber string `json:"account_number"`
+	// Account token of the financial account if applicable.
+	AccountToken string `json:"account_token" format:"uuid"`
 	// User-defined nickname for the financial account.
 	Nickname string `json:"nickname"`
 	// Routing number for your Lithic-assigned bank account number, if applicable.
@@ -117,6 +119,7 @@ type financialAccountJSON struct {
 	Type          apijson.Field
 	Updated       apijson.Field
 	AccountNumber apijson.Field
+	AccountToken  apijson.Field
 	Nickname      apijson.Field
 	RoutingNumber apijson.Field
 	raw           string
@@ -367,12 +370,16 @@ func (r FinancialTransactionEventsResult) IsKnown() bool {
 type FinancialTransactionEventsType string
 
 const (
+	FinancialTransactionEventsTypeACHExceededThreshold         FinancialTransactionEventsType = "ACH_EXCEEDED_THRESHOLD"
 	FinancialTransactionEventsTypeACHInsufficientFunds         FinancialTransactionEventsType = "ACH_INSUFFICIENT_FUNDS"
+	FinancialTransactionEventsTypeACHInvalidAccount            FinancialTransactionEventsType = "ACH_INVALID_ACCOUNT"
 	FinancialTransactionEventsTypeACHOriginationPending        FinancialTransactionEventsType = "ACH_ORIGINATION_PENDING"
+	FinancialTransactionEventsTypeACHOriginationProcessed      FinancialTransactionEventsType = "ACH_ORIGINATION_PROCESSED"
 	FinancialTransactionEventsTypeACHOriginationReleased       FinancialTransactionEventsType = "ACH_ORIGINATION_RELEASED"
 	FinancialTransactionEventsTypeACHReceiptPending            FinancialTransactionEventsType = "ACH_RECEIPT_PENDING"
 	FinancialTransactionEventsTypeACHReceiptReleased           FinancialTransactionEventsType = "ACH_RECEIPT_RELEASED"
 	FinancialTransactionEventsTypeACHReturn                    FinancialTransactionEventsType = "ACH_RETURN"
+	FinancialTransactionEventsTypeACHReturnPending             FinancialTransactionEventsType = "ACH_RETURN_PENDING"
 	FinancialTransactionEventsTypeAuthorization                FinancialTransactionEventsType = "AUTHORIZATION"
 	FinancialTransactionEventsTypeAuthorizationAdvice          FinancialTransactionEventsType = "AUTHORIZATION_ADVICE"
 	FinancialTransactionEventsTypeAuthorizationExpiry          FinancialTransactionEventsType = "AUTHORIZATION_EXPIRY"
@@ -393,7 +400,7 @@ const (
 
 func (r FinancialTransactionEventsType) IsKnown() bool {
 	switch r {
-	case FinancialTransactionEventsTypeACHInsufficientFunds, FinancialTransactionEventsTypeACHOriginationPending, FinancialTransactionEventsTypeACHOriginationReleased, FinancialTransactionEventsTypeACHReceiptPending, FinancialTransactionEventsTypeACHReceiptReleased, FinancialTransactionEventsTypeACHReturn, FinancialTransactionEventsTypeAuthorization, FinancialTransactionEventsTypeAuthorizationAdvice, FinancialTransactionEventsTypeAuthorizationExpiry, FinancialTransactionEventsTypeAuthorizationReversal, FinancialTransactionEventsTypeBalanceInquiry, FinancialTransactionEventsTypeClearing, FinancialTransactionEventsTypeCorrectionCredit, FinancialTransactionEventsTypeCorrectionDebit, FinancialTransactionEventsTypeCreditAuthorization, FinancialTransactionEventsTypeCreditAuthorizationAdvice, FinancialTransactionEventsTypeFinancialAuthorization, FinancialTransactionEventsTypeFinancialCreditAuthorization, FinancialTransactionEventsTypeReturn, FinancialTransactionEventsTypeReturnReversal, FinancialTransactionEventsTypeTransfer, FinancialTransactionEventsTypeTransferInsufficientFunds:
+	case FinancialTransactionEventsTypeACHExceededThreshold, FinancialTransactionEventsTypeACHInsufficientFunds, FinancialTransactionEventsTypeACHInvalidAccount, FinancialTransactionEventsTypeACHOriginationPending, FinancialTransactionEventsTypeACHOriginationProcessed, FinancialTransactionEventsTypeACHOriginationReleased, FinancialTransactionEventsTypeACHReceiptPending, FinancialTransactionEventsTypeACHReceiptReleased, FinancialTransactionEventsTypeACHReturn, FinancialTransactionEventsTypeACHReturnPending, FinancialTransactionEventsTypeAuthorization, FinancialTransactionEventsTypeAuthorizationAdvice, FinancialTransactionEventsTypeAuthorizationExpiry, FinancialTransactionEventsTypeAuthorizationReversal, FinancialTransactionEventsTypeBalanceInquiry, FinancialTransactionEventsTypeClearing, FinancialTransactionEventsTypeCorrectionCredit, FinancialTransactionEventsTypeCorrectionDebit, FinancialTransactionEventsTypeCreditAuthorization, FinancialTransactionEventsTypeCreditAuthorizationAdvice, FinancialTransactionEventsTypeFinancialAuthorization, FinancialTransactionEventsTypeFinancialCreditAuthorization, FinancialTransactionEventsTypeReturn, FinancialTransactionEventsTypeReturnReversal, FinancialTransactionEventsTypeTransfer, FinancialTransactionEventsTypeTransferInsufficientFunds:
 		return true
 	}
 	return false
