@@ -11,9 +11,9 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
+	"github.com/lithic-com/lithic-go/internal/pagination"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
-	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
 )
 
@@ -51,7 +51,7 @@ func (r *PaymentService) Get(ctx context.Context, paymentToken string, opts ...o
 }
 
 // List all the payments for the provided search criteria.
-func (r *PaymentService) List(ctx context.Context, query PaymentListParams, opts ...option.RequestOption) (res *shared.CursorPage[Payment], err error) {
+func (r *PaymentService) List(ctx context.Context, query PaymentListParams, opts ...option.RequestOption) (res *pagination.CursorPage[Payment], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -69,8 +69,8 @@ func (r *PaymentService) List(ctx context.Context, query PaymentListParams, opts
 }
 
 // List all the payments for the provided search criteria.
-func (r *PaymentService) ListAutoPaging(ctx context.Context, query PaymentListParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[Payment] {
-	return shared.NewCursorPageAutoPager(r.List(ctx, query, opts...))
+func (r *PaymentService) ListAutoPaging(ctx context.Context, query PaymentListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[Payment] {
+	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
 // Retry an origination which has been returned.

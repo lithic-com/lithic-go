@@ -11,9 +11,9 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
+	"github.com/lithic-com/lithic-go/internal/pagination"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
-	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
 )
 
@@ -44,7 +44,7 @@ func (r *CardProgramService) Get(ctx context.Context, cardProgramToken string, o
 }
 
 // List card programs.
-func (r *CardProgramService) List(ctx context.Context, query CardProgramListParams, opts ...option.RequestOption) (res *shared.CursorPage[CardProgram], err error) {
+func (r *CardProgramService) List(ctx context.Context, query CardProgramListParams, opts ...option.RequestOption) (res *pagination.CursorPage[CardProgram], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -62,8 +62,8 @@ func (r *CardProgramService) List(ctx context.Context, query CardProgramListPara
 }
 
 // List card programs.
-func (r *CardProgramService) ListAutoPaging(ctx context.Context, query CardProgramListParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[CardProgram] {
-	return shared.NewCursorPageAutoPager(r.List(ctx, query, opts...))
+func (r *CardProgramService) ListAutoPaging(ctx context.Context, query CardProgramListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[CardProgram] {
+	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
 type CardProgram struct {
