@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.28.0 (2024-03-28)
+
+Full Changelog: [v0.27.0...v0.28.0](https://github.com/lithic-com/lithic-go/compare/v0.27.0...v0.28.0)
+
+### Features
+
+* **api:** add settlement_report.updated enum ([#248](https://github.com/lithic-com/lithic-go/issues/248)) ([4ffb933](https://github.com/lithic-com/lithic-go/commit/4ffb93337f866631f7f15fce98d48e2cb0831414))
+* **client:** implement raw requests methods on client ([#252](https://github.com/lithic-com/lithic-go/issues/252)) ([445089d](https://github.com/lithic-com/lithic-go/commit/445089d567cff012c9f1de5acf1a993954ca0242))
+
+
+### Chores
+
+* **internal:** move pagination types to pagination package ([#253](https://github.com/lithic-com/lithic-go/issues/253)) ([c9dcf15](https://github.com/lithic-com/lithic-go/commit/c9dcf1598bd15c33816157c8ca8ebc4edf435fab))
+
+
+### Documentation
+
+* fix typo in docstring for Null() ([#251](https://github.com/lithic-com/lithic-go/issues/251)) ([9787ff1](https://github.com/lithic-com/lithic-go/commit/9787ff10c0c2600dcc93d9e4c2def571324b8f75))
+* **readme:** document file uploads ([#250](https://github.com/lithic-com/lithic-go/issues/250)) ([0d7e97c](https://github.com/lithic-com/lithic-go/commit/0d7e97c9ab557f68e226857010e36ed22e4aab15))
+
 ## 0.27.0 (2024-03-21)
 
 Full Changelog: [v0.26.1...v0.27.0](https://github.com/lithic-com/lithic-go/compare/v0.26.1...v0.27.0)
