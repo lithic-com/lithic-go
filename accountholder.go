@@ -11,6 +11,7 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
+	"github.com/lithic-com/lithic-go/internal/pagination"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/internal/shared"
@@ -70,7 +71,7 @@ func (r *AccountHolderService) Update(ctx context.Context, accountHolderToken st
 
 // Get a list of individual or business account holders and their KYC or KYB
 // evaluation status.
-func (r *AccountHolderService) List(ctx context.Context, query AccountHolderListParams, opts ...option.RequestOption) (res *shared.SinglePage[AccountHolder], err error) {
+func (r *AccountHolderService) List(ctx context.Context, query AccountHolderListParams, opts ...option.RequestOption) (res *pagination.SinglePage[AccountHolder], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -89,8 +90,8 @@ func (r *AccountHolderService) List(ctx context.Context, query AccountHolderList
 
 // Get a list of individual or business account holders and their KYC or KYB
 // evaluation status.
-func (r *AccountHolderService) ListAutoPaging(ctx context.Context, query AccountHolderListParams, opts ...option.RequestOption) *shared.SinglePageAutoPager[AccountHolder] {
-	return shared.NewSinglePageAutoPager(r.List(ctx, query, opts...))
+func (r *AccountHolderService) ListAutoPaging(ctx context.Context, query AccountHolderListParams, opts ...option.RequestOption) *pagination.SinglePageAutoPager[AccountHolder] {
+	return pagination.NewSinglePageAutoPager(r.List(ctx, query, opts...))
 }
 
 // Retrieve the status of account holder document uploads, or retrieve the upload
