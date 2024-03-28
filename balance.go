@@ -10,9 +10,9 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
+	"github.com/lithic-com/lithic-go/internal/pagination"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
-	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
 )
 
@@ -34,7 +34,7 @@ func NewBalanceService(opts ...option.RequestOption) (r *BalanceService) {
 }
 
 // Get the balances for a program or a given end-user account
-func (r *BalanceService) List(ctx context.Context, query BalanceListParams, opts ...option.RequestOption) (res *shared.SinglePage[Balance], err error) {
+func (r *BalanceService) List(ctx context.Context, query BalanceListParams, opts ...option.RequestOption) (res *pagination.SinglePage[Balance], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -52,8 +52,8 @@ func (r *BalanceService) List(ctx context.Context, query BalanceListParams, opts
 }
 
 // Get the balances for a program or a given end-user account
-func (r *BalanceService) ListAutoPaging(ctx context.Context, query BalanceListParams, opts ...option.RequestOption) *shared.SinglePageAutoPager[Balance] {
-	return shared.NewSinglePageAutoPager(r.List(ctx, query, opts...))
+func (r *BalanceService) ListAutoPaging(ctx context.Context, query BalanceListParams, opts ...option.RequestOption) *pagination.SinglePageAutoPager[Balance] {
+	return pagination.NewSinglePageAutoPager(r.List(ctx, query, opts...))
 }
 
 // Balance of a Financial Account

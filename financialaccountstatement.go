@@ -11,9 +11,9 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
+	"github.com/lithic-com/lithic-go/internal/pagination"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
-	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
 )
 
@@ -46,7 +46,7 @@ func (r *FinancialAccountStatementService) Get(ctx context.Context, financialAcc
 }
 
 // List the statements for a given financial account.
-func (r *FinancialAccountStatementService) List(ctx context.Context, financialAccountToken string, query FinancialAccountStatementListParams, opts ...option.RequestOption) (res *shared.CursorPage[Statement], err error) {
+func (r *FinancialAccountStatementService) List(ctx context.Context, financialAccountToken string, query FinancialAccountStatementListParams, opts ...option.RequestOption) (res *pagination.CursorPage[Statement], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -64,8 +64,8 @@ func (r *FinancialAccountStatementService) List(ctx context.Context, financialAc
 }
 
 // List the statements for a given financial account.
-func (r *FinancialAccountStatementService) ListAutoPaging(ctx context.Context, financialAccountToken string, query FinancialAccountStatementListParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[Statement] {
-	return shared.NewCursorPageAutoPager(r.List(ctx, financialAccountToken, query, opts...))
+func (r *FinancialAccountStatementService) ListAutoPaging(ctx context.Context, financialAccountToken string, query FinancialAccountStatementListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[Statement] {
+	return pagination.NewCursorPageAutoPager(r.List(ctx, financialAccountToken, query, opts...))
 }
 
 type Statement struct {
