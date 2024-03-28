@@ -10,9 +10,9 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
+	"github.com/lithic-com/lithic-go/internal/pagination"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
-	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
 )
 
@@ -61,7 +61,7 @@ func (r *AuthRuleService) Update(ctx context.Context, authRuleToken string, body
 }
 
 // Return all of the Auth Rules under the program.
-func (r *AuthRuleService) List(ctx context.Context, query AuthRuleListParams, opts ...option.RequestOption) (res *shared.CursorPage[AuthRule], err error) {
+func (r *AuthRuleService) List(ctx context.Context, query AuthRuleListParams, opts ...option.RequestOption) (res *pagination.CursorPage[AuthRule], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -79,8 +79,8 @@ func (r *AuthRuleService) List(ctx context.Context, query AuthRuleListParams, op
 }
 
 // Return all of the Auth Rules under the program.
-func (r *AuthRuleService) ListAutoPaging(ctx context.Context, query AuthRuleListParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[AuthRule] {
-	return shared.NewCursorPageAutoPager(r.List(ctx, query, opts...))
+func (r *AuthRuleService) ListAutoPaging(ctx context.Context, query AuthRuleListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[AuthRule] {
+	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
 // Applies an existing authorization rule (Auth Rule) to an program, account, or

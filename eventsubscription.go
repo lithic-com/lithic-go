@@ -11,9 +11,9 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
+	"github.com/lithic-com/lithic-go/internal/pagination"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
-	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
 )
 
@@ -60,7 +60,7 @@ func (r *EventSubscriptionService) Update(ctx context.Context, eventSubscription
 }
 
 // List all the event subscriptions.
-func (r *EventSubscriptionService) List(ctx context.Context, query EventSubscriptionListParams, opts ...option.RequestOption) (res *shared.CursorPage[EventSubscription], err error) {
+func (r *EventSubscriptionService) List(ctx context.Context, query EventSubscriptionListParams, opts ...option.RequestOption) (res *pagination.CursorPage[EventSubscription], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -78,8 +78,8 @@ func (r *EventSubscriptionService) List(ctx context.Context, query EventSubscrip
 }
 
 // List all the event subscriptions.
-func (r *EventSubscriptionService) ListAutoPaging(ctx context.Context, query EventSubscriptionListParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[EventSubscription] {
-	return shared.NewCursorPageAutoPager(r.List(ctx, query, opts...))
+func (r *EventSubscriptionService) ListAutoPaging(ctx context.Context, query EventSubscriptionListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[EventSubscription] {
+	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
 // Delete an event subscription.
@@ -92,7 +92,7 @@ func (r *EventSubscriptionService) Delete(ctx context.Context, eventSubscription
 }
 
 // List all the message attempts for a given event subscription.
-func (r *EventSubscriptionService) ListAttempts(ctx context.Context, eventSubscriptionToken string, query EventSubscriptionListAttemptsParams, opts ...option.RequestOption) (res *shared.CursorPage[MessageAttempt], err error) {
+func (r *EventSubscriptionService) ListAttempts(ctx context.Context, eventSubscriptionToken string, query EventSubscriptionListAttemptsParams, opts ...option.RequestOption) (res *pagination.CursorPage[MessageAttempt], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -110,8 +110,8 @@ func (r *EventSubscriptionService) ListAttempts(ctx context.Context, eventSubscr
 }
 
 // List all the message attempts for a given event subscription.
-func (r *EventSubscriptionService) ListAttemptsAutoPaging(ctx context.Context, eventSubscriptionToken string, query EventSubscriptionListAttemptsParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[MessageAttempt] {
-	return shared.NewCursorPageAutoPager(r.ListAttempts(ctx, eventSubscriptionToken, query, opts...))
+func (r *EventSubscriptionService) ListAttemptsAutoPaging(ctx context.Context, eventSubscriptionToken string, query EventSubscriptionListAttemptsParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[MessageAttempt] {
+	return pagination.NewCursorPageAutoPager(r.ListAttempts(ctx, eventSubscriptionToken, query, opts...))
 }
 
 // Resend all failed messages since a given time.
@@ -222,6 +222,7 @@ const (
 	EventSubscriptionNewParamsEventTypeFinancialAccountCreated                              EventSubscriptionNewParamsEventType = "financial_account.created"
 	EventSubscriptionNewParamsEventTypePaymentTransactionCreated                            EventSubscriptionNewParamsEventType = "payment_transaction.created"
 	EventSubscriptionNewParamsEventTypePaymentTransactionUpdated                            EventSubscriptionNewParamsEventType = "payment_transaction.updated"
+	EventSubscriptionNewParamsEventTypeSettlementReportUpdated                              EventSubscriptionNewParamsEventType = "settlement_report.updated"
 	EventSubscriptionNewParamsEventTypeStatementsCreated                                    EventSubscriptionNewParamsEventType = "statements.created"
 	EventSubscriptionNewParamsEventTypeThreeDSAuthenticationCreated                         EventSubscriptionNewParamsEventType = "three_ds_authentication.created"
 	EventSubscriptionNewParamsEventTypeTransferTransactionCreated                           EventSubscriptionNewParamsEventType = "transfer_transaction.created"
@@ -229,7 +230,7 @@ const (
 
 func (r EventSubscriptionNewParamsEventType) IsKnown() bool {
 	switch r {
-	case EventSubscriptionNewParamsEventTypeAccountHolderCreated, EventSubscriptionNewParamsEventTypeAccountHolderUpdated, EventSubscriptionNewParamsEventTypeAccountHolderVerification, EventSubscriptionNewParamsEventTypeBalanceUpdated, EventSubscriptionNewParamsEventTypeCardCreated, EventSubscriptionNewParamsEventTypeCardRenewed, EventSubscriptionNewParamsEventTypeCardShipped, EventSubscriptionNewParamsEventTypeCardTransactionUpdated, EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationResult, EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionNewParamsEventTypeDisputeUpdated, EventSubscriptionNewParamsEventTypeDisputeEvidenceUploadFailed, EventSubscriptionNewParamsEventTypeExternalBankAccountCreated, EventSubscriptionNewParamsEventTypeExternalBankAccountUpdated, EventSubscriptionNewParamsEventTypeFinancialAccountCreated, EventSubscriptionNewParamsEventTypePaymentTransactionCreated, EventSubscriptionNewParamsEventTypePaymentTransactionUpdated, EventSubscriptionNewParamsEventTypeStatementsCreated, EventSubscriptionNewParamsEventTypeThreeDSAuthenticationCreated, EventSubscriptionNewParamsEventTypeTransferTransactionCreated:
+	case EventSubscriptionNewParamsEventTypeAccountHolderCreated, EventSubscriptionNewParamsEventTypeAccountHolderUpdated, EventSubscriptionNewParamsEventTypeAccountHolderVerification, EventSubscriptionNewParamsEventTypeBalanceUpdated, EventSubscriptionNewParamsEventTypeCardCreated, EventSubscriptionNewParamsEventTypeCardRenewed, EventSubscriptionNewParamsEventTypeCardShipped, EventSubscriptionNewParamsEventTypeCardTransactionUpdated, EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationResult, EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionNewParamsEventTypeDisputeUpdated, EventSubscriptionNewParamsEventTypeDisputeEvidenceUploadFailed, EventSubscriptionNewParamsEventTypeExternalBankAccountCreated, EventSubscriptionNewParamsEventTypeExternalBankAccountUpdated, EventSubscriptionNewParamsEventTypeFinancialAccountCreated, EventSubscriptionNewParamsEventTypePaymentTransactionCreated, EventSubscriptionNewParamsEventTypePaymentTransactionUpdated, EventSubscriptionNewParamsEventTypeSettlementReportUpdated, EventSubscriptionNewParamsEventTypeStatementsCreated, EventSubscriptionNewParamsEventTypeThreeDSAuthenticationCreated, EventSubscriptionNewParamsEventTypeTransferTransactionCreated:
 		return true
 	}
 	return false
@@ -272,6 +273,7 @@ const (
 	EventSubscriptionUpdateParamsEventTypeFinancialAccountCreated                              EventSubscriptionUpdateParamsEventType = "financial_account.created"
 	EventSubscriptionUpdateParamsEventTypePaymentTransactionCreated                            EventSubscriptionUpdateParamsEventType = "payment_transaction.created"
 	EventSubscriptionUpdateParamsEventTypePaymentTransactionUpdated                            EventSubscriptionUpdateParamsEventType = "payment_transaction.updated"
+	EventSubscriptionUpdateParamsEventTypeSettlementReportUpdated                              EventSubscriptionUpdateParamsEventType = "settlement_report.updated"
 	EventSubscriptionUpdateParamsEventTypeStatementsCreated                                    EventSubscriptionUpdateParamsEventType = "statements.created"
 	EventSubscriptionUpdateParamsEventTypeThreeDSAuthenticationCreated                         EventSubscriptionUpdateParamsEventType = "three_ds_authentication.created"
 	EventSubscriptionUpdateParamsEventTypeTransferTransactionCreated                           EventSubscriptionUpdateParamsEventType = "transfer_transaction.created"
@@ -279,7 +281,7 @@ const (
 
 func (r EventSubscriptionUpdateParamsEventType) IsKnown() bool {
 	switch r {
-	case EventSubscriptionUpdateParamsEventTypeAccountHolderCreated, EventSubscriptionUpdateParamsEventTypeAccountHolderUpdated, EventSubscriptionUpdateParamsEventTypeAccountHolderVerification, EventSubscriptionUpdateParamsEventTypeBalanceUpdated, EventSubscriptionUpdateParamsEventTypeCardCreated, EventSubscriptionUpdateParamsEventTypeCardRenewed, EventSubscriptionUpdateParamsEventTypeCardShipped, EventSubscriptionUpdateParamsEventTypeCardTransactionUpdated, EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationResult, EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionUpdateParamsEventTypeDisputeUpdated, EventSubscriptionUpdateParamsEventTypeDisputeEvidenceUploadFailed, EventSubscriptionUpdateParamsEventTypeExternalBankAccountCreated, EventSubscriptionUpdateParamsEventTypeExternalBankAccountUpdated, EventSubscriptionUpdateParamsEventTypeFinancialAccountCreated, EventSubscriptionUpdateParamsEventTypePaymentTransactionCreated, EventSubscriptionUpdateParamsEventTypePaymentTransactionUpdated, EventSubscriptionUpdateParamsEventTypeStatementsCreated, EventSubscriptionUpdateParamsEventTypeThreeDSAuthenticationCreated, EventSubscriptionUpdateParamsEventTypeTransferTransactionCreated:
+	case EventSubscriptionUpdateParamsEventTypeAccountHolderCreated, EventSubscriptionUpdateParamsEventTypeAccountHolderUpdated, EventSubscriptionUpdateParamsEventTypeAccountHolderVerification, EventSubscriptionUpdateParamsEventTypeBalanceUpdated, EventSubscriptionUpdateParamsEventTypeCardCreated, EventSubscriptionUpdateParamsEventTypeCardRenewed, EventSubscriptionUpdateParamsEventTypeCardShipped, EventSubscriptionUpdateParamsEventTypeCardTransactionUpdated, EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationResult, EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionUpdateParamsEventTypeDisputeUpdated, EventSubscriptionUpdateParamsEventTypeDisputeEvidenceUploadFailed, EventSubscriptionUpdateParamsEventTypeExternalBankAccountCreated, EventSubscriptionUpdateParamsEventTypeExternalBankAccountUpdated, EventSubscriptionUpdateParamsEventTypeFinancialAccountCreated, EventSubscriptionUpdateParamsEventTypePaymentTransactionCreated, EventSubscriptionUpdateParamsEventTypePaymentTransactionUpdated, EventSubscriptionUpdateParamsEventTypeSettlementReportUpdated, EventSubscriptionUpdateParamsEventTypeStatementsCreated, EventSubscriptionUpdateParamsEventTypeThreeDSAuthenticationCreated, EventSubscriptionUpdateParamsEventTypeTransferTransactionCreated:
 		return true
 	}
 	return false
@@ -416,6 +418,7 @@ const (
 	EventSubscriptionSendSimulatedExampleParamsEventTypeFinancialAccountCreated                              EventSubscriptionSendSimulatedExampleParamsEventType = "financial_account.created"
 	EventSubscriptionSendSimulatedExampleParamsEventTypePaymentTransactionCreated                            EventSubscriptionSendSimulatedExampleParamsEventType = "payment_transaction.created"
 	EventSubscriptionSendSimulatedExampleParamsEventTypePaymentTransactionUpdated                            EventSubscriptionSendSimulatedExampleParamsEventType = "payment_transaction.updated"
+	EventSubscriptionSendSimulatedExampleParamsEventTypeSettlementReportUpdated                              EventSubscriptionSendSimulatedExampleParamsEventType = "settlement_report.updated"
 	EventSubscriptionSendSimulatedExampleParamsEventTypeStatementsCreated                                    EventSubscriptionSendSimulatedExampleParamsEventType = "statements.created"
 	EventSubscriptionSendSimulatedExampleParamsEventTypeThreeDSAuthenticationCreated                         EventSubscriptionSendSimulatedExampleParamsEventType = "three_ds_authentication.created"
 	EventSubscriptionSendSimulatedExampleParamsEventTypeTransferTransactionCreated                           EventSubscriptionSendSimulatedExampleParamsEventType = "transfer_transaction.created"
@@ -423,7 +426,7 @@ const (
 
 func (r EventSubscriptionSendSimulatedExampleParamsEventType) IsKnown() bool {
 	switch r {
-	case EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderVerification, EventSubscriptionSendSimulatedExampleParamsEventTypeBalanceUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeCardCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeCardRenewed, EventSubscriptionSendSimulatedExampleParamsEventTypeCardShipped, EventSubscriptionSendSimulatedExampleParamsEventTypeCardTransactionUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationResult, EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionSendSimulatedExampleParamsEventTypeDisputeUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeDisputeEvidenceUploadFailed, EventSubscriptionSendSimulatedExampleParamsEventTypeExternalBankAccountCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeExternalBankAccountUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeFinancialAccountCreated, EventSubscriptionSendSimulatedExampleParamsEventTypePaymentTransactionCreated, EventSubscriptionSendSimulatedExampleParamsEventTypePaymentTransactionUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeStatementsCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeThreeDSAuthenticationCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeTransferTransactionCreated:
+	case EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderVerification, EventSubscriptionSendSimulatedExampleParamsEventTypeBalanceUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeCardCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeCardRenewed, EventSubscriptionSendSimulatedExampleParamsEventTypeCardShipped, EventSubscriptionSendSimulatedExampleParamsEventTypeCardTransactionUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationResult, EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionSendSimulatedExampleParamsEventTypeDisputeUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeDisputeEvidenceUploadFailed, EventSubscriptionSendSimulatedExampleParamsEventTypeExternalBankAccountCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeExternalBankAccountUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeFinancialAccountCreated, EventSubscriptionSendSimulatedExampleParamsEventTypePaymentTransactionCreated, EventSubscriptionSendSimulatedExampleParamsEventTypePaymentTransactionUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeSettlementReportUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeStatementsCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeThreeDSAuthenticationCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeTransferTransactionCreated:
 		return true
 	}
 	return false

@@ -22,7 +22,7 @@ Or to pin the version:
 <!-- x-release-please-start-version -->
 
 ```sh
-go get -u 'github.com/lithic-com/lithic-go@v0.27.0'
+go get -u 'github.com/lithic-com/lithic-go@v0.28.0'
 ```
 
 <!-- x-release-please-end -->
@@ -238,6 +238,19 @@ client.Cards.List(
 	option.WithRequestTimeout(20*time.Second),
 )
 ```
+
+### File uploads
+
+Request parameters that correspond to file uploads in multipart requests are typed as
+`param.Field[io.Reader]`. The contents of the `io.Reader` will by default be sent as a multipart form
+part with the file name of "anonymous_file" and content-type of "application/octet-stream".
+
+The file name and content-type can be customized by implementing `Name() string` or `ContentType()
+string` on the run-time type of `io.Reader`. Note that `os.File` implements `Name() string`, so a
+file returned by `os.Open` will be sent with the file name on disk.
+
+We also provide a helper `lithic.FileParam(reader io.Reader, filename string, contentType string)`
+which can be used to wrap any `io.Reader` with the appropriate file name and content type.
 
 ## Retries
 

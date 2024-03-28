@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apiquery"
+	"github.com/lithic-com/lithic-go/internal/pagination"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
-	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
 )
 
@@ -35,7 +35,7 @@ func NewFinancialAccountBalanceService(opts ...option.RequestOption) (r *Financi
 }
 
 // Get the balances for a given financial account.
-func (r *FinancialAccountBalanceService) List(ctx context.Context, financialAccountToken string, query FinancialAccountBalanceListParams, opts ...option.RequestOption) (res *shared.SinglePage[Balance], err error) {
+func (r *FinancialAccountBalanceService) List(ctx context.Context, financialAccountToken string, query FinancialAccountBalanceListParams, opts ...option.RequestOption) (res *pagination.SinglePage[Balance], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -53,8 +53,8 @@ func (r *FinancialAccountBalanceService) List(ctx context.Context, financialAcco
 }
 
 // Get the balances for a given financial account.
-func (r *FinancialAccountBalanceService) ListAutoPaging(ctx context.Context, financialAccountToken string, query FinancialAccountBalanceListParams, opts ...option.RequestOption) *shared.SinglePageAutoPager[Balance] {
-	return shared.NewSinglePageAutoPager(r.List(ctx, financialAccountToken, query, opts...))
+func (r *FinancialAccountBalanceService) ListAutoPaging(ctx context.Context, financialAccountToken string, query FinancialAccountBalanceListParams, opts ...option.RequestOption) *pagination.SinglePageAutoPager[Balance] {
+	return pagination.NewSinglePageAutoPager(r.List(ctx, financialAccountToken, query, opts...))
 }
 
 type FinancialAccountBalanceListParams struct {

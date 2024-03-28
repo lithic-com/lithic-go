@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apiquery"
+	"github.com/lithic-com/lithic-go/internal/pagination"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
-	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
 )
 
@@ -35,7 +35,7 @@ func NewReportSettlementService(opts ...option.RequestOption) (r *ReportSettleme
 }
 
 // List details.
-func (r *ReportSettlementService) ListDetails(ctx context.Context, reportDate time.Time, query ReportSettlementListDetailsParams, opts ...option.RequestOption) (res *shared.CursorPage[SettlementDetail], err error) {
+func (r *ReportSettlementService) ListDetails(ctx context.Context, reportDate time.Time, query ReportSettlementListDetailsParams, opts ...option.RequestOption) (res *pagination.CursorPage[SettlementDetail], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -53,8 +53,8 @@ func (r *ReportSettlementService) ListDetails(ctx context.Context, reportDate ti
 }
 
 // List details.
-func (r *ReportSettlementService) ListDetailsAutoPaging(ctx context.Context, reportDate time.Time, query ReportSettlementListDetailsParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[SettlementDetail] {
-	return shared.NewCursorPageAutoPager(r.ListDetails(ctx, reportDate, query, opts...))
+func (r *ReportSettlementService) ListDetailsAutoPaging(ctx context.Context, reportDate time.Time, query ReportSettlementListDetailsParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[SettlementDetail] {
+	return pagination.NewCursorPageAutoPager(r.ListDetails(ctx, reportDate, query, opts...))
 }
 
 // Get the settlement report for a specified report date.

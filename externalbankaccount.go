@@ -11,9 +11,9 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
+	"github.com/lithic-com/lithic-go/internal/pagination"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
-	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
 )
 
@@ -62,7 +62,7 @@ func (r *ExternalBankAccountService) Update(ctx context.Context, externalBankAcc
 }
 
 // List all the external bank accounts for the provided search criteria.
-func (r *ExternalBankAccountService) List(ctx context.Context, query ExternalBankAccountListParams, opts ...option.RequestOption) (res *shared.CursorPage[ExternalBankAccountListResponse], err error) {
+func (r *ExternalBankAccountService) List(ctx context.Context, query ExternalBankAccountListParams, opts ...option.RequestOption) (res *pagination.CursorPage[ExternalBankAccountListResponse], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -80,8 +80,8 @@ func (r *ExternalBankAccountService) List(ctx context.Context, query ExternalBan
 }
 
 // List all the external bank accounts for the provided search criteria.
-func (r *ExternalBankAccountService) ListAutoPaging(ctx context.Context, query ExternalBankAccountListParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[ExternalBankAccountListResponse] {
-	return shared.NewCursorPageAutoPager(r.List(ctx, query, opts...))
+func (r *ExternalBankAccountService) ListAutoPaging(ctx context.Context, query ExternalBankAccountListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[ExternalBankAccountListResponse] {
+	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
 // Retry external bank account micro deposit verification.

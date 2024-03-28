@@ -10,9 +10,9 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
+	"github.com/lithic-com/lithic-go/internal/pagination"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
-	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
 )
 
@@ -36,7 +36,7 @@ func NewAggregateBalanceService(opts ...option.RequestOption) (r *AggregateBalan
 
 // Get the aggregated balance across all end-user accounts by financial account
 // type
-func (r *AggregateBalanceService) List(ctx context.Context, query AggregateBalanceListParams, opts ...option.RequestOption) (res *shared.SinglePage[AggregateBalance], err error) {
+func (r *AggregateBalanceService) List(ctx context.Context, query AggregateBalanceListParams, opts ...option.RequestOption) (res *pagination.SinglePage[AggregateBalance], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -55,8 +55,8 @@ func (r *AggregateBalanceService) List(ctx context.Context, query AggregateBalan
 
 // Get the aggregated balance across all end-user accounts by financial account
 // type
-func (r *AggregateBalanceService) ListAutoPaging(ctx context.Context, query AggregateBalanceListParams, opts ...option.RequestOption) *shared.SinglePageAutoPager[AggregateBalance] {
-	return shared.NewSinglePageAutoPager(r.List(ctx, query, opts...))
+func (r *AggregateBalanceService) ListAutoPaging(ctx context.Context, query AggregateBalanceListParams, opts ...option.RequestOption) *pagination.SinglePageAutoPager[AggregateBalance] {
+	return pagination.NewSinglePageAutoPager(r.List(ctx, query, opts...))
 }
 
 // Aggregate Balance across all end-user accounts

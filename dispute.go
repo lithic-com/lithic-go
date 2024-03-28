@@ -14,9 +14,9 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
+	"github.com/lithic-com/lithic-go/internal/pagination"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
-	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
 )
 
@@ -62,7 +62,7 @@ func (r *DisputeService) Update(ctx context.Context, disputeToken string, body D
 }
 
 // List disputes.
-func (r *DisputeService) List(ctx context.Context, query DisputeListParams, opts ...option.RequestOption) (res *shared.CursorPage[Dispute], err error) {
+func (r *DisputeService) List(ctx context.Context, query DisputeListParams, opts ...option.RequestOption) (res *pagination.CursorPage[Dispute], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -80,8 +80,8 @@ func (r *DisputeService) List(ctx context.Context, query DisputeListParams, opts
 }
 
 // List disputes.
-func (r *DisputeService) ListAutoPaging(ctx context.Context, query DisputeListParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[Dispute] {
-	return shared.NewCursorPageAutoPager(r.List(ctx, query, opts...))
+func (r *DisputeService) ListAutoPaging(ctx context.Context, query DisputeListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[Dispute] {
+	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
 // Withdraw dispute.
@@ -114,7 +114,7 @@ func (r *DisputeService) InitiateEvidenceUpload(ctx context.Context, disputeToke
 }
 
 // List evidence metadata for a dispute.
-func (r *DisputeService) ListEvidences(ctx context.Context, disputeToken string, query DisputeListEvidencesParams, opts ...option.RequestOption) (res *shared.CursorPage[DisputeEvidence], err error) {
+func (r *DisputeService) ListEvidences(ctx context.Context, disputeToken string, query DisputeListEvidencesParams, opts ...option.RequestOption) (res *pagination.CursorPage[DisputeEvidence], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -132,8 +132,8 @@ func (r *DisputeService) ListEvidences(ctx context.Context, disputeToken string,
 }
 
 // List evidence metadata for a dispute.
-func (r *DisputeService) ListEvidencesAutoPaging(ctx context.Context, disputeToken string, query DisputeListEvidencesParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[DisputeEvidence] {
-	return shared.NewCursorPageAutoPager(r.ListEvidences(ctx, disputeToken, query, opts...))
+func (r *DisputeService) ListEvidencesAutoPaging(ctx context.Context, disputeToken string, query DisputeListEvidencesParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[DisputeEvidence] {
+	return pagination.NewCursorPageAutoPager(r.ListEvidences(ctx, disputeToken, query, opts...))
 }
 
 // Get a dispute's evidence metadata.

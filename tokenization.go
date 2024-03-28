@@ -11,9 +11,9 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
+	"github.com/lithic-com/lithic-go/internal/pagination"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
-	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
 )
 
@@ -44,7 +44,7 @@ func (r *TokenizationService) Get(ctx context.Context, tokenizationToken string,
 }
 
 // List card tokenizations
-func (r *TokenizationService) List(ctx context.Context, query TokenizationListParams, opts ...option.RequestOption) (res *shared.CursorPage[Tokenization], err error) {
+func (r *TokenizationService) List(ctx context.Context, query TokenizationListParams, opts ...option.RequestOption) (res *pagination.CursorPage[Tokenization], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -62,8 +62,8 @@ func (r *TokenizationService) List(ctx context.Context, query TokenizationListPa
 }
 
 // List card tokenizations
-func (r *TokenizationService) ListAutoPaging(ctx context.Context, query TokenizationListParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[Tokenization] {
-	return shared.NewCursorPageAutoPager(r.List(ctx, query, opts...))
+func (r *TokenizationService) ListAutoPaging(ctx context.Context, query TokenizationListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[Tokenization] {
+	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
 // This endpoint is used to simulate a card's tokenization in the Digital Wallet

@@ -11,9 +11,9 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
+	"github.com/lithic-com/lithic-go/internal/pagination"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
-	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
 )
 
@@ -36,7 +36,7 @@ func NewFinancialAccountStatementLineItemService(opts ...option.RequestOption) (
 }
 
 // List the line items for a given statement within a given financial account.
-func (r *FinancialAccountStatementLineItemService) List(ctx context.Context, financialAccountToken string, statementToken string, query FinancialAccountStatementLineItemListParams, opts ...option.RequestOption) (res *shared.CursorPage[FinancialAccountStatementLineItemListResponse], err error) {
+func (r *FinancialAccountStatementLineItemService) List(ctx context.Context, financialAccountToken string, statementToken string, query FinancialAccountStatementLineItemListParams, opts ...option.RequestOption) (res *pagination.CursorPage[FinancialAccountStatementLineItemListResponse], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -54,8 +54,8 @@ func (r *FinancialAccountStatementLineItemService) List(ctx context.Context, fin
 }
 
 // List the line items for a given statement within a given financial account.
-func (r *FinancialAccountStatementLineItemService) ListAutoPaging(ctx context.Context, financialAccountToken string, statementToken string, query FinancialAccountStatementLineItemListParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[FinancialAccountStatementLineItemListResponse] {
-	return shared.NewCursorPageAutoPager(r.List(ctx, financialAccountToken, statementToken, query, opts...))
+func (r *FinancialAccountStatementLineItemService) ListAutoPaging(ctx context.Context, financialAccountToken string, statementToken string, query FinancialAccountStatementLineItemListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[FinancialAccountStatementLineItemListResponse] {
+	return pagination.NewCursorPageAutoPager(r.List(ctx, financialAccountToken, statementToken, query, opts...))
 }
 
 type FinancialAccountStatementLineItemListResponse struct {
