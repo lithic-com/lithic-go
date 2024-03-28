@@ -14,6 +14,7 @@ import (
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
+	"github.com/lithic-com/lithic-go/internal/pagination"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/internal/shared"
@@ -73,7 +74,7 @@ func (r *CardService) Update(ctx context.Context, cardToken string, body CardUpd
 }
 
 // List cards.
-func (r *CardService) List(ctx context.Context, query CardListParams, opts ...option.RequestOption) (res *shared.CursorPage[Card], err error) {
+func (r *CardService) List(ctx context.Context, query CardListParams, opts ...option.RequestOption) (res *pagination.CursorPage[Card], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -91,8 +92,8 @@ func (r *CardService) List(ctx context.Context, query CardListParams, opts ...op
 }
 
 // List cards.
-func (r *CardService) ListAutoPaging(ctx context.Context, query CardListParams, opts ...option.RequestOption) *shared.CursorPageAutoPager[Card] {
-	return shared.NewCursorPageAutoPager(r.List(ctx, query, opts...))
+func (r *CardService) ListAutoPaging(ctx context.Context, query CardListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[Card] {
+	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
 // Handling full card PANs and CVV codes requires that you comply with the Payment
