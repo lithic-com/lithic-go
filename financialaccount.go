@@ -187,6 +187,7 @@ type FinancialTransaction struct {
 	//     expiration time.
 	//   - `PENDING` - Authorization is pending completion from the merchant or pending
 	//     release from ACH hold period
+	//   - `RETURNED` - The financial transaction has been returned.
 	//   - `SETTLED` - The financial transaction is completed.
 	//   - `VOIDED` - The merchant has voided the previously pending card authorization.
 	Status FinancialTransactionStatus `json:"status,required"`
@@ -430,6 +431,7 @@ func (r FinancialTransactionResult) IsKnown() bool {
 //     expiration time.
 //   - `PENDING` - Authorization is pending completion from the merchant or pending
 //     release from ACH hold period
+//   - `RETURNED` - The financial transaction has been returned.
 //   - `SETTLED` - The financial transaction is completed.
 //   - `VOIDED` - The merchant has voided the previously pending card authorization.
 type FinancialTransactionStatus string
@@ -438,13 +440,14 @@ const (
 	FinancialTransactionStatusDeclined FinancialTransactionStatus = "DECLINED"
 	FinancialTransactionStatusExpired  FinancialTransactionStatus = "EXPIRED"
 	FinancialTransactionStatusPending  FinancialTransactionStatus = "PENDING"
+	FinancialTransactionStatusReturned FinancialTransactionStatus = "RETURNED"
 	FinancialTransactionStatusSettled  FinancialTransactionStatus = "SETTLED"
 	FinancialTransactionStatusVoided   FinancialTransactionStatus = "VOIDED"
 )
 
 func (r FinancialTransactionStatus) IsKnown() bool {
 	switch r {
-	case FinancialTransactionStatusDeclined, FinancialTransactionStatusExpired, FinancialTransactionStatusPending, FinancialTransactionStatusSettled, FinancialTransactionStatusVoided:
+	case FinancialTransactionStatusDeclined, FinancialTransactionStatusExpired, FinancialTransactionStatusPending, FinancialTransactionStatusReturned, FinancialTransactionStatusSettled, FinancialTransactionStatusVoided:
 		return true
 	}
 	return false
