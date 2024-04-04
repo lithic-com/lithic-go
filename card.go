@@ -476,12 +476,16 @@ func (r CardType) IsKnown() bool {
 
 type CardSpendLimits struct {
 	AvailableSpendLimit CardSpendLimitsAvailableSpendLimit `json:"available_spend_limit,required"`
+	SpendLimit          CardSpendLimitsSpendLimit          `json:"spend_limit"`
+	SpendVelocity       CardSpendLimitsSpendVelocity       `json:"spend_velocity"`
 	JSON                cardSpendLimitsJSON                `json:"-"`
 }
 
 // cardSpendLimitsJSON contains the JSON metadata for the struct [CardSpendLimits]
 type cardSpendLimitsJSON struct {
 	AvailableSpendLimit apijson.Field
+	SpendLimit          apijson.Field
+	SpendVelocity       apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
 }
@@ -495,11 +499,14 @@ func (r cardSpendLimitsJSON) RawJSON() string {
 }
 
 type CardSpendLimitsAvailableSpendLimit struct {
-	// The available spend limit relative to the annual limit configured on the Card.
+	// The available spend limit (in cents) relative to the annual limit configured on
+	// the Card.
 	Annually int64 `json:"annually"`
-	// The available spend limit relative to the forever limit configured on the Card.
+	// The available spend limit (in cents) relative to the forever limit configured on
+	// the Card.
 	Forever int64 `json:"forever"`
-	// The available spend limit relative to the monthly limit configured on the Card.
+	// The available spend limit (in cents) relative to the monthly limit configured on
+	// the Card.
 	Monthly int64                                  `json:"monthly"`
 	JSON    cardSpendLimitsAvailableSpendLimitJSON `json:"-"`
 }
@@ -519,6 +526,65 @@ func (r *CardSpendLimitsAvailableSpendLimit) UnmarshalJSON(data []byte) (err err
 }
 
 func (r cardSpendLimitsAvailableSpendLimitJSON) RawJSON() string {
+	return r.raw
+}
+
+type CardSpendLimitsSpendLimit struct {
+	// The configured annual spend limit (in cents) on the Card.
+	Annually int64 `json:"annually"`
+	// The configured forever spend limit (in cents) on the Card.
+	Forever int64 `json:"forever"`
+	// The configured monthly spend limit (in cents) on the Card.
+	Monthly int64                         `json:"monthly"`
+	JSON    cardSpendLimitsSpendLimitJSON `json:"-"`
+}
+
+// cardSpendLimitsSpendLimitJSON contains the JSON metadata for the struct
+// [CardSpendLimitsSpendLimit]
+type cardSpendLimitsSpendLimitJSON struct {
+	Annually    apijson.Field
+	Forever     apijson.Field
+	Monthly     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CardSpendLimitsSpendLimit) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardSpendLimitsSpendLimitJSON) RawJSON() string {
+	return r.raw
+}
+
+type CardSpendLimitsSpendVelocity struct {
+	// Current annual spend velocity (in cents) on the Card. Present if annual spend
+	// limit is set.
+	Annually int64 `json:"annually"`
+	// Current forever spend velocity (in cents) on the Card. Present if forever spend
+	// limit is set.
+	Forever int64 `json:"forever"`
+	// Current monthly spend velocity (in cents) on the Card. Present if monthly spend
+	// limit is set.
+	Monthly int64                            `json:"monthly"`
+	JSON    cardSpendLimitsSpendVelocityJSON `json:"-"`
+}
+
+// cardSpendLimitsSpendVelocityJSON contains the JSON metadata for the struct
+// [CardSpendLimitsSpendVelocity]
+type cardSpendLimitsSpendVelocityJSON struct {
+	Annually    apijson.Field
+	Forever     apijson.Field
+	Monthly     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CardSpendLimitsSpendVelocity) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardSpendLimitsSpendVelocityJSON) RawJSON() string {
 	return r.raw
 }
 
