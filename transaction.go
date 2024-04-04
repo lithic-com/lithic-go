@@ -150,7 +150,7 @@ type Transaction struct {
 	// Fee assessed by the merchant and paid for by the cardholder in the smallest unit
 	// of the currency. Will be zero if no fee is assessed. Rebates may be transmitted
 	// as a negative value to indicate credited fees.
-	AcquirerFee int64 `json:"acquirer_fee,required"`
+	AcquirerFee int64 `json:"acquirer_fee,required,nullable"`
 	// Unique identifier assigned to a transaction by the acquirer that can be used in
 	// dispute and chargeback filing.
 	AcquirerReferenceNumber string `json:"acquirer_reference_number,required,nullable"`
@@ -161,11 +161,11 @@ type Transaction struct {
 	// Authorization amount (in cents) of the transaction, including any acquirer fees.
 	// This amount always represents the amount authorized for the transaction,
 	// unaffected by settlement.
-	AuthorizationAmount int64 `json:"authorization_amount,required"`
+	AuthorizationAmount int64 `json:"authorization_amount,required,nullable"`
 	// A fixed-width 6-digit numeric identifier that can be used to identify a
 	// transaction with networks.
-	AuthorizationCode string         `json:"authorization_code,required"`
-	Avs               TransactionAvs `json:"avs,required"`
+	AuthorizationCode string         `json:"authorization_code,required,nullable"`
+	Avs               TransactionAvs `json:"avs,required,nullable"`
 	// Token for the card used in this transaction.
 	CardToken string `json:"card_token,required" format:"uuid"`
 	// Date and time when the transaction first occurred. UTC time zone.
@@ -175,11 +175,11 @@ type Transaction struct {
 	Merchant TransactionMerchant `json:"merchant,required"`
 	// Analogous to the "amount" property, but will represent the amount in the
 	// transaction's local currency (smallest unit), including any acquirer fees.
-	MerchantAmount int64 `json:"merchant_amount,required"`
+	MerchantAmount int64 `json:"merchant_amount,required,nullable"`
 	// Analogous to the "authorization_amount" property, but will represent the amount
 	// in the transaction's local currency (smallest unit), including any acquirer
 	// fees.
-	MerchantAuthorizationAmount int64 `json:"merchant_authorization_amount,required"`
+	MerchantAuthorizationAmount int64 `json:"merchant_authorization_amount,required,nullable"`
 	// 3-digit alphabetic ISO 4217 code for the local currency of the transaction.
 	MerchantCurrency string `json:"merchant_currency,required"`
 	// Card network of the authorization. Can be `INTERLINK`, `MAESTRO`, `MASTERCARD`,
@@ -194,8 +194,8 @@ type Transaction struct {
 	//
 	// A score may not be available for all authorizations, and where it is not, this
 	// field will be set to null.
-	NetworkRiskScore float64        `json:"network_risk_score,required"`
-	Pos              TransactionPos `json:"pos,required"`
+	NetworkRiskScore int64          `json:"network_risk_score,required,nullable"`
+	Pos              TransactionPos `json:"pos,required,nullable"`
 	// `APPROVED` or decline reason. See Event result types
 	Result TransactionResult `json:"result,required"`
 	// Amount of the transaction that has been settled (in cents), including any
@@ -210,7 +210,7 @@ type Transaction struct {
 	//   - `SETTLED` - The transaction is complete.
 	//   - `VOIDED` - The merchant has voided the previously pending authorization.
 	Status                   TransactionStatus                   `json:"status,required"`
-	TokenInfo                TransactionTokenInfo                `json:"token_info,required"`
+	TokenInfo                TransactionTokenInfo                `json:"token_info,required,nullable"`
 	CardholderAuthentication TransactionCardholderAuthentication `json:"cardholder_authentication,nullable"`
 	JSON                     transactionJSON                     `json:"-"`
 }

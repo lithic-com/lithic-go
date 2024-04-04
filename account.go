@@ -267,6 +267,8 @@ func (r accountVerificationAddressJSON) RawJSON() string {
 
 type AccountSpendLimits struct {
 	AvailableSpendLimit AccountSpendLimitsAvailableSpendLimit `json:"available_spend_limit,required"`
+	SpendLimit          AccountSpendLimitsSpendLimit          `json:"spend_limit"`
+	SpendVelocity       AccountSpendLimitsSpendVelocity       `json:"spend_velocity"`
 	JSON                accountSpendLimitsJSON                `json:"-"`
 }
 
@@ -274,6 +276,8 @@ type AccountSpendLimits struct {
 // [AccountSpendLimits]
 type accountSpendLimitsJSON struct {
 	AvailableSpendLimit apijson.Field
+	SpendLimit          apijson.Field
+	SpendVelocity       apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
 }
@@ -287,13 +291,14 @@ func (r accountSpendLimitsJSON) RawJSON() string {
 }
 
 type AccountSpendLimitsAvailableSpendLimit struct {
-	// The available spend limit relative to the daily limit configured on the Account.
+	// The available spend limit (in cents) relative to the daily limit configured on
+	// the Account.
 	Daily int64 `json:"daily"`
-	// The available spend limit relative to the lifetime limit configured on the
-	// Account.
+	// The available spend limit (in cents) relative to the lifetime limit configured
+	// on the Account.
 	Lifetime int64 `json:"lifetime"`
-	// The available spend limit relative to the monthly limit configured on the
-	// Account.
+	// The available spend limit (in cents) relative to the monthly limit configured on
+	// the Account.
 	Monthly int64                                     `json:"monthly"`
 	JSON    accountSpendLimitsAvailableSpendLimitJSON `json:"-"`
 }
@@ -313,6 +318,65 @@ func (r *AccountSpendLimitsAvailableSpendLimit) UnmarshalJSON(data []byte) (err 
 }
 
 func (r accountSpendLimitsAvailableSpendLimitJSON) RawJSON() string {
+	return r.raw
+}
+
+type AccountSpendLimitsSpendLimit struct {
+	// The configured daily spend limit (in cents) on the Account.
+	Daily int64 `json:"daily"`
+	// The configured lifetime spend limit (in cents) on the Account.
+	Lifetime int64 `json:"lifetime"`
+	// The configured monthly spend limit (in cents) on the Account.
+	Monthly int64                            `json:"monthly"`
+	JSON    accountSpendLimitsSpendLimitJSON `json:"-"`
+}
+
+// accountSpendLimitsSpendLimitJSON contains the JSON metadata for the struct
+// [AccountSpendLimitsSpendLimit]
+type accountSpendLimitsSpendLimitJSON struct {
+	Daily       apijson.Field
+	Lifetime    apijson.Field
+	Monthly     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AccountSpendLimitsSpendLimit) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountSpendLimitsSpendLimitJSON) RawJSON() string {
+	return r.raw
+}
+
+type AccountSpendLimitsSpendVelocity struct {
+	// Current daily spend velocity (in cents) on the Account. Present if daily spend
+	// limit is set.
+	Daily int64 `json:"daily"`
+	// Current lifetime spend velocity (in cents) on the Account. Present if lifetime
+	// spend limit is set.
+	Lifetime int64 `json:"lifetime"`
+	// Current monthly spend velocity (in cents) on the Account. Present if monthly
+	// spend limit is set.
+	Monthly int64                               `json:"monthly"`
+	JSON    accountSpendLimitsSpendVelocityJSON `json:"-"`
+}
+
+// accountSpendLimitsSpendVelocityJSON contains the JSON metadata for the struct
+// [AccountSpendLimitsSpendVelocity]
+type accountSpendLimitsSpendVelocityJSON struct {
+	Daily       apijson.Field
+	Lifetime    apijson.Field
+	Monthly     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AccountSpendLimitsSpendVelocity) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountSpendLimitsSpendVelocityJSON) RawJSON() string {
 	return r.raw
 }
 
