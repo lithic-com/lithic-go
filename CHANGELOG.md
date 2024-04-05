@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.28.0 (2024-04-05)
+
+Full Changelog: [v0.27.0...v0.28.0](https://github.com/lithic-com/lithic-go/compare/v0.27.0...v0.28.0)
+
+### Features
+
+* **api:** add detailed result CARD_NOT_ACTIVATED ([#259](https://github.com/lithic-com/lithic-go/issues/259)) ([ffcb5e7](https://github.com/lithic-com/lithic-go/commit/ffcb5e794936921c69c09b4fbffe08524d49fee8))
+* **api:** add event type digital_wallet.tokenization_two_factor_authentication_code_sent ([#257](https://github.com/lithic-com/lithic-go/issues/257)) ([787ff07](https://github.com/lithic-com/lithic-go/commit/787ff07d9b3d3b9c873cde5660e98ba32916c5e8))
+* **api:** add params spend_limit and spend_velocity ([#258](https://github.com/lithic-com/lithic-go/issues/258)) ([df6010a](https://github.com/lithic-com/lithic-go/commit/df6010a9a40d5cf5f6647ca59967d51d3dd5dee5))
+* **api:** add settlement_report.updated enum ([#248](https://github.com/lithic-com/lithic-go/issues/248)) ([4ffb933](https://github.com/lithic-com/lithic-go/commit/4ffb93337f866631f7f15fce98d48e2cb0831414))
+* **api:** update financial transaction status enum ([#254](https://github.com/lithic-com/lithic-go/issues/254)) ([1f21e5b](https://github.com/lithic-com/lithic-go/commit/1f21e5b12b057eec4be1d9200e69520707ef4389))
+* **api:** update link to encrypted PIN block docs ([#261](https://github.com/lithic-com/lithic-go/issues/261)) ([e2c18b3](https://github.com/lithic-com/lithic-go/commit/e2c18b3789fc877348fbe7611a108bf66ae788e7))
+* **client:** implement raw requests methods on client ([#252](https://github.com/lithic-com/lithic-go/issues/252)) ([445089d](https://github.com/lithic-com/lithic-go/commit/445089d567cff012c9f1de5acf1a993954ca0242))
+
+
+### Chores
+
+* **internal:** implement Port function in apijson ([#260](https://github.com/lithic-com/lithic-go/issues/260)) ([f6b0ce2](https://github.com/lithic-com/lithic-go/commit/f6b0ce282a82e431c2749ded09457f5468426b0b))
+* **internal:** move pagination types to pagination package ([#253](https://github.com/lithic-com/lithic-go/issues/253)) ([c9dcf15](https://github.com/lithic-com/lithic-go/commit/c9dcf1598bd15c33816157c8ca8ebc4edf435fab))
+* **internal:** use a time zone less likely to conflict with the local one ([#256](https://github.com/lithic-com/lithic-go/issues/256)) ([d62266f](https://github.com/lithic-com/lithic-go/commit/d62266febe9f804d765e77647fc66dc0a506b1b5))
+
+
+### Documentation
+
+* fix typo in docstring for Null() ([#251](https://github.com/lithic-com/lithic-go/issues/251)) ([9787ff1](https://github.com/lithic-com/lithic-go/commit/9787ff10c0c2600dcc93d9e4c2def571324b8f75))
+* **readme:** document file uploads ([#250](https://github.com/lithic-com/lithic-go/issues/250)) ([0d7e97c](https://github.com/lithic-com/lithic-go/commit/0d7e97c9ab557f68e226857010e36ed22e4aab15))
+
 ## 0.27.0 (2024-03-21)
 
 Full Changelog: [v0.26.1...v0.27.0](https://github.com/lithic-com/lithic-go/compare/v0.26.1...v0.27.0)
