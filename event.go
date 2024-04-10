@@ -122,6 +122,8 @@ type Event struct {
 	//   - `digital_wallet.tokenization_two_factor_authentication_code_sent` -
 	//     Notification that a two factor authentication code for activating a digital
 	//     wallet has been sent to the end user.
+	//   - `digital_wallet.tokenization_updated` - Notification that a digital wallet
+	//     tokenization's status has changed.
 	EventType EventEventType         `json:"event_type,required"`
 	Payload   map[string]interface{} `json:"payload,required"`
 	JSON      eventJSON              `json:"-"`
@@ -169,6 +171,8 @@ func (r eventJSON) RawJSON() string {
 //   - `digital_wallet.tokenization_two_factor_authentication_code_sent` -
 //     Notification that a two factor authentication code for activating a digital
 //     wallet has been sent to the end user.
+//   - `digital_wallet.tokenization_updated` - Notification that a digital wallet
+//     tokenization's status has changed.
 type EventEventType string
 
 const (
@@ -184,6 +188,7 @@ const (
 	EventEventTypeDigitalWalletTokenizationResult                          EventEventType = "digital_wallet.tokenization_result"
 	EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode     EventEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent EventEventType = "digital_wallet.tokenization_two_factor_authentication_code_sent"
+	EventEventTypeDigitalWalletTokenizationUpdated                         EventEventType = "digital_wallet.tokenization_updated"
 	EventEventTypeDisputeUpdated                                           EventEventType = "dispute.updated"
 	EventEventTypeDisputeEvidenceUploadFailed                              EventEventType = "dispute_evidence.upload_failed"
 	EventEventTypeExternalBankAccountCreated                               EventEventType = "external_bank_account.created"
@@ -199,7 +204,7 @@ const (
 
 func (r EventEventType) IsKnown() bool {
 	switch r {
-	case EventEventTypeAccountHolderCreated, EventEventTypeAccountHolderUpdated, EventEventTypeAccountHolderVerification, EventEventTypeBalanceUpdated, EventEventTypeCardCreated, EventEventTypeCardRenewed, EventEventTypeCardShipped, EventEventTypeCardTransactionUpdated, EventEventTypeDigitalWalletTokenizationApprovalRequest, EventEventTypeDigitalWalletTokenizationResult, EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventEventTypeDisputeUpdated, EventEventTypeDisputeEvidenceUploadFailed, EventEventTypeExternalBankAccountCreated, EventEventTypeExternalBankAccountUpdated, EventEventTypeFinancialAccountCreated, EventEventTypePaymentTransactionCreated, EventEventTypePaymentTransactionUpdated, EventEventTypeSettlementReportUpdated, EventEventTypeStatementsCreated, EventEventTypeThreeDSAuthenticationCreated, EventEventTypeTransferTransactionCreated:
+	case EventEventTypeAccountHolderCreated, EventEventTypeAccountHolderUpdated, EventEventTypeAccountHolderVerification, EventEventTypeBalanceUpdated, EventEventTypeCardCreated, EventEventTypeCardRenewed, EventEventTypeCardShipped, EventEventTypeCardTransactionUpdated, EventEventTypeDigitalWalletTokenizationApprovalRequest, EventEventTypeDigitalWalletTokenizationResult, EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventEventTypeDigitalWalletTokenizationUpdated, EventEventTypeDisputeUpdated, EventEventTypeDisputeEvidenceUploadFailed, EventEventTypeExternalBankAccountCreated, EventEventTypeExternalBankAccountUpdated, EventEventTypeFinancialAccountCreated, EventEventTypePaymentTransactionCreated, EventEventTypePaymentTransactionUpdated, EventEventTypeSettlementReportUpdated, EventEventTypeStatementsCreated, EventEventTypeThreeDSAuthenticationCreated, EventEventTypeTransferTransactionCreated:
 		return true
 	}
 	return false
@@ -253,6 +258,7 @@ const (
 	EventSubscriptionEventTypeDigitalWalletTokenizationResult                          EventSubscriptionEventType = "digital_wallet.tokenization_result"
 	EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode     EventSubscriptionEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent EventSubscriptionEventType = "digital_wallet.tokenization_two_factor_authentication_code_sent"
+	EventSubscriptionEventTypeDigitalWalletTokenizationUpdated                         EventSubscriptionEventType = "digital_wallet.tokenization_updated"
 	EventSubscriptionEventTypeDisputeUpdated                                           EventSubscriptionEventType = "dispute.updated"
 	EventSubscriptionEventTypeDisputeEvidenceUploadFailed                              EventSubscriptionEventType = "dispute_evidence.upload_failed"
 	EventSubscriptionEventTypeExternalBankAccountCreated                               EventSubscriptionEventType = "external_bank_account.created"
@@ -268,7 +274,7 @@ const (
 
 func (r EventSubscriptionEventType) IsKnown() bool {
 	switch r {
-	case EventSubscriptionEventTypeAccountHolderCreated, EventSubscriptionEventTypeAccountHolderUpdated, EventSubscriptionEventTypeAccountHolderVerification, EventSubscriptionEventTypeBalanceUpdated, EventSubscriptionEventTypeCardCreated, EventSubscriptionEventTypeCardRenewed, EventSubscriptionEventTypeCardShipped, EventSubscriptionEventTypeCardTransactionUpdated, EventSubscriptionEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionEventTypeDigitalWalletTokenizationResult, EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionEventTypeDisputeUpdated, EventSubscriptionEventTypeDisputeEvidenceUploadFailed, EventSubscriptionEventTypeExternalBankAccountCreated, EventSubscriptionEventTypeExternalBankAccountUpdated, EventSubscriptionEventTypeFinancialAccountCreated, EventSubscriptionEventTypePaymentTransactionCreated, EventSubscriptionEventTypePaymentTransactionUpdated, EventSubscriptionEventTypeSettlementReportUpdated, EventSubscriptionEventTypeStatementsCreated, EventSubscriptionEventTypeThreeDSAuthenticationCreated, EventSubscriptionEventTypeTransferTransactionCreated:
+	case EventSubscriptionEventTypeAccountHolderCreated, EventSubscriptionEventTypeAccountHolderUpdated, EventSubscriptionEventTypeAccountHolderVerification, EventSubscriptionEventTypeBalanceUpdated, EventSubscriptionEventTypeCardCreated, EventSubscriptionEventTypeCardRenewed, EventSubscriptionEventTypeCardShipped, EventSubscriptionEventTypeCardTransactionUpdated, EventSubscriptionEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionEventTypeDigitalWalletTokenizationResult, EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionEventTypeDigitalWalletTokenizationUpdated, EventSubscriptionEventTypeDisputeUpdated, EventSubscriptionEventTypeDisputeEvidenceUploadFailed, EventSubscriptionEventTypeExternalBankAccountCreated, EventSubscriptionEventTypeExternalBankAccountUpdated, EventSubscriptionEventTypeFinancialAccountCreated, EventSubscriptionEventTypePaymentTransactionCreated, EventSubscriptionEventTypePaymentTransactionUpdated, EventSubscriptionEventTypeSettlementReportUpdated, EventSubscriptionEventTypeStatementsCreated, EventSubscriptionEventTypeThreeDSAuthenticationCreated, EventSubscriptionEventTypeTransferTransactionCreated:
 		return true
 	}
 	return false
@@ -380,6 +386,7 @@ const (
 	EventListParamsEventTypeDigitalWalletTokenizationResult                          EventListParamsEventType = "digital_wallet.tokenization_result"
 	EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode     EventListParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent EventListParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code_sent"
+	EventListParamsEventTypeDigitalWalletTokenizationUpdated                         EventListParamsEventType = "digital_wallet.tokenization_updated"
 	EventListParamsEventTypeDisputeUpdated                                           EventListParamsEventType = "dispute.updated"
 	EventListParamsEventTypeDisputeEvidenceUploadFailed                              EventListParamsEventType = "dispute_evidence.upload_failed"
 	EventListParamsEventTypeExternalBankAccountCreated                               EventListParamsEventType = "external_bank_account.created"
@@ -395,7 +402,7 @@ const (
 
 func (r EventListParamsEventType) IsKnown() bool {
 	switch r {
-	case EventListParamsEventTypeAccountHolderCreated, EventListParamsEventTypeAccountHolderUpdated, EventListParamsEventTypeAccountHolderVerification, EventListParamsEventTypeBalanceUpdated, EventListParamsEventTypeCardCreated, EventListParamsEventTypeCardRenewed, EventListParamsEventTypeCardShipped, EventListParamsEventTypeCardTransactionUpdated, EventListParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventListParamsEventTypeDigitalWalletTokenizationResult, EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventListParamsEventTypeDisputeUpdated, EventListParamsEventTypeDisputeEvidenceUploadFailed, EventListParamsEventTypeExternalBankAccountCreated, EventListParamsEventTypeExternalBankAccountUpdated, EventListParamsEventTypeFinancialAccountCreated, EventListParamsEventTypePaymentTransactionCreated, EventListParamsEventTypePaymentTransactionUpdated, EventListParamsEventTypeSettlementReportUpdated, EventListParamsEventTypeStatementsCreated, EventListParamsEventTypeThreeDSAuthenticationCreated, EventListParamsEventTypeTransferTransactionCreated:
+	case EventListParamsEventTypeAccountHolderCreated, EventListParamsEventTypeAccountHolderUpdated, EventListParamsEventTypeAccountHolderVerification, EventListParamsEventTypeBalanceUpdated, EventListParamsEventTypeCardCreated, EventListParamsEventTypeCardRenewed, EventListParamsEventTypeCardShipped, EventListParamsEventTypeCardTransactionUpdated, EventListParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventListParamsEventTypeDigitalWalletTokenizationResult, EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventListParamsEventTypeDigitalWalletTokenizationUpdated, EventListParamsEventTypeDisputeUpdated, EventListParamsEventTypeDisputeEvidenceUploadFailed, EventListParamsEventTypeExternalBankAccountCreated, EventListParamsEventTypeExternalBankAccountUpdated, EventListParamsEventTypeFinancialAccountCreated, EventListParamsEventTypePaymentTransactionCreated, EventListParamsEventTypePaymentTransactionUpdated, EventListParamsEventTypeSettlementReportUpdated, EventListParamsEventTypeStatementsCreated, EventListParamsEventTypeThreeDSAuthenticationCreated, EventListParamsEventTypeTransferTransactionCreated:
 		return true
 	}
 	return false

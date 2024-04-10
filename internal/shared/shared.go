@@ -85,9 +85,12 @@ type ShippingAddressParam struct {
 	// Uppercase ISO 3166-1 alpha-3 three character abbreviation.
 	Country param.Field[string] `json:"country,required"`
 	// Customer's first name. This will be the first name printed on the physical card.
+	// The combined length of `first_name` and `last_name` may not exceed 25
+	// characters.
 	FirstName param.Field[string] `json:"first_name,required"`
 	// Customer's surname (family name). This will be the last name printed on the
-	// physical card.
+	// physical card. The combined length of `first_name` and `last_name` may not
+	// exceed 25 characters.
 	LastName param.Field[string] `json:"last_name,required"`
 	// Postal code (formerly zipcode). For US addresses, either five-digit zipcode or
 	// nine-digit "ZIP+4".
