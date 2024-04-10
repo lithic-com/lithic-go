@@ -1017,23 +1017,67 @@ func (r ExternalBankAccountRetryMicroDepositsResponseVerificationState) IsKnown(
 	return false
 }
 
-// This interface is a union satisfied by one of the following:
-// [ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequest],
-// [ExternalBankAccountNewParamsPlaidCreateBankAccountAPIRequest].
-type ExternalBankAccountNewParams interface {
-	ImplementsExternalBankAccountNewParams()
+type ExternalBankAccountNewParams struct {
+	Body ExternalBankAccountNewParamsBodyUnion `json:"body,required"`
 }
 
-type ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequest struct {
-	AccountNumber      param.Field[string]                                                                  `json:"account_number,required"`
-	Country            param.Field[string]                                                                  `json:"country,required"`
-	Currency           param.Field[string]                                                                  `json:"currency,required"`
-	Owner              param.Field[string]                                                                  `json:"owner,required"`
-	OwnerType          param.Field[OwnerType]                                                               `json:"owner_type,required"`
-	RoutingNumber      param.Field[string]                                                                  `json:"routing_number,required"`
-	Type               param.Field[ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestType] `json:"type,required"`
-	VerificationMethod param.Field[VerificationMethod]                                                      `json:"verification_method,required"`
-	AccountToken       param.Field[string]                                                                  `json:"account_token" format:"uuid"`
+func (r ExternalBankAccountNewParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r.Body)
+}
+
+type ExternalBankAccountNewParamsBody struct {
+	AccountNumber param.Field[string] `json:"account_number"`
+	AccountToken  param.Field[string] `json:"account_token" format:"uuid"`
+	// Address used during Address Verification Service (AVS) checks during
+	// transactions if enabled via Auth Rules.
+	Address   param.Field[ExternalBankAccountAddressParam] `json:"address"`
+	CompanyID param.Field[string]                          `json:"company_id"`
+	Country   param.Field[string]                          `json:"country"`
+	Currency  param.Field[string]                          `json:"currency"`
+	// Date of Birth of the Individual that owns the external bank account
+	Dob             param.Field[time.Time] `json:"dob" format:"date"`
+	DoingBusinessAs param.Field[string]    `json:"doing_business_as"`
+	// The financial account token of the operating account used to verify the account
+	FinancialAccountToken param.Field[string]                               `json:"financial_account_token" format:"uuid"`
+	Name                  param.Field[string]                               `json:"name"`
+	Owner                 param.Field[string]                               `json:"owner,required"`
+	OwnerType             param.Field[OwnerType]                            `json:"owner_type,required"`
+	RoutingNumber         param.Field[string]                               `json:"routing_number"`
+	Type                  param.Field[ExternalBankAccountNewParamsBodyType] `json:"type"`
+	UserDefinedID         param.Field[string]                               `json:"user_defined_id"`
+	// Indicates whether verification was enforced for a given association record. For
+	// MICRO_DEPOSIT, option to disable verification if the external bank account has
+	// already been verified before. By default, verification will be required unless
+	// users pass in a value of false
+	VerificationEnforcement param.Field[bool]               `json:"verification_enforcement"`
+	VerificationMethod      param.Field[VerificationMethod] `json:"verification_method,required"`
+	ProcessorToken          param.Field[string]             `json:"processor_token"`
+}
+
+func (r ExternalBankAccountNewParamsBody) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r ExternalBankAccountNewParamsBody) implementsExternalBankAccountNewParamsBodyUnion() {}
+
+// Satisfied by
+// [ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest],
+// [ExternalBankAccountNewParamsBodyPlaidCreateBankAccountAPIRequest],
+// [ExternalBankAccountNewParamsBody].
+type ExternalBankAccountNewParamsBodyUnion interface {
+	implementsExternalBankAccountNewParamsBodyUnion()
+}
+
+type ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest struct {
+	AccountNumber      param.Field[string]                                                                      `json:"account_number,required"`
+	Country            param.Field[string]                                                                      `json:"country,required"`
+	Currency           param.Field[string]                                                                      `json:"currency,required"`
+	Owner              param.Field[string]                                                                      `json:"owner,required"`
+	OwnerType          param.Field[OwnerType]                                                                   `json:"owner_type,required"`
+	RoutingNumber      param.Field[string]                                                                      `json:"routing_number,required"`
+	Type               param.Field[ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestType] `json:"type,required"`
+	VerificationMethod param.Field[VerificationMethod]                                                          `json:"verification_method,required"`
+	AccountToken       param.Field[string]                                                                      `json:"account_token" format:"uuid"`
 	// Address used during Address Verification Service (AVS) checks during
 	// transactions if enabled via Auth Rules.
 	Address   param.Field[ExternalBankAccountAddressParam] `json:"address"`
@@ -1052,30 +1096,29 @@ type ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequest struct 
 	VerificationEnforcement param.Field[bool] `json:"verification_enforcement"`
 }
 
-func (r ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequest) MarshalJSON() (data []byte, err error) {
+func (r ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-func (ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequest) ImplementsExternalBankAccountNewParams() {
-
+func (r ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest) implementsExternalBankAccountNewParamsBodyUnion() {
 }
 
-type ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestType string
+type ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestType string
 
 const (
-	ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestTypeChecking ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestType = "CHECKING"
-	ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestTypeSavings  ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestType = "SAVINGS"
+	ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestTypeChecking ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestType = "CHECKING"
+	ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestTypeSavings  ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestType = "SAVINGS"
 )
 
-func (r ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestType) IsKnown() bool {
+func (r ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestType) IsKnown() bool {
 	switch r {
-	case ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestTypeChecking, ExternalBankAccountNewParamsBankVerifiedCreateBankAccountAPIRequestTypeSavings:
+	case ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestTypeChecking, ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestTypeSavings:
 		return true
 	}
 	return false
 }
 
-type ExternalBankAccountNewParamsPlaidCreateBankAccountAPIRequest struct {
+type ExternalBankAccountNewParamsBodyPlaidCreateBankAccountAPIRequest struct {
 	Owner              param.Field[string]             `json:"owner,required"`
 	OwnerType          param.Field[OwnerType]          `json:"owner_type,required"`
 	ProcessorToken     param.Field[string]             `json:"processor_token,required"`
@@ -1088,12 +1131,26 @@ type ExternalBankAccountNewParamsPlaidCreateBankAccountAPIRequest struct {
 	UserDefinedID   param.Field[string]    `json:"user_defined_id"`
 }
 
-func (r ExternalBankAccountNewParamsPlaidCreateBankAccountAPIRequest) MarshalJSON() (data []byte, err error) {
+func (r ExternalBankAccountNewParamsBodyPlaidCreateBankAccountAPIRequest) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-func (ExternalBankAccountNewParamsPlaidCreateBankAccountAPIRequest) ImplementsExternalBankAccountNewParams() {
+func (r ExternalBankAccountNewParamsBodyPlaidCreateBankAccountAPIRequest) implementsExternalBankAccountNewParamsBodyUnion() {
+}
 
+type ExternalBankAccountNewParamsBodyType string
+
+const (
+	ExternalBankAccountNewParamsBodyTypeChecking ExternalBankAccountNewParamsBodyType = "CHECKING"
+	ExternalBankAccountNewParamsBodyTypeSavings  ExternalBankAccountNewParamsBodyType = "SAVINGS"
+)
+
+func (r ExternalBankAccountNewParamsBodyType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountNewParamsBodyTypeChecking, ExternalBankAccountNewParamsBodyTypeSavings:
+		return true
+	}
+	return false
 }
 
 type ExternalBankAccountUpdateParams struct {
