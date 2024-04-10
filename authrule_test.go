@@ -27,12 +27,12 @@ func TestAuthRuleNewWithOptionalParams(t *testing.T) {
 	)
 	_, err := client.AuthRules.New(context.TODO(), lithic.AuthRuleNewParams{
 		AccountTokens:    lithic.F([]string{"3fa85f64-5717-4562-b3fc-2c963f66afa6"}),
-		AllowedCountries: lithic.F([]string{"MEX"}),
+		AllowedCountries: lithic.F([]string{"CAN", "USA"}),
 		AllowedMcc:       lithic.F([]string{"3000"}),
 		BlockedCountries: lithic.F([]string{"CAN", "USA"}),
 		BlockedMcc:       lithic.F([]string{"5811", "5812"}),
 		CardTokens:       lithic.F([]string{"3fa85f64-5717-4562-b3fc-2c963f66afa6"}),
-		ProgramLevel:     lithic.F(false),
+		ProgramLevel:     lithic.F(true),
 	})
 	if err != nil {
 		var apierr *lithic.Error
