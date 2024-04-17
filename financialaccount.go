@@ -259,7 +259,14 @@ type FinancialTransactionEvent struct {
 	//
 	//   - `ACH_INSUFFICIENT_FUNDS` - Attempted ACH origination declined due to
 	//     insufficient balance.
-	//   - `ACH_ORIGINATION_PENDING` - ACH origination pending release from an ACH hold.
+	//   - `ACH_ORIGINATION_PENDING` - ACH origination received and pending
+	//     approval/release from an ACH hold.
+	//   - `ACH_ORIGINATION_APPROVED` - ACH origination has been approved and pending
+	//     processing.
+	//   - `ACH_ORIGINATION_DECLINED` - ACH origination has been declined.
+	//   - `ACH_ORIGINATION_CANCELLED` - ACH origination has been cancelled.
+	//   - `ACH_ORIGINATION_PROCESSED` - ACH origination has been processed.
+	//   - `ACH_ORIGINATION_SETTLED` - ACH origination has settled.
 	//   - `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to
 	//     available balance.
 	//   - `ACH_RECEIPT_PENDING` - ACH receipt pending release from an ACH holder.
@@ -336,7 +343,14 @@ func (r FinancialTransactionEventsResult) IsKnown() bool {
 //
 //   - `ACH_INSUFFICIENT_FUNDS` - Attempted ACH origination declined due to
 //     insufficient balance.
-//   - `ACH_ORIGINATION_PENDING` - ACH origination pending release from an ACH hold.
+//   - `ACH_ORIGINATION_PENDING` - ACH origination received and pending
+//     approval/release from an ACH hold.
+//   - `ACH_ORIGINATION_APPROVED` - ACH origination has been approved and pending
+//     processing.
+//   - `ACH_ORIGINATION_DECLINED` - ACH origination has been declined.
+//   - `ACH_ORIGINATION_CANCELLED` - ACH origination has been cancelled.
+//   - `ACH_ORIGINATION_PROCESSED` - ACH origination has been processed.
+//   - `ACH_ORIGINATION_SETTLED` - ACH origination has settled.
 //   - `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to
 //     available balance.
 //   - `ACH_RECEIPT_PENDING` - ACH receipt pending release from an ACH holder.
@@ -375,7 +389,11 @@ const (
 	FinancialTransactionEventsTypeACHInsufficientFunds         FinancialTransactionEventsType = "ACH_INSUFFICIENT_FUNDS"
 	FinancialTransactionEventsTypeACHInvalidAccount            FinancialTransactionEventsType = "ACH_INVALID_ACCOUNT"
 	FinancialTransactionEventsTypeACHOriginationPending        FinancialTransactionEventsType = "ACH_ORIGINATION_PENDING"
+	FinancialTransactionEventsTypeACHOriginationApproved       FinancialTransactionEventsType = "ACH_ORIGINATION_APPROVED"
+	FinancialTransactionEventsTypeACHOriginationDeclined       FinancialTransactionEventsType = "ACH_ORIGINATION_DECLINED"
+	FinancialTransactionEventsTypeACHOriginationCancelled      FinancialTransactionEventsType = "ACH_ORIGINATION_CANCELLED"
 	FinancialTransactionEventsTypeACHOriginationProcessed      FinancialTransactionEventsType = "ACH_ORIGINATION_PROCESSED"
+	FinancialTransactionEventsTypeACHOriginationSettled        FinancialTransactionEventsType = "ACH_ORIGINATION_SETTLED"
 	FinancialTransactionEventsTypeACHOriginationReleased       FinancialTransactionEventsType = "ACH_ORIGINATION_RELEASED"
 	FinancialTransactionEventsTypeACHReceiptPending            FinancialTransactionEventsType = "ACH_RECEIPT_PENDING"
 	FinancialTransactionEventsTypeACHReceiptReleased           FinancialTransactionEventsType = "ACH_RECEIPT_RELEASED"
@@ -401,7 +419,7 @@ const (
 
 func (r FinancialTransactionEventsType) IsKnown() bool {
 	switch r {
-	case FinancialTransactionEventsTypeACHExceededThreshold, FinancialTransactionEventsTypeACHInsufficientFunds, FinancialTransactionEventsTypeACHInvalidAccount, FinancialTransactionEventsTypeACHOriginationPending, FinancialTransactionEventsTypeACHOriginationProcessed, FinancialTransactionEventsTypeACHOriginationReleased, FinancialTransactionEventsTypeACHReceiptPending, FinancialTransactionEventsTypeACHReceiptReleased, FinancialTransactionEventsTypeACHReturn, FinancialTransactionEventsTypeACHReturnPending, FinancialTransactionEventsTypeAuthorization, FinancialTransactionEventsTypeAuthorizationAdvice, FinancialTransactionEventsTypeAuthorizationExpiry, FinancialTransactionEventsTypeAuthorizationReversal, FinancialTransactionEventsTypeBalanceInquiry, FinancialTransactionEventsTypeClearing, FinancialTransactionEventsTypeCorrectionCredit, FinancialTransactionEventsTypeCorrectionDebit, FinancialTransactionEventsTypeCreditAuthorization, FinancialTransactionEventsTypeCreditAuthorizationAdvice, FinancialTransactionEventsTypeFinancialAuthorization, FinancialTransactionEventsTypeFinancialCreditAuthorization, FinancialTransactionEventsTypeReturn, FinancialTransactionEventsTypeReturnReversal, FinancialTransactionEventsTypeTransfer, FinancialTransactionEventsTypeTransferInsufficientFunds:
+	case FinancialTransactionEventsTypeACHExceededThreshold, FinancialTransactionEventsTypeACHInsufficientFunds, FinancialTransactionEventsTypeACHInvalidAccount, FinancialTransactionEventsTypeACHOriginationPending, FinancialTransactionEventsTypeACHOriginationApproved, FinancialTransactionEventsTypeACHOriginationDeclined, FinancialTransactionEventsTypeACHOriginationCancelled, FinancialTransactionEventsTypeACHOriginationProcessed, FinancialTransactionEventsTypeACHOriginationSettled, FinancialTransactionEventsTypeACHOriginationReleased, FinancialTransactionEventsTypeACHReceiptPending, FinancialTransactionEventsTypeACHReceiptReleased, FinancialTransactionEventsTypeACHReturn, FinancialTransactionEventsTypeACHReturnPending, FinancialTransactionEventsTypeAuthorization, FinancialTransactionEventsTypeAuthorizationAdvice, FinancialTransactionEventsTypeAuthorizationExpiry, FinancialTransactionEventsTypeAuthorizationReversal, FinancialTransactionEventsTypeBalanceInquiry, FinancialTransactionEventsTypeClearing, FinancialTransactionEventsTypeCorrectionCredit, FinancialTransactionEventsTypeCorrectionDebit, FinancialTransactionEventsTypeCreditAuthorization, FinancialTransactionEventsTypeCreditAuthorizationAdvice, FinancialTransactionEventsTypeFinancialAuthorization, FinancialTransactionEventsTypeFinancialCreditAuthorization, FinancialTransactionEventsTypeReturn, FinancialTransactionEventsTypeReturnReversal, FinancialTransactionEventsTypeTransfer, FinancialTransactionEventsTypeTransferInsufficientFunds:
 		return true
 	}
 	return false
