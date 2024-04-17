@@ -99,11 +99,12 @@ func (r *PaymentService) SimulateReturn(ctx context.Context, body PaymentSimulat
 
 type Payment struct {
 	Direction                PaymentDirection        `json:"direction,required"`
+	ExternalBankAccountToken string                  `json:"external_bank_account_token,required,nullable" format:"uuid"`
+	FinancialAccountToken    string                  `json:"financial_account_token,required" format:"uuid"`
 	Method                   PaymentMethod           `json:"method,required"`
 	MethodAttributes         PaymentMethodAttributes `json:"method_attributes,required"`
 	Source                   PaymentSource           `json:"source,required"`
-	ExternalBankAccountToken string                  `json:"external_bank_account_token" format:"uuid"`
-	UserDefinedID            string                  `json:"user_defined_id"`
+	UserDefinedID            string                  `json:"user_defined_id,required,nullable"`
 	JSON                     paymentJSON             `json:"-"`
 	FinancialTransaction
 }
@@ -111,10 +112,11 @@ type Payment struct {
 // paymentJSON contains the JSON metadata for the struct [Payment]
 type paymentJSON struct {
 	Direction                apijson.Field
+	ExternalBankAccountToken apijson.Field
+	FinancialAccountToken    apijson.Field
 	Method                   apijson.Field
 	MethodAttributes         apijson.Field
 	Source                   apijson.Field
-	ExternalBankAccountToken apijson.Field
 	UserDefinedID            apijson.Field
 	raw                      string
 	ExtraFields              map[string]apijson.Field
@@ -159,22 +161,22 @@ func (r PaymentMethod) IsKnown() bool {
 }
 
 type PaymentMethodAttributes struct {
+	CompanyID            string                         `json:"company_id,required,nullable"`
+	ReceiptRoutingNumber string                         `json:"receipt_routing_number,required,nullable"`
+	Retries              int64                          `json:"retries,required,nullable"`
+	ReturnReasonCode     string                         `json:"return_reason_code,required,nullable"`
 	SecCode              PaymentMethodAttributesSecCode `json:"sec_code,required"`
-	CompanyID            string                         `json:"company_id"`
-	ReceiptRoutingNumber string                         `json:"receipt_routing_number"`
-	Retries              int64                          `json:"retries"`
-	ReturnReasonCode     string                         `json:"return_reason_code"`
 	JSON                 paymentMethodAttributesJSON    `json:"-"`
 }
 
 // paymentMethodAttributesJSON contains the JSON metadata for the struct
 // [PaymentMethodAttributes]
 type paymentMethodAttributesJSON struct {
-	SecCode              apijson.Field
 	CompanyID            apijson.Field
 	ReceiptRoutingNumber apijson.Field
 	Retries              apijson.Field
 	ReturnReasonCode     apijson.Field
+	SecCode              apijson.Field
 	raw                  string
 	ExtraFields          map[string]apijson.Field
 }
@@ -378,11 +380,11 @@ func (r PaymentNewParamsMethod) IsKnown() bool {
 }
 
 type PaymentNewParamsMethodAttributes struct {
+	CompanyID            param.Field[string]                                  `json:"company_id,required"`
+	ReceiptRoutingNumber param.Field[string]                                  `json:"receipt_routing_number,required"`
+	Retries              param.Field[int64]                                   `json:"retries,required"`
+	ReturnReasonCode     param.Field[string]                                  `json:"return_reason_code,required"`
 	SecCode              param.Field[PaymentNewParamsMethodAttributesSecCode] `json:"sec_code,required"`
-	CompanyID            param.Field[string]                                  `json:"company_id"`
-	ReceiptRoutingNumber param.Field[string]                                  `json:"receipt_routing_number"`
-	Retries              param.Field[int64]                                   `json:"retries"`
-	ReturnReasonCode     param.Field[string]                                  `json:"return_reason_code"`
 }
 
 func (r PaymentNewParamsMethodAttributes) MarshalJSON() (data []byte, err error) {

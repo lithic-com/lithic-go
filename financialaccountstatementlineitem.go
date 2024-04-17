@@ -71,7 +71,14 @@ type FinancialAccountStatementLineItemListResponse struct {
 	//
 	//   - `ACH_INSUFFICIENT_FUNDS` - Attempted ACH origination declined due to
 	//     insufficient balance.
-	//   - `ACH_ORIGINATION_PENDING` - ACH origination pending release from an ACH hold.
+	//   - `ACH_ORIGINATION_PENDING` - ACH origination received and pending
+	//     approval/release from an ACH hold.
+	//   - `ACH_ORIGINATION_APPROVED` - ACH origination has been approved and pending
+	//     processing.
+	//   - `ACH_ORIGINATION_DECLINED` - ACH origination has been declined.
+	//   - `ACH_ORIGINATION_CANCELLED` - ACH origination has been cancelled.
+	//   - `ACH_ORIGINATION_PROCESSED` - ACH origination has been processed.
+	//   - `ACH_ORIGINATION_SETTLED` - ACH origination has settled.
 	//   - `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to
 	//     available balance.
 	//   - `ACH_RECEIPT_PENDING` - ACH receipt pending release from an ACH holder.
@@ -162,7 +169,14 @@ func (r FinancialAccountStatementLineItemListResponseCategory) IsKnown() bool {
 //
 //   - `ACH_INSUFFICIENT_FUNDS` - Attempted ACH origination declined due to
 //     insufficient balance.
-//   - `ACH_ORIGINATION_PENDING` - ACH origination pending release from an ACH hold.
+//   - `ACH_ORIGINATION_PENDING` - ACH origination received and pending
+//     approval/release from an ACH hold.
+//   - `ACH_ORIGINATION_APPROVED` - ACH origination has been approved and pending
+//     processing.
+//   - `ACH_ORIGINATION_DECLINED` - ACH origination has been declined.
+//   - `ACH_ORIGINATION_CANCELLED` - ACH origination has been cancelled.
+//   - `ACH_ORIGINATION_PROCESSED` - ACH origination has been processed.
+//   - `ACH_ORIGINATION_SETTLED` - ACH origination has settled.
 //   - `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to
 //     available balance.
 //   - `ACH_RECEIPT_PENDING` - ACH receipt pending release from an ACH holder.
@@ -201,7 +215,11 @@ const (
 	FinancialAccountStatementLineItemListResponseEventTypeACHInsufficientFunds         FinancialAccountStatementLineItemListResponseEventType = "ACH_INSUFFICIENT_FUNDS"
 	FinancialAccountStatementLineItemListResponseEventTypeACHInvalidAccount            FinancialAccountStatementLineItemListResponseEventType = "ACH_INVALID_ACCOUNT"
 	FinancialAccountStatementLineItemListResponseEventTypeACHOriginationPending        FinancialAccountStatementLineItemListResponseEventType = "ACH_ORIGINATION_PENDING"
+	FinancialAccountStatementLineItemListResponseEventTypeACHOriginationApproved       FinancialAccountStatementLineItemListResponseEventType = "ACH_ORIGINATION_APPROVED"
+	FinancialAccountStatementLineItemListResponseEventTypeACHOriginationDeclined       FinancialAccountStatementLineItemListResponseEventType = "ACH_ORIGINATION_DECLINED"
+	FinancialAccountStatementLineItemListResponseEventTypeACHOriginationCancelled      FinancialAccountStatementLineItemListResponseEventType = "ACH_ORIGINATION_CANCELLED"
 	FinancialAccountStatementLineItemListResponseEventTypeACHOriginationProcessed      FinancialAccountStatementLineItemListResponseEventType = "ACH_ORIGINATION_PROCESSED"
+	FinancialAccountStatementLineItemListResponseEventTypeACHOriginationSettled        FinancialAccountStatementLineItemListResponseEventType = "ACH_ORIGINATION_SETTLED"
 	FinancialAccountStatementLineItemListResponseEventTypeACHOriginationReleased       FinancialAccountStatementLineItemListResponseEventType = "ACH_ORIGINATION_RELEASED"
 	FinancialAccountStatementLineItemListResponseEventTypeACHReceiptPending            FinancialAccountStatementLineItemListResponseEventType = "ACH_RECEIPT_PENDING"
 	FinancialAccountStatementLineItemListResponseEventTypeACHReceiptReleased           FinancialAccountStatementLineItemListResponseEventType = "ACH_RECEIPT_RELEASED"
@@ -227,7 +245,7 @@ const (
 
 func (r FinancialAccountStatementLineItemListResponseEventType) IsKnown() bool {
 	switch r {
-	case FinancialAccountStatementLineItemListResponseEventTypeACHExceededThreshold, FinancialAccountStatementLineItemListResponseEventTypeACHInsufficientFunds, FinancialAccountStatementLineItemListResponseEventTypeACHInvalidAccount, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationPending, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationProcessed, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationReleased, FinancialAccountStatementLineItemListResponseEventTypeACHReceiptPending, FinancialAccountStatementLineItemListResponseEventTypeACHReceiptReleased, FinancialAccountStatementLineItemListResponseEventTypeACHReturn, FinancialAccountStatementLineItemListResponseEventTypeACHReturnPending, FinancialAccountStatementLineItemListResponseEventTypeAuthorization, FinancialAccountStatementLineItemListResponseEventTypeAuthorizationAdvice, FinancialAccountStatementLineItemListResponseEventTypeAuthorizationExpiry, FinancialAccountStatementLineItemListResponseEventTypeAuthorizationReversal, FinancialAccountStatementLineItemListResponseEventTypeBalanceInquiry, FinancialAccountStatementLineItemListResponseEventTypeClearing, FinancialAccountStatementLineItemListResponseEventTypeCorrectionCredit, FinancialAccountStatementLineItemListResponseEventTypeCorrectionDebit, FinancialAccountStatementLineItemListResponseEventTypeCreditAuthorization, FinancialAccountStatementLineItemListResponseEventTypeCreditAuthorizationAdvice, FinancialAccountStatementLineItemListResponseEventTypeFinancialAuthorization, FinancialAccountStatementLineItemListResponseEventTypeFinancialCreditAuthorization, FinancialAccountStatementLineItemListResponseEventTypeReturn, FinancialAccountStatementLineItemListResponseEventTypeReturnReversal, FinancialAccountStatementLineItemListResponseEventTypeTransfer, FinancialAccountStatementLineItemListResponseEventTypeTransferInsufficientFunds:
+	case FinancialAccountStatementLineItemListResponseEventTypeACHExceededThreshold, FinancialAccountStatementLineItemListResponseEventTypeACHInsufficientFunds, FinancialAccountStatementLineItemListResponseEventTypeACHInvalidAccount, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationPending, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationApproved, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationDeclined, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationCancelled, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationProcessed, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationSettled, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationReleased, FinancialAccountStatementLineItemListResponseEventTypeACHReceiptPending, FinancialAccountStatementLineItemListResponseEventTypeACHReceiptReleased, FinancialAccountStatementLineItemListResponseEventTypeACHReturn, FinancialAccountStatementLineItemListResponseEventTypeACHReturnPending, FinancialAccountStatementLineItemListResponseEventTypeAuthorization, FinancialAccountStatementLineItemListResponseEventTypeAuthorizationAdvice, FinancialAccountStatementLineItemListResponseEventTypeAuthorizationExpiry, FinancialAccountStatementLineItemListResponseEventTypeAuthorizationReversal, FinancialAccountStatementLineItemListResponseEventTypeBalanceInquiry, FinancialAccountStatementLineItemListResponseEventTypeClearing, FinancialAccountStatementLineItemListResponseEventTypeCorrectionCredit, FinancialAccountStatementLineItemListResponseEventTypeCorrectionDebit, FinancialAccountStatementLineItemListResponseEventTypeCreditAuthorization, FinancialAccountStatementLineItemListResponseEventTypeCreditAuthorizationAdvice, FinancialAccountStatementLineItemListResponseEventTypeFinancialAuthorization, FinancialAccountStatementLineItemListResponseEventTypeFinancialCreditAuthorization, FinancialAccountStatementLineItemListResponseEventTypeReturn, FinancialAccountStatementLineItemListResponseEventTypeReturnReversal, FinancialAccountStatementLineItemListResponseEventTypeTransfer, FinancialAccountStatementLineItemListResponseEventTypeTransferInsufficientFunds:
 		return true
 	}
 	return false
