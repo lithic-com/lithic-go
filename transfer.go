@@ -143,7 +143,14 @@ type TransferEvent struct {
 	//
 	//   - `ACH_INSUFFICIENT_FUNDS` - Attempted ACH origination declined due to
 	//     insufficient balance.
-	//   - `ACH_ORIGINATION_PENDING` - ACH origination pending release from an ACH hold.
+	//   - `ACH_ORIGINATION_PENDING` - ACH origination received and pending
+	//     approval/release from an ACH hold.
+	//   - `ACH_ORIGINATION_APPROVED` - ACH origination has been approved and pending
+	//     processing.
+	//   - `ACH_ORIGINATION_DECLINED` - ACH origination has been declined.
+	//   - `ACH_ORIGINATION_CANCELLED` - ACH origination has been cancelled.
+	//   - `ACH_ORIGINATION_PROCESSED` - ACH origination has been processed.
+	//   - `ACH_ORIGINATION_SETTLED` - ACH origination has settled.
 	//   - `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to
 	//     available balance.
 	//   - `ACH_RECEIPT_PENDING` - ACH receipt pending release from an ACH holder.
@@ -219,7 +226,14 @@ func (r TransferEventsResult) IsKnown() bool {
 //
 //   - `ACH_INSUFFICIENT_FUNDS` - Attempted ACH origination declined due to
 //     insufficient balance.
-//   - `ACH_ORIGINATION_PENDING` - ACH origination pending release from an ACH hold.
+//   - `ACH_ORIGINATION_PENDING` - ACH origination received and pending
+//     approval/release from an ACH hold.
+//   - `ACH_ORIGINATION_APPROVED` - ACH origination has been approved and pending
+//     processing.
+//   - `ACH_ORIGINATION_DECLINED` - ACH origination has been declined.
+//   - `ACH_ORIGINATION_CANCELLED` - ACH origination has been cancelled.
+//   - `ACH_ORIGINATION_PROCESSED` - ACH origination has been processed.
+//   - `ACH_ORIGINATION_SETTLED` - ACH origination has settled.
 //   - `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to
 //     available balance.
 //   - `ACH_RECEIPT_PENDING` - ACH receipt pending release from an ACH holder.
@@ -258,7 +272,11 @@ const (
 	TransferEventsTypeACHInsufficientFunds         TransferEventsType = "ACH_INSUFFICIENT_FUNDS"
 	TransferEventsTypeACHInvalidAccount            TransferEventsType = "ACH_INVALID_ACCOUNT"
 	TransferEventsTypeACHOriginationPending        TransferEventsType = "ACH_ORIGINATION_PENDING"
+	TransferEventsTypeACHOriginationApproved       TransferEventsType = "ACH_ORIGINATION_APPROVED"
+	TransferEventsTypeACHOriginationDeclined       TransferEventsType = "ACH_ORIGINATION_DECLINED"
+	TransferEventsTypeACHOriginationCancelled      TransferEventsType = "ACH_ORIGINATION_CANCELLED"
 	TransferEventsTypeACHOriginationProcessed      TransferEventsType = "ACH_ORIGINATION_PROCESSED"
+	TransferEventsTypeACHOriginationSettled        TransferEventsType = "ACH_ORIGINATION_SETTLED"
 	TransferEventsTypeACHOriginationReleased       TransferEventsType = "ACH_ORIGINATION_RELEASED"
 	TransferEventsTypeACHReceiptPending            TransferEventsType = "ACH_RECEIPT_PENDING"
 	TransferEventsTypeACHReceiptReleased           TransferEventsType = "ACH_RECEIPT_RELEASED"
@@ -284,7 +302,7 @@ const (
 
 func (r TransferEventsType) IsKnown() bool {
 	switch r {
-	case TransferEventsTypeACHExceededThreshold, TransferEventsTypeACHInsufficientFunds, TransferEventsTypeACHInvalidAccount, TransferEventsTypeACHOriginationPending, TransferEventsTypeACHOriginationProcessed, TransferEventsTypeACHOriginationReleased, TransferEventsTypeACHReceiptPending, TransferEventsTypeACHReceiptReleased, TransferEventsTypeACHReturn, TransferEventsTypeACHReturnPending, TransferEventsTypeAuthorization, TransferEventsTypeAuthorizationAdvice, TransferEventsTypeAuthorizationExpiry, TransferEventsTypeAuthorizationReversal, TransferEventsTypeBalanceInquiry, TransferEventsTypeClearing, TransferEventsTypeCorrectionCredit, TransferEventsTypeCorrectionDebit, TransferEventsTypeCreditAuthorization, TransferEventsTypeCreditAuthorizationAdvice, TransferEventsTypeFinancialAuthorization, TransferEventsTypeFinancialCreditAuthorization, TransferEventsTypeReturn, TransferEventsTypeReturnReversal, TransferEventsTypeTransfer, TransferEventsTypeTransferInsufficientFunds:
+	case TransferEventsTypeACHExceededThreshold, TransferEventsTypeACHInsufficientFunds, TransferEventsTypeACHInvalidAccount, TransferEventsTypeACHOriginationPending, TransferEventsTypeACHOriginationApproved, TransferEventsTypeACHOriginationDeclined, TransferEventsTypeACHOriginationCancelled, TransferEventsTypeACHOriginationProcessed, TransferEventsTypeACHOriginationSettled, TransferEventsTypeACHOriginationReleased, TransferEventsTypeACHReceiptPending, TransferEventsTypeACHReceiptReleased, TransferEventsTypeACHReturn, TransferEventsTypeACHReturnPending, TransferEventsTypeAuthorization, TransferEventsTypeAuthorizationAdvice, TransferEventsTypeAuthorizationExpiry, TransferEventsTypeAuthorizationReversal, TransferEventsTypeBalanceInquiry, TransferEventsTypeClearing, TransferEventsTypeCorrectionCredit, TransferEventsTypeCorrectionDebit, TransferEventsTypeCreditAuthorization, TransferEventsTypeCreditAuthorizationAdvice, TransferEventsTypeFinancialAuthorization, TransferEventsTypeFinancialCreditAuthorization, TransferEventsTypeReturn, TransferEventsTypeReturnReversal, TransferEventsTypeTransfer, TransferEventsTypeTransferInsufficientFunds:
 		return true
 	}
 	return false
