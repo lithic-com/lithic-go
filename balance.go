@@ -56,7 +56,7 @@ func (r *BalanceService) ListAutoPaging(ctx context.Context, query BalanceListPa
 	return pagination.NewSinglePageAutoPager(r.List(ctx, query, opts...))
 }
 
-// Balance of a Financial Account
+// Balance
 type Balance struct {
 	// Funds available for spend in the currency's smallest unit (e.g., cents for USD)
 	AvailableAmount int64 `json:"available_amount,required"`

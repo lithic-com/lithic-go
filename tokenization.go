@@ -92,6 +92,11 @@ type Tokenization struct {
 	TokenUniqueReference string `json:"token_unique_reference,required"`
 	// Latest date and time when the tokenization was updated. UTC time zone.
 	UpdatedAt time.Time `json:"updated_at,required" format:"date-time"`
+	// Specifies the digital card art displayed in the user’s digital wallet after
+	// tokenization. This will be null if the tokenization was created without an
+	// associated digital card art. See
+	// [Flexible Card Art Guide](https://docs.lithic.com/docs/about-digital-wallets#flexible-card-art).
+	DigitalCardArtToken string `json:"digital_card_art_token" format:"uuid"`
 	// A list of events related to the tokenization.
 	Events []TokenizationEvent `json:"events"`
 	JSON   tokenizationJSON    `json:"-"`
@@ -107,6 +112,7 @@ type tokenizationJSON struct {
 	TokenRequestorName   apijson.Field
 	TokenUniqueReference apijson.Field
 	UpdatedAt            apijson.Field
+	DigitalCardArtToken  apijson.Field
 	Events               apijson.Field
 	raw                  string
 	ExtraFields          map[string]apijson.Field
