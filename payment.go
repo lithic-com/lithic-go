@@ -221,7 +221,7 @@ func (r PaymentSource) IsKnown() bool {
 }
 
 type PaymentNewResponse struct {
-	// Balance of a Financial Account
+	// Balance
 	Balance Balance                `json:"balance"`
 	JSON    paymentNewResponseJSON `json:"-"`
 	Payment
@@ -244,7 +244,7 @@ func (r paymentNewResponseJSON) RawJSON() string {
 }
 
 type PaymentRetryResponse struct {
-	// Balance of a Financial Account
+	// Balance
 	Balance Balance                  `json:"balance"`
 	JSON    paymentRetryResponseJSON `json:"-"`
 	Payment

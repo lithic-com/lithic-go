@@ -27,31 +27,16 @@ func TestExternalBankAccountNewWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.ExternalBankAccounts.New(context.TODO(), lithic.ExternalBankAccountNewParams{
-		Body: lithic.ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest{
-			AccountNumber: lithic.F("13719713158835300"),
-			AccountToken:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-			Address: lithic.F(lithic.ExternalBankAccountAddressParam{
-				Address1:   lithic.F("5 Broad Street"),
-				Address2:   lithic.F("x"),
-				City:       lithic.F("New York"),
-				Country:    lithic.F("USA"),
-				PostalCode: lithic.F("10001"),
-				State:      lithic.F("NY"),
-			}),
-			CompanyID:               lithic.F("x"),
-			Country:                 lithic.F("USA"),
-			Currency:                lithic.F("USD"),
-			Dob:                     lithic.F(time.Now()),
-			DoingBusinessAs:         lithic.F("string"),
-			FinancialAccountToken:   lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-			Name:                    lithic.F("John Does Checking"),
-			Owner:                   lithic.F("John Doe"),
-			OwnerType:               lithic.F(lithic.OwnerTypeBusiness),
-			RoutingNumber:           lithic.F("011103093"),
-			Type:                    lithic.F(lithic.ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestTypeChecking),
-			UserDefinedID:           lithic.F("string"),
-			VerificationEnforcement: lithic.F(true),
-			VerificationMethod:      lithic.F(lithic.VerificationMethodMicroDeposit),
+		Body: lithic.ExternalBankAccountNewParamsBodyPlaidCreateBankAccountAPIRequest{
+			AccountToken:       lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+			CompanyID:          lithic.F("x"),
+			Dob:                lithic.F(time.Now()),
+			DoingBusinessAs:    lithic.F("string"),
+			Owner:              lithic.F("John Doe"),
+			OwnerType:          lithic.F(lithic.OwnerTypeBusiness),
+			ProcessorToken:     lithic.F("processor-sandbox-0asd1-a92nc"),
+			UserDefinedID:      lithic.F("string"),
+			VerificationMethod: lithic.F(lithic.VerificationMethodPlaid),
 		},
 	})
 	if err != nil {
@@ -159,7 +144,7 @@ func TestExternalBankAccountListWithOptionalParams(t *testing.T) {
 	}
 }
 
-func TestExternalBankAccountRetryMicroDeposits(t *testing.T) {
+func TestExternalBankAccountRetryMicroDepositsWithOptionalParams(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -171,7 +156,13 @@ func TestExternalBankAccountRetryMicroDeposits(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My Lithic API Key"),
 	)
-	_, err := client.ExternalBankAccounts.RetryMicroDeposits(context.TODO(), "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e")
+	_, err := client.ExternalBankAccounts.RetryMicroDeposits(
+		context.TODO(),
+		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+		lithic.ExternalBankAccountRetryMicroDepositsParams{
+			FinancialAccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		},
+	)
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
