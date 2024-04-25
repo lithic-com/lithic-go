@@ -85,10 +85,10 @@ func (r *ExternalBankAccountService) ListAutoPaging(ctx context.Context, query E
 }
 
 // Retry external bank account micro deposit verification.
-func (r *ExternalBankAccountService) RetryMicroDeposits(ctx context.Context, externalBankAccountToken string, opts ...option.RequestOption) (res *ExternalBankAccountRetryMicroDepositsResponse, err error) {
+func (r *ExternalBankAccountService) RetryMicroDeposits(ctx context.Context, externalBankAccountToken string, body ExternalBankAccountRetryMicroDepositsParams, opts ...option.RequestOption) (res *ExternalBankAccountRetryMicroDepositsResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("external_bank_accounts/%s/retry_micro_deposits", externalBankAccountToken)
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
@@ -212,7 +212,8 @@ type ExternalBankAccountNewResponse struct {
 	// Date of Birth of the Individual that owns the external bank account
 	Dob             time.Time `json:"dob" format:"date"`
 	DoingBusinessAs string    `json:"doing_business_as"`
-	// The financial account token of the operating account used to verify the account
+	// The financial account token of the operating account, which will provide the
+	// funds for micro deposits used to verify the account
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
 	// The nickname given to this record of External Bank Account
 	Name          string `json:"name"`
@@ -381,7 +382,8 @@ type ExternalBankAccountGetResponse struct {
 	// Date of Birth of the Individual that owns the external bank account
 	Dob             time.Time `json:"dob" format:"date"`
 	DoingBusinessAs string    `json:"doing_business_as"`
-	// The financial account token of the operating account used to verify the account
+	// The financial account token of the operating account, which will provide the
+	// funds for micro deposits used to verify the account
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
 	// The nickname given to this record of External Bank Account
 	Name          string `json:"name"`
@@ -550,7 +552,8 @@ type ExternalBankAccountUpdateResponse struct {
 	// Date of Birth of the Individual that owns the external bank account
 	Dob             time.Time `json:"dob" format:"date"`
 	DoingBusinessAs string    `json:"doing_business_as"`
-	// The financial account token of the operating account used to verify the account
+	// The financial account token of the operating account, which will provide the
+	// funds for micro deposits used to verify the account
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
 	// The nickname given to this record of External Bank Account
 	Name          string `json:"name"`
@@ -719,7 +722,8 @@ type ExternalBankAccountListResponse struct {
 	// Date of Birth of the Individual that owns the external bank account
 	Dob             time.Time `json:"dob" format:"date"`
 	DoingBusinessAs string    `json:"doing_business_as"`
-	// The financial account token of the operating account used to verify the account
+	// The financial account token of the operating account, which will provide the
+	// funds for micro deposits used to verify the account
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
 	// The nickname given to this record of External Bank Account
 	Name          string `json:"name"`
@@ -888,7 +892,8 @@ type ExternalBankAccountRetryMicroDepositsResponse struct {
 	// Date of Birth of the Individual that owns the external bank account
 	Dob             time.Time `json:"dob" format:"date"`
 	DoingBusinessAs string    `json:"doing_business_as"`
-	// The financial account token of the operating account used to verify the account
+	// The financial account token of the operating account, which will provide the
+	// funds for micro deposits used to verify the account
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
 	// The nickname given to this record of External Bank Account
 	Name          string `json:"name"`
@@ -1037,7 +1042,8 @@ type ExternalBankAccountNewParamsBody struct {
 	// Date of Birth of the Individual that owns the external bank account
 	Dob             param.Field[time.Time] `json:"dob" format:"date"`
 	DoingBusinessAs param.Field[string]    `json:"doing_business_as"`
-	// The financial account token of the operating account used to verify the account
+	// The financial account token of the operating account, which will provide the
+	// funds for micro deposits used to verify the account
 	FinancialAccountToken param.Field[string]                               `json:"financial_account_token" format:"uuid"`
 	Name                  param.Field[string]                               `json:"name"`
 	Owner                 param.Field[string]                               `json:"owner,required"`
@@ -1069,15 +1075,18 @@ type ExternalBankAccountNewParamsBodyUnion interface {
 }
 
 type ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest struct {
-	AccountNumber      param.Field[string]                                                                      `json:"account_number,required"`
-	Country            param.Field[string]                                                                      `json:"country,required"`
-	Currency           param.Field[string]                                                                      `json:"currency,required"`
-	Owner              param.Field[string]                                                                      `json:"owner,required"`
-	OwnerType          param.Field[OwnerType]                                                                   `json:"owner_type,required"`
-	RoutingNumber      param.Field[string]                                                                      `json:"routing_number,required"`
-	Type               param.Field[ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestType] `json:"type,required"`
-	VerificationMethod param.Field[VerificationMethod]                                                          `json:"verification_method,required"`
-	AccountToken       param.Field[string]                                                                      `json:"account_token" format:"uuid"`
+	AccountNumber param.Field[string] `json:"account_number,required"`
+	Country       param.Field[string] `json:"country,required"`
+	Currency      param.Field[string] `json:"currency,required"`
+	// The financial account token of the operating account, which will provide the
+	// funds for micro deposits used to verify the account
+	FinancialAccountToken param.Field[string]                                                                      `json:"financial_account_token,required" format:"uuid"`
+	Owner                 param.Field[string]                                                                      `json:"owner,required"`
+	OwnerType             param.Field[OwnerType]                                                                   `json:"owner_type,required"`
+	RoutingNumber         param.Field[string]                                                                      `json:"routing_number,required"`
+	Type                  param.Field[ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestType] `json:"type,required"`
+	VerificationMethod    param.Field[VerificationMethod]                                                          `json:"verification_method,required"`
+	AccountToken          param.Field[string]                                                                      `json:"account_token" format:"uuid"`
 	// Address used during Address Verification Service (AVS) checks during
 	// transactions if enabled via Auth Rules.
 	Address   param.Field[ExternalBankAccountAddressParam] `json:"address"`
@@ -1085,10 +1094,8 @@ type ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest str
 	// Date of Birth of the Individual that owns the external bank account
 	Dob             param.Field[time.Time] `json:"dob" format:"date"`
 	DoingBusinessAs param.Field[string]    `json:"doing_business_as"`
-	// The financial account token of the operating account used to verify the account
-	FinancialAccountToken param.Field[string] `json:"financial_account_token" format:"uuid"`
-	Name                  param.Field[string] `json:"name"`
-	UserDefinedID         param.Field[string] `json:"user_defined_id"`
+	Name            param.Field[string]    `json:"name"`
+	UserDefinedID   param.Field[string]    `json:"user_defined_id"`
 	// Indicates whether verification was enforced for a given association record. For
 	// MICRO_DEPOSIT, option to disable verification if the external bank account has
 	// already been verified before. By default, verification will be required unless
@@ -1243,4 +1250,14 @@ func (r ExternalBankAccountListParamsVerificationState) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+type ExternalBankAccountRetryMicroDepositsParams struct {
+	// The financial account token of the operating account, which will provide the
+	// funds for micro deposits used to verify the account
+	FinancialAccountToken param.Field[string] `json:"financial_account_token" format:"uuid"`
+}
+
+func (r ExternalBankAccountRetryMicroDepositsParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }

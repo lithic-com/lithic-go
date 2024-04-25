@@ -80,7 +80,8 @@ type ExternalBankAccountMicroDepositNewResponse struct {
 	// Date of Birth of the Individual that owns the external bank account
 	Dob             time.Time `json:"dob" format:"date"`
 	DoingBusinessAs string    `json:"doing_business_as"`
-	// The financial account token of the operating account used to verify the account
+	// The financial account token of the operating account, which will provide the
+	// funds for micro deposits used to verify the account
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
 	// The nickname given to this record of External Bank Account
 	Name          string `json:"name"`

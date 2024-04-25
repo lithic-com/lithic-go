@@ -271,7 +271,8 @@ type Card struct {
 	// Globally unique identifier for the card program on which the card exists.
 	CardProgramToken string `json:"card_program_token,required" format:"uuid"`
 	// An RFC 3339 timestamp for when the card was created. UTC time zone.
-	Created time.Time   `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created,required" format:"date-time"`
+	// Deprecated: Funding account for the card.
 	Funding CardFunding `json:"funding,required"`
 	// Last four digits of the card number.
 	LastFour string `json:"last_four,required"`
@@ -388,6 +389,7 @@ func (r cardJSON) RawJSON() string {
 	return r.raw
 }
 
+// Deprecated: Funding account for the card.
 type CardFunding struct {
 	// A globally unique identifier for this FundingAccount.
 	Token string `json:"token,required" format:"uuid"`
