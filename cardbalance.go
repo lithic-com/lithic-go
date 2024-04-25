@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
 	"github.com/lithic-com/lithic-go/internal/pagination"
 	"github.com/lithic-com/lithic-go/internal/param"
@@ -35,7 +36,7 @@ func NewCardBalanceService(opts ...option.RequestOption) (r *CardBalanceService)
 }
 
 // Get the balances for a given card.
-func (r *CardBalanceService) List(ctx context.Context, cardToken string, query CardBalanceListParams, opts ...option.RequestOption) (res *pagination.SinglePage[Balance], err error) {
+func (r *CardBalanceService) List(ctx context.Context, cardToken string, query CardBalanceListParams, opts ...option.RequestOption) (res *pagination.SinglePage[CardBalanceListResponse], err error) {
 	var raw *http.Response
 	opts = append(r.Options, opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -53,8 +54,79 @@ func (r *CardBalanceService) List(ctx context.Context, cardToken string, query C
 }
 
 // Get the balances for a given card.
-func (r *CardBalanceService) ListAutoPaging(ctx context.Context, cardToken string, query CardBalanceListParams, opts ...option.RequestOption) *pagination.SinglePageAutoPager[Balance] {
+func (r *CardBalanceService) ListAutoPaging(ctx context.Context, cardToken string, query CardBalanceListParams, opts ...option.RequestOption) *pagination.SinglePageAutoPager[CardBalanceListResponse] {
 	return pagination.NewSinglePageAutoPager(r.List(ctx, cardToken, query, opts...))
+}
+
+// Balance of a Financial Account
+type CardBalanceListResponse struct {
+	// Globally unique identifier for the financial account that holds this balance.
+	Token string `json:"token,required" format:"uuid"`
+	// Funds available for spend in the currency's smallest unit (e.g., cents for USD)
+	AvailableAmount int64 `json:"available_amount,required"`
+	// Date and time for when the balance was first created.
+	Created time.Time `json:"created,required" format:"date-time"`
+	// 3-digit alphabetic ISO 4217 code for the local currency of the balance.
+	Currency string `json:"currency,required"`
+	// Globally unique identifier for the last financial transaction event that
+	// impacted this balance.
+	LastTransactionEventToken string `json:"last_transaction_event_token,required" format:"uuid"`
+	// Globally unique identifier for the last financial transaction that impacted this
+	// balance.
+	LastTransactionToken string `json:"last_transaction_token,required" format:"uuid"`
+	// Funds not available for spend due to card authorizations or pending ACH release.
+	// Shown in the currency's smallest unit (e.g., cents for USD).
+	PendingAmount int64 `json:"pending_amount,required"`
+	// The sum of available and pending balance in the currency's smallest unit (e.g.,
+	// cents for USD).
+	TotalAmount int64 `json:"total_amount,required"`
+	// Type of financial account.
+	Type CardBalanceListResponseType `json:"type,required"`
+	// Date and time for when the balance was last updated.
+	Updated time.Time                   `json:"updated,required" format:"date-time"`
+	JSON    cardBalanceListResponseJSON `json:"-"`
+}
+
+// cardBalanceListResponseJSON contains the JSON metadata for the struct
+// [CardBalanceListResponse]
+type cardBalanceListResponseJSON struct {
+	Token                     apijson.Field
+	AvailableAmount           apijson.Field
+	Created                   apijson.Field
+	Currency                  apijson.Field
+	LastTransactionEventToken apijson.Field
+	LastTransactionToken      apijson.Field
+	PendingAmount             apijson.Field
+	TotalAmount               apijson.Field
+	Type                      apijson.Field
+	Updated                   apijson.Field
+	raw                       string
+	ExtraFields               map[string]apijson.Field
+}
+
+func (r *CardBalanceListResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardBalanceListResponseJSON) RawJSON() string {
+	return r.raw
+}
+
+// Type of financial account.
+type CardBalanceListResponseType string
+
+const (
+	CardBalanceListResponseTypeIssuing   CardBalanceListResponseType = "ISSUING"
+	CardBalanceListResponseTypeOperating CardBalanceListResponseType = "OPERATING"
+	CardBalanceListResponseTypeReserve   CardBalanceListResponseType = "RESERVE"
+)
+
+func (r CardBalanceListResponseType) IsKnown() bool {
+	switch r {
+	case CardBalanceListResponseTypeIssuing, CardBalanceListResponseTypeOperating, CardBalanceListResponseTypeReserve:
+		return true
+	}
+	return false
 }
 
 type CardBalanceListParams struct {
