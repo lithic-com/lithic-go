@@ -9,9 +9,9 @@ import (
 	"testing"
 
 	"github.com/lithic-com/lithic-go"
-	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/internal/testutil"
 	"github.com/lithic-com/lithic-go/option"
+	"github.com/lithic-com/lithic-go/shared"
 )
 
 func TestAccountHolderNewWithOptionalParams(t *testing.T) {

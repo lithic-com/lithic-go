@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/lithic-com/lithic-go"
-	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/internal/testutil"
 	"github.com/lithic-com/lithic-go/option"
+	"github.com/lithic-com/lithic-go/shared"
 )
 
 func TestCardNewWithOptionalParams(t *testing.T) {
