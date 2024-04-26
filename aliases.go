@@ -4,7 +4,7 @@ package lithic
 
 import (
 	"github.com/lithic-com/lithic-go/internal/apierror"
-	"github.com/lithic-com/lithic-go/internal/shared"
+	"github.com/lithic-com/lithic-go/shared"
 )
 
 type Error = apierror.Error
