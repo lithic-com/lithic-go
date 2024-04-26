@@ -14,8 +14,8 @@ import (
 	"github.com/lithic-com/lithic-go/internal/pagination"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
-	"github.com/lithic-com/lithic-go/internal/shared"
 	"github.com/lithic-com/lithic-go/option"
+	"github.com/lithic-com/lithic-go/shared"
 )
 
 // CardService contains methods and other services that help with interacting with

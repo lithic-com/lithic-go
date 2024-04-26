@@ -1,12 +1,12 @@
 # Shared Params Types
 
-- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared#AddressParam">AddressParam</a>
-- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared#CarrierParam">CarrierParam</a>
-- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared#ShippingAddressParam">ShippingAddressParam</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#AddressParam">AddressParam</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#CarrierParam">CarrierParam</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#ShippingAddressParam">ShippingAddressParam</a>
 
 # Shared Response Types
 
-- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/internal/shared#Address">Address</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#Address">Address</a>
 
 # lithic
 
