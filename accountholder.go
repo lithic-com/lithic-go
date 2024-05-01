@@ -1035,6 +1035,9 @@ func (r KYCWorkflow) IsKnown() bool {
 }
 
 type KYCExemptParam struct {
+	// KYC Exempt user's current address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
+	Address param.Field[shared.AddressParam] `json:"address,required"`
 	// The KYC Exempt user's email
 	Email param.Field[string] `json:"email,required"`
 	// The KYC Exempt user's first name
@@ -1047,9 +1050,6 @@ type KYCExemptParam struct {
 	PhoneNumber param.Field[string] `json:"phone_number,required"`
 	// Specifies the workflow type. This must be 'KYC_EXEMPT'
 	Workflow param.Field[KYCExemptWorkflow] `json:"workflow,required"`
-	// KYC Exempt user's current address - PO boxes, UPS drops, and FedEx drops are not
-	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
-	Address param.Field[shared.AddressParam] `json:"address"`
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
 	// users of businesses. Pass the account_token of the enrolled business associated
 	// with the AUTHORIZED_USER in this field.
