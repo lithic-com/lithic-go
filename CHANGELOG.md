@@ -1,5 +1,38 @@
 # Changelog
 
+## 0.29.0 (2024-05-01)
+
+Full Changelog: [v0.28.0...v0.29.0](https://github.com/lithic-com/lithic-go/compare/v0.28.0...v0.29.0)
+
+### Features
+
+* **api:** changes to balance-related return types and other API changes ([#272](https://github.com/lithic-com/lithic-go/issues/272)) ([8fd8a7c](https://github.com/lithic-com/lithic-go/commit/8fd8a7c2eed94a8a354206ca2dd6a1b0b45a81fd))
+* **api:** updates ([#264](https://github.com/lithic-com/lithic-go/issues/264)) ([6442564](https://github.com/lithic-com/lithic-go/commit/644256495e9b85d33a38ef81a2d0c8b523a566e9))
+* **api:** updates ([#269](https://github.com/lithic-com/lithic-go/issues/269)) ([0562c47](https://github.com/lithic-com/lithic-go/commit/0562c47d4c685ecf7d4c9aa3f3be5377026e144f))
+* **api:** updates ([#276](https://github.com/lithic-com/lithic-go/issues/276)) ([fa52e34](https://github.com/lithic-com/lithic-go/commit/fa52e34c82997485dd5b33e8db023f471d89c86b))
+* **option:** add option to provide a raw request body ([#267](https://github.com/lithic-com/lithic-go/issues/267)) ([071d6e6](https://github.com/lithic-com/lithic-go/commit/071d6e653ce9709c8ee04e7fc5afd0f65e0e932a))
+* update model params behavior ([#262](https://github.com/lithic-com/lithic-go/issues/262)) ([05a3532](https://github.com/lithic-com/lithic-go/commit/05a3532bc919a455a960f9f7d233766b1062f283))
+
+
+### Bug Fixes
+
+* make shared package public ([#273](https://github.com/lithic-com/lithic-go/issues/273)) ([00a7799](https://github.com/lithic-com/lithic-go/commit/00a7799ffbff16f8f906651cd8ea774c716e0680))
+* **test:** fix test github actions job ([#275](https://github.com/lithic-com/lithic-go/issues/275)) ([0e4ccdd](https://github.com/lithic-com/lithic-go/commit/0e4ccddebba350ed6431ff68427c7d286d2c3f49))
+
+
+### Chores
+
+* change test names ([#265](https://github.com/lithic-com/lithic-go/issues/265)) ([22a01b7](https://github.com/lithic-com/lithic-go/commit/22a01b74b9b89e07eaed009f6231565a68a5d0b9))
+* **internal:** add scripts/test, scripts/mock and add ci job ([#274](https://github.com/lithic-com/lithic-go/issues/274)) ([13d5670](https://github.com/lithic-com/lithic-go/commit/13d5670f6a0e36aa6a457599302d6f04ab542768))
+* **internal:** fix Port function for number and boolean enums ([#271](https://github.com/lithic-com/lithic-go/issues/271)) ([c37e9d6](https://github.com/lithic-com/lithic-go/commit/c37e9d63e2114a011ccfd34e9f5733ca03014e9c))
+* **internal:** formatting ([#266](https://github.com/lithic-com/lithic-go/issues/266)) ([c453766](https://github.com/lithic-com/lithic-go/commit/c4537667071f9af0e98f12609d745081eebd0734))
+* **internal:** use actions/checkout@v4 for codeflow ([#270](https://github.com/lithic-com/lithic-go/issues/270)) ([429a92f](https://github.com/lithic-com/lithic-go/commit/429a92fd2ef06c5e71268ec7cf964c7afac1d2a4))
+
+
+### Build System
+
+* configure UTF-8 locale in devcontainer ([#268](https://github.com/lithic-com/lithic-go/issues/268)) ([a34339a](https://github.com/lithic-com/lithic-go/commit/a34339a656e9f88244e06955df7bc3edd2649526))
+
 ## 0.28.0 (2024-04-05)
 
 Full Changelog: [v0.27.0...v0.28.0](https://github.com/lithic-com/lithic-go/compare/v0.27.0...v0.28.0)
