@@ -18,10 +18,11 @@ import (
 )
 
 // FinancialAccountService contains methods and other services that help with
-// interacting with the lithic API. Note, unlike clients, this service does not
-// read variables from the environment automatically. You should not instantiate
-// this service directly, and instead use the [NewFinancialAccountService] method
-// instead.
+// interacting with the lithic API.
+//
+// Note, unlike clients, this service does not read variables from the environment
+// automatically. You should not instantiate this service directly, and instead use
+// the [NewFinancialAccountService] method instead.
 type FinancialAccountService struct {
 	Options               []option.RequestOption
 	Balances              *FinancialAccountBalanceService
