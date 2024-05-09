@@ -15,10 +15,11 @@ import (
 )
 
 // ExternalBankAccountMicroDepositService contains methods and other services that
-// help with interacting with the lithic API. Note, unlike clients, this service
-// does not read variables from the environment automatically. You should not
-// instantiate this service directly, and instead use the
-// [NewExternalBankAccountMicroDepositService] method instead.
+// help with interacting with the lithic API.
+//
+// Note, unlike clients, this service does not read variables from the environment
+// automatically. You should not instantiate this service directly, and instead use
+// the [NewExternalBankAccountMicroDepositService] method instead.
 type ExternalBankAccountMicroDepositService struct {
 	Options []option.RequestOption
 }
