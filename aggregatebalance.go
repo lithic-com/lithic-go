@@ -17,10 +17,11 @@ import (
 )
 
 // AggregateBalanceService contains methods and other services that help with
-// interacting with the lithic API. Note, unlike clients, this service does not
-// read variables from the environment automatically. You should not instantiate
-// this service directly, and instead use the [NewAggregateBalanceService] method
-// instead.
+// interacting with the lithic API.
+//
+// Note, unlike clients, this service does not read variables from the environment
+// automatically. You should not instantiate this service directly, and instead use
+// the [NewAggregateBalanceService] method instead.
 type AggregateBalanceService struct {
 	Options []option.RequestOption
 }
