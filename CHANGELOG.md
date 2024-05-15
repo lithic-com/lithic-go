@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.30.0 (2024-05-15)
+
+Full Changelog: [v0.29.0...v0.30.0](https://github.com/lithic-com/lithic-go/compare/v0.29.0...v0.30.0)
+
+### Features
+
+* propagate resource description field from stainless config to SDK docs ([#280](https://github.com/lithic-com/lithic-go/issues/280)) ([4f9d6c1](https://github.com/lithic-com/lithic-go/commit/4f9d6c1e0e23c946f8ca254cd65a8f9ccd33d177))
+
+
+### Bug Fixes
+
+* fix reading the error body more than once ([#283](https://github.com/lithic-com/lithic-go/issues/283)) ([301e35b](https://github.com/lithic-com/lithic-go/commit/301e35b5a1577f394b45f574df61ed6e6efb325d))
+
+
+### Chores
+
+* **docs:** add SECURITY.md ([#281](https://github.com/lithic-com/lithic-go/issues/281)) ([4fb5392](https://github.com/lithic-com/lithic-go/commit/4fb5392f86a7d0ea73a238919e0024dcc9afaed7))
+* **internal:** add slightly better logging to scripts ([#282](https://github.com/lithic-com/lithic-go/issues/282)) ([a646ba8](https://github.com/lithic-com/lithic-go/commit/a646ba8cf8d57b417fa88ffa14886d0c8322111a))
+* **internal:** fix bootstrap script ([#277](https://github.com/lithic-com/lithic-go/issues/277)) ([80006cf](https://github.com/lithic-com/lithic-go/commit/80006cf47d3a104a4fee0dfdbbb58ae0801374d5))
+
 ## 0.29.0 (2024-05-01)
 
 Full Changelog: [v0.28.0...v0.29.0](https://github.com/lithic-com/lithic-go/compare/v0.28.0...v0.29.0)
