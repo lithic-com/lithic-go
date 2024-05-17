@@ -30,17 +30,17 @@ func TestCardNewWithOptionalParams(t *testing.T) {
 	_, err := client.Cards.New(context.TODO(), lithic.CardNewParams{
 		Type:             lithic.F(lithic.CardNewParamsTypeVirtual),
 		AccountToken:     lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-		CardProgramToken: lithic.F("00000000-0000-0000-1000-000000000000"),
+		CardProgramToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Carrier: lithic.F(shared.CarrierParam{
 			QrCodeURL: lithic.F("string"),
 		}),
-		DigitalCardArtToken: lithic.F("00000000-0000-0000-1000-000000000000"),
+		DigitalCardArtToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		ExpMonth:            lithic.F("06"),
 		ExpYear:             lithic.F("2027"),
 		Memo:                lithic.F("New Card"),
 		Pin:                 lithic.F("string"),
 		ProductID:           lithic.F("1"),
-		ReplacementFor:      lithic.F("00000000-0000-0000-1000-000000000000"),
+		ReplacementFor:      lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		ShippingAddress: lithic.F(shared.ShippingAddressParam{
 			Address1:    lithic.F("5 Broad Street"),
 			Address2:    lithic.F("Unit 25A"),
@@ -107,7 +107,7 @@ func TestCardUpdateWithOptionalParams(t *testing.T) {
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.CardUpdateParams{
 			AuthRuleToken:       lithic.F("string"),
-			DigitalCardArtToken: lithic.F("00000000-0000-0000-1000-000000000000"),
+			DigitalCardArtToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 			Memo:                lithic.F("Updated Name"),
 			Pin:                 lithic.F("string"),
 			SpendLimit:          lithic.F(int64(100)),
