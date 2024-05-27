@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -47,6 +48,10 @@ func (r *DisputeService) New(ctx context.Context, body DisputeNewParams, opts ..
 // Get dispute.
 func (r *DisputeService) Get(ctx context.Context, disputeToken string, opts ...option.RequestOption) (res *Dispute, err error) {
 	opts = append(r.Options[:], opts...)
+	if disputeToken == "" {
+		err = errors.New("missing required dispute_token parameter")
+		return
+	}
 	path := fmt.Sprintf("disputes/%s", disputeToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
@@ -55,6 +60,10 @@ func (r *DisputeService) Get(ctx context.Context, disputeToken string, opts ...o
 // Update dispute. Can only be modified if status is `NEW`.
 func (r *DisputeService) Update(ctx context.Context, disputeToken string, body DisputeUpdateParams, opts ...option.RequestOption) (res *Dispute, err error) {
 	opts = append(r.Options[:], opts...)
+	if disputeToken == "" {
+		err = errors.New("missing required dispute_token parameter")
+		return
+	}
 	path := fmt.Sprintf("disputes/%s", disputeToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
@@ -86,6 +95,10 @@ func (r *DisputeService) ListAutoPaging(ctx context.Context, query DisputeListPa
 // Withdraw dispute.
 func (r *DisputeService) Delete(ctx context.Context, disputeToken string, opts ...option.RequestOption) (res *Dispute, err error) {
 	opts = append(r.Options[:], opts...)
+	if disputeToken == "" {
+		err = errors.New("missing required dispute_token parameter")
+		return
+	}
 	path := fmt.Sprintf("disputes/%s", disputeToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, &res, opts...)
 	return
@@ -95,6 +108,14 @@ func (r *DisputeService) Delete(ctx context.Context, disputeToken string, opts .
 // by Lithic after it is withdrawn.
 func (r *DisputeService) DeleteEvidence(ctx context.Context, disputeToken string, evidenceToken string, opts ...option.RequestOption) (res *DisputeEvidence, err error) {
 	opts = append(r.Options[:], opts...)
+	if disputeToken == "" {
+		err = errors.New("missing required dispute_token parameter")
+		return
+	}
+	if evidenceToken == "" {
+		err = errors.New("missing required evidence_token parameter")
+		return
+	}
 	path := fmt.Sprintf("disputes/%s/evidences/%s", disputeToken, evidenceToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, &res, opts...)
 	return
@@ -107,6 +128,10 @@ func (r *DisputeService) DeleteEvidence(ctx context.Context, disputeToken string
 // less than 5 GiB.
 func (r *DisputeService) InitiateEvidenceUpload(ctx context.Context, disputeToken string, body DisputeInitiateEvidenceUploadParams, opts ...option.RequestOption) (res *DisputeEvidence, err error) {
 	opts = append(r.Options[:], opts...)
+	if disputeToken == "" {
+		err = errors.New("missing required dispute_token parameter")
+		return
+	}
 	path := fmt.Sprintf("disputes/%s/evidences", disputeToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -138,6 +163,14 @@ func (r *DisputeService) ListEvidencesAutoPaging(ctx context.Context, disputeTok
 // Get a dispute's evidence metadata.
 func (r *DisputeService) GetEvidence(ctx context.Context, disputeToken string, evidenceToken string, opts ...option.RequestOption) (res *DisputeEvidence, err error) {
 	opts = append(r.Options[:], opts...)
+	if disputeToken == "" {
+		err = errors.New("missing required dispute_token parameter")
+		return
+	}
+	if evidenceToken == "" {
+		err = errors.New("missing required evidence_token parameter")
+		return
+	}
 	path := fmt.Sprintf("disputes/%s/evidences/%s", disputeToken, evidenceToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return

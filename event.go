@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -41,6 +42,10 @@ func NewEventService(opts ...option.RequestOption) (r *EventService) {
 // Get an event.
 func (r *EventService) Get(ctx context.Context, eventToken string, opts ...option.RequestOption) (res *Event, err error) {
 	opts = append(r.Options[:], opts...)
+	if eventToken == "" {
+		err = errors.New("missing required event_token parameter")
+		return
+	}
 	path := fmt.Sprintf("events/%s", eventToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return

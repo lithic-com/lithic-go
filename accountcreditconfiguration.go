@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -35,6 +36,10 @@ func NewAccountCreditConfigurationService(opts ...option.RequestOption) (r *Acco
 // Get an Account's credit configuration
 func (r *AccountCreditConfigurationService) Get(ctx context.Context, accountToken string, opts ...option.RequestOption) (res *BusinessAccount, err error) {
 	opts = append(r.Options[:], opts...)
+	if accountToken == "" {
+		err = errors.New("missing required account_token parameter")
+		return
+	}
 	path := fmt.Sprintf("accounts/%s/credit_configuration", accountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
@@ -43,6 +48,10 @@ func (r *AccountCreditConfigurationService) Get(ctx context.Context, accountToke
 // Update a Business Accounts credit configuration
 func (r *AccountCreditConfigurationService) Update(ctx context.Context, accountToken string, body AccountCreditConfigurationUpdateParams, opts ...option.RequestOption) (res *BusinessAccount, err error) {
 	opts = append(r.Options[:], opts...)
+	if accountToken == "" {
+		err = errors.New("missing required account_token parameter")
+		return
+	}
 	path := fmt.Sprintf("accounts/%s/credit_configuration", accountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return

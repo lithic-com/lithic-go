@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -36,6 +37,10 @@ func NewExternalBankAccountMicroDepositService(opts ...option.RequestOption) (r 
 // Verify the external bank account by providing the micro deposit amounts.
 func (r *ExternalBankAccountMicroDepositService) New(ctx context.Context, externalBankAccountToken string, body ExternalBankAccountMicroDepositNewParams, opts ...option.RequestOption) (res *ExternalBankAccountMicroDepositNewResponse, err error) {
 	opts = append(r.Options[:], opts...)
+	if externalBankAccountToken == "" {
+		err = errors.New("missing required external_bank_account_token parameter")
+		return
+	}
 	path := fmt.Sprintf("external_bank_accounts/%s/micro_deposits", externalBankAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return

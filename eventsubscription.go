@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -47,6 +48,10 @@ func (r *EventSubscriptionService) New(ctx context.Context, body EventSubscripti
 // Get an event subscription.
 func (r *EventSubscriptionService) Get(ctx context.Context, eventSubscriptionToken string, opts ...option.RequestOption) (res *EventSubscription, err error) {
 	opts = append(r.Options[:], opts...)
+	if eventSubscriptionToken == "" {
+		err = errors.New("missing required event_subscription_token parameter")
+		return
+	}
 	path := fmt.Sprintf("event_subscriptions/%s", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
@@ -55,6 +60,10 @@ func (r *EventSubscriptionService) Get(ctx context.Context, eventSubscriptionTok
 // Update an event subscription.
 func (r *EventSubscriptionService) Update(ctx context.Context, eventSubscriptionToken string, body EventSubscriptionUpdateParams, opts ...option.RequestOption) (res *EventSubscription, err error) {
 	opts = append(r.Options[:], opts...)
+	if eventSubscriptionToken == "" {
+		err = errors.New("missing required event_subscription_token parameter")
+		return
+	}
 	path := fmt.Sprintf("event_subscriptions/%s", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
@@ -87,6 +96,10 @@ func (r *EventSubscriptionService) ListAutoPaging(ctx context.Context, query Eve
 func (r *EventSubscriptionService) Delete(ctx context.Context, eventSubscriptionToken string, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	if eventSubscriptionToken == "" {
+		err = errors.New("missing required event_subscription_token parameter")
+		return
+	}
 	path := fmt.Sprintf("event_subscriptions/%s", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, nil, opts...)
 	return
@@ -119,6 +132,10 @@ func (r *EventSubscriptionService) ListAttemptsAutoPaging(ctx context.Context, e
 func (r *EventSubscriptionService) Recover(ctx context.Context, eventSubscriptionToken string, body EventSubscriptionRecoverParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	if eventSubscriptionToken == "" {
+		err = errors.New("missing required event_subscription_token parameter")
+		return
+	}
 	path := fmt.Sprintf("event_subscriptions/%s/recover", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
 	return
@@ -132,6 +149,10 @@ func (r *EventSubscriptionService) Recover(ctx context.Context, eventSubscriptio
 func (r *EventSubscriptionService) ReplayMissing(ctx context.Context, eventSubscriptionToken string, body EventSubscriptionReplayMissingParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	if eventSubscriptionToken == "" {
+		err = errors.New("missing required event_subscription_token parameter")
+		return
+	}
 	path := fmt.Sprintf("event_subscriptions/%s/replay_missing", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
 	return
@@ -140,6 +161,10 @@ func (r *EventSubscriptionService) ReplayMissing(ctx context.Context, eventSubsc
 // Get the secret for an event subscription.
 func (r *EventSubscriptionService) GetSecret(ctx context.Context, eventSubscriptionToken string, opts ...option.RequestOption) (res *EventSubscriptionGetSecretResponse, err error) {
 	opts = append(r.Options[:], opts...)
+	if eventSubscriptionToken == "" {
+		err = errors.New("missing required event_subscription_token parameter")
+		return
+	}
 	path := fmt.Sprintf("event_subscriptions/%s/secret", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
@@ -150,6 +175,10 @@ func (r *EventSubscriptionService) GetSecret(ctx context.Context, eventSubscript
 func (r *EventSubscriptionService) RotateSecret(ctx context.Context, eventSubscriptionToken string, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	if eventSubscriptionToken == "" {
+		err = errors.New("missing required event_subscription_token parameter")
+		return
+	}
 	path := fmt.Sprintf("event_subscriptions/%s/secret/rotate", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
 	return
@@ -159,6 +188,10 @@ func (r *EventSubscriptionService) RotateSecret(ctx context.Context, eventSubscr
 func (r *EventSubscriptionService) SendSimulatedExample(ctx context.Context, eventSubscriptionToken string, body EventSubscriptionSendSimulatedExampleParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	if eventSubscriptionToken == "" {
+		err = errors.New("missing required event_subscription_token parameter")
+		return
+	}
 	path := fmt.Sprintf("simulate/event_subscriptions/%s/send_example", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
 	return
