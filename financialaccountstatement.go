@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -41,6 +42,14 @@ func NewFinancialAccountStatementService(opts ...option.RequestOption) (r *Finan
 // Get a specific statement for a given financial account.
 func (r *FinancialAccountStatementService) Get(ctx context.Context, financialAccountToken string, statementToken string, opts ...option.RequestOption) (res *Statement, err error) {
 	opts = append(r.Options[:], opts...)
+	if financialAccountToken == "" {
+		err = errors.New("missing required financial_account_token parameter")
+		return
+	}
+	if statementToken == "" {
+		err = errors.New("missing required statement_token parameter")
+		return
+	}
 	path := fmt.Sprintf("financial_accounts/%s/statements/%s", financialAccountToken, statementToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return

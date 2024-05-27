@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -39,6 +40,10 @@ func NewCardProgramService(opts ...option.RequestOption) (r *CardProgramService)
 // Get card program.
 func (r *CardProgramService) Get(ctx context.Context, cardProgramToken string, opts ...option.RequestOption) (res *CardProgram, err error) {
 	opts = append(r.Options[:], opts...)
+	if cardProgramToken == "" {
+		err = errors.New("missing required card_program_token parameter")
+		return
+	}
 	path := fmt.Sprintf("card_programs/%s", cardProgramToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return

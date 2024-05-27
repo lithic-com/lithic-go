@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -48,6 +49,10 @@ func (r *AuthRuleService) New(ctx context.Context, body AuthRuleNewParams, opts 
 // with an existing authorization rule (Auth Rule).
 func (r *AuthRuleService) Get(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (res *AuthRuleGetResponse, err error) {
 	opts = append(r.Options[:], opts...)
+	if authRuleToken == "" {
+		err = errors.New("missing required auth_rule_token parameter")
+		return
+	}
 	path := fmt.Sprintf("auth_rules/%s", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
@@ -57,6 +62,10 @@ func (r *AuthRuleService) Get(ctx context.Context, authRuleToken string, opts ..
 // Rule).
 func (r *AuthRuleService) Update(ctx context.Context, authRuleToken string, body AuthRuleUpdateParams, opts ...option.RequestOption) (res *AuthRule, err error) {
 	opts = append(r.Options[:], opts...)
+	if authRuleToken == "" {
+		err = errors.New("missing required auth_rule_token parameter")
+		return
+	}
 	path := fmt.Sprintf("auth_rules/%s", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPut, path, body, &res, opts...)
 	return
@@ -89,6 +98,10 @@ func (r *AuthRuleService) ListAutoPaging(ctx context.Context, query AuthRuleList
 // card level.
 func (r *AuthRuleService) Apply(ctx context.Context, authRuleToken string, body AuthRuleApplyParams, opts ...option.RequestOption) (res *AuthRule, err error) {
 	opts = append(r.Options[:], opts...)
+	if authRuleToken == "" {
+		err = errors.New("missing required auth_rule_token parameter")
+		return
+	}
 	path := fmt.Sprintf("auth_rules/%s/apply", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
