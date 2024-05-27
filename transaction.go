@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -39,6 +40,10 @@ func NewTransactionService(opts ...option.RequestOption) (r *TransactionService)
 // Get specific card transaction.
 func (r *TransactionService) Get(ctx context.Context, transactionToken string, opts ...option.RequestOption) (res *Transaction, err error) {
 	opts = append(r.Options[:], opts...)
+	if transactionToken == "" {
+		err = errors.New("missing required transaction_token parameter")
+		return
+	}
 	path := fmt.Sprintf("transactions/%s", transactionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return

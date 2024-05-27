@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -39,6 +40,10 @@ func NewDigitalCardArtService(opts ...option.RequestOption) (r *DigitalCardArtSe
 // Get digital card art by token.
 func (r *DigitalCardArtService) Get(ctx context.Context, digitalCardArtToken string, opts ...option.RequestOption) (res *DigitalCardArt, err error) {
 	opts = append(r.Options[:], opts...)
+	if digitalCardArtToken == "" {
+		err = errors.New("missing required digital_card_art_token parameter")
+		return
+	}
 	path := fmt.Sprintf("digital_card_art/%s", digitalCardArtToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return

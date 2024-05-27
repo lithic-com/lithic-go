@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -57,6 +58,10 @@ func (r *AccountHolderService) New(ctx context.Context, body AccountHolderNewPar
 // status.
 func (r *AccountHolderService) Get(ctx context.Context, accountHolderToken string, opts ...option.RequestOption) (res *AccountHolder, err error) {
 	opts = append(r.Options[:], opts...)
+	if accountHolderToken == "" {
+		err = errors.New("missing required account_holder_token parameter")
+		return
+	}
 	path := fmt.Sprintf("account_holders/%s", accountHolderToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
@@ -65,6 +70,10 @@ func (r *AccountHolderService) Get(ctx context.Context, accountHolderToken strin
 // Update the information associated with a particular account holder.
 func (r *AccountHolderService) Update(ctx context.Context, accountHolderToken string, body AccountHolderUpdateParams, opts ...option.RequestOption) (res *AccountHolderUpdateResponse, err error) {
 	opts = append(r.Options[:], opts...)
+	if accountHolderToken == "" {
+		err = errors.New("missing required account_holder_token parameter")
+		return
+	}
 	path := fmt.Sprintf("account_holders/%s", accountHolderToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
@@ -112,6 +121,10 @@ func (r *AccountHolderService) ListAutoPaging(ctx context.Context, query Account
 // state for the corresponding `image_type`.
 func (r *AccountHolderService) ListDocuments(ctx context.Context, accountHolderToken string, opts ...option.RequestOption) (res *AccountHolderListDocumentsResponse, err error) {
 	opts = append(r.Options[:], opts...)
+	if accountHolderToken == "" {
+		err = errors.New("missing required account_holder_token parameter")
+		return
+	}
 	path := fmt.Sprintf("account_holders/%s/documents", accountHolderToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
@@ -127,6 +140,10 @@ func (r *AccountHolderService) ListDocuments(ctx context.Context, accountHolderT
 // status is returned and the account creation process is ended.
 func (r *AccountHolderService) Resubmit(ctx context.Context, accountHolderToken string, body AccountHolderResubmitParams, opts ...option.RequestOption) (res *AccountHolder, err error) {
 	opts = append(r.Options[:], opts...)
+	if accountHolderToken == "" {
+		err = errors.New("missing required account_holder_token parameter")
+		return
+	}
 	path := fmt.Sprintf("account_holders/%s/resubmit", accountHolderToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -148,6 +165,14 @@ func (r *AccountHolderService) Resubmit(ctx context.Context, accountHolderToken 
 // in a `PENDING` state for the corresponding `image_type`.
 func (r *AccountHolderService) GetDocument(ctx context.Context, accountHolderToken string, documentToken string, opts ...option.RequestOption) (res *AccountHolderDocument, err error) {
 	opts = append(r.Options[:], opts...)
+	if accountHolderToken == "" {
+		err = errors.New("missing required account_holder_token parameter")
+		return
+	}
+	if documentToken == "" {
+		err = errors.New("missing required document_token parameter")
+		return
+	}
 	path := fmt.Sprintf("account_holders/%s/documents/%s", accountHolderToken, documentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
@@ -173,6 +198,10 @@ func (r *AccountHolderService) GetDocument(ctx context.Context, accountHolderTok
 // verification.
 func (r *AccountHolderService) UploadDocument(ctx context.Context, accountHolderToken string, body AccountHolderUploadDocumentParams, opts ...option.RequestOption) (res *AccountHolderDocument, err error) {
 	opts = append(r.Options[:], opts...)
+	if accountHolderToken == "" {
+		err = errors.New("missing required account_holder_token parameter")
+		return
+	}
 	path := fmt.Sprintf("account_holders/%s/documents", accountHolderToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return

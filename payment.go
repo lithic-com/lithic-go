@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -47,6 +48,10 @@ func (r *PaymentService) New(ctx context.Context, body PaymentNewParams, opts ..
 // Get the payment by token.
 func (r *PaymentService) Get(ctx context.Context, paymentToken string, opts ...option.RequestOption) (res *Payment, err error) {
 	opts = append(r.Options[:], opts...)
+	if paymentToken == "" {
+		err = errors.New("missing required payment_token parameter")
+		return
+	}
 	path := fmt.Sprintf("payments/%s", paymentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
@@ -78,6 +83,10 @@ func (r *PaymentService) ListAutoPaging(ctx context.Context, query PaymentListPa
 // Retry an origination which has been returned.
 func (r *PaymentService) Retry(ctx context.Context, paymentToken string, opts ...option.RequestOption) (res *PaymentRetryResponse, err error) {
 	opts = append(r.Options[:], opts...)
+	if paymentToken == "" {
+		err = errors.New("missing required payment_token parameter")
+		return
+	}
 	path := fmt.Sprintf("payments/%s/retry", paymentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
 	return

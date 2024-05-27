@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -55,6 +56,10 @@ func (r *CardService) New(ctx context.Context, body CardNewParams, opts ...optio
 // Get card configuration such as spend limit and state.
 func (r *CardService) Get(ctx context.Context, cardToken string, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
+	if cardToken == "" {
+		err = errors.New("missing required card_token parameter")
+		return
+	}
 	path := fmt.Sprintf("cards/%s", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
@@ -67,6 +72,10 @@ func (r *CardService) Get(ctx context.Context, cardToken string, opts ...option.
 // undone._
 func (r *CardService) Update(ctx context.Context, cardToken string, body CardUpdateParams, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
+	if cardToken == "" {
+		err = errors.New("missing required card_token parameter")
+		return
+	}
 	path := fmt.Sprintf("cards/%s", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
@@ -139,6 +148,10 @@ func (r *CardService) Embed(ctx context.Context, query CardEmbedParams, opts ...
 // for more information.
 func (r *CardService) Provision(ctx context.Context, cardToken string, body CardProvisionParams, opts ...option.RequestOption) (res *CardProvisionResponse, err error) {
 	opts = append(r.Options[:], opts...)
+	if cardToken == "" {
+		err = errors.New("missing required card_token parameter")
+		return
+	}
 	path := fmt.Sprintf("cards/%s/provision", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -149,6 +162,10 @@ func (r *CardService) Provision(ctx context.Context, cardToken string, body Card
 // Only applies to cards of type `PHYSICAL`.
 func (r *CardService) Reissue(ctx context.Context, cardToken string, body CardReissueParams, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
+	if cardToken == "" {
+		err = errors.New("missing required card_token parameter")
+		return
+	}
 	path := fmt.Sprintf("cards/%s/reissue", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -159,6 +176,10 @@ func (r *CardService) Reissue(ctx context.Context, cardToken string, body CardRe
 // Only applies to cards of type `PHYSICAL`.
 func (r *CardService) Renew(ctx context.Context, cardToken string, body CardRenewParams, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
+	if cardToken == "" {
+		err = errors.New("missing required card_token parameter")
+		return
+	}
 	path := fmt.Sprintf("cards/%s/renew", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -170,6 +191,10 @@ func (r *CardService) Renew(ctx context.Context, cardToken string, body CardRene
 // spent $600 in the last month, the available spend limit returned would be $400.
 func (r *CardService) GetSpendLimits(ctx context.Context, cardToken string, opts ...option.RequestOption) (res *CardSpendLimits, err error) {
 	opts = append(r.Options[:], opts...)
+	if cardToken == "" {
+		err = errors.New("missing required card_token parameter")
+		return
+	}
 	path := fmt.Sprintf("cards/%s/spend_limits", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return

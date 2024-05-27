@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -39,6 +40,10 @@ func NewTokenizationService(opts ...option.RequestOption) (r *TokenizationServic
 // Get tokenization
 func (r *TokenizationService) Get(ctx context.Context, tokenizationToken string, opts ...option.RequestOption) (res *TokenizationGetResponse, err error) {
 	opts = append(r.Options[:], opts...)
+	if tokenizationToken == "" {
+		err = errors.New("missing required tokenization_token parameter")
+		return
+	}
 	path := fmt.Sprintf("tokenizations/%s", tokenizationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
