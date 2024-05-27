@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -49,6 +50,10 @@ func (r *ExternalBankAccountService) New(ctx context.Context, body ExternalBankA
 // Get the external bank account by token.
 func (r *ExternalBankAccountService) Get(ctx context.Context, externalBankAccountToken string, opts ...option.RequestOption) (res *ExternalBankAccountGetResponse, err error) {
 	opts = append(r.Options[:], opts...)
+	if externalBankAccountToken == "" {
+		err = errors.New("missing required external_bank_account_token parameter")
+		return
+	}
 	path := fmt.Sprintf("external_bank_accounts/%s", externalBankAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
@@ -57,6 +62,10 @@ func (r *ExternalBankAccountService) Get(ctx context.Context, externalBankAccoun
 // Update the external bank account by token.
 func (r *ExternalBankAccountService) Update(ctx context.Context, externalBankAccountToken string, body ExternalBankAccountUpdateParams, opts ...option.RequestOption) (res *ExternalBankAccountUpdateResponse, err error) {
 	opts = append(r.Options[:], opts...)
+	if externalBankAccountToken == "" {
+		err = errors.New("missing required external_bank_account_token parameter")
+		return
+	}
 	path := fmt.Sprintf("external_bank_accounts/%s", externalBankAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
@@ -88,6 +97,10 @@ func (r *ExternalBankAccountService) ListAutoPaging(ctx context.Context, query E
 // Retry external bank account micro deposit verification.
 func (r *ExternalBankAccountService) RetryMicroDeposits(ctx context.Context, externalBankAccountToken string, body ExternalBankAccountRetryMicroDepositsParams, opts ...option.RequestOption) (res *ExternalBankAccountRetryMicroDepositsResponse, err error) {
 	opts = append(r.Options[:], opts...)
+	if externalBankAccountToken == "" {
+		err = errors.New("missing required external_bank_account_token parameter")
+		return
+	}
 	path := fmt.Sprintf("external_bank_accounts/%s/retry_micro_deposits", externalBankAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return

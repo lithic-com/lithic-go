@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -41,6 +42,10 @@ func NewAccountService(opts ...option.RequestOption) (r *AccountService) {
 // Get account configuration such as spend limits.
 func (r *AccountService) Get(ctx context.Context, accountToken string, opts ...option.RequestOption) (res *Account, err error) {
 	opts = append(r.Options[:], opts...)
+	if accountToken == "" {
+		err = errors.New("missing required account_token parameter")
+		return
+	}
 	path := fmt.Sprintf("accounts/%s", accountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
@@ -53,6 +58,10 @@ func (r *AccountService) Get(ctx context.Context, accountToken string, opts ...o
 // new cards.
 func (r *AccountService) Update(ctx context.Context, accountToken string, body AccountUpdateParams, opts ...option.RequestOption) (res *Account, err error) {
 	opts = append(r.Options[:], opts...)
+	if accountToken == "" {
+		err = errors.New("missing required account_token parameter")
+		return
+	}
 	path := fmt.Sprintf("accounts/%s", accountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
@@ -88,6 +97,10 @@ func (r *AccountService) ListAutoPaging(ctx context.Context, query AccountListPa
 // returned would be $400.
 func (r *AccountService) GetSpendLimits(ctx context.Context, accountToken string, opts ...option.RequestOption) (res *AccountSpendLimits, err error) {
 	opts = append(r.Options[:], opts...)
+	if accountToken == "" {
+		err = errors.New("missing required account_token parameter")
+		return
+	}
 	path := fmt.Sprintf("accounts/%s/spend_limits", accountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return

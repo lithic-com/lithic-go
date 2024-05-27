@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -36,6 +37,10 @@ func NewThreeDSAuthenticationService(opts ...option.RequestOption) (r *ThreeDSAu
 // Get 3DS Authentication by token
 func (r *ThreeDSAuthenticationService) Get(ctx context.Context, threeDSAuthenticationToken string, opts ...option.RequestOption) (res *ThreeDSAuthenticationGetResponse, err error) {
 	opts = append(r.Options[:], opts...)
+	if threeDSAuthenticationToken == "" {
+		err = errors.New("missing required three_ds_authentication_token parameter")
+		return
+	}
 	path := fmt.Sprintf("three_ds_authentication/%s", threeDSAuthenticationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
