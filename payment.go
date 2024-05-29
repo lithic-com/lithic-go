@@ -92,6 +92,26 @@ func (r *PaymentService) Retry(ctx context.Context, paymentToken string, opts ..
 	return
 }
 
+// Simulate payment lifecycle event
+func (r *PaymentService) SimulateAction(ctx context.Context, paymentToken string, body PaymentSimulateActionParams, opts ...option.RequestOption) (res *PaymentSimulateActionResponse, err error) {
+	opts = append(r.Options[:], opts...)
+	if paymentToken == "" {
+		err = errors.New("missing required payment_token parameter")
+		return
+	}
+	path := fmt.Sprintf("simulate/payments/%s/action", paymentToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+	return
+}
+
+// Simulates a receipt of a Payment.
+func (r *PaymentService) SimulateReceipt(ctx context.Context, body PaymentSimulateReceiptParams, opts ...option.RequestOption) (res *PaymentSimulateReceiptResponse, err error) {
+	opts = append(r.Options[:], opts...)
+	path := "simulate/payments/receipt"
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+	return
+}
+
 // Simulates a release of a Payment.
 func (r *PaymentService) SimulateRelease(ctx context.Context, body PaymentSimulateReleaseParams, opts ...option.RequestOption) (res *PaymentSimulateReleaseResponse, err error) {
 	opts = append(r.Options[:], opts...)
@@ -277,11 +297,102 @@ func (r paymentRetryResponseJSON) RawJSON() string {
 	return r.raw
 }
 
+type PaymentSimulateActionResponse struct {
+	// Debugging Request Id
+	DebuggingRequestID string `json:"debugging_request_id,required" format:"uuid"`
+	// Request Result
+	Result PaymentSimulateActionResponseResult `json:"result,required"`
+	// Transaction Event Token
+	TransactionEventToken string                            `json:"transaction_event_token,required" format:"uuid"`
+	JSON                  paymentSimulateActionResponseJSON `json:"-"`
+}
+
+// paymentSimulateActionResponseJSON contains the JSON metadata for the struct
+// [PaymentSimulateActionResponse]
+type paymentSimulateActionResponseJSON struct {
+	DebuggingRequestID    apijson.Field
+	Result                apijson.Field
+	TransactionEventToken apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
+}
+
+func (r *PaymentSimulateActionResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r paymentSimulateActionResponseJSON) RawJSON() string {
+	return r.raw
+}
+
+// Request Result
+type PaymentSimulateActionResponseResult string
+
+const (
+	PaymentSimulateActionResponseResultApproved PaymentSimulateActionResponseResult = "APPROVED"
+	PaymentSimulateActionResponseResultDeclined PaymentSimulateActionResponseResult = "DECLINED"
+)
+
+func (r PaymentSimulateActionResponseResult) IsKnown() bool {
+	switch r {
+	case PaymentSimulateActionResponseResultApproved, PaymentSimulateActionResponseResultDeclined:
+		return true
+	}
+	return false
+}
+
+type PaymentSimulateReceiptResponse struct {
+	// Debugging Request Id
+	DebuggingRequestID string `json:"debugging_request_id,required" format:"uuid"`
+	// Request Result
+	Result PaymentSimulateReceiptResponseResult `json:"result,required"`
+	// Transaction Event Token
+	TransactionEventToken string                             `json:"transaction_event_token,required" format:"uuid"`
+	JSON                  paymentSimulateReceiptResponseJSON `json:"-"`
+}
+
+// paymentSimulateReceiptResponseJSON contains the JSON metadata for the struct
+// [PaymentSimulateReceiptResponse]
+type paymentSimulateReceiptResponseJSON struct {
+	DebuggingRequestID    apijson.Field
+	Result                apijson.Field
+	TransactionEventToken apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
+}
+
+func (r *PaymentSimulateReceiptResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r paymentSimulateReceiptResponseJSON) RawJSON() string {
+	return r.raw
+}
+
+// Request Result
+type PaymentSimulateReceiptResponseResult string
+
+const (
+	PaymentSimulateReceiptResponseResultApproved PaymentSimulateReceiptResponseResult = "APPROVED"
+	PaymentSimulateReceiptResponseResultDeclined PaymentSimulateReceiptResponseResult = "DECLINED"
+)
+
+func (r PaymentSimulateReceiptResponseResult) IsKnown() bool {
+	switch r {
+	case PaymentSimulateReceiptResponseResultApproved, PaymentSimulateReceiptResponseResultDeclined:
+		return true
+	}
+	return false
+}
+
 type PaymentSimulateReleaseResponse struct {
-	DebuggingRequestID    string                               `json:"debugging_request_id" format:"uuid"`
-	Result                PaymentSimulateReleaseResponseResult `json:"result"`
-	TransactionEventToken string                               `json:"transaction_event_token" format:"uuid"`
-	JSON                  paymentSimulateReleaseResponseJSON   `json:"-"`
+	// Debugging Request Id
+	DebuggingRequestID string `json:"debugging_request_id,required" format:"uuid"`
+	// Request Result
+	Result PaymentSimulateReleaseResponseResult `json:"result,required"`
+	// Transaction Event Token
+	TransactionEventToken string                             `json:"transaction_event_token,required" format:"uuid"`
+	JSON                  paymentSimulateReleaseResponseJSON `json:"-"`
 }
 
 // paymentSimulateReleaseResponseJSON contains the JSON metadata for the struct
@@ -302,6 +413,7 @@ func (r paymentSimulateReleaseResponseJSON) RawJSON() string {
 	return r.raw
 }
 
+// Request Result
 type PaymentSimulateReleaseResponseResult string
 
 const (
@@ -318,10 +430,13 @@ func (r PaymentSimulateReleaseResponseResult) IsKnown() bool {
 }
 
 type PaymentSimulateReturnResponse struct {
-	DebuggingRequestID    string                              `json:"debugging_request_id" format:"uuid"`
-	Result                PaymentSimulateReturnResponseResult `json:"result"`
-	TransactionEventToken string                              `json:"transaction_event_token" format:"uuid"`
-	JSON                  paymentSimulateReturnResponseJSON   `json:"-"`
+	// Debugging Request Id
+	DebuggingRequestID string `json:"debugging_request_id,required" format:"uuid"`
+	// Request Result
+	Result PaymentSimulateReturnResponseResult `json:"result,required"`
+	// Transaction Event Token
+	TransactionEventToken string                            `json:"transaction_event_token,required" format:"uuid"`
+	JSON                  paymentSimulateReturnResponseJSON `json:"-"`
 }
 
 // paymentSimulateReturnResponseJSON contains the JSON metadata for the struct
@@ -342,6 +457,7 @@ func (r paymentSimulateReturnResponseJSON) RawJSON() string {
 	return r.raw
 }
 
+// Request Result
 type PaymentSimulateReturnResponseResult string
 
 const (
@@ -493,7 +609,92 @@ func (r PaymentListParamsStatus) IsKnown() bool {
 	return false
 }
 
+type PaymentSimulateActionParams struct {
+	// Event Type
+	EventType param.Field[PaymentSimulateActionParamsEventType] `json:"event_type,required"`
+	// Decline reason
+	DeclineReason param.Field[PaymentSimulateActionParamsDeclineReason] `json:"decline_reason"`
+	// Return Reason Code
+	ReturnReasonCode param.Field[string] `json:"return_reason_code"`
+}
+
+func (r PaymentSimulateActionParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// Event Type
+type PaymentSimulateActionParamsEventType string
+
+const (
+	PaymentSimulateActionParamsEventTypeACHOriginationReviewed  PaymentSimulateActionParamsEventType = "ACH_ORIGINATION_REVIEWED"
+	PaymentSimulateActionParamsEventTypeACHOriginationReleased  PaymentSimulateActionParamsEventType = "ACH_ORIGINATION_RELEASED"
+	PaymentSimulateActionParamsEventTypeACHOriginationProcessed PaymentSimulateActionParamsEventType = "ACH_ORIGINATION_PROCESSED"
+	PaymentSimulateActionParamsEventTypeACHOriginationSettled   PaymentSimulateActionParamsEventType = "ACH_ORIGINATION_SETTLED"
+	PaymentSimulateActionParamsEventTypeACHReceiptSettled       PaymentSimulateActionParamsEventType = "ACH_RECEIPT_SETTLED"
+	PaymentSimulateActionParamsEventTypeACHReturnInitiated      PaymentSimulateActionParamsEventType = "ACH_RETURN_INITIATED"
+	PaymentSimulateActionParamsEventTypeACHReturnProcessed      PaymentSimulateActionParamsEventType = "ACH_RETURN_PROCESSED"
+)
+
+func (r PaymentSimulateActionParamsEventType) IsKnown() bool {
+	switch r {
+	case PaymentSimulateActionParamsEventTypeACHOriginationReviewed, PaymentSimulateActionParamsEventTypeACHOriginationReleased, PaymentSimulateActionParamsEventTypeACHOriginationProcessed, PaymentSimulateActionParamsEventTypeACHOriginationSettled, PaymentSimulateActionParamsEventTypeACHReceiptSettled, PaymentSimulateActionParamsEventTypeACHReturnInitiated, PaymentSimulateActionParamsEventTypeACHReturnProcessed:
+		return true
+	}
+	return false
+}
+
+// Decline reason
+type PaymentSimulateActionParamsDeclineReason string
+
+const (
+	PaymentSimulateActionParamsDeclineReasonProgramTransactionLimitsExceeded PaymentSimulateActionParamsDeclineReason = "PROGRAM_TRANSACTION_LIMITS_EXCEEDED"
+	PaymentSimulateActionParamsDeclineReasonProgramDailyLimitsExceeded       PaymentSimulateActionParamsDeclineReason = "PROGRAM_DAILY_LIMITS_EXCEEDED"
+	PaymentSimulateActionParamsDeclineReasonProgramMonthlyLimitsExceeded     PaymentSimulateActionParamsDeclineReason = "PROGRAM_MONTHLY_LIMITS_EXCEEDED"
+)
+
+func (r PaymentSimulateActionParamsDeclineReason) IsKnown() bool {
+	switch r {
+	case PaymentSimulateActionParamsDeclineReasonProgramTransactionLimitsExceeded, PaymentSimulateActionParamsDeclineReasonProgramDailyLimitsExceeded, PaymentSimulateActionParamsDeclineReasonProgramMonthlyLimitsExceeded:
+		return true
+	}
+	return false
+}
+
+type PaymentSimulateReceiptParams struct {
+	// Payment token
+	Token param.Field[string] `json:"token,required" format:"uuid"`
+	// Amount
+	Amount param.Field[int64] `json:"amount,required"`
+	// Financial Account Token
+	FinancialAccountToken param.Field[string] `json:"financial_account_token,required" format:"uuid"`
+	// Receipt Type
+	ReceiptType param.Field[PaymentSimulateReceiptParamsReceiptType] `json:"receipt_type,required"`
+	// Memo
+	Memo param.Field[string] `json:"memo"`
+}
+
+func (r PaymentSimulateReceiptParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// Receipt Type
+type PaymentSimulateReceiptParamsReceiptType string
+
+const (
+	PaymentSimulateReceiptParamsReceiptTypeReceiptCredit PaymentSimulateReceiptParamsReceiptType = "RECEIPT_CREDIT"
+	PaymentSimulateReceiptParamsReceiptTypeReceiptDebit  PaymentSimulateReceiptParamsReceiptType = "RECEIPT_DEBIT"
+)
+
+func (r PaymentSimulateReceiptParamsReceiptType) IsKnown() bool {
+	switch r {
+	case PaymentSimulateReceiptParamsReceiptTypeReceiptCredit, PaymentSimulateReceiptParamsReceiptTypeReceiptDebit:
+		return true
+	}
+	return false
+}
+
 type PaymentSimulateReleaseParams struct {
+	// Payment Token
 	PaymentToken param.Field[string] `json:"payment_token,required" format:"uuid"`
 }
 
@@ -502,7 +703,9 @@ func (r PaymentSimulateReleaseParams) MarshalJSON() (data []byte, err error) {
 }
 
 type PaymentSimulateReturnParams struct {
-	PaymentToken     param.Field[string] `json:"payment_token,required" format:"uuid"`
+	// Payment Token
+	PaymentToken param.Field[string] `json:"payment_token,required" format:"uuid"`
+	// Return Reason Code
 	ReturnReasonCode param.Field[string] `json:"return_reason_code"`
 }
 
