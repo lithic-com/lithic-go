@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.32.0 (2024-05-29)
+
+Full Changelog: [v0.31.0...v0.32.0](https://github.com/lithic-com/lithic-go/compare/v0.31.0...v0.32.0)
+
+### Features
+
+* **api:** add simulate_receipt and simulate_action endpoints ([#291](https://github.com/lithic-com/lithic-go/issues/291)) ([7280fe3](https://github.com/lithic-com/lithic-go/commit/7280fe31cd84fa05b5aeef4cadee31796e9eb70d))
+
 ## 0.31.0 (2024-05-29)
 
 Full Changelog: [v0.30.0...v0.31.0](https://github.com/lithic-com/lithic-go/compare/v0.30.0...v0.31.0)
