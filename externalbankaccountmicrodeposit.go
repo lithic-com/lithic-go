@@ -65,32 +65,38 @@ type ExternalBankAccountMicroDepositNewResponse struct {
 	LastFour string `json:"last_four,required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner         string                                              `json:"owner,required"`
-	OwnerType     ExternalBankAccountMicroDepositNewResponseOwnerType `json:"owner_type,required"`
-	RoutingNumber string                                              `json:"routing_number,required"`
-	State         ExternalBankAccountMicroDepositNewResponseState     `json:"state,required"`
-	Type          ExternalBankAccountMicroDepositNewResponseType      `json:"type,required"`
+	Owner string `json:"owner,required"`
+	// Owner Type
+	OwnerType ExternalBankAccountMicroDepositNewResponseOwnerType `json:"owner_type,required"`
+	// Routing Number
+	RoutingNumber string `json:"routing_number,required"`
+	// Account State
+	State ExternalBankAccountMicroDepositNewResponseState `json:"state,required"`
+	// Account Type
+	Type ExternalBankAccountMicroDepositNewResponseType `json:"type,required"`
 	// The number of attempts at verification
-	VerificationAttempts int64                                                        `json:"verification_attempts,required"`
-	VerificationMethod   ExternalBankAccountMicroDepositNewResponseVerificationMethod `json:"verification_method,required"`
-	VerificationState    ExternalBankAccountMicroDepositNewResponseVerificationState  `json:"verification_state,required"`
+	VerificationAttempts int64 `json:"verification_attempts,required"`
+	// Verification Method
+	VerificationMethod ExternalBankAccountMicroDepositNewResponseVerificationMethod `json:"verification_method,required"`
+	// Verification State
+	VerificationState ExternalBankAccountMicroDepositNewResponseVerificationState `json:"verification_state,required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
 	AccountToken string `json:"account_token" format:"uuid"`
-	// Address used during Address Verification Service (AVS) checks during
-	// transactions if enabled via Auth Rules.
+	// Address
 	Address ExternalBankAccountAddress `json:"address"`
 	// Optional field that helps identify bank accounts in receipts
 	CompanyID string `json:"company_id"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob             time.Time `json:"dob" format:"date"`
-	DoingBusinessAs string    `json:"doing_business_as"`
-	// The financial account token of the operating account, which will provide the
-	// funds for micro deposits used to verify the account
+	Dob time.Time `json:"dob" format:"date"`
+	// Doing Business As
+	DoingBusinessAs string `json:"doing_business_as"`
+	// The financial account token of the operating account to fund the micro deposits
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
 	// The nickname given to this record of External Bank Account
-	Name          string `json:"name"`
+	Name string `json:"name"`
+	// User Defined ID
 	UserDefinedID string `json:"user_defined_id"`
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
@@ -136,6 +142,7 @@ func (r externalBankAccountMicroDepositNewResponseJSON) RawJSON() string {
 	return r.raw
 }
 
+// Owner Type
 type ExternalBankAccountMicroDepositNewResponseOwnerType string
 
 const (
@@ -151,22 +158,24 @@ func (r ExternalBankAccountMicroDepositNewResponseOwnerType) IsKnown() bool {
 	return false
 }
 
+// Account State
 type ExternalBankAccountMicroDepositNewResponseState string
 
 const (
-	ExternalBankAccountMicroDepositNewResponseStateClosed  ExternalBankAccountMicroDepositNewResponseState = "CLOSED"
 	ExternalBankAccountMicroDepositNewResponseStateEnabled ExternalBankAccountMicroDepositNewResponseState = "ENABLED"
+	ExternalBankAccountMicroDepositNewResponseStateClosed  ExternalBankAccountMicroDepositNewResponseState = "CLOSED"
 	ExternalBankAccountMicroDepositNewResponseStatePaused  ExternalBankAccountMicroDepositNewResponseState = "PAUSED"
 )
 
 func (r ExternalBankAccountMicroDepositNewResponseState) IsKnown() bool {
 	switch r {
-	case ExternalBankAccountMicroDepositNewResponseStateClosed, ExternalBankAccountMicroDepositNewResponseStateEnabled, ExternalBankAccountMicroDepositNewResponseStatePaused:
+	case ExternalBankAccountMicroDepositNewResponseStateEnabled, ExternalBankAccountMicroDepositNewResponseStateClosed, ExternalBankAccountMicroDepositNewResponseStatePaused:
 		return true
 	}
 	return false
 }
 
+// Account Type
 type ExternalBankAccountMicroDepositNewResponseType string
 
 const (
@@ -182,6 +191,7 @@ func (r ExternalBankAccountMicroDepositNewResponseType) IsKnown() bool {
 	return false
 }
 
+// Verification Method
 type ExternalBankAccountMicroDepositNewResponseVerificationMethod string
 
 const (
@@ -199,18 +209,19 @@ func (r ExternalBankAccountMicroDepositNewResponseVerificationMethod) IsKnown() 
 	return false
 }
 
+// Verification State
 type ExternalBankAccountMicroDepositNewResponseVerificationState string
 
 const (
+	ExternalBankAccountMicroDepositNewResponseVerificationStatePending            ExternalBankAccountMicroDepositNewResponseVerificationState = "PENDING"
 	ExternalBankAccountMicroDepositNewResponseVerificationStateEnabled            ExternalBankAccountMicroDepositNewResponseVerificationState = "ENABLED"
 	ExternalBankAccountMicroDepositNewResponseVerificationStateFailedVerification ExternalBankAccountMicroDepositNewResponseVerificationState = "FAILED_VERIFICATION"
 	ExternalBankAccountMicroDepositNewResponseVerificationStateInsufficientFunds  ExternalBankAccountMicroDepositNewResponseVerificationState = "INSUFFICIENT_FUNDS"
-	ExternalBankAccountMicroDepositNewResponseVerificationStatePending            ExternalBankAccountMicroDepositNewResponseVerificationState = "PENDING"
 )
 
 func (r ExternalBankAccountMicroDepositNewResponseVerificationState) IsKnown() bool {
 	switch r {
-	case ExternalBankAccountMicroDepositNewResponseVerificationStateEnabled, ExternalBankAccountMicroDepositNewResponseVerificationStateFailedVerification, ExternalBankAccountMicroDepositNewResponseVerificationStateInsufficientFunds, ExternalBankAccountMicroDepositNewResponseVerificationStatePending:
+	case ExternalBankAccountMicroDepositNewResponseVerificationStatePending, ExternalBankAccountMicroDepositNewResponseVerificationStateEnabled, ExternalBankAccountMicroDepositNewResponseVerificationStateFailedVerification, ExternalBankAccountMicroDepositNewResponseVerificationStateInsufficientFunds:
 		return true
 	}
 	return false
