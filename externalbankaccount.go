@@ -106,8 +106,6 @@ func (r *ExternalBankAccountService) RetryMicroDeposits(ctx context.Context, ext
 	return
 }
 
-// Address used during Address Verification Service (AVS) checks during
-// transactions if enabled via Auth Rules.
 type ExternalBankAccountAddress struct {
 	Address1   string                         `json:"address1,required"`
 	City       string                         `json:"city,required"`
@@ -139,8 +137,6 @@ func (r externalBankAccountAddressJSON) RawJSON() string {
 	return r.raw
 }
 
-// Address used during Address Verification Service (AVS) checks during
-// transactions if enabled via Auth Rules.
 type ExternalBankAccountAddressParam struct {
 	Address1   param.Field[string] `json:"address1,required"`
 	City       param.Field[string] `json:"city,required"`
@@ -157,13 +153,13 @@ func (r ExternalBankAccountAddressParam) MarshalJSON() (data []byte, err error) 
 type OwnerType string
 
 const (
-	OwnerTypeBusiness   OwnerType = "BUSINESS"
 	OwnerTypeIndividual OwnerType = "INDIVIDUAL"
+	OwnerTypeBusiness   OwnerType = "BUSINESS"
 )
 
 func (r OwnerType) IsKnown() bool {
 	switch r {
-	case OwnerTypeBusiness, OwnerTypeIndividual:
+	case OwnerTypeIndividual, OwnerTypeBusiness:
 		return true
 	}
 	return false
@@ -205,32 +201,38 @@ type ExternalBankAccountNewResponse struct {
 	LastFour string `json:"last_four,required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner         string                                  `json:"owner,required"`
-	OwnerType     ExternalBankAccountNewResponseOwnerType `json:"owner_type,required"`
-	RoutingNumber string                                  `json:"routing_number,required"`
-	State         ExternalBankAccountNewResponseState     `json:"state,required"`
-	Type          ExternalBankAccountNewResponseType      `json:"type,required"`
+	Owner string `json:"owner,required"`
+	// Owner Type
+	OwnerType ExternalBankAccountNewResponseOwnerType `json:"owner_type,required"`
+	// Routing Number
+	RoutingNumber string `json:"routing_number,required"`
+	// Account State
+	State ExternalBankAccountNewResponseState `json:"state,required"`
+	// Account Type
+	Type ExternalBankAccountNewResponseType `json:"type,required"`
 	// The number of attempts at verification
-	VerificationAttempts int64                                            `json:"verification_attempts,required"`
-	VerificationMethod   ExternalBankAccountNewResponseVerificationMethod `json:"verification_method,required"`
-	VerificationState    ExternalBankAccountNewResponseVerificationState  `json:"verification_state,required"`
+	VerificationAttempts int64 `json:"verification_attempts,required"`
+	// Verification Method
+	VerificationMethod ExternalBankAccountNewResponseVerificationMethod `json:"verification_method,required"`
+	// Verification State
+	VerificationState ExternalBankAccountNewResponseVerificationState `json:"verification_state,required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
 	AccountToken string `json:"account_token" format:"uuid"`
-	// Address used during Address Verification Service (AVS) checks during
-	// transactions if enabled via Auth Rules.
+	// Address
 	Address ExternalBankAccountAddress `json:"address"`
 	// Optional field that helps identify bank accounts in receipts
 	CompanyID string `json:"company_id"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob             time.Time `json:"dob" format:"date"`
-	DoingBusinessAs string    `json:"doing_business_as"`
-	// The financial account token of the operating account, which will provide the
-	// funds for micro deposits used to verify the account
+	Dob time.Time `json:"dob" format:"date"`
+	// Doing Business As
+	DoingBusinessAs string `json:"doing_business_as"`
+	// The financial account token of the operating account to fund the micro deposits
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
 	// The nickname given to this record of External Bank Account
-	Name          string `json:"name"`
+	Name string `json:"name"`
+	// User Defined ID
 	UserDefinedID string `json:"user_defined_id"`
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
@@ -276,6 +278,7 @@ func (r externalBankAccountNewResponseJSON) RawJSON() string {
 	return r.raw
 }
 
+// Owner Type
 type ExternalBankAccountNewResponseOwnerType string
 
 const (
@@ -291,22 +294,24 @@ func (r ExternalBankAccountNewResponseOwnerType) IsKnown() bool {
 	return false
 }
 
+// Account State
 type ExternalBankAccountNewResponseState string
 
 const (
-	ExternalBankAccountNewResponseStateClosed  ExternalBankAccountNewResponseState = "CLOSED"
 	ExternalBankAccountNewResponseStateEnabled ExternalBankAccountNewResponseState = "ENABLED"
+	ExternalBankAccountNewResponseStateClosed  ExternalBankAccountNewResponseState = "CLOSED"
 	ExternalBankAccountNewResponseStatePaused  ExternalBankAccountNewResponseState = "PAUSED"
 )
 
 func (r ExternalBankAccountNewResponseState) IsKnown() bool {
 	switch r {
-	case ExternalBankAccountNewResponseStateClosed, ExternalBankAccountNewResponseStateEnabled, ExternalBankAccountNewResponseStatePaused:
+	case ExternalBankAccountNewResponseStateEnabled, ExternalBankAccountNewResponseStateClosed, ExternalBankAccountNewResponseStatePaused:
 		return true
 	}
 	return false
 }
 
+// Account Type
 type ExternalBankAccountNewResponseType string
 
 const (
@@ -322,6 +327,7 @@ func (r ExternalBankAccountNewResponseType) IsKnown() bool {
 	return false
 }
 
+// Verification Method
 type ExternalBankAccountNewResponseVerificationMethod string
 
 const (
@@ -339,18 +345,19 @@ func (r ExternalBankAccountNewResponseVerificationMethod) IsKnown() bool {
 	return false
 }
 
+// Verification State
 type ExternalBankAccountNewResponseVerificationState string
 
 const (
+	ExternalBankAccountNewResponseVerificationStatePending            ExternalBankAccountNewResponseVerificationState = "PENDING"
 	ExternalBankAccountNewResponseVerificationStateEnabled            ExternalBankAccountNewResponseVerificationState = "ENABLED"
 	ExternalBankAccountNewResponseVerificationStateFailedVerification ExternalBankAccountNewResponseVerificationState = "FAILED_VERIFICATION"
 	ExternalBankAccountNewResponseVerificationStateInsufficientFunds  ExternalBankAccountNewResponseVerificationState = "INSUFFICIENT_FUNDS"
-	ExternalBankAccountNewResponseVerificationStatePending            ExternalBankAccountNewResponseVerificationState = "PENDING"
 )
 
 func (r ExternalBankAccountNewResponseVerificationState) IsKnown() bool {
 	switch r {
-	case ExternalBankAccountNewResponseVerificationStateEnabled, ExternalBankAccountNewResponseVerificationStateFailedVerification, ExternalBankAccountNewResponseVerificationStateInsufficientFunds, ExternalBankAccountNewResponseVerificationStatePending:
+	case ExternalBankAccountNewResponseVerificationStatePending, ExternalBankAccountNewResponseVerificationStateEnabled, ExternalBankAccountNewResponseVerificationStateFailedVerification, ExternalBankAccountNewResponseVerificationStateInsufficientFunds:
 		return true
 	}
 	return false
@@ -375,32 +382,38 @@ type ExternalBankAccountGetResponse struct {
 	LastFour string `json:"last_four,required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner         string                                  `json:"owner,required"`
-	OwnerType     ExternalBankAccountGetResponseOwnerType `json:"owner_type,required"`
-	RoutingNumber string                                  `json:"routing_number,required"`
-	State         ExternalBankAccountGetResponseState     `json:"state,required"`
-	Type          ExternalBankAccountGetResponseType      `json:"type,required"`
+	Owner string `json:"owner,required"`
+	// Owner Type
+	OwnerType ExternalBankAccountGetResponseOwnerType `json:"owner_type,required"`
+	// Routing Number
+	RoutingNumber string `json:"routing_number,required"`
+	// Account State
+	State ExternalBankAccountGetResponseState `json:"state,required"`
+	// Account Type
+	Type ExternalBankAccountGetResponseType `json:"type,required"`
 	// The number of attempts at verification
-	VerificationAttempts int64                                            `json:"verification_attempts,required"`
-	VerificationMethod   ExternalBankAccountGetResponseVerificationMethod `json:"verification_method,required"`
-	VerificationState    ExternalBankAccountGetResponseVerificationState  `json:"verification_state,required"`
+	VerificationAttempts int64 `json:"verification_attempts,required"`
+	// Verification Method
+	VerificationMethod ExternalBankAccountGetResponseVerificationMethod `json:"verification_method,required"`
+	// Verification State
+	VerificationState ExternalBankAccountGetResponseVerificationState `json:"verification_state,required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
 	AccountToken string `json:"account_token" format:"uuid"`
-	// Address used during Address Verification Service (AVS) checks during
-	// transactions if enabled via Auth Rules.
+	// Address
 	Address ExternalBankAccountAddress `json:"address"`
 	// Optional field that helps identify bank accounts in receipts
 	CompanyID string `json:"company_id"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob             time.Time `json:"dob" format:"date"`
-	DoingBusinessAs string    `json:"doing_business_as"`
-	// The financial account token of the operating account, which will provide the
-	// funds for micro deposits used to verify the account
+	Dob time.Time `json:"dob" format:"date"`
+	// Doing Business As
+	DoingBusinessAs string `json:"doing_business_as"`
+	// The financial account token of the operating account to fund the micro deposits
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
 	// The nickname given to this record of External Bank Account
-	Name          string `json:"name"`
+	Name string `json:"name"`
+	// User Defined ID
 	UserDefinedID string `json:"user_defined_id"`
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
@@ -446,6 +459,7 @@ func (r externalBankAccountGetResponseJSON) RawJSON() string {
 	return r.raw
 }
 
+// Owner Type
 type ExternalBankAccountGetResponseOwnerType string
 
 const (
@@ -461,22 +475,24 @@ func (r ExternalBankAccountGetResponseOwnerType) IsKnown() bool {
 	return false
 }
 
+// Account State
 type ExternalBankAccountGetResponseState string
 
 const (
-	ExternalBankAccountGetResponseStateClosed  ExternalBankAccountGetResponseState = "CLOSED"
 	ExternalBankAccountGetResponseStateEnabled ExternalBankAccountGetResponseState = "ENABLED"
+	ExternalBankAccountGetResponseStateClosed  ExternalBankAccountGetResponseState = "CLOSED"
 	ExternalBankAccountGetResponseStatePaused  ExternalBankAccountGetResponseState = "PAUSED"
 )
 
 func (r ExternalBankAccountGetResponseState) IsKnown() bool {
 	switch r {
-	case ExternalBankAccountGetResponseStateClosed, ExternalBankAccountGetResponseStateEnabled, ExternalBankAccountGetResponseStatePaused:
+	case ExternalBankAccountGetResponseStateEnabled, ExternalBankAccountGetResponseStateClosed, ExternalBankAccountGetResponseStatePaused:
 		return true
 	}
 	return false
 }
 
+// Account Type
 type ExternalBankAccountGetResponseType string
 
 const (
@@ -492,6 +508,7 @@ func (r ExternalBankAccountGetResponseType) IsKnown() bool {
 	return false
 }
 
+// Verification Method
 type ExternalBankAccountGetResponseVerificationMethod string
 
 const (
@@ -509,18 +526,19 @@ func (r ExternalBankAccountGetResponseVerificationMethod) IsKnown() bool {
 	return false
 }
 
+// Verification State
 type ExternalBankAccountGetResponseVerificationState string
 
 const (
+	ExternalBankAccountGetResponseVerificationStatePending            ExternalBankAccountGetResponseVerificationState = "PENDING"
 	ExternalBankAccountGetResponseVerificationStateEnabled            ExternalBankAccountGetResponseVerificationState = "ENABLED"
 	ExternalBankAccountGetResponseVerificationStateFailedVerification ExternalBankAccountGetResponseVerificationState = "FAILED_VERIFICATION"
 	ExternalBankAccountGetResponseVerificationStateInsufficientFunds  ExternalBankAccountGetResponseVerificationState = "INSUFFICIENT_FUNDS"
-	ExternalBankAccountGetResponseVerificationStatePending            ExternalBankAccountGetResponseVerificationState = "PENDING"
 )
 
 func (r ExternalBankAccountGetResponseVerificationState) IsKnown() bool {
 	switch r {
-	case ExternalBankAccountGetResponseVerificationStateEnabled, ExternalBankAccountGetResponseVerificationStateFailedVerification, ExternalBankAccountGetResponseVerificationStateInsufficientFunds, ExternalBankAccountGetResponseVerificationStatePending:
+	case ExternalBankAccountGetResponseVerificationStatePending, ExternalBankAccountGetResponseVerificationStateEnabled, ExternalBankAccountGetResponseVerificationStateFailedVerification, ExternalBankAccountGetResponseVerificationStateInsufficientFunds:
 		return true
 	}
 	return false
@@ -545,32 +563,38 @@ type ExternalBankAccountUpdateResponse struct {
 	LastFour string `json:"last_four,required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner         string                                     `json:"owner,required"`
-	OwnerType     ExternalBankAccountUpdateResponseOwnerType `json:"owner_type,required"`
-	RoutingNumber string                                     `json:"routing_number,required"`
-	State         ExternalBankAccountUpdateResponseState     `json:"state,required"`
-	Type          ExternalBankAccountUpdateResponseType      `json:"type,required"`
+	Owner string `json:"owner,required"`
+	// Owner Type
+	OwnerType ExternalBankAccountUpdateResponseOwnerType `json:"owner_type,required"`
+	// Routing Number
+	RoutingNumber string `json:"routing_number,required"`
+	// Account State
+	State ExternalBankAccountUpdateResponseState `json:"state,required"`
+	// Account Type
+	Type ExternalBankAccountUpdateResponseType `json:"type,required"`
 	// The number of attempts at verification
-	VerificationAttempts int64                                               `json:"verification_attempts,required"`
-	VerificationMethod   ExternalBankAccountUpdateResponseVerificationMethod `json:"verification_method,required"`
-	VerificationState    ExternalBankAccountUpdateResponseVerificationState  `json:"verification_state,required"`
+	VerificationAttempts int64 `json:"verification_attempts,required"`
+	// Verification Method
+	VerificationMethod ExternalBankAccountUpdateResponseVerificationMethod `json:"verification_method,required"`
+	// Verification State
+	VerificationState ExternalBankAccountUpdateResponseVerificationState `json:"verification_state,required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
 	AccountToken string `json:"account_token" format:"uuid"`
-	// Address used during Address Verification Service (AVS) checks during
-	// transactions if enabled via Auth Rules.
+	// Address
 	Address ExternalBankAccountAddress `json:"address"`
 	// Optional field that helps identify bank accounts in receipts
 	CompanyID string `json:"company_id"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob             time.Time `json:"dob" format:"date"`
-	DoingBusinessAs string    `json:"doing_business_as"`
-	// The financial account token of the operating account, which will provide the
-	// funds for micro deposits used to verify the account
+	Dob time.Time `json:"dob" format:"date"`
+	// Doing Business As
+	DoingBusinessAs string `json:"doing_business_as"`
+	// The financial account token of the operating account to fund the micro deposits
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
 	// The nickname given to this record of External Bank Account
-	Name          string `json:"name"`
+	Name string `json:"name"`
+	// User Defined ID
 	UserDefinedID string `json:"user_defined_id"`
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
@@ -616,6 +640,7 @@ func (r externalBankAccountUpdateResponseJSON) RawJSON() string {
 	return r.raw
 }
 
+// Owner Type
 type ExternalBankAccountUpdateResponseOwnerType string
 
 const (
@@ -631,22 +656,24 @@ func (r ExternalBankAccountUpdateResponseOwnerType) IsKnown() bool {
 	return false
 }
 
+// Account State
 type ExternalBankAccountUpdateResponseState string
 
 const (
-	ExternalBankAccountUpdateResponseStateClosed  ExternalBankAccountUpdateResponseState = "CLOSED"
 	ExternalBankAccountUpdateResponseStateEnabled ExternalBankAccountUpdateResponseState = "ENABLED"
+	ExternalBankAccountUpdateResponseStateClosed  ExternalBankAccountUpdateResponseState = "CLOSED"
 	ExternalBankAccountUpdateResponseStatePaused  ExternalBankAccountUpdateResponseState = "PAUSED"
 )
 
 func (r ExternalBankAccountUpdateResponseState) IsKnown() bool {
 	switch r {
-	case ExternalBankAccountUpdateResponseStateClosed, ExternalBankAccountUpdateResponseStateEnabled, ExternalBankAccountUpdateResponseStatePaused:
+	case ExternalBankAccountUpdateResponseStateEnabled, ExternalBankAccountUpdateResponseStateClosed, ExternalBankAccountUpdateResponseStatePaused:
 		return true
 	}
 	return false
 }
 
+// Account Type
 type ExternalBankAccountUpdateResponseType string
 
 const (
@@ -662,6 +689,7 @@ func (r ExternalBankAccountUpdateResponseType) IsKnown() bool {
 	return false
 }
 
+// Verification Method
 type ExternalBankAccountUpdateResponseVerificationMethod string
 
 const (
@@ -679,18 +707,19 @@ func (r ExternalBankAccountUpdateResponseVerificationMethod) IsKnown() bool {
 	return false
 }
 
+// Verification State
 type ExternalBankAccountUpdateResponseVerificationState string
 
 const (
+	ExternalBankAccountUpdateResponseVerificationStatePending            ExternalBankAccountUpdateResponseVerificationState = "PENDING"
 	ExternalBankAccountUpdateResponseVerificationStateEnabled            ExternalBankAccountUpdateResponseVerificationState = "ENABLED"
 	ExternalBankAccountUpdateResponseVerificationStateFailedVerification ExternalBankAccountUpdateResponseVerificationState = "FAILED_VERIFICATION"
 	ExternalBankAccountUpdateResponseVerificationStateInsufficientFunds  ExternalBankAccountUpdateResponseVerificationState = "INSUFFICIENT_FUNDS"
-	ExternalBankAccountUpdateResponseVerificationStatePending            ExternalBankAccountUpdateResponseVerificationState = "PENDING"
 )
 
 func (r ExternalBankAccountUpdateResponseVerificationState) IsKnown() bool {
 	switch r {
-	case ExternalBankAccountUpdateResponseVerificationStateEnabled, ExternalBankAccountUpdateResponseVerificationStateFailedVerification, ExternalBankAccountUpdateResponseVerificationStateInsufficientFunds, ExternalBankAccountUpdateResponseVerificationStatePending:
+	case ExternalBankAccountUpdateResponseVerificationStatePending, ExternalBankAccountUpdateResponseVerificationStateEnabled, ExternalBankAccountUpdateResponseVerificationStateFailedVerification, ExternalBankAccountUpdateResponseVerificationStateInsufficientFunds:
 		return true
 	}
 	return false
@@ -715,32 +744,38 @@ type ExternalBankAccountListResponse struct {
 	LastFour string `json:"last_four,required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner         string                                   `json:"owner,required"`
-	OwnerType     ExternalBankAccountListResponseOwnerType `json:"owner_type,required"`
-	RoutingNumber string                                   `json:"routing_number,required"`
-	State         ExternalBankAccountListResponseState     `json:"state,required"`
-	Type          ExternalBankAccountListResponseType      `json:"type,required"`
+	Owner string `json:"owner,required"`
+	// Owner Type
+	OwnerType ExternalBankAccountListResponseOwnerType `json:"owner_type,required"`
+	// Routing Number
+	RoutingNumber string `json:"routing_number,required"`
+	// Account State
+	State ExternalBankAccountListResponseState `json:"state,required"`
+	// Account Type
+	Type ExternalBankAccountListResponseType `json:"type,required"`
 	// The number of attempts at verification
-	VerificationAttempts int64                                             `json:"verification_attempts,required"`
-	VerificationMethod   ExternalBankAccountListResponseVerificationMethod `json:"verification_method,required"`
-	VerificationState    ExternalBankAccountListResponseVerificationState  `json:"verification_state,required"`
+	VerificationAttempts int64 `json:"verification_attempts,required"`
+	// Verification Method
+	VerificationMethod ExternalBankAccountListResponseVerificationMethod `json:"verification_method,required"`
+	// Verification State
+	VerificationState ExternalBankAccountListResponseVerificationState `json:"verification_state,required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
 	AccountToken string `json:"account_token" format:"uuid"`
-	// Address used during Address Verification Service (AVS) checks during
-	// transactions if enabled via Auth Rules.
+	// Address
 	Address ExternalBankAccountAddress `json:"address"`
 	// Optional field that helps identify bank accounts in receipts
 	CompanyID string `json:"company_id"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob             time.Time `json:"dob" format:"date"`
-	DoingBusinessAs string    `json:"doing_business_as"`
-	// The financial account token of the operating account, which will provide the
-	// funds for micro deposits used to verify the account
+	Dob time.Time `json:"dob" format:"date"`
+	// Doing Business As
+	DoingBusinessAs string `json:"doing_business_as"`
+	// The financial account token of the operating account to fund the micro deposits
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
 	// The nickname given to this record of External Bank Account
-	Name          string `json:"name"`
+	Name string `json:"name"`
+	// User Defined ID
 	UserDefinedID string `json:"user_defined_id"`
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
@@ -786,6 +821,7 @@ func (r externalBankAccountListResponseJSON) RawJSON() string {
 	return r.raw
 }
 
+// Owner Type
 type ExternalBankAccountListResponseOwnerType string
 
 const (
@@ -801,22 +837,24 @@ func (r ExternalBankAccountListResponseOwnerType) IsKnown() bool {
 	return false
 }
 
+// Account State
 type ExternalBankAccountListResponseState string
 
 const (
-	ExternalBankAccountListResponseStateClosed  ExternalBankAccountListResponseState = "CLOSED"
 	ExternalBankAccountListResponseStateEnabled ExternalBankAccountListResponseState = "ENABLED"
+	ExternalBankAccountListResponseStateClosed  ExternalBankAccountListResponseState = "CLOSED"
 	ExternalBankAccountListResponseStatePaused  ExternalBankAccountListResponseState = "PAUSED"
 )
 
 func (r ExternalBankAccountListResponseState) IsKnown() bool {
 	switch r {
-	case ExternalBankAccountListResponseStateClosed, ExternalBankAccountListResponseStateEnabled, ExternalBankAccountListResponseStatePaused:
+	case ExternalBankAccountListResponseStateEnabled, ExternalBankAccountListResponseStateClosed, ExternalBankAccountListResponseStatePaused:
 		return true
 	}
 	return false
 }
 
+// Account Type
 type ExternalBankAccountListResponseType string
 
 const (
@@ -832,6 +870,7 @@ func (r ExternalBankAccountListResponseType) IsKnown() bool {
 	return false
 }
 
+// Verification Method
 type ExternalBankAccountListResponseVerificationMethod string
 
 const (
@@ -849,18 +888,19 @@ func (r ExternalBankAccountListResponseVerificationMethod) IsKnown() bool {
 	return false
 }
 
+// Verification State
 type ExternalBankAccountListResponseVerificationState string
 
 const (
+	ExternalBankAccountListResponseVerificationStatePending            ExternalBankAccountListResponseVerificationState = "PENDING"
 	ExternalBankAccountListResponseVerificationStateEnabled            ExternalBankAccountListResponseVerificationState = "ENABLED"
 	ExternalBankAccountListResponseVerificationStateFailedVerification ExternalBankAccountListResponseVerificationState = "FAILED_VERIFICATION"
 	ExternalBankAccountListResponseVerificationStateInsufficientFunds  ExternalBankAccountListResponseVerificationState = "INSUFFICIENT_FUNDS"
-	ExternalBankAccountListResponseVerificationStatePending            ExternalBankAccountListResponseVerificationState = "PENDING"
 )
 
 func (r ExternalBankAccountListResponseVerificationState) IsKnown() bool {
 	switch r {
-	case ExternalBankAccountListResponseVerificationStateEnabled, ExternalBankAccountListResponseVerificationStateFailedVerification, ExternalBankAccountListResponseVerificationStateInsufficientFunds, ExternalBankAccountListResponseVerificationStatePending:
+	case ExternalBankAccountListResponseVerificationStatePending, ExternalBankAccountListResponseVerificationStateEnabled, ExternalBankAccountListResponseVerificationStateFailedVerification, ExternalBankAccountListResponseVerificationStateInsufficientFunds:
 		return true
 	}
 	return false
@@ -885,32 +925,38 @@ type ExternalBankAccountRetryMicroDepositsResponse struct {
 	LastFour string `json:"last_four,required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner         string                                                 `json:"owner,required"`
-	OwnerType     ExternalBankAccountRetryMicroDepositsResponseOwnerType `json:"owner_type,required"`
-	RoutingNumber string                                                 `json:"routing_number,required"`
-	State         ExternalBankAccountRetryMicroDepositsResponseState     `json:"state,required"`
-	Type          ExternalBankAccountRetryMicroDepositsResponseType      `json:"type,required"`
+	Owner string `json:"owner,required"`
+	// Owner Type
+	OwnerType ExternalBankAccountRetryMicroDepositsResponseOwnerType `json:"owner_type,required"`
+	// Routing Number
+	RoutingNumber string `json:"routing_number,required"`
+	// Account State
+	State ExternalBankAccountRetryMicroDepositsResponseState `json:"state,required"`
+	// Account Type
+	Type ExternalBankAccountRetryMicroDepositsResponseType `json:"type,required"`
 	// The number of attempts at verification
-	VerificationAttempts int64                                                           `json:"verification_attempts,required"`
-	VerificationMethod   ExternalBankAccountRetryMicroDepositsResponseVerificationMethod `json:"verification_method,required"`
-	VerificationState    ExternalBankAccountRetryMicroDepositsResponseVerificationState  `json:"verification_state,required"`
+	VerificationAttempts int64 `json:"verification_attempts,required"`
+	// Verification Method
+	VerificationMethod ExternalBankAccountRetryMicroDepositsResponseVerificationMethod `json:"verification_method,required"`
+	// Verification State
+	VerificationState ExternalBankAccountRetryMicroDepositsResponseVerificationState `json:"verification_state,required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
 	AccountToken string `json:"account_token" format:"uuid"`
-	// Address used during Address Verification Service (AVS) checks during
-	// transactions if enabled via Auth Rules.
+	// Address
 	Address ExternalBankAccountAddress `json:"address"`
 	// Optional field that helps identify bank accounts in receipts
 	CompanyID string `json:"company_id"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob             time.Time `json:"dob" format:"date"`
-	DoingBusinessAs string    `json:"doing_business_as"`
-	// The financial account token of the operating account, which will provide the
-	// funds for micro deposits used to verify the account
+	Dob time.Time `json:"dob" format:"date"`
+	// Doing Business As
+	DoingBusinessAs string `json:"doing_business_as"`
+	// The financial account token of the operating account to fund the micro deposits
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
 	// The nickname given to this record of External Bank Account
-	Name          string `json:"name"`
+	Name string `json:"name"`
+	// User Defined ID
 	UserDefinedID string `json:"user_defined_id"`
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
@@ -956,6 +1002,7 @@ func (r externalBankAccountRetryMicroDepositsResponseJSON) RawJSON() string {
 	return r.raw
 }
 
+// Owner Type
 type ExternalBankAccountRetryMicroDepositsResponseOwnerType string
 
 const (
@@ -971,22 +1018,24 @@ func (r ExternalBankAccountRetryMicroDepositsResponseOwnerType) IsKnown() bool {
 	return false
 }
 
+// Account State
 type ExternalBankAccountRetryMicroDepositsResponseState string
 
 const (
-	ExternalBankAccountRetryMicroDepositsResponseStateClosed  ExternalBankAccountRetryMicroDepositsResponseState = "CLOSED"
 	ExternalBankAccountRetryMicroDepositsResponseStateEnabled ExternalBankAccountRetryMicroDepositsResponseState = "ENABLED"
+	ExternalBankAccountRetryMicroDepositsResponseStateClosed  ExternalBankAccountRetryMicroDepositsResponseState = "CLOSED"
 	ExternalBankAccountRetryMicroDepositsResponseStatePaused  ExternalBankAccountRetryMicroDepositsResponseState = "PAUSED"
 )
 
 func (r ExternalBankAccountRetryMicroDepositsResponseState) IsKnown() bool {
 	switch r {
-	case ExternalBankAccountRetryMicroDepositsResponseStateClosed, ExternalBankAccountRetryMicroDepositsResponseStateEnabled, ExternalBankAccountRetryMicroDepositsResponseStatePaused:
+	case ExternalBankAccountRetryMicroDepositsResponseStateEnabled, ExternalBankAccountRetryMicroDepositsResponseStateClosed, ExternalBankAccountRetryMicroDepositsResponseStatePaused:
 		return true
 	}
 	return false
 }
 
+// Account Type
 type ExternalBankAccountRetryMicroDepositsResponseType string
 
 const (
@@ -1002,6 +1051,7 @@ func (r ExternalBankAccountRetryMicroDepositsResponseType) IsKnown() bool {
 	return false
 }
 
+// Verification Method
 type ExternalBankAccountRetryMicroDepositsResponseVerificationMethod string
 
 const (
@@ -1019,18 +1069,19 @@ func (r ExternalBankAccountRetryMicroDepositsResponseVerificationMethod) IsKnown
 	return false
 }
 
+// Verification State
 type ExternalBankAccountRetryMicroDepositsResponseVerificationState string
 
 const (
+	ExternalBankAccountRetryMicroDepositsResponseVerificationStatePending            ExternalBankAccountRetryMicroDepositsResponseVerificationState = "PENDING"
 	ExternalBankAccountRetryMicroDepositsResponseVerificationStateEnabled            ExternalBankAccountRetryMicroDepositsResponseVerificationState = "ENABLED"
 	ExternalBankAccountRetryMicroDepositsResponseVerificationStateFailedVerification ExternalBankAccountRetryMicroDepositsResponseVerificationState = "FAILED_VERIFICATION"
 	ExternalBankAccountRetryMicroDepositsResponseVerificationStateInsufficientFunds  ExternalBankAccountRetryMicroDepositsResponseVerificationState = "INSUFFICIENT_FUNDS"
-	ExternalBankAccountRetryMicroDepositsResponseVerificationStatePending            ExternalBankAccountRetryMicroDepositsResponseVerificationState = "PENDING"
 )
 
 func (r ExternalBankAccountRetryMicroDepositsResponseVerificationState) IsKnown() bool {
 	switch r {
-	case ExternalBankAccountRetryMicroDepositsResponseVerificationStateEnabled, ExternalBankAccountRetryMicroDepositsResponseVerificationStateFailedVerification, ExternalBankAccountRetryMicroDepositsResponseVerificationStateInsufficientFunds, ExternalBankAccountRetryMicroDepositsResponseVerificationStatePending:
+	case ExternalBankAccountRetryMicroDepositsResponseVerificationStatePending, ExternalBankAccountRetryMicroDepositsResponseVerificationStateEnabled, ExternalBankAccountRetryMicroDepositsResponseVerificationStateFailedVerification, ExternalBankAccountRetryMicroDepositsResponseVerificationStateInsufficientFunds:
 		return true
 	}
 	return false
@@ -1045,33 +1096,44 @@ func (r ExternalBankAccountNewParams) MarshalJSON() (data []byte, err error) {
 }
 
 type ExternalBankAccountNewParamsBody struct {
-	AccountNumber param.Field[string] `json:"account_number"`
-	AccountToken  param.Field[string] `json:"account_token" format:"uuid"`
-	// Address used during Address Verification Service (AVS) checks during
-	// transactions if enabled via Auth Rules.
-	Address   param.Field[ExternalBankAccountAddressParam] `json:"address"`
-	CompanyID param.Field[string]                          `json:"company_id"`
-	Country   param.Field[string]                          `json:"country"`
-	Currency  param.Field[string]                          `json:"currency"`
+	// Verification Method
+	VerificationMethod param.Field[VerificationMethod] `json:"verification_method,required"`
+	// Owner Type
+	OwnerType param.Field[OwnerType] `json:"owner_type,required"`
+	// Legal Name of the business or individual who owns the external account. This
+	// will appear in statements
+	Owner param.Field[string] `json:"owner,required"`
+	// Indicates which Lithic account the external account is associated with. For
+	// external accounts that are associated with the program, account_token field
+	// returned will be null
+	AccountToken param.Field[string] `json:"account_token" format:"uuid"`
+	// Optional field that helps identify bank accounts in receipts
+	CompanyID param.Field[string] `json:"company_id"`
+	// Doing Business As
+	DoingBusinessAs param.Field[string] `json:"doing_business_as"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob             param.Field[time.Time] `json:"dob" format:"date"`
-	DoingBusinessAs param.Field[string]    `json:"doing_business_as"`
-	// The financial account token of the operating account, which will provide the
-	// funds for micro deposits used to verify the account
-	FinancialAccountToken param.Field[string]                               `json:"financial_account_token" format:"uuid"`
-	Name                  param.Field[string]                               `json:"name"`
-	Owner                 param.Field[string]                               `json:"owner,required"`
-	OwnerType             param.Field[OwnerType]                            `json:"owner_type,required"`
-	RoutingNumber         param.Field[string]                               `json:"routing_number"`
-	Type                  param.Field[ExternalBankAccountNewParamsBodyType] `json:"type"`
-	UserDefinedID         param.Field[string]                               `json:"user_defined_id"`
-	// Indicates whether verification was enforced for a given association record. For
-	// MICRO_DEPOSIT, option to disable verification if the external bank account has
-	// already been verified before. By default, verification will be required unless
-	// users pass in a value of false
-	VerificationEnforcement param.Field[bool]               `json:"verification_enforcement"`
-	VerificationMethod      param.Field[VerificationMethod] `json:"verification_method,required"`
-	ProcessorToken          param.Field[string]             `json:"processor_token"`
+	Dob param.Field[time.Time] `json:"dob" format:"date"`
+	// User Defined ID
+	UserDefinedID param.Field[string] `json:"user_defined_id"`
+	// Account Type
+	Type param.Field[ExternalBankAccountNewParamsBodyType] `json:"type"`
+	// Routing Number
+	RoutingNumber param.Field[string] `json:"routing_number"`
+	// Routing Number
+	AccountNumber param.Field[string] `json:"account_number"`
+	// The nickname given to this record of External Bank Account
+	Name param.Field[string] `json:"name"`
+	// The country that the bank account is located in using ISO 3166-1. We will only
+	// accept USA bank accounts e.g., USA
+	Country param.Field[string] `json:"country"`
+	// currency of the external account 3-digit alphabetic ISO 4217 code
+	Currency                param.Field[string] `json:"currency"`
+	VerificationEnforcement param.Field[bool]   `json:"verification_enforcement"`
+	// Address
+	Address param.Field[ExternalBankAccountAddressParam] `json:"address"`
+	// The financial account token of the operating account to fund the micro deposits
+	FinancialAccountToken param.Field[string] `json:"financial_account_token" format:"uuid"`
+	ProcessorToken        param.Field[string] `json:"processor_token"`
 }
 
 func (r ExternalBankAccountNewParamsBody) MarshalJSON() (data []byte, err error) {
@@ -1089,32 +1151,43 @@ type ExternalBankAccountNewParamsBodyUnion interface {
 }
 
 type ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest struct {
+	// Routing Number
 	AccountNumber param.Field[string] `json:"account_number,required"`
-	Country       param.Field[string] `json:"country,required"`
-	Currency      param.Field[string] `json:"currency,required"`
-	// The financial account token of the operating account, which will provide the
-	// funds for micro deposits used to verify the account
-	FinancialAccountToken param.Field[string]                                                                      `json:"financial_account_token,required" format:"uuid"`
-	Owner                 param.Field[string]                                                                      `json:"owner,required"`
-	OwnerType             param.Field[OwnerType]                                                                   `json:"owner_type,required"`
-	RoutingNumber         param.Field[string]                                                                      `json:"routing_number,required"`
-	Type                  param.Field[ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestType] `json:"type,required"`
-	VerificationMethod    param.Field[VerificationMethod]                                                          `json:"verification_method,required"`
-	AccountToken          param.Field[string]                                                                      `json:"account_token" format:"uuid"`
-	// Address used during Address Verification Service (AVS) checks during
-	// transactions if enabled via Auth Rules.
-	Address   param.Field[ExternalBankAccountAddressParam] `json:"address"`
-	CompanyID param.Field[string]                          `json:"company_id"`
+	// The country that the bank account is located in using ISO 3166-1. We will only
+	// accept USA bank accounts e.g., USA
+	Country param.Field[string] `json:"country,required"`
+	// currency of the external account 3-digit alphabetic ISO 4217 code
+	Currency param.Field[string] `json:"currency,required"`
+	// Legal Name of the business or individual who owns the external account. This
+	// will appear in statements
+	Owner param.Field[string] `json:"owner,required"`
+	// Owner Type
+	OwnerType param.Field[OwnerType] `json:"owner_type,required"`
+	// Routing Number
+	RoutingNumber param.Field[string] `json:"routing_number,required"`
+	// Account Type
+	Type param.Field[ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestType] `json:"type,required"`
+	// Verification Method
+	VerificationMethod param.Field[VerificationMethod] `json:"verification_method,required"`
+	// Indicates which Lithic account the external account is associated with. For
+	// external accounts that are associated with the program, account_token field
+	// returned will be null
+	AccountToken param.Field[string] `json:"account_token" format:"uuid"`
+	// Address
+	Address param.Field[ExternalBankAccountAddressParam] `json:"address"`
+	// Optional field that helps identify bank accounts in receipts
+	CompanyID param.Field[string] `json:"company_id"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob             param.Field[time.Time] `json:"dob" format:"date"`
-	DoingBusinessAs param.Field[string]    `json:"doing_business_as"`
-	Name            param.Field[string]    `json:"name"`
-	UserDefinedID   param.Field[string]    `json:"user_defined_id"`
-	// Indicates whether verification was enforced for a given association record. For
-	// MICRO_DEPOSIT, option to disable verification if the external bank account has
-	// already been verified before. By default, verification will be required unless
-	// users pass in a value of false
-	VerificationEnforcement param.Field[bool] `json:"verification_enforcement"`
+	Dob param.Field[time.Time] `json:"dob" format:"date"`
+	// Doing Business As
+	DoingBusinessAs param.Field[string] `json:"doing_business_as"`
+	// The financial account token of the operating account to fund the micro deposits
+	FinancialAccountToken param.Field[string] `json:"financial_account_token" format:"uuid"`
+	// The nickname given to this record of External Bank Account
+	Name param.Field[string] `json:"name"`
+	// User Defined ID
+	UserDefinedID           param.Field[string] `json:"user_defined_id"`
+	VerificationEnforcement param.Field[bool]   `json:"verification_enforcement"`
 }
 
 func (r ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest) MarshalJSON() (data []byte, err error) {
@@ -1124,6 +1197,7 @@ func (r ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest)
 func (r ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest) implementsExternalBankAccountNewParamsBodyUnion() {
 }
 
+// Account Type
 type ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestType string
 
 const (
@@ -1140,16 +1214,26 @@ func (r ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestT
 }
 
 type ExternalBankAccountNewParamsBodyPlaidCreateBankAccountAPIRequest struct {
-	Owner              param.Field[string]             `json:"owner,required"`
-	OwnerType          param.Field[OwnerType]          `json:"owner_type,required"`
-	ProcessorToken     param.Field[string]             `json:"processor_token,required"`
+	// Legal Name of the business or individual who owns the external account. This
+	// will appear in statements
+	Owner param.Field[string] `json:"owner,required"`
+	// Owner Type
+	OwnerType      param.Field[OwnerType] `json:"owner_type,required"`
+	ProcessorToken param.Field[string]    `json:"processor_token,required"`
+	// Verification Method
 	VerificationMethod param.Field[VerificationMethod] `json:"verification_method,required"`
-	AccountToken       param.Field[string]             `json:"account_token" format:"uuid"`
-	CompanyID          param.Field[string]             `json:"company_id"`
+	// Indicates which Lithic account the external account is associated with. For
+	// external accounts that are associated with the program, account_token field
+	// returned will be null
+	AccountToken param.Field[string] `json:"account_token" format:"uuid"`
+	// Optional field that helps identify bank accounts in receipts
+	CompanyID param.Field[string] `json:"company_id"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob             param.Field[time.Time] `json:"dob" format:"date"`
-	DoingBusinessAs param.Field[string]    `json:"doing_business_as"`
-	UserDefinedID   param.Field[string]    `json:"user_defined_id"`
+	Dob param.Field[time.Time] `json:"dob" format:"date"`
+	// Doing Business As
+	DoingBusinessAs param.Field[string] `json:"doing_business_as"`
+	// User Defined ID
+	UserDefinedID param.Field[string] `json:"user_defined_id"`
 }
 
 func (r ExternalBankAccountNewParamsBodyPlaidCreateBankAccountAPIRequest) MarshalJSON() (data []byte, err error) {
@@ -1159,6 +1243,7 @@ func (r ExternalBankAccountNewParamsBodyPlaidCreateBankAccountAPIRequest) Marsha
 func (r ExternalBankAccountNewParamsBodyPlaidCreateBankAccountAPIRequest) implementsExternalBankAccountNewParamsBodyUnion() {
 }
 
+// Account Type
 type ExternalBankAccountNewParamsBodyType string
 
 const (
@@ -1175,17 +1260,23 @@ func (r ExternalBankAccountNewParamsBodyType) IsKnown() bool {
 }
 
 type ExternalBankAccountUpdateParams struct {
-	// Address used during Address Verification Service (AVS) checks during
-	// transactions if enabled via Auth Rules.
-	Address   param.Field[ExternalBankAccountAddressParam] `json:"address"`
-	CompanyID param.Field[string]                          `json:"company_id"`
+	// Address
+	Address param.Field[ExternalBankAccountAddressParam] `json:"address"`
+	// Optional field that helps identify bank accounts in receipts
+	CompanyID param.Field[string] `json:"company_id"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob             param.Field[time.Time] `json:"dob" format:"date"`
-	DoingBusinessAs param.Field[string]    `json:"doing_business_as"`
-	Name            param.Field[string]    `json:"name"`
-	Owner           param.Field[string]    `json:"owner"`
-	OwnerType       param.Field[OwnerType] `json:"owner_type"`
-	UserDefinedID   param.Field[string]    `json:"user_defined_id"`
+	Dob param.Field[time.Time] `json:"dob" format:"date"`
+	// Doing Business As
+	DoingBusinessAs param.Field[string] `json:"doing_business_as"`
+	// The nickname given to this record of External Bank Account
+	Name param.Field[string] `json:"name"`
+	// Legal Name of the business or individual who owns the external account. This
+	// will appear in statements
+	Owner param.Field[string] `json:"owner"`
+	// Owner Type
+	OwnerType param.Field[OwnerType] `json:"owner_type"`
+	// User Defined ID
+	UserDefinedID param.Field[string] `json:"user_defined_id"`
 }
 
 func (r ExternalBankAccountUpdateParams) MarshalJSON() (data []byte, err error) {
@@ -1236,14 +1327,14 @@ func (r ExternalBankAccountListParamsAccountType) IsKnown() bool {
 type ExternalBankAccountListParamsState string
 
 const (
-	ExternalBankAccountListParamsStateClosed  ExternalBankAccountListParamsState = "CLOSED"
 	ExternalBankAccountListParamsStateEnabled ExternalBankAccountListParamsState = "ENABLED"
+	ExternalBankAccountListParamsStateClosed  ExternalBankAccountListParamsState = "CLOSED"
 	ExternalBankAccountListParamsStatePaused  ExternalBankAccountListParamsState = "PAUSED"
 )
 
 func (r ExternalBankAccountListParamsState) IsKnown() bool {
 	switch r {
-	case ExternalBankAccountListParamsStateClosed, ExternalBankAccountListParamsStateEnabled, ExternalBankAccountListParamsStatePaused:
+	case ExternalBankAccountListParamsStateEnabled, ExternalBankAccountListParamsStateClosed, ExternalBankAccountListParamsStatePaused:
 		return true
 	}
 	return false
@@ -1252,23 +1343,21 @@ func (r ExternalBankAccountListParamsState) IsKnown() bool {
 type ExternalBankAccountListParamsVerificationState string
 
 const (
+	ExternalBankAccountListParamsVerificationStatePending            ExternalBankAccountListParamsVerificationState = "PENDING"
 	ExternalBankAccountListParamsVerificationStateEnabled            ExternalBankAccountListParamsVerificationState = "ENABLED"
 	ExternalBankAccountListParamsVerificationStateFailedVerification ExternalBankAccountListParamsVerificationState = "FAILED_VERIFICATION"
 	ExternalBankAccountListParamsVerificationStateInsufficientFunds  ExternalBankAccountListParamsVerificationState = "INSUFFICIENT_FUNDS"
-	ExternalBankAccountListParamsVerificationStatePending            ExternalBankAccountListParamsVerificationState = "PENDING"
 )
 
 func (r ExternalBankAccountListParamsVerificationState) IsKnown() bool {
 	switch r {
-	case ExternalBankAccountListParamsVerificationStateEnabled, ExternalBankAccountListParamsVerificationStateFailedVerification, ExternalBankAccountListParamsVerificationStateInsufficientFunds, ExternalBankAccountListParamsVerificationStatePending:
+	case ExternalBankAccountListParamsVerificationStatePending, ExternalBankAccountListParamsVerificationStateEnabled, ExternalBankAccountListParamsVerificationStateFailedVerification, ExternalBankAccountListParamsVerificationStateInsufficientFunds:
 		return true
 	}
 	return false
 }
 
 type ExternalBankAccountRetryMicroDepositsParams struct {
-	// The financial account token of the operating account, which will provide the
-	// funds for micro deposits used to verify the account
 	FinancialAccountToken param.Field[string] `json:"financial_account_token" format:"uuid"`
 }
 
