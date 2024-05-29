@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.31.0 (2024-05-29)
+
+Full Changelog: [v0.30.0...v0.31.0](https://github.com/lithic-com/lithic-go/compare/v0.30.0...v0.31.0)
+
+### Features
+
+* **api:** updates ([#290](https://github.com/lithic-com/lithic-go/issues/290)) ([4ade761](https://github.com/lithic-com/lithic-go/commit/4ade761a4a1def031fe2ff457987e04425c4a82b))
+* better validation of path params ([#287](https://github.com/lithic-com/lithic-go/issues/287)) ([bfbf2f5](https://github.com/lithic-com/lithic-go/commit/bfbf2f53a1247b4a0c4f4c290e5ffc9ce4e52eb7))
+
+
+### Chores
+
+* **internal:** fix format script ([#289](https://github.com/lithic-com/lithic-go/issues/289)) ([4a68229](https://github.com/lithic-com/lithic-go/commit/4a68229f455a96c7b555555af82a52ce04c1665c))
+* **internal:** support parsing other json content types ([#284](https://github.com/lithic-com/lithic-go/issues/284)) ([7dd0761](https://github.com/lithic-com/lithic-go/commit/7dd0761e35c245ef806ad817a0688d5158d17435))
+* **tests:** update some example values ([#286](https://github.com/lithic-com/lithic-go/issues/286)) ([d97dc10](https://github.com/lithic-com/lithic-go/commit/d97dc105214fd08b388ec984f19c981decb5734e))
+
 ## 0.30.0 (2024-05-15)
 
 Full Changelog: [v0.29.0...v0.30.0](https://github.com/lithic-com/lithic-go/compare/v0.29.0...v0.30.0)
