@@ -138,28 +138,29 @@ type TransferEvent struct {
 	Amount int64 `json:"amount"`
 	// Date and time when the financial event occurred. UTC time zone.
 	Created time.Time `json:"created" format:"date-time"`
+	// More detailed reasons for the event
+	DetailedResults []TransferEventsDetailedResult `json:"detailed_results"`
 	// APPROVED financial events were successful while DECLINED financial events were
 	// declined by user, Lithic, or the network.
 	Result TransferEventsResult `json:"result"`
 	// Event types:
 	//
-	//   - `ACH_INSUFFICIENT_FUNDS` - Attempted ACH origination declined due to
-	//     insufficient balance.
-	//   - `ACH_ORIGINATION_PENDING` - ACH origination received and pending
+	//   - `ACH_ORIGINATION_INITIATED` - ACH origination received and pending
 	//     approval/release from an ACH hold.
-	//   - `ACH_ORIGINATION_APPROVED` - ACH origination has been approved and pending
-	//     processing.
-	//   - `ACH_ORIGINATION_DECLINED` - ACH origination has been declined.
+	//   - `ACH_ORIGINATION_REVIEWED` - ACH origination has completed the review process.
 	//   - `ACH_ORIGINATION_CANCELLED` - ACH origination has been cancelled.
-	//   - `ACH_ORIGINATION_PROCESSED` - ACH origination has been processed.
+	//   - `ACH_ORIGINATION_PROCESSED` - ACH origination has been processed and sent to
+	//     the fed.
 	//   - `ACH_ORIGINATION_SETTLED` - ACH origination has settled.
 	//   - `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to
 	//     available balance.
-	//   - `ACH_RECEIPT_PENDING` - ACH receipt pending release from an ACH holder.
+	//   - `ACH_RETURN_PROCESSED` - ACH origination returned by the Receiving Depository
+	//     Financial Institution.
+	//   - `ACH_RECEIPT_PROCESSED` - ACH receipt pending release from an ACH holder.
+	//   - `ACH_RETURN_INITIATED` - ACH initiated return for a ACH receipt.
+	//   - `ACH_RECEIPT_SETTLED` - ACH receipt funds have settled.
 	//   - `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to available
 	//     balance.
-	//   - `ACH_RETURN` - ACH origination returned by the Receiving Depository Financial
-	//     Institution.
 	//   - `AUTHORIZATION` - Authorize a card transaction.
 	//   - `AUTHORIZATION_ADVICE` - Advice on a card transaction.
 	//   - `AUTHORIZATION_EXPIRY` - Card Authorization has expired and reversed by
@@ -190,13 +191,14 @@ type TransferEvent struct {
 
 // transferEventJSON contains the JSON metadata for the struct [TransferEvent]
 type transferEventJSON struct {
-	Token       apijson.Field
-	Amount      apijson.Field
-	Created     apijson.Field
-	Result      apijson.Field
-	Type        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+	Token           apijson.Field
+	Amount          apijson.Field
+	Created         apijson.Field
+	DetailedResults apijson.Field
+	Result          apijson.Field
+	Type            apijson.Field
+	raw             string
+	ExtraFields     map[string]apijson.Field
 }
 
 func (r *TransferEvent) UnmarshalJSON(data []byte) (err error) {
@@ -205,6 +207,25 @@ func (r *TransferEvent) UnmarshalJSON(data []byte) (err error) {
 
 func (r transferEventJSON) RawJSON() string {
 	return r.raw
+}
+
+type TransferEventsDetailedResult string
+
+const (
+	TransferEventsDetailedResultApproved                         TransferEventsDetailedResult = "APPROVED"
+	TransferEventsDetailedResultInsufficientFunds                TransferEventsDetailedResult = "INSUFFICIENT_FUNDS"
+	TransferEventsDetailedResultInvalidAccount                   TransferEventsDetailedResult = "INVALID_ACCOUNT"
+	TransferEventsDetailedResultProgramTransactionLimitsExceeded TransferEventsDetailedResult = "PROGRAM_TRANSACTION_LIMITS_EXCEEDED"
+	TransferEventsDetailedResultProgramDailyLimitsExceeded       TransferEventsDetailedResult = "PROGRAM_DAILY_LIMITS_EXCEEDED"
+	TransferEventsDetailedResultProgramMonthlyLimitsExceeded     TransferEventsDetailedResult = "PROGRAM_MONTHLY_LIMITS_EXCEEDED"
+)
+
+func (r TransferEventsDetailedResult) IsKnown() bool {
+	switch r {
+	case TransferEventsDetailedResultApproved, TransferEventsDetailedResultInsufficientFunds, TransferEventsDetailedResultInvalidAccount, TransferEventsDetailedResultProgramTransactionLimitsExceeded, TransferEventsDetailedResultProgramDailyLimitsExceeded, TransferEventsDetailedResultProgramMonthlyLimitsExceeded:
+		return true
+	}
+	return false
 }
 
 // APPROVED financial events were successful while DECLINED financial events were
@@ -226,23 +247,22 @@ func (r TransferEventsResult) IsKnown() bool {
 
 // Event types:
 //
-//   - `ACH_INSUFFICIENT_FUNDS` - Attempted ACH origination declined due to
-//     insufficient balance.
-//   - `ACH_ORIGINATION_PENDING` - ACH origination received and pending
+//   - `ACH_ORIGINATION_INITIATED` - ACH origination received and pending
 //     approval/release from an ACH hold.
-//   - `ACH_ORIGINATION_APPROVED` - ACH origination has been approved and pending
-//     processing.
-//   - `ACH_ORIGINATION_DECLINED` - ACH origination has been declined.
+//   - `ACH_ORIGINATION_REVIEWED` - ACH origination has completed the review process.
 //   - `ACH_ORIGINATION_CANCELLED` - ACH origination has been cancelled.
-//   - `ACH_ORIGINATION_PROCESSED` - ACH origination has been processed.
+//   - `ACH_ORIGINATION_PROCESSED` - ACH origination has been processed and sent to
+//     the fed.
 //   - `ACH_ORIGINATION_SETTLED` - ACH origination has settled.
 //   - `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to
 //     available balance.
-//   - `ACH_RECEIPT_PENDING` - ACH receipt pending release from an ACH holder.
+//   - `ACH_RETURN_PROCESSED` - ACH origination returned by the Receiving Depository
+//     Financial Institution.
+//   - `ACH_RECEIPT_PROCESSED` - ACH receipt pending release from an ACH holder.
+//   - `ACH_RETURN_INITIATED` - ACH initiated return for a ACH receipt.
+//   - `ACH_RECEIPT_SETTLED` - ACH receipt funds have settled.
 //   - `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to available
 //     balance.
-//   - `ACH_RETURN` - ACH origination returned by the Receiving Depository Financial
-//     Institution.
 //   - `AUTHORIZATION` - Authorize a card transaction.
 //   - `AUTHORIZATION_ADVICE` - Advice on a card transaction.
 //   - `AUTHORIZATION_EXPIRY` - Card Authorization has expired and reversed by
@@ -270,20 +290,16 @@ func (r TransferEventsResult) IsKnown() bool {
 type TransferEventsType string
 
 const (
-	TransferEventsTypeACHExceededThreshold         TransferEventsType = "ACH_EXCEEDED_THRESHOLD"
-	TransferEventsTypeACHInsufficientFunds         TransferEventsType = "ACH_INSUFFICIENT_FUNDS"
-	TransferEventsTypeACHInvalidAccount            TransferEventsType = "ACH_INVALID_ACCOUNT"
-	TransferEventsTypeACHOriginationPending        TransferEventsType = "ACH_ORIGINATION_PENDING"
-	TransferEventsTypeACHOriginationApproved       TransferEventsType = "ACH_ORIGINATION_APPROVED"
-	TransferEventsTypeACHOriginationDeclined       TransferEventsType = "ACH_ORIGINATION_DECLINED"
 	TransferEventsTypeACHOriginationCancelled      TransferEventsType = "ACH_ORIGINATION_CANCELLED"
+	TransferEventsTypeACHOriginationInitiated      TransferEventsType = "ACH_ORIGINATION_INITIATED"
 	TransferEventsTypeACHOriginationProcessed      TransferEventsType = "ACH_ORIGINATION_PROCESSED"
 	TransferEventsTypeACHOriginationSettled        TransferEventsType = "ACH_ORIGINATION_SETTLED"
 	TransferEventsTypeACHOriginationReleased       TransferEventsType = "ACH_ORIGINATION_RELEASED"
-	TransferEventsTypeACHReceiptPending            TransferEventsType = "ACH_RECEIPT_PENDING"
-	TransferEventsTypeACHReceiptReleased           TransferEventsType = "ACH_RECEIPT_RELEASED"
-	TransferEventsTypeACHReturn                    TransferEventsType = "ACH_RETURN"
-	TransferEventsTypeACHReturnPending             TransferEventsType = "ACH_RETURN_PENDING"
+	TransferEventsTypeACHOriginationReviewed       TransferEventsType = "ACH_ORIGINATION_REVIEWED"
+	TransferEventsTypeACHReceiptProcessed          TransferEventsType = "ACH_RECEIPT_PROCESSED"
+	TransferEventsTypeACHReceiptSettled            TransferEventsType = "ACH_RECEIPT_SETTLED"
+	TransferEventsTypeACHReturnInitiated           TransferEventsType = "ACH_RETURN_INITIATED"
+	TransferEventsTypeACHReturnProcessed           TransferEventsType = "ACH_RETURN_PROCESSED"
 	TransferEventsTypeAuthorization                TransferEventsType = "AUTHORIZATION"
 	TransferEventsTypeAuthorizationAdvice          TransferEventsType = "AUTHORIZATION_ADVICE"
 	TransferEventsTypeAuthorizationExpiry          TransferEventsType = "AUTHORIZATION_EXPIRY"
@@ -304,7 +320,7 @@ const (
 
 func (r TransferEventsType) IsKnown() bool {
 	switch r {
-	case TransferEventsTypeACHExceededThreshold, TransferEventsTypeACHInsufficientFunds, TransferEventsTypeACHInvalidAccount, TransferEventsTypeACHOriginationPending, TransferEventsTypeACHOriginationApproved, TransferEventsTypeACHOriginationDeclined, TransferEventsTypeACHOriginationCancelled, TransferEventsTypeACHOriginationProcessed, TransferEventsTypeACHOriginationSettled, TransferEventsTypeACHOriginationReleased, TransferEventsTypeACHReceiptPending, TransferEventsTypeACHReceiptReleased, TransferEventsTypeACHReturn, TransferEventsTypeACHReturnPending, TransferEventsTypeAuthorization, TransferEventsTypeAuthorizationAdvice, TransferEventsTypeAuthorizationExpiry, TransferEventsTypeAuthorizationReversal, TransferEventsTypeBalanceInquiry, TransferEventsTypeClearing, TransferEventsTypeCorrectionCredit, TransferEventsTypeCorrectionDebit, TransferEventsTypeCreditAuthorization, TransferEventsTypeCreditAuthorizationAdvice, TransferEventsTypeFinancialAuthorization, TransferEventsTypeFinancialCreditAuthorization, TransferEventsTypeReturn, TransferEventsTypeReturnReversal, TransferEventsTypeTransfer, TransferEventsTypeTransferInsufficientFunds:
+	case TransferEventsTypeACHOriginationCancelled, TransferEventsTypeACHOriginationInitiated, TransferEventsTypeACHOriginationProcessed, TransferEventsTypeACHOriginationSettled, TransferEventsTypeACHOriginationReleased, TransferEventsTypeACHOriginationReviewed, TransferEventsTypeACHReceiptProcessed, TransferEventsTypeACHReceiptSettled, TransferEventsTypeACHReturnInitiated, TransferEventsTypeACHReturnProcessed, TransferEventsTypeAuthorization, TransferEventsTypeAuthorizationAdvice, TransferEventsTypeAuthorizationExpiry, TransferEventsTypeAuthorizationReversal, TransferEventsTypeBalanceInquiry, TransferEventsTypeClearing, TransferEventsTypeCorrectionCredit, TransferEventsTypeCorrectionDebit, TransferEventsTypeCreditAuthorization, TransferEventsTypeCreditAuthorizationAdvice, TransferEventsTypeFinancialAuthorization, TransferEventsTypeFinancialCreditAuthorization, TransferEventsTypeReturn, TransferEventsTypeReturnReversal, TransferEventsTypeTransfer, TransferEventsTypeTransferInsufficientFunds:
 		return true
 	}
 	return false

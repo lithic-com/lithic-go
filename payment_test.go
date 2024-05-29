@@ -127,6 +127,64 @@ func TestPaymentRetry(t *testing.T) {
 	}
 }
 
+func TestPaymentSimulateActionWithOptionalParams(t *testing.T) {
+	baseURL := "http://localhost:4010"
+	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+		baseURL = envURL
+	}
+	if !testutil.CheckTestServer(t, baseURL) {
+		return
+	}
+	client := lithic.NewClient(
+		option.WithBaseURL(baseURL),
+		option.WithAPIKey("My Lithic API Key"),
+	)
+	_, err := client.Payments.SimulateAction(
+		context.TODO(),
+		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+		lithic.PaymentSimulateActionParams{
+			EventType:        lithic.F(lithic.PaymentSimulateActionParamsEventTypeACHOriginationReviewed),
+			DeclineReason:    lithic.F(lithic.PaymentSimulateActionParamsDeclineReasonProgramTransactionLimitsExceeded),
+			ReturnReasonCode: lithic.F("string"),
+		},
+	)
+	if err != nil {
+		var apierr *lithic.Error
+		if errors.As(err, &apierr) {
+			t.Log(string(apierr.DumpRequest(true)))
+		}
+		t.Fatalf("err should be nil: %s", err.Error())
+	}
+}
+
+func TestPaymentSimulateReceiptWithOptionalParams(t *testing.T) {
+	baseURL := "http://localhost:4010"
+	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+		baseURL = envURL
+	}
+	if !testutil.CheckTestServer(t, baseURL) {
+		return
+	}
+	client := lithic.NewClient(
+		option.WithBaseURL(baseURL),
+		option.WithAPIKey("My Lithic API Key"),
+	)
+	_, err := client.Payments.SimulateReceipt(context.TODO(), lithic.PaymentSimulateReceiptParams{
+		Token:                 lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		Amount:                lithic.F(int64(0)),
+		FinancialAccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		ReceiptType:           lithic.F(lithic.PaymentSimulateReceiptParamsReceiptTypeReceiptCredit),
+		Memo:                  lithic.F("string"),
+	})
+	if err != nil {
+		var apierr *lithic.Error
+		if errors.As(err, &apierr) {
+			t.Log(string(apierr.DumpRequest(true)))
+		}
+		t.Fatalf("err should be nil: %s", err.Error())
+	}
+}
+
 func TestPaymentSimulateRelease(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
@@ -165,7 +223,7 @@ func TestPaymentSimulateReturnWithOptionalParams(t *testing.T) {
 	)
 	_, err := client.Payments.SimulateReturn(context.TODO(), lithic.PaymentSimulateReturnParams{
 		PaymentToken:     lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-		ReturnReasonCode: lithic.F("string"),
+		ReturnReasonCode: lithic.F("R12"),
 	})
 	if err != nil {
 		var apierr *lithic.Error
