@@ -338,8 +338,8 @@ type FinancialTransactionEventsDetailedResult string
 
 const (
 	FinancialTransactionEventsDetailedResultApproved                         FinancialTransactionEventsDetailedResult = "APPROVED"
-	FinancialTransactionEventsDetailedResultInsufficientFunds                FinancialTransactionEventsDetailedResult = "INSUFFICIENT_FUNDS"
-	FinancialTransactionEventsDetailedResultInvalidAccount                   FinancialTransactionEventsDetailedResult = "INVALID_ACCOUNT"
+	FinancialTransactionEventsDetailedResultFundsInsufficient                FinancialTransactionEventsDetailedResult = "FUNDS_INSUFFICIENT"
+	FinancialTransactionEventsDetailedResultAccountInvalid                   FinancialTransactionEventsDetailedResult = "ACCOUNT_INVALID"
 	FinancialTransactionEventsDetailedResultProgramTransactionLimitsExceeded FinancialTransactionEventsDetailedResult = "PROGRAM_TRANSACTION_LIMITS_EXCEEDED"
 	FinancialTransactionEventsDetailedResultProgramDailyLimitsExceeded       FinancialTransactionEventsDetailedResult = "PROGRAM_DAILY_LIMITS_EXCEEDED"
 	FinancialTransactionEventsDetailedResultProgramMonthlyLimitsExceeded     FinancialTransactionEventsDetailedResult = "PROGRAM_MONTHLY_LIMITS_EXCEEDED"
@@ -347,7 +347,7 @@ const (
 
 func (r FinancialTransactionEventsDetailedResult) IsKnown() bool {
 	switch r {
-	case FinancialTransactionEventsDetailedResultApproved, FinancialTransactionEventsDetailedResultInsufficientFunds, FinancialTransactionEventsDetailedResultInvalidAccount, FinancialTransactionEventsDetailedResultProgramTransactionLimitsExceeded, FinancialTransactionEventsDetailedResultProgramDailyLimitsExceeded, FinancialTransactionEventsDetailedResultProgramMonthlyLimitsExceeded:
+	case FinancialTransactionEventsDetailedResultApproved, FinancialTransactionEventsDetailedResultFundsInsufficient, FinancialTransactionEventsDetailedResultAccountInvalid, FinancialTransactionEventsDetailedResultProgramTransactionLimitsExceeded, FinancialTransactionEventsDetailedResultProgramDailyLimitsExceeded, FinancialTransactionEventsDetailedResultProgramMonthlyLimitsExceeded:
 		return true
 	}
 	return false
