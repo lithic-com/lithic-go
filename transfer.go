@@ -213,8 +213,8 @@ type TransferEventsDetailedResult string
 
 const (
 	TransferEventsDetailedResultApproved                         TransferEventsDetailedResult = "APPROVED"
-	TransferEventsDetailedResultInsufficientFunds                TransferEventsDetailedResult = "INSUFFICIENT_FUNDS"
-	TransferEventsDetailedResultInvalidAccount                   TransferEventsDetailedResult = "INVALID_ACCOUNT"
+	TransferEventsDetailedResultFundsInsufficient                TransferEventsDetailedResult = "FUNDS_INSUFFICIENT"
+	TransferEventsDetailedResultAccountInvalid                   TransferEventsDetailedResult = "ACCOUNT_INVALID"
 	TransferEventsDetailedResultProgramTransactionLimitsExceeded TransferEventsDetailedResult = "PROGRAM_TRANSACTION_LIMITS_EXCEEDED"
 	TransferEventsDetailedResultProgramDailyLimitsExceeded       TransferEventsDetailedResult = "PROGRAM_DAILY_LIMITS_EXCEEDED"
 	TransferEventsDetailedResultProgramMonthlyLimitsExceeded     TransferEventsDetailedResult = "PROGRAM_MONTHLY_LIMITS_EXCEEDED"
@@ -222,7 +222,7 @@ const (
 
 func (r TransferEventsDetailedResult) IsKnown() bool {
 	switch r {
-	case TransferEventsDetailedResultApproved, TransferEventsDetailedResultInsufficientFunds, TransferEventsDetailedResultInvalidAccount, TransferEventsDetailedResultProgramTransactionLimitsExceeded, TransferEventsDetailedResultProgramDailyLimitsExceeded, TransferEventsDetailedResultProgramMonthlyLimitsExceeded:
+	case TransferEventsDetailedResultApproved, TransferEventsDetailedResultFundsInsufficient, TransferEventsDetailedResultAccountInvalid, TransferEventsDetailedResultProgramTransactionLimitsExceeded, TransferEventsDetailedResultProgramDailyLimitsExceeded, TransferEventsDetailedResultProgramMonthlyLimitsExceeded:
 		return true
 	}
 	return false
