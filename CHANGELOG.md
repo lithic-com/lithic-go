@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.33.0 (2024-05-30)
+
+Full Changelog: [v0.32.0...v0.33.0](https://github.com/lithic-com/lithic-go/compare/v0.32.0...v0.33.0)
+
+### Features
+
+* **api:** update detailed_results enum values ([#293](https://github.com/lithic-com/lithic-go/issues/293)) ([e6196d0](https://github.com/lithic-com/lithic-go/commit/e6196d0e2e73bb6a05c40f41e1b8c84b63dd9f73))
+
 ## 0.32.0 (2024-05-29)
 
 Full Changelog: [v0.31.0...v0.32.0](https://github.com/lithic-com/lithic-go/compare/v0.31.0...v0.32.0)
