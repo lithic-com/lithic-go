@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.33.1 (2024-06-03)
+
+Full Changelog: [v0.33.0...v0.33.1](https://github.com/lithic-com/lithic-go/compare/v0.33.0...v0.33.1)
+
+### Bug Fixes
+
+* **internal:** fix the way that unions are deserialized in nested arrays ([#295](https://github.com/lithic-com/lithic-go/issues/295)) ([42ba4ad](https://github.com/lithic-com/lithic-go/commit/42ba4ad8b02dfa4482ec0dbecae5a3a74a9c5c87))
+
 ## 0.33.0 (2024-05-30)
 
 Full Changelog: [v0.32.0...v0.33.0](https://github.com/lithic-com/lithic-go/compare/v0.32.0...v0.33.0)
