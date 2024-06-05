@@ -25,8 +25,7 @@ import (
 // automatically. You should not instantiate this service directly, and instead use
 // the [NewAccountService] method instead.
 type AccountService struct {
-	Options              []option.RequestOption
-	CreditConfigurations *AccountCreditConfigurationService
+	Options []option.RequestOption
 }
 
 // NewAccountService generates a new service that applies the given options to each
@@ -35,7 +34,6 @@ type AccountService struct {
 func NewAccountService(opts ...option.RequestOption) (r *AccountService) {
 	r = &AccountService{}
 	r.Options = opts
-	r.CreditConfigurations = NewAccountCreditConfigurationService(opts...)
 	return
 }
 
@@ -111,6 +109,9 @@ type Account struct {
 	// account_token returned by the enroll endpoint. If using this parameter, do not
 	// include pagination.
 	Token string `json:"token,required" format:"uuid"`
+	// Timestamp of when the account was created. For accounts created before
+	// 2023-05-11, this field will be null.
+	Created time.Time `json:"created,required,nullable" format:"date-time"`
 	// Spend limit information for the user containing the daily, monthly, and lifetime
 	// spend limit of the account. Any charges to a card owned by this account will be
 	// declined once their transaction volume has surpassed the value in the applicable
@@ -139,6 +140,7 @@ type Account struct {
 // accountJSON contains the JSON metadata for the struct [Account]
 type accountJSON struct {
 	Token               apijson.Field
+	Created             apijson.Field
 	SpendLimit          apijson.Field
 	State               apijson.Field
 	AccountHolder       apijson.Field
@@ -400,60 +402,6 @@ func (r *AccountSpendLimitsSpendVelocity) UnmarshalJSON(data []byte) (err error)
 }
 
 func (r accountSpendLimitsSpendVelocityJSON) RawJSON() string {
-	return r.raw
-}
-
-type BusinessAccount struct {
-	// Account token
-	Token                    string                                  `json:"token,required" format:"uuid"`
-	CollectionsConfiguration BusinessAccountCollectionsConfiguration `json:"collections_configuration"`
-	// Credit limit extended to the Account
-	CreditLimit int64               `json:"credit_limit"`
-	JSON        businessAccountJSON `json:"-"`
-}
-
-// businessAccountJSON contains the JSON metadata for the struct [BusinessAccount]
-type businessAccountJSON struct {
-	Token                    apijson.Field
-	CollectionsConfiguration apijson.Field
-	CreditLimit              apijson.Field
-	raw                      string
-	ExtraFields              map[string]apijson.Field
-}
-
-func (r *BusinessAccount) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r businessAccountJSON) RawJSON() string {
-	return r.raw
-}
-
-type BusinessAccountCollectionsConfiguration struct {
-	// Number of days within the billing period
-	BillingPeriod int64 `json:"billing_period,required"`
-	// Number of days after the billing period ends that a payment is required
-	PaymentPeriod int64 `json:"payment_period,required"`
-	// The external bank account token to use for auto-collections
-	ExternalBankAccountToken string                                      `json:"external_bank_account_token" format:"uuid"`
-	JSON                     businessAccountCollectionsConfigurationJSON `json:"-"`
-}
-
-// businessAccountCollectionsConfigurationJSON contains the JSON metadata for the
-// struct [BusinessAccountCollectionsConfiguration]
-type businessAccountCollectionsConfigurationJSON struct {
-	BillingPeriod            apijson.Field
-	PaymentPeriod            apijson.Field
-	ExternalBankAccountToken apijson.Field
-	raw                      string
-	ExtraFields              map[string]apijson.Field
-}
-
-func (r *BusinessAccountCollectionsConfiguration) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r businessAccountCollectionsConfigurationJSON) RawJSON() string {
 	return r.raw
 }
 

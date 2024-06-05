@@ -255,9 +255,15 @@ type AccountHolder struct {
 	//
 	// > Primary phone of Account Holder, entered in E.164 format.
 	PhoneNumber string `json:"phone_number"`
-	// <Deprecated. Use verification_application.status instead> KYC and KYB evaluation
-	// states. Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for
-	// the `ADVANCED` workflow.
+	// <Deprecated. Use verification_application.status instead>
+	//
+	// KYC and KYB evaluation states.
+	//
+	// Note:
+	//
+	//   - `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
+	//     `KYC_ADVANCED` workflow.
+	//   - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
 	Status AccountHolderStatus `json:"status"`
 	// <Deprecated. Use verification_application.status_reasons> Reason for the
 	// evaluation status.
@@ -531,13 +537,20 @@ func (r accountHolderIndividualJSON) RawJSON() string {
 	return r.raw
 }
 
-// <Deprecated. Use verification_application.status instead> KYC and KYB evaluation
-// states. Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for
-// the `ADVANCED` workflow.
+// <Deprecated. Use verification_application.status instead>
+//
+// KYC and KYB evaluation states.
+//
+// Note:
+//
+//   - `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
+//     `KYC_ADVANCED` workflow.
+//   - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
 type AccountHolderStatus string
 
 const (
 	AccountHolderStatusAccepted        AccountHolderStatus = "ACCEPTED"
+	AccountHolderStatusPendingReview   AccountHolderStatus = "PENDING_REVIEW"
 	AccountHolderStatusPendingDocument AccountHolderStatus = "PENDING_DOCUMENT"
 	AccountHolderStatusPendingResubmit AccountHolderStatus = "PENDING_RESUBMIT"
 	AccountHolderStatusRejected        AccountHolderStatus = "REJECTED"
@@ -545,7 +558,7 @@ const (
 
 func (r AccountHolderStatus) IsKnown() bool {
 	switch r {
-	case AccountHolderStatusAccepted, AccountHolderStatusPendingDocument, AccountHolderStatusPendingResubmit, AccountHolderStatusRejected:
+	case AccountHolderStatusAccepted, AccountHolderStatusPendingReview, AccountHolderStatusPendingDocument, AccountHolderStatusPendingResubmit, AccountHolderStatusRejected:
 		return true
 	}
 	return false
@@ -598,8 +611,13 @@ func (r AccountHolderUserType) IsKnown() bool {
 type AccountHolderVerificationApplication struct {
 	// Timestamp of when the application was created.
 	Created time.Time `json:"created" format:"date-time"`
-	// KYC and KYB evaluation states. Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT`
-	// are only applicable for the `ADVANCED` workflow.
+	// KYC and KYB evaluation states.
+	//
+	// Note:
+	//
+	//   - `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
+	//     `KYC_ADVANCED` workflow.
+	//   - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
 	Status AccountHolderVerificationApplicationStatus `json:"status"`
 	// Reason for the evaluation status.
 	StatusReasons []AccountHolderVerificationApplicationStatusReason `json:"status_reasons"`
@@ -627,12 +645,18 @@ func (r accountHolderVerificationApplicationJSON) RawJSON() string {
 	return r.raw
 }
 
-// KYC and KYB evaluation states. Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT`
-// are only applicable for the `ADVANCED` workflow.
+// KYC and KYB evaluation states.
+//
+// Note:
+//
+//   - `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
+//     `KYC_ADVANCED` workflow.
+//   - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
 type AccountHolderVerificationApplicationStatus string
 
 const (
 	AccountHolderVerificationApplicationStatusAccepted        AccountHolderVerificationApplicationStatus = "ACCEPTED"
+	AccountHolderVerificationApplicationStatusPendingReview   AccountHolderVerificationApplicationStatus = "PENDING_REVIEW"
 	AccountHolderVerificationApplicationStatusPendingDocument AccountHolderVerificationApplicationStatus = "PENDING_DOCUMENT"
 	AccountHolderVerificationApplicationStatusPendingResubmit AccountHolderVerificationApplicationStatus = "PENDING_RESUBMIT"
 	AccountHolderVerificationApplicationStatusRejected        AccountHolderVerificationApplicationStatus = "REJECTED"
@@ -640,7 +664,7 @@ const (
 
 func (r AccountHolderVerificationApplicationStatus) IsKnown() bool {
 	switch r {
-	case AccountHolderVerificationApplicationStatusAccepted, AccountHolderVerificationApplicationStatusPendingDocument, AccountHolderVerificationApplicationStatusPendingResubmit, AccountHolderVerificationApplicationStatusRejected:
+	case AccountHolderVerificationApplicationStatusAccepted, AccountHolderVerificationApplicationStatusPendingReview, AccountHolderVerificationApplicationStatusPendingDocument, AccountHolderVerificationApplicationStatusPendingResubmit, AccountHolderVerificationApplicationStatusRejected:
 		return true
 	}
 	return false
@@ -1131,8 +1155,13 @@ type AccountHolderNewResponse struct {
 	Token string `json:"token,required" format:"uuid"`
 	// Globally unique identifier for the account.
 	AccountToken string `json:"account_token,required" format:"uuid"`
-	// KYC and KYB evaluation states. Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT`
-	// are only applicable for the `ADVANCED` workflow.
+	// KYC and KYB evaluation states.
+	//
+	// Note:
+	//
+	//   - `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
+	//     `KYC_ADVANCED` workflow.
+	//   - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
 	Status AccountHolderNewResponseStatus `json:"status,required"`
 	// Reason for the evaluation status.
 	StatusReasons []AccountHolderNewResponseStatusReason `json:"status_reasons,required"`
@@ -1165,12 +1194,18 @@ func (r accountHolderNewResponseJSON) RawJSON() string {
 	return r.raw
 }
 
-// KYC and KYB evaluation states. Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT`
-// are only applicable for the `ADVANCED` workflow.
+// KYC and KYB evaluation states.
+//
+// Note:
+//
+//   - `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
+//     `KYC_ADVANCED` workflow.
+//   - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
 type AccountHolderNewResponseStatus string
 
 const (
 	AccountHolderNewResponseStatusAccepted        AccountHolderNewResponseStatus = "ACCEPTED"
+	AccountHolderNewResponseStatusPendingReview   AccountHolderNewResponseStatus = "PENDING_REVIEW"
 	AccountHolderNewResponseStatusPendingDocument AccountHolderNewResponseStatus = "PENDING_DOCUMENT"
 	AccountHolderNewResponseStatusPendingResubmit AccountHolderNewResponseStatus = "PENDING_RESUBMIT"
 	AccountHolderNewResponseStatusRejected        AccountHolderNewResponseStatus = "REJECTED"
@@ -1178,7 +1213,7 @@ const (
 
 func (r AccountHolderNewResponseStatus) IsKnown() bool {
 	switch r {
-	case AccountHolderNewResponseStatusAccepted, AccountHolderNewResponseStatusPendingDocument, AccountHolderNewResponseStatusPendingResubmit, AccountHolderNewResponseStatusRejected:
+	case AccountHolderNewResponseStatusAccepted, AccountHolderNewResponseStatusPendingReview, AccountHolderNewResponseStatusPendingDocument, AccountHolderNewResponseStatusPendingResubmit, AccountHolderNewResponseStatusRejected:
 		return true
 	}
 	return false

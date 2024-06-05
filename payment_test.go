@@ -32,11 +32,7 @@ func TestPaymentNewWithOptionalParams(t *testing.T) {
 		FinancialAccountToken:    lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Method:                   lithic.F(lithic.PaymentNewParamsMethodACHNextDay),
 		MethodAttributes: lithic.F(lithic.PaymentNewParamsMethodAttributes{
-			CompanyID:            lithic.F("string"),
-			ReceiptRoutingNumber: lithic.F("string"),
-			Retries:              lithic.F(int64(0)),
-			ReturnReasonCode:     lithic.F("string"),
-			SecCode:              lithic.F(lithic.PaymentNewParamsMethodAttributesSecCodeCcd),
+			SecCode: lithic.F(lithic.PaymentNewParamsMethodAttributesSecCodeCcd),
 		}),
 		Type:          lithic.F(lithic.PaymentNewParamsTypeCollection),
 		Token:         lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
@@ -144,7 +140,7 @@ func TestPaymentSimulateActionWithOptionalParams(t *testing.T) {
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.PaymentSimulateActionParams{
 			EventType:        lithic.F(lithic.PaymentSimulateActionParamsEventTypeACHOriginationReviewed),
-			DeclineReason:    lithic.F(lithic.PaymentSimulateActionParamsDeclineReasonProgramTransactionLimitsExceeded),
+			DeclineReason:    lithic.F(lithic.PaymentSimulateActionParamsDeclineReasonProgramTransactionLimitExceeded),
 			ReturnReasonCode: lithic.F("string"),
 		},
 	)

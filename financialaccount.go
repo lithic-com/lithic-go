@@ -28,7 +28,6 @@ type FinancialAccountService struct {
 	Options               []option.RequestOption
 	Balances              *FinancialAccountBalanceService
 	FinancialTransactions *FinancialAccountFinancialTransactionService
-	Statements            *FinancialAccountStatementService
 }
 
 // NewFinancialAccountService generates a new service that applies the given
@@ -39,7 +38,6 @@ func NewFinancialAccountService(opts ...option.RequestOption) (r *FinancialAccou
 	r.Options = opts
 	r.Balances = NewFinancialAccountBalanceService(opts...)
 	r.FinancialTransactions = NewFinancialAccountFinancialTransactionService(opts...)
-	r.Statements = NewFinancialAccountStatementService(opts...)
 	return
 }
 
@@ -192,14 +190,13 @@ type FinancialTransaction struct {
 	SettledAmount int64 `json:"settled_amount,required"`
 	// Status types:
 	//
-	//   - `DECLINED` - The card transaction was declined.
-	//   - `EXPIRED` - Lithic reversed the card authorization as it has passed its
-	//     expiration time.
-	//   - `PENDING` - Authorization is pending completion from the merchant or pending
-	//     release from ACH hold period
-	//   - `RETURNED` - The financial transaction has been returned.
-	//   - `SETTLED` - The financial transaction is completed.
-	//   - `VOIDED` - The merchant has voided the previously pending card authorization.
+	//   - `DECLINED` - The transaction was declined.
+	//   - `EXPIRED` - The authorization as it has passed its expiration time. Card
+	//     transaction only.
+	//   - `PENDING` - The transaction is expected to settle.
+	//   - `RETURNED` - The transaction has been returned.
+	//   - `SETTLED` - The transaction is completed.
+	//   - `VOIDED` - The transaction was voided. Card transaction only.
 	Status FinancialTransactionStatus `json:"status,required"`
 	// Date and time when the financial transaction was last updated. UTC time zone.
 	Updated time.Time                `json:"updated,required" format:"date-time"`
@@ -262,8 +259,6 @@ type FinancialTransactionEvent struct {
 	Amount int64 `json:"amount"`
 	// Date and time when the financial event occurred. UTC time zone.
 	Created time.Time `json:"created" format:"date-time"`
-	// More detailed reasons for the event
-	DetailedResults []FinancialTransactionEventsDetailedResult `json:"detailed_results"`
 	// APPROVED financial events were successful while DECLINED financial events were
 	// declined by user, Lithic, or the network.
 	Result FinancialTransactionEventsResult `json:"result"`
@@ -316,14 +311,13 @@ type FinancialTransactionEvent struct {
 // financialTransactionEventJSON contains the JSON metadata for the struct
 // [FinancialTransactionEvent]
 type financialTransactionEventJSON struct {
-	Token           apijson.Field
-	Amount          apijson.Field
-	Created         apijson.Field
-	DetailedResults apijson.Field
-	Result          apijson.Field
-	Type            apijson.Field
-	raw             string
-	ExtraFields     map[string]apijson.Field
+	Token       apijson.Field
+	Amount      apijson.Field
+	Created     apijson.Field
+	Result      apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *FinancialTransactionEvent) UnmarshalJSON(data []byte) (err error) {
@@ -332,25 +326,6 @@ func (r *FinancialTransactionEvent) UnmarshalJSON(data []byte) (err error) {
 
 func (r financialTransactionEventJSON) RawJSON() string {
 	return r.raw
-}
-
-type FinancialTransactionEventsDetailedResult string
-
-const (
-	FinancialTransactionEventsDetailedResultApproved                         FinancialTransactionEventsDetailedResult = "APPROVED"
-	FinancialTransactionEventsDetailedResultFundsInsufficient                FinancialTransactionEventsDetailedResult = "FUNDS_INSUFFICIENT"
-	FinancialTransactionEventsDetailedResultAccountInvalid                   FinancialTransactionEventsDetailedResult = "ACCOUNT_INVALID"
-	FinancialTransactionEventsDetailedResultProgramTransactionLimitsExceeded FinancialTransactionEventsDetailedResult = "PROGRAM_TRANSACTION_LIMITS_EXCEEDED"
-	FinancialTransactionEventsDetailedResultProgramDailyLimitsExceeded       FinancialTransactionEventsDetailedResult = "PROGRAM_DAILY_LIMITS_EXCEEDED"
-	FinancialTransactionEventsDetailedResultProgramMonthlyLimitsExceeded     FinancialTransactionEventsDetailedResult = "PROGRAM_MONTHLY_LIMITS_EXCEEDED"
-)
-
-func (r FinancialTransactionEventsDetailedResult) IsKnown() bool {
-	switch r {
-	case FinancialTransactionEventsDetailedResultApproved, FinancialTransactionEventsDetailedResultFundsInsufficient, FinancialTransactionEventsDetailedResultAccountInvalid, FinancialTransactionEventsDetailedResultProgramTransactionLimitsExceeded, FinancialTransactionEventsDetailedResultProgramDailyLimitsExceeded, FinancialTransactionEventsDetailedResultProgramMonthlyLimitsExceeded:
-		return true
-	}
-	return false
 }
 
 // APPROVED financial events were successful while DECLINED financial events were
@@ -470,14 +445,13 @@ func (r FinancialTransactionResult) IsKnown() bool {
 
 // Status types:
 //
-//   - `DECLINED` - The card transaction was declined.
-//   - `EXPIRED` - Lithic reversed the card authorization as it has passed its
-//     expiration time.
-//   - `PENDING` - Authorization is pending completion from the merchant or pending
-//     release from ACH hold period
-//   - `RETURNED` - The financial transaction has been returned.
-//   - `SETTLED` - The financial transaction is completed.
-//   - `VOIDED` - The merchant has voided the previously pending card authorization.
+//   - `DECLINED` - The transaction was declined.
+//   - `EXPIRED` - The authorization as it has passed its expiration time. Card
+//     transaction only.
+//   - `PENDING` - The transaction is expected to settle.
+//   - `RETURNED` - The transaction has been returned.
+//   - `SETTLED` - The transaction is completed.
+//   - `VOIDED` - The transaction was voided. Card transaction only.
 type FinancialTransactionStatus string
 
 const (

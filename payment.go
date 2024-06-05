@@ -129,25 +129,67 @@ func (r *PaymentService) SimulateReturn(ctx context.Context, body PaymentSimulat
 }
 
 type Payment struct {
-	Direction                PaymentDirection        `json:"direction,required"`
+	// Globally unique identifier.
+	Token string `json:"token,required" format:"uuid"`
+	// Payment category
+	Category PaymentCategory `json:"category,required"`
+	// Date and time when the payment first occurred. UTC time zone.
+	Created time.Time `json:"created,required" format:"date-time"`
+	// 3-digit alphabetic ISO 4217 code for the settling currency of the payment.
+	Currency string `json:"currency,required"`
+	// A string that provides a description of the payment; may be useful to display to
+	// users.
+	Descriptor string           `json:"descriptor,required"`
+	Direction  PaymentDirection `json:"direction,required"`
+	// A list of all payment events that have modified this payment.
+	Events                   []PaymentEvent          `json:"events,required"`
 	ExternalBankAccountToken string                  `json:"external_bank_account_token,required,nullable" format:"uuid"`
 	FinancialAccountToken    string                  `json:"financial_account_token,required" format:"uuid"`
 	Method                   PaymentMethod           `json:"method,required"`
 	MethodAttributes         PaymentMethodAttributes `json:"method_attributes,required"`
-	Source                   PaymentSource           `json:"source,required"`
-	UserDefinedID            string                  `json:"user_defined_id,required,nullable"`
-	JSON                     paymentJSON             `json:"-"`
-	FinancialTransaction
+	// Pending amount of the payment in the currency's smallest unit (e.g., cents). The
+	// value of this field will go to zero over time once the payment is settled.
+	PendingAmount int64 `json:"pending_amount,required"`
+	// APPROVED payments were successful while DECLINED payments were declined by
+	// Lithic or returned.
+	Result PaymentResult `json:"result,required"`
+	// Amount of the payment that has been settled in the currency's smallest unit
+	// (e.g., cents).
+	SettledAmount int64         `json:"settled_amount,required"`
+	Source        PaymentSource `json:"source,required"`
+	// Status types:
+	//
+	//   - `DECLINED` - The payment was declined.
+	//   - `PENDING` - The payment is being processed and has yet to settle or release
+	//     (origination debit).
+	//   - `RETURNED` - The payment has been returned.
+	//   - `SETTLED` - The payment is completed.
+	Status PaymentStatus `json:"status,required"`
+	// Date and time when the financial transaction was last updated. UTC time zone.
+	Updated       time.Time   `json:"updated,required" format:"date-time"`
+	UserDefinedID string      `json:"user_defined_id,required,nullable"`
+	JSON          paymentJSON `json:"-"`
 }
 
 // paymentJSON contains the JSON metadata for the struct [Payment]
 type paymentJSON struct {
+	Token                    apijson.Field
+	Category                 apijson.Field
+	Created                  apijson.Field
+	Currency                 apijson.Field
+	Descriptor               apijson.Field
 	Direction                apijson.Field
+	Events                   apijson.Field
 	ExternalBankAccountToken apijson.Field
 	FinancialAccountToken    apijson.Field
 	Method                   apijson.Field
 	MethodAttributes         apijson.Field
+	PendingAmount            apijson.Field
+	Result                   apijson.Field
+	SettledAmount            apijson.Field
 	Source                   apijson.Field
+	Status                   apijson.Field
+	Updated                  apijson.Field
 	UserDefinedID            apijson.Field
 	raw                      string
 	ExtraFields              map[string]apijson.Field
@@ -161,6 +203,21 @@ func (r paymentJSON) RawJSON() string {
 	return r.raw
 }
 
+// Payment category
+type PaymentCategory string
+
+const (
+	PaymentCategoryACH PaymentCategory = "ACH"
+)
+
+func (r PaymentCategory) IsKnown() bool {
+	switch r {
+	case PaymentCategoryACH:
+		return true
+	}
+	return false
+}
+
 type PaymentDirection string
 
 const (
@@ -171,6 +228,138 @@ const (
 func (r PaymentDirection) IsKnown() bool {
 	switch r {
 	case PaymentDirectionCredit, PaymentDirectionDebit:
+		return true
+	}
+	return false
+}
+
+type PaymentEvent struct {
+	// Globally unique identifier.
+	Token string `json:"token,required" format:"uuid"`
+	// Amount of the financial event that has been settled in the currency's smallest
+	// unit (e.g., cents).
+	Amount int64 `json:"amount,required"`
+	// Date and time when the financial event occurred. UTC time zone.
+	Created time.Time `json:"created,required" format:"date-time"`
+	// APPROVED financial events were successful while DECLINED financial events were
+	// declined by user, Lithic, or the network.
+	Result PaymentEventsResult `json:"result,required"`
+	// Event types:
+	//
+	//   - `ACH_ORIGINATION_INITIATED` - ACH origination received and pending
+	//     approval/release from an ACH hold.
+	//   - `ACH_ORIGINATION_REVIEWED` - ACH origination has completed the review process.
+	//   - `ACH_ORIGINATION_CANCELLED` - ACH origination has been cancelled.
+	//   - `ACH_ORIGINATION_PROCESSED` - ACH origination has been processed and sent to
+	//     the fed.
+	//   - `ACH_ORIGINATION_SETTLED` - ACH origination has settled.
+	//   - `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to
+	//     available balance.
+	//   - `ACH_RETURN_PROCESSED` - ACH origination returned by the Receiving Depository
+	//     Financial Institution.
+	//   - `ACH_RECEIPT_PROCESSED` - ACH receipt pending release from an ACH holder.
+	//   - `ACH_RETURN_INITIATED` - ACH initiated return for a ACH receipt.
+	//   - `ACH_RECEIPT_SETTLED` - ACH receipt funds have settled.
+	//   - `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to available
+	//     balance.
+	Type PaymentEventsType `json:"type,required"`
+	// More detailed reasons for the event
+	DetailedResults []PaymentEventsDetailedResult `json:"detailed_results"`
+	JSON            paymentEventJSON              `json:"-"`
+}
+
+// paymentEventJSON contains the JSON metadata for the struct [PaymentEvent]
+type paymentEventJSON struct {
+	Token           apijson.Field
+	Amount          apijson.Field
+	Created         apijson.Field
+	Result          apijson.Field
+	Type            apijson.Field
+	DetailedResults apijson.Field
+	raw             string
+	ExtraFields     map[string]apijson.Field
+}
+
+func (r *PaymentEvent) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r paymentEventJSON) RawJSON() string {
+	return r.raw
+}
+
+// APPROVED financial events were successful while DECLINED financial events were
+// declined by user, Lithic, or the network.
+type PaymentEventsResult string
+
+const (
+	PaymentEventsResultApproved PaymentEventsResult = "APPROVED"
+	PaymentEventsResultDeclined PaymentEventsResult = "DECLINED"
+)
+
+func (r PaymentEventsResult) IsKnown() bool {
+	switch r {
+	case PaymentEventsResultApproved, PaymentEventsResultDeclined:
+		return true
+	}
+	return false
+}
+
+// Event types:
+//
+//   - `ACH_ORIGINATION_INITIATED` - ACH origination received and pending
+//     approval/release from an ACH hold.
+//   - `ACH_ORIGINATION_REVIEWED` - ACH origination has completed the review process.
+//   - `ACH_ORIGINATION_CANCELLED` - ACH origination has been cancelled.
+//   - `ACH_ORIGINATION_PROCESSED` - ACH origination has been processed and sent to
+//     the fed.
+//   - `ACH_ORIGINATION_SETTLED` - ACH origination has settled.
+//   - `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to
+//     available balance.
+//   - `ACH_RETURN_PROCESSED` - ACH origination returned by the Receiving Depository
+//     Financial Institution.
+//   - `ACH_RECEIPT_PROCESSED` - ACH receipt pending release from an ACH holder.
+//   - `ACH_RETURN_INITIATED` - ACH initiated return for a ACH receipt.
+//   - `ACH_RECEIPT_SETTLED` - ACH receipt funds have settled.
+//   - `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to available
+//     balance.
+type PaymentEventsType string
+
+const (
+	PaymentEventsTypeACHOriginationCancelled PaymentEventsType = "ACH_ORIGINATION_CANCELLED"
+	PaymentEventsTypeACHOriginationInitiated PaymentEventsType = "ACH_ORIGINATION_INITIATED"
+	PaymentEventsTypeACHOriginationProcessed PaymentEventsType = "ACH_ORIGINATION_PROCESSED"
+	PaymentEventsTypeACHOriginationSettled   PaymentEventsType = "ACH_ORIGINATION_SETTLED"
+	PaymentEventsTypeACHOriginationReleased  PaymentEventsType = "ACH_ORIGINATION_RELEASED"
+	PaymentEventsTypeACHOriginationReviewed  PaymentEventsType = "ACH_ORIGINATION_REVIEWED"
+	PaymentEventsTypeACHReceiptProcessed     PaymentEventsType = "ACH_RECEIPT_PROCESSED"
+	PaymentEventsTypeACHReceiptSettled       PaymentEventsType = "ACH_RECEIPT_SETTLED"
+	PaymentEventsTypeACHReturnInitiated      PaymentEventsType = "ACH_RETURN_INITIATED"
+	PaymentEventsTypeACHReturnProcessed      PaymentEventsType = "ACH_RETURN_PROCESSED"
+)
+
+func (r PaymentEventsType) IsKnown() bool {
+	switch r {
+	case PaymentEventsTypeACHOriginationCancelled, PaymentEventsTypeACHOriginationInitiated, PaymentEventsTypeACHOriginationProcessed, PaymentEventsTypeACHOriginationSettled, PaymentEventsTypeACHOriginationReleased, PaymentEventsTypeACHOriginationReviewed, PaymentEventsTypeACHReceiptProcessed, PaymentEventsTypeACHReceiptSettled, PaymentEventsTypeACHReturnInitiated, PaymentEventsTypeACHReturnProcessed:
+		return true
+	}
+	return false
+}
+
+type PaymentEventsDetailedResult string
+
+const (
+	PaymentEventsDetailedResultApproved                        PaymentEventsDetailedResult = "APPROVED"
+	PaymentEventsDetailedResultFundsInsufficient               PaymentEventsDetailedResult = "FUNDS_INSUFFICIENT"
+	PaymentEventsDetailedResultAccountInvalid                  PaymentEventsDetailedResult = "ACCOUNT_INVALID"
+	PaymentEventsDetailedResultProgramTransactionLimitExceeded PaymentEventsDetailedResult = "PROGRAM_TRANSACTION_LIMIT_EXCEEDED"
+	PaymentEventsDetailedResultProgramDailyLimitExceeded       PaymentEventsDetailedResult = "PROGRAM_DAILY_LIMIT_EXCEEDED"
+	PaymentEventsDetailedResultProgramMonthlyLimitExceeded     PaymentEventsDetailedResult = "PROGRAM_MONTHLY_LIMIT_EXCEEDED"
+)
+
+func (r PaymentEventsDetailedResult) IsKnown() bool {
+	switch r {
+	case PaymentEventsDetailedResultApproved, PaymentEventsDetailedResultFundsInsufficient, PaymentEventsDetailedResultAccountInvalid, PaymentEventsDetailedResultProgramTransactionLimitExceeded, PaymentEventsDetailedResultProgramDailyLimitExceeded, PaymentEventsDetailedResultProgramMonthlyLimitExceeded:
 		return true
 	}
 	return false
@@ -236,6 +425,23 @@ func (r PaymentMethodAttributesSecCode) IsKnown() bool {
 	return false
 }
 
+// APPROVED payments were successful while DECLINED payments were declined by
+// Lithic or returned.
+type PaymentResult string
+
+const (
+	PaymentResultApproved PaymentResult = "APPROVED"
+	PaymentResultDeclined PaymentResult = "DECLINED"
+)
+
+func (r PaymentResult) IsKnown() bool {
+	switch r {
+	case PaymentResultApproved, PaymentResultDeclined:
+		return true
+	}
+	return false
+}
+
 type PaymentSource string
 
 const (
@@ -246,6 +452,30 @@ const (
 func (r PaymentSource) IsKnown() bool {
 	switch r {
 	case PaymentSourceCustomer, PaymentSourceLithic:
+		return true
+	}
+	return false
+}
+
+// Status types:
+//
+//   - `DECLINED` - The payment was declined.
+//   - `PENDING` - The payment is being processed and has yet to settle or release
+//     (origination debit).
+//   - `RETURNED` - The payment has been returned.
+//   - `SETTLED` - The payment is completed.
+type PaymentStatus string
+
+const (
+	PaymentStatusDeclined PaymentStatus = "DECLINED"
+	PaymentStatusPending  PaymentStatus = "PENDING"
+	PaymentStatusReturned PaymentStatus = "RETURNED"
+	PaymentStatusSettled  PaymentStatus = "SETTLED"
+)
+
+func (r PaymentStatus) IsKnown() bool {
+	switch r {
+	case PaymentStatusDeclined, PaymentStatusPending, PaymentStatusReturned, PaymentStatusSettled:
 		return true
 	}
 	return false
@@ -507,11 +737,7 @@ func (r PaymentNewParamsMethod) IsKnown() bool {
 }
 
 type PaymentNewParamsMethodAttributes struct {
-	CompanyID            param.Field[string]                                  `json:"company_id,required"`
-	ReceiptRoutingNumber param.Field[string]                                  `json:"receipt_routing_number,required"`
-	Retries              param.Field[int64]                                   `json:"retries,required"`
-	ReturnReasonCode     param.Field[string]                                  `json:"return_reason_code,required"`
-	SecCode              param.Field[PaymentNewParamsMethodAttributesSecCode] `json:"sec_code,required"`
+	SecCode param.Field[PaymentNewParamsMethodAttributesSecCode] `json:"sec_code,required"`
 }
 
 func (r PaymentNewParamsMethodAttributes) MarshalJSON() (data []byte, err error) {
@@ -647,14 +873,14 @@ func (r PaymentSimulateActionParamsEventType) IsKnown() bool {
 type PaymentSimulateActionParamsDeclineReason string
 
 const (
-	PaymentSimulateActionParamsDeclineReasonProgramTransactionLimitsExceeded PaymentSimulateActionParamsDeclineReason = "PROGRAM_TRANSACTION_LIMITS_EXCEEDED"
-	PaymentSimulateActionParamsDeclineReasonProgramDailyLimitsExceeded       PaymentSimulateActionParamsDeclineReason = "PROGRAM_DAILY_LIMITS_EXCEEDED"
-	PaymentSimulateActionParamsDeclineReasonProgramMonthlyLimitsExceeded     PaymentSimulateActionParamsDeclineReason = "PROGRAM_MONTHLY_LIMITS_EXCEEDED"
+	PaymentSimulateActionParamsDeclineReasonProgramTransactionLimitExceeded PaymentSimulateActionParamsDeclineReason = "PROGRAM_TRANSACTION_LIMIT_EXCEEDED"
+	PaymentSimulateActionParamsDeclineReasonProgramDailyLimitExceeded       PaymentSimulateActionParamsDeclineReason = "PROGRAM_DAILY_LIMIT_EXCEEDED"
+	PaymentSimulateActionParamsDeclineReasonProgramMonthlyLimitExceeded     PaymentSimulateActionParamsDeclineReason = "PROGRAM_MONTHLY_LIMIT_EXCEEDED"
 )
 
 func (r PaymentSimulateActionParamsDeclineReason) IsKnown() bool {
 	switch r {
-	case PaymentSimulateActionParamsDeclineReasonProgramTransactionLimitsExceeded, PaymentSimulateActionParamsDeclineReasonProgramDailyLimitsExceeded, PaymentSimulateActionParamsDeclineReasonProgramMonthlyLimitsExceeded:
+	case PaymentSimulateActionParamsDeclineReasonProgramTransactionLimitExceeded, PaymentSimulateActionParamsDeclineReasonProgramDailyLimitExceeded, PaymentSimulateActionParamsDeclineReasonProgramMonthlyLimitExceeded:
 		return true
 	}
 	return false
