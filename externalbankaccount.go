@@ -106,6 +106,18 @@ func (r *ExternalBankAccountService) RetryMicroDeposits(ctx context.Context, ext
 	return
 }
 
+// Retry external bank account prenote verification.
+func (r *ExternalBankAccountService) RetryPrenote(ctx context.Context, externalBankAccountToken string, body ExternalBankAccountRetryPrenoteParams, opts ...option.RequestOption) (res *ExternalBankAccountRetryPrenoteResponse, err error) {
+	opts = append(r.Options[:], opts...)
+	if externalBankAccountToken == "" {
+		err = errors.New("missing required external_bank_account_token parameter")
+		return
+	}
+	path := fmt.Sprintf("external_bank_accounts/%s/retry_prenote", externalBankAccountToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+	return
+}
+
 type ExternalBankAccountAddress struct {
 	Address1   string                         `json:"address1,required"`
 	City       string                         `json:"city,required"`
@@ -1087,6 +1099,153 @@ func (r ExternalBankAccountRetryMicroDepositsResponseVerificationState) IsKnown(
 	return false
 }
 
+type ExternalBankAccountRetryPrenoteResponse struct {
+	// A globally unique identifier for this record of an external bank account
+	// association. If a program links an external bank account to more than one
+	// end-user or to both the program and the end-user, then Lithic will return each
+	// record of the association
+	Token string `json:"token,required" format:"uuid"`
+	// The country that the bank account is located in using ISO 3166-1. We will only
+	// accept USA bank accounts e.g., USA
+	Country string `json:"country,required"`
+	// An ISO 8601 string representing when this funding source was added to the Lithic
+	// account.
+	Created time.Time `json:"created,required" format:"date-time"`
+	// currency of the external account 3-digit alphabetic ISO 4217 code
+	Currency string `json:"currency,required"`
+	// The last 4 digits of the bank account. Derived by Lithic from the account number
+	// passed
+	LastFour string `json:"last_four,required"`
+	// Legal Name of the business or individual who owns the external account. This
+	// will appear in statements
+	Owner string `json:"owner,required"`
+	// Owner Type
+	OwnerType OwnerType `json:"owner_type,required"`
+	// Routing Number
+	RoutingNumber string `json:"routing_number,required"`
+	// Account State
+	State ExternalBankAccountRetryPrenoteResponseState `json:"state,required"`
+	// Account Type
+	Type ExternalBankAccountRetryPrenoteResponseType `json:"type,required"`
+	// The number of attempts at verification
+	VerificationAttempts int64 `json:"verification_attempts,required"`
+	// Verification Method
+	VerificationMethod VerificationMethod `json:"verification_method,required"`
+	// Verification State
+	VerificationState ExternalBankAccountRetryPrenoteResponseVerificationState `json:"verification_state,required"`
+	// Indicates which Lithic account the external account is associated with. For
+	// external accounts that are associated with the program, account_token field
+	// returned will be null
+	AccountToken string `json:"account_token" format:"uuid"`
+	// Address
+	Address ExternalBankAccountAddress `json:"address"`
+	// Optional field that helps identify bank accounts in receipts
+	CompanyID string `json:"company_id"`
+	// Date of Birth of the Individual that owns the external bank account
+	Dob time.Time `json:"dob" format:"date"`
+	// Doing Business As
+	DoingBusinessAs string `json:"doing_business_as"`
+	// The financial account token of the operating account to fund the micro deposits
+	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
+	// The nickname given to this record of External Bank Account
+	Name string `json:"name"`
+	// User Defined ID
+	UserDefinedID string `json:"user_defined_id"`
+	// Optional free text description of the reason for the failed verification. For
+	// ACH micro-deposits returned, this field will display the reason return code sent
+	// by the ACH network
+	VerificationFailedReason string                                      `json:"verification_failed_reason"`
+	JSON                     externalBankAccountRetryPrenoteResponseJSON `json:"-"`
+}
+
+// externalBankAccountRetryPrenoteResponseJSON contains the JSON metadata for the
+// struct [ExternalBankAccountRetryPrenoteResponse]
+type externalBankAccountRetryPrenoteResponseJSON struct {
+	Token                    apijson.Field
+	Country                  apijson.Field
+	Created                  apijson.Field
+	Currency                 apijson.Field
+	LastFour                 apijson.Field
+	Owner                    apijson.Field
+	OwnerType                apijson.Field
+	RoutingNumber            apijson.Field
+	State                    apijson.Field
+	Type                     apijson.Field
+	VerificationAttempts     apijson.Field
+	VerificationMethod       apijson.Field
+	VerificationState        apijson.Field
+	AccountToken             apijson.Field
+	Address                  apijson.Field
+	CompanyID                apijson.Field
+	Dob                      apijson.Field
+	DoingBusinessAs          apijson.Field
+	FinancialAccountToken    apijson.Field
+	Name                     apijson.Field
+	UserDefinedID            apijson.Field
+	VerificationFailedReason apijson.Field
+	raw                      string
+	ExtraFields              map[string]apijson.Field
+}
+
+func (r *ExternalBankAccountRetryPrenoteResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r externalBankAccountRetryPrenoteResponseJSON) RawJSON() string {
+	return r.raw
+}
+
+// Account State
+type ExternalBankAccountRetryPrenoteResponseState string
+
+const (
+	ExternalBankAccountRetryPrenoteResponseStateEnabled ExternalBankAccountRetryPrenoteResponseState = "ENABLED"
+	ExternalBankAccountRetryPrenoteResponseStateClosed  ExternalBankAccountRetryPrenoteResponseState = "CLOSED"
+	ExternalBankAccountRetryPrenoteResponseStatePaused  ExternalBankAccountRetryPrenoteResponseState = "PAUSED"
+)
+
+func (r ExternalBankAccountRetryPrenoteResponseState) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountRetryPrenoteResponseStateEnabled, ExternalBankAccountRetryPrenoteResponseStateClosed, ExternalBankAccountRetryPrenoteResponseStatePaused:
+		return true
+	}
+	return false
+}
+
+// Account Type
+type ExternalBankAccountRetryPrenoteResponseType string
+
+const (
+	ExternalBankAccountRetryPrenoteResponseTypeChecking ExternalBankAccountRetryPrenoteResponseType = "CHECKING"
+	ExternalBankAccountRetryPrenoteResponseTypeSavings  ExternalBankAccountRetryPrenoteResponseType = "SAVINGS"
+)
+
+func (r ExternalBankAccountRetryPrenoteResponseType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountRetryPrenoteResponseTypeChecking, ExternalBankAccountRetryPrenoteResponseTypeSavings:
+		return true
+	}
+	return false
+}
+
+// Verification State
+type ExternalBankAccountRetryPrenoteResponseVerificationState string
+
+const (
+	ExternalBankAccountRetryPrenoteResponseVerificationStatePending            ExternalBankAccountRetryPrenoteResponseVerificationState = "PENDING"
+	ExternalBankAccountRetryPrenoteResponseVerificationStateEnabled            ExternalBankAccountRetryPrenoteResponseVerificationState = "ENABLED"
+	ExternalBankAccountRetryPrenoteResponseVerificationStateFailedVerification ExternalBankAccountRetryPrenoteResponseVerificationState = "FAILED_VERIFICATION"
+	ExternalBankAccountRetryPrenoteResponseVerificationStateInsufficientFunds  ExternalBankAccountRetryPrenoteResponseVerificationState = "INSUFFICIENT_FUNDS"
+)
+
+func (r ExternalBankAccountRetryPrenoteResponseVerificationState) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountRetryPrenoteResponseVerificationStatePending, ExternalBankAccountRetryPrenoteResponseVerificationStateEnabled, ExternalBankAccountRetryPrenoteResponseVerificationStateFailedVerification, ExternalBankAccountRetryPrenoteResponseVerificationStateInsufficientFunds:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountNewParams struct {
 	Body ExternalBankAccountNewParamsBodyUnion `json:"body,required"`
 }
@@ -1362,5 +1521,13 @@ type ExternalBankAccountRetryMicroDepositsParams struct {
 }
 
 func (r ExternalBankAccountRetryMicroDepositsParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+type ExternalBankAccountRetryPrenoteParams struct {
+	FinancialAccountToken param.Field[string] `json:"financial_account_token" format:"uuid"`
+}
+
+func (r ExternalBankAccountRetryPrenoteParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
