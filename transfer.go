@@ -138,8 +138,6 @@ type TransferEvent struct {
 	Amount int64 `json:"amount"`
 	// Date and time when the financial event occurred. UTC time zone.
 	Created time.Time `json:"created" format:"date-time"`
-	// More detailed reasons for the event
-	DetailedResults []TransferEventsDetailedResult `json:"detailed_results"`
 	// APPROVED financial events were successful while DECLINED financial events were
 	// declined by user, Lithic, or the network.
 	Result TransferEventsResult `json:"result"`
@@ -191,14 +189,13 @@ type TransferEvent struct {
 
 // transferEventJSON contains the JSON metadata for the struct [TransferEvent]
 type transferEventJSON struct {
-	Token           apijson.Field
-	Amount          apijson.Field
-	Created         apijson.Field
-	DetailedResults apijson.Field
-	Result          apijson.Field
-	Type            apijson.Field
-	raw             string
-	ExtraFields     map[string]apijson.Field
+	Token       apijson.Field
+	Amount      apijson.Field
+	Created     apijson.Field
+	Result      apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *TransferEvent) UnmarshalJSON(data []byte) (err error) {
@@ -207,25 +204,6 @@ func (r *TransferEvent) UnmarshalJSON(data []byte) (err error) {
 
 func (r transferEventJSON) RawJSON() string {
 	return r.raw
-}
-
-type TransferEventsDetailedResult string
-
-const (
-	TransferEventsDetailedResultApproved                         TransferEventsDetailedResult = "APPROVED"
-	TransferEventsDetailedResultFundsInsufficient                TransferEventsDetailedResult = "FUNDS_INSUFFICIENT"
-	TransferEventsDetailedResultAccountInvalid                   TransferEventsDetailedResult = "ACCOUNT_INVALID"
-	TransferEventsDetailedResultProgramTransactionLimitsExceeded TransferEventsDetailedResult = "PROGRAM_TRANSACTION_LIMITS_EXCEEDED"
-	TransferEventsDetailedResultProgramDailyLimitsExceeded       TransferEventsDetailedResult = "PROGRAM_DAILY_LIMITS_EXCEEDED"
-	TransferEventsDetailedResultProgramMonthlyLimitsExceeded     TransferEventsDetailedResult = "PROGRAM_MONTHLY_LIMITS_EXCEEDED"
-)
-
-func (r TransferEventsDetailedResult) IsKnown() bool {
-	switch r {
-	case TransferEventsDetailedResultApproved, TransferEventsDetailedResultFundsInsufficient, TransferEventsDetailedResultAccountInvalid, TransferEventsDetailedResultProgramTransactionLimitsExceeded, TransferEventsDetailedResultProgramDailyLimitsExceeded, TransferEventsDetailedResultProgramMonthlyLimitsExceeded:
-		return true
-	}
-	return false
 }
 
 // APPROVED financial events were successful while DECLINED financial events were
