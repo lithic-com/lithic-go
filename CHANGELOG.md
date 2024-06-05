@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.34.0 (2024-06-05)
+
+Full Changelog: [v0.33.1...v0.34.0](https://github.com/lithic-com/lithic-go/compare/v0.33.1...v0.34.0)
+
+### ⚠ BREAKING CHANGES
+
+* **api:** remove some endpoints and other API updates ([#297](https://github.com/lithic-com/lithic-go/issues/297))
+
+### Features
+
+* **api:** remove some endpoints and other API updates ([#297](https://github.com/lithic-com/lithic-go/issues/297)) ([0fdb299](https://github.com/lithic-com/lithic-go/commit/0fdb299059fba0542cc65ec4c156791d46b55852))
+
 ## 0.33.1 (2024-06-03)
 
 Full Changelog: [v0.33.0...v0.33.1](https://github.com/lithic-com/lithic-go/compare/v0.33.0...v0.33.1)
