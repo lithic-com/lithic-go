@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.34.1 (2024-06-06)
+
+Full Changelog: [v0.34.0...v0.34.1](https://github.com/lithic-com/lithic-go/compare/v0.34.0...v0.34.1)
+
+### Bug Fixes
+
+* fix port function for interface{} types ([#299](https://github.com/lithic-com/lithic-go/issues/299)) ([6510ee8](https://github.com/lithic-com/lithic-go/commit/6510ee8a4a95381baf5d2fdbb41f77ec4ab41604))
+
 ## 0.34.0 (2024-06-05)
 
 Full Changelog: [v0.33.1...v0.34.0](https://github.com/lithic-com/lithic-go/compare/v0.33.1...v0.34.0)
