@@ -94,7 +94,7 @@ type ExternalBankAccountMicroDepositNewResponse struct {
 	DoingBusinessAs string `json:"doing_business_as"`
 	// The financial account token of the operating account to fund the micro deposits
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
-	// The nickname given to this record of External Bank Account
+	// The nickname for this External Bank Account
 	Name string `json:"name"`
 	// User Defined ID
 	UserDefinedID string `json:"user_defined_id"`
