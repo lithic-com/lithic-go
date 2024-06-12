@@ -1506,7 +1506,8 @@ type TransactionSimulateAuthorizationParams struct {
 	// Amount of the transaction to be simulated in currency specified in
 	// merchant_currency, including any acquirer fees.
 	MerchantAmount param.Field[int64] `json:"merchant_amount"`
-	// 3-digit alphabetic ISO 4217 currency code.
+	// 3-digit alphabetic ISO 4217 currency code. Note: Simulator only accepts USD,
+	// GBP, EUR and defaults to GBP if another ISO 4217 code is provided
 	MerchantCurrency param.Field[string] `json:"merchant_currency"`
 	// Set to true if the terminal is capable of partial approval otherwise false.
 	// Partial approval is when part of a transaction is approved and another payment

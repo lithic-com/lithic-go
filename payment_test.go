@@ -84,6 +84,7 @@ func TestPaymentListWithOptionalParams(t *testing.T) {
 	)
 	_, err := client.Payments.List(context.TODO(), lithic.PaymentListParams{
 		Begin:                 lithic.F(time.Now()),
+		Category:              lithic.F(lithic.PaymentListParamsCategoryACH),
 		End:                   lithic.F(time.Now()),
 		EndingBefore:          lithic.F("string"),
 		FinancialAccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),

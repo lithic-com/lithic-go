@@ -778,7 +778,8 @@ func (r PaymentNewParamsType) IsKnown() bool {
 type PaymentListParams struct {
 	// Date string in RFC 3339 format. Only entries created after the specified time
 	// will be included. UTC time zone.
-	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
+	Begin    param.Field[time.Time]                 `query:"begin" format:"date-time"`
+	Category param.Field[PaymentListParamsCategory] `query:"category"`
 	// Date string in RFC 3339 format. Only entries created before the specified time
 	// will be included. UTC time zone.
 	End param.Field[time.Time] `query:"end" format:"date-time"`
@@ -801,6 +802,20 @@ func (r PaymentListParams) URLQuery() (v url.Values) {
 		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
+}
+
+type PaymentListParamsCategory string
+
+const (
+	PaymentListParamsCategoryACH PaymentListParamsCategory = "ACH"
+)
+
+func (r PaymentListParamsCategory) IsKnown() bool {
+	switch r {
+	case PaymentListParamsCategoryACH:
+		return true
+	}
+	return false
 }
 
 type PaymentListParamsResult string
