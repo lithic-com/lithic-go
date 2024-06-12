@@ -180,15 +180,16 @@ func (r OwnerType) IsKnown() bool {
 type VerificationMethod string
 
 const (
-	VerificationMethodManual       VerificationMethod = "MANUAL"
-	VerificationMethodMicroDeposit VerificationMethod = "MICRO_DEPOSIT"
-	VerificationMethodPlaid        VerificationMethod = "PLAID"
-	VerificationMethodPrenote      VerificationMethod = "PRENOTE"
+	VerificationMethodManual             VerificationMethod = "MANUAL"
+	VerificationMethodMicroDeposit       VerificationMethod = "MICRO_DEPOSIT"
+	VerificationMethodPlaid              VerificationMethod = "PLAID"
+	VerificationMethodPrenote            VerificationMethod = "PRENOTE"
+	VerificationMethodExternallyVerified VerificationMethod = "EXTERNALLY_VERIFIED"
 )
 
 func (r VerificationMethod) IsKnown() bool {
 	switch r {
-	case VerificationMethodManual, VerificationMethodMicroDeposit, VerificationMethodPlaid, VerificationMethodPrenote:
+	case VerificationMethodManual, VerificationMethodMicroDeposit, VerificationMethodPlaid, VerificationMethodPrenote, VerificationMethodExternallyVerified:
 		return true
 	}
 	return false
@@ -242,7 +243,7 @@ type ExternalBankAccountNewResponse struct {
 	DoingBusinessAs string `json:"doing_business_as"`
 	// The financial account token of the operating account to fund the micro deposits
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
-	// The nickname given to this record of External Bank Account
+	// The nickname for this External Bank Account
 	Name string `json:"name"`
 	// User Defined ID
 	UserDefinedID string `json:"user_defined_id"`
@@ -423,7 +424,7 @@ type ExternalBankAccountGetResponse struct {
 	DoingBusinessAs string `json:"doing_business_as"`
 	// The financial account token of the operating account to fund the micro deposits
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
-	// The nickname given to this record of External Bank Account
+	// The nickname for this External Bank Account
 	Name string `json:"name"`
 	// User Defined ID
 	UserDefinedID string `json:"user_defined_id"`
@@ -604,7 +605,7 @@ type ExternalBankAccountUpdateResponse struct {
 	DoingBusinessAs string `json:"doing_business_as"`
 	// The financial account token of the operating account to fund the micro deposits
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
-	// The nickname given to this record of External Bank Account
+	// The nickname for this External Bank Account
 	Name string `json:"name"`
 	// User Defined ID
 	UserDefinedID string `json:"user_defined_id"`
@@ -785,7 +786,7 @@ type ExternalBankAccountListResponse struct {
 	DoingBusinessAs string `json:"doing_business_as"`
 	// The financial account token of the operating account to fund the micro deposits
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
-	// The nickname given to this record of External Bank Account
+	// The nickname for this External Bank Account
 	Name string `json:"name"`
 	// User Defined ID
 	UserDefinedID string `json:"user_defined_id"`
@@ -966,7 +967,7 @@ type ExternalBankAccountRetryMicroDepositsResponse struct {
 	DoingBusinessAs string `json:"doing_business_as"`
 	// The financial account token of the operating account to fund the micro deposits
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
-	// The nickname given to this record of External Bank Account
+	// The nickname for this External Bank Account
 	Name string `json:"name"`
 	// User Defined ID
 	UserDefinedID string `json:"user_defined_id"`
@@ -1147,7 +1148,7 @@ type ExternalBankAccountRetryPrenoteResponse struct {
 	DoingBusinessAs string `json:"doing_business_as"`
 	// The financial account token of the operating account to fund the micro deposits
 	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
-	// The nickname given to this record of External Bank Account
+	// The nickname for this External Bank Account
 	Name string `json:"name"`
 	// User Defined ID
 	UserDefinedID string `json:"user_defined_id"`
@@ -1278,9 +1279,9 @@ type ExternalBankAccountNewParamsBody struct {
 	Type param.Field[ExternalBankAccountNewParamsBodyType] `json:"type"`
 	// Routing Number
 	RoutingNumber param.Field[string] `json:"routing_number"`
-	// Routing Number
+	// Account Number
 	AccountNumber param.Field[string] `json:"account_number"`
-	// The nickname given to this record of External Bank Account
+	// The nickname for this External Bank Account
 	Name param.Field[string] `json:"name"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
 	// accept USA bank accounts e.g., USA
@@ -1304,13 +1305,14 @@ func (r ExternalBankAccountNewParamsBody) implementsExternalBankAccountNewParams
 // Satisfied by
 // [ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest],
 // [ExternalBankAccountNewParamsBodyPlaidCreateBankAccountAPIRequest],
+// [ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequest],
 // [ExternalBankAccountNewParamsBody].
 type ExternalBankAccountNewParamsBodyUnion interface {
 	implementsExternalBankAccountNewParamsBodyUnion()
 }
 
 type ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest struct {
-	// Routing Number
+	// Account Number
 	AccountNumber param.Field[string] `json:"account_number,required"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
 	// accept USA bank accounts e.g., USA
@@ -1342,7 +1344,7 @@ type ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest str
 	DoingBusinessAs param.Field[string] `json:"doing_business_as"`
 	// The financial account token of the operating account to fund the micro deposits
 	FinancialAccountToken param.Field[string] `json:"financial_account_token" format:"uuid"`
-	// The nickname given to this record of External Bank Account
+	// The nickname for this External Bank Account
 	Name param.Field[string] `json:"name"`
 	// User Defined ID
 	UserDefinedID           param.Field[string] `json:"user_defined_id"`
@@ -1402,6 +1404,81 @@ func (r ExternalBankAccountNewParamsBodyPlaidCreateBankAccountAPIRequest) Marsha
 func (r ExternalBankAccountNewParamsBodyPlaidCreateBankAccountAPIRequest) implementsExternalBankAccountNewParamsBodyUnion() {
 }
 
+type ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequest struct {
+	// Account Number
+	AccountNumber param.Field[string] `json:"account_number,required"`
+	// The country that the bank account is located in using ISO 3166-1. We will only
+	// accept USA bank accounts e.g., USA
+	Country param.Field[string] `json:"country,required"`
+	// currency of the external account 3-digit alphabetic ISO 4217 code
+	Currency param.Field[string] `json:"currency,required"`
+	// Legal Name of the business or individual who owns the external account. This
+	// will appear in statements
+	Owner param.Field[string] `json:"owner,required"`
+	// Owner Type
+	OwnerType param.Field[OwnerType] `json:"owner_type,required"`
+	// Routing Number
+	RoutingNumber param.Field[string] `json:"routing_number,required"`
+	// Account Type
+	Type param.Field[ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestType] `json:"type,required"`
+	// Verification Method
+	VerificationMethod param.Field[ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestVerificationMethod] `json:"verification_method,required"`
+	// Indicates which Lithic account the external account is associated with. For
+	// external accounts that are associated with the program, account_token field
+	// returned will be null
+	AccountToken param.Field[string] `json:"account_token" format:"uuid"`
+	// Address
+	Address param.Field[ExternalBankAccountAddressParam] `json:"address"`
+	// Optional field that helps identify bank accounts in receipts
+	CompanyID param.Field[string] `json:"company_id"`
+	// Date of Birth of the Individual that owns the external bank account
+	Dob param.Field[time.Time] `json:"dob" format:"date"`
+	// Doing Business As
+	DoingBusinessAs param.Field[string] `json:"doing_business_as"`
+	// The nickname for this External Bank Account
+	Name param.Field[string] `json:"name"`
+	// User Defined ID
+	UserDefinedID param.Field[string] `json:"user_defined_id"`
+}
+
+func (r ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequest) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequest) implementsExternalBankAccountNewParamsBodyUnion() {
+}
+
+// Account Type
+type ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestType string
+
+const (
+	ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestTypeChecking ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestType = "CHECKING"
+	ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestTypeSavings  ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestType = "SAVINGS"
+)
+
+func (r ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestTypeChecking, ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestTypeSavings:
+		return true
+	}
+	return false
+}
+
+// Verification Method
+type ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestVerificationMethod string
+
+const (
+	ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestVerificationMethodExternallyVerified ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestVerificationMethod = "EXTERNALLY_VERIFIED"
+)
+
+func (r ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestVerificationMethod) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestVerificationMethodExternallyVerified:
+		return true
+	}
+	return false
+}
+
 // Account Type
 type ExternalBankAccountNewParamsBodyType string
 
@@ -1427,7 +1504,7 @@ type ExternalBankAccountUpdateParams struct {
 	Dob param.Field[time.Time] `json:"dob" format:"date"`
 	// Doing Business As
 	DoingBusinessAs param.Field[string] `json:"doing_business_as"`
-	// The nickname given to this record of External Bank Account
+	// The nickname for this External Bank Account
 	Name param.Field[string] `json:"name"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
