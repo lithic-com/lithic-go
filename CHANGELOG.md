@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.36.1 (2024-06-21)
+
+Full Changelog: [v0.36.0...v0.36.1](https://github.com/lithic-com/lithic-go/compare/v0.36.0...v0.36.1)
+
+### Bug Fixes
+
+* fix ExtraFields serialization / deserialization ([#305](https://github.com/lithic-com/lithic-go/issues/305)) ([7ccfaeb](https://github.com/lithic-com/lithic-go/commit/7ccfaeb5f53a5aa6a5b6da0707cd702eca57b5a2))
+
 ## 0.36.0 (2024-06-21)
 
 Full Changelog: [v0.35.0...v0.36.0](https://github.com/lithic-com/lithic-go/compare/v0.35.0...v0.36.0)
