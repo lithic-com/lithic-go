@@ -81,6 +81,18 @@ func (r *BookTransferService) ListAutoPaging(ctx context.Context, query BookTran
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
+// Reverse a book transfer
+func (r *BookTransferService) Reverse(ctx context.Context, bookTransferToken string, body BookTransferReverseParams, opts ...option.RequestOption) (res *BookTransferResponse, err error) {
+	opts = append(r.Options[:], opts...)
+	if bookTransferToken == "" {
+		err = errors.New("missing required book_transfer_token parameter")
+		return
+	}
+	path := fmt.Sprintf("book_transfers/%s/reverse", bookTransferToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+	return
+}
+
 type BookTransferResponse struct {
 	// Customer-provided token that will serve as an idempotency token. This token will
 	// become the transaction token.
@@ -458,4 +470,13 @@ func (r BookTransferListParamsStatus) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+type BookTransferReverseParams struct {
+	// Optional descriptor for the reversal.
+	Memo param.Field[string] `json:"memo"`
+}
+
+func (r BookTransferReverseParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }
