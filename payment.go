@@ -386,6 +386,7 @@ type PaymentMethodAttributes struct {
 	Retries              int64                          `json:"retries,required,nullable"`
 	ReturnReasonCode     string                         `json:"return_reason_code,required,nullable"`
 	SecCode              PaymentMethodAttributesSecCode `json:"sec_code,required"`
+	TraceNumbers         []string                       `json:"trace_numbers,required"`
 	JSON                 paymentMethodAttributesJSON    `json:"-"`
 }
 
@@ -397,6 +398,7 @@ type paymentMethodAttributesJSON struct {
 	Retries              apijson.Field
 	ReturnReasonCode     apijson.Field
 	SecCode              apijson.Field
+	TraceNumbers         apijson.Field
 	raw                  string
 	ExtraFields          map[string]apijson.Field
 }
