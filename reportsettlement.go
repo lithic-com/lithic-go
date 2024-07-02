@@ -38,7 +38,7 @@ func NewReportSettlementService(opts ...option.RequestOption) (r *ReportSettleme
 // List details.
 func (r *ReportSettlementService) ListDetails(ctx context.Context, reportDate time.Time, query ReportSettlementListDetailsParams, opts ...option.RequestOption) (res *pagination.CursorPage[SettlementDetail], err error) {
 	var raw *http.Response
-	opts = append(r.Options, opts...)
+	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := fmt.Sprintf("reports/settlement/details/%s", reportDate.Format("2006-01-02"))
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)

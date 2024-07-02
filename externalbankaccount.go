@@ -74,7 +74,7 @@ func (r *ExternalBankAccountService) Update(ctx context.Context, externalBankAcc
 // List all the external bank accounts for the provided search criteria.
 func (r *ExternalBankAccountService) List(ctx context.Context, query ExternalBankAccountListParams, opts ...option.RequestOption) (res *pagination.CursorPage[ExternalBankAccountListResponse], err error) {
 	var raw *http.Response
-	opts = append(r.Options, opts...)
+	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "external_bank_accounts"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)

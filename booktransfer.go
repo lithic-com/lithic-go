@@ -61,7 +61,7 @@ func (r *BookTransferService) Get(ctx context.Context, bookTransferToken string,
 // List book transfers
 func (r *BookTransferService) List(ctx context.Context, query BookTransferListParams, opts ...option.RequestOption) (res *pagination.CursorPage[BookTransferResponse], err error) {
 	var raw *http.Response
-	opts = append(r.Options, opts...)
+	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "book_transfers"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
