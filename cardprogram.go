@@ -52,7 +52,7 @@ func (r *CardProgramService) Get(ctx context.Context, cardProgramToken string, o
 // List card programs.
 func (r *CardProgramService) List(ctx context.Context, query CardProgramListParams, opts ...option.RequestOption) (res *pagination.CursorPage[CardProgram], err error) {
 	var raw *http.Response
-	opts = append(r.Options, opts...)
+	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "card_programs"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)

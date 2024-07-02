@@ -72,7 +72,7 @@ func (r *EventSubscriptionService) Update(ctx context.Context, eventSubscription
 // List all the event subscriptions.
 func (r *EventSubscriptionService) List(ctx context.Context, query EventSubscriptionListParams, opts ...option.RequestOption) (res *pagination.CursorPage[EventSubscription], err error) {
 	var raw *http.Response
-	opts = append(r.Options, opts...)
+	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "event_subscriptions"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -108,8 +108,12 @@ func (r *EventSubscriptionService) Delete(ctx context.Context, eventSubscription
 // List all the message attempts for a given event subscription.
 func (r *EventSubscriptionService) ListAttempts(ctx context.Context, eventSubscriptionToken string, query EventSubscriptionListAttemptsParams, opts ...option.RequestOption) (res *pagination.CursorPage[MessageAttempt], err error) {
 	var raw *http.Response
-	opts = append(r.Options, opts...)
+	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
+	if eventSubscriptionToken == "" {
+		err = errors.New("missing required event_subscription_token parameter")
+		return
+	}
 	path := fmt.Sprintf("event_subscriptions/%s/attempts", eventSubscriptionToken)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
