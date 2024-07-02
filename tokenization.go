@@ -52,7 +52,7 @@ func (r *TokenizationService) Get(ctx context.Context, tokenizationToken string,
 // List card tokenizations
 func (r *TokenizationService) List(ctx context.Context, query TokenizationListParams, opts ...option.RequestOption) (res *pagination.CursorPage[Tokenization], err error) {
 	var raw *http.Response
-	opts = append(r.Options, opts...)
+	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "tokenizations"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)

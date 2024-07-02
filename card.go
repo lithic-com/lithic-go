@@ -87,7 +87,7 @@ func (r *CardService) Update(ctx context.Context, cardToken string, body CardUpd
 // List cards.
 func (r *CardService) List(ctx context.Context, query CardListParams, opts ...option.RequestOption) (res *pagination.CursorPage[Card], err error) {
 	var raw *http.Response
-	opts = append(r.Options, opts...)
+	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "cards"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)

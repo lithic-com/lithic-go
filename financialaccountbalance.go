@@ -4,6 +4,7 @@ package lithic
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -39,8 +40,12 @@ func NewFinancialAccountBalanceService(opts ...option.RequestOption) (r *Financi
 // Get the balances for a given financial account.
 func (r *FinancialAccountBalanceService) List(ctx context.Context, financialAccountToken string, query FinancialAccountBalanceListParams, opts ...option.RequestOption) (res *pagination.SinglePage[FinancialAccountBalanceListResponse], err error) {
 	var raw *http.Response
-	opts = append(r.Options, opts...)
+	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
+	if financialAccountToken == "" {
+		err = errors.New("missing required financial_account_token parameter")
+		return
+	}
 	path := fmt.Sprintf("financial_accounts/%s/balances", financialAccountToken)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
