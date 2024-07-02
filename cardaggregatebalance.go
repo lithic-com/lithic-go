@@ -38,7 +38,7 @@ func NewCardAggregateBalanceService(opts ...option.RequestOption) (r *CardAggreg
 // Get the aggregated card balance across all end-user accounts.
 func (r *CardAggregateBalanceService) List(ctx context.Context, query CardAggregateBalanceListParams, opts ...option.RequestOption) (res *pagination.SinglePage[CardAggregateBalanceListResponse], err error) {
 	var raw *http.Response
-	opts = append(r.Options, opts...)
+	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "cards/aggregate_balances"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)

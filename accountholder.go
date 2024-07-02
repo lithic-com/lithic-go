@@ -82,7 +82,7 @@ func (r *AccountHolderService) Update(ctx context.Context, accountHolderToken st
 // evaluation status.
 func (r *AccountHolderService) List(ctx context.Context, query AccountHolderListParams, opts ...option.RequestOption) (res *pagination.SinglePage[AccountHolder], err error) {
 	var raw *http.Response
-	opts = append(r.Options, opts...)
+	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "account_holders"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)

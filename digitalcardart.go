@@ -52,7 +52,7 @@ func (r *DigitalCardArtService) Get(ctx context.Context, digitalCardArtToken str
 // List digital card art.
 func (r *DigitalCardArtService) List(ctx context.Context, query DigitalCardArtListParams, opts ...option.RequestOption) (res *pagination.CursorPage[DigitalCardArt], err error) {
 	var raw *http.Response
-	opts = append(r.Options, opts...)
+	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "digital_card_art"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
