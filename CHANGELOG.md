@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.36.2 (2024-07-07)
+
+Full Changelog: [v0.36.1...v0.36.2](https://github.com/lithic-com/lithic-go/compare/v0.36.1...v0.36.2)
+
+### Bug Fixes
+
+* **internal:** fix MarshalJSON logic for interface elemnets ([#311](https://github.com/lithic-com/lithic-go/issues/311)) ([6663ba1](https://github.com/lithic-com/lithic-go/commit/6663ba166c8c44d5f49a8f29fc8580b7c3b6cb81))
+* use slice instead of appending to r.Options ([#309](https://github.com/lithic-com/lithic-go/issues/309)) ([82edf46](https://github.com/lithic-com/lithic-go/commit/82edf46b49df41c5e1ce7bc9377c0fde3420b204))
+
+
+### Chores
+
+* gitignore test server logs ([#307](https://github.com/lithic-com/lithic-go/issues/307)) ([e0076c5](https://github.com/lithic-com/lithic-go/commit/e0076c5f9efcbf284f65bb5ea2cb6320b5f98779))
+* **internal:** improve deserialization of embedded structs ([#310](https://github.com/lithic-com/lithic-go/issues/310)) ([5abc98f](https://github.com/lithic-com/lithic-go/commit/5abc98fcb88479a111a7e598edea265e0d262d9b))
+
 ## 0.36.1 (2024-06-21)
 
 Full Changelog: [v0.36.0...v0.36.1](https://github.com/lithic-com/lithic-go/compare/v0.36.0...v0.36.1)
