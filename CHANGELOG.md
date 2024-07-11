@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.36.3 (2024-07-11)
+
+Full Changelog: [v0.36.2...v0.36.3](https://github.com/lithic-com/lithic-go/compare/v0.36.2...v0.36.3)
+
+### Chores
+
+* **ci:** also run workflows for PRs targeting `next` ([#312](https://github.com/lithic-com/lithic-go/issues/312)) ([7f78938](https://github.com/lithic-com/lithic-go/commit/7f789384e0d13aa8f752ac23cbc1073b85e9302d))
+
+
+### Documentation
+
+* **examples:** update example values ([#314](https://github.com/lithic-com/lithic-go/issues/314)) ([d998e57](https://github.com/lithic-com/lithic-go/commit/d998e579c22aa15fe92128070d70f7829782bab1))
+
 ## 0.36.2 (2024-07-07)
 
 Full Changelog: [v0.36.1...v0.36.2](https://github.com/lithic-com/lithic-go/compare/v0.36.1...v0.36.2)

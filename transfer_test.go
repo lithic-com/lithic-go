@@ -30,7 +30,7 @@ func TestTransferNewWithOptionalParams(t *testing.T) {
 		From:   lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		To:     lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Token:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-		Memo:   lithic.F("string"),
+		Memo:   lithic.F("memo"),
 	})
 	if err != nil {
 		var apierr *lithic.Error

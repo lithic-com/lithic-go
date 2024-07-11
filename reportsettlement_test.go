@@ -30,9 +30,9 @@ func TestReportSettlementListDetailsWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		time.Now(),
 		lithic.ReportSettlementListDetailsParams{
-			EndingBefore:  lithic.F("string"),
+			EndingBefore:  lithic.F("ending_before"),
 			PageSize:      lithic.F(int64(1)),
-			StartingAfter: lithic.F("string"),
+			StartingAfter: lithic.F("starting_after"),
 		},
 	)
 	if err != nil {

@@ -32,13 +32,13 @@ func TestCardNewWithOptionalParams(t *testing.T) {
 		AccountToken:     lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		CardProgramToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Carrier: lithic.F(shared.CarrierParam{
-			QrCodeURL: lithic.F("string"),
+			QrCodeURL: lithic.F("qr_code_url"),
 		}),
 		DigitalCardArtToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		ExpMonth:            lithic.F("06"),
 		ExpYear:             lithic.F("2027"),
 		Memo:                lithic.F("New Card"),
-		Pin:                 lithic.F("string"),
+		Pin:                 lithic.F("pin"),
 		ProductID:           lithic.F("1"),
 		ReplacementFor:      lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		ShippingAddress: lithic.F(shared.ShippingAddressParam{
@@ -106,10 +106,10 @@ func TestCardUpdateWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.CardUpdateParams{
-			AuthRuleToken:       lithic.F("string"),
+			AuthRuleToken:       lithic.F("auth_rule_token"),
 			DigitalCardArtToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 			Memo:                lithic.F("Updated Name"),
-			Pin:                 lithic.F("string"),
+			Pin:                 lithic.F("pin"),
 			SpendLimit:          lithic.F(int64(100)),
 			SpendLimitDuration:  lithic.F(lithic.SpendLimitDurationForever),
 			State:               lithic.F(lithic.CardUpdateParamsStateOpen),
@@ -140,9 +140,9 @@ func TestCardListWithOptionalParams(t *testing.T) {
 		AccountToken:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Begin:         lithic.F(time.Now()),
 		End:           lithic.F(time.Now()),
-		EndingBefore:  lithic.F("string"),
+		EndingBefore:  lithic.F("ending_before"),
 		PageSize:      lithic.F(int64(1)),
-		StartingAfter: lithic.F("string"),
+		StartingAfter: lithic.F("starting_after"),
 		State:         lithic.F(lithic.CardListParamsStateClosed),
 	})
 	if err != nil {
@@ -167,8 +167,8 @@ func TestCardEmbed(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Cards.Embed(context.TODO(), lithic.CardEmbedParams{
-		EmbedRequest: lithic.F("string"),
-		Hmac:         lithic.F("string"),
+		EmbedRequest: lithic.F("embed_request"),
+		Hmac:         lithic.F("hmac"),
 	})
 	if err != nil {
 		var apierr *lithic.Error
@@ -250,8 +250,8 @@ func TestCardProvisionWithOptionalParams(t *testing.T) {
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.CardProvisionParams{
 			Certificate:           lithic.F("U3RhaW5sZXNzIHJvY2tz"),
-			ClientDeviceID:        lithic.F("string"),
-			ClientWalletAccountID: lithic.F("string"),
+			ClientDeviceID:        lithic.F("client_device_id"),
+			ClientWalletAccountID: lithic.F("client_wallet_account_id"),
 			DigitalWallet:         lithic.F(lithic.CardProvisionParamsDigitalWalletGooglePay),
 			Nonce:                 lithic.F("U3RhaW5sZXNzIHJvY2tz"),
 			NonceSignature:        lithic.F("U3RhaW5sZXNzIHJvY2tz"),

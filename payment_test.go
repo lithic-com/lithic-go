@@ -36,8 +36,8 @@ func TestPaymentNewWithOptionalParams(t *testing.T) {
 		}),
 		Type:          lithic.F(lithic.PaymentNewParamsTypeCollection),
 		Token:         lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-		Memo:          lithic.F("string"),
-		UserDefinedID: lithic.F("string"),
+		Memo:          lithic.F("memo"),
+		UserDefinedID: lithic.F("user_defined_id"),
 	})
 	if err != nil {
 		var apierr *lithic.Error
@@ -86,11 +86,11 @@ func TestPaymentListWithOptionalParams(t *testing.T) {
 		Begin:                 lithic.F(time.Now()),
 		Category:              lithic.F(lithic.PaymentListParamsCategoryACH),
 		End:                   lithic.F(time.Now()),
-		EndingBefore:          lithic.F("string"),
+		EndingBefore:          lithic.F("ending_before"),
 		FinancialAccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		PageSize:              lithic.F(int64(1)),
 		Result:                lithic.F(lithic.PaymentListParamsResultApproved),
-		StartingAfter:         lithic.F("string"),
+		StartingAfter:         lithic.F("starting_after"),
 		Status:                lithic.F(lithic.PaymentListParamsStatusDeclined),
 	})
 	if err != nil {
@@ -142,7 +142,7 @@ func TestPaymentSimulateActionWithOptionalParams(t *testing.T) {
 		lithic.PaymentSimulateActionParams{
 			EventType:        lithic.F(lithic.PaymentSimulateActionParamsEventTypeACHOriginationReviewed),
 			DeclineReason:    lithic.F(lithic.PaymentSimulateActionParamsDeclineReasonProgramTransactionLimitExceeded),
-			ReturnReasonCode: lithic.F("string"),
+			ReturnReasonCode: lithic.F("return_reason_code"),
 		},
 	)
 	if err != nil {
@@ -171,7 +171,7 @@ func TestPaymentSimulateReceiptWithOptionalParams(t *testing.T) {
 		Amount:                lithic.F(int64(0)),
 		FinancialAccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		ReceiptType:           lithic.F(lithic.PaymentSimulateReceiptParamsReceiptTypeReceiptCredit),
-		Memo:                  lithic.F("string"),
+		Memo:                  lithic.F("memo"),
 	})
 	if err != nil {
 		var apierr *lithic.Error

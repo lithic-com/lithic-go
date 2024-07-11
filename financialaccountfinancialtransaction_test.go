@@ -59,9 +59,9 @@ func TestFinancialAccountFinancialTransactionListWithOptionalParams(t *testing.T
 			Begin:         lithic.F(time.Now()),
 			Category:      lithic.F(lithic.FinancialTransactionListParamsCategoryACH),
 			End:           lithic.F(time.Now()),
-			EndingBefore:  lithic.F("string"),
+			EndingBefore:  lithic.F("ending_before"),
 			Result:        lithic.F(lithic.FinancialTransactionListParamsResultApproved),
-			StartingAfter: lithic.F("string"),
+			StartingAfter: lithic.F("starting_after"),
 			Status:        lithic.F(lithic.FinancialTransactionListParamsStatusDeclined),
 		},
 	)

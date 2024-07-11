@@ -30,11 +30,11 @@ func TestBookTransferNewWithOptionalParams(t *testing.T) {
 		Amount:                    lithic.F(int64(1)),
 		Category:                  lithic.F(lithic.BookTransferNewParamsCategoryAdjustment),
 		FromFinancialAccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-		Subtype:                   lithic.F("string"),
+		Subtype:                   lithic.F("subtype"),
 		ToFinancialAccountToken:   lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Type:                      lithic.F(lithic.BookTransferNewParamsTypeAtmWithdrawal),
 		Token:                     lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-		Memo:                      lithic.F("string"),
+		Memo:                      lithic.F("memo"),
 	})
 	if err != nil {
 		var apierr *lithic.Error
@@ -83,11 +83,11 @@ func TestBookTransferListWithOptionalParams(t *testing.T) {
 		Begin:                 lithic.F(time.Now()),
 		Category:              lithic.F(lithic.BookTransferListParamsCategoryBalanceOrFunding),
 		End:                   lithic.F(time.Now()),
-		EndingBefore:          lithic.F("string"),
+		EndingBefore:          lithic.F("ending_before"),
 		FinancialAccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		PageSize:              lithic.F(int64(1)),
 		Result:                lithic.F(lithic.BookTransferListParamsResultApproved),
-		StartingAfter:         lithic.F("string"),
+		StartingAfter:         lithic.F("starting_after"),
 		Status:                lithic.F(lithic.BookTransferListParamsStatusDeclined),
 	})
 	if err != nil {
@@ -115,7 +115,7 @@ func TestBookTransferReverseWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.BookTransferReverseParams{
-			Memo: lithic.F("string"),
+			Memo: lithic.F("memo"),
 		},
 	)
 	if err != nil {

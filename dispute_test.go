@@ -31,7 +31,7 @@ func TestDisputeNewWithOptionalParams(t *testing.T) {
 		Reason:            lithic.F(lithic.DisputeNewParamsReasonFraudCardPresent),
 		TransactionToken:  lithic.F("12345624-aa69-4cbc-a946-30d90181b621"),
 		CustomerFiledDate: lithic.F(time.Now()),
-		CustomerNote:      lithic.F("string"),
+		CustomerNote:      lithic.F("customer_note"),
 	})
 	if err != nil {
 		var apierr *lithic.Error
@@ -82,7 +82,7 @@ func TestDisputeUpdateWithOptionalParams(t *testing.T) {
 		lithic.DisputeUpdateParams{
 			Amount:            lithic.F(int64(0)),
 			CustomerFiledDate: lithic.F(time.Now()),
-			CustomerNote:      lithic.F("string"),
+			CustomerNote:      lithic.F("customer_note"),
 			Reason:            lithic.F(lithic.DisputeUpdateParamsReasonAtmCashMisdispense),
 		},
 	)
@@ -110,9 +110,9 @@ func TestDisputeListWithOptionalParams(t *testing.T) {
 	_, err := client.Disputes.List(context.TODO(), lithic.DisputeListParams{
 		Begin:             lithic.F(time.Now()),
 		End:               lithic.F(time.Now()),
-		EndingBefore:      lithic.F("string"),
+		EndingBefore:      lithic.F("ending_before"),
 		PageSize:          lithic.F(int64(1)),
-		StartingAfter:     lithic.F("string"),
+		StartingAfter:     lithic.F("starting_after"),
 		Status:            lithic.F(lithic.DisputeListParamsStatusArbitration),
 		TransactionTokens: lithic.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
 	})
@@ -189,7 +189,7 @@ func TestDisputeInitiateEvidenceUploadWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.DisputeInitiateEvidenceUploadParams{
-			Filename: lithic.F("string"),
+			Filename: lithic.F("filename"),
 		},
 	)
 	if err != nil {
@@ -219,9 +219,9 @@ func TestDisputeListEvidencesWithOptionalParams(t *testing.T) {
 		lithic.DisputeListEvidencesParams{
 			Begin:         lithic.F(time.Now()),
 			End:           lithic.F(time.Now()),
-			EndingBefore:  lithic.F("string"),
+			EndingBefore:  lithic.F("ending_before"),
 			PageSize:      lithic.F(int64(1)),
-			StartingAfter: lithic.F("string"),
+			StartingAfter: lithic.F("starting_after"),
 		},
 	)
 	if err != nil {
