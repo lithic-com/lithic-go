@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.37.0 (2024-07-11)
+
+Full Changelog: [v0.36.3...v0.37.0](https://github.com/lithic-com/lithic-go/compare/v0.36.3...v0.37.0)
+
+### Features
+
+* **api:** param 'FinancialAccountToken' for 'ExternalBankAccountService.New()' is now required ([#315](https://github.com/lithic-com/lithic-go/issues/315)) ([76303f0](https://github.com/lithic-com/lithic-go/commit/76303f0e8ff486d69356fe6e25feb3c1eb37e034))
+
 ## 0.36.3 (2024-07-11)
 
 Full Changelog: [v0.36.2...v0.36.3](https://github.com/lithic-com/lithic-go/compare/v0.36.2...v0.36.3)
