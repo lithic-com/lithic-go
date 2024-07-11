@@ -48,9 +48,9 @@ func TestCardProgramListWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.CardPrograms.List(context.TODO(), lithic.CardProgramListParams{
-		EndingBefore:  lithic.F("string"),
+		EndingBefore:  lithic.F("ending_before"),
 		PageSize:      lithic.F(int64(1)),
-		StartingAfter: lithic.F("string"),
+		StartingAfter: lithic.F("starting_after"),
 	})
 	if err != nil {
 		var apierr *lithic.Error
