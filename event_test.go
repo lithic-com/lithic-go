@@ -26,7 +26,7 @@ func TestEventGet(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My Lithic API Key"),
 	)
-	_, err := client.Events.Get(context.TODO(), "string")
+	_, err := client.Events.Get(context.TODO(), "event_token")
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
@@ -51,10 +51,10 @@ func TestEventListWithOptionalParams(t *testing.T) {
 	_, err := client.Events.List(context.TODO(), lithic.EventListParams{
 		Begin:         lithic.F(time.Now()),
 		End:           lithic.F(time.Now()),
-		EndingBefore:  lithic.F("string"),
+		EndingBefore:  lithic.F("ending_before"),
 		EventTypes:    lithic.F([]lithic.EventListParamsEventType{lithic.EventListParamsEventTypeAccountHolderCreated, lithic.EventListParamsEventTypeAccountHolderUpdated, lithic.EventListParamsEventTypeAccountHolderVerification}),
 		PageSize:      lithic.F(int64(1)),
-		StartingAfter: lithic.F("string"),
+		StartingAfter: lithic.F("starting_after"),
 		WithContent:   lithic.F(true),
 	})
 	if err != nil {
@@ -80,13 +80,13 @@ func TestEventListAttemptsWithOptionalParams(t *testing.T) {
 	)
 	_, err := client.Events.ListAttempts(
 		context.TODO(),
-		"string",
+		"event_token",
 		lithic.EventListAttemptsParams{
 			Begin:         lithic.F(time.Now()),
 			End:           lithic.F(time.Now()),
-			EndingBefore:  lithic.F("string"),
+			EndingBefore:  lithic.F("ending_before"),
 			PageSize:      lithic.F(int64(1)),
-			StartingAfter: lithic.F("string"),
+			StartingAfter: lithic.F("starting_after"),
 			Status:        lithic.F(lithic.EventListAttemptsParamsStatusFailed),
 		},
 	)

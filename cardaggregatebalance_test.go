@@ -26,8 +26,8 @@ func TestCardAggregateBalanceListWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Cards.AggregateBalances.List(context.TODO(), lithic.CardAggregateBalanceListParams{
-		AccountToken:         lithic.F("string"),
-		BusinessAccountToken: lithic.F("string"),
+		AccountToken:         lithic.F("account_token"),
+		BusinessAccountToken: lithic.F("business_account_token"),
 	})
 	if err != nil {
 		var apierr *lithic.Error

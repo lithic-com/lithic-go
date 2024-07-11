@@ -28,7 +28,7 @@ func TestEventSubscriptionNewWithOptionalParams(t *testing.T) {
 	)
 	_, err := client.Events.Subscriptions.New(context.TODO(), lithic.EventSubscriptionNewParams{
 		URL:         lithic.F("https://example.com"),
-		Description: lithic.F("string"),
+		Description: lithic.F("description"),
 		Disabled:    lithic.F(true),
 		EventTypes:  lithic.F([]lithic.EventSubscriptionNewParamsEventType{lithic.EventSubscriptionNewParamsEventTypeAccountHolderCreated, lithic.EventSubscriptionNewParamsEventTypeAccountHolderUpdated, lithic.EventSubscriptionNewParamsEventTypeAccountHolderVerification}),
 	})
@@ -53,7 +53,7 @@ func TestEventSubscriptionGet(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My Lithic API Key"),
 	)
-	_, err := client.Events.Subscriptions.Get(context.TODO(), "string")
+	_, err := client.Events.Subscriptions.Get(context.TODO(), "event_subscription_token")
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
@@ -77,10 +77,10 @@ func TestEventSubscriptionUpdateWithOptionalParams(t *testing.T) {
 	)
 	_, err := client.Events.Subscriptions.Update(
 		context.TODO(),
-		"string",
+		"event_subscription_token",
 		lithic.EventSubscriptionUpdateParams{
 			URL:         lithic.F("https://example.com"),
-			Description: lithic.F("string"),
+			Description: lithic.F("description"),
 			Disabled:    lithic.F(true),
 			EventTypes:  lithic.F([]lithic.EventSubscriptionUpdateParamsEventType{lithic.EventSubscriptionUpdateParamsEventTypeAccountHolderCreated, lithic.EventSubscriptionUpdateParamsEventTypeAccountHolderUpdated, lithic.EventSubscriptionUpdateParamsEventTypeAccountHolderVerification}),
 		},
@@ -107,9 +107,9 @@ func TestEventSubscriptionListWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Events.Subscriptions.List(context.TODO(), lithic.EventSubscriptionListParams{
-		EndingBefore:  lithic.F("string"),
+		EndingBefore:  lithic.F("ending_before"),
 		PageSize:      lithic.F(int64(1)),
-		StartingAfter: lithic.F("string"),
+		StartingAfter: lithic.F("starting_after"),
 	})
 	if err != nil {
 		var apierr *lithic.Error
@@ -133,7 +133,7 @@ func TestEventSubscriptionDelete(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My Lithic API Key"),
 	)
-	err := client.Events.Subscriptions.Delete(context.TODO(), "string")
+	err := client.Events.Subscriptions.Delete(context.TODO(), "event_subscription_token")
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
@@ -157,13 +157,13 @@ func TestEventSubscriptionListAttemptsWithOptionalParams(t *testing.T) {
 	)
 	_, err := client.Events.Subscriptions.ListAttempts(
 		context.TODO(),
-		"string",
+		"event_subscription_token",
 		lithic.EventSubscriptionListAttemptsParams{
 			Begin:         lithic.F(time.Now()),
 			End:           lithic.F(time.Now()),
-			EndingBefore:  lithic.F("string"),
+			EndingBefore:  lithic.F("ending_before"),
 			PageSize:      lithic.F(int64(1)),
-			StartingAfter: lithic.F("string"),
+			StartingAfter: lithic.F("starting_after"),
 			Status:        lithic.F(lithic.EventSubscriptionListAttemptsParamsStatusFailed),
 		},
 	)
@@ -191,7 +191,7 @@ func TestEventSubscriptionRecoverWithOptionalParams(t *testing.T) {
 	)
 	err := client.Events.Subscriptions.Recover(
 		context.TODO(),
-		"string",
+		"event_subscription_token",
 		lithic.EventSubscriptionRecoverParams{
 			Begin: lithic.F(time.Now()),
 			End:   lithic.F(time.Now()),
@@ -221,7 +221,7 @@ func TestEventSubscriptionReplayMissingWithOptionalParams(t *testing.T) {
 	)
 	err := client.Events.Subscriptions.ReplayMissing(
 		context.TODO(),
-		"string",
+		"event_subscription_token",
 		lithic.EventSubscriptionReplayMissingParams{
 			Begin: lithic.F(time.Now()),
 			End:   lithic.F(time.Now()),
@@ -248,7 +248,7 @@ func TestEventSubscriptionGetSecret(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My Lithic API Key"),
 	)
-	_, err := client.Events.Subscriptions.GetSecret(context.TODO(), "string")
+	_, err := client.Events.Subscriptions.GetSecret(context.TODO(), "event_subscription_token")
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
@@ -271,7 +271,7 @@ func TestEventSubscriptionRotateSecret(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My Lithic API Key"),
 	)
-	err := client.Events.Subscriptions.RotateSecret(context.TODO(), "string")
+	err := client.Events.Subscriptions.RotateSecret(context.TODO(), "event_subscription_token")
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {
@@ -295,7 +295,7 @@ func TestEventSubscriptionSendSimulatedExampleWithOptionalParams(t *testing.T) {
 	)
 	err := client.Events.Subscriptions.SendSimulatedExample(
 		context.TODO(),
-		"string",
+		"event_subscription_token",
 		lithic.EventSubscriptionSendSimulatedExampleParams{
 			EventType: lithic.F(lithic.EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderCreated),
 		},
