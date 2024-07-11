@@ -58,12 +58,12 @@ func TestAccountUpdateWithOptionalParams(t *testing.T) {
 			MonthlySpendLimit:  lithic.F(int64(0)),
 			State:              lithic.F(lithic.AccountUpdateParamsStateActive),
 			VerificationAddress: lithic.F(lithic.AccountUpdateParamsVerificationAddress{
-				Address1:   lithic.F("string"),
-				Address2:   lithic.F("string"),
-				City:       lithic.F("string"),
-				Country:    lithic.F("string"),
-				PostalCode: lithic.F("string"),
-				State:      lithic.F("string"),
+				Address1:   lithic.F("address1"),
+				Address2:   lithic.F("address2"),
+				City:       lithic.F("city"),
+				Country:    lithic.F("country"),
+				PostalCode: lithic.F("postal_code"),
+				State:      lithic.F("state"),
 			}),
 		},
 	)
@@ -91,9 +91,9 @@ func TestAccountListWithOptionalParams(t *testing.T) {
 	_, err := client.Accounts.List(context.TODO(), lithic.AccountListParams{
 		Begin:         lithic.F(time.Now()),
 		End:           lithic.F(time.Now()),
-		EndingBefore:  lithic.F("string"),
+		EndingBefore:  lithic.F("ending_before"),
 		PageSize:      lithic.F(int64(1)),
-		StartingAfter: lithic.F("string"),
+		StartingAfter: lithic.F("starting_after"),
 	})
 	if err != nil {
 		var apierr *lithic.Error

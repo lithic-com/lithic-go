@@ -26,7 +26,7 @@ func TestFinancialAccountNewWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.FinancialAccounts.New(context.TODO(), lithic.FinancialAccountNewParams{
-		Nickname:       lithic.F("string"),
+		Nickname:       lithic.F("nickname"),
 		Type:           lithic.F(lithic.FinancialAccountNewParamsTypeOperating),
 		AccountToken:   lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		IdempotencyKey: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
@@ -78,7 +78,7 @@ func TestFinancialAccountUpdateWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.FinancialAccountUpdateParams{
-			Nickname: lithic.F("string"),
+			Nickname: lithic.F("nickname"),
 		},
 	)
 	if err != nil {

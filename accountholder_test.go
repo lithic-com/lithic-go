@@ -31,22 +31,22 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 			BeneficialOwnerEntities: lithic.F([]lithic.KYBBeneficialOwnerEntityParam{{
 				Address: lithic.F(shared.AddressParam{
 					Address1:   lithic.F("300 Normal Forest Way"),
-					Address2:   lithic.F("string"),
+					Address2:   lithic.F("address2"),
 					City:       lithic.F("Portland"),
 					Country:    lithic.F("USA"),
 					PostalCode: lithic.F("90210"),
 					State:      lithic.F("OR"),
 				}),
-				DbaBusinessName:   lithic.F("string"),
+				DbaBusinessName:   lithic.F("dba_business_name"),
 				GovernmentID:      lithic.F("98-7654321"),
 				LegalBusinessName: lithic.F("Majority Holdings LLC"),
-				ParentCompany:     lithic.F("string"),
+				ParentCompany:     lithic.F("parent_company"),
 				PhoneNumbers:      lithic.F([]string{"+12124007676"}),
 			}}),
 			BeneficialOwnerIndividuals: lithic.F([]lithic.KYBBeneficialOwnerIndividualParam{{
 				Address: lithic.F(shared.AddressParam{
 					Address1:   lithic.F("300 Normal Forest Way"),
-					Address2:   lithic.F("string"),
+					Address2:   lithic.F("address2"),
 					City:       lithic.F("Portland"),
 					Country:    lithic.F("USA"),
 					PostalCode: lithic.F("90210"),
@@ -62,22 +62,22 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 			BusinessEntity: lithic.F(lithic.KYBBusinessEntityParam{
 				Address: lithic.F(shared.AddressParam{
 					Address1:   lithic.F("123 Old Forest Way"),
-					Address2:   lithic.F("string"),
+					Address2:   lithic.F("address2"),
 					City:       lithic.F("Omaha"),
 					Country:    lithic.F("USA"),
 					PostalCode: lithic.F("61022"),
 					State:      lithic.F("NE"),
 				}),
-				DbaBusinessName:   lithic.F("string"),
+				DbaBusinessName:   lithic.F("dba_business_name"),
 				GovernmentID:      lithic.F("12-3456789"),
 				LegalBusinessName: lithic.F("Busy Business, Inc."),
-				ParentCompany:     lithic.F("string"),
+				ParentCompany:     lithic.F("parent_company"),
 				PhoneNumbers:      lithic.F([]string{"+12124007676"}),
 			}),
 			ControlPerson: lithic.F(lithic.KYBControlPersonParam{
 				Address: lithic.F(shared.AddressParam{
 					Address1:   lithic.F("451 New Forest Way"),
-					Address2:   lithic.F("string"),
+					Address2:   lithic.F("address2"),
 					City:       lithic.F("Springfield"),
 					Country:    lithic.F("USA"),
 					PostalCode: lithic.F("68022"),
@@ -90,7 +90,7 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 				LastName:     lithic.F("Timothy"),
 				PhoneNumber:  lithic.F("+12024008176"),
 			}),
-			ExternalID:         lithic.F("string"),
+			ExternalID:         lithic.F("external_id"),
 			KYBPassedTimestamp: lithic.F("2022-03-08T08:00:00Z"),
 			NatureOfBusiness:   lithic.F("Software company selling solutions to the restaurant industry"),
 			TosTimestamp:       lithic.F("2022-03-08T08:00:00Z"),
@@ -145,9 +145,9 @@ func TestAccountHolderUpdateWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.AccountHolderUpdateParams{
-			BusinessAccountToken: lithic.F("string"),
-			Email:                lithic.F("string"),
-			PhoneNumber:          lithic.F("string"),
+			BusinessAccountToken: lithic.F("business_account_token"),
+			Email:                lithic.F("email"),
+			PhoneNumber:          lithic.F("phone_number"),
 		},
 	)
 	if err != nil {
@@ -172,10 +172,10 @@ func TestAccountHolderListWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AccountHolders.List(context.TODO(), lithic.AccountHolderListParams{
-		EndingBefore:  lithic.F("string"),
+		EndingBefore:  lithic.F("ending_before"),
 		ExternalID:    lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Limit:         lithic.F(int64(0)),
-		StartingAfter: lithic.F("string"),
+		StartingAfter: lithic.F("starting_after"),
 	})
 	if err != nil {
 		var apierr *lithic.Error
@@ -227,7 +227,7 @@ func TestAccountHolderResubmit(t *testing.T) {
 			Individual: lithic.F(lithic.AccountHolderResubmitParamsIndividual{
 				Address: lithic.F(shared.AddressParam{
 					Address1:   lithic.F("123 Old Forest Way"),
-					Address2:   lithic.F("string"),
+					Address2:   lithic.F("address2"),
 					City:       lithic.F("Omaha"),
 					Country:    lithic.F("USA"),
 					PostalCode: lithic.F("68022"),

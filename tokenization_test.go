@@ -53,9 +53,9 @@ func TestTokenizationListWithOptionalParams(t *testing.T) {
 		Begin:         lithic.F(time.Now()),
 		CardToken:     lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		End:           lithic.F(time.Now()),
-		EndingBefore:  lithic.F("string"),
+		EndingBefore:  lithic.F("ending_before"),
 		PageSize:      lithic.F(int64(1)),
-		StartingAfter: lithic.F("string"),
+		StartingAfter: lithic.F("starting_after"),
 	})
 	if err != nil {
 		var apierr *lithic.Error
