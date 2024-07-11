@@ -1319,6 +1319,8 @@ type ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest str
 	Country param.Field[string] `json:"country,required"`
 	// currency of the external account 3-digit alphabetic ISO 4217 code
 	Currency param.Field[string] `json:"currency,required"`
+	// The financial account token of the operating account to fund the micro deposits
+	FinancialAccountToken param.Field[string] `json:"financial_account_token,required" format:"uuid"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
 	Owner param.Field[string] `json:"owner,required"`
@@ -1342,8 +1344,6 @@ type ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest str
 	Dob param.Field[time.Time] `json:"dob" format:"date"`
 	// Doing Business As
 	DoingBusinessAs param.Field[string] `json:"doing_business_as"`
-	// The financial account token of the operating account to fund the micro deposits
-	FinancialAccountToken param.Field[string] `json:"financial_account_token" format:"uuid"`
 	// The nickname for this External Bank Account
 	Name param.Field[string] `json:"name"`
 	// User Defined ID
