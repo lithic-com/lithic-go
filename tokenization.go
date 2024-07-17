@@ -210,10 +210,13 @@ type Tokenization struct {
 	CreatedAt time.Time `json:"created_at,required" format:"date-time"`
 	// The status of the tokenization request
 	Status TokenizationStatus `json:"status,required"`
-	// The entity that is requested the tokenization. Represents a Digital Wallet.
+	// The entity that requested the tokenization. Represents a Digital Wallet or
+	// merchant.
 	TokenRequestorName TokenizationTokenRequestorName `json:"token_requestor_name,required"`
 	// The network's unique reference for the tokenization.
 	TokenUniqueReference string `json:"token_unique_reference,required"`
+	// The channel through which the tokenization was made.
+	TokenizationChannel TokenizationTokenizationChannel `json:"tokenization_channel,required"`
 	// Latest date and time when the tokenization was updated. UTC time zone.
 	UpdatedAt time.Time `json:"updated_at,required" format:"date-time"`
 	// Specifies the digital card art displayed in the user’s digital wallet after
@@ -235,6 +238,7 @@ type tokenizationJSON struct {
 	Status               apijson.Field
 	TokenRequestorName   apijson.Field
 	TokenUniqueReference apijson.Field
+	TokenizationChannel  apijson.Field
 	UpdatedAt            apijson.Field
 	DigitalCardArtToken  apijson.Field
 	Events               apijson.Field
@@ -271,16 +275,19 @@ func (r TokenizationStatus) IsKnown() bool {
 	return false
 }
 
-// The entity that is requested the tokenization. Represents a Digital Wallet.
+// The entity that requested the tokenization. Represents a Digital Wallet or
+// merchant.
 type TokenizationTokenRequestorName string
 
 const (
 	TokenizationTokenRequestorNameAmazonOne    TokenizationTokenRequestorName = "AMAZON_ONE"
 	TokenizationTokenRequestorNameAndroidPay   TokenizationTokenRequestorName = "ANDROID_PAY"
 	TokenizationTokenRequestorNameApplePay     TokenizationTokenRequestorName = "APPLE_PAY"
+	TokenizationTokenRequestorNameFacebook     TokenizationTokenRequestorName = "FACEBOOK"
 	TokenizationTokenRequestorNameFitbitPay    TokenizationTokenRequestorName = "FITBIT_PAY"
 	TokenizationTokenRequestorNameGarminPay    TokenizationTokenRequestorName = "GARMIN_PAY"
 	TokenizationTokenRequestorNameMicrosoftPay TokenizationTokenRequestorName = "MICROSOFT_PAY"
+	TokenizationTokenRequestorNameNetflix      TokenizationTokenRequestorName = "NETFLIX"
 	TokenizationTokenRequestorNameSamsungPay   TokenizationTokenRequestorName = "SAMSUNG_PAY"
 	TokenizationTokenRequestorNameUnknown      TokenizationTokenRequestorName = "UNKNOWN"
 	TokenizationTokenRequestorNameVisaCheckout TokenizationTokenRequestorName = "VISA_CHECKOUT"
@@ -288,7 +295,23 @@ const (
 
 func (r TokenizationTokenRequestorName) IsKnown() bool {
 	switch r {
-	case TokenizationTokenRequestorNameAmazonOne, TokenizationTokenRequestorNameAndroidPay, TokenizationTokenRequestorNameApplePay, TokenizationTokenRequestorNameFitbitPay, TokenizationTokenRequestorNameGarminPay, TokenizationTokenRequestorNameMicrosoftPay, TokenizationTokenRequestorNameSamsungPay, TokenizationTokenRequestorNameUnknown, TokenizationTokenRequestorNameVisaCheckout:
+	case TokenizationTokenRequestorNameAmazonOne, TokenizationTokenRequestorNameAndroidPay, TokenizationTokenRequestorNameApplePay, TokenizationTokenRequestorNameFacebook, TokenizationTokenRequestorNameFitbitPay, TokenizationTokenRequestorNameGarminPay, TokenizationTokenRequestorNameMicrosoftPay, TokenizationTokenRequestorNameNetflix, TokenizationTokenRequestorNameSamsungPay, TokenizationTokenRequestorNameUnknown, TokenizationTokenRequestorNameVisaCheckout:
+		return true
+	}
+	return false
+}
+
+// The channel through which the tokenization was made.
+type TokenizationTokenizationChannel string
+
+const (
+	TokenizationTokenizationChannelDigitalWallet TokenizationTokenizationChannel = "DIGITAL_WALLET"
+	TokenizationTokenizationChannelMerchant      TokenizationTokenizationChannel = "MERCHANT"
+)
+
+func (r TokenizationTokenizationChannel) IsKnown() bool {
+	switch r {
+	case TokenizationTokenizationChannelDigitalWallet, TokenizationTokenizationChannelMerchant:
 		return true
 	}
 	return false
@@ -449,6 +472,9 @@ type TokenizationListParams struct {
 	// A cursor representing an item's token after which a page of results should
 	// begin. Used to retrieve the next page of results after this item.
 	StartingAfter param.Field[string] `query:"starting_after"`
+	// Filter for tokenizations by tokenization channel. If this is not specified, only
+	// DIGITAL_WALLET tokenizations will be returned.
+	TokenizationChannel param.Field[TokenizationListParamsTokenizationChannel] `query:"tokenization_channel"`
 }
 
 // URLQuery serializes [TokenizationListParams]'s query parameters as `url.Values`.
@@ -457,6 +483,23 @@ func (r TokenizationListParams) URLQuery() (v url.Values) {
 		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
+}
+
+// Filter for tokenizations by tokenization channel. If this is not specified, only
+// DIGITAL_WALLET tokenizations will be returned.
+type TokenizationListParamsTokenizationChannel string
+
+const (
+	TokenizationListParamsTokenizationChannelDigitalWallet TokenizationListParamsTokenizationChannel = "DIGITAL_WALLET"
+	TokenizationListParamsTokenizationChannelMerchant      TokenizationListParamsTokenizationChannel = "MERCHANT"
+)
+
+func (r TokenizationListParamsTokenizationChannel) IsKnown() bool {
+	switch r {
+	case TokenizationListParamsTokenizationChannelDigitalWallet, TokenizationListParamsTokenizationChannelMerchant:
+		return true
+	}
+	return false
 }
 
 type TokenizationResendActivationCodeParams struct {
@@ -503,6 +546,9 @@ type TokenizationSimulateParams struct {
 	// The device score (1-5) that represents how the Digital Wallet's view on how
 	// reputable an end user's device is.
 	DeviceScore param.Field[int64] `json:"device_score"`
+	// Optional field to specify the token requestor name for a merchant token
+	// simulation. Ignored when tokenization_source is not MERCHANT.
+	Entity param.Field[string] `json:"entity"`
 	// The decision that the Digital Wallet's recommend
 	WalletRecommendedDecision param.Field[TokenizationSimulateParamsWalletRecommendedDecision] `json:"wallet_recommended_decision"`
 }
@@ -518,11 +564,12 @@ const (
 	TokenizationSimulateParamsTokenizationSourceApplePay   TokenizationSimulateParamsTokenizationSource = "APPLE_PAY"
 	TokenizationSimulateParamsTokenizationSourceGoogle     TokenizationSimulateParamsTokenizationSource = "GOOGLE"
 	TokenizationSimulateParamsTokenizationSourceSamsungPay TokenizationSimulateParamsTokenizationSource = "SAMSUNG_PAY"
+	TokenizationSimulateParamsTokenizationSourceMerchant   TokenizationSimulateParamsTokenizationSource = "MERCHANT"
 )
 
 func (r TokenizationSimulateParamsTokenizationSource) IsKnown() bool {
 	switch r {
-	case TokenizationSimulateParamsTokenizationSourceApplePay, TokenizationSimulateParamsTokenizationSourceGoogle, TokenizationSimulateParamsTokenizationSourceSamsungPay:
+	case TokenizationSimulateParamsTokenizationSourceApplePay, TokenizationSimulateParamsTokenizationSourceGoogle, TokenizationSimulateParamsTokenizationSourceSamsungPay, TokenizationSimulateParamsTokenizationSourceMerchant:
 		return true
 	}
 	return false

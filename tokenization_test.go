@@ -49,13 +49,14 @@ func TestTokenizationListWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Tokenizations.List(context.TODO(), lithic.TokenizationListParams{
-		AccountToken:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-		Begin:         lithic.F(time.Now()),
-		CardToken:     lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-		End:           lithic.F(time.Now()),
-		EndingBefore:  lithic.F("ending_before"),
-		PageSize:      lithic.F(int64(1)),
-		StartingAfter: lithic.F("starting_after"),
+		AccountToken:        lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		Begin:               lithic.F(time.Now()),
+		CardToken:           lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		End:                 lithic.F(time.Now()),
+		EndingBefore:        lithic.F("ending_before"),
+		PageSize:            lithic.F(int64(1)),
+		StartingAfter:       lithic.F("starting_after"),
+		TokenizationChannel: lithic.F(lithic.TokenizationListParamsTokenizationChannelDigitalWallet),
 	})
 	if err != nil {
 		var apierr *lithic.Error
@@ -179,6 +180,7 @@ func TestTokenizationSimulateWithOptionalParams(t *testing.T) {
 		TokenizationSource:        lithic.F(lithic.TokenizationSimulateParamsTokenizationSourceApplePay),
 		AccountScore:              lithic.F(int64(5)),
 		DeviceScore:               lithic.F(int64(5)),
+		Entity:                    lithic.F("entity"),
 		WalletRecommendedDecision: lithic.F(lithic.TokenizationSimulateParamsWalletRecommendedDecisionApproved),
 	})
 	if err != nil {
