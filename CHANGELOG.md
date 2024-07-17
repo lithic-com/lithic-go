@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.38.0 (2024-07-17)
+
+Full Changelog: [v0.37.0...v0.38.0](https://github.com/lithic-com/lithic-go/compare/v0.37.0...v0.38.0)
+
+### Features
+
+* **api:** updates ([#317](https://github.com/lithic-com/lithic-go/issues/317)) ([ed54c59](https://github.com/lithic-com/lithic-go/commit/ed54c597883f6ca3a71b52e8b4267ff566cdfbac))
+
 ## 0.37.0 (2024-07-11)
 
 Full Changelog: [v0.36.3...v0.37.0](https://github.com/lithic-com/lithic-go/compare/v0.36.3...v0.37.0)
