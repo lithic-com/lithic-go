@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.39.0 (2024-07-19)
+
+Full Changelog: [v0.38.0...v0.39.0](https://github.com/lithic-com/lithic-go/compare/v0.38.0...v0.39.0)
+
+### Features
+
+* **api:** add method to retrieve a transaction's enhanced commercial data ([#321](https://github.com/lithic-com/lithic-go/issues/321)) ([0f46dd0](https://github.com/lithic-com/lithic-go/commit/0f46dd092e69eb46a7cdd8ff8a557f68ed2ae348))
+
+
+### Chores
+
+* **ci:** limit release doctor target branches ([#319](https://github.com/lithic-com/lithic-go/issues/319)) ([3254f11](https://github.com/lithic-com/lithic-go/commit/3254f1126beea5cf28b0ce503bc55108d1b201a8))
+
 ## 0.38.0 (2024-07-17)
 
 Full Changelog: [v0.37.0...v0.38.0](https://github.com/lithic-com/lithic-go/compare/v0.37.0...v0.38.0)
