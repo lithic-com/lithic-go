@@ -315,6 +315,28 @@ Methods:
 - <code title="post /simulate/return_reversal">client.Transactions.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TransactionService.SimulateReturnReversal">SimulateReturnReversal</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TransactionSimulateReturnReversalParams">TransactionSimulateReturnReversalParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TransactionSimulateReturnReversalResponse">TransactionSimulateReturnReversalResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 - <code title="post /simulate/void">client.Transactions.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TransactionService.SimulateVoid">SimulateVoid</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TransactionSimulateVoidParams">TransactionSimulateVoidParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TransactionSimulateVoidResponse">TransactionSimulateVoidResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 
+## EnhancedCommercialData
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TransactionEnhancedCommercialDataGetResponse">TransactionEnhancedCommercialDataGetResponse</a>
+
+Methods:
+
+- <code title="get /transactions/{transaction_token}/enhanced_commercial_data">client.Transactions.EnhancedCommercialData.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TransactionEnhancedCommercialDataService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, transactionToken <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TransactionEnhancedCommercialDataGetResponse">TransactionEnhancedCommercialDataGetResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
+## Events
+
+### EnhancedCommercialData
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#EnhancedData">EnhancedData</a>
+
+Methods:
+
+- <code title="get /transactions/events/{event_token}/enhanced_commercial_data">client.Transactions.Events.EnhancedCommercialData.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TransactionEventEnhancedCommercialDataService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, eventToken <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#EnhancedData">EnhancedData</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
 # ResponderEndpoints
 
 Response Types:

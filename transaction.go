@@ -25,7 +25,9 @@ import (
 // automatically. You should not instantiate this service directly, and instead use
 // the [NewTransactionService] method instead.
 type TransactionService struct {
-	Options []option.RequestOption
+	Options                []option.RequestOption
+	EnhancedCommercialData *TransactionEnhancedCommercialDataService
+	Events                 *TransactionEventService
 }
 
 // NewTransactionService generates a new service that applies the given options to
@@ -34,6 +36,8 @@ type TransactionService struct {
 func NewTransactionService(opts ...option.RequestOption) (r *TransactionService) {
 	r = &TransactionService{}
 	r.Options = opts
+	r.EnhancedCommercialData = NewTransactionEnhancedCommercialDataService(opts...)
+	r.Events = NewTransactionEventService(opts...)
 	return
 }
 
