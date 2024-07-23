@@ -354,7 +354,10 @@ type Card struct {
 	//   - `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first merchant that
 	//     successfully authorizes the card.
 	Type CardType `json:"type,required"`
-	// List of identifiers for the Auth Rule(s) that are applied on the card.
+	// List of identifiers for the Auth Rule(s) that are applied on the card. This
+	// field is deprecated and will no longer be populated in the `Card` object. The
+	// key will be removed from the schema in a future release. Use the `/auth_rules`
+	// endpoints to fetch Auth Rule information instead.
 	AuthRuleTokens []string `json:"auth_rule_tokens"`
 	// Three digit cvv printed on the back of the card.
 	Cvv string `json:"cvv"`
@@ -925,9 +928,6 @@ func (r CardNewParamsState) IsKnown() bool {
 }
 
 type CardUpdateParams struct {
-	// Identifier for any Auth Rules that will be applied to transactions taking place
-	// with the card.
-	AuthRuleToken param.Field[string] `json:"auth_rule_token"`
 	// Specifies the digital card art to be displayed in the user’s digital wallet
 	// after tokenization. This artwork must be approved by Mastercard and configured
 	// by Lithic to use. See

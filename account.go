@@ -131,7 +131,10 @@ type Account struct {
 	//     error.
 	State         AccountState         `json:"state,required"`
 	AccountHolder AccountAccountHolder `json:"account_holder"`
-	// List of identifiers for the Auth Rule(s) that are applied on the account.
+	// List of identifiers for the Auth Rule(s) that are applied on the account. This
+	// field is deprecated and will no longer be populated in the `account_holder`
+	// object. The key will be removed from the schema in a future release. Use the
+	// `/auth_rules` endpoints to fetch Auth Rule information instead.
 	AuthRuleTokens      []string                   `json:"auth_rule_tokens"`
 	VerificationAddress AccountVerificationAddress `json:"verification_address"`
 	JSON                accountJSON                `json:"-"`
