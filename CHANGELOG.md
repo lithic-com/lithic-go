@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.40.0 (2024-07-23)
+
+Full Changelog: [v0.39.0...v0.40.0](https://github.com/lithic-com/lithic-go/compare/v0.39.0...v0.40.0)
+
+### ⚠ BREAKING CHANGES
+
+* **api:** deprecate 'auth rule token' in 'card' and 'account holder' models ([#325](https://github.com/lithic-com/lithic-go/issues/325))
+
+### Features
+
+* **api:** deprecate 'auth rule token' in 'card' and 'account holder' models ([#325](https://github.com/lithic-com/lithic-go/issues/325)) ([364e58b](https://github.com/lithic-com/lithic-go/commit/364e58bfefd38d388b04e010c6cade77ec98f1ad))
+
+
+### Chores
+
+* **ci:** remove unused release doctor ([#322](https://github.com/lithic-com/lithic-go/issues/322)) ([3a3fe06](https://github.com/lithic-com/lithic-go/commit/3a3fe06eb1f02d7d9c27a823c29489a759df3ced))
+* **tests:** update prism version ([#324](https://github.com/lithic-com/lithic-go/issues/324)) ([2b65acd](https://github.com/lithic-com/lithic-go/commit/2b65acdb5ec1c6fa295326cf97f362b2f6502f59))
+
 ## 0.39.0 (2024-07-19)
 
 Full Changelog: [v0.38.0...v0.39.0](https://github.com/lithic-com/lithic-go/compare/v0.38.0...v0.39.0)
