@@ -38,6 +38,7 @@ type Client struct {
 	CardPrograms            *CardProgramService
 	DigitalCardArt          *DigitalCardArtService
 	BookTransfers           *BookTransferService
+	CreditProducts          *CreditProductService
 }
 
 // NewClient generates a new client with the default option read from the
@@ -78,6 +79,7 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.CardPrograms = NewCardProgramService(opts...)
 	r.DigitalCardArt = NewDigitalCardArtService(opts...)
 	r.BookTransfers = NewBookTransferService(opts...)
+	r.CreditProducts = NewCreditProductService(opts...)
 
 	return
 }
