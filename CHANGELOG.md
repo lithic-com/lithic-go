@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.40.1 (2024-07-31)
+
+Full Changelog: [v0.40.0...v0.40.1](https://github.com/lithic-com/lithic-go/compare/v0.40.0...v0.40.1)
+
+### Bug Fixes
+
+* handle nil pagination responses when HTTP status is 200 ([#328](https://github.com/lithic-com/lithic-go/issues/328)) ([d53c62f](https://github.com/lithic-com/lithic-go/commit/d53c62f2d38181f6b40fe5b6accf04e406f78f07))
+
 ## 0.40.0 (2024-07-23)
 
 Full Changelog: [v0.39.0...v0.40.0](https://github.com/lithic-com/lithic-go/compare/v0.39.0...v0.40.0)
