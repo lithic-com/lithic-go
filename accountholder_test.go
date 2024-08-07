@@ -42,6 +42,7 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 				LegalBusinessName: lithic.F("Majority Holdings LLC"),
 				ParentCompany:     lithic.F("parent_company"),
 				PhoneNumbers:      lithic.F([]string{"+12124007676"}),
+				EntityToken:       lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 			}}),
 			BeneficialOwnerIndividuals: lithic.F([]lithic.KYBBeneficialOwnerIndividualParam{{
 				Address: lithic.F(shared.AddressParam{
@@ -73,6 +74,7 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 				LegalBusinessName: lithic.F("Busy Business, Inc."),
 				ParentCompany:     lithic.F("parent_company"),
 				PhoneNumbers:      lithic.F([]string{"+12124007676"}),
+				EntityToken:       lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 			}),
 			ControlPerson: lithic.F(lithic.KYBControlPersonParam{
 				Address: lithic.F(shared.AddressParam{
@@ -279,7 +281,59 @@ func TestAccountHolderGetDocument(t *testing.T) {
 	}
 }
 
-func TestAccountHolderUploadDocument(t *testing.T) {
+func TestAccountHolderSimulateEnrollmentDocumentReviewWithOptionalParams(t *testing.T) {
+	baseURL := "http://localhost:4010"
+	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+		baseURL = envURL
+	}
+	if !testutil.CheckTestServer(t, baseURL) {
+		return
+	}
+	client := lithic.NewClient(
+		option.WithBaseURL(baseURL),
+		option.WithAPIKey("My Lithic API Key"),
+	)
+	_, err := client.AccountHolders.SimulateEnrollmentDocumentReview(context.TODO(), lithic.AccountHolderSimulateEnrollmentDocumentReviewParams{
+		DocumentUploadToken: lithic.F("b11cd67b-0a52-4180-8365-314f3def5426"),
+		Status:              lithic.F(lithic.AccountHolderSimulateEnrollmentDocumentReviewParamsStatusUploaded),
+		StatusReasons:       lithic.F([]lithic.AccountHolderSimulateEnrollmentDocumentReviewParamsStatusReason{lithic.AccountHolderSimulateEnrollmentDocumentReviewParamsStatusReasonDocumentMissingRequiredData, lithic.AccountHolderSimulateEnrollmentDocumentReviewParamsStatusReasonDocumentUploadTooBlurry, lithic.AccountHolderSimulateEnrollmentDocumentReviewParamsStatusReasonInvalidDocumentType}),
+	})
+	if err != nil {
+		var apierr *lithic.Error
+		if errors.As(err, &apierr) {
+			t.Log(string(apierr.DumpRequest(true)))
+		}
+		t.Fatalf("err should be nil: %s", err.Error())
+	}
+}
+
+func TestAccountHolderSimulateEnrollmentReviewWithOptionalParams(t *testing.T) {
+	baseURL := "http://localhost:4010"
+	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+		baseURL = envURL
+	}
+	if !testutil.CheckTestServer(t, baseURL) {
+		return
+	}
+	client := lithic.NewClient(
+		option.WithBaseURL(baseURL),
+		option.WithAPIKey("My Lithic API Key"),
+	)
+	_, err := client.AccountHolders.SimulateEnrollmentReview(context.TODO(), lithic.AccountHolderSimulateEnrollmentReviewParams{
+		AccountHolderToken: lithic.F("1415964d-4400-4d79-9fb3-eee0faaee4e4"),
+		Status:             lithic.F(lithic.AccountHolderSimulateEnrollmentReviewParamsStatusAccepted),
+		StatusReasons:      lithic.F([]lithic.AccountHolderSimulateEnrollmentReviewParamsStatusReason{lithic.AccountHolderSimulateEnrollmentReviewParamsStatusReasonPrimaryBusinessEntityIDVerificationFailure, lithic.AccountHolderSimulateEnrollmentReviewParamsStatusReasonPrimaryBusinessEntityAddressVerificationFailure, lithic.AccountHolderSimulateEnrollmentReviewParamsStatusReasonPrimaryBusinessEntityNameVerificationFailure}),
+	})
+	if err != nil {
+		var apierr *lithic.Error
+		if errors.As(err, &apierr) {
+			t.Log(string(apierr.DumpRequest(true)))
+		}
+		t.Fatalf("err should be nil: %s", err.Error())
+	}
+}
+
+func TestAccountHolderUploadDocumentWithOptionalParams(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -295,7 +349,8 @@ func TestAccountHolderUploadDocument(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.AccountHolderUploadDocumentParams{
-			DocumentType: lithic.F(lithic.AccountHolderUploadDocumentParamsDocumentTypeDriversLicense),
+			DocumentType: lithic.F(lithic.AccountHolderUploadDocumentParamsDocumentTypeEinLetter),
+			EntityToken:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		},
 	)
 	if err != nil {
