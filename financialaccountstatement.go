@@ -161,16 +161,16 @@ func (r statementJSON) RawJSON() string {
 
 type StatementAccountStanding struct {
 	// Current overall period number
-	PeriodNumber int64                         `json:"period_number,required"`
-	State        StatementAccountStandingState `json:"state,required"`
-	JSON         statementAccountStandingJSON  `json:"-"`
+	PeriodNumber int64                               `json:"period_number,required"`
+	PeriodState  StatementAccountStandingPeriodState `json:"period_state,required"`
+	JSON         statementAccountStandingJSON        `json:"-"`
 }
 
 // statementAccountStandingJSON contains the JSON metadata for the struct
 // [StatementAccountStanding]
 type statementAccountStandingJSON struct {
 	PeriodNumber apijson.Field
-	State        apijson.Field
+	PeriodState  apijson.Field
 	raw          string
 	ExtraFields  map[string]apijson.Field
 }
@@ -183,17 +183,17 @@ func (r statementAccountStandingJSON) RawJSON() string {
 	return r.raw
 }
 
-type StatementAccountStandingState string
+type StatementAccountStandingPeriodState string
 
 const (
-	StatementAccountStandingStateStandard StatementAccountStandingState = "STANDARD"
-	StatementAccountStandingStatePromo    StatementAccountStandingState = "PROMO"
-	StatementAccountStandingStatePenalty  StatementAccountStandingState = "PENALTY"
+	StatementAccountStandingPeriodStateStandard StatementAccountStandingPeriodState = "STANDARD"
+	StatementAccountStandingPeriodStatePromo    StatementAccountStandingPeriodState = "PROMO"
+	StatementAccountStandingPeriodStatePenalty  StatementAccountStandingPeriodState = "PENALTY"
 )
 
-func (r StatementAccountStandingState) IsKnown() bool {
+func (r StatementAccountStandingPeriodState) IsKnown() bool {
 	switch r {
-	case StatementAccountStandingStateStandard, StatementAccountStandingStatePromo, StatementAccountStandingStatePenalty:
+	case StatementAccountStandingPeriodStateStandard, StatementAccountStandingPeriodStatePromo, StatementAccountStandingPeriodStatePenalty:
 		return true
 	}
 	return false
