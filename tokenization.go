@@ -95,10 +95,12 @@ func (r *TokenizationService) Activate(ctx context.Context, tokenizationToken st
 // This endpoint is used to ask the card network to deactivate a tokenization. A
 // successful response indicates that the request was successfully delivered to the
 // card network. When the card network deactivates the tokenization, the state will
-// be updated and a tokenization.updated event will be sent. Transactions attemped
-// with a deactivated tokenization will be declined. If the target is a digital
-// wallet tokenization, it will be removed from its device. Reach out at
-// [lithic.com/contact](https://lithic.com/contact) for more information.
+// be updated and a tokenization.updated event will be sent. Authorizations
+// attempted with a deactivated tokenization will be blocked and will not be
+// forwarded to Lithic from the network. Deactivating the token is a permanent
+// operation. If the target is a digital wallet tokenization, it will be removed
+// from its device. Reach out at [lithic.com/contact](https://lithic.com/contact)
+// for more information.
 func (r *TokenizationService) Deactivate(ctx context.Context, tokenizationToken string, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
@@ -115,9 +117,10 @@ func (r *TokenizationService) Deactivate(ctx context.Context, tokenizationToken 
 // successful response indicates that the request was successfully delivered to the
 // card network. When the card network pauses the tokenization, the state will be
 // updated and a tokenization.updated event will be sent. The endpoint may only be
-// used on tokenizations with status `ACTIVE`. Transactions attemped with a paused
-// tokenization will be declined. Reach out at
-// [lithic.com/contact](https://lithic.com/contact) for more information.
+// used on tokenizations with status `ACTIVE`. A paused token will prevent
+// merchants from sending authorizations, and is a temporary status that can be
+// changed. Reach out at [lithic.com/contact](https://lithic.com/contact) for more
+// information.
 func (r *TokenizationService) Pause(ctx context.Context, tokenizationToken string, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
