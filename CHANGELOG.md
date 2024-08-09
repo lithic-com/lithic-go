@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.41.0 (2024-08-09)
+
+Full Changelog: [v0.40.1...v0.41.0](https://github.com/lithic-com/lithic-go/compare/v0.40.1...v0.41.0)
+
+### ⚠ BREAKING CHANGES
+
+* **api:** rename model property 'StatementAccountStanding.State' to 'PeriodState' ([#334](https://github.com/lithic-com/lithic-go/issues/334))
+
+### Features
+
+* **api:** add event type 'card.reissued' ([#331](https://github.com/lithic-com/lithic-go/issues/331)) ([63bef3b](https://github.com/lithic-com/lithic-go/commit/63bef3b5b210c40e571d55a39eb56982064799af))
+* **api:** add event type 'statements.created' ([#330](https://github.com/lithic-com/lithic-go/issues/330)) ([df398bc](https://github.com/lithic-com/lithic-go/commit/df398bc8be0f4e3e41d2dd8b13ef9882135b6c82))
+* **api:** add methods to simulate enrollment review and enrollment document review ([#332](https://github.com/lithic-com/lithic-go/issues/332)) ([9265daf](https://github.com/lithic-com/lithic-go/commit/9265daf66c81ee07788a139504abae7705b18341))
+* **api:** rename model property 'StatementAccountStanding.State' to 'PeriodState' ([#334](https://github.com/lithic-com/lithic-go/issues/334)) ([d4754a6](https://github.com/lithic-com/lithic-go/commit/d4754a6110b71c68f5de87a95b08335c43a2c55c))
+
 ## 0.40.1 (2024-07-31)
 
 Full Changelog: [v0.40.0...v0.40.1](https://github.com/lithic-com/lithic-go/compare/v0.40.0...v0.40.1)
