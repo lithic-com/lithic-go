@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.41.1 (2024-08-09)
+
+Full Changelog: [v0.41.0...v0.41.1](https://github.com/lithic-com/lithic-go/compare/v0.41.0...v0.41.1)
+
+### Bug Fixes
+
+* deserialization of struct unions that implement json.Unmarshaler ([#337](https://github.com/lithic-com/lithic-go/issues/337)) ([416dea1](https://github.com/lithic-com/lithic-go/commit/416dea1c14352eb0284267d30768dfd861317a88))
+
+
+### Chores
+
+* **ci:** bump prism mock server version ([#335](https://github.com/lithic-com/lithic-go/issues/335)) ([c9ac55e](https://github.com/lithic-com/lithic-go/commit/c9ac55ec54ad23888bb5ffaf0f40c4f7ee4ea29d))
+
 ## 0.41.0 (2024-08-09)
 
 Full Changelog: [v0.40.1...v0.41.0](https://github.com/lithic-com/lithic-go/compare/v0.40.1...v0.41.0)
