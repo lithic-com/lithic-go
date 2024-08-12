@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.42.0 (2024-08-12)
+
+Full Changelog: [v0.41.1...v0.42.0](https://github.com/lithic-com/lithic-go/compare/v0.41.1...v0.42.0)
+
+### Features
+
+* **api:** add property `Account.CardholderCurrency` ([#338](https://github.com/lithic-com/lithic-go/issues/338)) ([7b97846](https://github.com/lithic-com/lithic-go/commit/7b97846987624352af944d09cf9c48aef4849bcd))
+* **api:** add property `Card.CardholderCurrency` ([7b97846](https://github.com/lithic-com/lithic-go/commit/7b97846987624352af944d09cf9c48aef4849bcd))
+* **api:** add property `CardProgram.CardholderCurrency` ([7b97846](https://github.com/lithic-com/lithic-go/commit/7b97846987624352af944d09cf9c48aef4849bcd))
+* **api:** add property `CardProgram.SettlementCurrencies` ([7b97846](https://github.com/lithic-com/lithic-go/commit/7b97846987624352af944d09cf9c48aef4849bcd))
+
 ## 0.41.1 (2024-08-09)
 
 Full Changelog: [v0.41.0...v0.41.1](https://github.com/lithic-com/lithic-go/compare/v0.41.0...v0.41.1)
