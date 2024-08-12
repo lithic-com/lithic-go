@@ -135,7 +135,9 @@ type Account struct {
 	// field is deprecated and will no longer be populated in the `account_holder`
 	// object. The key will be removed from the schema in a future release. Use the
 	// `/auth_rules` endpoints to fetch Auth Rule information instead.
-	AuthRuleTokens      []string                   `json:"auth_rule_tokens"`
+	AuthRuleTokens []string `json:"auth_rule_tokens"`
+	// 3-digit alphabetic ISO 4217 code for the currency of the cardholder.
+	CardholderCurrency  string                     `json:"cardholder_currency"`
 	VerificationAddress AccountVerificationAddress `json:"verification_address"`
 	JSON                accountJSON                `json:"-"`
 }
@@ -148,6 +150,7 @@ type accountJSON struct {
 	State               apijson.Field
 	AccountHolder       apijson.Field
 	AuthRuleTokens      apijson.Field
+	CardholderCurrency  apijson.Field
 	VerificationAddress apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
