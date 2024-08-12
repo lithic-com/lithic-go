@@ -149,7 +149,7 @@ func TestTokenizationResendActivationCodeWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.TokenizationResendActivationCodeParams{
-			ActivationMethodType: lithic.F(lithic.TokenizationResendActivationCodeParamsActivationMethodTypeTextToCardholderNumber),
+			ActivationMethodType: lithic.F(lithic.TokenizationResendActivationCodeParamsActivationMethodTypeEmailToCardholderAddress),
 		},
 	)
 	if err != nil {
