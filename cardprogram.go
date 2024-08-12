@@ -82,19 +82,26 @@ type CardProgram struct {
 	// The first digits of the card number that this card program ends with.
 	PanRangeEnd string `json:"pan_range_end,required"`
 	// The first digits of the card number that this card program starts with.
-	PanRangeStart string          `json:"pan_range_start,required"`
-	JSON          cardProgramJSON `json:"-"`
+	PanRangeStart string `json:"pan_range_start,required"`
+	// 3-digit alphabetic ISO 4217 code for the currency of the cardholder.
+	CardholderCurrency string `json:"cardholder_currency"`
+	// List of 3-digit alphabetic ISO 4217 codes for the currencies that the card
+	// program supports for settlement.
+	SettlementCurrencies []string        `json:"settlement_currencies"`
+	JSON                 cardProgramJSON `json:"-"`
 }
 
 // cardProgramJSON contains the JSON metadata for the struct [CardProgram]
 type cardProgramJSON struct {
-	Token         apijson.Field
-	Created       apijson.Field
-	Name          apijson.Field
-	PanRangeEnd   apijson.Field
-	PanRangeStart apijson.Field
-	raw           string
-	ExtraFields   map[string]apijson.Field
+	Token                apijson.Field
+	Created              apijson.Field
+	Name                 apijson.Field
+	PanRangeEnd          apijson.Field
+	PanRangeStart        apijson.Field
+	CardholderCurrency   apijson.Field
+	SettlementCurrencies apijson.Field
+	raw                  string
+	ExtraFields          map[string]apijson.Field
 }
 
 func (r *CardProgram) UnmarshalJSON(data []byte) (err error) {
