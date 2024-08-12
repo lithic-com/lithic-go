@@ -49,8 +49,8 @@ func TestThreeDSAuthenticationSimulate(t *testing.T) {
 	)
 	_, err := client.ThreeDS.Authentication.Simulate(context.TODO(), lithic.ThreeDSAuthenticationSimulateParams{
 		Merchant: lithic.F(lithic.ThreeDSAuthenticationSimulateParamsMerchant{
-			Country: lithic.F("USA"),
 			ID:      lithic.F("OODKZAPJVN4YS7O"),
+			Country: lithic.F("USA"),
 			Mcc:     lithic.F("5812"),
 			Name:    lithic.F("COFFEE SHOP"),
 		}),
