@@ -359,6 +359,8 @@ type Card struct {
 	// key will be removed from the schema in a future release. Use the `/auth_rules`
 	// endpoints to fetch Auth Rule information instead.
 	AuthRuleTokens []string `json:"auth_rule_tokens"`
+	// 3-digit alphabetic ISO 4217 code for the currency of the cardholder.
+	CardholderCurrency string `json:"cardholder_currency"`
 	// Three digit cvv printed on the back of the card.
 	Cvv string `json:"cvv"`
 	// Specifies the digital card art to be displayed in the user’s digital wallet
@@ -399,6 +401,7 @@ type cardJSON struct {
 	State               apijson.Field
 	Type                apijson.Field
 	AuthRuleTokens      apijson.Field
+	CardholderCurrency  apijson.Field
 	Cvv                 apijson.Field
 	DigitalCardArtToken apijson.Field
 	ExpMonth            apijson.Field
