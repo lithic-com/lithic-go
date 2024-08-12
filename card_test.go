@@ -28,7 +28,7 @@ func TestCardNewWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Cards.New(context.TODO(), lithic.CardNewParams{
-		Type:             lithic.F(lithic.CardNewParamsTypeVirtual),
+		Type:             lithic.F(lithic.CardNewParamsTypeMerchantLocked),
 		AccountToken:     lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		CardProgramToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Carrier: lithic.F(shared.CarrierParam{
@@ -43,20 +43,20 @@ func TestCardNewWithOptionalParams(t *testing.T) {
 		ReplacementFor:      lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		ShippingAddress: lithic.F(shared.ShippingAddressParam{
 			Address1:    lithic.F("5 Broad Street"),
-			Address2:    lithic.F("Unit 25A"),
 			City:        lithic.F("NEW YORK"),
 			Country:     lithic.F("USA"),
-			Email:       lithic.F("johnny@appleseed.com"),
 			FirstName:   lithic.F("Michael"),
 			LastName:    lithic.F("Bluth"),
-			Line2Text:   lithic.F("The Bluth Company"),
-			PhoneNumber: lithic.F("+12124007676"),
 			PostalCode:  lithic.F("10001-1809"),
 			State:       lithic.F("NY"),
+			Address2:    lithic.F("Unit 25A"),
+			Email:       lithic.F("johnny@appleseed.com"),
+			Line2Text:   lithic.F("The Bluth Company"),
+			PhoneNumber: lithic.F("+12124007676"),
 		}),
 		ShippingMethod:     lithic.F(lithic.CardNewParamsShippingMethod2Day),
 		SpendLimit:         lithic.F(int64(1000)),
-		SpendLimitDuration: lithic.F(lithic.SpendLimitDurationTransaction),
+		SpendLimitDuration: lithic.F(lithic.SpendLimitDurationAnnually),
 		State:              lithic.F(lithic.CardNewParamsStateOpen),
 	})
 	if err != nil {
@@ -110,8 +110,8 @@ func TestCardUpdateWithOptionalParams(t *testing.T) {
 			Memo:                lithic.F("Updated Name"),
 			Pin:                 lithic.F("pin"),
 			SpendLimit:          lithic.F(int64(100)),
-			SpendLimitDuration:  lithic.F(lithic.SpendLimitDurationForever),
-			State:               lithic.F(lithic.CardUpdateParamsStateOpen),
+			SpendLimitDuration:  lithic.F(lithic.SpendLimitDurationAnnually),
+			State:               lithic.F(lithic.CardUpdateParamsStateClosed),
 		},
 	)
 	if err != nil {
@@ -197,7 +197,7 @@ func TestCardProvisionWithOptionalParams(t *testing.T) {
 			Certificate:           lithic.F("U3RhaW5sZXNzIHJvY2tz"),
 			ClientDeviceID:        lithic.F("client_device_id"),
 			ClientWalletAccountID: lithic.F("client_wallet_account_id"),
-			DigitalWallet:         lithic.F(lithic.CardProvisionParamsDigitalWalletGooglePay),
+			DigitalWallet:         lithic.F(lithic.CardProvisionParamsDigitalWalletApplePay),
 			Nonce:                 lithic.F("U3RhaW5sZXNzIHJvY2tz"),
 			NonceSignature:        lithic.F("U3RhaW5sZXNzIHJvY2tz"),
 		},
@@ -233,18 +233,18 @@ func TestCardReissueWithOptionalParams(t *testing.T) {
 			ProductID: lithic.F("100"),
 			ShippingAddress: lithic.F(shared.ShippingAddressParam{
 				Address1:    lithic.F("5 Broad Street"),
-				Address2:    lithic.F("Unit 5A"),
 				City:        lithic.F("NEW YORK"),
 				Country:     lithic.F("USA"),
-				Email:       lithic.F("johnny@appleseed.com"),
 				FirstName:   lithic.F("Janet"),
 				LastName:    lithic.F("Yellen"),
-				Line2Text:   lithic.F("The Bluth Company"),
-				PhoneNumber: lithic.F("+12124007676"),
 				PostalCode:  lithic.F("10001"),
 				State:       lithic.F("NY"),
+				Address2:    lithic.F("Unit 5A"),
+				Email:       lithic.F("johnny@appleseed.com"),
+				Line2Text:   lithic.F("The Bluth Company"),
+				PhoneNumber: lithic.F("+12124007676"),
 			}),
-			ShippingMethod: lithic.F(lithic.CardReissueParamsShippingMethodStandard),
+			ShippingMethod: lithic.F(lithic.CardReissueParamsShippingMethod2Day),
 		},
 	)
 	if err != nil {
@@ -274,16 +274,16 @@ func TestCardRenewWithOptionalParams(t *testing.T) {
 		lithic.CardRenewParams{
 			ShippingAddress: lithic.F(shared.ShippingAddressParam{
 				Address1:    lithic.F("5 Broad Street"),
-				Address2:    lithic.F("Unit 5A"),
 				City:        lithic.F("NEW YORK"),
 				Country:     lithic.F("USA"),
-				Email:       lithic.F("johnny@appleseed.com"),
 				FirstName:   lithic.F("Janet"),
 				LastName:    lithic.F("Yellen"),
-				Line2Text:   lithic.F("The Bluth Company"),
-				PhoneNumber: lithic.F("+12124007676"),
 				PostalCode:  lithic.F("10001"),
 				State:       lithic.F("NY"),
+				Address2:    lithic.F("Unit 5A"),
+				Email:       lithic.F("johnny@appleseed.com"),
+				Line2Text:   lithic.F("The Bluth Company"),
+				PhoneNumber: lithic.F("+12124007676"),
 			}),
 			Carrier: lithic.F(shared.CarrierParam{
 				QrCodeURL: lithic.F("https://lithic.com/activate-card/1"),
@@ -291,7 +291,7 @@ func TestCardRenewWithOptionalParams(t *testing.T) {
 			ExpMonth:       lithic.F("06"),
 			ExpYear:        lithic.F("2027"),
 			ProductID:      lithic.F("100"),
-			ShippingMethod: lithic.F(lithic.CardRenewParamsShippingMethodStandard),
+			ShippingMethod: lithic.F(lithic.CardRenewParamsShippingMethod2Day),
 		},
 	)
 	if err != nil {
