@@ -199,8 +199,10 @@ type SettlementReport struct {
 	// fees, and disputes).
 	TransactionsGrossAmount int64 `json:"transactions_gross_amount,required"`
 	// Date and time when the transaction first occurred. UTC time zone.
-	Updated time.Time            `json:"updated,required" format:"date-time"`
-	JSON    settlementReportJSON `json:"-"`
+	Updated time.Time `json:"updated,required" format:"date-time"`
+	// Indicates that all data expected on the given report date is available.
+	IsComplete bool                 `json:"is_complete"`
+	JSON       settlementReportJSON `json:"-"`
 }
 
 // settlementReportJSON contains the JSON metadata for the struct
@@ -216,6 +218,7 @@ type settlementReportJSON struct {
 	SettledNetAmount        apijson.Field
 	TransactionsGrossAmount apijson.Field
 	Updated                 apijson.Field
+	IsComplete              apijson.Field
 	raw                     string
 	ExtraFields             map[string]apijson.Field
 }
