@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.43.0 (2024-08-14)
+
+Full Changelog: [v0.42.0...v0.43.0](https://github.com/lithic-com/lithic-go/compare/v0.42.0...v0.43.0)
+
+### Features
+
+* **api:** add SettlementReport property `is_complete` ([#343](https://github.com/lithic-com/lithic-go/issues/343)) ([528dfbe](https://github.com/lithic-com/lithic-go/commit/528dfbed1f552567eff626800e922e7c9f6670d5))
+
+
+### Chores
+
+* bump Go to v1.21 ([#340](https://github.com/lithic-com/lithic-go/issues/340)) ([8ba9105](https://github.com/lithic-com/lithic-go/commit/8ba91052ca32f7994ec66fba999aa531a15b91a5))
+* **examples:** minor formatting changes ([#342](https://github.com/lithic-com/lithic-go/issues/342)) ([6326899](https://github.com/lithic-com/lithic-go/commit/6326899066cbc2b562158c0625ee1ea274ddcf82))
+
 ## 0.42.0 (2024-08-12)
 
 Full Changelog: [v0.41.1...v0.42.0](https://github.com/lithic-com/lithic-go/compare/v0.41.1...v0.42.0)
