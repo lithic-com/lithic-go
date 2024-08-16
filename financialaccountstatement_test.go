@@ -56,11 +56,12 @@ func TestFinancialAccountStatementListWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.FinancialAccountStatementListParams{
-			Begin:         lithic.F(time.Now()),
-			End:           lithic.F(time.Now()),
-			EndingBefore:  lithic.F("ending_before"),
-			PageSize:      lithic.F(int64(1)),
-			StartingAfter: lithic.F("starting_after"),
+			Begin:                    lithic.F(time.Now()),
+			End:                      lithic.F(time.Now()),
+			EndingBefore:             lithic.F("ending_before"),
+			IncludeInitialStatements: lithic.F(true),
+			PageSize:                 lithic.F(int64(1)),
+			StartingAfter:            lithic.F("starting_after"),
 		},
 	)
 	if err != nil {
