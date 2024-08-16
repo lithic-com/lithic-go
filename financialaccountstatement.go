@@ -297,6 +297,8 @@ type FinancialAccountStatementListParams struct {
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string] `query:"ending_before"`
+	// Whether to include the initial statement. It is not included by default.
+	IncludeInitialStatements param.Field[bool] `query:"include_initial_statements"`
 	// Page size (for pagination).
 	PageSize param.Field[int64] `query:"page_size"`
 	// A cursor representing an item's token after which a page of results should
