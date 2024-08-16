@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.44.0 (2024-08-16)
+
+Full Changelog: [v0.43.0...v0.44.0](https://github.com/lithic-com/lithic-go/compare/v0.43.0...v0.44.0)
+
+### Features
+
+* **api:** add StatementListParams property include_initial_statements ([#344](https://github.com/lithic-com/lithic-go/issues/344)) ([422a2ce](https://github.com/lithic-com/lithic-go/commit/422a2ce1be046d7f148690da77a7aaa98b8b5bab))
+
 ## 0.43.0 (2024-08-14)
 
 Full Changelog: [v0.42.0...v0.43.0](https://github.com/lithic-com/lithic-go/compare/v0.42.0...v0.43.0)
