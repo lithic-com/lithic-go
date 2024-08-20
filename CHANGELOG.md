@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.45.0 (2024-08-20)
+
+Full Changelog: [v0.44.0...v0.45.0](https://github.com/lithic-com/lithic-go/compare/v0.44.0...v0.45.0)
+
+### Features
+
+* **api:** add property `next_payment_end_date` and `next_payment_due_date` to Statement model ([#348](https://github.com/lithic-com/lithic-go/issues/348)) ([02cef9a](https://github.com/lithic-com/lithic-go/commit/02cef9a8c8040130445cffb134fd2256ff3050aa))
+
+
+### Chores
+
+* **docs:** update state description on Card ([#346](https://github.com/lithic-com/lithic-go/issues/346)) ([77b0dfd](https://github.com/lithic-com/lithic-go/commit/77b0dfd8b1b27bb9bab2d31d9bdf96adc1dfd7a8))
+
 ## 0.44.0 (2024-08-16)
 
 Full Changelog: [v0.43.0...v0.44.0](https://github.com/lithic-com/lithic-go/compare/v0.43.0...v0.44.0)
