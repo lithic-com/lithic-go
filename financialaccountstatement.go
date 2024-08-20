@@ -123,7 +123,11 @@ type Statement struct {
 	// Timestamp of when the statement was updated
 	Updated   time.Time          `json:"updated,required" format:"date-time"`
 	YtdTotals StatementYtdTotals `json:"ytd_totals,required"`
-	JSON      statementJSON      `json:"-"`
+	// Date when the next payment is due
+	NextPaymentDueDate time.Time `json:"next_payment_due_date" format:"date"`
+	// Date when the next billing period will end
+	NextStatementEndDate time.Time     `json:"next_statement_end_date" format:"date"`
+	JSON                 statementJSON `json:"-"`
 }
 
 // statementJSON contains the JSON metadata for the struct [Statement]
@@ -147,6 +151,8 @@ type statementJSON struct {
 	StatementStartDate    apijson.Field
 	Updated               apijson.Field
 	YtdTotals             apijson.Field
+	NextPaymentDueDate    apijson.Field
+	NextStatementEndDate  apijson.Field
 	raw                   string
 	ExtraFields           map[string]apijson.Field
 }
