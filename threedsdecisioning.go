@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
+	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/option"
 )
@@ -27,6 +28,15 @@ type ThreeDSDecisioningService struct {
 func NewThreeDSDecisioningService(opts ...option.RequestOption) (r *ThreeDSDecisioningService) {
 	r = &ThreeDSDecisioningService{}
 	r.Options = opts
+	return
+}
+
+// Card program's response to a 3DS Challenge Request (CReq)
+func (r *ThreeDSDecisioningService) ChallengeResponse(ctx context.Context, body ThreeDSDecisioningChallengeResponseParams, opts ...option.RequestOption) (err error) {
+	opts = append(r.Options[:], opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	path := "three_ds_decisioning/challenge_response"
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
 	return
 }
 
@@ -75,4 +85,34 @@ func (r *ThreeDSDecisioningGetSecretResponse) UnmarshalJSON(data []byte) (err er
 
 func (r threeDSDecisioningGetSecretResponseJSON) RawJSON() string {
 	return r.raw
+}
+
+type ThreeDSDecisioningChallengeResponseParams struct {
+	// Globally unique identifier for the 3DS authentication. This token is sent as
+	// part of the initial 3DS Decisioning Request and as part of the 3DS Challenge
+	// Event in the [ThreeDSAuthentication](#/components/schemas/ThreeDSAuthentication)
+	// object
+	Token param.Field[string] `json:"token,required" format:"uuid"`
+	// Whether the Cardholder has Approved or Declined the issued Challenge
+	ChallengeResponse param.Field[ThreeDSDecisioningChallengeResponseParamsChallengeResponse] `json:"challenge_response,required"`
+}
+
+func (r ThreeDSDecisioningChallengeResponseParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// Whether the Cardholder has Approved or Declined the issued Challenge
+type ThreeDSDecisioningChallengeResponseParamsChallengeResponse string
+
+const (
+	ThreeDSDecisioningChallengeResponseParamsChallengeResponseApprove           ThreeDSDecisioningChallengeResponseParamsChallengeResponse = "APPROVE"
+	ThreeDSDecisioningChallengeResponseParamsChallengeResponseDeclineByCustomer ThreeDSDecisioningChallengeResponseParamsChallengeResponse = "DECLINE_BY_CUSTOMER"
+)
+
+func (r ThreeDSDecisioningChallengeResponseParamsChallengeResponse) IsKnown() bool {
+	switch r {
+	case ThreeDSDecisioningChallengeResponseParamsChallengeResponseApprove, ThreeDSDecisioningChallengeResponseParamsChallengeResponseDeclineByCustomer:
+		return true
+	}
+	return false
 }
