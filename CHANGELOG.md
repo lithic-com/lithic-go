@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.47.0 (2024-08-23)
+
+Full Changelog: [v0.46.0...v0.47.0](https://github.com/lithic-com/lithic-go/compare/v0.46.0...v0.47.0)
+
+### Features
+
+* **api:** add endpoints and webhooks for 3DS challenge decisions and challenges ([#351](https://github.com/lithic-com/lithic-go/issues/351)) ([e1a87ef](https://github.com/lithic-com/lithic-go/commit/e1a87efebd4628add40792b07818c06526f4a652))
+
 ## 0.46.0 (2024-08-23)
 
 Full Changelog: [v0.45.0...v0.46.0](https://github.com/lithic-com/lithic-go/compare/v0.45.0...v0.46.0)
