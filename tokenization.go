@@ -495,11 +495,12 @@ type TokenizationListParamsTokenizationChannel string
 const (
 	TokenizationListParamsTokenizationChannelDigitalWallet TokenizationListParamsTokenizationChannel = "DIGITAL_WALLET"
 	TokenizationListParamsTokenizationChannelMerchant      TokenizationListParamsTokenizationChannel = "MERCHANT"
+	TokenizationListParamsTokenizationChannelAll           TokenizationListParamsTokenizationChannel = "ALL"
 )
 
 func (r TokenizationListParamsTokenizationChannel) IsKnown() bool {
 	switch r {
-	case TokenizationListParamsTokenizationChannelDigitalWallet, TokenizationListParamsTokenizationChannelMerchant:
+	case TokenizationListParamsTokenizationChannelDigitalWallet, TokenizationListParamsTokenizationChannelMerchant, TokenizationListParamsTokenizationChannelAll:
 		return true
 	}
 	return false

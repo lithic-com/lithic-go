@@ -181,28 +181,41 @@ func (r SettlementDetailType) IsKnown() bool {
 type SettlementReport struct {
 	// Date and time when the transaction first occurred. UTC time zone.
 	Created time.Time `json:"created,required" format:"date-time"`
-	// Three-digit alphabetic ISO 4217 code.
+	// Three-digit alphabetic ISO 4217 code. (This field is deprecated and will be
+	// removed in a future version of the API.)
 	Currency string                     `json:"currency,required"`
 	Details  []SettlementSummaryDetails `json:"details,required"`
-	// The total gross amount of disputes settlements.
+	// The total gross amount of disputes settlements. (This field is deprecated and
+	// will be removed in a future version of the API. To compute total amounts, Lithic
+	// recommends that customers sum the relevant settlement amounts found within
+	// `details`.)
 	DisputesGrossAmount int64 `json:"disputes_gross_amount,required"`
-	// The total amount of interchange.
+	// The total amount of interchange. (This field is deprecated and will be removed
+	// in a future version of the API. To compute total amounts, Lithic recommends that
+	// customers sum the relevant settlement amounts found within `details`.)
 	InterchangeGrossAmount int64 `json:"interchange_gross_amount,required"`
-	// Total amount of gross other fees outside of interchange.
+	// Indicates that all data expected on the given report date is available.
+	IsComplete bool `json:"is_complete,required"`
+	// Total amount of gross other fees outside of interchange. (This field is
+	// deprecated and will be removed in a future version of the API. To compute total
+	// amounts, Lithic recommends that customers sum the relevant settlement amounts
+	// found within `details`.)
 	OtherFeesGrossAmount int64 `json:"other_fees_gross_amount,required"`
 	// Date of when the report was first generated.
 	ReportDate string `json:"report_date,required"`
 	// The total net amount of cash moved. (net value of settled_gross_amount,
-	// interchange, fees).
+	// interchange, fees). (This field is deprecated and will be removed in a future
+	// version of the API. To compute total amounts, Lithic recommends that customers
+	// sum the relevant settlement amounts found within `details`.)
 	SettledNetAmount int64 `json:"settled_net_amount,required"`
 	// The total amount of settlement impacting transactions (excluding interchange,
-	// fees, and disputes).
+	// fees, and disputes). (This field is deprecated and will be removed in a future
+	// version of the API. To compute total amounts, Lithic recommends that customers
+	// sum the relevant settlement amounts found within `details`.)
 	TransactionsGrossAmount int64 `json:"transactions_gross_amount,required"`
 	// Date and time when the transaction first occurred. UTC time zone.
-	Updated time.Time `json:"updated,required" format:"date-time"`
-	// Indicates that all data expected on the given report date is available.
-	IsComplete bool                 `json:"is_complete"`
-	JSON       settlementReportJSON `json:"-"`
+	Updated time.Time            `json:"updated,required" format:"date-time"`
+	JSON    settlementReportJSON `json:"-"`
 }
 
 // settlementReportJSON contains the JSON metadata for the struct
@@ -213,12 +226,12 @@ type settlementReportJSON struct {
 	Details                 apijson.Field
 	DisputesGrossAmount     apijson.Field
 	InterchangeGrossAmount  apijson.Field
+	IsComplete              apijson.Field
 	OtherFeesGrossAmount    apijson.Field
 	ReportDate              apijson.Field
 	SettledNetAmount        apijson.Field
 	TransactionsGrossAmount apijson.Field
 	Updated                 apijson.Field
-	IsComplete              apijson.Field
 	raw                     string
 	ExtraFields             map[string]apijson.Field
 }
@@ -232,6 +245,8 @@ func (r settlementReportJSON) RawJSON() string {
 }
 
 type SettlementSummaryDetails struct {
+	// ISO 4217 alpha 3 code.
+	Currency string `json:"currency"`
 	// The total gross amount of disputes settlements.
 	DisputesGrossAmount int64 `json:"disputes_gross_amount"`
 	// The most granular ID the network settles with (e.g., ICA for Mastercard, FTSRE
@@ -255,6 +270,7 @@ type SettlementSummaryDetails struct {
 // settlementSummaryDetailsJSON contains the JSON metadata for the struct
 // [SettlementSummaryDetails]
 type settlementSummaryDetailsJSON struct {
+	Currency                apijson.Field
 	DisputesGrossAmount     apijson.Field
 	Institution             apijson.Field
 	InterchangeGrossAmount  apijson.Field
