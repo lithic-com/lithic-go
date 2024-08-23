@@ -186,6 +186,8 @@ type BookTransferResponseEvent struct {
 	Amount int64 `json:"amount,required"`
 	// Date and time when the financial event occurred. UTC time zone.
 	Created time.Time `json:"created,required" format:"date-time"`
+	// Detailed Results
+	DetailedResults []BookTransferResponseEventsDetailedResult `json:"detailed_results,required"`
 	// Memo for the transfer.
 	Memo string `json:"memo,required"`
 	// APPROVED financial events were successful while DECLINED financial events were
@@ -193,11 +195,9 @@ type BookTransferResponseEvent struct {
 	Result BookTransferResponseEventsResult `json:"result,required"`
 	// The program specific subtype code for the specified category/type.
 	Subtype string `json:"subtype,required"`
-	// Subtype of the book transfer
-	Type string `json:"type,required"`
-	// Detailed Results
-	DetailedResults []BookTransferResponseEventsDetailedResult `json:"detailed_results"`
-	JSON            bookTransferResponseEventJSON              `json:"-"`
+	// Type of the book transfer
+	Type string                        `json:"type,required"`
+	JSON bookTransferResponseEventJSON `json:"-"`
 }
 
 // bookTransferResponseEventJSON contains the JSON metadata for the struct
@@ -206,11 +206,11 @@ type bookTransferResponseEventJSON struct {
 	Token           apijson.Field
 	Amount          apijson.Field
 	Created         apijson.Field
+	DetailedResults apijson.Field
 	Memo            apijson.Field
 	Result          apijson.Field
 	Subtype         apijson.Field
 	Type            apijson.Field
-	DetailedResults apijson.Field
 	raw             string
 	ExtraFields     map[string]apijson.Field
 }
@@ -221,6 +221,21 @@ func (r *BookTransferResponseEvent) UnmarshalJSON(data []byte) (err error) {
 
 func (r bookTransferResponseEventJSON) RawJSON() string {
 	return r.raw
+}
+
+type BookTransferResponseEventsDetailedResult string
+
+const (
+	BookTransferResponseEventsDetailedResultApproved          BookTransferResponseEventsDetailedResult = "APPROVED"
+	BookTransferResponseEventsDetailedResultFundsInsufficient BookTransferResponseEventsDetailedResult = "FUNDS_INSUFFICIENT"
+)
+
+func (r BookTransferResponseEventsDetailedResult) IsKnown() bool {
+	switch r {
+	case BookTransferResponseEventsDetailedResultApproved, BookTransferResponseEventsDetailedResultFundsInsufficient:
+		return true
+	}
+	return false
 }
 
 // APPROVED financial events were successful while DECLINED financial events were
@@ -235,21 +250,6 @@ const (
 func (r BookTransferResponseEventsResult) IsKnown() bool {
 	switch r {
 	case BookTransferResponseEventsResultApproved, BookTransferResponseEventsResultDeclined:
-		return true
-	}
-	return false
-}
-
-type BookTransferResponseEventsDetailedResult string
-
-const (
-	BookTransferResponseEventsDetailedResultApproved          BookTransferResponseEventsDetailedResult = "APPROVED"
-	BookTransferResponseEventsDetailedResultFundsInsufficient BookTransferResponseEventsDetailedResult = "FUNDS_INSUFFICIENT"
-)
-
-func (r BookTransferResponseEventsDetailedResult) IsKnown() bool {
-	switch r {
-	case BookTransferResponseEventsDetailedResultApproved, BookTransferResponseEventsDetailedResultFundsInsufficient:
 		return true
 	}
 	return false
