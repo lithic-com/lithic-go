@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.46.0 (2024-08-23)
+
+Full Changelog: [v0.45.0...v0.46.0](https://github.com/lithic-com/lithic-go/compare/v0.45.0...v0.46.0)
+
+### Features
+
+* **api:** new book_transfer_transaction events and Settlement Report field deprecations ([#349](https://github.com/lithic-com/lithic-go/issues/349)) ([caf2767](https://github.com/lithic-com/lithic-go/commit/caf276753f491d11f98216c58ec4eb369ed5fdbd))
+
 ## 0.45.0 (2024-08-20)
 
 Full Changelog: [v0.44.0...v0.45.0](https://github.com/lithic-com/lithic-go/compare/v0.44.0...v0.45.0)
