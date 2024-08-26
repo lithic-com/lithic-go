@@ -61,7 +61,7 @@ type ThreeDSAuthenticationGetResponse struct {
 	// Globally unique identifier for the 3DS authentication.
 	Token string `json:"token,required" format:"uuid"`
 	// Type of account/card that is being used for the transaction. Maps to EMV 3DS
-	// field acctType.
+	// field `acctType`.
 	AccountType ThreeDSAuthenticationGetResponseAccountType `json:"account_type,required,nullable"`
 	// Indicates the outcome of the 3DS authentication process.
 	AuthenticationResult ThreeDSAuthenticationGetResponseAuthenticationResult `json:"authentication_result,required,nullable"`
@@ -145,7 +145,7 @@ func (r threeDSAuthenticationGetResponseJSON) RawJSON() string {
 }
 
 // Type of account/card that is being used for the transaction. Maps to EMV 3DS
-// field acctType.
+// field `acctType`.
 type ThreeDSAuthenticationGetResponseAccountType string
 
 const (
