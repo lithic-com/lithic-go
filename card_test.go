@@ -109,6 +109,7 @@ func TestCardUpdateWithOptionalParams(t *testing.T) {
 			DigitalCardArtToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 			Memo:                lithic.F("Updated Name"),
 			Pin:                 lithic.F("pin"),
+			PinStatus:           lithic.F(lithic.CardUpdateParamsPinStatusOk),
 			SpendLimit:          lithic.F(int64(100)),
 			SpendLimitDuration:  lithic.F(lithic.SpendLimitDurationAnnually),
 			State:               lithic.F(lithic.CardUpdateParamsStateClosed),

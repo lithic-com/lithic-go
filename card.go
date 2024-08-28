@@ -303,6 +303,9 @@ type Card struct {
 	Funding CardFunding `json:"funding,required"`
 	// Last four digits of the card number.
 	LastFour string `json:"last_four,required"`
+	// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
+	// attempts).
+	PinStatus CardPinStatus `json:"pin_status,required"`
 	// Amount (in cents) to limit approved authorizations. Transaction requests above
 	// the spend limit will be declined.
 	SpendLimit int64 `json:"spend_limit,required"`
@@ -380,6 +383,10 @@ type Card struct {
 	// compliant to have PAN returned as a field in production. Please contact
 	// [support@lithic.com](mailto:support@lithic.com) for questions.
 	Pan string `json:"pan"`
+	// Indicates if there are offline PIN changes pending card interaction with an
+	// offline PIN terminal. Possible commands are: CHANGE_PIN, UNBLOCK_PIN. Applicable
+	// only to cards issued in markets supporting offline PINs.
+	PendingCommands []string `json:"pending_commands"`
 	// Only applicable to cards of type `PHYSICAL`. This must be configured with Lithic
 	// before use. Specifies the configuration (i.e., physical card art) that the card
 	// should be manufactured with.
@@ -395,6 +402,7 @@ type cardJSON struct {
 	Created             apijson.Field
 	Funding             apijson.Field
 	LastFour            apijson.Field
+	PinStatus           apijson.Field
 	SpendLimit          apijson.Field
 	SpendLimitDuration  apijson.Field
 	State               apijson.Field
@@ -408,6 +416,7 @@ type cardJSON struct {
 	Hostname            apijson.Field
 	Memo                apijson.Field
 	Pan                 apijson.Field
+	PendingCommands     apijson.Field
 	ProductID           apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
@@ -513,6 +522,24 @@ const (
 func (r CardFundingType) IsKnown() bool {
 	switch r {
 	case CardFundingTypeDepositoryChecking, CardFundingTypeDepositorySavings:
+		return true
+	}
+	return false
+}
+
+// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
+// attempts).
+type CardPinStatus string
+
+const (
+	CardPinStatusOk      CardPinStatus = "OK"
+	CardPinStatusBlocked CardPinStatus = "BLOCKED"
+	CardPinStatusNotSet  CardPinStatus = "NOT_SET"
+)
+
+func (r CardPinStatus) IsKnown() bool {
+	switch r {
+	case CardPinStatusOk, CardPinStatusBlocked, CardPinStatusNotSet:
 		return true
 	}
 	return false
@@ -938,9 +965,12 @@ type CardUpdateParams struct {
 	// store JSON data as it can cause unexpected behavior.
 	Memo param.Field[string] `json:"memo"`
 	// Encrypted PIN block (in base64). Only applies to cards of type `PHYSICAL` and
-	// `VIRTUAL`. See
-	// [Encrypted PIN Block](https://docs.lithic.com/docs/cards#encrypted-pin-block-enterprise).
+	// `VIRTUAL`. Changing PIN also resets PIN status to `OK`. See
+	// [Encrypted PIN Block](https://docs.lithic.com/docs/cards#encrypted-pin-block).
 	Pin param.Field[string] `json:"pin"`
+	// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
+	// attempts). Can only be set to `OK` to unblock a card.
+	PinStatus param.Field[CardUpdateParamsPinStatus] `json:"pin_status"`
 	// Amount (in cents) to limit approved authorizations. Transaction requests above
 	// the spend limit will be declined. Note that a spend limit of 0 is effectively no
 	// limit, and should only be used to reset or remove a prior limit. Only a limit of
@@ -973,6 +1003,22 @@ type CardUpdateParams struct {
 
 func (r CardUpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
+}
+
+// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
+// attempts). Can only be set to `OK` to unblock a card.
+type CardUpdateParamsPinStatus string
+
+const (
+	CardUpdateParamsPinStatusOk CardUpdateParamsPinStatus = "OK"
+)
+
+func (r CardUpdateParamsPinStatus) IsKnown() bool {
+	switch r {
+	case CardUpdateParamsPinStatusOk:
+		return true
+	}
+	return false
 }
 
 // Card state values:
