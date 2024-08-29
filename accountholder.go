@@ -162,7 +162,7 @@ func (r *AccountHolderService) Resubmit(ctx context.Context, accountHolderToken 
 // When a new account holder document upload is generated for a failed attempt, the
 // response will show an additional entry in the `required_document_uploads` array
 // in a `PENDING` state for the corresponding `image_type`.
-func (r *AccountHolderService) GetDocument(ctx context.Context, accountHolderToken string, documentToken string, opts ...option.RequestOption) (res *AccountHolderDocument, err error) {
+func (r *AccountHolderService) GetDocument(ctx context.Context, accountHolderToken string, documentToken string, opts ...option.RequestOption) (res *shared.Document, err error) {
 	opts = append(r.Options[:], opts...)
 	if accountHolderToken == "" {
 		err = errors.New("missing required account_holder_token parameter")
@@ -178,7 +178,7 @@ func (r *AccountHolderService) GetDocument(ctx context.Context, accountHolderTok
 }
 
 // Simulates a review for an account holder document upload.
-func (r *AccountHolderService) SimulateEnrollmentDocumentReview(ctx context.Context, body AccountHolderSimulateEnrollmentDocumentReviewParams, opts ...option.RequestOption) (res *AccountHolderSimulateEnrollmentDocumentReviewResponse, err error) {
+func (r *AccountHolderService) SimulateEnrollmentDocumentReview(ctx context.Context, body AccountHolderSimulateEnrollmentDocumentReviewParams, opts ...option.RequestOption) (res *shared.Document, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "simulate/account_holders/enrollment_document_review"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -213,7 +213,7 @@ func (r *AccountHolderService) SimulateEnrollmentReview(ctx context.Context, bod
 // `REJECTED` status is returned and the account creation process is ended.
 // Currently only one type of account holder document is supported per KYC
 // verification.
-func (r *AccountHolderService) UploadDocument(ctx context.Context, accountHolderToken string, body AccountHolderUploadDocumentParams, opts ...option.RequestOption) (res *AccountHolderDocument, err error) {
+func (r *AccountHolderService) UploadDocument(ctx context.Context, accountHolderToken string, body AccountHolderUploadDocumentParams, opts ...option.RequestOption) (res *shared.Document, err error) {
 	opts = append(r.Options[:], opts...)
 	if accountHolderToken == "" {
 		err = errors.New("missing required account_holder_token parameter")
@@ -227,6 +227,8 @@ func (r *AccountHolderService) UploadDocument(ctx context.Context, accountHolder
 type AccountHolder struct {
 	// Globally unique identifier for the account holder.
 	Token string `json:"token,required" format:"uuid"`
+	// Timestamp of when the account holder was created.
+	Created time.Time `json:"created,required" format:"date-time"`
 	// Globally unique identifier for the account.
 	AccountToken string `json:"account_token" format:"uuid"`
 	// Only present when user_type == "BUSINESS". List of all entities with >25%
@@ -249,8 +251,6 @@ type AccountHolder struct {
 	// someone who will have program-wide access to the cards that Lithic will provide.
 	// In some cases, this individual could also be a beneficial owner listed above.
 	ControlPerson AccountHolderControlPerson `json:"control_person"`
-	// Timestamp of when the account holder was created.
-	Created time.Time `json:"created" format:"date-time"`
 	// < Deprecated. Use control_person.email when user_type == "BUSINESS". Use
 	// individual.phone_number when user_type == "INDIVIDUAL".
 	//
@@ -303,13 +303,13 @@ type AccountHolder struct {
 // accountHolderJSON contains the JSON metadata for the struct [AccountHolder]
 type accountHolderJSON struct {
 	Token                      apijson.Field
+	Created                    apijson.Field
 	AccountToken               apijson.Field
 	BeneficialOwnerEntities    apijson.Field
 	BeneficialOwnerIndividuals apijson.Field
 	BusinessAccountToken       apijson.Field
 	BusinessEntity             apijson.Field
 	ControlPerson              apijson.Field
-	Created                    apijson.Field
 	Email                      apijson.Field
 	ExemptionType              apijson.Field
 	ExternalID                 apijson.Field
@@ -338,6 +338,8 @@ type AccountHolderBeneficialOwnerEntity struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
 	Address shared.Address `json:"address,required"`
+	// Globally unique identifier for the entity.
+	EntityToken string `json:"entity_token,required" format:"uuid"`
 	// Government-issued identification number. US Federal Employer Identification
 	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
 	// without hyphens.
@@ -350,8 +352,6 @@ type AccountHolderBeneficialOwnerEntity struct {
 	// Any name that the business operates under that is not its legal business name
 	// (if applicable).
 	DbaBusinessName string `json:"dba_business_name"`
-	// Globally unique identifier for the entity.
-	EntityToken string `json:"entity_token" format:"uuid"`
 	// Parent company name (if applicable).
 	ParentCompany string                                 `json:"parent_company"`
 	JSON          accountHolderBeneficialOwnerEntityJSON `json:"-"`
@@ -361,11 +361,11 @@ type AccountHolderBeneficialOwnerEntity struct {
 // [AccountHolderBeneficialOwnerEntity]
 type accountHolderBeneficialOwnerEntityJSON struct {
 	Address           apijson.Field
+	EntityToken       apijson.Field
 	GovernmentID      apijson.Field
 	LegalBusinessName apijson.Field
 	PhoneNumbers      apijson.Field
 	DbaBusinessName   apijson.Field
-	EntityToken       apijson.Field
 	ParentCompany     apijson.Field
 	raw               string
 	ExtraFields       map[string]apijson.Field
@@ -384,19 +384,19 @@ func (r accountHolderBeneficialOwnerEntityJSON) RawJSON() string {
 // id.
 type AccountHolderBeneficialOwnerIndividual struct {
 	// Individual's current address
-	Address shared.Address `json:"address"`
+	Address shared.Address `json:"address,required"`
 	// Individual's date of birth, as an RFC 3339 date.
-	Dob string `json:"dob"`
+	Dob string `json:"dob,required"`
 	// Individual's email address.
-	Email string `json:"email"`
+	Email string `json:"email,required"`
 	// Globally unique identifier for the entity.
-	EntityToken string `json:"entity_token" format:"uuid"`
+	EntityToken string `json:"entity_token,required" format:"uuid"`
 	// Individual's first name, as it appears on government-issued identity documents.
-	FirstName string `json:"first_name"`
+	FirstName string `json:"first_name,required"`
 	// Individual's last name, as it appears on government-issued identity documents.
-	LastName string `json:"last_name"`
+	LastName string `json:"last_name,required"`
 	// Individual's phone number, entered in E.164 format.
-	PhoneNumber string                                     `json:"phone_number"`
+	PhoneNumber string                                     `json:"phone_number,required"`
 	JSON        accountHolderBeneficialOwnerIndividualJSON `json:"-"`
 }
 
@@ -428,6 +428,8 @@ type AccountHolderBusinessEntity struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
 	Address shared.Address `json:"address,required"`
+	// Globally unique identifier for the entity.
+	EntityToken string `json:"entity_token,required" format:"uuid"`
 	// Government-issued identification number. US Federal Employer Identification
 	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
 	// without hyphens.
@@ -440,8 +442,6 @@ type AccountHolderBusinessEntity struct {
 	// Any name that the business operates under that is not its legal business name
 	// (if applicable).
 	DbaBusinessName string `json:"dba_business_name"`
-	// Globally unique identifier for the entity.
-	EntityToken string `json:"entity_token" format:"uuid"`
 	// Parent company name (if applicable).
 	ParentCompany string                          `json:"parent_company"`
 	JSON          accountHolderBusinessEntityJSON `json:"-"`
@@ -451,11 +451,11 @@ type AccountHolderBusinessEntity struct {
 // [AccountHolderBusinessEntity]
 type accountHolderBusinessEntityJSON struct {
 	Address           apijson.Field
+	EntityToken       apijson.Field
 	GovernmentID      apijson.Field
 	LegalBusinessName apijson.Field
 	PhoneNumbers      apijson.Field
 	DbaBusinessName   apijson.Field
-	EntityToken       apijson.Field
 	ParentCompany     apijson.Field
 	raw               string
 	ExtraFields       map[string]apijson.Field
@@ -477,19 +477,19 @@ func (r accountHolderBusinessEntityJSON) RawJSON() string {
 // In some cases, this individual could also be a beneficial owner listed above.
 type AccountHolderControlPerson struct {
 	// Individual's current address
-	Address shared.Address `json:"address"`
+	Address shared.Address `json:"address,required"`
 	// Individual's date of birth, as an RFC 3339 date.
-	Dob string `json:"dob"`
+	Dob string `json:"dob,required"`
 	// Individual's email address.
-	Email string `json:"email"`
+	Email string `json:"email,required"`
 	// Globally unique identifier for the entity.
-	EntityToken string `json:"entity_token" format:"uuid"`
+	EntityToken string `json:"entity_token,required" format:"uuid"`
 	// Individual's first name, as it appears on government-issued identity documents.
-	FirstName string `json:"first_name"`
+	FirstName string `json:"first_name,required"`
 	// Individual's last name, as it appears on government-issued identity documents.
-	LastName string `json:"last_name"`
+	LastName string `json:"last_name,required"`
 	// Individual's phone number, entered in E.164 format.
-	PhoneNumber string                         `json:"phone_number"`
+	PhoneNumber string                         `json:"phone_number,required"`
 	JSON        accountHolderControlPersonJSON `json:"-"`
 }
 
@@ -535,19 +535,19 @@ func (r AccountHolderExemptionType) IsKnown() bool {
 // for which the account is being opened and KYC is being run.
 type AccountHolderIndividual struct {
 	// Individual's current address
-	Address shared.Address `json:"address"`
+	Address shared.Address `json:"address,required"`
 	// Individual's date of birth, as an RFC 3339 date.
-	Dob string `json:"dob"`
+	Dob string `json:"dob,required"`
 	// Individual's email address.
-	Email string `json:"email"`
+	Email string `json:"email,required"`
 	// Globally unique identifier for the entity.
-	EntityToken string `json:"entity_token" format:"uuid"`
+	EntityToken string `json:"entity_token,required" format:"uuid"`
 	// Individual's first name, as it appears on government-issued identity documents.
-	FirstName string `json:"first_name"`
+	FirstName string `json:"first_name,required"`
 	// Individual's last name, as it appears on government-issued identity documents.
-	LastName string `json:"last_name"`
+	LastName string `json:"last_name,required"`
 	// Individual's phone number, entered in E.164 format.
-	PhoneNumber string                      `json:"phone_number"`
+	PhoneNumber string                      `json:"phone_number,required"`
 	JSON        accountHolderIndividualJSON `json:"-"`
 }
 
@@ -760,165 +760,6 @@ func (r AccountHolderVerificationApplicationStatusReason) IsKnown() bool {
 	return false
 }
 
-// Describes the document and the required document image uploads required to
-// re-run KYC.
-type AccountHolderDocument struct {
-	// Globally unique identifier for the document.
-	Token string `json:"token" format:"uuid"`
-	// Globally unique identifier for the account holder.
-	AccountHolderToken string `json:"account_holder_token" format:"uuid"`
-	// Type of documentation to be submitted for verification.
-	DocumentType AccountHolderDocumentDocumentType `json:"document_type"`
-	// Globally unique identifier for the entity.
-	EntityToken             string                                        `json:"entity_token" format:"uuid"`
-	RequiredDocumentUploads []AccountHolderDocumentRequiredDocumentUpload `json:"required_document_uploads"`
-	JSON                    accountHolderDocumentJSON                     `json:"-"`
-}
-
-// accountHolderDocumentJSON contains the JSON metadata for the struct
-// [AccountHolderDocument]
-type accountHolderDocumentJSON struct {
-	Token                   apijson.Field
-	AccountHolderToken      apijson.Field
-	DocumentType            apijson.Field
-	EntityToken             apijson.Field
-	RequiredDocumentUploads apijson.Field
-	raw                     string
-	ExtraFields             map[string]apijson.Field
-}
-
-func (r *AccountHolderDocument) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r accountHolderDocumentJSON) RawJSON() string {
-	return r.raw
-}
-
-// Type of documentation to be submitted for verification.
-type AccountHolderDocumentDocumentType string
-
-const (
-	AccountHolderDocumentDocumentTypeEinLetter                 AccountHolderDocumentDocumentType = "EIN_LETTER"
-	AccountHolderDocumentDocumentTypeTaxReturn                 AccountHolderDocumentDocumentType = "TAX_RETURN"
-	AccountHolderDocumentDocumentTypeOperatingAgreement        AccountHolderDocumentDocumentType = "OPERATING_AGREEMENT"
-	AccountHolderDocumentDocumentTypeCertificateOfFormation    AccountHolderDocumentDocumentType = "CERTIFICATE_OF_FORMATION"
-	AccountHolderDocumentDocumentTypeDriversLicense            AccountHolderDocumentDocumentType = "DRIVERS_LICENSE"
-	AccountHolderDocumentDocumentTypePassport                  AccountHolderDocumentDocumentType = "PASSPORT"
-	AccountHolderDocumentDocumentTypePassportCard              AccountHolderDocumentDocumentType = "PASSPORT_CARD"
-	AccountHolderDocumentDocumentTypeCertificateOfGoodStanding AccountHolderDocumentDocumentType = "CERTIFICATE_OF_GOOD_STANDING"
-	AccountHolderDocumentDocumentTypeArticlesOfIncorporation   AccountHolderDocumentDocumentType = "ARTICLES_OF_INCORPORATION"
-	AccountHolderDocumentDocumentTypeArticlesOfOrganization    AccountHolderDocumentDocumentType = "ARTICLES_OF_ORGANIZATION"
-	AccountHolderDocumentDocumentTypeBylaws                    AccountHolderDocumentDocumentType = "BYLAWS"
-	AccountHolderDocumentDocumentTypeGovernmentBusinessLicense AccountHolderDocumentDocumentType = "GOVERNMENT_BUSINESS_LICENSE"
-	AccountHolderDocumentDocumentTypePartnershipAgreement      AccountHolderDocumentDocumentType = "PARTNERSHIP_AGREEMENT"
-	AccountHolderDocumentDocumentTypeSs4Form                   AccountHolderDocumentDocumentType = "SS4_FORM"
-	AccountHolderDocumentDocumentTypeBankStatement             AccountHolderDocumentDocumentType = "BANK_STATEMENT"
-	AccountHolderDocumentDocumentTypeUtilityBillStatement      AccountHolderDocumentDocumentType = "UTILITY_BILL_STATEMENT"
-	AccountHolderDocumentDocumentTypeSsnCard                   AccountHolderDocumentDocumentType = "SSN_CARD"
-	AccountHolderDocumentDocumentTypeItinLetter                AccountHolderDocumentDocumentType = "ITIN_LETTER"
-)
-
-func (r AccountHolderDocumentDocumentType) IsKnown() bool {
-	switch r {
-	case AccountHolderDocumentDocumentTypeEinLetter, AccountHolderDocumentDocumentTypeTaxReturn, AccountHolderDocumentDocumentTypeOperatingAgreement, AccountHolderDocumentDocumentTypeCertificateOfFormation, AccountHolderDocumentDocumentTypeDriversLicense, AccountHolderDocumentDocumentTypePassport, AccountHolderDocumentDocumentTypePassportCard, AccountHolderDocumentDocumentTypeCertificateOfGoodStanding, AccountHolderDocumentDocumentTypeArticlesOfIncorporation, AccountHolderDocumentDocumentTypeArticlesOfOrganization, AccountHolderDocumentDocumentTypeBylaws, AccountHolderDocumentDocumentTypeGovernmentBusinessLicense, AccountHolderDocumentDocumentTypePartnershipAgreement, AccountHolderDocumentDocumentTypeSs4Form, AccountHolderDocumentDocumentTypeBankStatement, AccountHolderDocumentDocumentTypeUtilityBillStatement, AccountHolderDocumentDocumentTypeSsnCard, AccountHolderDocumentDocumentTypeItinLetter:
-		return true
-	}
-	return false
-}
-
-// Represents a single image of the document to upload.
-type AccountHolderDocumentRequiredDocumentUpload struct {
-	// Globally unique identifier for the document upload.
-	Token string `json:"token" format:"uuid"`
-	// Type of image to upload.
-	ImageType AccountHolderDocumentRequiredDocumentUploadsImageType `json:"image_type"`
-	// Status of document image upload.
-	Status        AccountHolderDocumentRequiredDocumentUploadsStatus         `json:"status"`
-	StatusReasons []AccountHolderDocumentRequiredDocumentUploadsStatusReason `json:"status_reasons"`
-	// URL to upload document image to.
-	//
-	// Note that the upload URLs expire after 7 days. If an upload URL expires, you can
-	// refresh the URLs by retrieving the document upload from
-	// `GET /account_holders/{account_holder_token}/documents`.
-	UploadURL string                                          `json:"upload_url"`
-	JSON      accountHolderDocumentRequiredDocumentUploadJSON `json:"-"`
-}
-
-// accountHolderDocumentRequiredDocumentUploadJSON contains the JSON metadata for
-// the struct [AccountHolderDocumentRequiredDocumentUpload]
-type accountHolderDocumentRequiredDocumentUploadJSON struct {
-	Token         apijson.Field
-	ImageType     apijson.Field
-	Status        apijson.Field
-	StatusReasons apijson.Field
-	UploadURL     apijson.Field
-	raw           string
-	ExtraFields   map[string]apijson.Field
-}
-
-func (r *AccountHolderDocumentRequiredDocumentUpload) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r accountHolderDocumentRequiredDocumentUploadJSON) RawJSON() string {
-	return r.raw
-}
-
-// Type of image to upload.
-type AccountHolderDocumentRequiredDocumentUploadsImageType string
-
-const (
-	AccountHolderDocumentRequiredDocumentUploadsImageTypeBack  AccountHolderDocumentRequiredDocumentUploadsImageType = "back"
-	AccountHolderDocumentRequiredDocumentUploadsImageTypeFront AccountHolderDocumentRequiredDocumentUploadsImageType = "front"
-)
-
-func (r AccountHolderDocumentRequiredDocumentUploadsImageType) IsKnown() bool {
-	switch r {
-	case AccountHolderDocumentRequiredDocumentUploadsImageTypeBack, AccountHolderDocumentRequiredDocumentUploadsImageTypeFront:
-		return true
-	}
-	return false
-}
-
-// Status of document image upload.
-type AccountHolderDocumentRequiredDocumentUploadsStatus string
-
-const (
-	AccountHolderDocumentRequiredDocumentUploadsStatusCompleted     AccountHolderDocumentRequiredDocumentUploadsStatus = "COMPLETED"
-	AccountHolderDocumentRequiredDocumentUploadsStatusFailed        AccountHolderDocumentRequiredDocumentUploadsStatus = "FAILED"
-	AccountHolderDocumentRequiredDocumentUploadsStatusPendingUpload AccountHolderDocumentRequiredDocumentUploadsStatus = "PENDING_UPLOAD"
-	AccountHolderDocumentRequiredDocumentUploadsStatusUploaded      AccountHolderDocumentRequiredDocumentUploadsStatus = "UPLOADED"
-)
-
-func (r AccountHolderDocumentRequiredDocumentUploadsStatus) IsKnown() bool {
-	switch r {
-	case AccountHolderDocumentRequiredDocumentUploadsStatusCompleted, AccountHolderDocumentRequiredDocumentUploadsStatusFailed, AccountHolderDocumentRequiredDocumentUploadsStatusPendingUpload, AccountHolderDocumentRequiredDocumentUploadsStatusUploaded:
-		return true
-	}
-	return false
-}
-
-// Reasons for document image upload status.
-type AccountHolderDocumentRequiredDocumentUploadsStatusReason string
-
-const (
-	AccountHolderDocumentRequiredDocumentUploadsStatusReasonBackImageBlurry  AccountHolderDocumentRequiredDocumentUploadsStatusReason = "BACK_IMAGE_BLURRY"
-	AccountHolderDocumentRequiredDocumentUploadsStatusReasonFileSizeTooLarge AccountHolderDocumentRequiredDocumentUploadsStatusReason = "FILE_SIZE_TOO_LARGE"
-	AccountHolderDocumentRequiredDocumentUploadsStatusReasonFrontImageBlurry AccountHolderDocumentRequiredDocumentUploadsStatusReason = "FRONT_IMAGE_BLURRY"
-	AccountHolderDocumentRequiredDocumentUploadsStatusReasonFrontImageGlare  AccountHolderDocumentRequiredDocumentUploadsStatusReason = "FRONT_IMAGE_GLARE"
-	AccountHolderDocumentRequiredDocumentUploadsStatusReasonInvalidFileType  AccountHolderDocumentRequiredDocumentUploadsStatusReason = "INVALID_FILE_TYPE"
-	AccountHolderDocumentRequiredDocumentUploadsStatusReasonUnknownError     AccountHolderDocumentRequiredDocumentUploadsStatusReason = "UNKNOWN_ERROR"
-)
-
-func (r AccountHolderDocumentRequiredDocumentUploadsStatusReason) IsKnown() bool {
-	switch r {
-	case AccountHolderDocumentRequiredDocumentUploadsStatusReasonBackImageBlurry, AccountHolderDocumentRequiredDocumentUploadsStatusReasonFileSizeTooLarge, AccountHolderDocumentRequiredDocumentUploadsStatusReasonFrontImageBlurry, AccountHolderDocumentRequiredDocumentUploadsStatusReasonFrontImageGlare, AccountHolderDocumentRequiredDocumentUploadsStatusReasonInvalidFileType, AccountHolderDocumentRequiredDocumentUploadsStatusReasonUnknownError:
-		return true
-	}
-	return false
-}
-
 type KYBParam struct {
 	// List of all entities with >25% ownership in the company. If no entity or
 	// individual owns >25% of the company, and the largest shareholder is an entity,
@@ -979,6 +820,8 @@ type KYBBeneficialOwnerEntityParam struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
 	Address param.Field[shared.AddressParam] `json:"address,required"`
+	// Globally unique identifier for the entity.
+	EntityToken param.Field[string] `json:"entity_token,required" format:"uuid"`
 	// Government-issued identification number. US Federal Employer Identification
 	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
 	// without hyphens.
@@ -991,8 +834,6 @@ type KYBBeneficialOwnerEntityParam struct {
 	// Any name that the business operates under that is not its legal business name
 	// (if applicable).
 	DbaBusinessName param.Field[string] `json:"dba_business_name"`
-	// Globally unique identifier for the entity.
-	EntityToken param.Field[string] `json:"entity_token" format:"uuid"`
 	// Parent company name (if applicable).
 	ParentCompany param.Field[string] `json:"parent_company"`
 }
@@ -1034,6 +875,8 @@ type KYBBusinessEntityParam struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
 	Address param.Field[shared.AddressParam] `json:"address,required"`
+	// Globally unique identifier for the entity.
+	EntityToken param.Field[string] `json:"entity_token,required" format:"uuid"`
 	// Government-issued identification number. US Federal Employer Identification
 	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
 	// without hyphens.
@@ -1046,8 +889,6 @@ type KYBBusinessEntityParam struct {
 	// Any name that the business operates under that is not its legal business name
 	// (if applicable).
 	DbaBusinessName param.Field[string] `json:"dba_business_name"`
-	// Globally unique identifier for the entity.
-	EntityToken param.Field[string] `json:"entity_token" format:"uuid"`
 	// Parent company name (if applicable).
 	ParentCompany param.Field[string] `json:"parent_company"`
 }
@@ -1366,7 +1207,7 @@ func (r accountHolderUpdateResponseJSON) RawJSON() string {
 }
 
 type AccountHolderListDocumentsResponse struct {
-	Data []AccountHolderDocument                `json:"data"`
+	Data []shared.Document                      `json:"data"`
 	JSON accountHolderListDocumentsResponseJSON `json:"-"`
 }
 
@@ -1384,147 +1225,6 @@ func (r *AccountHolderListDocumentsResponse) UnmarshalJSON(data []byte) (err err
 
 func (r accountHolderListDocumentsResponseJSON) RawJSON() string {
 	return r.raw
-}
-
-// A document to be submitted for account holder verification.
-type AccountHolderSimulateEnrollmentDocumentReviewResponse struct {
-	// Globally unique identifier for the document.
-	Token string `json:"token" format:"uuid"`
-	// Globally unique identifier for the account holder.
-	AccountHolderToken string `json:"account_holder_token" format:"uuid"`
-	// Type of documentation to be submitted for verification.
-	DocumentType AccountHolderSimulateEnrollmentDocumentReviewResponseDocumentType `json:"document_type"`
-	// List of required document images to upload.
-	RequiredDocumentUploads []AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUpload `json:"required_document_uploads"`
-	JSON                    accountHolderSimulateEnrollmentDocumentReviewResponseJSON                     `json:"-"`
-}
-
-// accountHolderSimulateEnrollmentDocumentReviewResponseJSON contains the JSON
-// metadata for the struct [AccountHolderSimulateEnrollmentDocumentReviewResponse]
-type accountHolderSimulateEnrollmentDocumentReviewResponseJSON struct {
-	Token                   apijson.Field
-	AccountHolderToken      apijson.Field
-	DocumentType            apijson.Field
-	RequiredDocumentUploads apijson.Field
-	raw                     string
-	ExtraFields             map[string]apijson.Field
-}
-
-func (r *AccountHolderSimulateEnrollmentDocumentReviewResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r accountHolderSimulateEnrollmentDocumentReviewResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-// Type of documentation to be submitted for verification.
-type AccountHolderSimulateEnrollmentDocumentReviewResponseDocumentType string
-
-const (
-	AccountHolderSimulateEnrollmentDocumentReviewResponseDocumentTypeCommercialLicense AccountHolderSimulateEnrollmentDocumentReviewResponseDocumentType = "commercial_license"
-	AccountHolderSimulateEnrollmentDocumentReviewResponseDocumentTypeDriversLicense    AccountHolderSimulateEnrollmentDocumentReviewResponseDocumentType = "drivers_license"
-	AccountHolderSimulateEnrollmentDocumentReviewResponseDocumentTypePassport          AccountHolderSimulateEnrollmentDocumentReviewResponseDocumentType = "passport"
-	AccountHolderSimulateEnrollmentDocumentReviewResponseDocumentTypePassportCard      AccountHolderSimulateEnrollmentDocumentReviewResponseDocumentType = "passport_card"
-	AccountHolderSimulateEnrollmentDocumentReviewResponseDocumentTypeVisa              AccountHolderSimulateEnrollmentDocumentReviewResponseDocumentType = "visa"
-)
-
-func (r AccountHolderSimulateEnrollmentDocumentReviewResponseDocumentType) IsKnown() bool {
-	switch r {
-	case AccountHolderSimulateEnrollmentDocumentReviewResponseDocumentTypeCommercialLicense, AccountHolderSimulateEnrollmentDocumentReviewResponseDocumentTypeDriversLicense, AccountHolderSimulateEnrollmentDocumentReviewResponseDocumentTypePassport, AccountHolderSimulateEnrollmentDocumentReviewResponseDocumentTypePassportCard, AccountHolderSimulateEnrollmentDocumentReviewResponseDocumentTypeVisa:
-		return true
-	}
-	return false
-}
-
-// Represents a single image of the document to upload.
-type AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUpload struct {
-	// Type of image to upload.
-	ImageType AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsImageType `json:"image_type"`
-	// Status of document image upload.
-	Status AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatus `json:"status"`
-	// Reasons for document image upload status.
-	StatusReasons []AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReason `json:"status_reasons"`
-	// URL to upload document image to.
-	//
-	// Note that the upload URLs expire after 7 days. If an upload URL expires, you can
-	// refresh the URLs by retrieving the document upload from
-	// `GET /account_holders/{account_holder_token}/documents`.
-	UploadURL string                                                                          `json:"upload_url"`
-	JSON      accountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadJSON `json:"-"`
-}
-
-// accountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadJSON
-// contains the JSON metadata for the struct
-// [AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUpload]
-type accountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadJSON struct {
-	ImageType     apijson.Field
-	Status        apijson.Field
-	StatusReasons apijson.Field
-	UploadURL     apijson.Field
-	raw           string
-	ExtraFields   map[string]apijson.Field
-}
-
-func (r *AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUpload) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r accountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadJSON) RawJSON() string {
-	return r.raw
-}
-
-// Type of image to upload.
-type AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsImageType string
-
-const (
-	AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsImageTypeBack  AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsImageType = "back"
-	AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsImageTypeFront AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsImageType = "front"
-)
-
-func (r AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsImageType) IsKnown() bool {
-	switch r {
-	case AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsImageTypeBack, AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsImageTypeFront:
-		return true
-	}
-	return false
-}
-
-// Status of document image upload.
-type AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatus string
-
-const (
-	AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusCompleted AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatus = "COMPLETED"
-	AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusFailed    AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatus = "FAILED"
-	AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusPending   AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatus = "PENDING"
-	AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusUploaded  AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatus = "UPLOADED"
-)
-
-func (r AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatus) IsKnown() bool {
-	switch r {
-	case AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusCompleted, AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusFailed, AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusPending, AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusUploaded:
-		return true
-	}
-	return false
-}
-
-type AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReason string
-
-const (
-	AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReasonBackImageBlurry  AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReason = "BACK_IMAGE_BLURRY"
-	AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReasonFileSizeTooLarge AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReason = "FILE_SIZE_TOO_LARGE"
-	AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReasonFrontImageBlurry AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReason = "FRONT_IMAGE_BLURRY"
-	AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReasonFrontImageGlare  AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReason = "FRONT_IMAGE_GLARE"
-	AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReasonInvalidFileType  AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReason = "INVALID_FILE_TYPE"
-	AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReasonUnknownError     AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReason = "UNKNOWN_ERROR"
-)
-
-func (r AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReason) IsKnown() bool {
-	switch r {
-	case AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReasonBackImageBlurry, AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReasonFileSizeTooLarge, AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReasonFrontImageBlurry, AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReasonFrontImageGlare, AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReasonInvalidFileType, AccountHolderSimulateEnrollmentDocumentReviewResponseRequiredDocumentUploadsStatusReasonUnknownError:
-		return true
-	}
-	return false
 }
 
 type AccountHolderSimulateEnrollmentReviewResponse struct {
@@ -2586,9 +2286,9 @@ func (r AccountHolderSimulateEnrollmentReviewParamsStatusReason) IsKnown() bool 
 
 type AccountHolderUploadDocumentParams struct {
 	// The type of document to upload
-	DocumentType param.Field[AccountHolderUploadDocumentParamsDocumentType] `json:"document_type"`
+	DocumentType param.Field[AccountHolderUploadDocumentParamsDocumentType] `json:"document_type,required"`
 	// Globally unique identifier for the entity.
-	EntityToken param.Field[string] `json:"entity_token" format:"uuid"`
+	EntityToken param.Field[string] `json:"entity_token,required" format:"uuid"`
 }
 
 func (r AccountHolderUploadDocumentParams) MarshalJSON() (data []byte, err error) {
