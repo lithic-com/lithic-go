@@ -77,6 +77,159 @@ func (r CarrierParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
+// Describes the document and the required document image uploads required to
+// re-run KYC
+type Document struct {
+	// Globally unique identifier for the document.
+	Token string `json:"token,required" format:"uuid"`
+	// Globally unique identifier for the account holder.
+	AccountHolderToken string `json:"account_holder_token,required" format:"uuid"`
+	// Type of documentation to be submitted for verification.
+	DocumentType DocumentDocumentType `json:"document_type,required"`
+	// Represents a single image of the document to upload.
+	RequiredDocumentUploads []DocumentRequiredDocumentUpload `json:"required_document_uploads,required"`
+	JSON                    documentJSON                     `json:"-"`
+}
+
+// documentJSON contains the JSON metadata for the struct [Document]
+type documentJSON struct {
+	Token                   apijson.Field
+	AccountHolderToken      apijson.Field
+	DocumentType            apijson.Field
+	RequiredDocumentUploads apijson.Field
+	raw                     string
+	ExtraFields             map[string]apijson.Field
+}
+
+func (r *Document) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r documentJSON) RawJSON() string {
+	return r.raw
+}
+
+// Type of documentation to be submitted for verification.
+type DocumentDocumentType string
+
+const (
+	DocumentDocumentTypeDriversLicense            DocumentDocumentType = "DRIVERS_LICENSE"
+	DocumentDocumentTypePassport                  DocumentDocumentType = "PASSPORT"
+	DocumentDocumentTypePassportCard              DocumentDocumentType = "PASSPORT_CARD"
+	DocumentDocumentTypeEinLetter                 DocumentDocumentType = "EIN_LETTER"
+	DocumentDocumentTypeTaxReturn                 DocumentDocumentType = "TAX_RETURN"
+	DocumentDocumentTypeOperatingAgreement        DocumentDocumentType = "OPERATING_AGREEMENT"
+	DocumentDocumentTypeCertificateOfFormation    DocumentDocumentType = "CERTIFICATE_OF_FORMATION"
+	DocumentDocumentTypeCertificateOfGoodStanding DocumentDocumentType = "CERTIFICATE_OF_GOOD_STANDING"
+	DocumentDocumentTypeArticlesOfIncorporation   DocumentDocumentType = "ARTICLES_OF_INCORPORATION"
+	DocumentDocumentTypeArticlesOfOrganization    DocumentDocumentType = "ARTICLES_OF_ORGANIZATION"
+	DocumentDocumentTypeBylaws                    DocumentDocumentType = "BYLAWS"
+	DocumentDocumentTypeGovernmentBusinessLicense DocumentDocumentType = "GOVERNMENT_BUSINESS_LICENSE"
+	DocumentDocumentTypePartnershipAgreement      DocumentDocumentType = "PARTNERSHIP_AGREEMENT"
+	DocumentDocumentTypeSs4Form                   DocumentDocumentType = "SS4_FORM"
+	DocumentDocumentTypeBankStatement             DocumentDocumentType = "BANK_STATEMENT"
+	DocumentDocumentTypeUtilityBillStatement      DocumentDocumentType = "UTILITY_BILL_STATEMENT"
+	DocumentDocumentTypeSsnCard                   DocumentDocumentType = "SSN_CARD"
+	DocumentDocumentTypeItinLetter                DocumentDocumentType = "ITIN_LETTER"
+)
+
+func (r DocumentDocumentType) IsKnown() bool {
+	switch r {
+	case DocumentDocumentTypeDriversLicense, DocumentDocumentTypePassport, DocumentDocumentTypePassportCard, DocumentDocumentTypeEinLetter, DocumentDocumentTypeTaxReturn, DocumentDocumentTypeOperatingAgreement, DocumentDocumentTypeCertificateOfFormation, DocumentDocumentTypeCertificateOfGoodStanding, DocumentDocumentTypeArticlesOfIncorporation, DocumentDocumentTypeArticlesOfOrganization, DocumentDocumentTypeBylaws, DocumentDocumentTypeGovernmentBusinessLicense, DocumentDocumentTypePartnershipAgreement, DocumentDocumentTypeSs4Form, DocumentDocumentTypeBankStatement, DocumentDocumentTypeUtilityBillStatement, DocumentDocumentTypeSsnCard, DocumentDocumentTypeItinLetter:
+		return true
+	}
+	return false
+}
+
+// Represents a single image of the document to upload.
+type DocumentRequiredDocumentUpload struct {
+	// Type of image to upload.
+	ImageType DocumentRequiredDocumentUploadsImageType `json:"image_type,required"`
+	// Status of document image upload.
+	Status DocumentRequiredDocumentUploadsStatus `json:"status,required"`
+	// Reasons for document image upload status.
+	StatusReasons []DocumentRequiredDocumentUploadsStatusReason `json:"status_reasons,required"`
+	// URL to upload document image to.
+	//
+	// Note that the upload URLs expire after 7 days. If an upload URL expires, you can
+	// refresh the URLs by retrieving the document upload from
+	// `GET /account_holders/{account_holder_token}/documents`.
+	UploadURL string                             `json:"upload_url,required"`
+	JSON      documentRequiredDocumentUploadJSON `json:"-"`
+}
+
+// documentRequiredDocumentUploadJSON contains the JSON metadata for the struct
+// [DocumentRequiredDocumentUpload]
+type documentRequiredDocumentUploadJSON struct {
+	ImageType     apijson.Field
+	Status        apijson.Field
+	StatusReasons apijson.Field
+	UploadURL     apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
+}
+
+func (r *DocumentRequiredDocumentUpload) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r documentRequiredDocumentUploadJSON) RawJSON() string {
+	return r.raw
+}
+
+// Type of image to upload.
+type DocumentRequiredDocumentUploadsImageType string
+
+const (
+	DocumentRequiredDocumentUploadsImageTypeFront DocumentRequiredDocumentUploadsImageType = "FRONT"
+	DocumentRequiredDocumentUploadsImageTypeBack  DocumentRequiredDocumentUploadsImageType = "BACK"
+)
+
+func (r DocumentRequiredDocumentUploadsImageType) IsKnown() bool {
+	switch r {
+	case DocumentRequiredDocumentUploadsImageTypeFront, DocumentRequiredDocumentUploadsImageTypeBack:
+		return true
+	}
+	return false
+}
+
+// Status of document image upload.
+type DocumentRequiredDocumentUploadsStatus string
+
+const (
+	DocumentRequiredDocumentUploadsStatusAccepted      DocumentRequiredDocumentUploadsStatus = "ACCEPTED"
+	DocumentRequiredDocumentUploadsStatusRejected      DocumentRequiredDocumentUploadsStatus = "REJECTED"
+	DocumentRequiredDocumentUploadsStatusPendingUpload DocumentRequiredDocumentUploadsStatus = "PENDING_UPLOAD"
+	DocumentRequiredDocumentUploadsStatusUploaded      DocumentRequiredDocumentUploadsStatus = "UPLOADED"
+)
+
+func (r DocumentRequiredDocumentUploadsStatus) IsKnown() bool {
+	switch r {
+	case DocumentRequiredDocumentUploadsStatusAccepted, DocumentRequiredDocumentUploadsStatusRejected, DocumentRequiredDocumentUploadsStatusPendingUpload, DocumentRequiredDocumentUploadsStatusUploaded:
+		return true
+	}
+	return false
+}
+
+type DocumentRequiredDocumentUploadsStatusReason string
+
+const (
+	DocumentRequiredDocumentUploadsStatusReasonDocumentMissingRequiredData DocumentRequiredDocumentUploadsStatusReason = "DOCUMENT_MISSING_REQUIRED_DATA"
+	DocumentRequiredDocumentUploadsStatusReasonDocumentUploadTooBlurry     DocumentRequiredDocumentUploadsStatusReason = "DOCUMENT_UPLOAD_TOO_BLURRY"
+	DocumentRequiredDocumentUploadsStatusReasonFileSizeTooLarge            DocumentRequiredDocumentUploadsStatusReason = "FILE_SIZE_TOO_LARGE"
+	DocumentRequiredDocumentUploadsStatusReasonInvalidDocumentType         DocumentRequiredDocumentUploadsStatusReason = "INVALID_DOCUMENT_TYPE"
+	DocumentRequiredDocumentUploadsStatusReasonInvalidDocumentUpload       DocumentRequiredDocumentUploadsStatusReason = "INVALID_DOCUMENT_UPLOAD"
+	DocumentRequiredDocumentUploadsStatusReasonUnknownError                DocumentRequiredDocumentUploadsStatusReason = "UNKNOWN_ERROR"
+)
+
+func (r DocumentRequiredDocumentUploadsStatusReason) IsKnown() bool {
+	switch r {
+	case DocumentRequiredDocumentUploadsStatusReasonDocumentMissingRequiredData, DocumentRequiredDocumentUploadsStatusReasonDocumentUploadTooBlurry, DocumentRequiredDocumentUploadsStatusReasonFileSizeTooLarge, DocumentRequiredDocumentUploadsStatusReasonInvalidDocumentType, DocumentRequiredDocumentUploadsStatusReasonInvalidDocumentUpload, DocumentRequiredDocumentUploadsStatusReasonUnknownError:
+		return true
+	}
+	return false
+}
+
 type ShippingAddressParam struct {
 	// Valid USPS routable address.
 	Address1 param.Field[string] `json:"address1,required"`
