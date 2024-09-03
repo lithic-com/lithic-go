@@ -338,6 +338,9 @@ type AccountHolderBeneficialOwnerEntity struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
 	Address shared.Address `json:"address,required"`
+	// Any name that the business operates under that is not its legal business name
+	// (if applicable).
+	DbaBusinessName string `json:"dba_business_name,required"`
 	// Globally unique identifier for the entity.
 	EntityToken string `json:"entity_token,required" format:"uuid"`
 	// Government-issued identification number. US Federal Employer Identification
@@ -349,9 +352,6 @@ type AccountHolderBeneficialOwnerEntity struct {
 	// One or more of the business's phone number(s), entered as a list in E.164
 	// format.
 	PhoneNumbers []string `json:"phone_numbers,required"`
-	// Any name that the business operates under that is not its legal business name
-	// (if applicable).
-	DbaBusinessName string `json:"dba_business_name"`
 	// Parent company name (if applicable).
 	ParentCompany string                                 `json:"parent_company"`
 	JSON          accountHolderBeneficialOwnerEntityJSON `json:"-"`
@@ -361,11 +361,11 @@ type AccountHolderBeneficialOwnerEntity struct {
 // [AccountHolderBeneficialOwnerEntity]
 type accountHolderBeneficialOwnerEntityJSON struct {
 	Address           apijson.Field
+	DbaBusinessName   apijson.Field
 	EntityToken       apijson.Field
 	GovernmentID      apijson.Field
 	LegalBusinessName apijson.Field
 	PhoneNumbers      apijson.Field
-	DbaBusinessName   apijson.Field
 	ParentCompany     apijson.Field
 	raw               string
 	ExtraFields       map[string]apijson.Field
@@ -428,6 +428,9 @@ type AccountHolderBusinessEntity struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
 	Address shared.Address `json:"address,required"`
+	// Any name that the business operates under that is not its legal business name
+	// (if applicable).
+	DbaBusinessName string `json:"dba_business_name,required"`
 	// Globally unique identifier for the entity.
 	EntityToken string `json:"entity_token,required" format:"uuid"`
 	// Government-issued identification number. US Federal Employer Identification
@@ -439,9 +442,6 @@ type AccountHolderBusinessEntity struct {
 	// One or more of the business's phone number(s), entered as a list in E.164
 	// format.
 	PhoneNumbers []string `json:"phone_numbers,required"`
-	// Any name that the business operates under that is not its legal business name
-	// (if applicable).
-	DbaBusinessName string `json:"dba_business_name"`
 	// Parent company name (if applicable).
 	ParentCompany string                          `json:"parent_company"`
 	JSON          accountHolderBusinessEntityJSON `json:"-"`
@@ -451,11 +451,11 @@ type AccountHolderBusinessEntity struct {
 // [AccountHolderBusinessEntity]
 type accountHolderBusinessEntityJSON struct {
 	Address           apijson.Field
+	DbaBusinessName   apijson.Field
 	EntityToken       apijson.Field
 	GovernmentID      apijson.Field
 	LegalBusinessName apijson.Field
 	PhoneNumbers      apijson.Field
-	DbaBusinessName   apijson.Field
 	ParentCompany     apijson.Field
 	raw               string
 	ExtraFields       map[string]apijson.Field
@@ -820,8 +820,6 @@ type KYBBeneficialOwnerEntityParam struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
 	Address param.Field[shared.AddressParam] `json:"address,required"`
-	// Globally unique identifier for the entity.
-	EntityToken param.Field[string] `json:"entity_token,required" format:"uuid"`
 	// Government-issued identification number. US Federal Employer Identification
 	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
 	// without hyphens.
@@ -875,8 +873,6 @@ type KYBBusinessEntityParam struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
 	Address param.Field[shared.AddressParam] `json:"address,required"`
-	// Globally unique identifier for the entity.
-	EntityToken param.Field[string] `json:"entity_token,required" format:"uuid"`
 	// Government-issued identification number. US Federal Employer Identification
 	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
 	// without hyphens.
@@ -2105,13 +2101,33 @@ func (r AccountHolderUpdateParams) MarshalJSON() (data []byte, err error) {
 }
 
 type AccountHolderListParams struct {
+	// Date string in RFC 3339 format. Only entries created after the specified time
+	// will be included. UTC time zone.
+	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
+	// Email address of the account holder. The query must be an exact match, case
+	// insensitive.
+	Email param.Field[string] `query:"email"`
+	// Date string in RFC 3339 format. Only entries created before the specified time
+	// will be included. UTC time zone.
+	End param.Field[time.Time] `query:"end" format:"date-time"`
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string] `query:"ending_before"`
 	// If applicable, represents the external_id associated with the account_holder.
 	ExternalID param.Field[string] `query:"external_id" format:"uuid"`
+	// (Individual Account Holders only) The first name of the account holder. The
+	// query is case insensitive and supports partial matches.
+	FirstName param.Field[string] `query:"first_name"`
+	// (Individual Account Holders only) The last name of the account holder. The query
+	// is case insensitive and supports partial matches.
+	LastName param.Field[string] `query:"last_name"`
+	// (Business Account Holders only) The legal business name of the account holder.
+	// The query is case insensitive and supports partial matches.
+	LegalBusinessName param.Field[string] `query:"legal_business_name"`
 	// The number of account_holders to limit the response to.
 	Limit param.Field[int64] `query:"limit"`
+	// Phone number of the account holder. The query must be an exact match.
+	PhoneNumber param.Field[string] `query:"phone_number"`
 	// A cursor representing an item's token after which a page of results should
 	// begin. Used to retrieve the next page of results after this item.
 	StartingAfter param.Field[string] `query:"starting_after"`
