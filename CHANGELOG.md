@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.48.0 (2024-09-03)
+
+Full Changelog: [v0.47.0...v0.48.0](https://github.com/lithic-com/lithic-go/compare/v0.47.0...v0.48.0)
+
+### ⚠ BREAKING CHANGES
+
+* **api:** add shared model Document ([#356](https://github.com/lithic-com/lithic-go/issues/356))
+
+### Features
+
+* **api:** add 'pin status' and 'pending_commands' to Card model ([#355](https://github.com/lithic-com/lithic-go/issues/355)) ([fca6d00](https://github.com/lithic-com/lithic-go/commit/fca6d00715bc0fd002d4cc4c9e1ea47518022dee))
+* **api:** add shared model Document ([#356](https://github.com/lithic-com/lithic-go/issues/356)) ([a117730](https://github.com/lithic-com/lithic-go/commit/a117730913073cd0f76de5eee4806b6fb7e88fb0))
+* **api:** declare AccountHolderBusinessResponse and remove entity_token from BusinessEntity ([#357](https://github.com/lithic-com/lithic-go/issues/357)) ([9dea351](https://github.com/lithic-com/lithic-go/commit/9dea3517db99c8c44f3e62a55c207dc1f8b21cc0))
+
+
+### Chores
+
+* **docs:** minor edits ([#353](https://github.com/lithic-com/lithic-go/issues/353)) ([481b68b](https://github.com/lithic-com/lithic-go/commit/481b68b2228b5456ede57a9bb4eb405359a128c7))
+
 ## 0.47.0 (2024-08-23)
 
 Full Changelog: [v0.46.0...v0.47.0](https://github.com/lithic-com/lithic-go/compare/v0.46.0...v0.47.0)
