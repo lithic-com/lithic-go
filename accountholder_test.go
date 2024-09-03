@@ -7,6 +7,7 @@ import (
 	"errors"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/lithic-com/lithic-go"
 	"github.com/lithic-com/lithic-go/internal/testutil"
@@ -27,23 +28,75 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AccountHolders.New(context.TODO(), lithic.AccountHolderNewParams{
-		Body: lithic.KYCExemptParam{
-			Address: lithic.F(shared.AddressParam{
-				Address1:   lithic.F("123 Old Forest Way"),
-				City:       lithic.F("Omaha"),
-				Country:    lithic.F("USA"),
-				PostalCode: lithic.F("68022"),
-				State:      lithic.F("NE"),
-				Address2:   lithic.F("address2"),
+		Body: lithic.KYBParam{
+			BeneficialOwnerEntities: lithic.F([]lithic.KYBBeneficialOwnerEntityParam{{
+				Address: lithic.F(shared.AddressParam{
+					Address1:   lithic.F("300 Normal Forest Way"),
+					City:       lithic.F("Portland"),
+					Country:    lithic.F("USA"),
+					PostalCode: lithic.F("90210"),
+					State:      lithic.F("OR"),
+					Address2:   lithic.F("address2"),
+				}),
+				GovernmentID:      lithic.F("98-7654321"),
+				LegalBusinessName: lithic.F("Majority Holdings LLC"),
+				PhoneNumbers:      lithic.F([]string{"+12124007676"}),
+				DbaBusinessName:   lithic.F("dba_business_name"),
+				ParentCompany:     lithic.F("parent_company"),
+			}}),
+			BeneficialOwnerIndividuals: lithic.F([]lithic.KYBBeneficialOwnerIndividualParam{{
+				Address: lithic.F(shared.AddressParam{
+					Address1:   lithic.F("300 Normal Forest Way"),
+					City:       lithic.F("Portland"),
+					Country:    lithic.F("USA"),
+					PostalCode: lithic.F("90210"),
+					State:      lithic.F("OR"),
+					Address2:   lithic.F("address2"),
+				}),
+				Dob:          lithic.F("1991-03-08T08:00:00Z"),
+				Email:        lithic.F("tim@left-earth.com"),
+				FirstName:    lithic.F("Timmy"),
+				GovernmentID: lithic.F("211-23-1412"),
+				LastName:     lithic.F("Turner"),
+				PhoneNumber:  lithic.F("+12024007611"),
+			}}),
+			BusinessEntity: lithic.F(lithic.KYBBusinessEntityParam{
+				Address: lithic.F(shared.AddressParam{
+					Address1:   lithic.F("123 Old Forest Way"),
+					City:       lithic.F("Omaha"),
+					Country:    lithic.F("USA"),
+					PostalCode: lithic.F("61022"),
+					State:      lithic.F("NE"),
+					Address2:   lithic.F("address2"),
+				}),
+				GovernmentID:      lithic.F("12-3456789"),
+				LegalBusinessName: lithic.F("Busy Business, Inc."),
+				PhoneNumbers:      lithic.F([]string{"+12124007676"}),
+				DbaBusinessName:   lithic.F("dba_business_name"),
+				ParentCompany:     lithic.F("parent_company"),
 			}),
-			Email:                lithic.F("tom@middle-earth.com"),
-			FirstName:            lithic.F("Tom"),
-			KYCExemptionType:     lithic.F(lithic.KYCExemptKYCExemptionTypeAuthorizedUser),
-			LastName:             lithic.F("Bombadil"),
-			PhoneNumber:          lithic.F("+12124007676"),
-			Workflow:             lithic.F(lithic.KYCExemptWorkflowKYCExempt),
-			BusinessAccountToken: lithic.F("e87db14a-4abf-4901-adad-5d5c9f46aff2"),
-			ExternalID:           lithic.F("external_id"),
+			ControlPerson: lithic.F(lithic.KYBControlPersonParam{
+				Address: lithic.F(shared.AddressParam{
+					Address1:   lithic.F("451 New Forest Way"),
+					City:       lithic.F("Springfield"),
+					Country:    lithic.F("USA"),
+					PostalCode: lithic.F("68022"),
+					State:      lithic.F("IL"),
+					Address2:   lithic.F("address2"),
+				}),
+				Dob:          lithic.F("1991-03-08T08:00:00Z"),
+				Email:        lithic.F("tom@middle-pluto.com"),
+				FirstName:    lithic.F("Tom"),
+				GovernmentID: lithic.F("111-23-1412"),
+				LastName:     lithic.F("Timothy"),
+				PhoneNumber:  lithic.F("+12024008176"),
+			}),
+			NatureOfBusiness:   lithic.F("Software company selling solutions to the restaurant industry"),
+			TosTimestamp:       lithic.F("2022-03-08T08:00:00Z"),
+			Workflow:           lithic.F(lithic.KYBWorkflowKYBBasic),
+			ExternalID:         lithic.F("external_id"),
+			KYBPassedTimestamp: lithic.F("2022-03-08T08:00:00Z"),
+			WebsiteURL:         lithic.F("https://www.mybusiness.com"),
 		},
 	})
 	if err != nil {
@@ -120,10 +173,17 @@ func TestAccountHolderListWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AccountHolders.List(context.TODO(), lithic.AccountHolderListParams{
-		EndingBefore:  lithic.F("ending_before"),
-		ExternalID:    lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-		Limit:         lithic.F(int64(0)),
-		StartingAfter: lithic.F("starting_after"),
+		Begin:             lithic.F(time.Now()),
+		Email:             lithic.F("email"),
+		End:               lithic.F(time.Now()),
+		EndingBefore:      lithic.F("ending_before"),
+		ExternalID:        lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		FirstName:         lithic.F("first_name"),
+		LastName:          lithic.F("last_name"),
+		LegalBusinessName: lithic.F("legal_business_name"),
+		Limit:             lithic.F(int64(0)),
+		PhoneNumber:       lithic.F("phone_number"),
+		StartingAfter:     lithic.F("starting_after"),
 	})
 	if err != nil {
 		var apierr *lithic.Error
