@@ -15,8 +15,9 @@ type Address struct {
 	// Valid country code. Only USA is currently supported, entered in uppercase ISO
 	// 3166-1 alpha-3 three-character format.
 	Country string `json:"country,required"`
-	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
-	// five-digit ZIP or nine-digit ZIP+4.
+	// Valid postal code. Only USA postal codes (ZIP codes) are currently supported,
+	// entered as a five-digit postal code or nine-digit postal code (ZIP+4) using the
+	// format 12345-1234.
 	PostalCode string `json:"postal_code,required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
@@ -54,8 +55,9 @@ type AddressParam struct {
 	// Valid country code. Only USA is currently supported, entered in uppercase ISO
 	// 3166-1 alpha-3 three-character format.
 	Country param.Field[string] `json:"country,required"`
-	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
-	// five-digit ZIP or nine-digit ZIP+4.
+	// Valid postal code. Only USA postal codes (ZIP codes) are currently supported,
+	// entered as a five-digit postal code or nine-digit postal code (ZIP+4) using the
+	// format 12345-1234.
 	PostalCode param.Field[string] `json:"postal_code,required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
@@ -245,8 +247,8 @@ type ShippingAddressParam struct {
 	// physical card. The combined length of `first_name` and `last_name` may not
 	// exceed 25 characters.
 	LastName param.Field[string] `json:"last_name,required"`
-	// Postal code (formerly zipcode). For US addresses, either five-digit zipcode or
-	// nine-digit "ZIP+4".
+	// Postal code (formerly zipcode). For US addresses, either five-digit postal code
+	// or nine-digit postal code (ZIP+4) using the format 12345-1234.
 	PostalCode param.Field[string] `json:"postal_code,required"`
 	// Uppercase ISO 3166-2 two character abbreviation for US and CA. Optional with a
 	// limit of 24 characters for other countries.

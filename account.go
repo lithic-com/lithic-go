@@ -264,8 +264,9 @@ type AccountVerificationAddress struct {
 	City string `json:"city,required"`
 	// Country name. Only USA is currently supported.
 	Country string `json:"country,required"`
-	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
-	// five-digit ZIP or nine-digit ZIP+4.
+	// Valid postal code. Only USA postal codes (ZIP codes) are currently supported,
+	// entered as a five-digit postal code or nine-digit postal code (ZIP+4) using the
+	// format 12345-1234.
 	PostalCode string `json:"postal_code,required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
