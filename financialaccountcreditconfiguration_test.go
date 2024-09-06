@@ -54,6 +54,7 @@ func TestFinancialAccountCreditConfigurationUpdateWithOptionalParams(t *testing.
 			CreditLimit:              lithic.F(int64(0)),
 			CreditProductToken:       lithic.F("credit_product_token"),
 			ExternalBankAccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+			Tier:                     lithic.F("x"),
 		},
 	)
 	if err != nil {

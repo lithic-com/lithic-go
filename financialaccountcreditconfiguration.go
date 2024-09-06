@@ -63,9 +63,13 @@ type FinancialAccountCreditConfig struct {
 	AccountToken string `json:"account_token,required" format:"uuid"`
 	CreditLimit  int64  `json:"credit_limit,required,nullable"`
 	// Globally unique identifier for the credit product
-	CreditProductToken       string                           `json:"credit_product_token,required,nullable"`
-	ExternalBankAccountToken string                           `json:"external_bank_account_token,required,nullable" format:"uuid"`
-	JSON                     financialAccountCreditConfigJSON `json:"-"`
+	CreditProductToken       string `json:"credit_product_token,required,nullable"`
+	ExternalBankAccountToken string `json:"external_bank_account_token,required,nullable" format:"uuid"`
+	// State of the financial account
+	FinancialAccountState string `json:"financial_account_state,required,nullable"`
+	// Tier assigned to the financial account
+	Tier string                           `json:"tier,required,nullable"`
+	JSON financialAccountCreditConfigJSON `json:"-"`
 }
 
 // financialAccountCreditConfigJSON contains the JSON metadata for the struct
@@ -75,6 +79,8 @@ type financialAccountCreditConfigJSON struct {
 	CreditLimit              apijson.Field
 	CreditProductToken       apijson.Field
 	ExternalBankAccountToken apijson.Field
+	FinancialAccountState    apijson.Field
+	Tier                     apijson.Field
 	raw                      string
 	ExtraFields              map[string]apijson.Field
 }
@@ -92,6 +98,8 @@ type FinancialAccountCreditConfigurationUpdateParams struct {
 	// Globally unique identifier for the credit product
 	CreditProductToken       param.Field[string] `json:"credit_product_token"`
 	ExternalBankAccountToken param.Field[string] `json:"external_bank_account_token" format:"uuid"`
+	// Tier to assign to a financial account
+	Tier param.Field[string] `json:"tier"`
 }
 
 func (r FinancialAccountCreditConfigurationUpdateParams) MarshalJSON() (data []byte, err error) {
