@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.49.0 (2024-09-06)
+
+Full Changelog: [v0.48.0...v0.49.0](https://github.com/lithic-com/lithic-go/compare/v0.48.0...v0.49.0)
+
+### Features
+
+* **api:** add tier and state to financial_accounts ([#360](https://github.com/lithic-com/lithic-go/issues/360)) ([19ef005](https://github.com/lithic-com/lithic-go/commit/19ef0055948ebd66948615f1400598f48a711c04))
+
+
+### Chores
+
+* **docs:** update description for postal codes ([#358](https://github.com/lithic-com/lithic-go/issues/358)) ([b90dc4d](https://github.com/lithic-com/lithic-go/commit/b90dc4df890e71a3f87155bb6c358af25cc35fb1))
+
 ## 0.48.0 (2024-09-03)
 
 Full Changelog: [v0.47.0...v0.48.0](https://github.com/lithic-com/lithic-go/compare/v0.47.0...v0.48.0)
