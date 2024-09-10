@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.49.1 (2024-09-10)
+
+Full Changelog: [v0.49.0...v0.49.1](https://github.com/lithic-com/lithic-go/compare/v0.49.0...v0.49.1)
+
+### Bug Fixes
+
+* **requestconfig:** copy over more fields when cloning ([#361](https://github.com/lithic-com/lithic-go/issues/361)) ([a205219](https://github.com/lithic-com/lithic-go/commit/a205219514f80ad9aff5f56d019a72ecff208b22))
+
 ## 0.49.0 (2024-09-06)
 
 Full Changelog: [v0.48.0...v0.49.0](https://github.com/lithic-com/lithic-go/compare/v0.48.0...v0.49.0)
