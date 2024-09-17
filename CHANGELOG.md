@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.50.0 (2024-09-17)
+
+Full Changelog: [v0.49.1...v0.50.0](https://github.com/lithic-com/lithic-go/compare/v0.49.1...v0.50.0)
+
+### ⚠ BREAKING CHANGES
+
+* **api:** updates book transfer status, updates to transactions, add currency model ([#365](https://github.com/lithic-com/lithic-go/issues/365))
+
+### Features
+
+* **api:** updates book transfer status, updates to transactions, add currency model ([#365](https://github.com/lithic-com/lithic-go/issues/365)) ([611b4b2](https://github.com/lithic-com/lithic-go/commit/611b4b2617aa310f5146a06e7d7495cf52fbf31e))
+
+
+### Documentation
+
+* update CONTRIBUTING.md ([#363](https://github.com/lithic-com/lithic-go/issues/363)) ([0f35602](https://github.com/lithic-com/lithic-go/commit/0f3560234b1cbd9876960a682ecebeae89b3db00))
+
 ## 0.49.1 (2024-09-10)
 
 Full Changelog: [v0.49.0...v0.49.1](https://github.com/lithic-com/lithic-go/compare/v0.49.0...v0.49.1)
