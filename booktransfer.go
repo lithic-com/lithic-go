@@ -118,9 +118,8 @@ type BookTransferResponse struct {
 	// Amount of the transaction that has been settled in the currency's smallest unit
 	// (e.g., cents).
 	SettledAmount int64 `json:"settled_amount,required"`
-	// Status types: _ `DECLINED` - The transfer was declined. _ `PENDING` - The
-	// transfer is pending release from a hold. \* `SETTLED` - The transfer is
-	// completed.
+	// Status types: _ `DECLINED` - The transfer was declined. _ `REVERSED` - The
+	// transfer was reversed \* `SETTLED` - The transfer is completed.
 	Status BookTransferResponseStatus `json:"status,required"`
 	// Globally unique identifier for the financial account or card that will receive
 	// the funds. Accepted type dependent on the program's use case.
@@ -272,20 +271,19 @@ func (r BookTransferResponseResult) IsKnown() bool {
 	return false
 }
 
-// Status types: _ `DECLINED` - The transfer was declined. _ `PENDING` - The
-// transfer is pending release from a hold. \* `SETTLED` - The transfer is
-// completed.
+// Status types: _ `DECLINED` - The transfer was declined. _ `REVERSED` - The
+// transfer was reversed \* `SETTLED` - The transfer is completed.
 type BookTransferResponseStatus string
 
 const (
 	BookTransferResponseStatusDeclined BookTransferResponseStatus = "DECLINED"
-	BookTransferResponseStatusPending  BookTransferResponseStatus = "PENDING"
+	BookTransferResponseStatusReversed BookTransferResponseStatus = "REVERSED"
 	BookTransferResponseStatusSettled  BookTransferResponseStatus = "SETTLED"
 )
 
 func (r BookTransferResponseStatus) IsKnown() bool {
 	switch r {
-	case BookTransferResponseStatusDeclined, BookTransferResponseStatusPending, BookTransferResponseStatusSettled:
+	case BookTransferResponseStatusDeclined, BookTransferResponseStatusReversed, BookTransferResponseStatusSettled:
 		return true
 	}
 	return false

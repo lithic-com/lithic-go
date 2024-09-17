@@ -7,6 +7,7 @@
 # Shared Response Types
 
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#Address">Address</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#Currency">Currency</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#Document">Document</a>
 
 # lithic
