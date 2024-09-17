@@ -42,7 +42,7 @@ func NewExternalBankAccountService(opts ...option.RequestOption) (r *ExternalBan
 // Creates an external bank account within a program or Lithic account.
 func (r *ExternalBankAccountService) New(ctx context.Context, body ExternalBankAccountNewParams, opts ...option.RequestOption) (res *ExternalBankAccountNewResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "external_bank_accounts"
+	path := "v1/external_bank_accounts"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -54,7 +54,7 @@ func (r *ExternalBankAccountService) Get(ctx context.Context, externalBankAccoun
 		err = errors.New("missing required external_bank_account_token parameter")
 		return
 	}
-	path := fmt.Sprintf("external_bank_accounts/%s", externalBankAccountToken)
+	path := fmt.Sprintf("v1/external_bank_accounts/%s", externalBankAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -66,7 +66,7 @@ func (r *ExternalBankAccountService) Update(ctx context.Context, externalBankAcc
 		err = errors.New("missing required external_bank_account_token parameter")
 		return
 	}
-	path := fmt.Sprintf("external_bank_accounts/%s", externalBankAccountToken)
+	path := fmt.Sprintf("v1/external_bank_accounts/%s", externalBankAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
 }
@@ -76,7 +76,7 @@ func (r *ExternalBankAccountService) List(ctx context.Context, query ExternalBan
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
-	path := "external_bank_accounts"
+	path := "v1/external_bank_accounts"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
@@ -101,7 +101,7 @@ func (r *ExternalBankAccountService) RetryMicroDeposits(ctx context.Context, ext
 		err = errors.New("missing required external_bank_account_token parameter")
 		return
 	}
-	path := fmt.Sprintf("external_bank_accounts/%s/retry_micro_deposits", externalBankAccountToken)
+	path := fmt.Sprintf("v1/external_bank_accounts/%s/retry_micro_deposits", externalBankAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -113,7 +113,7 @@ func (r *ExternalBankAccountService) RetryPrenote(ctx context.Context, externalB
 		err = errors.New("missing required external_bank_account_token parameter")
 		return
 	}
-	path := fmt.Sprintf("external_bank_accounts/%s/retry_prenote", externalBankAccountToken)
+	path := fmt.Sprintf("v1/external_bank_accounts/%s/retry_prenote", externalBankAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }

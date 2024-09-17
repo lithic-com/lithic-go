@@ -49,7 +49,7 @@ func (r *TransactionService) Get(ctx context.Context, transactionToken string, o
 		err = errors.New("missing required transaction_token parameter")
 		return
 	}
-	path := fmt.Sprintf("transactions/%s", transactionToken)
+	path := fmt.Sprintf("v1/transactions/%s", transactionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -59,7 +59,7 @@ func (r *TransactionService) List(ctx context.Context, query TransactionListPara
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
-	path := "transactions"
+	path := "v1/transactions"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
@@ -86,7 +86,7 @@ func (r *TransactionService) ListAutoPaging(ctx context.Context, query Transacti
 // endpoint.
 func (r *TransactionService) SimulateAuthorization(ctx context.Context, body TransactionSimulateAuthorizationParams, opts ...option.RequestOption) (res *TransactionSimulateAuthorizationResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "simulate/authorize"
+	path := "v1/simulate/authorize"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -96,7 +96,7 @@ func (r *TransactionService) SimulateAuthorization(ctx context.Context, body Tra
 // the transaction.
 func (r *TransactionService) SimulateAuthorizationAdvice(ctx context.Context, body TransactionSimulateAuthorizationAdviceParams, opts ...option.RequestOption) (res *TransactionSimulateAuthorizationAdviceResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "simulate/authorization_advice"
+	path := "v1/simulate/authorization_advice"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -109,7 +109,7 @@ func (r *TransactionService) SimulateAuthorizationAdvice(ctx context.Context, bo
 // access to this behavior.
 func (r *TransactionService) SimulateClearing(ctx context.Context, body TransactionSimulateClearingParams, opts ...option.RequestOption) (res *TransactionSimulateClearingResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "simulate/clearing"
+	path := "v1/simulate/clearing"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -119,7 +119,7 @@ func (r *TransactionService) SimulateClearing(ctx context.Context, body Transact
 // network.
 func (r *TransactionService) SimulateCreditAuthorization(ctx context.Context, body TransactionSimulateCreditAuthorizationParams, opts ...option.RequestOption) (res *TransactionSimulateCreditAuthorizationResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "simulate/credit_authorization_advice"
+	path := "v1/simulate/credit_authorization_advice"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -128,7 +128,7 @@ func (r *TransactionService) SimulateCreditAuthorization(ctx context.Context, bo
 // and do not spend time in a `PENDING` state.
 func (r *TransactionService) SimulateReturn(ctx context.Context, body TransactionSimulateReturnParams, opts ...option.RequestOption) (res *TransactionSimulateReturnResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "simulate/return"
+	path := "v1/simulate/return"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -138,7 +138,7 @@ func (r *TransactionService) SimulateReturn(ctx context.Context, body Transactio
 // cleared or financial credit authorizations.
 func (r *TransactionService) SimulateReturnReversal(ctx context.Context, body TransactionSimulateReturnReversalParams, opts ...option.RequestOption) (res *TransactionSimulateReturnReversalResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "simulate/return_reversal"
+	path := "v1/simulate/return_reversal"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -150,7 +150,7 @@ func (r *TransactionService) SimulateReturnReversal(ctx context.Context, body Tr
 // authorization advice is not currently supported but will be added soon._
 func (r *TransactionService) SimulateVoid(ctx context.Context, body TransactionSimulateVoidParams, opts ...option.RequestOption) (res *TransactionSimulateVoidResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "simulate/void"
+	path := "v1/simulate/void"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -185,10 +185,10 @@ type Transaction struct {
 	// A list of all events that have modified this transaction.
 	Events   []TransactionEvent  `json:"events,required"`
 	Merchant TransactionMerchant `json:"merchant,required"`
-	// Analogous to the "amount" property, but will represent the amount in the
+	// Analogous to the 'amount' property, but will represent the amount in the
 	// transaction's local currency (smallest unit), including any acquirer fees.
 	MerchantAmount int64 `json:"merchant_amount,required,nullable"`
-	// Analogous to the "authorization_amount" property, but will represent the amount
+	// Analogous to the 'authorization_amount' property, but will represent the amount
 	// in the transaction's local currency (smallest unit), including any acquirer
 	// fees.
 	MerchantAuthorizationAmount int64 `json:"merchant_authorization_amount,required,nullable"`

@@ -40,7 +40,7 @@ func NewAuthRuleService(opts ...option.RequestOption) (r *AuthRuleService) {
 // account, or card level.
 func (r *AuthRuleService) New(ctx context.Context, body AuthRuleNewParams, opts ...option.RequestOption) (res *AuthRule, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "auth_rules"
+	path := "v1/auth_rules"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -53,7 +53,7 @@ func (r *AuthRuleService) Get(ctx context.Context, authRuleToken string, opts ..
 		err = errors.New("missing required auth_rule_token parameter")
 		return
 	}
-	path := fmt.Sprintf("auth_rules/%s", authRuleToken)
+	path := fmt.Sprintf("v1/auth_rules/%s", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -66,7 +66,7 @@ func (r *AuthRuleService) Update(ctx context.Context, authRuleToken string, body
 		err = errors.New("missing required auth_rule_token parameter")
 		return
 	}
-	path := fmt.Sprintf("auth_rules/%s", authRuleToken)
+	path := fmt.Sprintf("v1/auth_rules/%s", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPut, path, body, &res, opts...)
 	return
 }
@@ -76,7 +76,7 @@ func (r *AuthRuleService) List(ctx context.Context, query AuthRuleListParams, op
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
-	path := "auth_rules"
+	path := "v1/auth_rules"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
@@ -102,7 +102,7 @@ func (r *AuthRuleService) Apply(ctx context.Context, authRuleToken string, body 
 		err = errors.New("missing required auth_rule_token parameter")
 		return
 	}
-	path := fmt.Sprintf("auth_rules/%s/apply", authRuleToken)
+	path := fmt.Sprintf("v1/auth_rules/%s/apply", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -111,7 +111,7 @@ func (r *AuthRuleService) Apply(ctx context.Context, authRuleToken string, body 
 // card-level.
 func (r *AuthRuleService) Remove(ctx context.Context, body AuthRuleRemoveParams, opts ...option.RequestOption) (res *AuthRuleRemoveResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "auth_rules/remove"
+	path := "v1/auth_rules/remove"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, body, &res, opts...)
 	return
 }
@@ -126,7 +126,7 @@ type AuthRule struct {
 	// Rule.
 	AccountTokens []string `json:"account_tokens"`
 	// Countries in which the Auth Rule permits transactions. Note that Lithic
-	// maintains a list of countries in which all transactions are blocked; "allowing"
+	// maintains a list of countries in which all transactions are blocked; 'allowing'
 	// those countries in an Auth Rule does not override the Lithic-wide restrictions.
 	AllowedCountries []string `json:"allowed_countries"`
 	// Merchant category codes for which the Auth Rule permits transactions.
@@ -235,7 +235,7 @@ type AuthRuleNewParams struct {
 	// Rule.
 	AccountTokens param.Field[[]string] `json:"account_tokens"`
 	// Countries in which the Auth Rule permits transactions. Note that Lithic
-	// maintains a list of countries in which all transactions are blocked; "allowing"
+	// maintains a list of countries in which all transactions are blocked; 'allowing'
 	// those countries in an Auth Rule does not override the Lithic-wide restrictions.
 	AllowedCountries param.Field[[]string] `json:"allowed_countries"`
 	// Merchant category codes for which the Auth Rule permits transactions.

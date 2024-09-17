@@ -40,7 +40,7 @@ func NewDisputeService(opts ...option.RequestOption) (r *DisputeService) {
 // Initiate a dispute.
 func (r *DisputeService) New(ctx context.Context, body DisputeNewParams, opts ...option.RequestOption) (res *Dispute, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "disputes"
+	path := "v1/disputes"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -52,7 +52,7 @@ func (r *DisputeService) Get(ctx context.Context, disputeToken string, opts ...o
 		err = errors.New("missing required dispute_token parameter")
 		return
 	}
-	path := fmt.Sprintf("disputes/%s", disputeToken)
+	path := fmt.Sprintf("v1/disputes/%s", disputeToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -64,7 +64,7 @@ func (r *DisputeService) Update(ctx context.Context, disputeToken string, body D
 		err = errors.New("missing required dispute_token parameter")
 		return
 	}
-	path := fmt.Sprintf("disputes/%s", disputeToken)
+	path := fmt.Sprintf("v1/disputes/%s", disputeToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
 }
@@ -74,7 +74,7 @@ func (r *DisputeService) List(ctx context.Context, query DisputeListParams, opts
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
-	path := "disputes"
+	path := "v1/disputes"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
@@ -99,7 +99,7 @@ func (r *DisputeService) Delete(ctx context.Context, disputeToken string, opts .
 		err = errors.New("missing required dispute_token parameter")
 		return
 	}
-	path := fmt.Sprintf("disputes/%s", disputeToken)
+	path := fmt.Sprintf("v1/disputes/%s", disputeToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, &res, opts...)
 	return
 }
@@ -116,7 +116,7 @@ func (r *DisputeService) DeleteEvidence(ctx context.Context, disputeToken string
 		err = errors.New("missing required evidence_token parameter")
 		return
 	}
-	path := fmt.Sprintf("disputes/%s/evidences/%s", disputeToken, evidenceToken)
+	path := fmt.Sprintf("v1/disputes/%s/evidences/%s", disputeToken, evidenceToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, &res, opts...)
 	return
 }
@@ -132,7 +132,7 @@ func (r *DisputeService) InitiateEvidenceUpload(ctx context.Context, disputeToke
 		err = errors.New("missing required dispute_token parameter")
 		return
 	}
-	path := fmt.Sprintf("disputes/%s/evidences", disputeToken)
+	path := fmt.Sprintf("v1/disputes/%s/evidences", disputeToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -146,7 +146,7 @@ func (r *DisputeService) ListEvidences(ctx context.Context, disputeToken string,
 		err = errors.New("missing required dispute_token parameter")
 		return
 	}
-	path := fmt.Sprintf("disputes/%s/evidences", disputeToken)
+	path := fmt.Sprintf("v1/disputes/%s/evidences", disputeToken)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
@@ -175,7 +175,7 @@ func (r *DisputeService) GetEvidence(ctx context.Context, disputeToken string, e
 		err = errors.New("missing required evidence_token parameter")
 		return
 	}
-	path := fmt.Sprintf("disputes/%s/evidences/%s", disputeToken, evidenceToken)
+	path := fmt.Sprintf("v1/disputes/%s/evidences/%s", disputeToken, evidenceToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }

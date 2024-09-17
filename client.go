@@ -156,7 +156,7 @@ func (r *Client) Delete(ctx context.Context, path string, params interface{}, re
 // Status of api
 func (r *Client) APIStatus(ctx context.Context, opts ...option.RequestOption) (res *APIStatus, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "status"
+	path := "v1/status"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }

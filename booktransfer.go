@@ -41,7 +41,7 @@ func NewBookTransferService(opts ...option.RequestOption) (r *BookTransferServic
 // account and card
 func (r *BookTransferService) New(ctx context.Context, body BookTransferNewParams, opts ...option.RequestOption) (res *BookTransferResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "book_transfers"
+	path := "v1/book_transfers"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -53,7 +53,7 @@ func (r *BookTransferService) Get(ctx context.Context, bookTransferToken string,
 		err = errors.New("missing required book_transfer_token parameter")
 		return
 	}
-	path := fmt.Sprintf("book_transfers/%s", bookTransferToken)
+	path := fmt.Sprintf("v1/book_transfers/%s", bookTransferToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -63,7 +63,7 @@ func (r *BookTransferService) List(ctx context.Context, query BookTransferListPa
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
-	path := "book_transfers"
+	path := "v1/book_transfers"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func (r *BookTransferService) Reverse(ctx context.Context, bookTransferToken str
 		err = errors.New("missing required book_transfer_token parameter")
 		return
 	}
-	path := fmt.Sprintf("book_transfers/%s/reverse", bookTransferToken)
+	path := fmt.Sprintf("v1/book_transfers/%s/reverse", bookTransferToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
