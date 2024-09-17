@@ -39,7 +39,7 @@ func (r *CreditProductExtendedCreditService) Get(ctx context.Context, creditProd
 		err = errors.New("missing required credit_product_id parameter")
 		return
 	}
-	path := fmt.Sprintf("credit_products/%s/extended_credit", creditProductID)
+	path := fmt.Sprintf("v1/credit_products/%s/extended_credit", creditProductID)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }

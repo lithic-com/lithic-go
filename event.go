@@ -46,7 +46,7 @@ func (r *EventService) Get(ctx context.Context, eventToken string, opts ...optio
 		err = errors.New("missing required event_token parameter")
 		return
 	}
-	path := fmt.Sprintf("events/%s", eventToken)
+	path := fmt.Sprintf("v1/events/%s", eventToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -56,7 +56,7 @@ func (r *EventService) List(ctx context.Context, query EventListParams, opts ...
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
-	path := "events"
+	path := "v1/events"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
@@ -83,7 +83,7 @@ func (r *EventService) ListAttempts(ctx context.Context, eventToken string, quer
 		err = errors.New("missing required event_token parameter")
 		return
 	}
-	path := fmt.Sprintf("events/%s/attempts", eventToken)
+	path := fmt.Sprintf("v1/events/%s/attempts", eventToken)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err

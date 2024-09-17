@@ -47,7 +47,7 @@ func (r *CardFinancialTransactionService) Get(ctx context.Context, cardToken str
 		err = errors.New("missing required financial_transaction_token parameter")
 		return
 	}
-	path := fmt.Sprintf("cards/%s/financial_transactions/%s", cardToken, financialTransactionToken)
+	path := fmt.Sprintf("v1/cards/%s/financial_transactions/%s", cardToken, financialTransactionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -61,7 +61,7 @@ func (r *CardFinancialTransactionService) List(ctx context.Context, cardToken st
 		err = errors.New("missing required card_token parameter")
 		return
 	}
-	path := fmt.Sprintf("cards/%s/financial_transactions", cardToken)
+	path := fmt.Sprintf("v1/cards/%s/financial_transactions", cardToken)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err

@@ -36,7 +36,7 @@ func NewResponderEndpointService(opts ...option.RequestOption) (r *ResponderEndp
 // Enroll a responder endpoint
 func (r *ResponderEndpointService) New(ctx context.Context, body ResponderEndpointNewParams, opts ...option.RequestOption) (res *ResponderEndpointNewResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "responder_endpoints"
+	path := "v1/responder_endpoints"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -45,7 +45,7 @@ func (r *ResponderEndpointService) New(ctx context.Context, body ResponderEndpoi
 func (r *ResponderEndpointService) Delete(ctx context.Context, body ResponderEndpointDeleteParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
-	path := "responder_endpoints"
+	path := "v1/responder_endpoints"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, body, nil, opts...)
 	return
 }
@@ -53,7 +53,7 @@ func (r *ResponderEndpointService) Delete(ctx context.Context, body ResponderEnd
 // Check the status of a responder endpoint
 func (r *ResponderEndpointService) CheckStatus(ctx context.Context, query ResponderEndpointCheckStatusParams, opts ...option.RequestOption) (res *ResponderEndpointStatus, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "responder_endpoints"
+	path := "v1/responder_endpoints"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
 	return
 }

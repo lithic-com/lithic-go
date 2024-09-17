@@ -41,7 +41,7 @@ func (r *ExternalBankAccountMicroDepositService) New(ctx context.Context, extern
 		err = errors.New("missing required external_bank_account_token parameter")
 		return
 	}
-	path := fmt.Sprintf("external_bank_accounts/%s/micro_deposits", externalBankAccountToken)
+	path := fmt.Sprintf("v1/external_bank_accounts/%s/micro_deposits", externalBankAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }

@@ -41,7 +41,7 @@ func (r *AggregateBalanceService) List(ctx context.Context, query AggregateBalan
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
-	path := "aggregate_balances"
+	path := "v1/aggregate_balances"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err

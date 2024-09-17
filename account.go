@@ -44,7 +44,7 @@ func (r *AccountService) Get(ctx context.Context, accountToken string, opts ...o
 		err = errors.New("missing required account_token parameter")
 		return
 	}
-	path := fmt.Sprintf("accounts/%s", accountToken)
+	path := fmt.Sprintf("v1/accounts/%s", accountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -60,7 +60,7 @@ func (r *AccountService) Update(ctx context.Context, accountToken string, body A
 		err = errors.New("missing required account_token parameter")
 		return
 	}
-	path := fmt.Sprintf("accounts/%s", accountToken)
+	path := fmt.Sprintf("v1/accounts/%s", accountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
 }
@@ -70,7 +70,7 @@ func (r *AccountService) List(ctx context.Context, query AccountListParams, opts
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
-	path := "accounts"
+	path := "v1/accounts"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
@@ -99,7 +99,7 @@ func (r *AccountService) GetSpendLimits(ctx context.Context, accountToken string
 		err = errors.New("missing required account_token parameter")
 		return
 	}
-	path := fmt.Sprintf("accounts/%s/spend_limits", accountToken)
+	path := fmt.Sprintf("v1/accounts/%s/spend_limits", accountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }

@@ -44,7 +44,7 @@ func (r *CardProgramService) Get(ctx context.Context, cardProgramToken string, o
 		err = errors.New("missing required card_program_token parameter")
 		return
 	}
-	path := fmt.Sprintf("card_programs/%s", cardProgramToken)
+	path := fmt.Sprintf("v1/card_programs/%s", cardProgramToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -54,7 +54,7 @@ func (r *CardProgramService) List(ctx context.Context, query CardProgramListPara
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
-	path := "card_programs"
+	path := "v1/card_programs"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err

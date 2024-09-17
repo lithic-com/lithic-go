@@ -35,7 +35,7 @@ func NewThreeDSDecisioningService(opts ...option.RequestOption) (r *ThreeDSDecis
 func (r *ThreeDSDecisioningService) ChallengeResponse(ctx context.Context, body ThreeDSDecisioningChallengeResponseParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
-	path := "three_ds_decisioning/challenge_response"
+	path := "v1/three_ds_decisioning/challenge_response"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
 	return
 }
@@ -48,7 +48,7 @@ func (r *ThreeDSDecisioningService) ChallengeResponse(ctx context.Context, body 
 // for more detail about verifying 3DS Decisioning requests.
 func (r *ThreeDSDecisioningService) GetSecret(ctx context.Context, opts ...option.RequestOption) (res *ThreeDSDecisioningGetSecretResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "three_ds_decisioning/secret"
+	path := "v1/three_ds_decisioning/secret"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -60,7 +60,7 @@ func (r *ThreeDSDecisioningService) GetSecret(ctx context.Context, opts ...optio
 func (r *ThreeDSDecisioningService) RotateSecret(ctx context.Context, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
-	path := "three_ds_decisioning/secret/rotate"
+	path := "v1/three_ds_decisioning/secret/rotate"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
 	return
 }
