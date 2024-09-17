@@ -16,6 +16,7 @@ import (
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/option"
+	"github.com/lithic-com/lithic-go/shared"
 )
 
 // TransactionService contains methods and other services that help with
@@ -167,7 +168,8 @@ type Transaction struct {
 	// Authorization amount of the transaction (in cents), including any acquirer fees.
 	// This may change over time, and will represent the settled amount once the
 	// transaction is settled.
-	Amount int64 `json:"amount,required"`
+	Amount  int64              `json:"amount,required"`
+	Amounts TransactionAmounts `json:"amounts,required"`
 	// Authorization amount (in cents) of the transaction, including any acquirer fees.
 	// This amount always represents the amount authorized for the transaction,
 	// unaffected by settlement.
@@ -219,8 +221,10 @@ type Transaction struct {
 	//   - `PENDING` - Authorization is pending completion from the merchant.
 	//   - `SETTLED` - The transaction is complete.
 	//   - `VOIDED` - The merchant has voided the previously pending authorization.
-	Status                   TransactionStatus                   `json:"status,required"`
-	TokenInfo                TransactionTokenInfo                `json:"token_info,required,nullable"`
+	Status    TransactionStatus    `json:"status,required"`
+	TokenInfo TransactionTokenInfo `json:"token_info,required,nullable"`
+	// Date and time when the transaction last updated. UTC time zone.
+	Updated                  time.Time                           `json:"updated,required" format:"date-time"`
 	CardholderAuthentication TransactionCardholderAuthentication `json:"cardholder_authentication,nullable"`
 	JSON                     transactionJSON                     `json:"-"`
 }
@@ -231,6 +235,7 @@ type transactionJSON struct {
 	AcquirerFee                 apijson.Field
 	AcquirerReferenceNumber     apijson.Field
 	Amount                      apijson.Field
+	Amounts                     apijson.Field
 	AuthorizationAmount         apijson.Field
 	AuthorizationCode           apijson.Field
 	Avs                         apijson.Field
@@ -248,6 +253,7 @@ type transactionJSON struct {
 	SettledAmount               apijson.Field
 	Status                      apijson.Field
 	TokenInfo                   apijson.Field
+	Updated                     apijson.Field
 	CardholderAuthentication    apijson.Field
 	raw                         string
 	ExtraFields                 map[string]apijson.Field
@@ -258,6 +264,139 @@ func (r *Transaction) UnmarshalJSON(data []byte) (err error) {
 }
 
 func (r transactionJSON) RawJSON() string {
+	return r.raw
+}
+
+type TransactionAmounts struct {
+	Cardholder TransactionAmountsCardholder `json:"cardholder,required"`
+	Hold       TransactionAmountsHold       `json:"hold,required"`
+	Merchant   TransactionAmountsMerchant   `json:"merchant,required"`
+	Settlement TransactionAmountsSettlement `json:"settlement,required"`
+	JSON       transactionAmountsJSON       `json:"-"`
+}
+
+// transactionAmountsJSON contains the JSON metadata for the struct
+// [TransactionAmounts]
+type transactionAmountsJSON struct {
+	Cardholder  apijson.Field
+	Hold        apijson.Field
+	Merchant    apijson.Field
+	Settlement  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *TransactionAmounts) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionAmountsJSON) RawJSON() string {
+	return r.raw
+}
+
+type TransactionAmountsCardholder struct {
+	Amount         int64  `json:"amount,required"`
+	ConversionRate string `json:"conversion_rate,required"`
+	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
+	// special currencies like “XXX`. Enumerants names are lowercase cureency code
+	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
+	Currency shared.Currency                  `json:"currency,required"`
+	JSON     transactionAmountsCardholderJSON `json:"-"`
+}
+
+// transactionAmountsCardholderJSON contains the JSON metadata for the struct
+// [TransactionAmountsCardholder]
+type transactionAmountsCardholderJSON struct {
+	Amount         apijson.Field
+	ConversionRate apijson.Field
+	Currency       apijson.Field
+	raw            string
+	ExtraFields    map[string]apijson.Field
+}
+
+func (r *TransactionAmountsCardholder) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionAmountsCardholderJSON) RawJSON() string {
+	return r.raw
+}
+
+type TransactionAmountsHold struct {
+	Amount int64 `json:"amount,required"`
+	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
+	// special currencies like “XXX`. Enumerants names are lowercase cureency code
+	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
+	Currency shared.Currency            `json:"currency,required"`
+	JSON     transactionAmountsHoldJSON `json:"-"`
+}
+
+// transactionAmountsHoldJSON contains the JSON metadata for the struct
+// [TransactionAmountsHold]
+type transactionAmountsHoldJSON struct {
+	Amount      apijson.Field
+	Currency    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *TransactionAmountsHold) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionAmountsHoldJSON) RawJSON() string {
+	return r.raw
+}
+
+type TransactionAmountsMerchant struct {
+	Amount int64 `json:"amount,required"`
+	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
+	// special currencies like “XXX`. Enumerants names are lowercase cureency code
+	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
+	Currency shared.Currency                `json:"currency,required"`
+	JSON     transactionAmountsMerchantJSON `json:"-"`
+}
+
+// transactionAmountsMerchantJSON contains the JSON metadata for the struct
+// [TransactionAmountsMerchant]
+type transactionAmountsMerchantJSON struct {
+	Amount      apijson.Field
+	Currency    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *TransactionAmountsMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionAmountsMerchantJSON) RawJSON() string {
+	return r.raw
+}
+
+type TransactionAmountsSettlement struct {
+	Amount int64 `json:"amount,required"`
+	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
+	// special currencies like “XXX`. Enumerants names are lowercase cureency code
+	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
+	Currency shared.Currency                  `json:"currency,required"`
+	JSON     transactionAmountsSettlementJSON `json:"-"`
+}
+
+// transactionAmountsSettlementJSON contains the JSON metadata for the struct
+// [TransactionAmountsSettlement]
+type transactionAmountsSettlementJSON struct {
+	Amount      apijson.Field
+	Currency    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *TransactionAmountsSettlement) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionAmountsSettlementJSON) RawJSON() string {
 	return r.raw
 }
 
@@ -291,7 +430,8 @@ type TransactionEvent struct {
 	// Globally unique identifier.
 	Token string `json:"token,required" format:"uuid"`
 	// Amount of the transaction event (in cents), including any acquirer fees.
-	Amount int64 `json:"amount,required"`
+	Amount  int64                    `json:"amount,required"`
+	Amounts TransactionEventsAmounts `json:"amounts,required"`
 	// RFC 3339 date and time this event entered the system. UTC time zone.
 	Created         time.Time                         `json:"created,required" format:"date-time"`
 	DetailedResults []TransactionEventsDetailedResult `json:"detailed_results,required"`
@@ -351,6 +491,7 @@ type TransactionEvent struct {
 type transactionEventJSON struct {
 	Token           apijson.Field
 	Amount          apijson.Field
+	Amounts         apijson.Field
 	Created         apijson.Field
 	DetailedResults apijson.Field
 	Result          apijson.Field
@@ -364,6 +505,113 @@ func (r *TransactionEvent) UnmarshalJSON(data []byte) (err error) {
 }
 
 func (r transactionEventJSON) RawJSON() string {
+	return r.raw
+}
+
+type TransactionEventsAmounts struct {
+	Cardholder TransactionEventsAmountsCardholder `json:"cardholder,required"`
+	Merchant   TransactionEventsAmountsMerchant   `json:"merchant,required"`
+	Settlement TransactionEventsAmountsSettlement `json:"settlement"`
+	JSON       transactionEventsAmountsJSON       `json:"-"`
+}
+
+// transactionEventsAmountsJSON contains the JSON metadata for the struct
+// [TransactionEventsAmounts]
+type transactionEventsAmountsJSON struct {
+	Cardholder  apijson.Field
+	Merchant    apijson.Field
+	Settlement  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *TransactionEventsAmounts) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionEventsAmountsJSON) RawJSON() string {
+	return r.raw
+}
+
+type TransactionEventsAmountsCardholder struct {
+	Amount         int64  `json:"amount,required"`
+	ConversionRate string `json:"conversion_rate,required"`
+	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
+	// special currencies like “XXX`. Enumerants names are lowercase cureency code
+	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
+	Currency shared.Currency                        `json:"currency,required"`
+	JSON     transactionEventsAmountsCardholderJSON `json:"-"`
+}
+
+// transactionEventsAmountsCardholderJSON contains the JSON metadata for the struct
+// [TransactionEventsAmountsCardholder]
+type transactionEventsAmountsCardholderJSON struct {
+	Amount         apijson.Field
+	ConversionRate apijson.Field
+	Currency       apijson.Field
+	raw            string
+	ExtraFields    map[string]apijson.Field
+}
+
+func (r *TransactionEventsAmountsCardholder) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionEventsAmountsCardholderJSON) RawJSON() string {
+	return r.raw
+}
+
+type TransactionEventsAmountsMerchant struct {
+	Amount int64 `json:"amount,required"`
+	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
+	// special currencies like “XXX`. Enumerants names are lowercase cureency code
+	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
+	Currency shared.Currency                      `json:"currency,required"`
+	JSON     transactionEventsAmountsMerchantJSON `json:"-"`
+}
+
+// transactionEventsAmountsMerchantJSON contains the JSON metadata for the struct
+// [TransactionEventsAmountsMerchant]
+type transactionEventsAmountsMerchantJSON struct {
+	Amount      apijson.Field
+	Currency    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *TransactionEventsAmountsMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionEventsAmountsMerchantJSON) RawJSON() string {
+	return r.raw
+}
+
+type TransactionEventsAmountsSettlement struct {
+	Amount         int64  `json:"amount,required"`
+	ConversionRate string `json:"conversion_rate,required"`
+	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
+	// special currencies like “XXX`. Enumerants names are lowercase cureency code
+	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
+	Currency shared.Currency                        `json:"currency,required"`
+	JSON     transactionEventsAmountsSettlementJSON `json:"-"`
+}
+
+// transactionEventsAmountsSettlementJSON contains the JSON metadata for the struct
+// [TransactionEventsAmountsSettlement]
+type transactionEventsAmountsSettlementJSON struct {
+	Amount         apijson.Field
+	ConversionRate apijson.Field
+	Currency       apijson.Field
+	raw            string
+	ExtraFields    map[string]apijson.Field
+}
+
+func (r *TransactionEventsAmountsSettlement) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionEventsAmountsSettlementJSON) RawJSON() string {
 	return r.raw
 }
 
