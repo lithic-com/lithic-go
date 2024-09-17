@@ -236,9 +236,9 @@ func TestAccountHolderResubmit(t *testing.T) {
 				Address: lithic.F(shared.AddressParam{
 					Address1:   lithic.F("123 Old Forest Way"),
 					City:       lithic.F("Omaha"),
-					Country:    lithic.F("USA"),
-					PostalCode: lithic.F("68022"),
-					State:      lithic.F("NE"),
+					Country:    lithic.F("CAN"),
+					PostalCode: lithic.F("M5V 1S8"),
+					State:      lithic.F("ON"),
 					Address2:   lithic.F("address2"),
 				}),
 				Dob:          lithic.F("1991-03-08 08:00:00"),
