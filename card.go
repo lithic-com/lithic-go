@@ -149,7 +149,7 @@ func (r *CardService) GetEmbedHTML(ctx context.Context, params CardGetEmbedHTMLP
 	if err != nil {
 		return nil, err
 	}
-	cfg, err := requestconfig.NewRequestConfig(ctx, "GET", "embed/card", nil, &res, opts...)
+	cfg, err := requestconfig.NewRequestConfig(ctx, "GET", "v1/embed/card", nil, &res, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -201,7 +201,7 @@ func (r *CardService) GetEmbedURL(ctx context.Context, params CardGetEmbedURLPar
 	if err != nil {
 		return nil, err
 	}
-	cfg, err := requestconfig.NewRequestConfig(ctx, "GET", "embed/card", nil, &res, opts...)
+	cfg, err := requestconfig.NewRequestConfig(ctx, "GET", "v1/embed/card", nil, &res, opts...)
 	if err != nil {
 		return nil, err
 	}
