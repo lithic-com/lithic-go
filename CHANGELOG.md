@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.50.1 (2024-09-18)
+
+Full Changelog: [v0.50.0...v0.50.1](https://github.com/lithic-com/lithic-go/compare/v0.50.0...v0.50.1)
+
+### Chores
+
+* **internal:** specify API version for each endpoints instead of hardcoded in base URLs ([#366](https://github.com/lithic-com/lithic-go/issues/366)) ([4331c84](https://github.com/lithic-com/lithic-go/commit/4331c84d281155fd91b9d79b16bf8648ddb3e454))
+* **tests:** fix GetEmbedURL to specify /v1/ prefix ([d6defc2](https://github.com/lithic-com/lithic-go/commit/d6defc2de23efe60003b7d67f202e6f170cfacf4))
+
 ## 0.50.0 (2024-09-17)
 
 Full Changelog: [v0.49.1...v0.50.0](https://github.com/lithic-com/lithic-go/compare/v0.49.1...v0.50.0)
