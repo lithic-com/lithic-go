@@ -38,7 +38,7 @@ func NewTokenizationDecisioningService(opts ...option.RequestOption) (r *Tokeniz
 // detail about verifying Tokenization Decisioning requests.
 func (r *TokenizationDecisioningService) GetSecret(ctx context.Context, opts ...option.RequestOption) (res *TokenizationSecret, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "tokenization_decisioning/secret"
+	path := "v1/tokenization_decisioning/secret"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -48,7 +48,7 @@ func (r *TokenizationDecisioningService) GetSecret(ctx context.Context, opts ...
 // to this endpoint.
 func (r *TokenizationDecisioningService) RotateSecret(ctx context.Context, opts ...option.RequestOption) (res *TokenizationDecisioningRotateSecretResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "tokenization_decisioning/secret/rotate"
+	path := "v1/tokenization_decisioning/secret/rotate"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
 	return
 }

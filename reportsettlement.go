@@ -40,7 +40,7 @@ func (r *ReportSettlementService) ListDetails(ctx context.Context, reportDate ti
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
-	path := fmt.Sprintf("reports/settlement/details/%s", reportDate.Format("2006-01-02"))
+	path := fmt.Sprintf("v1/reports/settlement/details/%s", reportDate.Format("2006-01-02"))
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (r *ReportSettlementService) ListDetailsAutoPaging(ctx context.Context, rep
 // Get the settlement report for a specified report date.
 func (r *ReportSettlementService) Summary(ctx context.Context, reportDate time.Time, opts ...option.RequestOption) (res *SettlementReport, err error) {
 	opts = append(r.Options[:], opts...)
-	path := fmt.Sprintf("reports/settlement/summary/%s", reportDate.Format("2006-01-02"))
+	path := fmt.Sprintf("v1/reports/settlement/summary/%s", reportDate.Format("2006-01-02"))
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }

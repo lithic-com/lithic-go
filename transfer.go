@@ -36,7 +36,7 @@ func NewTransferService(opts ...option.RequestOption) (r *TransferService) {
 // card
 func (r *TransferService) New(ctx context.Context, body TransferNewParams, opts ...option.RequestOption) (res *Transfer, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "transfer"
+	path := "v1/transfer"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }

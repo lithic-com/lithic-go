@@ -41,7 +41,7 @@ func (r *ThreeDSAuthenticationService) Get(ctx context.Context, threeDSAuthentic
 		err = errors.New("missing required three_ds_authentication_token parameter")
 		return
 	}
-	path := fmt.Sprintf("three_ds_authentication/%s", threeDSAuthenticationToken)
+	path := fmt.Sprintf("v1/three_ds_authentication/%s", threeDSAuthenticationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -52,7 +52,7 @@ func (r *ThreeDSAuthenticationService) Get(ctx context.Context, threeDSAuthentic
 // properly (respond with a valid JSON).
 func (r *ThreeDSAuthenticationService) Simulate(ctx context.Context, body ThreeDSAuthenticationSimulateParams, opts ...option.RequestOption) (res *ThreeDSAuthenticationSimulateResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "three_ds_authentication/simulate"
+	path := "v1/three_ds_authentication/simulate"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }

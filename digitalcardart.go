@@ -44,7 +44,7 @@ func (r *DigitalCardArtService) Get(ctx context.Context, digitalCardArtToken str
 		err = errors.New("missing required digital_card_art_token parameter")
 		return
 	}
-	path := fmt.Sprintf("digital_card_art/%s", digitalCardArtToken)
+	path := fmt.Sprintf("v1/digital_card_art/%s", digitalCardArtToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -54,7 +54,7 @@ func (r *DigitalCardArtService) List(ctx context.Context, query DigitalCardArtLi
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
-	path := "digital_card_art"
+	path := "v1/digital_card_art"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err

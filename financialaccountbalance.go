@@ -46,7 +46,7 @@ func (r *FinancialAccountBalanceService) List(ctx context.Context, financialAcco
 		err = errors.New("missing required financial_account_token parameter")
 		return
 	}
-	path := fmt.Sprintf("financial_accounts/%s/balances", financialAccountToken)
+	path := fmt.Sprintf("v1/financial_accounts/%s/balances", financialAccountToken)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err

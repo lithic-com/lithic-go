@@ -211,7 +211,7 @@ if err != nil {
 		println(apierr.Message)                    // Invalid parameter(s): type
 		println(apierr.DebuggingRequestID)         // 94d5e915-xxxx-4cee-a4f5-2xd6ebd279ac
 	}
-	panic(err.Error()) // GET "/cards": 400 Bad Request { ... }
+	panic(err.Error()) // GET "/v1/cards": 400 Bad Request { ... }
 }
 ```
 

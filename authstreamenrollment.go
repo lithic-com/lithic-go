@@ -38,7 +38,7 @@ func NewAuthStreamEnrollmentService(opts ...option.RequestOption) (r *AuthStream
 // for more detail about verifying ASA webhooks.
 func (r *AuthStreamEnrollmentService) GetSecret(ctx context.Context, opts ...option.RequestOption) (res *AuthStreamSecret, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "auth_stream/secret"
+	path := "v1/auth_stream/secret"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -50,7 +50,7 @@ func (r *AuthStreamEnrollmentService) GetSecret(ctx context.Context, opts ...opt
 func (r *AuthStreamEnrollmentService) RotateSecret(ctx context.Context, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
-	path := "auth_stream/secret/rotate"
+	path := "v1/auth_stream/secret/rotate"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
 	return
 }
