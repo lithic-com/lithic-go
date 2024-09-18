@@ -41,7 +41,7 @@ func (r *TransactionEventEnhancedCommercialDataService) Get(ctx context.Context,
 		err = errors.New("missing required event_token parameter")
 		return
 	}
-	path := fmt.Sprintf("transactions/events/%s/enhanced_commercial_data", eventToken)
+	path := fmt.Sprintf("v1/transactions/events/%s/enhanced_commercial_data", eventToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }

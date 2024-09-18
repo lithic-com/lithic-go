@@ -40,7 +40,7 @@ func NewPaymentService(opts ...option.RequestOption) (r *PaymentService) {
 // Initiates a payment between a financial account and an external bank account.
 func (r *PaymentService) New(ctx context.Context, body PaymentNewParams, opts ...option.RequestOption) (res *PaymentNewResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "payments"
+	path := "v1/payments"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -52,7 +52,7 @@ func (r *PaymentService) Get(ctx context.Context, paymentToken string, opts ...o
 		err = errors.New("missing required payment_token parameter")
 		return
 	}
-	path := fmt.Sprintf("payments/%s", paymentToken)
+	path := fmt.Sprintf("v1/payments/%s", paymentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -62,7 +62,7 @@ func (r *PaymentService) List(ctx context.Context, query PaymentListParams, opts
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
-	path := "payments"
+	path := "v1/payments"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func (r *PaymentService) Retry(ctx context.Context, paymentToken string, opts ..
 		err = errors.New("missing required payment_token parameter")
 		return
 	}
-	path := fmt.Sprintf("payments/%s/retry", paymentToken)
+	path := fmt.Sprintf("v1/payments/%s/retry", paymentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
 	return
 }
@@ -99,7 +99,7 @@ func (r *PaymentService) SimulateAction(ctx context.Context, paymentToken string
 		err = errors.New("missing required payment_token parameter")
 		return
 	}
-	path := fmt.Sprintf("simulate/payments/%s/action", paymentToken)
+	path := fmt.Sprintf("v1/simulate/payments/%s/action", paymentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -107,7 +107,7 @@ func (r *PaymentService) SimulateAction(ctx context.Context, paymentToken string
 // Simulates a receipt of a Payment.
 func (r *PaymentService) SimulateReceipt(ctx context.Context, body PaymentSimulateReceiptParams, opts ...option.RequestOption) (res *PaymentSimulateReceiptResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "simulate/payments/receipt"
+	path := "v1/simulate/payments/receipt"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -115,7 +115,7 @@ func (r *PaymentService) SimulateReceipt(ctx context.Context, body PaymentSimula
 // Simulates a release of a Payment.
 func (r *PaymentService) SimulateRelease(ctx context.Context, body PaymentSimulateReleaseParams, opts ...option.RequestOption) (res *PaymentSimulateReleaseResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "simulate/payments/release"
+	path := "v1/simulate/payments/release"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -123,7 +123,7 @@ func (r *PaymentService) SimulateRelease(ctx context.Context, body PaymentSimula
 // Simulates a return of a Payment.
 func (r *PaymentService) SimulateReturn(ctx context.Context, body PaymentSimulateReturnParams, opts ...option.RequestOption) (res *PaymentSimulateReturnResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "simulate/payments/return"
+	path := "v1/simulate/payments/return"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }

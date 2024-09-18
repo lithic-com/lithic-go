@@ -40,7 +40,7 @@ func (r *BalanceService) List(ctx context.Context, query BalanceListParams, opts
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
-	path := "balances"
+	path := "v1/balances"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err

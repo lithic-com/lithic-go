@@ -48,7 +48,7 @@ func NewFinancialAccountService(opts ...option.RequestOption) (r *FinancialAccou
 // Create a new financial account
 func (r *FinancialAccountService) New(ctx context.Context, params FinancialAccountNewParams, opts ...option.RequestOption) (res *FinancialAccount, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "financial_accounts"
+	path := "v1/financial_accounts"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, params, &res, opts...)
 	return
 }
@@ -60,7 +60,7 @@ func (r *FinancialAccountService) Get(ctx context.Context, financialAccountToken
 		err = errors.New("missing required financial_account_token parameter")
 		return
 	}
-	path := fmt.Sprintf("financial_accounts/%s", financialAccountToken)
+	path := fmt.Sprintf("v1/financial_accounts/%s", financialAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -72,7 +72,7 @@ func (r *FinancialAccountService) Update(ctx context.Context, financialAccountTo
 		err = errors.New("missing required financial_account_token parameter")
 		return
 	}
-	path := fmt.Sprintf("financial_accounts/%s", financialAccountToken)
+	path := fmt.Sprintf("v1/financial_accounts/%s", financialAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
 }
@@ -83,7 +83,7 @@ func (r *FinancialAccountService) List(ctx context.Context, query FinancialAccou
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
-	path := "financial_accounts"
+	path := "v1/financial_accounts"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err

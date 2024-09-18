@@ -48,7 +48,7 @@ func (r *FinancialAccountFinancialTransactionService) Get(ctx context.Context, f
 		err = errors.New("missing required financial_transaction_token parameter")
 		return
 	}
-	path := fmt.Sprintf("financial_accounts/%s/financial_transactions/%s", financialAccountToken, financialTransactionToken)
+	path := fmt.Sprintf("v1/financial_accounts/%s/financial_transactions/%s", financialAccountToken, financialTransactionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -62,7 +62,7 @@ func (r *FinancialAccountFinancialTransactionService) List(ctx context.Context, 
 		err = errors.New("missing required financial_account_token parameter")
 		return
 	}
-	path := fmt.Sprintf("financial_accounts/%s/financial_transactions", financialAccountToken)
+	path := fmt.Sprintf("v1/financial_accounts/%s/financial_transactions", financialAccountToken)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err

@@ -51,7 +51,7 @@ func NewCardService(opts ...option.RequestOption) (r *CardService) {
 // `product_id` only apply to physical cards.
 func (r *CardService) New(ctx context.Context, body CardNewParams, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "cards"
+	path := "v1/cards"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -63,7 +63,7 @@ func (r *CardService) Get(ctx context.Context, cardToken string, opts ...option.
 		err = errors.New("missing required card_token parameter")
 		return
 	}
-	path := fmt.Sprintf("cards/%s", cardToken)
+	path := fmt.Sprintf("v1/cards/%s", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -79,7 +79,7 @@ func (r *CardService) Update(ctx context.Context, cardToken string, body CardUpd
 		err = errors.New("missing required card_token parameter")
 		return
 	}
-	path := fmt.Sprintf("cards/%s", cardToken)
+	path := fmt.Sprintf("v1/cards/%s", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
 }
@@ -89,7 +89,7 @@ func (r *CardService) List(ctx context.Context, query CardListParams, opts ...op
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
-	path := "cards"
+	path := "v1/cards"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
@@ -138,7 +138,7 @@ func (r *CardService) ListAutoPaging(ctx context.Context, query CardListParams, 
 func (r *CardService) Embed(ctx context.Context, query CardEmbedParams, opts ...option.RequestOption) (res *string, err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "text/html")}, opts...)
-	path := "embed/card"
+	path := "v1/embed/card"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
 	return
 }
@@ -230,7 +230,7 @@ func (r *CardService) Provision(ctx context.Context, cardToken string, body Card
 		err = errors.New("missing required card_token parameter")
 		return
 	}
-	path := fmt.Sprintf("cards/%s/provision", cardToken)
+	path := fmt.Sprintf("v1/cards/%s/provision", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -244,7 +244,7 @@ func (r *CardService) Reissue(ctx context.Context, cardToken string, body CardRe
 		err = errors.New("missing required card_token parameter")
 		return
 	}
-	path := fmt.Sprintf("cards/%s/reissue", cardToken)
+	path := fmt.Sprintf("v1/cards/%s/reissue", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -258,7 +258,7 @@ func (r *CardService) Renew(ctx context.Context, cardToken string, body CardRene
 		err = errors.New("missing required card_token parameter")
 		return
 	}
-	path := fmt.Sprintf("cards/%s/renew", cardToken)
+	path := fmt.Sprintf("v1/cards/%s/renew", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -273,7 +273,7 @@ func (r *CardService) GetSpendLimits(ctx context.Context, cardToken string, opts
 		err = errors.New("missing required card_token parameter")
 		return
 	}
-	path := fmt.Sprintf("cards/%s/spend_limits", cardToken)
+	path := fmt.Sprintf("v1/cards/%s/spend_limits", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -285,7 +285,7 @@ func (r *CardService) GetSpendLimits(ctx context.Context, cardToken string, opts
 // body than in a URL._
 func (r *CardService) SearchByPan(ctx context.Context, body CardSearchByPanParams, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "cards/search_by_pan"
+	path := "v1/cards/search_by_pan"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -332,7 +332,7 @@ type Card struct {
 	//     time.
 	//   - `PENDING_FULFILLMENT` - The initial state for cards of type `PHYSICAL`. The
 	//     card is provisioned pending manufacturing and fulfillment. Cards in this state
-	//     can accept authorizations for e-commerce purchases, but not for "Card Present"
+	//     can accept authorizations for e-commerce purchases, but not for 'Card Present'
 	//     purchases where the physical card itself is present.
 	//   - `PENDING_ACTIVATION` - At regular intervals, cards of type `PHYSICAL` in state
 	//     `PENDING_FULFILLMENT` are sent to the card production warehouse and updated to
@@ -555,7 +555,7 @@ func (r CardPinStatus) IsKnown() bool {
 //     time.
 //   - `PENDING_FULFILLMENT` - The initial state for cards of type `PHYSICAL`. The
 //     card is provisioned pending manufacturing and fulfillment. Cards in this state
-//     can accept authorizations for e-commerce purchases, but not for "Card Present"
+//     can accept authorizations for e-commerce purchases, but not for 'Card Present'
 //     purchases where the physical card itself is present.
 //   - `PENDING_ACTIVATION` - At regular intervals, cards of type `PHYSICAL` in state
 //     `PENDING_FULFILLMENT` are sent to the card production warehouse and updated to

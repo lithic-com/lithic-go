@@ -41,7 +41,7 @@ func (r *FinancialAccountCreditConfigurationService) Get(ctx context.Context, fi
 		err = errors.New("missing required financial_account_token parameter")
 		return
 	}
-	path := fmt.Sprintf("financial_accounts/%s/credit_configuration", financialAccountToken)
+	path := fmt.Sprintf("v1/financial_accounts/%s/credit_configuration", financialAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -53,7 +53,7 @@ func (r *FinancialAccountCreditConfigurationService) Update(ctx context.Context,
 		err = errors.New("missing required financial_account_token parameter")
 		return
 	}
-	path := fmt.Sprintf("financial_accounts/%s/credit_configuration", financialAccountToken)
+	path := fmt.Sprintf("v1/financial_accounts/%s/credit_configuration", financialAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return
 }

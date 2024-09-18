@@ -44,7 +44,7 @@ func (r *TokenizationService) Get(ctx context.Context, tokenizationToken string,
 		err = errors.New("missing required tokenization_token parameter")
 		return
 	}
-	path := fmt.Sprintf("tokenizations/%s", tokenizationToken)
+	path := fmt.Sprintf("v1/tokenizations/%s", tokenizationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
@@ -54,7 +54,7 @@ func (r *TokenizationService) List(ctx context.Context, query TokenizationListPa
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
-	path := "tokenizations"
+	path := "v1/tokenizations"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
 	if err != nil {
 		return nil, err
@@ -87,7 +87,7 @@ func (r *TokenizationService) Activate(ctx context.Context, tokenizationToken st
 		err = errors.New("missing required tokenization_token parameter")
 		return
 	}
-	path := fmt.Sprintf("tokenizations/%s/activate", tokenizationToken)
+	path := fmt.Sprintf("v1/tokenizations/%s/activate", tokenizationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
 	return
 }
@@ -108,7 +108,7 @@ func (r *TokenizationService) Deactivate(ctx context.Context, tokenizationToken 
 		err = errors.New("missing required tokenization_token parameter")
 		return
 	}
-	path := fmt.Sprintf("tokenizations/%s/deactivate", tokenizationToken)
+	path := fmt.Sprintf("v1/tokenizations/%s/deactivate", tokenizationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
 	return
 }
@@ -128,7 +128,7 @@ func (r *TokenizationService) Pause(ctx context.Context, tokenizationToken strin
 		err = errors.New("missing required tokenization_token parameter")
 		return
 	}
-	path := fmt.Sprintf("tokenizations/%s/pause", tokenizationToken)
+	path := fmt.Sprintf("v1/tokenizations/%s/pause", tokenizationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
 	return
 }
@@ -150,7 +150,7 @@ func (r *TokenizationService) ResendActivationCode(ctx context.Context, tokeniza
 		err = errors.New("missing required tokenization_token parameter")
 		return
 	}
-	path := fmt.Sprintf("tokenizations/%s/resend_activation_code", tokenizationToken)
+	path := fmt.Sprintf("v1/tokenizations/%s/resend_activation_code", tokenizationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
 	return
 }
@@ -159,7 +159,7 @@ func (r *TokenizationService) ResendActivationCode(ctx context.Context, tokeniza
 // and merchant tokenization ecosystem.
 func (r *TokenizationService) Simulate(ctx context.Context, body TokenizationSimulateParams, opts ...option.RequestOption) (res *TokenizationSimulateResponse, err error) {
 	opts = append(r.Options[:], opts...)
-	path := "simulate/tokenizations"
+	path := "v1/simulate/tokenizations"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -178,7 +178,7 @@ func (r *TokenizationService) Unpause(ctx context.Context, tokenizationToken str
 		err = errors.New("missing required tokenization_token parameter")
 		return
 	}
-	path := fmt.Sprintf("tokenizations/%s/unpause", tokenizationToken)
+	path := fmt.Sprintf("v1/tokenizations/%s/unpause", tokenizationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
 	return
 }
@@ -197,7 +197,7 @@ func (r *TokenizationService) UpdateDigitalCardArt(ctx context.Context, tokeniza
 		err = errors.New("missing required tokenization_token parameter")
 		return
 	}
-	path := fmt.Sprintf("tokenizations/%s/update_digital_card_art", tokenizationToken)
+	path := fmt.Sprintf("v1/tokenizations/%s/update_digital_card_art", tokenizationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -508,8 +508,8 @@ func (r TokenizationListParamsTokenizationChannel) IsKnown() bool {
 
 type TokenizationResendActivationCodeParams struct {
 	// The communication method that the user has selected to use to receive the
-	// authentication code. Supported Values: Sms = "TEXT_TO_CARDHOLDER_NUMBER". Email
-	// = "EMAIL_TO_CARDHOLDER_ADDRESS"
+	// authentication code. Supported Values: Sms = 'TEXT_TO_CARDHOLDER_NUMBER'. Email
+	// = 'EMAIL_TO_CARDHOLDER_ADDRESS'
 	ActivationMethodType param.Field[TokenizationResendActivationCodeParamsActivationMethodType] `json:"activation_method_type"`
 }
 
@@ -518,8 +518,8 @@ func (r TokenizationResendActivationCodeParams) MarshalJSON() (data []byte, err 
 }
 
 // The communication method that the user has selected to use to receive the
-// authentication code. Supported Values: Sms = "TEXT_TO_CARDHOLDER_NUMBER". Email
-// = "EMAIL_TO_CARDHOLDER_ADDRESS"
+// authentication code. Supported Values: Sms = 'TEXT_TO_CARDHOLDER_NUMBER'. Email
+// = 'EMAIL_TO_CARDHOLDER_ADDRESS'
 type TokenizationResendActivationCodeParamsActivationMethodType string
 
 const (

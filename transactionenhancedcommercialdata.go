@@ -39,7 +39,7 @@ func (r *TransactionEnhancedCommercialDataService) Get(ctx context.Context, tran
 		err = errors.New("missing required transaction_token parameter")
 		return
 	}
-	path := fmt.Sprintf("transactions/%s/enhanced_commercial_data", transactionToken)
+	path := fmt.Sprintf("v1/transactions/%s/enhanced_commercial_data", transactionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
