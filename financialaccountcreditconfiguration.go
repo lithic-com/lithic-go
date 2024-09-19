@@ -65,11 +65,11 @@ type FinancialAccountCreditConfig struct {
 	// Globally unique identifier for the credit product
 	CreditProductToken       string `json:"credit_product_token,required,nullable"`
 	ExternalBankAccountToken string `json:"external_bank_account_token,required,nullable" format:"uuid"`
-	// State of the financial account
-	FinancialAccountState string `json:"financial_account_state,required,nullable"`
 	// Tier assigned to the financial account
-	Tier string                           `json:"tier,required,nullable"`
-	JSON financialAccountCreditConfigJSON `json:"-"`
+	Tier string `json:"tier,required,nullable"`
+	// State of the financial account
+	FinancialAccountState FinancialAccountCreditConfigFinancialAccountState `json:"financial_account_state"`
+	JSON                  financialAccountCreditConfigJSON                  `json:"-"`
 }
 
 // financialAccountCreditConfigJSON contains the JSON metadata for the struct
@@ -79,8 +79,8 @@ type financialAccountCreditConfigJSON struct {
 	CreditLimit              apijson.Field
 	CreditProductToken       apijson.Field
 	ExternalBankAccountToken apijson.Field
-	FinancialAccountState    apijson.Field
 	Tier                     apijson.Field
+	FinancialAccountState    apijson.Field
 	raw                      string
 	ExtraFields              map[string]apijson.Field
 }
@@ -91,6 +91,23 @@ func (r *FinancialAccountCreditConfig) UnmarshalJSON(data []byte) (err error) {
 
 func (r financialAccountCreditConfigJSON) RawJSON() string {
 	return r.raw
+}
+
+// State of the financial account
+type FinancialAccountCreditConfigFinancialAccountState string
+
+const (
+	FinancialAccountCreditConfigFinancialAccountStatePending    FinancialAccountCreditConfigFinancialAccountState = "PENDING"
+	FinancialAccountCreditConfigFinancialAccountStateCurrent    FinancialAccountCreditConfigFinancialAccountState = "CURRENT"
+	FinancialAccountCreditConfigFinancialAccountStateDelinquent FinancialAccountCreditConfigFinancialAccountState = "DELINQUENT"
+)
+
+func (r FinancialAccountCreditConfigFinancialAccountState) IsKnown() bool {
+	switch r {
+	case FinancialAccountCreditConfigFinancialAccountStatePending, FinancialAccountCreditConfigFinancialAccountStateCurrent, FinancialAccountCreditConfigFinancialAccountStateDelinquent:
+		return true
+	}
+	return false
 }
 
 type FinancialAccountCreditConfigurationUpdateParams struct {

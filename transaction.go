@@ -185,10 +185,10 @@ type Transaction struct {
 	// A list of all events that have modified this transaction.
 	Events   []TransactionEvent  `json:"events,required"`
 	Merchant TransactionMerchant `json:"merchant,required"`
-	// Analogous to the 'amount' property, but will represent the amount in the
+	// Analogous to the "amount" property, but will represent the amount in the
 	// transaction's local currency (smallest unit), including any acquirer fees.
 	MerchantAmount int64 `json:"merchant_amount,required,nullable"`
-	// Analogous to the 'authorization_amount' property, but will represent the amount
+	// Analogous to the "authorization_amount" property, but will represent the amount
 	// in the transaction's local currency (smallest unit), including any acquirer
 	// fees.
 	MerchantAuthorizationAmount int64 `json:"merchant_authorization_amount,required,nullable"`

@@ -231,28 +231,28 @@ type AccountHolder struct {
 	Created time.Time `json:"created,required" format:"date-time"`
 	// Globally unique identifier for the account.
 	AccountToken string `json:"account_token" format:"uuid"`
-	// Only present when user_type == 'BUSINESS'. List of all entities with >25%
+	// Only present when user_type == "BUSINESS". List of all entities with >25%
 	// ownership in the company.
 	BeneficialOwnerEntities []AccountHolderBeneficialOwnerEntity `json:"beneficial_owner_entities"`
-	// Only present when user_type == 'BUSINESS'. List of all individuals with >25%
+	// Only present when user_type == "BUSINESS". List of all individuals with >25%
 	// ownership in the company.
 	BeneficialOwnerIndividuals []AccountHolderBeneficialOwnerIndividual `json:"beneficial_owner_individuals"`
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
 	// users of businesses. Pass the account_token of the enrolled business associated
 	// with the AUTHORIZED_USER in this field.
 	BusinessAccountToken string `json:"business_account_token" format:"uuid"`
-	// Only present when user_type == 'BUSINESS'. Information about the business for
+	// Only present when user_type == "BUSINESS". Information about the business for
 	// which the account is being opened and KYB is being run.
 	BusinessEntity AccountHolderBusinessEntity `json:"business_entity"`
-	// Only present when user_type == 'BUSINESS'. An individual with significant
+	// Only present when user_type == "BUSINESS". An individual with significant
 	// responsibility for managing the legal entity (e.g., a Chief Executive Officer,
 	// Chief Financial Officer, Chief Operating Officer, Managing Member, General
 	// Partner, President, Vice President, or Treasurer). This can be an executive, or
 	// someone who will have program-wide access to the cards that Lithic will provide.
 	// In some cases, this individual could also be a beneficial owner listed above.
 	ControlPerson AccountHolderControlPerson `json:"control_person"`
-	// < Deprecated. Use control_person.email when user_type == 'BUSINESS'. Use
-	// individual.phone_number when user_type == 'INDIVIDUAL'.
+	// < Deprecated. Use control_person.email when user_type == "BUSINESS". Use
+	// individual.phone_number when user_type == "INDIVIDUAL".
 	//
 	// > Primary email of Account Holder.
 	Email string `json:"email"`
@@ -261,20 +261,20 @@ type AccountHolder struct {
 	// Customer-provided token that indicates a relationship with an object outside of
 	// the Lithic ecosystem.
 	ExternalID string `json:"external_id" format:"string"`
-	// Only present when user_type == 'INDIVIDUAL'. Information about the individual
+	// Only present when user_type == "INDIVIDUAL". Information about the individual
 	// for which the account is being opened and KYC is being run.
 	Individual AccountHolderIndividual `json:"individual"`
-	// Only present when user_type == 'BUSINESS'. User-submitted description of the
+	// Only present when user_type == "BUSINESS". User-submitted description of the
 	// business.
 	NatureOfBusiness string `json:"nature_of_business" format:"string"`
-	// < Deprecated. Use control_person.phone_number when user_type == 'BUSINESS'. Use
-	// individual.phone_number when user_type == 'INDIVIDUAL'.
+	// < Deprecated. Use control_person.phone_number when user_type == "BUSINESS". Use
+	// individual.phone_number when user_type == "INDIVIDUAL".
 	//
 	// > Primary phone of Account Holder, entered in E.164 format.
 	PhoneNumber string `json:"phone_number"`
-	// Only present for 'KYB_BASIC' and 'KYC_ADVANCED' workflows. A list of documents
+	// Only present for "KYB_BASIC" and "KYC_ADVANCED" workflows. A list of documents
 	// required for the account holder to be approved.
-	RequiredDocuments []AccountHolderRequiredDocument `json:"required_documents"`
+	RequiredDocuments []RequiredDocument `json:"required_documents"`
 	// <Deprecated. Use verification_application.status instead>
 	//
 	// KYC and KYB evaluation states.
@@ -288,14 +288,14 @@ type AccountHolder struct {
 	// <Deprecated. Use verification_application.status_reasons> Reason for the
 	// evaluation status.
 	StatusReasons []AccountHolderStatusReason `json:"status_reasons"`
-	// The type of Account Holder. If the type is 'INDIVIDUAL', the 'individual'
-	// attribute will be present. If the type is 'BUSINESS' then the 'business_entity',
-	// 'control_person', 'beneficial_owner_individuals', 'beneficial_owner_entities',
-	// 'nature_of_business', and 'website_url' attributes will be present.
+	// The type of Account Holder. If the type is "INDIVIDUAL", the "individual"
+	// attribute will be present. If the type is "BUSINESS" then the "business_entity",
+	// "control_person", "beneficial_owner_individuals", "beneficial_owner_entities",
+	// "nature_of_business", and "website_url" attributes will be present.
 	UserType AccountHolderUserType `json:"user_type"`
 	// Information about the most recent identity verification attempt
 	VerificationApplication AccountHolderVerificationApplication `json:"verification_application"`
-	// Only present when user_type == 'BUSINESS'. Business's primary website.
+	// Only present when user_type == "BUSINESS". Business's primary website.
 	WebsiteURL string            `json:"website_url" format:"string"`
 	JSON       accountHolderJSON `json:"-"`
 }
@@ -422,7 +422,7 @@ func (r accountHolderBeneficialOwnerIndividualJSON) RawJSON() string {
 	return r.raw
 }
 
-// Only present when user_type == 'BUSINESS'. Information about the business for
+// Only present when user_type == "BUSINESS". Information about the business for
 // which the account is being opened and KYB is being run.
 type AccountHolderBusinessEntity struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
@@ -469,7 +469,7 @@ func (r accountHolderBusinessEntityJSON) RawJSON() string {
 	return r.raw
 }
 
-// Only present when user_type == 'BUSINESS'. An individual with significant
+// Only present when user_type == "BUSINESS". An individual with significant
 // responsibility for managing the legal entity (e.g., a Chief Executive Officer,
 // Chief Financial Officer, Chief Operating Officer, Managing Member, General
 // Partner, President, Vice President, or Treasurer). This can be an executive, or
@@ -531,7 +531,7 @@ func (r AccountHolderExemptionType) IsKnown() bool {
 	return false
 }
 
-// Only present when user_type == 'INDIVIDUAL'. Information about the individual
+// Only present when user_type == "INDIVIDUAL". Information about the individual
 // for which the account is being opened and KYC is being run.
 type AccountHolderIndividual struct {
 	// Individual's current address
@@ -570,36 +570,6 @@ func (r *AccountHolderIndividual) UnmarshalJSON(data []byte) (err error) {
 }
 
 func (r accountHolderIndividualJSON) RawJSON() string {
-	return r.raw
-}
-
-type AccountHolderRequiredDocument struct {
-	// Globally unique identifier for an entity.
-	EntityToken string `json:"entity_token,required" format:"uuid"`
-	// rovides the status reasons that will be satisfied by providing one of the valid
-	// documents.
-	StatusReasons []string `json:"status_reasons,required"`
-	// A list of valid documents that will satisfy the KYC requirements for the
-	// specified entity.
-	ValidDocuments []string                          `json:"valid_documents,required"`
-	JSON           accountHolderRequiredDocumentJSON `json:"-"`
-}
-
-// accountHolderRequiredDocumentJSON contains the JSON metadata for the struct
-// [AccountHolderRequiredDocument]
-type accountHolderRequiredDocumentJSON struct {
-	EntityToken    apijson.Field
-	StatusReasons  apijson.Field
-	ValidDocuments apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
-}
-
-func (r *AccountHolderRequiredDocument) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r accountHolderRequiredDocumentJSON) RawJSON() string {
 	return r.raw
 }
 
@@ -654,10 +624,10 @@ func (r AccountHolderStatusReason) IsKnown() bool {
 	return false
 }
 
-// The type of Account Holder. If the type is 'INDIVIDUAL', the 'individual'
-// attribute will be present. If the type is 'BUSINESS' then the 'business_entity',
-// 'control_person', 'beneficial_owner_individuals', 'beneficial_owner_entities',
-// 'nature_of_business', and 'website_url' attributes will be present.
+// The type of Account Holder. If the type is "INDIVIDUAL", the "individual"
+// attribute will be present. If the type is "BUSINESS" then the "business_entity",
+// "control_person", "beneficial_owner_individuals", "beneficial_owner_entities",
+// "nature_of_business", and "website_url" attributes will be present.
 type AccountHolderUserType string
 
 const (
@@ -1076,6 +1046,36 @@ func (r KYCExemptWorkflow) IsKnown() bool {
 	return false
 }
 
+type RequiredDocument struct {
+	// Globally unique identifier for an entity.
+	EntityToken string `json:"entity_token,required" format:"uuid"`
+	// rovides the status reasons that will be satisfied by providing one of the valid
+	// documents.
+	StatusReasons []string `json:"status_reasons,required"`
+	// A list of valid documents that will satisfy the KYC requirements for the
+	// specified entity.
+	ValidDocuments []string             `json:"valid_documents,required"`
+	JSON           requiredDocumentJSON `json:"-"`
+}
+
+// requiredDocumentJSON contains the JSON metadata for the struct
+// [RequiredDocument]
+type requiredDocumentJSON struct {
+	EntityToken    apijson.Field
+	StatusReasons  apijson.Field
+	ValidDocuments apijson.Field
+	raw            string
+	ExtraFields    map[string]apijson.Field
+}
+
+func (r *RequiredDocument) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r requiredDocumentJSON) RawJSON() string {
+	return r.raw
+}
+
 type AccountHolderNewResponse struct {
 	// Globally unique identifier for the account holder.
 	Token string `json:"token,required" format:"uuid"`
@@ -1095,21 +1095,25 @@ type AccountHolderNewResponse struct {
 	Created time.Time `json:"created" format:"date-time"`
 	// Customer-provided token that indicates a relationship with an object outside of
 	// the Lithic ecosystem.
-	ExternalID string                       `json:"external_id" format:"string"`
-	JSON       accountHolderNewResponseJSON `json:"-"`
+	ExternalID string `json:"external_id" format:"string"`
+	// Only present for "KYB_BASIC" and "KYC_ADVANCED" workflows. A list of documents
+	// required for the account holder to be approved.
+	RequiredDocuments []RequiredDocument           `json:"required_documents"`
+	JSON              accountHolderNewResponseJSON `json:"-"`
 }
 
 // accountHolderNewResponseJSON contains the JSON metadata for the struct
 // [AccountHolderNewResponse]
 type accountHolderNewResponseJSON struct {
-	Token         apijson.Field
-	AccountToken  apijson.Field
-	Status        apijson.Field
-	StatusReasons apijson.Field
-	Created       apijson.Field
-	ExternalID    apijson.Field
-	raw           string
-	ExtraFields   map[string]apijson.Field
+	Token             apijson.Field
+	AccountToken      apijson.Field
+	Status            apijson.Field
+	StatusReasons     apijson.Field
+	Created           apijson.Field
+	ExternalID        apijson.Field
+	RequiredDocuments apijson.Field
+	raw               string
+	ExtraFields       map[string]apijson.Field
 }
 
 func (r *AccountHolderNewResponse) UnmarshalJSON(data []byte) (err error) {
@@ -1228,20 +1232,20 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 	Token string `json:"token" format:"uuid"`
 	// Globally unique identifier for the account.
 	AccountToken string `json:"account_token" format:"uuid"`
-	// Only present when user_type == 'BUSINESS'. List of all entities with >25%
+	// Only present when user_type == "BUSINESS". List of all entities with >25%
 	// ownership in the company.
 	BeneficialOwnerEntities []AccountHolderSimulateEnrollmentReviewResponseBeneficialOwnerEntity `json:"beneficial_owner_entities"`
-	// Only present when user_type == 'BUSINESS'. List of all individuals with >25%
+	// Only present when user_type == "BUSINESS". List of all individuals with >25%
 	// ownership in the company.
 	BeneficialOwnerIndividuals []AccountHolderSimulateEnrollmentReviewResponseBeneficialOwnerIndividual `json:"beneficial_owner_individuals"`
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
 	// users of businesses. Pass the account_token of the enrolled business associated
 	// with the AUTHORIZED_USER in this field.
 	BusinessAccountToken string `json:"business_account_token" format:"uuid"`
-	// Only present when user_type == 'BUSINESS'. Information about the business for
+	// Only present when user_type == "BUSINESS". Information about the business for
 	// which the account is being opened and KYB is being run.
 	BusinessEntity AccountHolderSimulateEnrollmentReviewResponseBusinessEntity `json:"business_entity"`
-	// Only present when user_type == 'BUSINESS'.
+	// Only present when user_type == "BUSINESS".
 	//
 	// An individual with significant responsibility for managing the legal entity
 	// (e.g., a Chief Executive Officer, Chief Financial Officer, Chief Operating
@@ -1255,31 +1259,31 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 	ControlPerson AccountHolderSimulateEnrollmentReviewResponseControlPerson `json:"control_person"`
 	// Timestamp of when the account holder was created.
 	Created time.Time `json:"created" format:"date-time"`
-	// < Deprecated. Use control_person.email when user_type == 'BUSINESS'. Use
-	// individual.phone_number when user_type == 'INDIVIDUAL'.
+	// < Deprecated. Use control_person.email when user_type == "BUSINESS". Use
+	// individual.phone_number when user_type == "INDIVIDUAL".
 	//
 	// > Primary email of Account Holder.
 	Email string `json:"email"`
-	// The type of KYC exemption for a KYC-Exempt Account Holder. 'None' if the account
+	// The type of KYC exemption for a KYC-Exempt Account Holder. "None" if the account
 	// holder is not KYC-Exempt.
 	ExemptionType AccountHolderSimulateEnrollmentReviewResponseExemptionType `json:"exemption_type"`
 	// Customer-provided token that indicates a relationship with an object outside of
 	// the Lithic ecosystem.
 	ExternalID string `json:"external_id" format:"string"`
-	// Only present when user_type == 'INDIVIDUAL'. Information about the individual
+	// Only present when user_type == "INDIVIDUAL". Information about the individual
 	// for which the account is being opened and KYC is being run.
 	Individual AccountHolderSimulateEnrollmentReviewResponseIndividual `json:"individual"`
-	// Only present when user_type == 'BUSINESS'. User-submitted description of the
+	// Only present when user_type == "BUSINESS". User-submitted description of the
 	// business.
 	NatureOfBusiness string `json:"nature_of_business" format:"string"`
-	// < Deprecated. Use control_person.phone_number when user_type == 'BUSINESS'. Use
-	// individual.phone_number when user_type == 'INDIVIDUAL'.
+	// < Deprecated. Use control_person.phone_number when user_type == "BUSINESS". Use
+	// individual.phone_number when user_type == "INDIVIDUAL".
 	//
 	// > Primary phone of Account Holder, entered in E.164 format.
 	PhoneNumber string `json:"phone_number"`
-	// Only present for 'KYB_BASIC' and 'KYC_ADVANCED' workflows. A list of documents
+	// Only present for "KYB_BASIC" and "KYC_ADVANCED" workflows. A list of documents
 	// required for the account holder to be approved.
-	RequiredDocuments []AccountHolderSimulateEnrollmentReviewResponseRequiredDocument `json:"required_documents"`
+	RequiredDocuments []RequiredDocument `json:"required_documents"`
 	// <Deprecated. Use verification_application.status instead>
 	//
 	// KYC and KYB evaluation states.
@@ -1290,17 +1294,17 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 	// <Deprecated. Use verification_application.status_reasons> Reason for the
 	// evaluation status.
 	StatusReasons []AccountHolderSimulateEnrollmentReviewResponseStatusReason `json:"status_reasons"`
-	// The type of Account Holder. If the type is 'INDIVIDUAL', the 'individual'
+	// The type of Account Holder. If the type is "INDIVIDUAL", the "individual"
 	// attribute will be present.
 	//
-	// If the type is 'BUSINESS' then the 'business_entity', 'control_person',
-	// 'beneficial_owner_individuals', 'beneficial_owner_entities',
+	// If the type is "BUSINESS" then the "business_entity", "control_person",
+	// "beneficial_owner_individuals", "beneficial_owner_entities",
 	//
-	// 'nature_of_business', and 'website_url' attributes will be present.
+	// "nature_of_business", and "website_url" attributes will be present.
 	UserType AccountHolderSimulateEnrollmentReviewResponseUserType `json:"user_type"`
 	// Information about the most recent identity verification attempt
 	VerificationApplication AccountHolderSimulateEnrollmentReviewResponseVerificationApplication `json:"verification_application"`
-	// Only present when user_type == 'BUSINESS'. Business's primary website.
+	// Only present when user_type == "BUSINESS". Business's primary website.
 	WebsiteURL string                                            `json:"website_url" format:"string"`
 	JSON       accountHolderSimulateEnrollmentReviewResponseJSON `json:"-"`
 }
@@ -1509,7 +1513,7 @@ func (r accountHolderSimulateEnrollmentReviewResponseBeneficialOwnerIndividualsA
 	return r.raw
 }
 
-// Only present when user_type == 'BUSINESS'. Information about the business for
+// Only present when user_type == "BUSINESS". Information about the business for
 // which the account is being opened and KYB is being run.
 type AccountHolderSimulateEnrollmentReviewResponseBusinessEntity struct {
 	// Business”s physical address - PO boxes, UPS drops, and FedEx drops are not
@@ -1597,7 +1601,7 @@ func (r accountHolderSimulateEnrollmentReviewResponseBusinessEntityAddressJSON) 
 	return r.raw
 }
 
-// Only present when user_type == 'BUSINESS'.
+// Only present when user_type == "BUSINESS".
 //
 // An individual with significant responsibility for managing the legal entity
 // (e.g., a Chief Executive Officer, Chief Financial Officer, Chief Operating
@@ -1691,7 +1695,7 @@ func (r accountHolderSimulateEnrollmentReviewResponseControlPersonAddressJSON) R
 	return r.raw
 }
 
-// The type of KYC exemption for a KYC-Exempt Account Holder. 'None' if the account
+// The type of KYC exemption for a KYC-Exempt Account Holder. "None" if the account
 // holder is not KYC-Exempt.
 type AccountHolderSimulateEnrollmentReviewResponseExemptionType string
 
@@ -1708,7 +1712,7 @@ func (r AccountHolderSimulateEnrollmentReviewResponseExemptionType) IsKnown() bo
 	return false
 }
 
-// Only present when user_type == 'INDIVIDUAL'. Information about the individual
+// Only present when user_type == "INDIVIDUAL". Information about the individual
 // for which the account is being opened and KYC is being run.
 type AccountHolderSimulateEnrollmentReviewResponseIndividual struct {
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
@@ -1793,37 +1797,6 @@ func (r accountHolderSimulateEnrollmentReviewResponseIndividualAddressJSON) RawJ
 	return r.raw
 }
 
-type AccountHolderSimulateEnrollmentReviewResponseRequiredDocument struct {
-	// Globally unique identifier for an entity.
-	EntityToken string `json:"entity_token,required" format:"uuid"`
-	// rovides the status reasons that will be satisfied by providing one of the valid
-	// documents.
-	StatusReasons []string `json:"status_reasons,required"`
-	// A list of valid documents that will satisfy the KYC requirements for the
-	// specified entity.
-	ValidDocuments []string                                                          `json:"valid_documents,required"`
-	JSON           accountHolderSimulateEnrollmentReviewResponseRequiredDocumentJSON `json:"-"`
-}
-
-// accountHolderSimulateEnrollmentReviewResponseRequiredDocumentJSON contains the
-// JSON metadata for the struct
-// [AccountHolderSimulateEnrollmentReviewResponseRequiredDocument]
-type accountHolderSimulateEnrollmentReviewResponseRequiredDocumentJSON struct {
-	EntityToken    apijson.Field
-	StatusReasons  apijson.Field
-	ValidDocuments apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
-}
-
-func (r *AccountHolderSimulateEnrollmentReviewResponseRequiredDocument) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r accountHolderSimulateEnrollmentReviewResponseRequiredDocumentJSON) RawJSON() string {
-	return r.raw
-}
-
 // <Deprecated. Use verification_application.status instead>
 //
 // KYC and KYB evaluation states.
@@ -1872,13 +1845,13 @@ func (r AccountHolderSimulateEnrollmentReviewResponseStatusReason) IsKnown() boo
 	return false
 }
 
-// The type of Account Holder. If the type is 'INDIVIDUAL', the 'individual'
+// The type of Account Holder. If the type is "INDIVIDUAL", the "individual"
 // attribute will be present.
 //
-// If the type is 'BUSINESS' then the 'business_entity', 'control_person',
-// 'beneficial_owner_individuals', 'beneficial_owner_entities',
+// If the type is "BUSINESS" then the "business_entity", "control_person",
+// "beneficial_owner_individuals", "beneficial_owner_entities",
 //
-// 'nature_of_business', and 'website_url' attributes will be present.
+// "nature_of_business", and "website_url" attributes will be present.
 type AccountHolderSimulateEnrollmentReviewResponseUserType string
 
 const (

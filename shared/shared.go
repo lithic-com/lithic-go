@@ -3,8 +3,11 @@
 package shared
 
 import (
+	"reflect"
+
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/param"
+	"github.com/tidwall/gjson"
 )
 
 type Address struct {
@@ -12,12 +15,16 @@ type Address struct {
 	Address1 string `json:"address1,required"`
 	// Name of city.
 	City string `json:"city,required"`
-	// Valid country code. USA and CAN are supported, entered in uppercase ISO 3166-1
-	// alpha-3 three-character format.
+	// Valid country code, entered in uppercase ISO 3166-1 alpha-3 three-character
+	// format. Only USA is currently supported for all workflows. KYC_EXEMPT supports
+	// CAN additionally.
 	Country string `json:"country,required"`
-	// Valid postal code.
+	// Valid postal code. USA postal codes (ZIP codes) are supported, entered as a
+	// five-digit postal code or nine-digit postal code (ZIP+4) using the format
+	// 12345-1234. KYC_EXEMPT supports Canadian postal codes.
 	PostalCode string `json:"postal_code,required"`
-	// Valid state code.
+	// Valid state code. USA state codes are supported, entered in uppercase ISO 3166-2
+	// two-character format. KYC_EXEMPT supports Canadian province codes.
 	State string `json:"state,required"`
 	// Unit or apartment number (if applicable).
 	Address2 string      `json:"address2"`
@@ -49,12 +56,16 @@ type AddressParam struct {
 	Address1 param.Field[string] `json:"address1,required"`
 	// Name of city.
 	City param.Field[string] `json:"city,required"`
-	// Valid country code. USA and CAN are supported, entered in uppercase ISO 3166-1
-	// alpha-3 three-character format.
+	// Valid country code, entered in uppercase ISO 3166-1 alpha-3 three-character
+	// format. Only USA is currently supported for all workflows. KYC_EXEMPT supports
+	// CAN additionally.
 	Country param.Field[string] `json:"country,required"`
-	// Valid postal code.
+	// Valid postal code. USA postal codes (ZIP codes) are supported, entered as a
+	// five-digit postal code or nine-digit postal code (ZIP+4) using the format
+	// 12345-1234. KYC_EXEMPT supports Canadian postal codes.
 	PostalCode param.Field[string] `json:"postal_code,required"`
-	// Valid state code.
+	// Valid state code. USA state codes are supported, entered in uppercase ISO 3166-2
+	// two-character format. KYC_EXEMPT supports Canadian province codes.
 	State param.Field[string] `json:"state,required"`
 	// Unit or apartment number (if applicable).
 	Address2 param.Field[string] `json:"address2"`
@@ -62,6 +73,73 @@ type AddressParam struct {
 
 func (r AddressParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
+}
+
+type AuthRule struct {
+	// Globally unique identifier.
+	Token string `json:"token,required" format:"uuid"`
+	// Indicates whether the Auth Rule is ACTIVE or INACTIVE
+	State AuthRuleState `json:"state,required"`
+	// Array of account_token(s) identifying the accounts that the Auth Rule applies
+	// to. Note that only this field or `card_tokens` can be provided for a given Auth
+	// Rule.
+	AccountTokens []string `json:"account_tokens"`
+	// Countries in which the Auth Rule permits transactions. Note that Lithic
+	// maintains a list of countries in which all transactions are blocked; "allowing"
+	// those countries in an Auth Rule does not override the Lithic-wide restrictions.
+	AllowedCountries []string `json:"allowed_countries"`
+	// Merchant category codes for which the Auth Rule permits transactions.
+	AllowedMcc []string `json:"allowed_mcc"`
+	// Countries in which the Auth Rule automatically declines transactions.
+	BlockedCountries []string `json:"blocked_countries"`
+	// Merchant category codes for which the Auth Rule automatically declines
+	// transactions.
+	BlockedMcc []string `json:"blocked_mcc"`
+	// Array of card_token(s) identifying the cards that the Auth Rule applies to. Note
+	// that only this field or `account_tokens` can be provided for a given Auth Rule.
+	CardTokens []string `json:"card_tokens"`
+	// Boolean indicating whether the Auth Rule is applied at the program level.
+	ProgramLevel bool         `json:"program_level"`
+	JSON         authRuleJSON `json:"-"`
+}
+
+// authRuleJSON contains the JSON metadata for the struct [AuthRule]
+type authRuleJSON struct {
+	Token            apijson.Field
+	State            apijson.Field
+	AccountTokens    apijson.Field
+	AllowedCountries apijson.Field
+	AllowedMcc       apijson.Field
+	BlockedCountries apijson.Field
+	BlockedMcc       apijson.Field
+	CardTokens       apijson.Field
+	ProgramLevel     apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
+}
+
+func (r *AuthRule) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleJSON) RawJSON() string {
+	return r.raw
+}
+
+// Indicates whether the Auth Rule is ACTIVE or INACTIVE
+type AuthRuleState string
+
+const (
+	AuthRuleStateActive   AuthRuleState = "ACTIVE"
+	AuthRuleStateInactive AuthRuleState = "INACTIVE"
+)
+
+func (r AuthRuleState) IsKnown() bool {
+	switch r {
+	case AuthRuleStateActive, AuthRuleStateInactive:
+		return true
+	}
+	return false
 }
 
 type CarrierParam struct {
@@ -466,3 +544,157 @@ type ShippingAddressParam struct {
 func (r ShippingAddressParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
+
+type VelocityLimitParams struct {
+	Filters VelocityLimitParamsFilters `json:"filters,required"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds.
+	Period VelocityLimitParamsPeriodUnion `json:"period,required"`
+	Scope  VelocityLimitParamsScope       `json:"scope,required"`
+	// The maximum amount of spend velocity allowed in the period in minor units (the
+	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
+	// limit will be declined.
+	LimitAmount float64 `json:"limit_amount,nullable"`
+	// The number of spend velocity impacting transactions may not exceed this limit in
+	// the period. Transactions exceeding this limit will be declined. A spend velocity
+	// impacting transaction is a transaction that has been authorized, and optionally
+	// settled, or a force post (a transaction that settled without prior
+	// authorization).
+	LimitCount float64                 `json:"limit_count,nullable"`
+	JSON       velocityLimitParamsJSON `json:"-"`
+}
+
+// velocityLimitParamsJSON contains the JSON metadata for the struct
+// [VelocityLimitParams]
+type velocityLimitParamsJSON struct {
+	Filters     apijson.Field
+	Period      apijson.Field
+	Scope       apijson.Field
+	LimitAmount apijson.Field
+	LimitCount  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *VelocityLimitParams) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r velocityLimitParamsJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r VelocityLimitParams) ImplementsAuthRuleV2NewResponseCurrentVersionParameters() {}
+
+func (r VelocityLimitParams) ImplementsAuthRuleV2NewResponseDraftVersionParameters() {}
+
+func (r VelocityLimitParams) ImplementsAuthRuleV2GetResponseCurrentVersionParameters() {}
+
+func (r VelocityLimitParams) ImplementsAuthRuleV2GetResponseDraftVersionParameters() {}
+
+func (r VelocityLimitParams) ImplementsAuthRuleV2UpdateResponseCurrentVersionParameters() {}
+
+func (r VelocityLimitParams) ImplementsAuthRuleV2UpdateResponseDraftVersionParameters() {}
+
+func (r VelocityLimitParams) ImplementsAuthRuleV2ListResponseCurrentVersionParameters() {}
+
+func (r VelocityLimitParams) ImplementsAuthRuleV2ListResponseDraftVersionParameters() {}
+
+func (r VelocityLimitParams) ImplementsAuthRuleV2ApplyResponseCurrentVersionParameters() {}
+
+func (r VelocityLimitParams) ImplementsAuthRuleV2ApplyResponseDraftVersionParameters() {}
+
+func (r VelocityLimitParams) ImplementsAuthRuleV2DraftResponseCurrentVersionParameters() {}
+
+func (r VelocityLimitParams) ImplementsAuthRuleV2DraftResponseDraftVersionParameters() {}
+
+func (r VelocityLimitParams) ImplementsAuthRuleV2PromoteResponseCurrentVersionParameters() {}
+
+func (r VelocityLimitParams) ImplementsAuthRuleV2PromoteResponseDraftVersionParameters() {}
+
+type VelocityLimitParamsFilters struct {
+	// ISO-3166-1 alpha-3 Country Codes to include in the velocity calculation.
+	// Transactions not matching any of the provided will not be included in the
+	// calculated velocity.
+	IncludeCountries []string `json:"include_countries,nullable"`
+	// Merchant Category Codes to include in the velocity calculation. Transactions not
+	// matching this MCC will not be included in the calculated velocity.
+	IncludeMccs []string                       `json:"include_mccs,nullable"`
+	JSON        velocityLimitParamsFiltersJSON `json:"-"`
+}
+
+// velocityLimitParamsFiltersJSON contains the JSON metadata for the struct
+// [VelocityLimitParamsFilters]
+type velocityLimitParamsFiltersJSON struct {
+	IncludeCountries apijson.Field
+	IncludeMccs      apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
+}
+
+func (r *VelocityLimitParamsFilters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r velocityLimitParamsFiltersJSON) RawJSON() string {
+	return r.raw
+}
+
+// The size of the trailing window to calculate Spend Velocity over in seconds.
+//
+// Union satisfied by [shared.UnionFloat] or
+// [shared.VelocityLimitParamsPeriodWindow].
+type VelocityLimitParamsPeriodUnion interface {
+	ImplementsSharedVelocityLimitParamsPeriodUnion()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*VelocityLimitParamsPeriodUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(UnionFloat(0)),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(VelocityLimitParamsPeriodWindow("")),
+		},
+	)
+}
+
+type VelocityLimitParamsScope string
+
+const (
+	VelocityLimitParamsScopeCard    VelocityLimitParamsScope = "CARD"
+	VelocityLimitParamsScopeAccount VelocityLimitParamsScope = "ACCOUNT"
+)
+
+func (r VelocityLimitParamsScope) IsKnown() bool {
+	switch r {
+	case VelocityLimitParamsScopeCard, VelocityLimitParamsScopeAccount:
+		return true
+	}
+	return false
+}
+
+// The window of time to calculate Spend Velocity over.
+//
+//   - `DAY`: Velocity over the current day since midnight Eastern Time.
+//   - `MONTH`: Velocity over the current month since 00:00 / 12 AM on the first of
+//     the month in Eastern Time.
+type VelocityLimitParamsPeriodWindow string
+
+const (
+	VelocityLimitParamsPeriodWindowDay   VelocityLimitParamsPeriodWindow = "DAY"
+	VelocityLimitParamsPeriodWindowMonth VelocityLimitParamsPeriodWindow = "MONTH"
+)
+
+func (r VelocityLimitParamsPeriodWindow) IsKnown() bool {
+	switch r {
+	case VelocityLimitParamsPeriodWindowDay, VelocityLimitParamsPeriodWindowMonth:
+		return true
+	}
+	return false
+}
+
+func (r VelocityLimitParamsPeriodWindow) ImplementsSharedVelocityLimitParamsPeriodUnion() {}
