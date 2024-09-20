@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.51.1 (2024-09-20)
+
+Full Changelog: [v0.51.0...v0.51.1](https://github.com/lithic-com/lithic-go/compare/v0.51.0...v0.51.1)
+
+### Bug Fixes
+
+* remove use of 'CreditProductService' type that doesn't exist ([6e4386d](https://github.com/lithic-com/lithic-go/commit/6e4386d8fa681501973209cc70e7b6519c667393))
+
 ## 0.51.0 (2024-09-20)
 
 Full Changelog: [v0.50.1...v0.51.0](https://github.com/lithic-com/lithic-go/compare/v0.50.1...v0.51.0)
