@@ -102,43 +102,37 @@ func (r *FinancialAccountService) ListAutoPaging(ctx context.Context, query Fina
 	return pagination.NewSinglePageAutoPager(r.List(ctx, query, opts...))
 }
 
-// Financial Account
 type FinancialAccount struct {
-	// Globally unique identifier for the financial account.
-	Token string `json:"token,required" format:"uuid"`
-	// Date and time for when the financial account was first created.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// Whether the financial account holds funds for benefit of another party.
-	IsForBenefitOf bool `json:"is_for_benefit_of,required"`
-	// Type of financial account
-	Type FinancialAccountType `json:"type,required"`
-	// Date and time for when the financial account was last updated.
-	Updated time.Time `json:"updated,required" format:"date-time"`
-	// Account number for your Lithic-assigned bank account number, if applicable.
-	AccountNumber string `json:"account_number"`
-	// Account token of the financial account if applicable.
-	AccountToken string `json:"account_token" format:"uuid"`
-	// User-defined nickname for the financial account.
-	Nickname string `json:"nickname"`
-	// Routing number for your Lithic-assigned bank account number, if applicable.
-	RoutingNumber string               `json:"routing_number"`
-	JSON          financialAccountJSON `json:"-"`
+	// Globally unique identifier for the account
+	Token               string                              `json:"token,required" format:"uuid"`
+	AccountToken        string                              `json:"account_token,required,nullable" format:"uuid"`
+	Created             time.Time                           `json:"created,required" format:"date-time"`
+	CreditConfiguration FinancialAccountCreditConfiguration `json:"credit_configuration,required,nullable"`
+	// Whether financial account is for the benefit of another entity
+	IsForBenefitOf bool                 `json:"is_for_benefit_of,required"`
+	Nickname       string               `json:"nickname,required,nullable"`
+	Type           FinancialAccountType `json:"type,required"`
+	Updated        time.Time            `json:"updated,required" format:"date-time"`
+	AccountNumber  string               `json:"account_number,nullable"`
+	RoutingNumber  string               `json:"routing_number,nullable"`
+	JSON           financialAccountJSON `json:"-"`
 }
 
 // financialAccountJSON contains the JSON metadata for the struct
 // [FinancialAccount]
 type financialAccountJSON struct {
-	Token          apijson.Field
-	Created        apijson.Field
-	IsForBenefitOf apijson.Field
-	Type           apijson.Field
-	Updated        apijson.Field
-	AccountNumber  apijson.Field
-	AccountToken   apijson.Field
-	Nickname       apijson.Field
-	RoutingNumber  apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
+	Token               apijson.Field
+	AccountToken        apijson.Field
+	Created             apijson.Field
+	CreditConfiguration apijson.Field
+	IsForBenefitOf      apijson.Field
+	Nickname            apijson.Field
+	Type                apijson.Field
+	Updated             apijson.Field
+	AccountNumber       apijson.Field
+	RoutingNumber       apijson.Field
+	raw                 string
+	ExtraFields         map[string]apijson.Field
 }
 
 func (r *FinancialAccount) UnmarshalJSON(data []byte) (err error) {
@@ -149,18 +143,66 @@ func (r financialAccountJSON) RawJSON() string {
 	return r.raw
 }
 
-// Type of financial account
+type FinancialAccountCreditConfiguration struct {
+	CreditLimit int64 `json:"credit_limit,required,nullable"`
+	// Globally unique identifier for the credit product
+	CreditProductToken       string `json:"credit_product_token,required,nullable"`
+	ExternalBankAccountToken string `json:"external_bank_account_token,required,nullable" format:"uuid"`
+	// Tier assigned to the financial account
+	Tier string `json:"tier,required,nullable"`
+	// State of the financial account
+	FinancialAccountState FinancialAccountCreditConfigurationFinancialAccountState `json:"financial_account_state"`
+	JSON                  financialAccountCreditConfigurationJSON                  `json:"-"`
+}
+
+// financialAccountCreditConfigurationJSON contains the JSON metadata for the
+// struct [FinancialAccountCreditConfiguration]
+type financialAccountCreditConfigurationJSON struct {
+	CreditLimit              apijson.Field
+	CreditProductToken       apijson.Field
+	ExternalBankAccountToken apijson.Field
+	Tier                     apijson.Field
+	FinancialAccountState    apijson.Field
+	raw                      string
+	ExtraFields              map[string]apijson.Field
+}
+
+func (r *FinancialAccountCreditConfiguration) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r financialAccountCreditConfigurationJSON) RawJSON() string {
+	return r.raw
+}
+
+// State of the financial account
+type FinancialAccountCreditConfigurationFinancialAccountState string
+
+const (
+	FinancialAccountCreditConfigurationFinancialAccountStatePending    FinancialAccountCreditConfigurationFinancialAccountState = "PENDING"
+	FinancialAccountCreditConfigurationFinancialAccountStateCurrent    FinancialAccountCreditConfigurationFinancialAccountState = "CURRENT"
+	FinancialAccountCreditConfigurationFinancialAccountStateDelinquent FinancialAccountCreditConfigurationFinancialAccountState = "DELINQUENT"
+)
+
+func (r FinancialAccountCreditConfigurationFinancialAccountState) IsKnown() bool {
+	switch r {
+	case FinancialAccountCreditConfigurationFinancialAccountStatePending, FinancialAccountCreditConfigurationFinancialAccountStateCurrent, FinancialAccountCreditConfigurationFinancialAccountStateDelinquent:
+		return true
+	}
+	return false
+}
+
 type FinancialAccountType string
 
 const (
 	FinancialAccountTypeIssuing   FinancialAccountType = "ISSUING"
-	FinancialAccountTypeOperating FinancialAccountType = "OPERATING"
 	FinancialAccountTypeReserve   FinancialAccountType = "RESERVE"
+	FinancialAccountTypeOperating FinancialAccountType = "OPERATING"
 )
 
 func (r FinancialAccountType) IsKnown() bool {
 	switch r {
-	case FinancialAccountTypeIssuing, FinancialAccountTypeOperating, FinancialAccountTypeReserve:
+	case FinancialAccountTypeIssuing, FinancialAccountTypeReserve, FinancialAccountTypeOperating:
 		return true
 	}
 	return false

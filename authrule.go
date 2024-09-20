@@ -15,6 +15,7 @@ import (
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/option"
+	"github.com/lithic-com/lithic-go/shared"
 )
 
 // AuthRuleService contains methods and other services that help with interacting
@@ -25,6 +26,7 @@ import (
 // the [NewAuthRuleService] method instead.
 type AuthRuleService struct {
 	Options []option.RequestOption
+	V2      *AuthRuleV2Service
 }
 
 // NewAuthRuleService generates a new service that applies the given options to
@@ -33,12 +35,13 @@ type AuthRuleService struct {
 func NewAuthRuleService(opts ...option.RequestOption) (r *AuthRuleService) {
 	r = &AuthRuleService{}
 	r.Options = opts
+	r.V2 = NewAuthRuleV2Service(opts...)
 	return
 }
 
 // Creates an authorization rule (Auth Rule) and applies it at the program,
 // account, or card level.
-func (r *AuthRuleService) New(ctx context.Context, body AuthRuleNewParams, opts ...option.RequestOption) (res *AuthRule, err error) {
+func (r *AuthRuleService) New(ctx context.Context, body AuthRuleNewParams, opts ...option.RequestOption) (res *shared.AuthRule, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "v1/auth_rules"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -60,7 +63,7 @@ func (r *AuthRuleService) Get(ctx context.Context, authRuleToken string, opts ..
 
 // Update the properties associated with an existing authorization rule (Auth
 // Rule).
-func (r *AuthRuleService) Update(ctx context.Context, authRuleToken string, body AuthRuleUpdateParams, opts ...option.RequestOption) (res *AuthRule, err error) {
+func (r *AuthRuleService) Update(ctx context.Context, authRuleToken string, body AuthRuleUpdateParams, opts ...option.RequestOption) (res *shared.AuthRule, err error) {
 	opts = append(r.Options[:], opts...)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
@@ -72,7 +75,7 @@ func (r *AuthRuleService) Update(ctx context.Context, authRuleToken string, body
 }
 
 // Return all of the Auth Rules under the program.
-func (r *AuthRuleService) List(ctx context.Context, query AuthRuleListParams, opts ...option.RequestOption) (res *pagination.CursorPage[AuthRule], err error) {
+func (r *AuthRuleService) List(ctx context.Context, query AuthRuleListParams, opts ...option.RequestOption) (res *pagination.CursorPage[shared.AuthRule], err error) {
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -90,13 +93,13 @@ func (r *AuthRuleService) List(ctx context.Context, query AuthRuleListParams, op
 }
 
 // Return all of the Auth Rules under the program.
-func (r *AuthRuleService) ListAutoPaging(ctx context.Context, query AuthRuleListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[AuthRule] {
+func (r *AuthRuleService) ListAutoPaging(ctx context.Context, query AuthRuleListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[shared.AuthRule] {
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
 // Applies an existing authorization rule (Auth Rule) to an program, account, or
 // card level.
-func (r *AuthRuleService) Apply(ctx context.Context, authRuleToken string, body AuthRuleApplyParams, opts ...option.RequestOption) (res *AuthRule, err error) {
+func (r *AuthRuleService) Apply(ctx context.Context, authRuleToken string, body AuthRuleApplyParams, opts ...option.RequestOption) (res *shared.AuthRule, err error) {
 	opts = append(r.Options[:], opts...)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
@@ -116,75 +119,8 @@ func (r *AuthRuleService) Remove(ctx context.Context, body AuthRuleRemoveParams,
 	return
 }
 
-type AuthRule struct {
-	// Globally unique identifier.
-	Token string `json:"token,required" format:"uuid"`
-	// Indicates whether the Auth Rule is ACTIVE or INACTIVE
-	State AuthRuleState `json:"state,required"`
-	// Array of account_token(s) identifying the accounts that the Auth Rule applies
-	// to. Note that only this field or `card_tokens` can be provided for a given Auth
-	// Rule.
-	AccountTokens []string `json:"account_tokens"`
-	// Countries in which the Auth Rule permits transactions. Note that Lithic
-	// maintains a list of countries in which all transactions are blocked; 'allowing'
-	// those countries in an Auth Rule does not override the Lithic-wide restrictions.
-	AllowedCountries []string `json:"allowed_countries"`
-	// Merchant category codes for which the Auth Rule permits transactions.
-	AllowedMcc []string `json:"allowed_mcc"`
-	// Countries in which the Auth Rule automatically declines transactions.
-	BlockedCountries []string `json:"blocked_countries"`
-	// Merchant category codes for which the Auth Rule automatically declines
-	// transactions.
-	BlockedMcc []string `json:"blocked_mcc"`
-	// Array of card_token(s) identifying the cards that the Auth Rule applies to. Note
-	// that only this field or `account_tokens` can be provided for a given Auth Rule.
-	CardTokens []string `json:"card_tokens"`
-	// Boolean indicating whether the Auth Rule is applied at the program level.
-	ProgramLevel bool         `json:"program_level"`
-	JSON         authRuleJSON `json:"-"`
-}
-
-// authRuleJSON contains the JSON metadata for the struct [AuthRule]
-type authRuleJSON struct {
-	Token            apijson.Field
-	State            apijson.Field
-	AccountTokens    apijson.Field
-	AllowedCountries apijson.Field
-	AllowedMcc       apijson.Field
-	BlockedCountries apijson.Field
-	BlockedMcc       apijson.Field
-	CardTokens       apijson.Field
-	ProgramLevel     apijson.Field
-	raw              string
-	ExtraFields      map[string]apijson.Field
-}
-
-func (r *AuthRule) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleJSON) RawJSON() string {
-	return r.raw
-}
-
-// Indicates whether the Auth Rule is ACTIVE or INACTIVE
-type AuthRuleState string
-
-const (
-	AuthRuleStateActive   AuthRuleState = "ACTIVE"
-	AuthRuleStateInactive AuthRuleState = "INACTIVE"
-)
-
-func (r AuthRuleState) IsKnown() bool {
-	switch r {
-	case AuthRuleStateActive, AuthRuleStateInactive:
-		return true
-	}
-	return false
-}
-
 type AuthRuleGetResponse struct {
-	Data []AuthRule              `json:"data"`
+	Data []shared.AuthRule       `json:"data"`
 	JSON authRuleGetResponseJSON `json:"-"`
 }
 
@@ -235,7 +171,7 @@ type AuthRuleNewParams struct {
 	// Rule.
 	AccountTokens param.Field[[]string] `json:"account_tokens"`
 	// Countries in which the Auth Rule permits transactions. Note that Lithic
-	// maintains a list of countries in which all transactions are blocked; 'allowing'
+	// maintains a list of countries in which all transactions are blocked; "allowing"
 	// those countries in an Auth Rule does not override the Lithic-wide restrictions.
 	AllowedCountries param.Field[[]string] `json:"allowed_countries"`
 	// Merchant category codes for which the Auth Rule permits transactions.

@@ -16,6 +16,20 @@ type Address = shared.Address
 type AddressParam = shared.AddressParam
 
 // This is an alias to an internal type.
+type AuthRule = shared.AuthRule
+
+// Indicates whether the Auth Rule is ACTIVE or INACTIVE
+//
+// This is an alias to an internal type.
+type AuthRuleState = shared.AuthRuleState
+
+// This is an alias to an internal value.
+const AuthRuleStateActive = shared.AuthRuleStateActive
+
+// This is an alias to an internal value.
+const AuthRuleStateInactive = shared.AuthRuleStateInactive
+
+// This is an alias to an internal type.
 type CarrierParam = shared.CarrierParam
 
 // ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
@@ -689,3 +703,38 @@ const DocumentRequiredDocumentUploadsStatusReasonUnknownError = shared.DocumentR
 
 // This is an alias to an internal type.
 type ShippingAddressParam = shared.ShippingAddressParam
+
+// This is an alias to an internal type.
+type VelocityLimitParams = shared.VelocityLimitParams
+
+// This is an alias to an internal type.
+type VelocityLimitParamsFilters = shared.VelocityLimitParamsFilters
+
+// The size of the trailing window to calculate Spend Velocity over in seconds.
+//
+// This is an alias to an internal type.
+type VelocityLimitParamsPeriodUnion = shared.VelocityLimitParamsPeriodUnion
+
+// This is an alias to an internal type.
+type VelocityLimitParamsScope = shared.VelocityLimitParamsScope
+
+// This is an alias to an internal value.
+const VelocityLimitParamsScopeCard = shared.VelocityLimitParamsScopeCard
+
+// This is an alias to an internal value.
+const VelocityLimitParamsScopeAccount = shared.VelocityLimitParamsScopeAccount
+
+// The window of time to calculate Spend Velocity over.
+//
+//   - `DAY`: Velocity over the current day since midnight Eastern Time.
+//   - `MONTH`: Velocity over the current month since 00:00 / 12 AM on the first of
+//     the month in Eastern Time.
+//
+// This is an alias to an internal type.
+type VelocityLimitParamsPeriodWindow = shared.VelocityLimitParamsPeriodWindow
+
+// This is an alias to an internal value.
+const VelocityLimitParamsPeriodWindowDay = shared.VelocityLimitParamsPeriodWindowDay
+
+// This is an alias to an internal value.
+const VelocityLimitParamsPeriodWindowMonth = shared.VelocityLimitParamsPeriodWindowMonth
