@@ -39,7 +39,6 @@ type Client struct {
 	CardPrograms            *CardProgramService
 	DigitalCardArt          *DigitalCardArtService
 	BookTransfers           *BookTransferService
-	CreditProducts          *CreditProductService
 	ExternalPayments        *ExternalPaymentService
 }
 
@@ -82,7 +81,6 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.CardPrograms = NewCardProgramService(opts...)
 	r.DigitalCardArt = NewDigitalCardArtService(opts...)
 	r.BookTransfers = NewBookTransferService(opts...)
-	r.CreditProducts = NewCreditProductService(opts...)
 	r.ExternalPayments = NewExternalPaymentService(opts...)
 
 	return
