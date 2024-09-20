@@ -508,8 +508,8 @@ func (r TokenizationListParamsTokenizationChannel) IsKnown() bool {
 
 type TokenizationResendActivationCodeParams struct {
 	// The communication method that the user has selected to use to receive the
-	// authentication code. Supported Values: Sms = 'TEXT_TO_CARDHOLDER_NUMBER'. Email
-	// = 'EMAIL_TO_CARDHOLDER_ADDRESS'
+	// authentication code. Supported Values: Sms = "TEXT_TO_CARDHOLDER_NUMBER". Email
+	// = "EMAIL_TO_CARDHOLDER_ADDRESS"
 	ActivationMethodType param.Field[TokenizationResendActivationCodeParamsActivationMethodType] `json:"activation_method_type"`
 }
 
@@ -518,8 +518,8 @@ func (r TokenizationResendActivationCodeParams) MarshalJSON() (data []byte, err 
 }
 
 // The communication method that the user has selected to use to receive the
-// authentication code. Supported Values: Sms = 'TEXT_TO_CARDHOLDER_NUMBER'. Email
-// = 'EMAIL_TO_CARDHOLDER_ADDRESS'
+// authentication code. Supported Values: Sms = "TEXT_TO_CARDHOLDER_NUMBER". Email
+// = "EMAIL_TO_CARDHOLDER_ADDRESS"
 type TokenizationResendActivationCodeParamsActivationMethodType string
 
 const (

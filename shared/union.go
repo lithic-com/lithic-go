@@ -1,0 +1,82 @@
+// File generated from our OpenAPI spec by Stainless. See CONTRIBUTING.md for details.
+
+package shared
+
+type UnionString string
+
+func (UnionString) ImplementsAuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionString) ImplementsAuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionString) ImplementsAuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionString) ImplementsAuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionString) ImplementsAuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionString) ImplementsAuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionString) ImplementsAuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionString) ImplementsAuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionString) ImplementsAuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionString) ImplementsAuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionString) ImplementsAuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionString) ImplementsAuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionString) ImplementsAuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionString) ImplementsAuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionString) ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionString) ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionString) ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionString) ImplementsAuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsValueUnion() {
+}
+
+type UnionFloat float64
+
+func (UnionFloat) ImplementsSharedVelocityLimitParamsPeriodUnion() {}
+func (UnionFloat) ImplementsAuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionFloat) ImplementsAuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionFloat) ImplementsAuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionFloat) ImplementsAuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionFloat) ImplementsAuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionFloat) ImplementsAuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionFloat) ImplementsAuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionFloat) ImplementsAuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionFloat) ImplementsAuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionFloat) ImplementsAuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionFloat) ImplementsAuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionFloat) ImplementsAuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionFloat) ImplementsAuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionFloat) ImplementsAuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionFloat) ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionFloat) ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionFloat) ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionFloat) ImplementsAuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsValueUnion() {
+}
