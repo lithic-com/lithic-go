@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.51.0 (2024-09-20)
+
+Full Changelog: [v0.50.1...v0.51.0](https://github.com/lithic-com/lithic-go/compare/v0.50.1...v0.51.0)
+
+### ⚠ BREAKING CHANGES
+
+* **api:** update model `FinancialAccount` ([#369](https://github.com/lithic-com/lithic-go/issues/369))
+
+### Features
+
+* **api:** update model `FinancialAccount` ([#369](https://github.com/lithic-com/lithic-go/issues/369)) ([d7d3d47](https://github.com/lithic-com/lithic-go/commit/d7d3d473ecf8ce1ebfea523d8a22b288c0e6494c))
+
 ## 0.50.1 (2024-09-18)
 
 Full Changelog: [v0.50.0...v0.50.1](https://github.com/lithic-com/lithic-go/compare/v0.50.0...v0.50.1)
