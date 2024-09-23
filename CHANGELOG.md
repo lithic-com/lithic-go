@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.52.0 (2024-09-23)
+
+Full Changelog: [v0.51.1...v0.52.0](https://github.com/lithic-com/lithic-go/compare/v0.51.1...v0.52.0)
+
+### Features
+
+* **api:** add `canceled` to `transaction_status` enum values ([#373](https://github.com/lithic-com/lithic-go/issues/373)) ([2628d65](https://github.com/lithic-com/lithic-go/commit/2628d65737c9587dfd592358d1c33c31f568387e))
+
 ## 0.51.1 (2024-09-20)
 
 Full Changelog: [v0.51.0...v0.51.1](https://github.com/lithic-com/lithic-go/compare/v0.51.0...v0.51.1)
