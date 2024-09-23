@@ -33,7 +33,7 @@ const AuthRuleStateInactive = shared.AuthRuleStateInactive
 type CarrierParam = shared.CarrierParam
 
 // ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
-// special currencies like “XXX`. Enumerants names are lowercase cureency code
+// special currencies like “XXX`. Enumerants names are lowercase currency code
 // e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
 //
 // This is an alias to an internal type.
