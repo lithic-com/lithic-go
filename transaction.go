@@ -298,7 +298,7 @@ type TransactionAmountsCardholder struct {
 	Amount         int64  `json:"amount,required"`
 	ConversionRate string `json:"conversion_rate,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
-	// special currencies like “XXX`. Enumerants names are lowercase cureency code
+	// special currencies like “XXX`. Enumerants names are lowercase currency code
 	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
 	Currency shared.Currency                  `json:"currency,required"`
 	JSON     transactionAmountsCardholderJSON `json:"-"`
@@ -325,7 +325,7 @@ func (r transactionAmountsCardholderJSON) RawJSON() string {
 type TransactionAmountsHold struct {
 	Amount int64 `json:"amount,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
-	// special currencies like “XXX`. Enumerants names are lowercase cureency code
+	// special currencies like “XXX`. Enumerants names are lowercase currency code
 	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
 	Currency shared.Currency            `json:"currency,required"`
 	JSON     transactionAmountsHoldJSON `json:"-"`
@@ -351,7 +351,7 @@ func (r transactionAmountsHoldJSON) RawJSON() string {
 type TransactionAmountsMerchant struct {
 	Amount int64 `json:"amount,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
-	// special currencies like “XXX`. Enumerants names are lowercase cureency code
+	// special currencies like “XXX`. Enumerants names are lowercase currency code
 	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
 	Currency shared.Currency                `json:"currency,required"`
 	JSON     transactionAmountsMerchantJSON `json:"-"`
@@ -377,7 +377,7 @@ func (r transactionAmountsMerchantJSON) RawJSON() string {
 type TransactionAmountsSettlement struct {
 	Amount int64 `json:"amount,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
-	// special currencies like “XXX`. Enumerants names are lowercase cureency code
+	// special currencies like “XXX`. Enumerants names are lowercase currency code
 	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
 	Currency shared.Currency                  `json:"currency,required"`
 	JSON     transactionAmountsSettlementJSON `json:"-"`
@@ -537,7 +537,7 @@ type TransactionEventsAmountsCardholder struct {
 	Amount         int64  `json:"amount,required"`
 	ConversionRate string `json:"conversion_rate,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
-	// special currencies like “XXX`. Enumerants names are lowercase cureency code
+	// special currencies like “XXX`. Enumerants names are lowercase currency code
 	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
 	Currency shared.Currency                        `json:"currency,required"`
 	JSON     transactionEventsAmountsCardholderJSON `json:"-"`
@@ -564,7 +564,7 @@ func (r transactionEventsAmountsCardholderJSON) RawJSON() string {
 type TransactionEventsAmountsMerchant struct {
 	Amount int64 `json:"amount,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
-	// special currencies like “XXX`. Enumerants names are lowercase cureency code
+	// special currencies like “XXX`. Enumerants names are lowercase currency code
 	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
 	Currency shared.Currency                      `json:"currency,required"`
 	JSON     transactionEventsAmountsMerchantJSON `json:"-"`
@@ -591,7 +591,7 @@ type TransactionEventsAmountsSettlement struct {
 	Amount         int64  `json:"amount,required"`
 	ConversionRate string `json:"conversion_rate,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
-	// special currencies like “XXX`. Enumerants names are lowercase cureency code
+	// special currencies like “XXX`. Enumerants names are lowercase currency code
 	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
 	Currency shared.Currency                        `json:"currency,required"`
 	JSON     transactionEventsAmountsSettlementJSON `json:"-"`

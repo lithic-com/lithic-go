@@ -323,11 +323,12 @@ const (
 	ExternalPaymentStatusSettled  ExternalPaymentStatus = "SETTLED"
 	ExternalPaymentStatusDeclined ExternalPaymentStatus = "DECLINED"
 	ExternalPaymentStatusReversed ExternalPaymentStatus = "REVERSED"
+	ExternalPaymentStatusCanceled ExternalPaymentStatus = "CANCELED"
 )
 
 func (r ExternalPaymentStatus) IsKnown() bool {
 	switch r {
-	case ExternalPaymentStatusPending, ExternalPaymentStatusSettled, ExternalPaymentStatusDeclined, ExternalPaymentStatusReversed:
+	case ExternalPaymentStatusPending, ExternalPaymentStatusSettled, ExternalPaymentStatusDeclined, ExternalPaymentStatusReversed, ExternalPaymentStatusCanceled:
 		return true
 	}
 	return false
@@ -473,11 +474,12 @@ const (
 	ExternalPaymentListParamsStatusSettled  ExternalPaymentListParamsStatus = "SETTLED"
 	ExternalPaymentListParamsStatusDeclined ExternalPaymentListParamsStatus = "DECLINED"
 	ExternalPaymentListParamsStatusReversed ExternalPaymentListParamsStatus = "REVERSED"
+	ExternalPaymentListParamsStatusCanceled ExternalPaymentListParamsStatus = "CANCELED"
 )
 
 func (r ExternalPaymentListParamsStatus) IsKnown() bool {
 	switch r {
-	case ExternalPaymentListParamsStatusPending, ExternalPaymentListParamsStatusSettled, ExternalPaymentListParamsStatusDeclined, ExternalPaymentListParamsStatusReversed:
+	case ExternalPaymentListParamsStatusPending, ExternalPaymentListParamsStatusSettled, ExternalPaymentListParamsStatusDeclined, ExternalPaymentListParamsStatusReversed, ExternalPaymentListParamsStatusCanceled:
 		return true
 	}
 	return false
