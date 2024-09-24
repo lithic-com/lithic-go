@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.53.0 (2024-09-24)
+
+Full Changelog: [v0.52.0...v0.53.0](https://github.com/lithic-com/lithic-go/compare/v0.52.0...v0.53.0)
+
+### Features
+
+* **api:** add `ACCOUNT_DELINQUENT` to `detailed_results` enum ([#375](https://github.com/lithic-com/lithic-go/issues/375)) ([d0bb73f](https://github.com/lithic-com/lithic-go/commit/d0bb73f7f6cb6582d06c01c45132cc3d9cb397f9))
+
 ## 0.52.0 (2024-09-23)
 
 Full Changelog: [v0.51.1...v0.52.0](https://github.com/lithic-com/lithic-go/compare/v0.51.1...v0.52.0)
