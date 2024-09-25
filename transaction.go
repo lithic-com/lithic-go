@@ -299,7 +299,7 @@ type TransactionAmountsCardholder struct {
 	ConversionRate string `json:"conversion_rate,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like “XXX`. Enumerants names are lowercase currency code
-	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
+	// e.g. :attr:`EUR`, :attr:`USD`.
 	Currency shared.Currency                  `json:"currency,required"`
 	JSON     transactionAmountsCardholderJSON `json:"-"`
 }
@@ -326,7 +326,7 @@ type TransactionAmountsHold struct {
 	Amount int64 `json:"amount,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like “XXX`. Enumerants names are lowercase currency code
-	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
+	// e.g. :attr:`EUR`, :attr:`USD`.
 	Currency shared.Currency            `json:"currency,required"`
 	JSON     transactionAmountsHoldJSON `json:"-"`
 }
@@ -352,7 +352,7 @@ type TransactionAmountsMerchant struct {
 	Amount int64 `json:"amount,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like “XXX`. Enumerants names are lowercase currency code
-	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
+	// e.g. :attr:`EUR`, :attr:`USD`.
 	Currency shared.Currency                `json:"currency,required"`
 	JSON     transactionAmountsMerchantJSON `json:"-"`
 }
@@ -378,7 +378,7 @@ type TransactionAmountsSettlement struct {
 	Amount int64 `json:"amount,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like “XXX`. Enumerants names are lowercase currency code
-	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
+	// e.g. :attr:`EUR`, :attr:`USD`.
 	Currency shared.Currency                  `json:"currency,required"`
 	JSON     transactionAmountsSettlementJSON `json:"-"`
 }
@@ -483,21 +483,24 @@ type TransactionEvent struct {
 	//   - `RETURN_REVERSAL` - A refund has been reversed (e.g., when a merchant reverses
 	//     an incorrect refund).
 	Type TransactionEventsType `json:"type,required"`
-	JSON transactionEventJSON  `json:"-"`
+	// Indicates whether the transaction event is a credit or debit to the account.
+	EffectivePolarity TransactionEventsEffectivePolarity `json:"effective_polarity"`
+	JSON              transactionEventJSON               `json:"-"`
 }
 
 // transactionEventJSON contains the JSON metadata for the struct
 // [TransactionEvent]
 type transactionEventJSON struct {
-	Token           apijson.Field
-	Amount          apijson.Field
-	Amounts         apijson.Field
-	Created         apijson.Field
-	DetailedResults apijson.Field
-	Result          apijson.Field
-	Type            apijson.Field
-	raw             string
-	ExtraFields     map[string]apijson.Field
+	Token             apijson.Field
+	Amount            apijson.Field
+	Amounts           apijson.Field
+	Created           apijson.Field
+	DetailedResults   apijson.Field
+	Result            apijson.Field
+	Type              apijson.Field
+	EffectivePolarity apijson.Field
+	raw               string
+	ExtraFields       map[string]apijson.Field
 }
 
 func (r *TransactionEvent) UnmarshalJSON(data []byte) (err error) {
@@ -538,7 +541,7 @@ type TransactionEventsAmountsCardholder struct {
 	ConversionRate string `json:"conversion_rate,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like “XXX`. Enumerants names are lowercase currency code
-	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
+	// e.g. :attr:`EUR`, :attr:`USD`.
 	Currency shared.Currency                        `json:"currency,required"`
 	JSON     transactionEventsAmountsCardholderJSON `json:"-"`
 }
@@ -565,7 +568,7 @@ type TransactionEventsAmountsMerchant struct {
 	Amount int64 `json:"amount,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like “XXX`. Enumerants names are lowercase currency code
-	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
+	// e.g. :attr:`EUR`, :attr:`USD`.
 	Currency shared.Currency                      `json:"currency,required"`
 	JSON     transactionEventsAmountsMerchantJSON `json:"-"`
 }
@@ -592,7 +595,7 @@ type TransactionEventsAmountsSettlement struct {
 	ConversionRate string `json:"conversion_rate,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like “XXX`. Enumerants names are lowercase currency code
-	// e.g. :attr:`Currency.eur`, :attr:`Currency.usd`.
+	// e.g. :attr:`EUR`, :attr:`USD`.
 	Currency shared.Currency                        `json:"currency,required"`
 	JSON     transactionEventsAmountsSettlementJSON `json:"-"`
 }
@@ -778,6 +781,22 @@ const (
 func (r TransactionEventsType) IsKnown() bool {
 	switch r {
 	case TransactionEventsTypeAuthorization, TransactionEventsTypeAuthorizationAdvice, TransactionEventsTypeAuthorizationExpiry, TransactionEventsTypeAuthorizationReversal, TransactionEventsTypeBalanceInquiry, TransactionEventsTypeClearing, TransactionEventsTypeCorrectionCredit, TransactionEventsTypeCorrectionDebit, TransactionEventsTypeCreditAuthorization, TransactionEventsTypeCreditAuthorizationAdvice, TransactionEventsTypeFinancialAuthorization, TransactionEventsTypeFinancialCreditAuthorization, TransactionEventsTypeReturn, TransactionEventsTypeReturnReversal, TransactionEventsTypeVoid:
+		return true
+	}
+	return false
+}
+
+// Indicates whether the transaction event is a credit or debit to the account.
+type TransactionEventsEffectivePolarity string
+
+const (
+	TransactionEventsEffectivePolarityCredit TransactionEventsEffectivePolarity = "CREDIT"
+	TransactionEventsEffectivePolarityDebit  TransactionEventsEffectivePolarity = "DEBIT"
+)
+
+func (r TransactionEventsEffectivePolarity) IsKnown() bool {
+	switch r {
+	case TransactionEventsEffectivePolarityCredit, TransactionEventsEffectivePolarityDebit:
 		return true
 	}
 	return false

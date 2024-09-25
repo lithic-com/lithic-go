@@ -4,6 +4,10 @@ package shared
 
 type UnionString string
 
+func (UnionString) ImplementsAuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionString) ImplementsAuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
 func (UnionString) ImplementsAuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
 }
 func (UnionString) ImplementsAuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
@@ -44,6 +48,10 @@ func (UnionString) ImplementsAuthRuleV2DraftParamsParametersConditionalBlockPara
 type UnionFloat float64
 
 func (UnionFloat) ImplementsSharedVelocityLimitParamsPeriodUnion() {}
+func (UnionFloat) ImplementsAuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
+func (UnionFloat) ImplementsAuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
+}
 func (UnionFloat) ImplementsAuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
 }
 func (UnionFloat) ImplementsAuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
