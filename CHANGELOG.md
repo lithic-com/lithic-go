@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.54.0 (2024-09-25)
+
+Full Changelog: [v0.53.0...v0.54.0](https://github.com/lithic-com/lithic-go/compare/v0.53.0...v0.54.0)
+
+### Features
+
+* **api:** adds endpoint for migrating auth rules from v1 to V2. marks v1 auth rules as deprecated ([#379](https://github.com/lithic-com/lithic-go/issues/379)) ([4af648c](https://github.com/lithic-com/lithic-go/commit/4af648c6ef59af0bcf503eccd068ccff483666b6))
+* **client:** send retry count header ([#377](https://github.com/lithic-com/lithic-go/issues/377)) ([741d4db](https://github.com/lithic-com/lithic-go/commit/741d4dbe323114d3b2cff9e7cafcbb2511fe272a))
+
 ## 0.53.0 (2024-09-24)
 
 Full Changelog: [v0.52.0...v0.53.0](https://github.com/lithic-com/lithic-go/compare/v0.52.0...v0.53.0)
