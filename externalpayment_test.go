@@ -82,6 +82,7 @@ func TestExternalPaymentListWithOptionalParams(t *testing.T) {
 	)
 	_, err := client.ExternalPayments.List(context.TODO(), lithic.ExternalPaymentListParams{
 		Begin:                 lithic.F(time.Now()),
+		BusinessAccountToken:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Category:              lithic.F(lithic.ExternalPaymentListParamsCategoryExternalWire),
 		End:                   lithic.F(time.Now()),
 		EndingBefore:          lithic.F("ending_before"),
