@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.55.0 (2024-10-01)
+
+Full Changelog: [v0.54.0...v0.55.0](https://github.com/lithic-com/lithic-go/compare/v0.54.0...v0.55.0)
+
+### Features
+
+* **api:** add Management Operations and Loan Tapes API ([#380](https://github.com/lithic-com/lithic-go/issues/380)) ([06b39cf](https://github.com/lithic-com/lithic-go/commit/06b39cfe31e940439abc952c745c2c039acbeeec))
+
 ## 0.54.0 (2024-09-25)
 
 Full Changelog: [v0.53.0...v0.54.0](https://github.com/lithic-com/lithic-go/compare/v0.53.0...v0.54.0)
