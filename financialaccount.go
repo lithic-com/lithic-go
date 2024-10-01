@@ -30,6 +30,7 @@ type FinancialAccountService struct {
 	FinancialTransactions *FinancialAccountFinancialTransactionService
 	CreditConfiguration   *FinancialAccountCreditConfigurationService
 	Statements            *FinancialAccountStatementService
+	LoanTapes             *FinancialAccountLoanTapeService
 }
 
 // NewFinancialAccountService generates a new service that applies the given
@@ -42,6 +43,7 @@ func NewFinancialAccountService(opts ...option.RequestOption) (r *FinancialAccou
 	r.FinancialTransactions = NewFinancialAccountFinancialTransactionService(opts...)
 	r.CreditConfiguration = NewFinancialAccountCreditConfigurationService(opts...)
 	r.Statements = NewFinancialAccountStatementService(opts...)
+	r.LoanTapes = NewFinancialAccountLoanTapeService(opts...)
 	return
 }
 
@@ -311,39 +313,8 @@ type FinancialTransactionEvent struct {
 	// APPROVED financial events were successful while DECLINED financial events were
 	// declined by user, Lithic, or the network.
 	Result FinancialTransactionEventsResult `json:"result"`
-	// Event types: _ `ACH_ORIGINATION_INITIATED` - ACH origination received and
-	// pending approval/release from an ACH hold. _ `ACH_ORIGINATION_REVIEWED` - ACH
-	// origination has completed the review process. _ `ACH_ORIGINATION_CANCELLED` -
-	// ACH origination has been cancelled. _ `ACH_ORIGINATION_PROCESSED` - ACH
-	// origination has been processed and sent to the fed. _
-	// `ACH_ORIGINATION_SETTLED` - ACH origination has settled. _
-	// `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to available
-	// balance. _ `ACH_RETURN_PROCESSED` - ACH origination returned by the Receiving
-	// Depository Financial Institution. _ `ACH_RECEIPT_PROCESSED` - ACH receipt
-	// pending release from an ACH holder. _ `ACH_RETURN_INITIATED` - ACH initiated
-	// return for a ACH receipt. _ `ACH_RECEIPT_SETTLED` - ACH receipt funds have
-	// settled. _ `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to
-	// available balance. _ `AUTHORIZATION` - Authorize a card transaction. _
-	// `AUTHORIZATION_ADVICE` - Advice on a card transaction. _
-	// `AUTHORIZATION_EXPIRY` - Card Authorization has expired and reversed by Lithic.
-	// _ `AUTHORIZATION_REVERSAL` - Card Authorization was reversed by the merchant. _
-	// `BALANCE_INQUIRY` - A card balance inquiry (typically a $0 authorization) has
-	// occurred on a card. _ `CLEARING` - Card Transaction is settled. _
-	// `CORRECTION_DEBIT` - Manual card transaction correction (Debit). _
-	// `CORRECTION_CREDIT` - Manual card transaction correction (Credit). _
-	// `CREDIT_AUTHORIZATION` - A refund or credit card authorization from a merchant.
-	// _ `CREDIT_AUTHORIZATION_ADVICE` - A credit card authorization was approved on
-	// your behalf by the network. _ `FINANCIAL_AUTHORIZATION` - A request from a
-	// merchant to debit card funds without additional clearing. _
-	// `FINANCIAL_CREDIT_AUTHORIZATION` - A request from a merchant to refund or credit
-	// card funds without additional clearing. _ `RETURN` - A card refund has been
-	// processed on the transaction. _ `RETURN_REVERSAL` - A card refund has been
-	// reversed (e.g., when a merchant reverses an incorrect refund). _ `TRANSFER` -
-	// Successful internal transfer of funds between financial accounts. \*
-	// `TRANSFER_INSUFFICIENT_FUNDS` - Declined internal transfer of funds due to
-	// insufficient balance of the sender.
-	Type FinancialTransactionEventsType `json:"type"`
-	JSON financialTransactionEventJSON  `json:"-"`
+	Type   FinancialTransactionEventsType   `json:"type"`
+	JSON   financialTransactionEventJSON    `json:"-"`
 }
 
 // financialTransactionEventJSON contains the JSON metadata for the struct
@@ -383,46 +354,15 @@ func (r FinancialTransactionEventsResult) IsKnown() bool {
 	return false
 }
 
-// Event types: _ `ACH_ORIGINATION_INITIATED` - ACH origination received and
-// pending approval/release from an ACH hold. _ `ACH_ORIGINATION_REVIEWED` - ACH
-// origination has completed the review process. _ `ACH_ORIGINATION_CANCELLED` -
-// ACH origination has been cancelled. _ `ACH_ORIGINATION_PROCESSED` - ACH
-// origination has been processed and sent to the fed. _
-// `ACH_ORIGINATION_SETTLED` - ACH origination has settled. _
-// `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to available
-// balance. _ `ACH_RETURN_PROCESSED` - ACH origination returned by the Receiving
-// Depository Financial Institution. _ `ACH_RECEIPT_PROCESSED` - ACH receipt
-// pending release from an ACH holder. _ `ACH_RETURN_INITIATED` - ACH initiated
-// return for a ACH receipt. _ `ACH_RECEIPT_SETTLED` - ACH receipt funds have
-// settled. _ `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to
-// available balance. _ `AUTHORIZATION` - Authorize a card transaction. _
-// `AUTHORIZATION_ADVICE` - Advice on a card transaction. _
-// `AUTHORIZATION_EXPIRY` - Card Authorization has expired and reversed by Lithic.
-// _ `AUTHORIZATION_REVERSAL` - Card Authorization was reversed by the merchant. _
-// `BALANCE_INQUIRY` - A card balance inquiry (typically a $0 authorization) has
-// occurred on a card. _ `CLEARING` - Card Transaction is settled. _
-// `CORRECTION_DEBIT` - Manual card transaction correction (Debit). _
-// `CORRECTION_CREDIT` - Manual card transaction correction (Credit). _
-// `CREDIT_AUTHORIZATION` - A refund or credit card authorization from a merchant.
-// _ `CREDIT_AUTHORIZATION_ADVICE` - A credit card authorization was approved on
-// your behalf by the network. _ `FINANCIAL_AUTHORIZATION` - A request from a
-// merchant to debit card funds without additional clearing. _
-// `FINANCIAL_CREDIT_AUTHORIZATION` - A request from a merchant to refund or credit
-// card funds without additional clearing. _ `RETURN` - A card refund has been
-// processed on the transaction. _ `RETURN_REVERSAL` - A card refund has been
-// reversed (e.g., when a merchant reverses an incorrect refund). _ `TRANSFER` -
-// Successful internal transfer of funds between financial accounts. \*
-// `TRANSFER_INSUFFICIENT_FUNDS` - Declined internal transfer of funds due to
-// insufficient balance of the sender.
 type FinancialTransactionEventsType string
 
 const (
 	FinancialTransactionEventsTypeACHOriginationCancelled      FinancialTransactionEventsType = "ACH_ORIGINATION_CANCELLED"
 	FinancialTransactionEventsTypeACHOriginationInitiated      FinancialTransactionEventsType = "ACH_ORIGINATION_INITIATED"
 	FinancialTransactionEventsTypeACHOriginationProcessed      FinancialTransactionEventsType = "ACH_ORIGINATION_PROCESSED"
-	FinancialTransactionEventsTypeACHOriginationSettled        FinancialTransactionEventsType = "ACH_ORIGINATION_SETTLED"
 	FinancialTransactionEventsTypeACHOriginationReleased       FinancialTransactionEventsType = "ACH_ORIGINATION_RELEASED"
 	FinancialTransactionEventsTypeACHOriginationReviewed       FinancialTransactionEventsType = "ACH_ORIGINATION_REVIEWED"
+	FinancialTransactionEventsTypeACHOriginationSettled        FinancialTransactionEventsType = "ACH_ORIGINATION_SETTLED"
 	FinancialTransactionEventsTypeACHReceiptProcessed          FinancialTransactionEventsType = "ACH_RECEIPT_PROCESSED"
 	FinancialTransactionEventsTypeACHReceiptSettled            FinancialTransactionEventsType = "ACH_RECEIPT_SETTLED"
 	FinancialTransactionEventsTypeACHReturnInitiated           FinancialTransactionEventsType = "ACH_RETURN_INITIATED"
@@ -432,13 +372,40 @@ const (
 	FinancialTransactionEventsTypeAuthorizationExpiry          FinancialTransactionEventsType = "AUTHORIZATION_EXPIRY"
 	FinancialTransactionEventsTypeAuthorizationReversal        FinancialTransactionEventsType = "AUTHORIZATION_REVERSAL"
 	FinancialTransactionEventsTypeBalanceInquiry               FinancialTransactionEventsType = "BALANCE_INQUIRY"
+	FinancialTransactionEventsTypeBillingError                 FinancialTransactionEventsType = "BILLING_ERROR"
+	FinancialTransactionEventsTypeCashBack                     FinancialTransactionEventsType = "CASH_BACK"
 	FinancialTransactionEventsTypeClearing                     FinancialTransactionEventsType = "CLEARING"
 	FinancialTransactionEventsTypeCorrectionCredit             FinancialTransactionEventsType = "CORRECTION_CREDIT"
 	FinancialTransactionEventsTypeCorrectionDebit              FinancialTransactionEventsType = "CORRECTION_DEBIT"
 	FinancialTransactionEventsTypeCreditAuthorization          FinancialTransactionEventsType = "CREDIT_AUTHORIZATION"
 	FinancialTransactionEventsTypeCreditAuthorizationAdvice    FinancialTransactionEventsType = "CREDIT_AUTHORIZATION_ADVICE"
+	FinancialTransactionEventsTypeCurrencyConversion           FinancialTransactionEventsType = "CURRENCY_CONVERSION"
+	FinancialTransactionEventsTypeDisputeWon                   FinancialTransactionEventsType = "DISPUTE_WON"
+	FinancialTransactionEventsTypeExternalACHCanceled          FinancialTransactionEventsType = "EXTERNAL_ACH_CANCELED"
+	FinancialTransactionEventsTypeExternalACHInitiated         FinancialTransactionEventsType = "EXTERNAL_ACH_INITIATED"
+	FinancialTransactionEventsTypeExternalACHReleased          FinancialTransactionEventsType = "EXTERNAL_ACH_RELEASED"
+	FinancialTransactionEventsTypeExternalACHReversed          FinancialTransactionEventsType = "EXTERNAL_ACH_REVERSED"
+	FinancialTransactionEventsTypeExternalACHSettled           FinancialTransactionEventsType = "EXTERNAL_ACH_SETTLED"
+	FinancialTransactionEventsTypeExternalCheckCanceled        FinancialTransactionEventsType = "EXTERNAL_CHECK_CANCELED"
+	FinancialTransactionEventsTypeExternalCheckInitiated       FinancialTransactionEventsType = "EXTERNAL_CHECK_INITIATED"
+	FinancialTransactionEventsTypeExternalCheckReleased        FinancialTransactionEventsType = "EXTERNAL_CHECK_RELEASED"
+	FinancialTransactionEventsTypeExternalCheckReversed        FinancialTransactionEventsType = "EXTERNAL_CHECK_REVERSED"
+	FinancialTransactionEventsTypeExternalCheckSettled         FinancialTransactionEventsType = "EXTERNAL_CHECK_SETTLED"
+	FinancialTransactionEventsTypeExternalTransferCanceled     FinancialTransactionEventsType = "EXTERNAL_TRANSFER_CANCELED"
+	FinancialTransactionEventsTypeExternalTransferInitiated    FinancialTransactionEventsType = "EXTERNAL_TRANSFER_INITIATED"
+	FinancialTransactionEventsTypeExternalTransferReleased     FinancialTransactionEventsType = "EXTERNAL_TRANSFER_RELEASED"
+	FinancialTransactionEventsTypeExternalTransferReversed     FinancialTransactionEventsType = "EXTERNAL_TRANSFER_REVERSED"
+	FinancialTransactionEventsTypeExternalTransferSettled      FinancialTransactionEventsType = "EXTERNAL_TRANSFER_SETTLED"
+	FinancialTransactionEventsTypeExternalWireCanceled         FinancialTransactionEventsType = "EXTERNAL_WIRE_CANCELED"
+	FinancialTransactionEventsTypeExternalWireInitiated        FinancialTransactionEventsType = "EXTERNAL_WIRE_INITIATED"
+	FinancialTransactionEventsTypeExternalWireReleased         FinancialTransactionEventsType = "EXTERNAL_WIRE_RELEASED"
+	FinancialTransactionEventsTypeExternalWireReversed         FinancialTransactionEventsType = "EXTERNAL_WIRE_REVERSED"
+	FinancialTransactionEventsTypeExternalWireSettled          FinancialTransactionEventsType = "EXTERNAL_WIRE_SETTLED"
 	FinancialTransactionEventsTypeFinancialAuthorization       FinancialTransactionEventsType = "FINANCIAL_AUTHORIZATION"
 	FinancialTransactionEventsTypeFinancialCreditAuthorization FinancialTransactionEventsType = "FINANCIAL_CREDIT_AUTHORIZATION"
+	FinancialTransactionEventsTypeInterest                     FinancialTransactionEventsType = "INTEREST"
+	FinancialTransactionEventsTypeLatePayment                  FinancialTransactionEventsType = "LATE_PAYMENT"
+	FinancialTransactionEventsTypeProvisionalCredit            FinancialTransactionEventsType = "PROVISIONAL_CREDIT"
 	FinancialTransactionEventsTypeReturn                       FinancialTransactionEventsType = "RETURN"
 	FinancialTransactionEventsTypeReturnReversal               FinancialTransactionEventsType = "RETURN_REVERSAL"
 	FinancialTransactionEventsTypeTransfer                     FinancialTransactionEventsType = "TRANSFER"
@@ -447,7 +414,7 @@ const (
 
 func (r FinancialTransactionEventsType) IsKnown() bool {
 	switch r {
-	case FinancialTransactionEventsTypeACHOriginationCancelled, FinancialTransactionEventsTypeACHOriginationInitiated, FinancialTransactionEventsTypeACHOriginationProcessed, FinancialTransactionEventsTypeACHOriginationSettled, FinancialTransactionEventsTypeACHOriginationReleased, FinancialTransactionEventsTypeACHOriginationReviewed, FinancialTransactionEventsTypeACHReceiptProcessed, FinancialTransactionEventsTypeACHReceiptSettled, FinancialTransactionEventsTypeACHReturnInitiated, FinancialTransactionEventsTypeACHReturnProcessed, FinancialTransactionEventsTypeAuthorization, FinancialTransactionEventsTypeAuthorizationAdvice, FinancialTransactionEventsTypeAuthorizationExpiry, FinancialTransactionEventsTypeAuthorizationReversal, FinancialTransactionEventsTypeBalanceInquiry, FinancialTransactionEventsTypeClearing, FinancialTransactionEventsTypeCorrectionCredit, FinancialTransactionEventsTypeCorrectionDebit, FinancialTransactionEventsTypeCreditAuthorization, FinancialTransactionEventsTypeCreditAuthorizationAdvice, FinancialTransactionEventsTypeFinancialAuthorization, FinancialTransactionEventsTypeFinancialCreditAuthorization, FinancialTransactionEventsTypeReturn, FinancialTransactionEventsTypeReturnReversal, FinancialTransactionEventsTypeTransfer, FinancialTransactionEventsTypeTransferInsufficientFunds:
+	case FinancialTransactionEventsTypeACHOriginationCancelled, FinancialTransactionEventsTypeACHOriginationInitiated, FinancialTransactionEventsTypeACHOriginationProcessed, FinancialTransactionEventsTypeACHOriginationReleased, FinancialTransactionEventsTypeACHOriginationReviewed, FinancialTransactionEventsTypeACHOriginationSettled, FinancialTransactionEventsTypeACHReceiptProcessed, FinancialTransactionEventsTypeACHReceiptSettled, FinancialTransactionEventsTypeACHReturnInitiated, FinancialTransactionEventsTypeACHReturnProcessed, FinancialTransactionEventsTypeAuthorization, FinancialTransactionEventsTypeAuthorizationAdvice, FinancialTransactionEventsTypeAuthorizationExpiry, FinancialTransactionEventsTypeAuthorizationReversal, FinancialTransactionEventsTypeBalanceInquiry, FinancialTransactionEventsTypeBillingError, FinancialTransactionEventsTypeCashBack, FinancialTransactionEventsTypeClearing, FinancialTransactionEventsTypeCorrectionCredit, FinancialTransactionEventsTypeCorrectionDebit, FinancialTransactionEventsTypeCreditAuthorization, FinancialTransactionEventsTypeCreditAuthorizationAdvice, FinancialTransactionEventsTypeCurrencyConversion, FinancialTransactionEventsTypeDisputeWon, FinancialTransactionEventsTypeExternalACHCanceled, FinancialTransactionEventsTypeExternalACHInitiated, FinancialTransactionEventsTypeExternalACHReleased, FinancialTransactionEventsTypeExternalACHReversed, FinancialTransactionEventsTypeExternalACHSettled, FinancialTransactionEventsTypeExternalCheckCanceled, FinancialTransactionEventsTypeExternalCheckInitiated, FinancialTransactionEventsTypeExternalCheckReleased, FinancialTransactionEventsTypeExternalCheckReversed, FinancialTransactionEventsTypeExternalCheckSettled, FinancialTransactionEventsTypeExternalTransferCanceled, FinancialTransactionEventsTypeExternalTransferInitiated, FinancialTransactionEventsTypeExternalTransferReleased, FinancialTransactionEventsTypeExternalTransferReversed, FinancialTransactionEventsTypeExternalTransferSettled, FinancialTransactionEventsTypeExternalWireCanceled, FinancialTransactionEventsTypeExternalWireInitiated, FinancialTransactionEventsTypeExternalWireReleased, FinancialTransactionEventsTypeExternalWireReversed, FinancialTransactionEventsTypeExternalWireSettled, FinancialTransactionEventsTypeFinancialAuthorization, FinancialTransactionEventsTypeFinancialCreditAuthorization, FinancialTransactionEventsTypeInterest, FinancialTransactionEventsTypeLatePayment, FinancialTransactionEventsTypeProvisionalCredit, FinancialTransactionEventsTypeReturn, FinancialTransactionEventsTypeReturnReversal, FinancialTransactionEventsTypeTransfer, FinancialTransactionEventsTypeTransferInsufficientFunds:
 		return true
 	}
 	return false
