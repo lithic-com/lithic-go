@@ -109,11 +109,11 @@ type LoanTape struct {
 	// balances. An overpayment could land an account in this state
 	ExcessCredits int64 `json:"excess_credits,required"`
 	// Globally unique identifier for a financial account
-	FinancialAccountToken string                        `json:"financial_account_token,required" format:"uuid"`
-	MinimumPaymentBalance LoanTapeMinimumPaymentBalance `json:"minimum_payment_balance,required"`
-	PaymentAllocation     LoanTapePaymentAllocation     `json:"payment_allocation,required"`
-	PeriodTotals          LoanTapePeriodTotals          `json:"period_totals,required"`
-	StatementBalance      LoanTapeStatementBalance      `json:"statement_balance,required"`
+	FinancialAccountToken    string                           `json:"financial_account_token,required" format:"uuid"`
+	MinimumPaymentBalance    LoanTapeMinimumPaymentBalance    `json:"minimum_payment_balance,required"`
+	PaymentAllocation        LoanTapePaymentAllocation        `json:"payment_allocation,required"`
+	PeriodTotals             LoanTapePeriodTotals             `json:"period_totals,required"`
+	PreviousStatementBalance LoanTapePreviousStatementBalance `json:"previous_statement_balance,required"`
 	// Timestamp of when the loan tape was updated
 	Updated time.Time `json:"updated,required" format:"date-time"`
 	// Version number of the loan tape. This starts at 1
@@ -126,28 +126,28 @@ type LoanTape struct {
 
 // loanTapeJSON contains the JSON metadata for the struct [LoanTape]
 type loanTapeJSON struct {
-	Token                 apijson.Field
-	AccountStanding       apijson.Field
-	BalanceDue            apijson.Field
-	BalanceNextDue        apijson.Field
-	BalancePastDue        apijson.Field
-	Created               apijson.Field
-	CreditLimit           apijson.Field
-	CreditProductToken    apijson.Field
-	Date                  apijson.Field
-	DayTotals             apijson.Field
-	ExcessCredits         apijson.Field
-	FinancialAccountToken apijson.Field
-	MinimumPaymentBalance apijson.Field
-	PaymentAllocation     apijson.Field
-	PeriodTotals          apijson.Field
-	StatementBalance      apijson.Field
-	Updated               apijson.Field
-	Version               apijson.Field
-	YtdTotals             apijson.Field
-	Tier                  apijson.Field
-	raw                   string
-	ExtraFields           map[string]apijson.Field
+	Token                    apijson.Field
+	AccountStanding          apijson.Field
+	BalanceDue               apijson.Field
+	BalanceNextDue           apijson.Field
+	BalancePastDue           apijson.Field
+	Created                  apijson.Field
+	CreditLimit              apijson.Field
+	CreditProductToken       apijson.Field
+	Date                     apijson.Field
+	DayTotals                apijson.Field
+	ExcessCredits            apijson.Field
+	FinancialAccountToken    apijson.Field
+	MinimumPaymentBalance    apijson.Field
+	PaymentAllocation        apijson.Field
+	PeriodTotals             apijson.Field
+	PreviousStatementBalance apijson.Field
+	Updated                  apijson.Field
+	Version                  apijson.Field
+	YtdTotals                apijson.Field
+	Tier                     apijson.Field
+	raw                      string
+	ExtraFields              map[string]apijson.Field
 }
 
 func (r *LoanTape) UnmarshalJSON(data []byte) (err error) {
@@ -424,26 +424,26 @@ func (r loanTapePeriodTotalsJSON) RawJSON() string {
 	return r.raw
 }
 
-type LoanTapeStatementBalance struct {
-	Amount    int64                        `json:"amount,required"`
-	Remaining int64                        `json:"remaining,required"`
-	JSON      loanTapeStatementBalanceJSON `json:"-"`
+type LoanTapePreviousStatementBalance struct {
+	Amount    int64                                `json:"amount,required"`
+	Remaining int64                                `json:"remaining,required"`
+	JSON      loanTapePreviousStatementBalanceJSON `json:"-"`
 }
 
-// loanTapeStatementBalanceJSON contains the JSON metadata for the struct
-// [LoanTapeStatementBalance]
-type loanTapeStatementBalanceJSON struct {
+// loanTapePreviousStatementBalanceJSON contains the JSON metadata for the struct
+// [LoanTapePreviousStatementBalance]
+type loanTapePreviousStatementBalanceJSON struct {
 	Amount      apijson.Field
 	Remaining   apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *LoanTapeStatementBalance) UnmarshalJSON(data []byte) (err error) {
+func (r *LoanTapePreviousStatementBalance) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r loanTapeStatementBalanceJSON) RawJSON() string {
+func (r loanTapePreviousStatementBalanceJSON) RawJSON() string {
 	return r.raw
 }
 
