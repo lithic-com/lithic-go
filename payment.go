@@ -778,10 +778,12 @@ func (r PaymentNewParamsType) IsKnown() bool {
 }
 
 type PaymentListParams struct {
+	AccountToken param.Field[string] `query:"account_token" format:"uuid"`
 	// Date string in RFC 3339 format. Only entries created after the specified time
 	// will be included. UTC time zone.
-	Begin    param.Field[time.Time]                 `query:"begin" format:"date-time"`
-	Category param.Field[PaymentListParamsCategory] `query:"category"`
+	Begin                param.Field[time.Time]                 `query:"begin" format:"date-time"`
+	BusinessAccountToken param.Field[string]                    `query:"business_account_token" format:"uuid"`
+	Category             param.Field[PaymentListParamsCategory] `query:"category"`
 	// Date string in RFC 3339 format. Only entries created before the specified time
 	// will be included. UTC time zone.
 	End param.Field[time.Time] `query:"end" format:"date-time"`

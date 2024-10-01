@@ -93,51 +93,23 @@ func (r statementLineItemsJSON) RawJSON() string {
 
 type StatementLineItemsData struct {
 	// Globally unique identifier for a Statement Line Item
-	Token    string                         `json:"token,required"`
+	Token string `json:"token,required"`
+	// Transaction amount in cents
 	Amount   int64                          `json:"amount,required"`
 	Category StatementLineItemsDataCategory `json:"category,required"`
 	// Timestamp of when the line item was generated
 	Created time.Time `json:"created,required" format:"date-time"`
 	// 3-digit alphabetic ISO 4217 code for the settling currency of the transaction
 	Currency string `json:"currency,required"`
-	// Event types: _ `ACH_ORIGINATION_INITIATED` - ACH origination received and
-	// pending approval/release from an ACH hold. _ `ACH_ORIGINATION_REVIEWED` - ACH
-	// origination has completed the review process. _ `ACH_ORIGINATION_CANCELLED` -
-	// ACH origination has been cancelled. _ `ACH_ORIGINATION_PROCESSED` - ACH
-	// origination has been processed and sent to the fed. _
-	// `ACH_ORIGINATION_SETTLED` - ACH origination has settled. _
-	// `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to available
-	// balance. _ `ACH_RETURN_PROCESSED` - ACH origination returned by the Receiving
-	// Depository Financial Institution. _ `ACH_RECEIPT_PROCESSED` - ACH receipt
-	// pending release from an ACH holder. _ `ACH_RETURN_INITIATED` - ACH initiated
-	// return for a ACH receipt. _ `ACH_RECEIPT_SETTLED` - ACH receipt funds have
-	// settled. _ `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to
-	// available balance. _ `AUTHORIZATION` - Authorize a card transaction. _
-	// `AUTHORIZATION_ADVICE` - Advice on a card transaction. _
-	// `AUTHORIZATION_EXPIRY` - Card Authorization has expired and reversed by Lithic.
-	// _ `AUTHORIZATION_REVERSAL` - Card Authorization was reversed by the merchant. _
-	// `BALANCE_INQUIRY` - A card balance inquiry (typically a $0 authorization) has
-	// occurred on a card. _ `CLEARING` - Card Transaction is settled. _
-	// `CORRECTION_DEBIT` - Manual card transaction correction (Debit). _
-	// `CORRECTION_CREDIT` - Manual card transaction correction (Credit). _
-	// `CREDIT_AUTHORIZATION` - A refund or credit card authorization from a merchant.
-	// _ `CREDIT_AUTHORIZATION_ADVICE` - A credit card authorization was approved on
-	// your behalf by the network. _ `FINANCIAL_AUTHORIZATION` - A request from a
-	// merchant to debit card funds without additional clearing. _
-	// `FINANCIAL_CREDIT_AUTHORIZATION` - A request from a merchant to refund or credit
-	// card funds without additional clearing. _ `RETURN` - A card refund has been
-	// processed on the transaction. _ `RETURN_REVERSAL` - A card refund has been
-	// reversed (e.g., when a merchant reverses an incorrect refund). _ `TRANSFER` -
-	// Successful internal transfer of funds between financial accounts. \*
-	// `TRANSFER_INSUFFICIENT_FUNDS` - Declined internal transfer of funds due to
-	// insufficient balance of the sender.
-	EventType StatementLineItemsDataEventType `json:"event_type,required"`
+	// Date that the transaction effected the account balance
+	EffectiveDate time.Time                       `json:"effective_date,required" format:"date"`
+	EventType     StatementLineItemsDataEventType `json:"event_type,required"`
 	// Globally unique identifier for a financial account
 	FinancialAccountToken string `json:"financial_account_token,required" format:"uuid"`
+	// Globally unique identifier for a financial transaction event
+	FinancialTransactionEventToken string `json:"financial_transaction_event_token,required" format:"uuid"`
 	// Globally unique identifier for a financial transaction
 	FinancialTransactionToken string `json:"financial_transaction_token,required" format:"uuid"`
-	// Date that the transaction settled
-	SettledDate time.Time `json:"settled_date,required" format:"date"`
 	// Globally unique identifier for a card
 	CardToken  string                     `json:"card_token" format:"uuid"`
 	Descriptor string                     `json:"descriptor"`
@@ -147,19 +119,20 @@ type StatementLineItemsData struct {
 // statementLineItemsDataJSON contains the JSON metadata for the struct
 // [StatementLineItemsData]
 type statementLineItemsDataJSON struct {
-	Token                     apijson.Field
-	Amount                    apijson.Field
-	Category                  apijson.Field
-	Created                   apijson.Field
-	Currency                  apijson.Field
-	EventType                 apijson.Field
-	FinancialAccountToken     apijson.Field
-	FinancialTransactionToken apijson.Field
-	SettledDate               apijson.Field
-	CardToken                 apijson.Field
-	Descriptor                apijson.Field
-	raw                       string
-	ExtraFields               map[string]apijson.Field
+	Token                          apijson.Field
+	Amount                         apijson.Field
+	Category                       apijson.Field
+	Created                        apijson.Field
+	Currency                       apijson.Field
+	EffectiveDate                  apijson.Field
+	EventType                      apijson.Field
+	FinancialAccountToken          apijson.Field
+	FinancialTransactionEventToken apijson.Field
+	FinancialTransactionToken      apijson.Field
+	CardToken                      apijson.Field
+	Descriptor                     apijson.Field
+	raw                            string
+	ExtraFields                    map[string]apijson.Field
 }
 
 func (r *StatementLineItemsData) UnmarshalJSON(data []byte) (err error) {
@@ -173,59 +146,35 @@ func (r statementLineItemsDataJSON) RawJSON() string {
 type StatementLineItemsDataCategory string
 
 const (
-	StatementLineItemsDataCategoryACH      StatementLineItemsDataCategory = "ACH"
-	StatementLineItemsDataCategoryCard     StatementLineItemsDataCategory = "CARD"
-	StatementLineItemsDataCategoryTransfer StatementLineItemsDataCategory = "TRANSFER"
+	StatementLineItemsDataCategoryACH                  StatementLineItemsDataCategory = "ACH"
+	StatementLineItemsDataCategoryCard                 StatementLineItemsDataCategory = "CARD"
+	StatementLineItemsDataCategoryExternalACH          StatementLineItemsDataCategory = "EXTERNAL_ACH"
+	StatementLineItemsDataCategoryExternalCheck        StatementLineItemsDataCategory = "EXTERNAL_CHECK"
+	StatementLineItemsDataCategoryExternalTransfer     StatementLineItemsDataCategory = "EXTERNAL_TRANSFER"
+	StatementLineItemsDataCategoryExternalWire         StatementLineItemsDataCategory = "EXTERNAL_WIRE"
+	StatementLineItemsDataCategoryManagementAdjustment StatementLineItemsDataCategory = "MANAGEMENT_ADJUSTMENT"
+	StatementLineItemsDataCategoryManagementDispute    StatementLineItemsDataCategory = "MANAGEMENT_DISPUTE"
+	StatementLineItemsDataCategoryManagementFee        StatementLineItemsDataCategory = "MANAGEMENT_FEE"
+	StatementLineItemsDataCategoryManagementReward     StatementLineItemsDataCategory = "MANAGEMENT_REWARD"
 )
 
 func (r StatementLineItemsDataCategory) IsKnown() bool {
 	switch r {
-	case StatementLineItemsDataCategoryACH, StatementLineItemsDataCategoryCard, StatementLineItemsDataCategoryTransfer:
+	case StatementLineItemsDataCategoryACH, StatementLineItemsDataCategoryCard, StatementLineItemsDataCategoryExternalACH, StatementLineItemsDataCategoryExternalCheck, StatementLineItemsDataCategoryExternalTransfer, StatementLineItemsDataCategoryExternalWire, StatementLineItemsDataCategoryManagementAdjustment, StatementLineItemsDataCategoryManagementDispute, StatementLineItemsDataCategoryManagementFee, StatementLineItemsDataCategoryManagementReward:
 		return true
 	}
 	return false
 }
 
-// Event types: _ `ACH_ORIGINATION_INITIATED` - ACH origination received and
-// pending approval/release from an ACH hold. _ `ACH_ORIGINATION_REVIEWED` - ACH
-// origination has completed the review process. _ `ACH_ORIGINATION_CANCELLED` -
-// ACH origination has been cancelled. _ `ACH_ORIGINATION_PROCESSED` - ACH
-// origination has been processed and sent to the fed. _
-// `ACH_ORIGINATION_SETTLED` - ACH origination has settled. _
-// `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to available
-// balance. _ `ACH_RETURN_PROCESSED` - ACH origination returned by the Receiving
-// Depository Financial Institution. _ `ACH_RECEIPT_PROCESSED` - ACH receipt
-// pending release from an ACH holder. _ `ACH_RETURN_INITIATED` - ACH initiated
-// return for a ACH receipt. _ `ACH_RECEIPT_SETTLED` - ACH receipt funds have
-// settled. _ `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to
-// available balance. _ `AUTHORIZATION` - Authorize a card transaction. _
-// `AUTHORIZATION_ADVICE` - Advice on a card transaction. _
-// `AUTHORIZATION_EXPIRY` - Card Authorization has expired and reversed by Lithic.
-// _ `AUTHORIZATION_REVERSAL` - Card Authorization was reversed by the merchant. _
-// `BALANCE_INQUIRY` - A card balance inquiry (typically a $0 authorization) has
-// occurred on a card. _ `CLEARING` - Card Transaction is settled. _
-// `CORRECTION_DEBIT` - Manual card transaction correction (Debit). _
-// `CORRECTION_CREDIT` - Manual card transaction correction (Credit). _
-// `CREDIT_AUTHORIZATION` - A refund or credit card authorization from a merchant.
-// _ `CREDIT_AUTHORIZATION_ADVICE` - A credit card authorization was approved on
-// your behalf by the network. _ `FINANCIAL_AUTHORIZATION` - A request from a
-// merchant to debit card funds without additional clearing. _
-// `FINANCIAL_CREDIT_AUTHORIZATION` - A request from a merchant to refund or credit
-// card funds without additional clearing. _ `RETURN` - A card refund has been
-// processed on the transaction. _ `RETURN_REVERSAL` - A card refund has been
-// reversed (e.g., when a merchant reverses an incorrect refund). _ `TRANSFER` -
-// Successful internal transfer of funds between financial accounts. \*
-// `TRANSFER_INSUFFICIENT_FUNDS` - Declined internal transfer of funds due to
-// insufficient balance of the sender.
 type StatementLineItemsDataEventType string
 
 const (
 	StatementLineItemsDataEventTypeACHOriginationCancelled      StatementLineItemsDataEventType = "ACH_ORIGINATION_CANCELLED"
 	StatementLineItemsDataEventTypeACHOriginationInitiated      StatementLineItemsDataEventType = "ACH_ORIGINATION_INITIATED"
 	StatementLineItemsDataEventTypeACHOriginationProcessed      StatementLineItemsDataEventType = "ACH_ORIGINATION_PROCESSED"
-	StatementLineItemsDataEventTypeACHOriginationSettled        StatementLineItemsDataEventType = "ACH_ORIGINATION_SETTLED"
 	StatementLineItemsDataEventTypeACHOriginationReleased       StatementLineItemsDataEventType = "ACH_ORIGINATION_RELEASED"
 	StatementLineItemsDataEventTypeACHOriginationReviewed       StatementLineItemsDataEventType = "ACH_ORIGINATION_REVIEWED"
+	StatementLineItemsDataEventTypeACHOriginationSettled        StatementLineItemsDataEventType = "ACH_ORIGINATION_SETTLED"
 	StatementLineItemsDataEventTypeACHReceiptProcessed          StatementLineItemsDataEventType = "ACH_RECEIPT_PROCESSED"
 	StatementLineItemsDataEventTypeACHReceiptSettled            StatementLineItemsDataEventType = "ACH_RECEIPT_SETTLED"
 	StatementLineItemsDataEventTypeACHReturnInitiated           StatementLineItemsDataEventType = "ACH_RETURN_INITIATED"
@@ -235,13 +184,40 @@ const (
 	StatementLineItemsDataEventTypeAuthorizationExpiry          StatementLineItemsDataEventType = "AUTHORIZATION_EXPIRY"
 	StatementLineItemsDataEventTypeAuthorizationReversal        StatementLineItemsDataEventType = "AUTHORIZATION_REVERSAL"
 	StatementLineItemsDataEventTypeBalanceInquiry               StatementLineItemsDataEventType = "BALANCE_INQUIRY"
+	StatementLineItemsDataEventTypeBillingError                 StatementLineItemsDataEventType = "BILLING_ERROR"
+	StatementLineItemsDataEventTypeCashBack                     StatementLineItemsDataEventType = "CASH_BACK"
 	StatementLineItemsDataEventTypeClearing                     StatementLineItemsDataEventType = "CLEARING"
 	StatementLineItemsDataEventTypeCorrectionCredit             StatementLineItemsDataEventType = "CORRECTION_CREDIT"
 	StatementLineItemsDataEventTypeCorrectionDebit              StatementLineItemsDataEventType = "CORRECTION_DEBIT"
 	StatementLineItemsDataEventTypeCreditAuthorization          StatementLineItemsDataEventType = "CREDIT_AUTHORIZATION"
 	StatementLineItemsDataEventTypeCreditAuthorizationAdvice    StatementLineItemsDataEventType = "CREDIT_AUTHORIZATION_ADVICE"
+	StatementLineItemsDataEventTypeCurrencyConversion           StatementLineItemsDataEventType = "CURRENCY_CONVERSION"
+	StatementLineItemsDataEventTypeDisputeWon                   StatementLineItemsDataEventType = "DISPUTE_WON"
+	StatementLineItemsDataEventTypeExternalACHCanceled          StatementLineItemsDataEventType = "EXTERNAL_ACH_CANCELED"
+	StatementLineItemsDataEventTypeExternalACHInitiated         StatementLineItemsDataEventType = "EXTERNAL_ACH_INITIATED"
+	StatementLineItemsDataEventTypeExternalACHReleased          StatementLineItemsDataEventType = "EXTERNAL_ACH_RELEASED"
+	StatementLineItemsDataEventTypeExternalACHReversed          StatementLineItemsDataEventType = "EXTERNAL_ACH_REVERSED"
+	StatementLineItemsDataEventTypeExternalACHSettled           StatementLineItemsDataEventType = "EXTERNAL_ACH_SETTLED"
+	StatementLineItemsDataEventTypeExternalCheckCanceled        StatementLineItemsDataEventType = "EXTERNAL_CHECK_CANCELED"
+	StatementLineItemsDataEventTypeExternalCheckInitiated       StatementLineItemsDataEventType = "EXTERNAL_CHECK_INITIATED"
+	StatementLineItemsDataEventTypeExternalCheckReleased        StatementLineItemsDataEventType = "EXTERNAL_CHECK_RELEASED"
+	StatementLineItemsDataEventTypeExternalCheckReversed        StatementLineItemsDataEventType = "EXTERNAL_CHECK_REVERSED"
+	StatementLineItemsDataEventTypeExternalCheckSettled         StatementLineItemsDataEventType = "EXTERNAL_CHECK_SETTLED"
+	StatementLineItemsDataEventTypeExternalTransferCanceled     StatementLineItemsDataEventType = "EXTERNAL_TRANSFER_CANCELED"
+	StatementLineItemsDataEventTypeExternalTransferInitiated    StatementLineItemsDataEventType = "EXTERNAL_TRANSFER_INITIATED"
+	StatementLineItemsDataEventTypeExternalTransferReleased     StatementLineItemsDataEventType = "EXTERNAL_TRANSFER_RELEASED"
+	StatementLineItemsDataEventTypeExternalTransferReversed     StatementLineItemsDataEventType = "EXTERNAL_TRANSFER_REVERSED"
+	StatementLineItemsDataEventTypeExternalTransferSettled      StatementLineItemsDataEventType = "EXTERNAL_TRANSFER_SETTLED"
+	StatementLineItemsDataEventTypeExternalWireCanceled         StatementLineItemsDataEventType = "EXTERNAL_WIRE_CANCELED"
+	StatementLineItemsDataEventTypeExternalWireInitiated        StatementLineItemsDataEventType = "EXTERNAL_WIRE_INITIATED"
+	StatementLineItemsDataEventTypeExternalWireReleased         StatementLineItemsDataEventType = "EXTERNAL_WIRE_RELEASED"
+	StatementLineItemsDataEventTypeExternalWireReversed         StatementLineItemsDataEventType = "EXTERNAL_WIRE_REVERSED"
+	StatementLineItemsDataEventTypeExternalWireSettled          StatementLineItemsDataEventType = "EXTERNAL_WIRE_SETTLED"
 	StatementLineItemsDataEventTypeFinancialAuthorization       StatementLineItemsDataEventType = "FINANCIAL_AUTHORIZATION"
 	StatementLineItemsDataEventTypeFinancialCreditAuthorization StatementLineItemsDataEventType = "FINANCIAL_CREDIT_AUTHORIZATION"
+	StatementLineItemsDataEventTypeInterest                     StatementLineItemsDataEventType = "INTEREST"
+	StatementLineItemsDataEventTypeLatePayment                  StatementLineItemsDataEventType = "LATE_PAYMENT"
+	StatementLineItemsDataEventTypeProvisionalCredit            StatementLineItemsDataEventType = "PROVISIONAL_CREDIT"
 	StatementLineItemsDataEventTypeReturn                       StatementLineItemsDataEventType = "RETURN"
 	StatementLineItemsDataEventTypeReturnReversal               StatementLineItemsDataEventType = "RETURN_REVERSAL"
 	StatementLineItemsDataEventTypeTransfer                     StatementLineItemsDataEventType = "TRANSFER"
@@ -250,7 +226,7 @@ const (
 
 func (r StatementLineItemsDataEventType) IsKnown() bool {
 	switch r {
-	case StatementLineItemsDataEventTypeACHOriginationCancelled, StatementLineItemsDataEventTypeACHOriginationInitiated, StatementLineItemsDataEventTypeACHOriginationProcessed, StatementLineItemsDataEventTypeACHOriginationSettled, StatementLineItemsDataEventTypeACHOriginationReleased, StatementLineItemsDataEventTypeACHOriginationReviewed, StatementLineItemsDataEventTypeACHReceiptProcessed, StatementLineItemsDataEventTypeACHReceiptSettled, StatementLineItemsDataEventTypeACHReturnInitiated, StatementLineItemsDataEventTypeACHReturnProcessed, StatementLineItemsDataEventTypeAuthorization, StatementLineItemsDataEventTypeAuthorizationAdvice, StatementLineItemsDataEventTypeAuthorizationExpiry, StatementLineItemsDataEventTypeAuthorizationReversal, StatementLineItemsDataEventTypeBalanceInquiry, StatementLineItemsDataEventTypeClearing, StatementLineItemsDataEventTypeCorrectionCredit, StatementLineItemsDataEventTypeCorrectionDebit, StatementLineItemsDataEventTypeCreditAuthorization, StatementLineItemsDataEventTypeCreditAuthorizationAdvice, StatementLineItemsDataEventTypeFinancialAuthorization, StatementLineItemsDataEventTypeFinancialCreditAuthorization, StatementLineItemsDataEventTypeReturn, StatementLineItemsDataEventTypeReturnReversal, StatementLineItemsDataEventTypeTransfer, StatementLineItemsDataEventTypeTransferInsufficientFunds:
+	case StatementLineItemsDataEventTypeACHOriginationCancelled, StatementLineItemsDataEventTypeACHOriginationInitiated, StatementLineItemsDataEventTypeACHOriginationProcessed, StatementLineItemsDataEventTypeACHOriginationReleased, StatementLineItemsDataEventTypeACHOriginationReviewed, StatementLineItemsDataEventTypeACHOriginationSettled, StatementLineItemsDataEventTypeACHReceiptProcessed, StatementLineItemsDataEventTypeACHReceiptSettled, StatementLineItemsDataEventTypeACHReturnInitiated, StatementLineItemsDataEventTypeACHReturnProcessed, StatementLineItemsDataEventTypeAuthorization, StatementLineItemsDataEventTypeAuthorizationAdvice, StatementLineItemsDataEventTypeAuthorizationExpiry, StatementLineItemsDataEventTypeAuthorizationReversal, StatementLineItemsDataEventTypeBalanceInquiry, StatementLineItemsDataEventTypeBillingError, StatementLineItemsDataEventTypeCashBack, StatementLineItemsDataEventTypeClearing, StatementLineItemsDataEventTypeCorrectionCredit, StatementLineItemsDataEventTypeCorrectionDebit, StatementLineItemsDataEventTypeCreditAuthorization, StatementLineItemsDataEventTypeCreditAuthorizationAdvice, StatementLineItemsDataEventTypeCurrencyConversion, StatementLineItemsDataEventTypeDisputeWon, StatementLineItemsDataEventTypeExternalACHCanceled, StatementLineItemsDataEventTypeExternalACHInitiated, StatementLineItemsDataEventTypeExternalACHReleased, StatementLineItemsDataEventTypeExternalACHReversed, StatementLineItemsDataEventTypeExternalACHSettled, StatementLineItemsDataEventTypeExternalCheckCanceled, StatementLineItemsDataEventTypeExternalCheckInitiated, StatementLineItemsDataEventTypeExternalCheckReleased, StatementLineItemsDataEventTypeExternalCheckReversed, StatementLineItemsDataEventTypeExternalCheckSettled, StatementLineItemsDataEventTypeExternalTransferCanceled, StatementLineItemsDataEventTypeExternalTransferInitiated, StatementLineItemsDataEventTypeExternalTransferReleased, StatementLineItemsDataEventTypeExternalTransferReversed, StatementLineItemsDataEventTypeExternalTransferSettled, StatementLineItemsDataEventTypeExternalWireCanceled, StatementLineItemsDataEventTypeExternalWireInitiated, StatementLineItemsDataEventTypeExternalWireReleased, StatementLineItemsDataEventTypeExternalWireReversed, StatementLineItemsDataEventTypeExternalWireSettled, StatementLineItemsDataEventTypeFinancialAuthorization, StatementLineItemsDataEventTypeFinancialCreditAuthorization, StatementLineItemsDataEventTypeInterest, StatementLineItemsDataEventTypeLatePayment, StatementLineItemsDataEventTypeProvisionalCredit, StatementLineItemsDataEventTypeReturn, StatementLineItemsDataEventTypeReturnReversal, StatementLineItemsDataEventTypeTransfer, StatementLineItemsDataEventTypeTransferInsufficientFunds:
 		return true
 	}
 	return false
@@ -258,51 +234,23 @@ func (r StatementLineItemsDataEventType) IsKnown() bool {
 
 type FinancialAccountStatementLineItemListResponse struct {
 	// Globally unique identifier for a Statement Line Item
-	Token    string                                                `json:"token,required"`
+	Token string `json:"token,required"`
+	// Transaction amount in cents
 	Amount   int64                                                 `json:"amount,required"`
 	Category FinancialAccountStatementLineItemListResponseCategory `json:"category,required"`
 	// Timestamp of when the line item was generated
 	Created time.Time `json:"created,required" format:"date-time"`
 	// 3-digit alphabetic ISO 4217 code for the settling currency of the transaction
 	Currency string `json:"currency,required"`
-	// Event types: _ `ACH_ORIGINATION_INITIATED` - ACH origination received and
-	// pending approval/release from an ACH hold. _ `ACH_ORIGINATION_REVIEWED` - ACH
-	// origination has completed the review process. _ `ACH_ORIGINATION_CANCELLED` -
-	// ACH origination has been cancelled. _ `ACH_ORIGINATION_PROCESSED` - ACH
-	// origination has been processed and sent to the fed. _
-	// `ACH_ORIGINATION_SETTLED` - ACH origination has settled. _
-	// `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to available
-	// balance. _ `ACH_RETURN_PROCESSED` - ACH origination returned by the Receiving
-	// Depository Financial Institution. _ `ACH_RECEIPT_PROCESSED` - ACH receipt
-	// pending release from an ACH holder. _ `ACH_RETURN_INITIATED` - ACH initiated
-	// return for a ACH receipt. _ `ACH_RECEIPT_SETTLED` - ACH receipt funds have
-	// settled. _ `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to
-	// available balance. _ `AUTHORIZATION` - Authorize a card transaction. _
-	// `AUTHORIZATION_ADVICE` - Advice on a card transaction. _
-	// `AUTHORIZATION_EXPIRY` - Card Authorization has expired and reversed by Lithic.
-	// _ `AUTHORIZATION_REVERSAL` - Card Authorization was reversed by the merchant. _
-	// `BALANCE_INQUIRY` - A card balance inquiry (typically a $0 authorization) has
-	// occurred on a card. _ `CLEARING` - Card Transaction is settled. _
-	// `CORRECTION_DEBIT` - Manual card transaction correction (Debit). _
-	// `CORRECTION_CREDIT` - Manual card transaction correction (Credit). _
-	// `CREDIT_AUTHORIZATION` - A refund or credit card authorization from a merchant.
-	// _ `CREDIT_AUTHORIZATION_ADVICE` - A credit card authorization was approved on
-	// your behalf by the network. _ `FINANCIAL_AUTHORIZATION` - A request from a
-	// merchant to debit card funds without additional clearing. _
-	// `FINANCIAL_CREDIT_AUTHORIZATION` - A request from a merchant to refund or credit
-	// card funds without additional clearing. _ `RETURN` - A card refund has been
-	// processed on the transaction. _ `RETURN_REVERSAL` - A card refund has been
-	// reversed (e.g., when a merchant reverses an incorrect refund). _ `TRANSFER` -
-	// Successful internal transfer of funds between financial accounts. \*
-	// `TRANSFER_INSUFFICIENT_FUNDS` - Declined internal transfer of funds due to
-	// insufficient balance of the sender.
-	EventType FinancialAccountStatementLineItemListResponseEventType `json:"event_type,required"`
+	// Date that the transaction effected the account balance
+	EffectiveDate time.Time                                              `json:"effective_date,required" format:"date"`
+	EventType     FinancialAccountStatementLineItemListResponseEventType `json:"event_type,required"`
 	// Globally unique identifier for a financial account
 	FinancialAccountToken string `json:"financial_account_token,required" format:"uuid"`
+	// Globally unique identifier for a financial transaction event
+	FinancialTransactionEventToken string `json:"financial_transaction_event_token,required" format:"uuid"`
 	// Globally unique identifier for a financial transaction
 	FinancialTransactionToken string `json:"financial_transaction_token,required" format:"uuid"`
-	// Date that the transaction settled
-	SettledDate time.Time `json:"settled_date,required" format:"date"`
 	// Globally unique identifier for a card
 	CardToken  string                                            `json:"card_token" format:"uuid"`
 	Descriptor string                                            `json:"descriptor"`
@@ -312,19 +260,20 @@ type FinancialAccountStatementLineItemListResponse struct {
 // financialAccountStatementLineItemListResponseJSON contains the JSON metadata for
 // the struct [FinancialAccountStatementLineItemListResponse]
 type financialAccountStatementLineItemListResponseJSON struct {
-	Token                     apijson.Field
-	Amount                    apijson.Field
-	Category                  apijson.Field
-	Created                   apijson.Field
-	Currency                  apijson.Field
-	EventType                 apijson.Field
-	FinancialAccountToken     apijson.Field
-	FinancialTransactionToken apijson.Field
-	SettledDate               apijson.Field
-	CardToken                 apijson.Field
-	Descriptor                apijson.Field
-	raw                       string
-	ExtraFields               map[string]apijson.Field
+	Token                          apijson.Field
+	Amount                         apijson.Field
+	Category                       apijson.Field
+	Created                        apijson.Field
+	Currency                       apijson.Field
+	EffectiveDate                  apijson.Field
+	EventType                      apijson.Field
+	FinancialAccountToken          apijson.Field
+	FinancialTransactionEventToken apijson.Field
+	FinancialTransactionToken      apijson.Field
+	CardToken                      apijson.Field
+	Descriptor                     apijson.Field
+	raw                            string
+	ExtraFields                    map[string]apijson.Field
 }
 
 func (r *FinancialAccountStatementLineItemListResponse) UnmarshalJSON(data []byte) (err error) {
@@ -338,59 +287,35 @@ func (r financialAccountStatementLineItemListResponseJSON) RawJSON() string {
 type FinancialAccountStatementLineItemListResponseCategory string
 
 const (
-	FinancialAccountStatementLineItemListResponseCategoryACH      FinancialAccountStatementLineItemListResponseCategory = "ACH"
-	FinancialAccountStatementLineItemListResponseCategoryCard     FinancialAccountStatementLineItemListResponseCategory = "CARD"
-	FinancialAccountStatementLineItemListResponseCategoryTransfer FinancialAccountStatementLineItemListResponseCategory = "TRANSFER"
+	FinancialAccountStatementLineItemListResponseCategoryACH                  FinancialAccountStatementLineItemListResponseCategory = "ACH"
+	FinancialAccountStatementLineItemListResponseCategoryCard                 FinancialAccountStatementLineItemListResponseCategory = "CARD"
+	FinancialAccountStatementLineItemListResponseCategoryExternalACH          FinancialAccountStatementLineItemListResponseCategory = "EXTERNAL_ACH"
+	FinancialAccountStatementLineItemListResponseCategoryExternalCheck        FinancialAccountStatementLineItemListResponseCategory = "EXTERNAL_CHECK"
+	FinancialAccountStatementLineItemListResponseCategoryExternalTransfer     FinancialAccountStatementLineItemListResponseCategory = "EXTERNAL_TRANSFER"
+	FinancialAccountStatementLineItemListResponseCategoryExternalWire         FinancialAccountStatementLineItemListResponseCategory = "EXTERNAL_WIRE"
+	FinancialAccountStatementLineItemListResponseCategoryManagementAdjustment FinancialAccountStatementLineItemListResponseCategory = "MANAGEMENT_ADJUSTMENT"
+	FinancialAccountStatementLineItemListResponseCategoryManagementDispute    FinancialAccountStatementLineItemListResponseCategory = "MANAGEMENT_DISPUTE"
+	FinancialAccountStatementLineItemListResponseCategoryManagementFee        FinancialAccountStatementLineItemListResponseCategory = "MANAGEMENT_FEE"
+	FinancialAccountStatementLineItemListResponseCategoryManagementReward     FinancialAccountStatementLineItemListResponseCategory = "MANAGEMENT_REWARD"
 )
 
 func (r FinancialAccountStatementLineItemListResponseCategory) IsKnown() bool {
 	switch r {
-	case FinancialAccountStatementLineItemListResponseCategoryACH, FinancialAccountStatementLineItemListResponseCategoryCard, FinancialAccountStatementLineItemListResponseCategoryTransfer:
+	case FinancialAccountStatementLineItemListResponseCategoryACH, FinancialAccountStatementLineItemListResponseCategoryCard, FinancialAccountStatementLineItemListResponseCategoryExternalACH, FinancialAccountStatementLineItemListResponseCategoryExternalCheck, FinancialAccountStatementLineItemListResponseCategoryExternalTransfer, FinancialAccountStatementLineItemListResponseCategoryExternalWire, FinancialAccountStatementLineItemListResponseCategoryManagementAdjustment, FinancialAccountStatementLineItemListResponseCategoryManagementDispute, FinancialAccountStatementLineItemListResponseCategoryManagementFee, FinancialAccountStatementLineItemListResponseCategoryManagementReward:
 		return true
 	}
 	return false
 }
 
-// Event types: _ `ACH_ORIGINATION_INITIATED` - ACH origination received and
-// pending approval/release from an ACH hold. _ `ACH_ORIGINATION_REVIEWED` - ACH
-// origination has completed the review process. _ `ACH_ORIGINATION_CANCELLED` -
-// ACH origination has been cancelled. _ `ACH_ORIGINATION_PROCESSED` - ACH
-// origination has been processed and sent to the fed. _
-// `ACH_ORIGINATION_SETTLED` - ACH origination has settled. _
-// `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to available
-// balance. _ `ACH_RETURN_PROCESSED` - ACH origination returned by the Receiving
-// Depository Financial Institution. _ `ACH_RECEIPT_PROCESSED` - ACH receipt
-// pending release from an ACH holder. _ `ACH_RETURN_INITIATED` - ACH initiated
-// return for a ACH receipt. _ `ACH_RECEIPT_SETTLED` - ACH receipt funds have
-// settled. _ `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to
-// available balance. _ `AUTHORIZATION` - Authorize a card transaction. _
-// `AUTHORIZATION_ADVICE` - Advice on a card transaction. _
-// `AUTHORIZATION_EXPIRY` - Card Authorization has expired and reversed by Lithic.
-// _ `AUTHORIZATION_REVERSAL` - Card Authorization was reversed by the merchant. _
-// `BALANCE_INQUIRY` - A card balance inquiry (typically a $0 authorization) has
-// occurred on a card. _ `CLEARING` - Card Transaction is settled. _
-// `CORRECTION_DEBIT` - Manual card transaction correction (Debit). _
-// `CORRECTION_CREDIT` - Manual card transaction correction (Credit). _
-// `CREDIT_AUTHORIZATION` - A refund or credit card authorization from a merchant.
-// _ `CREDIT_AUTHORIZATION_ADVICE` - A credit card authorization was approved on
-// your behalf by the network. _ `FINANCIAL_AUTHORIZATION` - A request from a
-// merchant to debit card funds without additional clearing. _
-// `FINANCIAL_CREDIT_AUTHORIZATION` - A request from a merchant to refund or credit
-// card funds without additional clearing. _ `RETURN` - A card refund has been
-// processed on the transaction. _ `RETURN_REVERSAL` - A card refund has been
-// reversed (e.g., when a merchant reverses an incorrect refund). _ `TRANSFER` -
-// Successful internal transfer of funds between financial accounts. \*
-// `TRANSFER_INSUFFICIENT_FUNDS` - Declined internal transfer of funds due to
-// insufficient balance of the sender.
 type FinancialAccountStatementLineItemListResponseEventType string
 
 const (
 	FinancialAccountStatementLineItemListResponseEventTypeACHOriginationCancelled      FinancialAccountStatementLineItemListResponseEventType = "ACH_ORIGINATION_CANCELLED"
 	FinancialAccountStatementLineItemListResponseEventTypeACHOriginationInitiated      FinancialAccountStatementLineItemListResponseEventType = "ACH_ORIGINATION_INITIATED"
 	FinancialAccountStatementLineItemListResponseEventTypeACHOriginationProcessed      FinancialAccountStatementLineItemListResponseEventType = "ACH_ORIGINATION_PROCESSED"
-	FinancialAccountStatementLineItemListResponseEventTypeACHOriginationSettled        FinancialAccountStatementLineItemListResponseEventType = "ACH_ORIGINATION_SETTLED"
 	FinancialAccountStatementLineItemListResponseEventTypeACHOriginationReleased       FinancialAccountStatementLineItemListResponseEventType = "ACH_ORIGINATION_RELEASED"
 	FinancialAccountStatementLineItemListResponseEventTypeACHOriginationReviewed       FinancialAccountStatementLineItemListResponseEventType = "ACH_ORIGINATION_REVIEWED"
+	FinancialAccountStatementLineItemListResponseEventTypeACHOriginationSettled        FinancialAccountStatementLineItemListResponseEventType = "ACH_ORIGINATION_SETTLED"
 	FinancialAccountStatementLineItemListResponseEventTypeACHReceiptProcessed          FinancialAccountStatementLineItemListResponseEventType = "ACH_RECEIPT_PROCESSED"
 	FinancialAccountStatementLineItemListResponseEventTypeACHReceiptSettled            FinancialAccountStatementLineItemListResponseEventType = "ACH_RECEIPT_SETTLED"
 	FinancialAccountStatementLineItemListResponseEventTypeACHReturnInitiated           FinancialAccountStatementLineItemListResponseEventType = "ACH_RETURN_INITIATED"
@@ -400,13 +325,40 @@ const (
 	FinancialAccountStatementLineItemListResponseEventTypeAuthorizationExpiry          FinancialAccountStatementLineItemListResponseEventType = "AUTHORIZATION_EXPIRY"
 	FinancialAccountStatementLineItemListResponseEventTypeAuthorizationReversal        FinancialAccountStatementLineItemListResponseEventType = "AUTHORIZATION_REVERSAL"
 	FinancialAccountStatementLineItemListResponseEventTypeBalanceInquiry               FinancialAccountStatementLineItemListResponseEventType = "BALANCE_INQUIRY"
+	FinancialAccountStatementLineItemListResponseEventTypeBillingError                 FinancialAccountStatementLineItemListResponseEventType = "BILLING_ERROR"
+	FinancialAccountStatementLineItemListResponseEventTypeCashBack                     FinancialAccountStatementLineItemListResponseEventType = "CASH_BACK"
 	FinancialAccountStatementLineItemListResponseEventTypeClearing                     FinancialAccountStatementLineItemListResponseEventType = "CLEARING"
 	FinancialAccountStatementLineItemListResponseEventTypeCorrectionCredit             FinancialAccountStatementLineItemListResponseEventType = "CORRECTION_CREDIT"
 	FinancialAccountStatementLineItemListResponseEventTypeCorrectionDebit              FinancialAccountStatementLineItemListResponseEventType = "CORRECTION_DEBIT"
 	FinancialAccountStatementLineItemListResponseEventTypeCreditAuthorization          FinancialAccountStatementLineItemListResponseEventType = "CREDIT_AUTHORIZATION"
 	FinancialAccountStatementLineItemListResponseEventTypeCreditAuthorizationAdvice    FinancialAccountStatementLineItemListResponseEventType = "CREDIT_AUTHORIZATION_ADVICE"
+	FinancialAccountStatementLineItemListResponseEventTypeCurrencyConversion           FinancialAccountStatementLineItemListResponseEventType = "CURRENCY_CONVERSION"
+	FinancialAccountStatementLineItemListResponseEventTypeDisputeWon                   FinancialAccountStatementLineItemListResponseEventType = "DISPUTE_WON"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalACHCanceled          FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_ACH_CANCELED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalACHInitiated         FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_ACH_INITIATED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalACHReleased          FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_ACH_RELEASED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalACHReversed          FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_ACH_REVERSED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalACHSettled           FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_ACH_SETTLED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalCheckCanceled        FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_CHECK_CANCELED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalCheckInitiated       FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_CHECK_INITIATED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalCheckReleased        FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_CHECK_RELEASED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalCheckReversed        FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_CHECK_REVERSED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalCheckSettled         FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_CHECK_SETTLED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalTransferCanceled     FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_TRANSFER_CANCELED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalTransferInitiated    FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_TRANSFER_INITIATED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalTransferReleased     FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_TRANSFER_RELEASED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalTransferReversed     FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_TRANSFER_REVERSED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalTransferSettled      FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_TRANSFER_SETTLED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalWireCanceled         FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_WIRE_CANCELED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalWireInitiated        FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_WIRE_INITIATED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalWireReleased         FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_WIRE_RELEASED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalWireReversed         FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_WIRE_REVERSED"
+	FinancialAccountStatementLineItemListResponseEventTypeExternalWireSettled          FinancialAccountStatementLineItemListResponseEventType = "EXTERNAL_WIRE_SETTLED"
 	FinancialAccountStatementLineItemListResponseEventTypeFinancialAuthorization       FinancialAccountStatementLineItemListResponseEventType = "FINANCIAL_AUTHORIZATION"
 	FinancialAccountStatementLineItemListResponseEventTypeFinancialCreditAuthorization FinancialAccountStatementLineItemListResponseEventType = "FINANCIAL_CREDIT_AUTHORIZATION"
+	FinancialAccountStatementLineItemListResponseEventTypeInterest                     FinancialAccountStatementLineItemListResponseEventType = "INTEREST"
+	FinancialAccountStatementLineItemListResponseEventTypeLatePayment                  FinancialAccountStatementLineItemListResponseEventType = "LATE_PAYMENT"
+	FinancialAccountStatementLineItemListResponseEventTypeProvisionalCredit            FinancialAccountStatementLineItemListResponseEventType = "PROVISIONAL_CREDIT"
 	FinancialAccountStatementLineItemListResponseEventTypeReturn                       FinancialAccountStatementLineItemListResponseEventType = "RETURN"
 	FinancialAccountStatementLineItemListResponseEventTypeReturnReversal               FinancialAccountStatementLineItemListResponseEventType = "RETURN_REVERSAL"
 	FinancialAccountStatementLineItemListResponseEventTypeTransfer                     FinancialAccountStatementLineItemListResponseEventType = "TRANSFER"
@@ -415,7 +367,7 @@ const (
 
 func (r FinancialAccountStatementLineItemListResponseEventType) IsKnown() bool {
 	switch r {
-	case FinancialAccountStatementLineItemListResponseEventTypeACHOriginationCancelled, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationInitiated, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationProcessed, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationSettled, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationReleased, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationReviewed, FinancialAccountStatementLineItemListResponseEventTypeACHReceiptProcessed, FinancialAccountStatementLineItemListResponseEventTypeACHReceiptSettled, FinancialAccountStatementLineItemListResponseEventTypeACHReturnInitiated, FinancialAccountStatementLineItemListResponseEventTypeACHReturnProcessed, FinancialAccountStatementLineItemListResponseEventTypeAuthorization, FinancialAccountStatementLineItemListResponseEventTypeAuthorizationAdvice, FinancialAccountStatementLineItemListResponseEventTypeAuthorizationExpiry, FinancialAccountStatementLineItemListResponseEventTypeAuthorizationReversal, FinancialAccountStatementLineItemListResponseEventTypeBalanceInquiry, FinancialAccountStatementLineItemListResponseEventTypeClearing, FinancialAccountStatementLineItemListResponseEventTypeCorrectionCredit, FinancialAccountStatementLineItemListResponseEventTypeCorrectionDebit, FinancialAccountStatementLineItemListResponseEventTypeCreditAuthorization, FinancialAccountStatementLineItemListResponseEventTypeCreditAuthorizationAdvice, FinancialAccountStatementLineItemListResponseEventTypeFinancialAuthorization, FinancialAccountStatementLineItemListResponseEventTypeFinancialCreditAuthorization, FinancialAccountStatementLineItemListResponseEventTypeReturn, FinancialAccountStatementLineItemListResponseEventTypeReturnReversal, FinancialAccountStatementLineItemListResponseEventTypeTransfer, FinancialAccountStatementLineItemListResponseEventTypeTransferInsufficientFunds:
+	case FinancialAccountStatementLineItemListResponseEventTypeACHOriginationCancelled, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationInitiated, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationProcessed, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationReleased, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationReviewed, FinancialAccountStatementLineItemListResponseEventTypeACHOriginationSettled, FinancialAccountStatementLineItemListResponseEventTypeACHReceiptProcessed, FinancialAccountStatementLineItemListResponseEventTypeACHReceiptSettled, FinancialAccountStatementLineItemListResponseEventTypeACHReturnInitiated, FinancialAccountStatementLineItemListResponseEventTypeACHReturnProcessed, FinancialAccountStatementLineItemListResponseEventTypeAuthorization, FinancialAccountStatementLineItemListResponseEventTypeAuthorizationAdvice, FinancialAccountStatementLineItemListResponseEventTypeAuthorizationExpiry, FinancialAccountStatementLineItemListResponseEventTypeAuthorizationReversal, FinancialAccountStatementLineItemListResponseEventTypeBalanceInquiry, FinancialAccountStatementLineItemListResponseEventTypeBillingError, FinancialAccountStatementLineItemListResponseEventTypeCashBack, FinancialAccountStatementLineItemListResponseEventTypeClearing, FinancialAccountStatementLineItemListResponseEventTypeCorrectionCredit, FinancialAccountStatementLineItemListResponseEventTypeCorrectionDebit, FinancialAccountStatementLineItemListResponseEventTypeCreditAuthorization, FinancialAccountStatementLineItemListResponseEventTypeCreditAuthorizationAdvice, FinancialAccountStatementLineItemListResponseEventTypeCurrencyConversion, FinancialAccountStatementLineItemListResponseEventTypeDisputeWon, FinancialAccountStatementLineItemListResponseEventTypeExternalACHCanceled, FinancialAccountStatementLineItemListResponseEventTypeExternalACHInitiated, FinancialAccountStatementLineItemListResponseEventTypeExternalACHReleased, FinancialAccountStatementLineItemListResponseEventTypeExternalACHReversed, FinancialAccountStatementLineItemListResponseEventTypeExternalACHSettled, FinancialAccountStatementLineItemListResponseEventTypeExternalCheckCanceled, FinancialAccountStatementLineItemListResponseEventTypeExternalCheckInitiated, FinancialAccountStatementLineItemListResponseEventTypeExternalCheckReleased, FinancialAccountStatementLineItemListResponseEventTypeExternalCheckReversed, FinancialAccountStatementLineItemListResponseEventTypeExternalCheckSettled, FinancialAccountStatementLineItemListResponseEventTypeExternalTransferCanceled, FinancialAccountStatementLineItemListResponseEventTypeExternalTransferInitiated, FinancialAccountStatementLineItemListResponseEventTypeExternalTransferReleased, FinancialAccountStatementLineItemListResponseEventTypeExternalTransferReversed, FinancialAccountStatementLineItemListResponseEventTypeExternalTransferSettled, FinancialAccountStatementLineItemListResponseEventTypeExternalWireCanceled, FinancialAccountStatementLineItemListResponseEventTypeExternalWireInitiated, FinancialAccountStatementLineItemListResponseEventTypeExternalWireReleased, FinancialAccountStatementLineItemListResponseEventTypeExternalWireReversed, FinancialAccountStatementLineItemListResponseEventTypeExternalWireSettled, FinancialAccountStatementLineItemListResponseEventTypeFinancialAuthorization, FinancialAccountStatementLineItemListResponseEventTypeFinancialCreditAuthorization, FinancialAccountStatementLineItemListResponseEventTypeInterest, FinancialAccountStatementLineItemListResponseEventTypeLatePayment, FinancialAccountStatementLineItemListResponseEventTypeProvisionalCredit, FinancialAccountStatementLineItemListResponseEventTypeReturn, FinancialAccountStatementLineItemListResponseEventTypeReturnReversal, FinancialAccountStatementLineItemListResponseEventTypeTransfer, FinancialAccountStatementLineItemListResponseEventTypeTransferInsufficientFunds:
 		return true
 	}
 	return false

@@ -83,7 +83,9 @@ func TestPaymentListWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Payments.List(context.TODO(), lithic.PaymentListParams{
+		AccountToken:          lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Begin:                 lithic.F(time.Now()),
+		BusinessAccountToken:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Category:              lithic.F(lithic.PaymentListParamsCategoryACH),
 		End:                   lithic.F(time.Now()),
 		EndingBefore:          lithic.F("ending_before"),
