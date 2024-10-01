@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.56.0 (2024-10-01)
+
+Full Changelog: [v0.55.0...v0.56.0](https://github.com/lithic-com/lithic-go/compare/v0.55.0...v0.56.0)
+
+### Features
+
+* **api:** rename `loan_tape_response.statement_balance` to `previous_statement_balance` ([#384](https://github.com/lithic-com/lithic-go/issues/384)) ([43ab10a](https://github.com/lithic-com/lithic-go/commit/43ab10a2122d6b5955e80398900bea0c5bada633))
+
+
+### Documentation
+
+* improve and reference contributing documentation ([#382](https://github.com/lithic-com/lithic-go/issues/382)) ([c1f5162](https://github.com/lithic-com/lithic-go/commit/c1f5162de15cb3c7ed0cd7baa4af326d12bcee68))
+
 ## 0.55.0 (2024-10-01)
 
 Full Changelog: [v0.54.0...v0.55.0](https://github.com/lithic-com/lithic-go/compare/v0.54.0...v0.55.0)
