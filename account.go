@@ -49,11 +49,9 @@ func (r *AccountService) Get(ctx context.Context, accountToken string, opts ...o
 	return
 }
 
-// Update account configuration such as spend limits and verification address. Can
-// only be run on accounts that are part of the program managed by this API key.
-//
-// Accounts that are in the `PAUSED` state will not be able to transact or create
-// new cards.
+// Update account configuration such as state or spend limits. Can only be run on
+// accounts that are part of the program managed by this API key. Accounts that are
+// in the `PAUSED` state will not be able to transact or create new cards.
 func (r *AccountService) Update(ctx context.Context, accountToken string, body AccountUpdateParams, opts ...option.RequestOption) (res *Account, err error) {
 	opts = append(r.Options[:], opts...)
 	if accountToken == "" {
@@ -430,7 +428,9 @@ type AccountUpdateParams struct {
 	// Account states.
 	State param.Field[AccountUpdateParamsState] `json:"state"`
 	// Address used during Address Verification Service (AVS) checks during
-	// transactions if enabled via Auth Rules.
+	// transactions if enabled via Auth Rules. This field is deprecated as AVS checks
+	// are no longer supported by Authorization Rules. The field will be removed from
+	// the schema in a future release.
 	VerificationAddress param.Field[AccountUpdateParamsVerificationAddress] `json:"verification_address"`
 }
 
@@ -455,7 +455,9 @@ func (r AccountUpdateParamsState) IsKnown() bool {
 }
 
 // Address used during Address Verification Service (AVS) checks during
-// transactions if enabled via Auth Rules.
+// transactions if enabled via Auth Rules. This field is deprecated as AVS checks
+// are no longer supported by Authorization Rules. The field will be removed from
+// the schema in a future release.
 type AccountUpdateParamsVerificationAddress struct {
 	Address1   param.Field[string] `json:"address1"`
 	Address2   param.Field[string] `json:"address2"`

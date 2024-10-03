@@ -110,7 +110,8 @@ type Statement struct {
 	// Date when the billing period ended
 	StatementEndDate time.Time `json:"statement_end_date,required" format:"date"`
 	// Date when the billing period began
-	StatementStartDate time.Time `json:"statement_start_date,required" format:"date"`
+	StatementStartDate time.Time              `json:"statement_start_date,required" format:"date"`
+	StatementType      StatementStatementType `json:"statement_type,required"`
 	// Timestamp of when the statement was updated
 	Updated         time.Time                `json:"updated,required" format:"date-time"`
 	YtdTotals       StatementYtdTotals       `json:"ytd_totals,required"`
@@ -139,6 +140,7 @@ type statementJSON struct {
 	StartingBalance       apijson.Field
 	StatementEndDate      apijson.Field
 	StatementStartDate    apijson.Field
+	StatementType         apijson.Field
 	Updated               apijson.Field
 	YtdTotals             apijson.Field
 	InterestDetails       apijson.Field
@@ -278,6 +280,21 @@ func (r *StatementPeriodTotals) UnmarshalJSON(data []byte) (err error) {
 
 func (r statementPeriodTotalsJSON) RawJSON() string {
 	return r.raw
+}
+
+type StatementStatementType string
+
+const (
+	StatementStatementTypeInitial   StatementStatementType = "INITIAL"
+	StatementStatementTypePeriodEnd StatementStatementType = "PERIOD_END"
+)
+
+func (r StatementStatementType) IsKnown() bool {
+	switch r {
+	case StatementStatementTypeInitial, StatementStatementTypePeriodEnd:
+		return true
+	}
+	return false
 }
 
 type StatementYtdTotals struct {
