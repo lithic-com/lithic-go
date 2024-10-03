@@ -84,6 +84,8 @@ type LoanTape struct {
 	// Globally unique identifier for a loan tape
 	Token           string                  `json:"token,required"`
 	AccountStanding LoanTapeAccountStanding `json:"account_standing,required"`
+	// Amount of credit available to spend in cents
+	AvailableCredit int64 `json:"available_credit,required"`
 	// Amount due for the prior billing cycle. Any amounts not fully paid off on this
 	// due date will be considered past due the next day
 	BalanceDue LoanTapeBalanceDue `json:"balance_due,required"`
@@ -104,6 +106,8 @@ type LoanTape struct {
 	// Date of transactions that this loan tape covers
 	Date      time.Time         `json:"date,required" format:"date"`
 	DayTotals LoanTapeDayTotals `json:"day_totals,required"`
+	// Balance at the end of the day
+	EndingBalance int64 `json:"ending_balance,required"`
 	// Excess credits in the form of provisional credits, payments, or purchase
 	// refunds. If positive, the account is in net credit state with no outstanding
 	// balances. An overpayment could land an account in this state
@@ -128,6 +132,7 @@ type LoanTape struct {
 type loanTapeJSON struct {
 	Token                    apijson.Field
 	AccountStanding          apijson.Field
+	AvailableCredit          apijson.Field
 	BalanceDue               apijson.Field
 	BalanceNextDue           apijson.Field
 	BalancePastDue           apijson.Field
@@ -136,6 +141,7 @@ type loanTapeJSON struct {
 	CreditProductToken       apijson.Field
 	Date                     apijson.Field
 	DayTotals                apijson.Field
+	EndingBalance            apijson.Field
 	ExcessCredits            apijson.Field
 	FinancialAccountToken    apijson.Field
 	MinimumPaymentBalance    apijson.Field
