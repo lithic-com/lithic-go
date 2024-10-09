@@ -4,6 +4,7 @@ package shared
 
 import (
 	"reflect"
+	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/param"
@@ -355,7 +356,7 @@ type Document struct {
 	Token string `json:"token,required" format:"uuid"`
 	// Globally unique identifier for the account holder.
 	AccountHolderToken string `json:"account_holder_token,required" format:"uuid"`
-	// Type of documentation to be submitted for verification.
+	// Type of documentation to be submitted for verification of an account holder
 	DocumentType DocumentDocumentType `json:"document_type,required"`
 	// Globally unique identifier for an entity.
 	EntityToken string `json:"entity_token,required" format:"uuid"`
@@ -383,7 +384,7 @@ func (r documentJSON) RawJSON() string {
 	return r.raw
 }
 
-// Type of documentation to be submitted for verification.
+// Type of documentation to be submitted for verification of an account holder
 type DocumentDocumentType string
 
 const (
@@ -419,12 +420,22 @@ func (r DocumentDocumentType) IsKnown() bool {
 type DocumentRequiredDocumentUpload struct {
 	// Globally unique identifier for the document upload.
 	Token string `json:"token,required" format:"uuid"`
+	// A list of status reasons associated with a KYB account holder that have been
+	// satisfied by the document upload
+	AcceptedEntityStatusReasons []string `json:"accepted_entity_status_reasons,required"`
+	// When the document upload was created
+	Created time.Time `json:"created,required" format:"date-time"`
 	// Type of image to upload.
 	ImageType DocumentRequiredDocumentUploadsImageType `json:"image_type,required"`
-	// Status of document image upload.
+	// A list of status reasons associated with a KYB account holder that have not been
+	// satisfied by the document upload
+	RejectedEntityStatusReasons []string `json:"rejected_entity_status_reasons,required"`
+	// Status of an account holder's document upload.
 	Status DocumentRequiredDocumentUploadsStatus `json:"status,required"`
 	// Reasons for document image upload status.
 	StatusReasons []DocumentRequiredDocumentUploadsStatusReason `json:"status_reasons,required"`
+	// When the document upload was last updated
+	Updated time.Time `json:"updated,required" format:"date-time"`
 	// URL to upload document image to.
 	//
 	// Note that the upload URLs expire after 7 days. If an upload URL expires, you can
@@ -437,13 +448,17 @@ type DocumentRequiredDocumentUpload struct {
 // documentRequiredDocumentUploadJSON contains the JSON metadata for the struct
 // [DocumentRequiredDocumentUpload]
 type documentRequiredDocumentUploadJSON struct {
-	Token         apijson.Field
-	ImageType     apijson.Field
-	Status        apijson.Field
-	StatusReasons apijson.Field
-	UploadURL     apijson.Field
-	raw           string
-	ExtraFields   map[string]apijson.Field
+	Token                       apijson.Field
+	AcceptedEntityStatusReasons apijson.Field
+	Created                     apijson.Field
+	ImageType                   apijson.Field
+	RejectedEntityStatusReasons apijson.Field
+	Status                      apijson.Field
+	StatusReasons               apijson.Field
+	Updated                     apijson.Field
+	UploadURL                   apijson.Field
+	raw                         string
+	ExtraFields                 map[string]apijson.Field
 }
 
 func (r *DocumentRequiredDocumentUpload) UnmarshalJSON(data []byte) (err error) {
@@ -470,38 +485,45 @@ func (r DocumentRequiredDocumentUploadsImageType) IsKnown() bool {
 	return false
 }
 
-// Status of document image upload.
+// Status of an account holder's document upload.
 type DocumentRequiredDocumentUploadsStatus string
 
 const (
-	DocumentRequiredDocumentUploadsStatusAccepted      DocumentRequiredDocumentUploadsStatus = "ACCEPTED"
-	DocumentRequiredDocumentUploadsStatusRejected      DocumentRequiredDocumentUploadsStatus = "REJECTED"
-	DocumentRequiredDocumentUploadsStatusPendingUpload DocumentRequiredDocumentUploadsStatus = "PENDING_UPLOAD"
-	DocumentRequiredDocumentUploadsStatusUploaded      DocumentRequiredDocumentUploadsStatus = "UPLOADED"
+	DocumentRequiredDocumentUploadsStatusAccepted        DocumentRequiredDocumentUploadsStatus = "ACCEPTED"
+	DocumentRequiredDocumentUploadsStatusRejected        DocumentRequiredDocumentUploadsStatus = "REJECTED"
+	DocumentRequiredDocumentUploadsStatusPendingUpload   DocumentRequiredDocumentUploadsStatus = "PENDING_UPLOAD"
+	DocumentRequiredDocumentUploadsStatusUploaded        DocumentRequiredDocumentUploadsStatus = "UPLOADED"
+	DocumentRequiredDocumentUploadsStatusPartialApproval DocumentRequiredDocumentUploadsStatus = "PARTIAL_APPROVAL"
 )
 
 func (r DocumentRequiredDocumentUploadsStatus) IsKnown() bool {
 	switch r {
-	case DocumentRequiredDocumentUploadsStatusAccepted, DocumentRequiredDocumentUploadsStatusRejected, DocumentRequiredDocumentUploadsStatusPendingUpload, DocumentRequiredDocumentUploadsStatusUploaded:
+	case DocumentRequiredDocumentUploadsStatusAccepted, DocumentRequiredDocumentUploadsStatusRejected, DocumentRequiredDocumentUploadsStatusPendingUpload, DocumentRequiredDocumentUploadsStatusUploaded, DocumentRequiredDocumentUploadsStatusPartialApproval:
 		return true
 	}
 	return false
 }
 
+// The status reasons for an account holder document upload that is not ACCEPTED
 type DocumentRequiredDocumentUploadsStatusReason string
 
 const (
-	DocumentRequiredDocumentUploadsStatusReasonDocumentMissingRequiredData DocumentRequiredDocumentUploadsStatusReason = "DOCUMENT_MISSING_REQUIRED_DATA"
-	DocumentRequiredDocumentUploadsStatusReasonDocumentUploadTooBlurry     DocumentRequiredDocumentUploadsStatusReason = "DOCUMENT_UPLOAD_TOO_BLURRY"
-	DocumentRequiredDocumentUploadsStatusReasonFileSizeTooLarge            DocumentRequiredDocumentUploadsStatusReason = "FILE_SIZE_TOO_LARGE"
-	DocumentRequiredDocumentUploadsStatusReasonInvalidDocumentType         DocumentRequiredDocumentUploadsStatusReason = "INVALID_DOCUMENT_TYPE"
-	DocumentRequiredDocumentUploadsStatusReasonInvalidDocumentUpload       DocumentRequiredDocumentUploadsStatusReason = "INVALID_DOCUMENT_UPLOAD"
-	DocumentRequiredDocumentUploadsStatusReasonUnknownError                DocumentRequiredDocumentUploadsStatusReason = "UNKNOWN_ERROR"
+	DocumentRequiredDocumentUploadsStatusReasonDocumentMissingRequiredData     DocumentRequiredDocumentUploadsStatusReason = "DOCUMENT_MISSING_REQUIRED_DATA"
+	DocumentRequiredDocumentUploadsStatusReasonDocumentUploadTooBlurry         DocumentRequiredDocumentUploadsStatusReason = "DOCUMENT_UPLOAD_TOO_BLURRY"
+	DocumentRequiredDocumentUploadsStatusReasonFileSizeTooLarge                DocumentRequiredDocumentUploadsStatusReason = "FILE_SIZE_TOO_LARGE"
+	DocumentRequiredDocumentUploadsStatusReasonInvalidDocumentType             DocumentRequiredDocumentUploadsStatusReason = "INVALID_DOCUMENT_TYPE"
+	DocumentRequiredDocumentUploadsStatusReasonInvalidDocumentUpload           DocumentRequiredDocumentUploadsStatusReason = "INVALID_DOCUMENT_UPLOAD"
+	DocumentRequiredDocumentUploadsStatusReasonInvalidEntity                   DocumentRequiredDocumentUploadsStatusReason = "INVALID_ENTITY"
+	DocumentRequiredDocumentUploadsStatusReasonDocumentExpired                 DocumentRequiredDocumentUploadsStatusReason = "DOCUMENT_EXPIRED"
+	DocumentRequiredDocumentUploadsStatusReasonDocumentIssuedGreaterThan30Days DocumentRequiredDocumentUploadsStatusReason = "DOCUMENT_ISSUED_GREATER_THAN_30_DAYS"
+	DocumentRequiredDocumentUploadsStatusReasonDocumentTypeNotSupported        DocumentRequiredDocumentUploadsStatusReason = "DOCUMENT_TYPE_NOT_SUPPORTED"
+	DocumentRequiredDocumentUploadsStatusReasonUnknownFailureReason            DocumentRequiredDocumentUploadsStatusReason = "UNKNOWN_FAILURE_REASON"
+	DocumentRequiredDocumentUploadsStatusReasonUnknownError                    DocumentRequiredDocumentUploadsStatusReason = "UNKNOWN_ERROR"
 )
 
 func (r DocumentRequiredDocumentUploadsStatusReason) IsKnown() bool {
 	switch r {
-	case DocumentRequiredDocumentUploadsStatusReasonDocumentMissingRequiredData, DocumentRequiredDocumentUploadsStatusReasonDocumentUploadTooBlurry, DocumentRequiredDocumentUploadsStatusReasonFileSizeTooLarge, DocumentRequiredDocumentUploadsStatusReasonInvalidDocumentType, DocumentRequiredDocumentUploadsStatusReasonInvalidDocumentUpload, DocumentRequiredDocumentUploadsStatusReasonUnknownError:
+	case DocumentRequiredDocumentUploadsStatusReasonDocumentMissingRequiredData, DocumentRequiredDocumentUploadsStatusReasonDocumentUploadTooBlurry, DocumentRequiredDocumentUploadsStatusReasonFileSizeTooLarge, DocumentRequiredDocumentUploadsStatusReasonInvalidDocumentType, DocumentRequiredDocumentUploadsStatusReasonInvalidDocumentUpload, DocumentRequiredDocumentUploadsStatusReasonInvalidEntity, DocumentRequiredDocumentUploadsStatusReasonDocumentExpired, DocumentRequiredDocumentUploadsStatusReasonDocumentIssuedGreaterThan30Days, DocumentRequiredDocumentUploadsStatusReasonDocumentTypeNotSupported, DocumentRequiredDocumentUploadsStatusReasonUnknownFailureReason, DocumentRequiredDocumentUploadsStatusReasonUnknownError:
 		return true
 	}
 	return false
