@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.57.0 (2024-10-09)
+
+Full Changelog: [v0.56.0...v0.57.0](https://github.com/lithic-com/lithic-go/compare/v0.56.0...v0.57.0)
+
+### Features
+
+* **api:** small updates to Documents, AccountHolders and LoanTapes ([#387](https://github.com/lithic-com/lithic-go/issues/387)) ([20cb506](https://github.com/lithic-com/lithic-go/commit/20cb506fb9094a2efd7275ca728264328e24dca0))
+
+
+### Chores
+
+* **api:** small updates to verification addresses and Statement and LoanTape fields ([#385](https://github.com/lithic-com/lithic-go/issues/385)) ([bd05727](https://github.com/lithic-com/lithic-go/commit/bd0572705814f44a6436247339dee6c594de02fb))
+
 ## 0.56.0 (2024-10-01)
 
 Full Changelog: [v0.55.0...v0.56.0](https://github.com/lithic-com/lithic-go/compare/v0.55.0...v0.56.0)
