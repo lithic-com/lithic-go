@@ -118,6 +118,8 @@ type LoanTape struct {
 	PaymentAllocation        LoanTapePaymentAllocation        `json:"payment_allocation,required"`
 	PeriodTotals             LoanTapePeriodTotals             `json:"period_totals,required"`
 	PreviousStatementBalance LoanTapePreviousStatementBalance `json:"previous_statement_balance,required"`
+	// Balance at the start of the day
+	StartingBalance int64 `json:"starting_balance,required"`
 	// Timestamp of when the loan tape was updated
 	Updated time.Time `json:"updated,required" format:"date-time"`
 	// Version number of the loan tape. This starts at 1
@@ -148,6 +150,7 @@ type loanTapeJSON struct {
 	PaymentAllocation        apijson.Field
 	PeriodTotals             apijson.Field
 	PreviousStatementBalance apijson.Field
+	StartingBalance          apijson.Field
 	Updated                  apijson.Field
 	Version                  apijson.Field
 	YtdTotals                apijson.Field

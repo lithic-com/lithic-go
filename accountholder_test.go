@@ -300,9 +300,10 @@ func TestAccountHolderSimulateEnrollmentDocumentReviewWithOptionalParams(t *test
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AccountHolders.SimulateEnrollmentDocumentReview(context.TODO(), lithic.AccountHolderSimulateEnrollmentDocumentReviewParams{
-		DocumentUploadToken: lithic.F("b11cd67b-0a52-4180-8365-314f3def5426"),
-		Status:              lithic.F(lithic.AccountHolderSimulateEnrollmentDocumentReviewParamsStatusUploaded),
-		StatusReasons:       lithic.F([]lithic.AccountHolderSimulateEnrollmentDocumentReviewParamsStatusReason{lithic.AccountHolderSimulateEnrollmentDocumentReviewParamsStatusReasonDocumentMissingRequiredData, lithic.AccountHolderSimulateEnrollmentDocumentReviewParamsStatusReasonDocumentUploadTooBlurry, lithic.AccountHolderSimulateEnrollmentDocumentReviewParamsStatusReasonInvalidDocumentType}),
+		DocumentUploadToken:         lithic.F("b11cd67b-0a52-4180-8365-314f3def5426"),
+		Status:                      lithic.F(lithic.AccountHolderSimulateEnrollmentDocumentReviewParamsStatusUploaded),
+		AcceptedEntityStatusReasons: lithic.F([]string{"string", "string", "string"}),
+		StatusReason:                lithic.F(lithic.AccountHolderSimulateEnrollmentDocumentReviewParamsStatusReasonDocumentMissingRequiredData),
 	})
 	if err != nil {
 		var apierr *lithic.Error

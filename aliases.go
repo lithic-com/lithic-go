@@ -588,7 +588,7 @@ const CurrencyZwl = shared.CurrencyZwl
 // This is an alias to an internal type.
 type Document = shared.Document
 
-// Type of documentation to be submitted for verification.
+// Type of documentation to be submitted for verification of an account holder
 //
 // This is an alias to an internal type.
 type DocumentDocumentType = shared.DocumentDocumentType
@@ -663,7 +663,7 @@ const DocumentRequiredDocumentUploadsImageTypeFront = shared.DocumentRequiredDoc
 // This is an alias to an internal value.
 const DocumentRequiredDocumentUploadsImageTypeBack = shared.DocumentRequiredDocumentUploadsImageTypeBack
 
-// Status of document image upload.
+// Status of an account holder's document upload.
 //
 // This is an alias to an internal type.
 type DocumentRequiredDocumentUploadsStatus = shared.DocumentRequiredDocumentUploadsStatus
@@ -680,6 +680,11 @@ const DocumentRequiredDocumentUploadsStatusPendingUpload = shared.DocumentRequir
 // This is an alias to an internal value.
 const DocumentRequiredDocumentUploadsStatusUploaded = shared.DocumentRequiredDocumentUploadsStatusUploaded
 
+// This is an alias to an internal value.
+const DocumentRequiredDocumentUploadsStatusPartialApproval = shared.DocumentRequiredDocumentUploadsStatusPartialApproval
+
+// The status reasons for an account holder document upload that is not ACCEPTED
+//
 // This is an alias to an internal type.
 type DocumentRequiredDocumentUploadsStatusReason = shared.DocumentRequiredDocumentUploadsStatusReason
 
@@ -697,6 +702,21 @@ const DocumentRequiredDocumentUploadsStatusReasonInvalidDocumentType = shared.Do
 
 // This is an alias to an internal value.
 const DocumentRequiredDocumentUploadsStatusReasonInvalidDocumentUpload = shared.DocumentRequiredDocumentUploadsStatusReasonInvalidDocumentUpload
+
+// This is an alias to an internal value.
+const DocumentRequiredDocumentUploadsStatusReasonInvalidEntity = shared.DocumentRequiredDocumentUploadsStatusReasonInvalidEntity
+
+// This is an alias to an internal value.
+const DocumentRequiredDocumentUploadsStatusReasonDocumentExpired = shared.DocumentRequiredDocumentUploadsStatusReasonDocumentExpired
+
+// This is an alias to an internal value.
+const DocumentRequiredDocumentUploadsStatusReasonDocumentIssuedGreaterThan30Days = shared.DocumentRequiredDocumentUploadsStatusReasonDocumentIssuedGreaterThan30Days
+
+// This is an alias to an internal value.
+const DocumentRequiredDocumentUploadsStatusReasonDocumentTypeNotSupported = shared.DocumentRequiredDocumentUploadsStatusReasonDocumentTypeNotSupported
+
+// This is an alias to an internal value.
+const DocumentRequiredDocumentUploadsStatusReasonUnknownFailureReason = shared.DocumentRequiredDocumentUploadsStatusReasonUnknownFailureReason
 
 // This is an alias to an internal value.
 const DocumentRequiredDocumentUploadsStatusReasonUnknownError = shared.DocumentRequiredDocumentUploadsStatusReasonUnknownError

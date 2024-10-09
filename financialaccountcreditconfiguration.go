@@ -69,6 +69,7 @@ type FinancialAccountCreditConfig struct {
 	Tier string `json:"tier,required,nullable"`
 	// State of the financial account
 	FinancialAccountState FinancialAccountCreditConfigFinancialAccountState `json:"financial_account_state"`
+	IsSpendBlocked        bool                                              `json:"is_spend_blocked"`
 	JSON                  financialAccountCreditConfigJSON                  `json:"-"`
 }
 
@@ -81,6 +82,7 @@ type financialAccountCreditConfigJSON struct {
 	ExternalBankAccountToken apijson.Field
 	Tier                     apijson.Field
 	FinancialAccountState    apijson.Field
+	IsSpendBlocked           apijson.Field
 	raw                      string
 	ExtraFields              map[string]apijson.Field
 }
