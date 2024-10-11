@@ -35,7 +35,7 @@ func TestThreeDSAuthenticationGet(t *testing.T) {
 	}
 }
 
-func TestThreeDSAuthenticationSimulate(t *testing.T) {
+func TestThreeDSAuthenticationSimulateWithOptionalParams(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -59,6 +59,7 @@ func TestThreeDSAuthenticationSimulate(t *testing.T) {
 			Amount:   lithic.F(int64(100)),
 			Currency: lithic.F("USD"),
 		}),
+		CardExpiryCheck: lithic.F(lithic.ThreeDSAuthenticationSimulateParamsCardExpiryCheckMatch),
 	})
 	if err != nil {
 		var apierr *lithic.Error

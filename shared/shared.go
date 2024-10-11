@@ -153,8 +153,8 @@ func (r CarrierParam) MarshalJSON() (data []byte, err error) {
 }
 
 // ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
-// special currencies like “XXX`. Enumerants names are lowercase currency code
-// e.g. :attr:`EUR`, :attr:`USD`.
+// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
+// `EUR`, `USD`.
 type Currency string
 
 const (

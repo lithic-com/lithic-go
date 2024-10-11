@@ -85,16 +85,8 @@ type LoanTape struct {
 	Token           string                  `json:"token,required"`
 	AccountStanding LoanTapeAccountStanding `json:"account_standing,required"`
 	// Amount of credit available to spend in cents
-	AvailableCredit int64 `json:"available_credit,required"`
-	// Amount due for the prior billing cycle. Any amounts not fully paid off on this
-	// due date will be considered past due the next day
-	BalanceDue LoanTapeBalanceDue `json:"balance_due,required"`
-	// Amount due for the current billing cycle. Any amounts not paid off by early
-	// payments or credits will be considered due at the end of the current billing
-	// period
-	BalanceNextDue LoanTapeBalanceNextDue `json:"balance_next_due,required"`
-	// Amount not paid off on previous due dates
-	BalancePastDue LoanTapeBalancePastDue `json:"balance_past_due,required"`
+	AvailableCredit int64            `json:"available_credit,required"`
+	Balances        LoanTapeBalances `json:"balances,required"`
 	// Timestamp of when the loan tape was created
 	Created time.Time `json:"created,required" format:"date-time"`
 	// For prepay accounts, this is the minimum prepay balance that must be maintained.
@@ -135,9 +127,7 @@ type loanTapeJSON struct {
 	Token                    apijson.Field
 	AccountStanding          apijson.Field
 	AvailableCredit          apijson.Field
-	BalanceDue               apijson.Field
-	BalanceNextDue           apijson.Field
-	BalancePastDue           apijson.Field
+	Balances                 apijson.Field
 	Created                  apijson.Field
 	CreditLimit              apijson.Field
 	CreditProductToken       apijson.Field
@@ -222,18 +212,52 @@ func (r LoanTapeAccountStandingPeriodState) IsKnown() bool {
 	return false
 }
 
-// Amount due for the prior billing cycle. Any amounts not fully paid off on this
-// due date will be considered past due the next day
-type LoanTapeBalanceDue struct {
-	Fees      int64                  `json:"fees,required"`
-	Interest  int64                  `json:"interest,required"`
-	Principal int64                  `json:"principal,required"`
-	JSON      loanTapeBalanceDueJSON `json:"-"`
+type LoanTapeBalances struct {
+	// Amount due for the prior billing cycle. Any amounts not fully paid off on this
+	// due date will be considered past due the next day
+	Due LoanTapeBalancesDue `json:"due,required"`
+	// Amount due for the current billing cycle. Any amounts not paid off by early
+	// payments or credits will be considered due at the end of the current billing
+	// period
+	NextStatementDue LoanTapeBalancesNextStatementDue `json:"next_statement_due,required"`
+	// Amount not paid off on previous due dates
+	PastDue LoanTapeBalancesPastDue `json:"past_due,required"`
+	// Amount due for the past billing cycles.
+	PastStatementsDue LoanTapeBalancesPastStatementsDue `json:"past_statements_due,required"`
+	JSON              loanTapeBalancesJSON              `json:"-"`
 }
 
-// loanTapeBalanceDueJSON contains the JSON metadata for the struct
-// [LoanTapeBalanceDue]
-type loanTapeBalanceDueJSON struct {
+// loanTapeBalancesJSON contains the JSON metadata for the struct
+// [LoanTapeBalances]
+type loanTapeBalancesJSON struct {
+	Due               apijson.Field
+	NextStatementDue  apijson.Field
+	PastDue           apijson.Field
+	PastStatementsDue apijson.Field
+	raw               string
+	ExtraFields       map[string]apijson.Field
+}
+
+func (r *LoanTapeBalances) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r loanTapeBalancesJSON) RawJSON() string {
+	return r.raw
+}
+
+// Amount due for the prior billing cycle. Any amounts not fully paid off on this
+// due date will be considered past due the next day
+type LoanTapeBalancesDue struct {
+	Fees      int64                   `json:"fees,required"`
+	Interest  int64                   `json:"interest,required"`
+	Principal int64                   `json:"principal,required"`
+	JSON      loanTapeBalancesDueJSON `json:"-"`
+}
+
+// loanTapeBalancesDueJSON contains the JSON metadata for the struct
+// [LoanTapeBalancesDue]
+type loanTapeBalancesDueJSON struct {
 	Fees        apijson.Field
 	Interest    apijson.Field
 	Principal   apijson.Field
@@ -241,27 +265,27 @@ type loanTapeBalanceDueJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *LoanTapeBalanceDue) UnmarshalJSON(data []byte) (err error) {
+func (r *LoanTapeBalancesDue) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r loanTapeBalanceDueJSON) RawJSON() string {
+func (r loanTapeBalancesDueJSON) RawJSON() string {
 	return r.raw
 }
 
 // Amount due for the current billing cycle. Any amounts not paid off by early
 // payments or credits will be considered due at the end of the current billing
 // period
-type LoanTapeBalanceNextDue struct {
-	Fees      int64                      `json:"fees,required"`
-	Interest  int64                      `json:"interest,required"`
-	Principal int64                      `json:"principal,required"`
-	JSON      loanTapeBalanceNextDueJSON `json:"-"`
+type LoanTapeBalancesNextStatementDue struct {
+	Fees      int64                                `json:"fees,required"`
+	Interest  int64                                `json:"interest,required"`
+	Principal int64                                `json:"principal,required"`
+	JSON      loanTapeBalancesNextStatementDueJSON `json:"-"`
 }
 
-// loanTapeBalanceNextDueJSON contains the JSON metadata for the struct
-// [LoanTapeBalanceNextDue]
-type loanTapeBalanceNextDueJSON struct {
+// loanTapeBalancesNextStatementDueJSON contains the JSON metadata for the struct
+// [LoanTapeBalancesNextStatementDue]
+type loanTapeBalancesNextStatementDueJSON struct {
 	Fees        apijson.Field
 	Interest    apijson.Field
 	Principal   apijson.Field
@@ -269,25 +293,25 @@ type loanTapeBalanceNextDueJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *LoanTapeBalanceNextDue) UnmarshalJSON(data []byte) (err error) {
+func (r *LoanTapeBalancesNextStatementDue) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r loanTapeBalanceNextDueJSON) RawJSON() string {
+func (r loanTapeBalancesNextStatementDueJSON) RawJSON() string {
 	return r.raw
 }
 
 // Amount not paid off on previous due dates
-type LoanTapeBalancePastDue struct {
-	Fees      int64                      `json:"fees,required"`
-	Interest  int64                      `json:"interest,required"`
-	Principal int64                      `json:"principal,required"`
-	JSON      loanTapeBalancePastDueJSON `json:"-"`
+type LoanTapeBalancesPastDue struct {
+	Fees      int64                       `json:"fees,required"`
+	Interest  int64                       `json:"interest,required"`
+	Principal int64                       `json:"principal,required"`
+	JSON      loanTapeBalancesPastDueJSON `json:"-"`
 }
 
-// loanTapeBalancePastDueJSON contains the JSON metadata for the struct
-// [LoanTapeBalancePastDue]
-type loanTapeBalancePastDueJSON struct {
+// loanTapeBalancesPastDueJSON contains the JSON metadata for the struct
+// [LoanTapeBalancesPastDue]
+type loanTapeBalancesPastDueJSON struct {
 	Fees        apijson.Field
 	Interest    apijson.Field
 	Principal   apijson.Field
@@ -295,11 +319,37 @@ type loanTapeBalancePastDueJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *LoanTapeBalancePastDue) UnmarshalJSON(data []byte) (err error) {
+func (r *LoanTapeBalancesPastDue) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r loanTapeBalancePastDueJSON) RawJSON() string {
+func (r loanTapeBalancesPastDueJSON) RawJSON() string {
+	return r.raw
+}
+
+// Amount due for the past billing cycles.
+type LoanTapeBalancesPastStatementsDue struct {
+	Fees      int64                                 `json:"fees,required"`
+	Interest  int64                                 `json:"interest,required"`
+	Principal int64                                 `json:"principal,required"`
+	JSON      loanTapeBalancesPastStatementsDueJSON `json:"-"`
+}
+
+// loanTapeBalancesPastStatementsDueJSON contains the JSON metadata for the struct
+// [LoanTapeBalancesPastStatementsDue]
+type loanTapeBalancesPastStatementsDueJSON struct {
+	Fees        apijson.Field
+	Interest    apijson.Field
+	Principal   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *LoanTapeBalancesPastStatementsDue) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r loanTapeBalancesPastStatementsDueJSON) RawJSON() string {
 	return r.raw
 }
 
