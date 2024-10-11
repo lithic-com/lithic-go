@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.58.0 (2024-10-11)
+
+Full Changelog: [v0.57.0...v0.58.0](https://github.com/lithic-com/lithic-go/compare/v0.57.0...v0.58.0)
+
+### Features
+
+* **api:** updates to documentation and addition of new 3DS simulation methods ([#390](https://github.com/lithic-com/lithic-go/issues/390)) ([922e670](https://github.com/lithic-com/lithic-go/commit/922e6708668ef16a32360010f2f05da0937cce0b))
+
+
+### Chores
+
+* fix GetNextPage docstring ([#388](https://github.com/lithic-com/lithic-go/issues/388)) ([eec6cc7](https://github.com/lithic-com/lithic-go/commit/eec6cc72d16d63aa439efa508c67cab2fc8ac9cb))
+
 ## 0.57.0 (2024-10-09)
 
 Full Changelog: [v0.56.0...v0.57.0](https://github.com/lithic-com/lithic-go/compare/v0.56.0...v0.57.0)
