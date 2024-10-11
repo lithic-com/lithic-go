@@ -298,8 +298,7 @@ type Card struct {
 	ExpYear string `json:"exp_year"`
 	// Hostname of card’s locked merchant (will be empty if not applicable).
 	Hostname string `json:"hostname"`
-	// Friendly name to identify the card. We recommend against using this field to
-	// store JSON data as it can cause unexpected behavior.
+	// Friendly name to identify the card.
 	Memo string `json:"memo"`
 	// Primary Account Number (PAN) (i.e. the card number). Customers must be PCI
 	// compliant to have PAN returned as a field in production. Please contact
@@ -736,8 +735,7 @@ type CardNewParams struct {
 	// Four digit (yyyy) expiry year. If neither `exp_month` nor `exp_year` is
 	// provided, an expiration date will be generated.
 	ExpYear param.Field[string] `json:"exp_year"`
-	// Friendly name to identify the card. We recommend against using this field to
-	// store JSON data as it can cause unexpected behavior.
+	// Friendly name to identify the card.
 	Memo param.Field[string] `json:"memo"`
 	// Encrypted PIN block (in base64). Only applies to cards of type `PHYSICAL` and
 	// `VIRTUAL`. See
@@ -883,8 +881,7 @@ type CardUpdateParams struct {
 	// by Lithic to use. See
 	// [Flexible Card Art Guide](https://docs.lithic.com/docs/about-digital-wallets#flexible-card-art).
 	DigitalCardArtToken param.Field[string] `json:"digital_card_art_token" format:"uuid"`
-	// Friendly name to identify the card. We recommend against using this field to
-	// store JSON data as it can cause unexpected behavior.
+	// Friendly name to identify the card.
 	Memo param.Field[string] `json:"memo"`
 	// Encrypted PIN block (in base64). Only applies to cards of type `PHYSICAL` and
 	// `VIRTUAL`. Changing PIN also resets PIN status to `OK`. See
