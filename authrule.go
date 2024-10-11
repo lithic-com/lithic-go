@@ -112,15 +112,17 @@ func (r *AuthRuleService) Apply(ctx context.Context, authRuleToken string, body 
 	return
 }
 
-// Migrates an existing V1 authorization rule to a V2 authorization rule. This will
-// alter the internal structure of the Auth Rule such that it becomes a V2
-// Authorization Rule that can be operated on through the /v2/auth_rules endpoints.
+// Migrates an existing V1 authorization rule to a V2 authorization rule. Depending
+// on the configuration of the V1 Auth Rule, this will yield one or two V2
+// authorization rules. This endpoint will alter the internal structure of the Auth
+// Rule such that the resulting rules become a V2 Authorization Rule that can be
+// operated on through the /v2/auth_rules endpoints.
 //
 // After a V1 Auth Rule has been migrated, it can no longer be operated on through
 // the /v1/auth_rules/\* endpoints. Eventually, Lithic will deprecate the
 // /v1/auth_rules endpoints and migrate all existing V1 Auth Rules to V2 Auth
 // Rules.
-func (r *AuthRuleService) MigrateV1ToV2(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (res *AuthRuleMigrateV1ToV2Response, err error) {
+func (r *AuthRuleService) MigrateV1ToV2(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (res *[]AuthRuleMigrateV1ToV2Response, err error) {
 	opts = append(r.Options[:], opts...)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")

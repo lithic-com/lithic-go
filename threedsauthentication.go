@@ -804,19 +804,16 @@ func (r ThreeDSAuthenticationGetResponseTransactionType) IsKnown() bool {
 type ThreeDSAuthenticationSimulateResponse struct {
 	// A unique token to reference this transaction with later calls to void or clear
 	// the authorization.
-	Token string `json:"token" format:"uuid"`
-	// Debugging request ID to share with Lithic Support team.
-	DebuggingRequestID string                                    `json:"debugging_request_id" format:"uuid"`
-	JSON               threeDSAuthenticationSimulateResponseJSON `json:"-"`
+	Token string                                    `json:"token" format:"uuid"`
+	JSON  threeDSAuthenticationSimulateResponseJSON `json:"-"`
 }
 
 // threeDSAuthenticationSimulateResponseJSON contains the JSON metadata for the
 // struct [ThreeDSAuthenticationSimulateResponse]
 type threeDSAuthenticationSimulateResponseJSON struct {
-	Token              apijson.Field
-	DebuggingRequestID apijson.Field
-	raw                string
-	ExtraFields        map[string]apijson.Field
+	Token       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *ThreeDSAuthenticationSimulateResponse) UnmarshalJSON(data []byte) (err error) {
@@ -832,6 +829,9 @@ type ThreeDSAuthenticationSimulateParams struct {
 	// Sixteen digit card number.
 	Pan         param.Field[string]                                         `json:"pan,required"`
 	Transaction param.Field[ThreeDSAuthenticationSimulateParamsTransaction] `json:"transaction,required"`
+	// When set will use the following values as part of the Simulated Authentication.
+	// When not set defaults to MATCH
+	CardExpiryCheck param.Field[ThreeDSAuthenticationSimulateParamsCardExpiryCheck] `json:"card_expiry_check"`
 }
 
 func (r ThreeDSAuthenticationSimulateParams) MarshalJSON() (data []byte, err error) {
@@ -866,4 +866,22 @@ type ThreeDSAuthenticationSimulateParamsTransaction struct {
 
 func (r ThreeDSAuthenticationSimulateParamsTransaction) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
+}
+
+// When set will use the following values as part of the Simulated Authentication.
+// When not set defaults to MATCH
+type ThreeDSAuthenticationSimulateParamsCardExpiryCheck string
+
+const (
+	ThreeDSAuthenticationSimulateParamsCardExpiryCheckMatch      ThreeDSAuthenticationSimulateParamsCardExpiryCheck = "MATCH"
+	ThreeDSAuthenticationSimulateParamsCardExpiryCheckMismatch   ThreeDSAuthenticationSimulateParamsCardExpiryCheck = "MISMATCH"
+	ThreeDSAuthenticationSimulateParamsCardExpiryCheckNotPresent ThreeDSAuthenticationSimulateParamsCardExpiryCheck = "NOT_PRESENT"
+)
+
+func (r ThreeDSAuthenticationSimulateParamsCardExpiryCheck) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationSimulateParamsCardExpiryCheckMatch, ThreeDSAuthenticationSimulateParamsCardExpiryCheckMismatch, ThreeDSAuthenticationSimulateParamsCardExpiryCheckNotPresent:
+		return true
+	}
+	return false
 }
