@@ -200,13 +200,16 @@ const (
 	TransferEventsTypeAuthorizationReversal        TransferEventsType = "AUTHORIZATION_REVERSAL"
 	TransferEventsTypeBalanceInquiry               TransferEventsType = "BALANCE_INQUIRY"
 	TransferEventsTypeBillingError                 TransferEventsType = "BILLING_ERROR"
+	TransferEventsTypeBillingErrorReversal         TransferEventsType = "BILLING_ERROR_REVERSAL"
 	TransferEventsTypeCashBack                     TransferEventsType = "CASH_BACK"
+	TransferEventsTypeCashBackReversal             TransferEventsType = "CASH_BACK_REVERSAL"
 	TransferEventsTypeClearing                     TransferEventsType = "CLEARING"
 	TransferEventsTypeCorrectionCredit             TransferEventsType = "CORRECTION_CREDIT"
 	TransferEventsTypeCorrectionDebit              TransferEventsType = "CORRECTION_DEBIT"
 	TransferEventsTypeCreditAuthorization          TransferEventsType = "CREDIT_AUTHORIZATION"
 	TransferEventsTypeCreditAuthorizationAdvice    TransferEventsType = "CREDIT_AUTHORIZATION_ADVICE"
 	TransferEventsTypeCurrencyConversion           TransferEventsType = "CURRENCY_CONVERSION"
+	TransferEventsTypeCurrencyConversionReversal   TransferEventsType = "CURRENCY_CONVERSION_REVERSAL"
 	TransferEventsTypeDisputeWon                   TransferEventsType = "DISPUTE_WON"
 	TransferEventsTypeExternalACHCanceled          TransferEventsType = "EXTERNAL_ACH_CANCELED"
 	TransferEventsTypeExternalACHInitiated         TransferEventsType = "EXTERNAL_ACH_INITIATED"
@@ -231,8 +234,11 @@ const (
 	TransferEventsTypeFinancialAuthorization       TransferEventsType = "FINANCIAL_AUTHORIZATION"
 	TransferEventsTypeFinancialCreditAuthorization TransferEventsType = "FINANCIAL_CREDIT_AUTHORIZATION"
 	TransferEventsTypeInterest                     TransferEventsType = "INTEREST"
+	TransferEventsTypeInterestReversal             TransferEventsType = "INTEREST_REVERSAL"
 	TransferEventsTypeLatePayment                  TransferEventsType = "LATE_PAYMENT"
+	TransferEventsTypeLatePaymentReversal          TransferEventsType = "LATE_PAYMENT_REVERSAL"
 	TransferEventsTypeProvisionalCredit            TransferEventsType = "PROVISIONAL_CREDIT"
+	TransferEventsTypeProvisionalCreditReversal    TransferEventsType = "PROVISIONAL_CREDIT_REVERSAL"
 	TransferEventsTypeReturn                       TransferEventsType = "RETURN"
 	TransferEventsTypeReturnReversal               TransferEventsType = "RETURN_REVERSAL"
 	TransferEventsTypeTransfer                     TransferEventsType = "TRANSFER"
@@ -241,7 +247,7 @@ const (
 
 func (r TransferEventsType) IsKnown() bool {
 	switch r {
-	case TransferEventsTypeACHOriginationCancelled, TransferEventsTypeACHOriginationInitiated, TransferEventsTypeACHOriginationProcessed, TransferEventsTypeACHOriginationReleased, TransferEventsTypeACHOriginationReviewed, TransferEventsTypeACHOriginationSettled, TransferEventsTypeACHReceiptProcessed, TransferEventsTypeACHReceiptSettled, TransferEventsTypeACHReturnInitiated, TransferEventsTypeACHReturnProcessed, TransferEventsTypeAuthorization, TransferEventsTypeAuthorizationAdvice, TransferEventsTypeAuthorizationExpiry, TransferEventsTypeAuthorizationReversal, TransferEventsTypeBalanceInquiry, TransferEventsTypeBillingError, TransferEventsTypeCashBack, TransferEventsTypeClearing, TransferEventsTypeCorrectionCredit, TransferEventsTypeCorrectionDebit, TransferEventsTypeCreditAuthorization, TransferEventsTypeCreditAuthorizationAdvice, TransferEventsTypeCurrencyConversion, TransferEventsTypeDisputeWon, TransferEventsTypeExternalACHCanceled, TransferEventsTypeExternalACHInitiated, TransferEventsTypeExternalACHReleased, TransferEventsTypeExternalACHReversed, TransferEventsTypeExternalACHSettled, TransferEventsTypeExternalCheckCanceled, TransferEventsTypeExternalCheckInitiated, TransferEventsTypeExternalCheckReleased, TransferEventsTypeExternalCheckReversed, TransferEventsTypeExternalCheckSettled, TransferEventsTypeExternalTransferCanceled, TransferEventsTypeExternalTransferInitiated, TransferEventsTypeExternalTransferReleased, TransferEventsTypeExternalTransferReversed, TransferEventsTypeExternalTransferSettled, TransferEventsTypeExternalWireCanceled, TransferEventsTypeExternalWireInitiated, TransferEventsTypeExternalWireReleased, TransferEventsTypeExternalWireReversed, TransferEventsTypeExternalWireSettled, TransferEventsTypeFinancialAuthorization, TransferEventsTypeFinancialCreditAuthorization, TransferEventsTypeInterest, TransferEventsTypeLatePayment, TransferEventsTypeProvisionalCredit, TransferEventsTypeReturn, TransferEventsTypeReturnReversal, TransferEventsTypeTransfer, TransferEventsTypeTransferInsufficientFunds:
+	case TransferEventsTypeACHOriginationCancelled, TransferEventsTypeACHOriginationInitiated, TransferEventsTypeACHOriginationProcessed, TransferEventsTypeACHOriginationReleased, TransferEventsTypeACHOriginationReviewed, TransferEventsTypeACHOriginationSettled, TransferEventsTypeACHReceiptProcessed, TransferEventsTypeACHReceiptSettled, TransferEventsTypeACHReturnInitiated, TransferEventsTypeACHReturnProcessed, TransferEventsTypeAuthorization, TransferEventsTypeAuthorizationAdvice, TransferEventsTypeAuthorizationExpiry, TransferEventsTypeAuthorizationReversal, TransferEventsTypeBalanceInquiry, TransferEventsTypeBillingError, TransferEventsTypeBillingErrorReversal, TransferEventsTypeCashBack, TransferEventsTypeCashBackReversal, TransferEventsTypeClearing, TransferEventsTypeCorrectionCredit, TransferEventsTypeCorrectionDebit, TransferEventsTypeCreditAuthorization, TransferEventsTypeCreditAuthorizationAdvice, TransferEventsTypeCurrencyConversion, TransferEventsTypeCurrencyConversionReversal, TransferEventsTypeDisputeWon, TransferEventsTypeExternalACHCanceled, TransferEventsTypeExternalACHInitiated, TransferEventsTypeExternalACHReleased, TransferEventsTypeExternalACHReversed, TransferEventsTypeExternalACHSettled, TransferEventsTypeExternalCheckCanceled, TransferEventsTypeExternalCheckInitiated, TransferEventsTypeExternalCheckReleased, TransferEventsTypeExternalCheckReversed, TransferEventsTypeExternalCheckSettled, TransferEventsTypeExternalTransferCanceled, TransferEventsTypeExternalTransferInitiated, TransferEventsTypeExternalTransferReleased, TransferEventsTypeExternalTransferReversed, TransferEventsTypeExternalTransferSettled, TransferEventsTypeExternalWireCanceled, TransferEventsTypeExternalWireInitiated, TransferEventsTypeExternalWireReleased, TransferEventsTypeExternalWireReversed, TransferEventsTypeExternalWireSettled, TransferEventsTypeFinancialAuthorization, TransferEventsTypeFinancialCreditAuthorization, TransferEventsTypeInterest, TransferEventsTypeInterestReversal, TransferEventsTypeLatePayment, TransferEventsTypeLatePaymentReversal, TransferEventsTypeProvisionalCredit, TransferEventsTypeProvisionalCreditReversal, TransferEventsTypeReturn, TransferEventsTypeReturnReversal, TransferEventsTypeTransfer, TransferEventsTypeTransferInsufficientFunds:
 		return true
 	}
 	return false
