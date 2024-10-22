@@ -1897,16 +1897,16 @@ func (r AccountHolderSimulateEnrollmentReviewResponseUserType) IsKnown() bool {
 // Information about the most recent identity verification attempt
 type AccountHolderSimulateEnrollmentReviewResponseVerificationApplication struct {
 	// Timestamp of when the application was created.
-	Created time.Time `json:"created" format:"date-time"`
+	Created time.Time `json:"created,required" format:"date-time"`
 	// KYC and KYB evaluation states.
 	//
 	// Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
 	// `ADVANCED` workflow.
-	Status AccountHolderSimulateEnrollmentReviewResponseVerificationApplicationStatus `json:"status"`
+	Status AccountHolderSimulateEnrollmentReviewResponseVerificationApplicationStatus `json:"status,required"`
 	// Reason for the evaluation status.
-	StatusReasons []AccountHolderSimulateEnrollmentReviewResponseVerificationApplicationStatusReason `json:"status_reasons"`
+	StatusReasons []AccountHolderSimulateEnrollmentReviewResponseVerificationApplicationStatusReason `json:"status_reasons,required"`
 	// Timestamp of when the application was last updated.
-	Updated time.Time                                                                `json:"updated" format:"date-time"`
+	Updated time.Time                                                                `json:"updated,required" format:"date-time"`
 	JSON    accountHolderSimulateEnrollmentReviewResponseVerificationApplicationJSON `json:"-"`
 }
 
