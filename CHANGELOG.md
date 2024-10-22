@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.59.0 (2024-10-22)
+
+Full Changelog: [v0.58.0...v0.59.0](https://github.com/lithic-com/lithic-go/compare/v0.58.0...v0.59.0)
+
+### Features
+
+* **api:** removes `transfer_transaction.created` webhook and updates to VerificationApplication ([#393](https://github.com/lithic-com/lithic-go/issues/393)) ([5658bfd](https://github.com/lithic-com/lithic-go/commit/5658bfd250b45dbea868dbbfbac8bbab80317e18))
+* move pagination package from internal to packages ([#391](https://github.com/lithic-com/lithic-go/issues/391)) ([4d34239](https://github.com/lithic-com/lithic-go/commit/4d34239d575fcff51017b642cef309b77ddca7aa))
+
 ## 0.58.0 (2024-10-11)
 
 Full Changelog: [v0.57.0...v0.58.0](https://github.com/lithic-com/lithic-go/compare/v0.57.0...v0.58.0)
