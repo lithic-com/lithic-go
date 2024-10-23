@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.60.0 (2024-10-23)
+
+Full Changelog: [v0.59.0...v0.60.0](https://github.com/lithic-com/lithic-go/compare/v0.59.0...v0.60.0)
+
+### Features
+
+* **api:** add `interest_details` properties to LoanTapes ([#394](https://github.com/lithic-com/lithic-go/issues/394)) ([98f10bc](https://github.com/lithic-com/lithic-go/commit/98f10bc304d0bad42719fbe3e497066454f5ec64))
+
 ## 0.59.0 (2024-10-22)
 
 Full Changelog: [v0.58.0...v0.59.0](https://github.com/lithic-com/lithic-go/compare/v0.58.0...v0.59.0)
