@@ -117,7 +117,7 @@ type Statement struct {
 	// Timestamp of when the statement was updated
 	Updated         time.Time                `json:"updated,required" format:"date-time"`
 	YtdTotals       StatementYtdTotals       `json:"ytd_totals,required"`
-	InterestDetails StatementInterestDetails `json:"interest_details"`
+	InterestDetails StatementInterestDetails `json:"interest_details,nullable"`
 	// Date when the next payment is due
 	NextPaymentDueDate time.Time `json:"next_payment_due_date" format:"date"`
 	// Date when the next billing period will end
@@ -342,13 +342,13 @@ func (r statementYtdTotalsJSON) RawJSON() string {
 }
 
 type StatementInterestDetails struct {
-	ActualInterestCharged     int64                                             `json:"actual_interest_charged,required"`
+	ActualInterestCharged     int64                                             `json:"actual_interest_charged,required,nullable"`
 	DailyBalanceAmounts       StatementInterestDetailsDailyBalanceAmounts       `json:"daily_balance_amounts,required"`
 	EffectiveApr              StatementInterestDetailsEffectiveApr              `json:"effective_apr,required"`
 	InterestCalculationMethod StatementInterestDetailsInterestCalculationMethod `json:"interest_calculation_method,required"`
 	InterestForPeriod         StatementInterestDetailsInterestForPeriod         `json:"interest_for_period,required"`
-	MinimumInterestCharged    int64                                             `json:"minimum_interest_charged"`
-	PrimeRate                 string                                            `json:"prime_rate"`
+	PrimeRate                 string                                            `json:"prime_rate,required,nullable"`
+	MinimumInterestCharged    int64                                             `json:"minimum_interest_charged,nullable"`
 	JSON                      statementInterestDetailsJSON                      `json:"-"`
 }
 
@@ -360,8 +360,8 @@ type statementInterestDetailsJSON struct {
 	EffectiveApr              apijson.Field
 	InterestCalculationMethod apijson.Field
 	InterestForPeriod         apijson.Field
-	MinimumInterestCharged    apijson.Field
 	PrimeRate                 apijson.Field
+	MinimumInterestCharged    apijson.Field
 	raw                       string
 	ExtraFields               map[string]apijson.Field
 }
