@@ -106,6 +106,7 @@ type LoanTape struct {
 	ExcessCredits int64 `json:"excess_credits,required"`
 	// Globally unique identifier for a financial account
 	FinancialAccountToken    string                           `json:"financial_account_token,required" format:"uuid"`
+	InterestDetails          LoanTapeInterestDetails          `json:"interest_details,required,nullable"`
 	MinimumPaymentBalance    LoanTapeMinimumPaymentBalance    `json:"minimum_payment_balance,required"`
 	PaymentAllocation        LoanTapePaymentAllocation        `json:"payment_allocation,required"`
 	PeriodTotals             LoanTapePeriodTotals             `json:"period_totals,required"`
@@ -136,6 +137,7 @@ type loanTapeJSON struct {
 	EndingBalance            apijson.Field
 	ExcessCredits            apijson.Field
 	FinancialAccountToken    apijson.Field
+	InterestDetails          apijson.Field
 	MinimumPaymentBalance    apijson.Field
 	PaymentAllocation        apijson.Field
 	PeriodTotals             apijson.Field
@@ -391,6 +393,129 @@ func (r *LoanTapeDayTotals) UnmarshalJSON(data []byte) (err error) {
 }
 
 func (r loanTapeDayTotalsJSON) RawJSON() string {
+	return r.raw
+}
+
+type LoanTapeInterestDetails struct {
+	ActualInterestCharged     int64                                            `json:"actual_interest_charged,required,nullable"`
+	DailyBalanceAmounts       LoanTapeInterestDetailsDailyBalanceAmounts       `json:"daily_balance_amounts,required"`
+	EffectiveApr              LoanTapeInterestDetailsEffectiveApr              `json:"effective_apr,required"`
+	InterestCalculationMethod LoanTapeInterestDetailsInterestCalculationMethod `json:"interest_calculation_method,required"`
+	InterestForPeriod         LoanTapeInterestDetailsInterestForPeriod         `json:"interest_for_period,required"`
+	PrimeRate                 string                                           `json:"prime_rate,required,nullable"`
+	MinimumInterestCharged    int64                                            `json:"minimum_interest_charged,nullable"`
+	JSON                      loanTapeInterestDetailsJSON                      `json:"-"`
+}
+
+// loanTapeInterestDetailsJSON contains the JSON metadata for the struct
+// [LoanTapeInterestDetails]
+type loanTapeInterestDetailsJSON struct {
+	ActualInterestCharged     apijson.Field
+	DailyBalanceAmounts       apijson.Field
+	EffectiveApr              apijson.Field
+	InterestCalculationMethod apijson.Field
+	InterestForPeriod         apijson.Field
+	PrimeRate                 apijson.Field
+	MinimumInterestCharged    apijson.Field
+	raw                       string
+	ExtraFields               map[string]apijson.Field
+}
+
+func (r *LoanTapeInterestDetails) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r loanTapeInterestDetailsJSON) RawJSON() string {
+	return r.raw
+}
+
+type LoanTapeInterestDetailsDailyBalanceAmounts struct {
+	BalanceTransfers string                                         `json:"balance_transfers,required"`
+	CashAdvances     string                                         `json:"cash_advances,required"`
+	Purchases        string                                         `json:"purchases,required"`
+	JSON             loanTapeInterestDetailsDailyBalanceAmountsJSON `json:"-"`
+}
+
+// loanTapeInterestDetailsDailyBalanceAmountsJSON contains the JSON metadata for
+// the struct [LoanTapeInterestDetailsDailyBalanceAmounts]
+type loanTapeInterestDetailsDailyBalanceAmountsJSON struct {
+	BalanceTransfers apijson.Field
+	CashAdvances     apijson.Field
+	Purchases        apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
+}
+
+func (r *LoanTapeInterestDetailsDailyBalanceAmounts) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r loanTapeInterestDetailsDailyBalanceAmountsJSON) RawJSON() string {
+	return r.raw
+}
+
+type LoanTapeInterestDetailsEffectiveApr struct {
+	BalanceTransfers string                                  `json:"balance_transfers,required"`
+	CashAdvances     string                                  `json:"cash_advances,required"`
+	Purchases        string                                  `json:"purchases,required"`
+	JSON             loanTapeInterestDetailsEffectiveAprJSON `json:"-"`
+}
+
+// loanTapeInterestDetailsEffectiveAprJSON contains the JSON metadata for the
+// struct [LoanTapeInterestDetailsEffectiveApr]
+type loanTapeInterestDetailsEffectiveAprJSON struct {
+	BalanceTransfers apijson.Field
+	CashAdvances     apijson.Field
+	Purchases        apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
+}
+
+func (r *LoanTapeInterestDetailsEffectiveApr) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r loanTapeInterestDetailsEffectiveAprJSON) RawJSON() string {
+	return r.raw
+}
+
+type LoanTapeInterestDetailsInterestCalculationMethod string
+
+const (
+	LoanTapeInterestDetailsInterestCalculationMethodDaily        LoanTapeInterestDetailsInterestCalculationMethod = "DAILY"
+	LoanTapeInterestDetailsInterestCalculationMethodAverageDaily LoanTapeInterestDetailsInterestCalculationMethod = "AVERAGE_DAILY"
+)
+
+func (r LoanTapeInterestDetailsInterestCalculationMethod) IsKnown() bool {
+	switch r {
+	case LoanTapeInterestDetailsInterestCalculationMethodDaily, LoanTapeInterestDetailsInterestCalculationMethodAverageDaily:
+		return true
+	}
+	return false
+}
+
+type LoanTapeInterestDetailsInterestForPeriod struct {
+	BalanceTransfers string                                       `json:"balance_transfers,required"`
+	CashAdvances     string                                       `json:"cash_advances,required"`
+	Purchases        string                                       `json:"purchases,required"`
+	JSON             loanTapeInterestDetailsInterestForPeriodJSON `json:"-"`
+}
+
+// loanTapeInterestDetailsInterestForPeriodJSON contains the JSON metadata for the
+// struct [LoanTapeInterestDetailsInterestForPeriod]
+type loanTapeInterestDetailsInterestForPeriodJSON struct {
+	BalanceTransfers apijson.Field
+	CashAdvances     apijson.Field
+	Purchases        apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
+}
+
+func (r *LoanTapeInterestDetailsInterestForPeriod) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r loanTapeInterestDetailsInterestForPeriodJSON) RawJSON() string {
 	return r.raw
 }
 
