@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.60.1 (2024-10-24)
+
+Full Changelog: [v0.60.0...v0.60.1](https://github.com/lithic-com/lithic-go/compare/v0.60.0...v0.60.1)
+
+### Chores
+
+* **api:** add `PIN_BLOCKED` to `detailed_results` property on Event ([#396](https://github.com/lithic-com/lithic-go/issues/396)) ([64d9116](https://github.com/lithic-com/lithic-go/commit/64d911658dc866ba9604823766a29b9d5eff43a5))
+* **api:** adds new result types to Transactions and Events ([#398](https://github.com/lithic-com/lithic-go/issues/398)) ([47a8015](https://github.com/lithic-com/lithic-go/commit/47a801526d37a882f5e1148a6c135d80af9b91f5))
+
 ## 0.60.0 (2024-10-23)
 
 Full Changelog: [v0.59.0...v0.60.0](https://github.com/lithic-com/lithic-go/compare/v0.59.0...v0.60.0)
