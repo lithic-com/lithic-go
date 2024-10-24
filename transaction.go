@@ -204,10 +204,9 @@ type Transaction struct {
 	// risk and 999 representing the highest risk. For Visa transactions, where the raw
 	// score has a range of 0-99, Lithic will normalize the score by multiplying the
 	// raw score by 10x.
-	NetworkRiskScore int64          `json:"network_risk_score,required,nullable"`
-	Pos              TransactionPos `json:"pos,required"`
-	// `APPROVED` or decline reason. See Event result types
-	Result TransactionResult `json:"result,required"`
+	NetworkRiskScore int64             `json:"network_risk_score,required,nullable"`
+	Pos              TransactionPos    `json:"pos,required"`
+	Result           TransactionResult `json:"result,required"`
 	// Amount of the transaction that has been settled (in cents), including any
 	// acquirer fees. This may change over time.
 	SettledAmount int64 `json:"settled_amount,required"`
@@ -913,32 +912,37 @@ func (r TransactionPosTerminalType) IsKnown() bool {
 	return false
 }
 
-// `APPROVED` or decline reason. See Event result types
 type TransactionResult string
 
 const (
-	TransactionResultApproved                TransactionResult = "APPROVED"
-	TransactionResultBankConnectionError     TransactionResult = "BANK_CONNECTION_ERROR"
-	TransactionResultBankNotVerified         TransactionResult = "BANK_NOT_VERIFIED"
-	TransactionResultCardClosed              TransactionResult = "CARD_CLOSED"
-	TransactionResultCardPaused              TransactionResult = "CARD_PAUSED"
-	TransactionResultDeclined                TransactionResult = "DECLINED"
-	TransactionResultFraudAdvice             TransactionResult = "FRAUD_ADVICE"
-	TransactionResultInactiveAccount         TransactionResult = "INACTIVE_ACCOUNT"
-	TransactionResultIncorrectPin            TransactionResult = "INCORRECT_PIN"
-	TransactionResultInsufficientFunds       TransactionResult = "INSUFFICIENT_FUNDS"
-	TransactionResultInvalidCardDetails      TransactionResult = "INVALID_CARD_DETAILS"
-	TransactionResultMerchantBlacklist       TransactionResult = "MERCHANT_BLACKLIST"
-	TransactionResultSingleUseRecharged      TransactionResult = "SINGLE_USE_RECHARGED"
-	TransactionResultSwitchInoperativeAdvice TransactionResult = "SWITCH_INOPERATIVE_ADVICE"
-	TransactionResultUnauthorizedMerchant    TransactionResult = "UNAUTHORIZED_MERCHANT"
-	TransactionResultUnknownHostTimeout      TransactionResult = "UNKNOWN_HOST_TIMEOUT"
-	TransactionResultUserTransactionLimit    TransactionResult = "USER_TRANSACTION_LIMIT"
+	TransactionResultAccountStateTransactionFail TransactionResult = "ACCOUNT_STATE_TRANSACTION_FAIL"
+	TransactionResultApproved                    TransactionResult = "APPROVED"
+	TransactionResultBankConnectionError         TransactionResult = "BANK_CONNECTION_ERROR"
+	TransactionResultBankNotVerified             TransactionResult = "BANK_NOT_VERIFIED"
+	TransactionResultCardClosed                  TransactionResult = "CARD_CLOSED"
+	TransactionResultCardPaused                  TransactionResult = "CARD_PAUSED"
+	TransactionResultDeclined                    TransactionResult = "DECLINED"
+	TransactionResultFraudAdvice                 TransactionResult = "FRAUD_ADVICE"
+	TransactionResultIgnoredTtlExpiry            TransactionResult = "IGNORED_TTL_EXPIRY"
+	TransactionResultInactiveAccount             TransactionResult = "INACTIVE_ACCOUNT"
+	TransactionResultIncorrectPin                TransactionResult = "INCORRECT_PIN"
+	TransactionResultInvalidCardDetails          TransactionResult = "INVALID_CARD_DETAILS"
+	TransactionResultInsufficientFunds           TransactionResult = "INSUFFICIENT_FUNDS"
+	TransactionResultInsufficientFundsPreload    TransactionResult = "INSUFFICIENT_FUNDS_PRELOAD"
+	TransactionResultInvalidTransaction          TransactionResult = "INVALID_TRANSACTION"
+	TransactionResultMerchantBlacklist           TransactionResult = "MERCHANT_BLACKLIST"
+	TransactionResultOriginalNotFound            TransactionResult = "ORIGINAL_NOT_FOUND"
+	TransactionResultPreviouslyCompleted         TransactionResult = "PREVIOUSLY_COMPLETED"
+	TransactionResultSingleUseRecharged          TransactionResult = "SINGLE_USE_RECHARGED"
+	TransactionResultSwitchInoperativeAdvice     TransactionResult = "SWITCH_INOPERATIVE_ADVICE"
+	TransactionResultUnauthorizedMerchant        TransactionResult = "UNAUTHORIZED_MERCHANT"
+	TransactionResultUnknownHostTimeout          TransactionResult = "UNKNOWN_HOST_TIMEOUT"
+	TransactionResultUserTransactionLimit        TransactionResult = "USER_TRANSACTION_LIMIT"
 )
 
 func (r TransactionResult) IsKnown() bool {
 	switch r {
-	case TransactionResultApproved, TransactionResultBankConnectionError, TransactionResultBankNotVerified, TransactionResultCardClosed, TransactionResultCardPaused, TransactionResultDeclined, TransactionResultFraudAdvice, TransactionResultInactiveAccount, TransactionResultIncorrectPin, TransactionResultInsufficientFunds, TransactionResultInvalidCardDetails, TransactionResultMerchantBlacklist, TransactionResultSingleUseRecharged, TransactionResultSwitchInoperativeAdvice, TransactionResultUnauthorizedMerchant, TransactionResultUnknownHostTimeout, TransactionResultUserTransactionLimit:
+	case TransactionResultAccountStateTransactionFail, TransactionResultApproved, TransactionResultBankConnectionError, TransactionResultBankNotVerified, TransactionResultCardClosed, TransactionResultCardPaused, TransactionResultDeclined, TransactionResultFraudAdvice, TransactionResultIgnoredTtlExpiry, TransactionResultInactiveAccount, TransactionResultIncorrectPin, TransactionResultInvalidCardDetails, TransactionResultInsufficientFunds, TransactionResultInsufficientFundsPreload, TransactionResultInvalidTransaction, TransactionResultMerchantBlacklist, TransactionResultOriginalNotFound, TransactionResultPreviouslyCompleted, TransactionResultSingleUseRecharged, TransactionResultSwitchInoperativeAdvice, TransactionResultUnauthorizedMerchant, TransactionResultUnknownHostTimeout, TransactionResultUserTransactionLimit:
 		return true
 	}
 	return false
@@ -1022,8 +1026,7 @@ type TransactionEvent struct {
 	DetailedResults []TransactionEventsDetailedResult `json:"detailed_results,required"`
 	// Indicates whether the transaction event is a credit or debit to the account.
 	EffectivePolarity TransactionEventsEffectivePolarity `json:"effective_polarity,required"`
-	// Result of the transaction.
-	Result TransactionEventsResult `json:"result,required"`
+	Result            TransactionEventsResult            `json:"result,required"`
 	// Type of transaction event
 	Type TransactionEventsType `json:"type,required"`
 	JSON transactionEventJSON  `json:"-"`
@@ -1246,7 +1249,6 @@ func (r TransactionEventsEffectivePolarity) IsKnown() bool {
 	return false
 }
 
-// Result of the transaction.
 type TransactionEventsResult string
 
 const (
@@ -1256,12 +1258,18 @@ const (
 	TransactionEventsResultBankNotVerified             TransactionEventsResult = "BANK_NOT_VERIFIED"
 	TransactionEventsResultCardClosed                  TransactionEventsResult = "CARD_CLOSED"
 	TransactionEventsResultCardPaused                  TransactionEventsResult = "CARD_PAUSED"
+	TransactionEventsResultDeclined                    TransactionEventsResult = "DECLINED"
 	TransactionEventsResultFraudAdvice                 TransactionEventsResult = "FRAUD_ADVICE"
+	TransactionEventsResultIgnoredTtlExpiry            TransactionEventsResult = "IGNORED_TTL_EXPIRY"
 	TransactionEventsResultInactiveAccount             TransactionEventsResult = "INACTIVE_ACCOUNT"
 	TransactionEventsResultIncorrectPin                TransactionEventsResult = "INCORRECT_PIN"
 	TransactionEventsResultInvalidCardDetails          TransactionEventsResult = "INVALID_CARD_DETAILS"
 	TransactionEventsResultInsufficientFunds           TransactionEventsResult = "INSUFFICIENT_FUNDS"
+	TransactionEventsResultInsufficientFundsPreload    TransactionEventsResult = "INSUFFICIENT_FUNDS_PRELOAD"
+	TransactionEventsResultInvalidTransaction          TransactionEventsResult = "INVALID_TRANSACTION"
 	TransactionEventsResultMerchantBlacklist           TransactionEventsResult = "MERCHANT_BLACKLIST"
+	TransactionEventsResultOriginalNotFound            TransactionEventsResult = "ORIGINAL_NOT_FOUND"
+	TransactionEventsResultPreviouslyCompleted         TransactionEventsResult = "PREVIOUSLY_COMPLETED"
 	TransactionEventsResultSingleUseRecharged          TransactionEventsResult = "SINGLE_USE_RECHARGED"
 	TransactionEventsResultSwitchInoperativeAdvice     TransactionEventsResult = "SWITCH_INOPERATIVE_ADVICE"
 	TransactionEventsResultUnauthorizedMerchant        TransactionEventsResult = "UNAUTHORIZED_MERCHANT"
@@ -1271,7 +1279,7 @@ const (
 
 func (r TransactionEventsResult) IsKnown() bool {
 	switch r {
-	case TransactionEventsResultAccountStateTransactionFail, TransactionEventsResultApproved, TransactionEventsResultBankConnectionError, TransactionEventsResultBankNotVerified, TransactionEventsResultCardClosed, TransactionEventsResultCardPaused, TransactionEventsResultFraudAdvice, TransactionEventsResultInactiveAccount, TransactionEventsResultIncorrectPin, TransactionEventsResultInvalidCardDetails, TransactionEventsResultInsufficientFunds, TransactionEventsResultMerchantBlacklist, TransactionEventsResultSingleUseRecharged, TransactionEventsResultSwitchInoperativeAdvice, TransactionEventsResultUnauthorizedMerchant, TransactionEventsResultUnknownHostTimeout, TransactionEventsResultUserTransactionLimit:
+	case TransactionEventsResultAccountStateTransactionFail, TransactionEventsResultApproved, TransactionEventsResultBankConnectionError, TransactionEventsResultBankNotVerified, TransactionEventsResultCardClosed, TransactionEventsResultCardPaused, TransactionEventsResultDeclined, TransactionEventsResultFraudAdvice, TransactionEventsResultIgnoredTtlExpiry, TransactionEventsResultInactiveAccount, TransactionEventsResultIncorrectPin, TransactionEventsResultInvalidCardDetails, TransactionEventsResultInsufficientFunds, TransactionEventsResultInsufficientFundsPreload, TransactionEventsResultInvalidTransaction, TransactionEventsResultMerchantBlacklist, TransactionEventsResultOriginalNotFound, TransactionEventsResultPreviouslyCompleted, TransactionEventsResultSingleUseRecharged, TransactionEventsResultSwitchInoperativeAdvice, TransactionEventsResultUnauthorizedMerchant, TransactionEventsResultUnknownHostTimeout, TransactionEventsResultUserTransactionLimit:
 		return true
 	}
 	return false
