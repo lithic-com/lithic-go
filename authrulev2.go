@@ -370,15 +370,39 @@ func (r authRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersC
 type AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
+	// by the types of goods or services it provides.
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
+	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	// Unique alphanumeric identifier for the payment card acceptor (merchant).
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	// Short description of card acceptor.
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	// Indicates whether chargeback liability shift to the issuer applies to the
+	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	// `TOKEN_AUTHENTICATED`.
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	// The method by which the cardholder's primary account number (PAN) was entered.
+	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
+	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
+	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
+	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// The base transaction amount (in cents) plus the acquirer fee field in the
+	// settlement/cardholder billing currency. This is the amount the issuer should
+	// authorize against unless the issuer is paying the acquirer fee on behalf of the
+	// cardholder.
 	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
@@ -624,15 +648,39 @@ func (r authRuleV2NewResponseDraftVersionParametersConditionalBlockParametersCon
 type AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
+	// by the types of goods or services it provides.
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
+	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	// Unique alphanumeric identifier for the payment card acceptor (merchant).
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	// Short description of card acceptor.
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	// Indicates whether chargeback liability shift to the issuer applies to the
+	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	// `TOKEN_AUTHENTICATED`.
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	// The method by which the cardholder's primary account number (PAN) was entered.
+	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
+	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
+	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
+	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// The base transaction amount (in cents) plus the acquirer fee field in the
+	// settlement/cardholder billing currency. This is the amount the issuer should
+	// authorize against unless the issuer is paying the acquirer fee on behalf of the
+	// cardholder.
 	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
@@ -950,15 +998,39 @@ func (r authRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersC
 type AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
+	// by the types of goods or services it provides.
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
+	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	// Unique alphanumeric identifier for the payment card acceptor (merchant).
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	// Short description of card acceptor.
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	// Indicates whether chargeback liability shift to the issuer applies to the
+	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	// `TOKEN_AUTHENTICATED`.
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	// The method by which the cardholder's primary account number (PAN) was entered.
+	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
+	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
+	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
+	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// The base transaction amount (in cents) plus the acquirer fee field in the
+	// settlement/cardholder billing currency. This is the amount the issuer should
+	// authorize against unless the issuer is paying the acquirer fee on behalf of the
+	// cardholder.
 	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
@@ -1204,15 +1276,39 @@ func (r authRuleV2GetResponseDraftVersionParametersConditionalBlockParametersCon
 type AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
+	// by the types of goods or services it provides.
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
+	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	// Unique alphanumeric identifier for the payment card acceptor (merchant).
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	// Short description of card acceptor.
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	// Indicates whether chargeback liability shift to the issuer applies to the
+	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	// `TOKEN_AUTHENTICATED`.
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	// The method by which the cardholder's primary account number (PAN) was entered.
+	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
+	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
+	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
+	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// The base transaction amount (in cents) plus the acquirer fee field in the
+	// settlement/cardholder billing currency. This is the amount the issuer should
+	// authorize against unless the issuer is paying the acquirer fee on behalf of the
+	// cardholder.
 	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
@@ -1530,15 +1626,39 @@ func (r authRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParamete
 type AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
+	// by the types of goods or services it provides.
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
+	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	// Unique alphanumeric identifier for the payment card acceptor (merchant).
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	// Short description of card acceptor.
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	// Indicates whether chargeback liability shift to the issuer applies to the
+	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	// `TOKEN_AUTHENTICATED`.
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	// The method by which the cardholder's primary account number (PAN) was entered.
+	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
+	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
+	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
+	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// The base transaction amount (in cents) plus the acquirer fee field in the
+	// settlement/cardholder billing currency. This is the amount the issuer should
+	// authorize against unless the issuer is paying the acquirer fee on behalf of the
+	// cardholder.
 	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
@@ -1784,15 +1904,39 @@ func (r authRuleV2UpdateResponseDraftVersionParametersConditionalBlockParameters
 type AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
+	// by the types of goods or services it provides.
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
+	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	// Unique alphanumeric identifier for the payment card acceptor (merchant).
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	// Short description of card acceptor.
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	// Indicates whether chargeback liability shift to the issuer applies to the
+	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	// `TOKEN_AUTHENTICATED`.
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	// The method by which the cardholder's primary account number (PAN) was entered.
+	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
+	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
+	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
+	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// The base transaction amount (in cents) plus the acquirer fee field in the
+	// settlement/cardholder billing currency. This is the amount the issuer should
+	// authorize against unless the issuer is paying the acquirer fee on behalf of the
+	// cardholder.
 	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
@@ -2110,15 +2254,39 @@ func (r authRuleV2ListResponseCurrentVersionParametersConditionalBlockParameters
 type AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
+	// by the types of goods or services it provides.
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
+	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	// Unique alphanumeric identifier for the payment card acceptor (merchant).
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	// Short description of card acceptor.
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	// Indicates whether chargeback liability shift to the issuer applies to the
+	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	// `TOKEN_AUTHENTICATED`.
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	// The method by which the cardholder's primary account number (PAN) was entered.
+	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
+	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
+	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
+	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// The base transaction amount (in cents) plus the acquirer fee field in the
+	// settlement/cardholder billing currency. This is the amount the issuer should
+	// authorize against unless the issuer is paying the acquirer fee on behalf of the
+	// cardholder.
 	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
@@ -2364,15 +2532,39 @@ func (r authRuleV2ListResponseDraftVersionParametersConditionalBlockParametersCo
 type AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
+	// by the types of goods or services it provides.
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
+	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	// Unique alphanumeric identifier for the payment card acceptor (merchant).
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	// Short description of card acceptor.
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	// Indicates whether chargeback liability shift to the issuer applies to the
+	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	// `TOKEN_AUTHENTICATED`.
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	// The method by which the cardholder's primary account number (PAN) was entered.
+	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
+	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
+	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
+	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// The base transaction amount (in cents) plus the acquirer fee field in the
+	// settlement/cardholder billing currency. This is the amount the issuer should
+	// authorize against unless the issuer is paying the acquirer fee on behalf of the
+	// cardholder.
 	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
@@ -2690,15 +2882,39 @@ func (r authRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParameter
 type AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
+	// by the types of goods or services it provides.
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
+	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	// Unique alphanumeric identifier for the payment card acceptor (merchant).
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	// Short description of card acceptor.
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	// Indicates whether chargeback liability shift to the issuer applies to the
+	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	// `TOKEN_AUTHENTICATED`.
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	// The method by which the cardholder's primary account number (PAN) was entered.
+	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
+	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
+	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
+	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// The base transaction amount (in cents) plus the acquirer fee field in the
+	// settlement/cardholder billing currency. This is the amount the issuer should
+	// authorize against unless the issuer is paying the acquirer fee on behalf of the
+	// cardholder.
 	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
@@ -2944,15 +3160,39 @@ func (r authRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersC
 type AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
+	// by the types of goods or services it provides.
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
+	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	// Unique alphanumeric identifier for the payment card acceptor (merchant).
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	// Short description of card acceptor.
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	// Indicates whether chargeback liability shift to the issuer applies to the
+	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	// `TOKEN_AUTHENTICATED`.
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	// The method by which the cardholder's primary account number (PAN) was entered.
+	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
+	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
+	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
+	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// The base transaction amount (in cents) plus the acquirer fee field in the
+	// settlement/cardholder billing currency. This is the amount the issuer should
+	// authorize against unless the issuer is paying the acquirer fee on behalf of the
+	// cardholder.
 	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
@@ -3270,15 +3510,39 @@ func (r authRuleV2DraftResponseCurrentVersionParametersConditionalBlockParameter
 type AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
+	// by the types of goods or services it provides.
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
+	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	// Unique alphanumeric identifier for the payment card acceptor (merchant).
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	// Short description of card acceptor.
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	// Indicates whether chargeback liability shift to the issuer applies to the
+	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	// `TOKEN_AUTHENTICATED`.
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	// The method by which the cardholder's primary account number (PAN) was entered.
+	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
+	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
+	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
+	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// The base transaction amount (in cents) plus the acquirer fee field in the
+	// settlement/cardholder billing currency. This is the amount the issuer should
+	// authorize against unless the issuer is paying the acquirer fee on behalf of the
+	// cardholder.
 	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
@@ -3524,15 +3788,39 @@ func (r authRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersC
 type AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
+	// by the types of goods or services it provides.
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
+	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	// Unique alphanumeric identifier for the payment card acceptor (merchant).
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	// Short description of card acceptor.
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	// Indicates whether chargeback liability shift to the issuer applies to the
+	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	// `TOKEN_AUTHENTICATED`.
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	// The method by which the cardholder's primary account number (PAN) was entered.
+	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
+	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
+	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
+	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// The base transaction amount (in cents) plus the acquirer fee field in the
+	// settlement/cardholder billing currency. This is the amount the issuer should
+	// authorize against unless the issuer is paying the acquirer fee on behalf of the
+	// cardholder.
 	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
@@ -3850,15 +4138,39 @@ func (r authRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParamet
 type AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
+	// by the types of goods or services it provides.
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
+	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	// Unique alphanumeric identifier for the payment card acceptor (merchant).
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	// Short description of card acceptor.
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	// Indicates whether chargeback liability shift to the issuer applies to the
+	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	// `TOKEN_AUTHENTICATED`.
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	// The method by which the cardholder's primary account number (PAN) was entered.
+	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
+	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
+	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
+	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// The base transaction amount (in cents) plus the acquirer fee field in the
+	// settlement/cardholder billing currency. This is the amount the issuer should
+	// authorize against unless the issuer is paying the acquirer fee on behalf of the
+	// cardholder.
 	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
@@ -4104,15 +4416,39 @@ func (r authRuleV2PromoteResponseDraftVersionParametersConditionalBlockParameter
 type AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
+	// by the types of goods or services it provides.
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
+	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	// Unique alphanumeric identifier for the payment card acceptor (merchant).
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	// Short description of card acceptor.
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	// Indicates whether chargeback liability shift to the issuer applies to the
+	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	// `TOKEN_AUTHENTICATED`.
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	// The method by which the cardholder's primary account number (PAN) was entered.
+	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
+	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
+	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
+	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// The base transaction amount (in cents) plus the acquirer fee field in the
+	// settlement/cardholder billing currency. This is the amount the issuer should
+	// authorize against unless the issuer is paying the acquirer fee on behalf of the
+	// cardholder.
 	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
@@ -4354,15 +4690,39 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersCondi
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
+	// by the types of goods or services it provides.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
+	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	// Unique alphanumeric identifier for the payment card acceptor (merchant).
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	// Short description of card acceptor.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	// Indicates whether chargeback liability shift to the issuer applies to the
+	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	// `TOKEN_AUTHENTICATED`.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	// The method by which the cardholder's primary account number (PAN) was entered.
+	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
+	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
+	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
+	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// The base transaction amount (in cents) plus the acquirer fee field in the
+	// settlement/cardholder billing currency. This is the amount the issuer should
+	// authorize against unless the issuer is paying the acquirer fee on behalf of the
+	// cardholder.
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
@@ -4516,15 +4876,39 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditio
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
+	// by the types of goods or services it provides.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
+	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	// Unique alphanumeric identifier for the payment card acceptor (merchant).
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	// Short description of card acceptor.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	// Indicates whether chargeback liability shift to the issuer applies to the
+	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	// `TOKEN_AUTHENTICATED`.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	// The method by which the cardholder's primary account number (PAN) was entered.
+	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
+	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
+	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
+	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// The base transaction amount (in cents) plus the acquirer fee field in the
+	// settlement/cardholder billing currency. This is the amount the issuer should
+	// authorize against unless the issuer is paying the acquirer fee on behalf of the
+	// cardholder.
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
@@ -4678,15 +5062,39 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersCondit
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
+	// by the types of goods or services it provides.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
+	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	// Unique alphanumeric identifier for the payment card acceptor (merchant).
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	// Short description of card acceptor.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	// Indicates whether chargeback liability shift to the issuer applies to the
+	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	// `TOKEN_AUTHENTICATED`.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	// The method by which the cardholder's primary account number (PAN) was entered.
+	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
+	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
+	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
+	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// The base transaction amount (in cents) plus the acquirer fee field in the
+	// settlement/cardholder billing currency. This is the amount the issuer should
+	// authorize against unless the issuer is paying the acquirer fee on behalf of the
+	// cardholder.
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
@@ -4966,15 +5374,39 @@ func (r AuthRuleV2DraftParamsParametersConditionalBlockParametersCondition) Mars
 type AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
+	// by the types of goods or services it provides.
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
+	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	// Unique alphanumeric identifier for the payment card acceptor (merchant).
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	// Short description of card acceptor.
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	// Indicates whether chargeback liability shift to the issuer applies to the
+	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	// `TOKEN_AUTHENTICATED`.
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	// The method by which the cardholder's primary account number (PAN) was entered.
+	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
+	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
+	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
+	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	// The base transaction amount (in cents) plus the acquirer fee field in the
+	// settlement/cardholder billing currency. This is the amount the issuer should
+	// authorize against unless the issuer is paying the acquirer fee on behalf of the
+	// cardholder.
 	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	// Network-provided score assessing risk level associated with a given
+	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
+	// risk and 999 representing the highest risk. For Visa transactions, where the raw
+	// score has a range of 0-99, Lithic will normalize the score by multiplying the
+	// raw score by 10x.
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
