@@ -42,7 +42,8 @@ func NewTransactionService(opts ...option.RequestOption) (r *TransactionService)
 	return
 }
 
-// Get specific card transaction.
+// Get a specific card transaction. All amounts are in the smallest unit of their
+// respective currency (e.g., cents for USD).
 func (r *TransactionService) Get(ctx context.Context, transactionToken string, opts ...option.RequestOption) (res *Transaction, err error) {
 	opts = append(r.Options[:], opts...)
 	if transactionToken == "" {
@@ -54,7 +55,8 @@ func (r *TransactionService) Get(ctx context.Context, transactionToken string, o
 	return
 }
 
-// List card transactions.
+// List card transactions. All amounts are in the smallest unit of their respective
+// currency (e.g., cents for USD) and inclusive of any acquirer fees.
 func (r *TransactionService) List(ctx context.Context, query TransactionListParams, opts ...option.RequestOption) (res *pagination.CursorPage[Transaction], err error) {
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
@@ -72,7 +74,8 @@ func (r *TransactionService) List(ctx context.Context, query TransactionListPara
 	return res, nil
 }
 
-// List card transactions.
+// List card transactions. All amounts are in the smallest unit of their respective
+// currency (e.g., cents for USD) and inclusive of any acquirer fees.
 func (r *TransactionService) ListAutoPaging(ctx context.Context, query TransactionListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[Transaction] {
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
@@ -167,14 +170,13 @@ type Transaction struct {
 	// Unique identifier assigned to a transaction by the acquirer that can be used in
 	// dispute and chargeback filing.
 	AcquirerReferenceNumber string `json:"acquirer_reference_number,required,nullable"`
-	// Authorization amount of the transaction (in cents), including any acquirer fees.
-	// This may change over time, and will represent the settled amount once the
-	// transaction is settled.
+	// When the transaction is pending, this represents the authorization amount of the
+	// transaction in the anticipated settlement currency. Once the transaction has
+	// settled, this field represents the settled amount in the settlement currency.
 	Amount  int64              `json:"amount,required"`
 	Amounts TransactionAmounts `json:"amounts,required"`
-	// Authorization amount (in cents) of the transaction, including any acquirer fees.
-	// This amount always represents the amount authorized for the transaction,
-	// unaffected by settlement.
+	// The authorization amount of the transaction in the anticipated settlement
+	// currency.
 	AuthorizationAmount int64 `json:"authorization_amount,required,nullable"`
 	// A fixed-width 6-digit numeric identifier that can be used to identify a
 	// transaction with networks.
@@ -186,12 +188,9 @@ type Transaction struct {
 	// Date and time when the transaction first occurred. UTC time zone.
 	Created  time.Time           `json:"created,required" format:"date-time"`
 	Merchant TransactionMerchant `json:"merchant,required"`
-	// Analogous to the 'amount' property, but will represent the amount in the
-	// transaction's local currency (smallest unit), including any acquirer fees.
+	// Analogous to the 'amount', but in the merchant currency.
 	MerchantAmount int64 `json:"merchant_amount,required,nullable"`
-	// Analogous to the 'authorization_amount' property, but will represent the amount
-	// in the transaction's local currency (smallest unit), including any acquirer
-	// fees.
+	// Analogous to the 'authorization_amount', but in the merchant currency.
 	MerchantAuthorizationAmount int64 `json:"merchant_authorization_amount,required,nullable"`
 	// 3-digit alphabetic ISO 4217 code for the local currency of the transaction.
 	MerchantCurrency string `json:"merchant_currency,required"`
@@ -207,8 +206,7 @@ type Transaction struct {
 	NetworkRiskScore int64             `json:"network_risk_score,required,nullable"`
 	Pos              TransactionPos    `json:"pos,required"`
 	Result           TransactionResult `json:"result,required"`
-	// Amount of the transaction that has been settled (in cents), including any
-	// acquirer fees. This may change over time.
+	// The settled amount of the transaction in the settlement currency.
 	SettledAmount int64 `json:"settled_amount,required"`
 	// Status of the transaction.
 	Status    TransactionStatus    `json:"status,required"`
@@ -286,10 +284,10 @@ func (r transactionAmountsJSON) RawJSON() string {
 }
 
 type TransactionAmountsCardholder struct {
-	// The aggregate settled amount in the cardholder's local currency.
+	// The aggregate settled amount in the cardholder billing currency.
 	Amount int64 `json:"amount,required"`
 	// The conversion rate used to convert the merchant amount to the cardholder
-	// amount.
+	// billing amount.
 	ConversionRate string `json:"conversion_rate,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
@@ -317,7 +315,8 @@ func (r transactionAmountsCardholderJSON) RawJSON() string {
 }
 
 type TransactionAmountsHold struct {
-	// The aggregate pending amount in the anticipated settlement currency.
+	// The aggregate authorization amount of the transaction in the anticipated
+	// settlement currency.
 	Amount int64 `json:"amount,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
@@ -344,7 +343,7 @@ func (r transactionAmountsHoldJSON) RawJSON() string {
 }
 
 type TransactionAmountsMerchant struct {
-	// The aggregate settled amount in the merchant's local currency.
+	// The aggregate settled amount in the merchant currency.
 	Amount int64 `json:"amount,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
@@ -1018,7 +1017,7 @@ func (r TransactionTokenInfoWalletType) IsKnown() bool {
 type TransactionEvent struct {
 	// Transaction event identifier.
 	Token string `json:"token,required" format:"uuid"`
-	// Amount of the transaction event (in cents), including any acquirer fees.
+	// Amount of the event in the settlement currency.
 	Amount  int64                    `json:"amount,required"`
 	Amounts TransactionEventsAmounts `json:"amounts,required"`
 	// RFC 3339 date and time this event entered the system. UTC time zone.
@@ -1081,10 +1080,10 @@ func (r transactionEventsAmountsJSON) RawJSON() string {
 }
 
 type TransactionEventsAmountsCardholder struct {
-	// The amount in the cardholder's local currency.
+	// The amount in the cardholder billing currency.
 	Amount int64 `json:"amount,required"`
 	// The conversion rate used to convert the merchant amount to the cardholder
-	// amount.
+	// billing amount.
 	ConversionRate string `json:"conversion_rate,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
@@ -1112,7 +1111,7 @@ func (r transactionEventsAmountsCardholderJSON) RawJSON() string {
 }
 
 type TransactionEventsAmountsMerchant struct {
-	// The amount in the merchant's local currency.
+	// The amount in the merchant currency.
 	Amount int64 `json:"amount,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
@@ -1139,7 +1138,7 @@ func (r transactionEventsAmountsMerchantJSON) RawJSON() string {
 }
 
 type TransactionEventsAmountsSettlement struct {
-	// The amount in the settlement currency.
+	// Amount of the event, if it is financial, in the settlement currency.
 	Amount int64 `json:"amount,required"`
 	// Conversion rate used to convert the merchant amount to the settlement amount.
 	ConversionRate string `json:"conversion_rate,required"`
