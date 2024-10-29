@@ -339,7 +339,37 @@ func (r AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockPar
 }
 
 type AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersCondition struct {
-	// The attribute to target
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-digit alphabetic ISO 4217 code for the merchant currency of the
+	//     transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `LIABILITY_SHIFT`: Indicates whether chargeback liability shift to the issuer
+	//     applies to the transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	//     `TOKEN_AUTHENTICATED`.
+	//   - `PAN_ENTRY_MODE`: The method by which the cardholder's primary account number
+	//     (PAN) was entered. Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`,
+	//     `ECOMMERCE`, `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`,
+	//     `MAGNETIC_STRIPE`, `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`,
+	//     `UNKNOWN`, `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authorization. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
 	Attribute AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsOperation `json:"operation"`
@@ -367,43 +397,49 @@ func (r authRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockPar
 	return r.raw
 }
 
-// The attribute to target
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-digit alphabetic ISO 4217 code for the merchant currency of the
+//     transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `LIABILITY_SHIFT`: Indicates whether chargeback liability shift to the issuer
+//     applies to the transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+//     `TOKEN_AUTHENTICATED`.
+//   - `PAN_ENTRY_MODE`: The method by which the cardholder's primary account number
+//     (PAN) was entered. Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`,
+//     `ECOMMERCE`, `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`,
+//     `MAGNETIC_STRIPE`, `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`,
+//     `UNKNOWN`, `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authorization. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
 type AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
-	// by the types of goods or services it provides.
-	AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
-	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
-	AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
-	AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	// Unique alphanumeric identifier for the payment card acceptor (merchant).
-	AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	// Short description of card acceptor.
-	AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	// Indicates whether chargeback liability shift to the issuer applies to the
-	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
-	// `TOKEN_AUTHENTICATED`.
-	AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	// The method by which the cardholder's primary account number (PAN) was entered.
-	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
-	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
-	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
-	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
-	AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	// The base transaction amount (in cents) plus the acquirer fee field in the
-	// settlement/cardholder billing currency. This is the amount the issuer should
-	// authorize against unless the issuer is paying the acquirer fee on behalf of the
-	// cardholder.
+	AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	// Network-provided score assessing risk level associated with a given
-	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
-	// risk and 999 representing the highest risk. For Visa transactions, where the raw
-	// score has a range of 0-99, Lithic will normalize the score by multiplying the
-	// raw score by 10x.
-	AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleMigrateV1ToV2ResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
@@ -617,7 +653,37 @@ func (r AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParam
 }
 
 type AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersCondition struct {
-	// The attribute to target
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-digit alphabetic ISO 4217 code for the merchant currency of the
+	//     transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `LIABILITY_SHIFT`: Indicates whether chargeback liability shift to the issuer
+	//     applies to the transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	//     `TOKEN_AUTHENTICATED`.
+	//   - `PAN_ENTRY_MODE`: The method by which the cardholder's primary account number
+	//     (PAN) was entered. Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`,
+	//     `ECOMMERCE`, `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`,
+	//     `MAGNETIC_STRIPE`, `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`,
+	//     `UNKNOWN`, `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authorization. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
 	Attribute AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsOperation `json:"operation"`
@@ -645,43 +711,49 @@ func (r authRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParam
 	return r.raw
 }
 
-// The attribute to target
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-digit alphabetic ISO 4217 code for the merchant currency of the
+//     transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `LIABILITY_SHIFT`: Indicates whether chargeback liability shift to the issuer
+//     applies to the transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+//     `TOKEN_AUTHENTICATED`.
+//   - `PAN_ENTRY_MODE`: The method by which the cardholder's primary account number
+//     (PAN) was entered. Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`,
+//     `ECOMMERCE`, `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`,
+//     `MAGNETIC_STRIPE`, `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`,
+//     `UNKNOWN`, `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authorization. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
 type AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	// A four-digit number listed in ISO 18245. An MCC is used to classify a business
-	// by the types of goods or services it provides.
-	AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	// Country of entity of card acceptor. Possible values are: (1) all ISO 3166-1
-	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
-	AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	// 3-digit alphabetic ISO 4217 code for the merchant currency of the transaction.
-	AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	// Unique alphanumeric identifier for the payment card acceptor (merchant).
-	AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	// Short description of card acceptor.
-	AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	// Indicates whether chargeback liability shift to the issuer applies to the
-	// transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
-	// `TOKEN_AUTHENTICATED`.
-	AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	// The method by which the cardholder's primary account number (PAN) was entered.
-	// Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`, `ECOMMERCE`,
-	// `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`, `MAGNETIC_STRIPE`,
-	// `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`, `UNKNOWN`,
-	// `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
-	AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	// The base transaction amount (in cents) plus the acquirer fee field in the
-	// settlement/cardholder billing currency. This is the amount the issuer should
-	// authorize against unless the issuer is paying the acquirer fee on behalf of the
-	// cardholder.
+	AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	// Network-provided score assessing risk level associated with a given
-	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
-	// risk and 999 representing the highest risk. For Visa transactions, where the raw
-	// score has a range of 0-99, Lithic will normalize the score by multiplying the
-	// raw score by 10x.
-	AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
 )
 
 func (r AuthRuleMigrateV1ToV2ResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {

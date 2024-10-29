@@ -569,7 +569,8 @@ func (r ShippingAddressParam) MarshalJSON() (data []byte, err error) {
 
 type VelocityLimitParams struct {
 	Filters VelocityLimitParamsFilters `json:"filters,required"`
-	// The size of the trailing window to calculate Spend Velocity over in seconds.
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds.
 	Period VelocityLimitParamsPeriodUnion `json:"period,required"`
 	Scope  VelocityLimitParamsScope       `json:"scope,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
@@ -665,7 +666,8 @@ func (r velocityLimitParamsFiltersJSON) RawJSON() string {
 	return r.raw
 }
 
-// The size of the trailing window to calculate Spend Velocity over in seconds.
+// The size of the trailing window to calculate Spend Velocity over in seconds. The
+// minimum value is 10 seconds, and the maximum value is 2678400 seconds.
 //
 // Union satisfied by [shared.UnionFloat] or
 // [shared.VelocityLimitParamsPeriodWindow].

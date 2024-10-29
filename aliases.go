@@ -730,7 +730,8 @@ type VelocityLimitParams = shared.VelocityLimitParams
 // This is an alias to an internal type.
 type VelocityLimitParamsFilters = shared.VelocityLimitParamsFilters
 
-// The size of the trailing window to calculate Spend Velocity over in seconds.
+// The size of the trailing window to calculate Spend Velocity over in seconds. The
+// minimum value is 10 seconds, and the maximum value is 2678400 seconds.
 //
 // This is an alias to an internal type.
 type VelocityLimitParamsPeriodUnion = shared.VelocityLimitParamsPeriodUnion
