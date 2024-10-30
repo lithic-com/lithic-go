@@ -104,6 +104,18 @@ func (r *FinancialAccountService) ListAutoPaging(ctx context.Context, query Fina
 	return pagination.NewSinglePageAutoPager(r.List(ctx, query, opts...))
 }
 
+// Update issuing account state to charged off
+func (r *FinancialAccountService) ChargeOff(ctx context.Context, financialAccountToken string, body FinancialAccountChargeOffParams, opts ...option.RequestOption) (res *FinancialAccountCreditConfig, err error) {
+	opts = append(r.Options[:], opts...)
+	if financialAccountToken == "" {
+		err = errors.New("missing required financial_account_token parameter")
+		return
+	}
+	path := fmt.Sprintf("v1/financial_accounts/%s/charge_off", financialAccountToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
+	return
+}
+
 type FinancialAccount struct {
 	// Globally unique identifier for the account
 	Token               string                              `json:"token,required" format:"uuid"`
@@ -146,25 +158,30 @@ func (r financialAccountJSON) RawJSON() string {
 }
 
 type FinancialAccountCreditConfiguration struct {
-	CreditLimit int64 `json:"credit_limit,required,nullable"`
+	// Reason for the financial account being marked as Charged Off
+	ChargedOffReason FinancialAccountCreditConfigurationChargedOffReason `json:"charged_off_reason,required,nullable"`
+	CreditLimit      int64                                               `json:"credit_limit,required,nullable"`
 	// Globally unique identifier for the credit product
 	CreditProductToken       string `json:"credit_product_token,required,nullable"`
 	ExternalBankAccountToken string `json:"external_bank_account_token,required,nullable" format:"uuid"`
-	// Tier assigned to the financial account
-	Tier string `json:"tier,required,nullable"`
 	// State of the financial account
-	FinancialAccountState FinancialAccountCreditConfigurationFinancialAccountState `json:"financial_account_state"`
-	JSON                  financialAccountCreditConfigurationJSON                  `json:"-"`
+	FinancialAccountState FinancialAccountCreditConfigurationFinancialAccountState `json:"financial_account_state,required,nullable"`
+	IsSpendBlocked        bool                                                     `json:"is_spend_blocked,required"`
+	// Tier assigned to the financial account
+	Tier string                                  `json:"tier,required,nullable"`
+	JSON financialAccountCreditConfigurationJSON `json:"-"`
 }
 
 // financialAccountCreditConfigurationJSON contains the JSON metadata for the
 // struct [FinancialAccountCreditConfiguration]
 type financialAccountCreditConfigurationJSON struct {
+	ChargedOffReason         apijson.Field
 	CreditLimit              apijson.Field
 	CreditProductToken       apijson.Field
 	ExternalBankAccountToken apijson.Field
-	Tier                     apijson.Field
 	FinancialAccountState    apijson.Field
+	IsSpendBlocked           apijson.Field
+	Tier                     apijson.Field
 	raw                      string
 	ExtraFields              map[string]apijson.Field
 }
@@ -177,6 +194,22 @@ func (r financialAccountCreditConfigurationJSON) RawJSON() string {
 	return r.raw
 }
 
+// Reason for the financial account being marked as Charged Off
+type FinancialAccountCreditConfigurationChargedOffReason string
+
+const (
+	FinancialAccountCreditConfigurationChargedOffReasonDelinquent FinancialAccountCreditConfigurationChargedOffReason = "DELINQUENT"
+	FinancialAccountCreditConfigurationChargedOffReasonFraud      FinancialAccountCreditConfigurationChargedOffReason = "FRAUD"
+)
+
+func (r FinancialAccountCreditConfigurationChargedOffReason) IsKnown() bool {
+	switch r {
+	case FinancialAccountCreditConfigurationChargedOffReasonDelinquent, FinancialAccountCreditConfigurationChargedOffReasonFraud:
+		return true
+	}
+	return false
+}
+
 // State of the financial account
 type FinancialAccountCreditConfigurationFinancialAccountState string
 
@@ -184,11 +217,12 @@ const (
 	FinancialAccountCreditConfigurationFinancialAccountStatePending    FinancialAccountCreditConfigurationFinancialAccountState = "PENDING"
 	FinancialAccountCreditConfigurationFinancialAccountStateCurrent    FinancialAccountCreditConfigurationFinancialAccountState = "CURRENT"
 	FinancialAccountCreditConfigurationFinancialAccountStateDelinquent FinancialAccountCreditConfigurationFinancialAccountState = "DELINQUENT"
+	FinancialAccountCreditConfigurationFinancialAccountStateChargedOff FinancialAccountCreditConfigurationFinancialAccountState = "CHARGED_OFF"
 )
 
 func (r FinancialAccountCreditConfigurationFinancialAccountState) IsKnown() bool {
 	switch r {
-	case FinancialAccountCreditConfigurationFinancialAccountStatePending, FinancialAccountCreditConfigurationFinancialAccountStateCurrent, FinancialAccountCreditConfigurationFinancialAccountStateDelinquent:
+	case FinancialAccountCreditConfigurationFinancialAccountStatePending, FinancialAccountCreditConfigurationFinancialAccountStateCurrent, FinancialAccountCreditConfigurationFinancialAccountStateDelinquent, FinancialAccountCreditConfigurationFinancialAccountStateChargedOff:
 		return true
 	}
 	return false
@@ -535,6 +569,31 @@ const (
 func (r FinancialAccountListParamsType) IsKnown() bool {
 	switch r {
 	case FinancialAccountListParamsTypeIssuing, FinancialAccountListParamsTypeOperating, FinancialAccountListParamsTypeReserve:
+		return true
+	}
+	return false
+}
+
+type FinancialAccountChargeOffParams struct {
+	// Reason for the financial account being marked as Charged Off
+	Reason param.Field[FinancialAccountChargeOffParamsReason] `json:"reason,required"`
+}
+
+func (r FinancialAccountChargeOffParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// Reason for the financial account being marked as Charged Off
+type FinancialAccountChargeOffParamsReason string
+
+const (
+	FinancialAccountChargeOffParamsReasonDelinquent FinancialAccountChargeOffParamsReason = "DELINQUENT"
+	FinancialAccountChargeOffParamsReasonFraud      FinancialAccountChargeOffParamsReason = "FRAUD"
+)
+
+func (r FinancialAccountChargeOffParamsReason) IsKnown() bool {
+	switch r {
+	case FinancialAccountChargeOffParamsReasonDelinquent, FinancialAccountChargeOffParamsReasonFraud:
 		return true
 	}
 	return false
