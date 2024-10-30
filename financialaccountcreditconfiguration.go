@@ -61,28 +61,31 @@ func (r *FinancialAccountCreditConfigurationService) Update(ctx context.Context,
 type FinancialAccountCreditConfig struct {
 	// Globally unique identifier for the account
 	AccountToken string `json:"account_token,required" format:"uuid"`
-	CreditLimit  int64  `json:"credit_limit,required,nullable"`
+	// Reason for the financial account being marked as Charged Off
+	ChargedOffReason FinancialAccountCreditConfigChargedOffReason `json:"charged_off_reason,required,nullable"`
+	CreditLimit      int64                                        `json:"credit_limit,required,nullable"`
 	// Globally unique identifier for the credit product
 	CreditProductToken       string `json:"credit_product_token,required,nullable"`
 	ExternalBankAccountToken string `json:"external_bank_account_token,required,nullable" format:"uuid"`
-	// Tier assigned to the financial account
-	Tier string `json:"tier,required,nullable"`
 	// State of the financial account
-	FinancialAccountState FinancialAccountCreditConfigFinancialAccountState `json:"financial_account_state"`
-	IsSpendBlocked        bool                                              `json:"is_spend_blocked"`
-	JSON                  financialAccountCreditConfigJSON                  `json:"-"`
+	FinancialAccountState FinancialAccountCreditConfigFinancialAccountState `json:"financial_account_state,required"`
+	IsSpendBlocked        bool                                              `json:"is_spend_blocked,required"`
+	// Tier assigned to the financial account
+	Tier string                           `json:"tier,required,nullable"`
+	JSON financialAccountCreditConfigJSON `json:"-"`
 }
 
 // financialAccountCreditConfigJSON contains the JSON metadata for the struct
 // [FinancialAccountCreditConfig]
 type financialAccountCreditConfigJSON struct {
 	AccountToken             apijson.Field
+	ChargedOffReason         apijson.Field
 	CreditLimit              apijson.Field
 	CreditProductToken       apijson.Field
 	ExternalBankAccountToken apijson.Field
-	Tier                     apijson.Field
 	FinancialAccountState    apijson.Field
 	IsSpendBlocked           apijson.Field
+	Tier                     apijson.Field
 	raw                      string
 	ExtraFields              map[string]apijson.Field
 }
@@ -95,6 +98,22 @@ func (r financialAccountCreditConfigJSON) RawJSON() string {
 	return r.raw
 }
 
+// Reason for the financial account being marked as Charged Off
+type FinancialAccountCreditConfigChargedOffReason string
+
+const (
+	FinancialAccountCreditConfigChargedOffReasonDelinquent FinancialAccountCreditConfigChargedOffReason = "DELINQUENT"
+	FinancialAccountCreditConfigChargedOffReasonFraud      FinancialAccountCreditConfigChargedOffReason = "FRAUD"
+)
+
+func (r FinancialAccountCreditConfigChargedOffReason) IsKnown() bool {
+	switch r {
+	case FinancialAccountCreditConfigChargedOffReasonDelinquent, FinancialAccountCreditConfigChargedOffReasonFraud:
+		return true
+	}
+	return false
+}
+
 // State of the financial account
 type FinancialAccountCreditConfigFinancialAccountState string
 
@@ -102,11 +121,12 @@ const (
 	FinancialAccountCreditConfigFinancialAccountStatePending    FinancialAccountCreditConfigFinancialAccountState = "PENDING"
 	FinancialAccountCreditConfigFinancialAccountStateCurrent    FinancialAccountCreditConfigFinancialAccountState = "CURRENT"
 	FinancialAccountCreditConfigFinancialAccountStateDelinquent FinancialAccountCreditConfigFinancialAccountState = "DELINQUENT"
+	FinancialAccountCreditConfigFinancialAccountStateChargedOff FinancialAccountCreditConfigFinancialAccountState = "CHARGED_OFF"
 )
 
 func (r FinancialAccountCreditConfigFinancialAccountState) IsKnown() bool {
 	switch r {
-	case FinancialAccountCreditConfigFinancialAccountStatePending, FinancialAccountCreditConfigFinancialAccountStateCurrent, FinancialAccountCreditConfigFinancialAccountStateDelinquent:
+	case FinancialAccountCreditConfigFinancialAccountStatePending, FinancialAccountCreditConfigFinancialAccountStateCurrent, FinancialAccountCreditConfigFinancialAccountStateDelinquent, FinancialAccountCreditConfigFinancialAccountStateChargedOff:
 		return true
 	}
 	return false
