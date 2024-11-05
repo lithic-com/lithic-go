@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.62.0 (2024-11-05)
+
+Full Changelog: [v0.61.0...v0.62.0](https://github.com/lithic-com/lithic-go/compare/v0.61.0...v0.62.0)
+
+### ⚠ BREAKING CHANGES
+
+* **api:** removes AuthRules V1 ([#403](https://github.com/lithic-com/lithic-go/issues/403))
+
+### Features
+
+* **api:** removes AuthRules V1 ([#403](https://github.com/lithic-com/lithic-go/issues/403)) ([347ca15](https://github.com/lithic-com/lithic-go/commit/347ca157e5acb67d507f6044b8980b75b52c13fa))
+
+
+### Chores
+
+* **api:** adds `charge_off` functionality to FinancialAccounts ([#402](https://github.com/lithic-com/lithic-go/issues/402)) ([1935628](https://github.com/lithic-com/lithic-go/commit/19356282d48b9743c6360d49cfdd56ebd0eb238c))
+* **docs:** updates to documentation for V2 AuthRules ([#400](https://github.com/lithic-com/lithic-go/issues/400)) ([fbc8377](https://github.com/lithic-com/lithic-go/commit/fbc837786077ee053167b0fcaf904d86ed9fbe71))
+
 ## 0.61.0 (2024-10-28)
 
 Full Changelog: [v0.60.0...v0.61.0](https://github.com/lithic-com/lithic-go/compare/v0.60.0...v0.61.0)
