@@ -16,20 +16,6 @@ type Address = shared.Address
 type AddressParam = shared.AddressParam
 
 // This is an alias to an internal type.
-type AuthRule = shared.AuthRule
-
-// Indicates whether the Auth Rule is ACTIVE or INACTIVE
-//
-// This is an alias to an internal type.
-type AuthRuleState = shared.AuthRuleState
-
-// This is an alias to an internal value.
-const AuthRuleStateActive = shared.AuthRuleStateActive
-
-// This is an alias to an internal value.
-const AuthRuleStateInactive = shared.AuthRuleStateInactive
-
-// This is an alias to an internal type.
 type CarrierParam = shared.CarrierParam
 
 // ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
