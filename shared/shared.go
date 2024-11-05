@@ -76,73 +76,6 @@ func (r AddressParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-type AuthRule struct {
-	// Globally unique identifier.
-	Token string `json:"token,required" format:"uuid"`
-	// Indicates whether the Auth Rule is ACTIVE or INACTIVE
-	State AuthRuleState `json:"state,required"`
-	// Array of account_token(s) identifying the accounts that the Auth Rule applies
-	// to. Note that only this field or `card_tokens` can be provided for a given Auth
-	// Rule.
-	AccountTokens []string `json:"account_tokens"`
-	// Countries in which the Auth Rule permits transactions. Note that Lithic
-	// maintains a list of countries in which all transactions are blocked; "allowing"
-	// those countries in an Auth Rule does not override the Lithic-wide restrictions.
-	AllowedCountries []string `json:"allowed_countries"`
-	// Merchant category codes for which the Auth Rule permits transactions.
-	AllowedMcc []string `json:"allowed_mcc"`
-	// Countries in which the Auth Rule automatically declines transactions.
-	BlockedCountries []string `json:"blocked_countries"`
-	// Merchant category codes for which the Auth Rule automatically declines
-	// transactions.
-	BlockedMcc []string `json:"blocked_mcc"`
-	// Array of card_token(s) identifying the cards that the Auth Rule applies to. Note
-	// that only this field or `account_tokens` can be provided for a given Auth Rule.
-	CardTokens []string `json:"card_tokens"`
-	// Boolean indicating whether the Auth Rule is applied at the program level.
-	ProgramLevel bool         `json:"program_level"`
-	JSON         authRuleJSON `json:"-"`
-}
-
-// authRuleJSON contains the JSON metadata for the struct [AuthRule]
-type authRuleJSON struct {
-	Token            apijson.Field
-	State            apijson.Field
-	AccountTokens    apijson.Field
-	AllowedCountries apijson.Field
-	AllowedMcc       apijson.Field
-	BlockedCountries apijson.Field
-	BlockedMcc       apijson.Field
-	CardTokens       apijson.Field
-	ProgramLevel     apijson.Field
-	raw              string
-	ExtraFields      map[string]apijson.Field
-}
-
-func (r *AuthRule) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleJSON) RawJSON() string {
-	return r.raw
-}
-
-// Indicates whether the Auth Rule is ACTIVE or INACTIVE
-type AuthRuleState string
-
-const (
-	AuthRuleStateActive   AuthRuleState = "ACTIVE"
-	AuthRuleStateInactive AuthRuleState = "INACTIVE"
-)
-
-func (r AuthRuleState) IsKnown() bool {
-	switch r {
-	case AuthRuleStateActive, AuthRuleStateInactive:
-		return true
-	}
-	return false
-}
-
 type CarrierParam struct {
 	// QR code url to display on the card carrier
 	QrCodeURL param.Field[string] `json:"qr_code_url"`
@@ -605,10 +538,6 @@ func (r *VelocityLimitParams) UnmarshalJSON(data []byte) (err error) {
 func (r velocityLimitParamsJSON) RawJSON() string {
 	return r.raw
 }
-
-func (r VelocityLimitParams) ImplementsAuthRuleMigrateV1ToV2ResponseCurrentVersionParameters() {}
-
-func (r VelocityLimitParams) ImplementsAuthRuleMigrateV1ToV2ResponseDraftVersionParameters() {}
 
 func (r VelocityLimitParams) ImplementsAuthRuleV2NewResponseCurrentVersionParameters() {}
 
