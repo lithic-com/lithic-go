@@ -1256,44 +1256,44 @@ func (r ExternalBankAccountNewParams) MarshalJSON() (data []byte, err error) {
 }
 
 type ExternalBankAccountNewParamsBody struct {
-	// Verification Method
-	VerificationMethod param.Field[VerificationMethod] `json:"verification_method,required"`
-	// Owner Type
-	OwnerType param.Field[OwnerType] `json:"owner_type,required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
 	Owner param.Field[string] `json:"owner,required"`
+	// Owner Type
+	OwnerType param.Field[OwnerType] `json:"owner_type,required"`
+	// Verification Method
+	VerificationMethod param.Field[VerificationMethod] `json:"verification_method,required"`
+	// Account Number
+	AccountNumber param.Field[string] `json:"account_number"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
 	AccountToken param.Field[string] `json:"account_token" format:"uuid"`
+	// Address
+	Address param.Field[ExternalBankAccountAddressParam] `json:"address"`
 	// Optional field that helps identify bank accounts in receipts
 	CompanyID param.Field[string] `json:"company_id"`
-	// Doing Business As
-	DoingBusinessAs param.Field[string] `json:"doing_business_as"`
-	// Date of Birth of the Individual that owns the external bank account
-	Dob param.Field[time.Time] `json:"dob" format:"date"`
-	// User Defined ID
-	UserDefinedID param.Field[string] `json:"user_defined_id"`
-	// Account Type
-	Type param.Field[ExternalBankAccountNewParamsBodyType] `json:"type"`
-	// Routing Number
-	RoutingNumber param.Field[string] `json:"routing_number"`
-	// Account Number
-	AccountNumber param.Field[string] `json:"account_number"`
-	// The nickname for this External Bank Account
-	Name param.Field[string] `json:"name"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
 	// accept USA bank accounts e.g., USA
 	Country param.Field[string] `json:"country"`
 	// currency of the external account 3-digit alphabetic ISO 4217 code
-	Currency                param.Field[string] `json:"currency"`
-	VerificationEnforcement param.Field[bool]   `json:"verification_enforcement"`
-	// Address
-	Address param.Field[ExternalBankAccountAddressParam] `json:"address"`
+	Currency param.Field[string] `json:"currency"`
+	// Date of Birth of the Individual that owns the external bank account
+	Dob param.Field[time.Time] `json:"dob" format:"date"`
+	// Doing Business As
+	DoingBusinessAs param.Field[string] `json:"doing_business_as"`
 	// The financial account token of the operating account to fund the micro deposits
 	FinancialAccountToken param.Field[string] `json:"financial_account_token" format:"uuid"`
-	ProcessorToken        param.Field[string] `json:"processor_token"`
+	// The nickname for this External Bank Account
+	Name           param.Field[string] `json:"name"`
+	ProcessorToken param.Field[string] `json:"processor_token"`
+	// Routing Number
+	RoutingNumber param.Field[string] `json:"routing_number"`
+	// Account Type
+	Type param.Field[ExternalBankAccountNewParamsBodyType] `json:"type"`
+	// User Defined ID
+	UserDefinedID           param.Field[string] `json:"user_defined_id"`
+	VerificationEnforcement param.Field[bool]   `json:"verification_enforcement"`
 }
 
 func (r ExternalBankAccountNewParamsBody) MarshalJSON() (data []byte, err error) {
