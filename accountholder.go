@@ -2002,31 +2002,9 @@ type AccountHolderNewParamsBody struct {
 	BeneficialOwnerIndividuals param.Field[interface{}] `json:"beneficial_owner_individuals,required"`
 	BusinessEntity             param.Field[interface{}] `json:"business_entity,required"`
 	ControlPerson              param.Field[interface{}] `json:"control_person,required"`
-	// A user provided id that can be used to link an account holder with an external
-	// system
-	ExternalID param.Field[string] `json:"external_id"`
-	// An RFC 3339 timestamp indicating when precomputed KYC was completed on the
-	// business with a pass result.
-	//
-	// This field is required only if workflow type is `KYB_BYO`.
-	KYBPassedTimestamp param.Field[string] `json:"kyb_passed_timestamp"`
-	// Short description of the company's line of business (i.e., what does the company
-	// do?).
-	NatureOfBusiness param.Field[string] `json:"nature_of_business"`
-	// An RFC 3339 timestamp indicating when the account holder accepted the applicable
-	// legal agreements (e.g., cardholder terms) as agreed upon during API customer's
-	// implementation with Lithic.
-	TosTimestamp param.Field[string] `json:"tos_timestamp"`
-	// Company website URL.
-	WebsiteURL param.Field[string] `json:"website_url"`
+	Individual                 param.Field[interface{}] `json:"individual,required"`
 	// Specifies the type of KYB workflow to run.
-	Workflow   param.Field[AccountHolderNewParamsBodyWorkflow] `json:"workflow,required"`
-	Individual param.Field[interface{}]                        `json:"individual,required"`
-	// An RFC 3339 timestamp indicating when precomputed KYC was completed on the
-	// individual with a pass result.
-	//
-	// This field is required only if workflow type is `KYC_BYO`.
-	KYCPassedTimestamp param.Field[string] `json:"kyc_passed_timestamp"`
+	Workflow param.Field[AccountHolderNewParamsBodyWorkflow] `json:"workflow,required"`
 	// KYC Exempt user's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
 	Address param.Field[shared.AddressParam] `json:"address"`
@@ -2036,14 +2014,36 @@ type AccountHolderNewParamsBody struct {
 	BusinessAccountToken param.Field[string] `json:"business_account_token"`
 	// The KYC Exempt user's email
 	Email param.Field[string] `json:"email"`
+	// A user provided id that can be used to link an account holder with an external
+	// system
+	ExternalID param.Field[string] `json:"external_id"`
 	// The KYC Exempt user's first name
 	FirstName param.Field[string] `json:"first_name"`
+	// An RFC 3339 timestamp indicating when precomputed KYC was completed on the
+	// business with a pass result.
+	//
+	// This field is required only if workflow type is `KYB_BYO`.
+	KYBPassedTimestamp param.Field[string] `json:"kyb_passed_timestamp"`
 	// Specifies the type of KYC Exempt user
 	KYCExemptionType param.Field[AccountHolderNewParamsBodyKYCExemptionType] `json:"kyc_exemption_type"`
+	// An RFC 3339 timestamp indicating when precomputed KYC was completed on the
+	// individual with a pass result.
+	//
+	// This field is required only if workflow type is `KYC_BYO`.
+	KYCPassedTimestamp param.Field[string] `json:"kyc_passed_timestamp"`
 	// The KYC Exempt user's last name
 	LastName param.Field[string] `json:"last_name"`
+	// Short description of the company's line of business (i.e., what does the company
+	// do?).
+	NatureOfBusiness param.Field[string] `json:"nature_of_business"`
 	// The KYC Exempt user's phone number
 	PhoneNumber param.Field[string] `json:"phone_number"`
+	// An RFC 3339 timestamp indicating when the account holder accepted the applicable
+	// legal agreements (e.g., cardholder terms) as agreed upon during API customer's
+	// implementation with Lithic.
+	TosTimestamp param.Field[string] `json:"tos_timestamp"`
+	// Company website URL.
+	WebsiteURL param.Field[string] `json:"website_url"`
 }
 
 func (r AccountHolderNewParamsBody) MarshalJSON() (data []byte, err error) {

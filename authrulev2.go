@@ -271,12 +271,11 @@ func (r authRuleV2NewResponseCurrentVersionJSON) RawJSON() string {
 type AuthRuleV2NewResponseCurrentVersionParameters struct {
 	// This field can have the runtime type of
 	// [[]AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersCondition].
-	Conditions interface{}                                        `json:"conditions,required"`
-	Scope      AuthRuleV2NewResponseCurrentVersionParametersScope `json:"scope"`
-	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
-	Period interface{} `json:"period,required"`
+	Conditions interface{} `json:"conditions,required"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters,required"`
+	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
+	Period interface{} `json:"period,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -286,8 +285,9 @@ type AuthRuleV2NewResponseCurrentVersionParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64                                           `json:"limit_count,nullable"`
-	JSON       authRuleV2NewResponseCurrentVersionParametersJSON `json:"-"`
+	LimitCount float64                                            `json:"limit_count,nullable"`
+	Scope      AuthRuleV2NewResponseCurrentVersionParametersScope `json:"scope"`
+	JSON       authRuleV2NewResponseCurrentVersionParametersJSON  `json:"-"`
 	union      AuthRuleV2NewResponseCurrentVersionParametersUnion
 }
 
@@ -295,11 +295,11 @@ type AuthRuleV2NewResponseCurrentVersionParameters struct {
 // the struct [AuthRuleV2NewResponseCurrentVersionParameters]
 type authRuleV2NewResponseCurrentVersionParametersJSON struct {
 	Conditions  apijson.Field
-	Scope       apijson.Field
-	Period      apijson.Field
 	Filters     apijson.Field
+	Period      apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Scope       apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -585,12 +585,11 @@ func (r authRuleV2NewResponseDraftVersionJSON) RawJSON() string {
 type AuthRuleV2NewResponseDraftVersionParameters struct {
 	// This field can have the runtime type of
 	// [[]AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersCondition].
-	Conditions interface{}                                      `json:"conditions,required"`
-	Scope      AuthRuleV2NewResponseDraftVersionParametersScope `json:"scope"`
-	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
-	Period interface{} `json:"period,required"`
+	Conditions interface{} `json:"conditions,required"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters,required"`
+	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
+	Period interface{} `json:"period,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -600,8 +599,9 @@ type AuthRuleV2NewResponseDraftVersionParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64                                         `json:"limit_count,nullable"`
-	JSON       authRuleV2NewResponseDraftVersionParametersJSON `json:"-"`
+	LimitCount float64                                          `json:"limit_count,nullable"`
+	Scope      AuthRuleV2NewResponseDraftVersionParametersScope `json:"scope"`
+	JSON       authRuleV2NewResponseDraftVersionParametersJSON  `json:"-"`
 	union      AuthRuleV2NewResponseDraftVersionParametersUnion
 }
 
@@ -609,11 +609,11 @@ type AuthRuleV2NewResponseDraftVersionParameters struct {
 // the struct [AuthRuleV2NewResponseDraftVersionParameters]
 type authRuleV2NewResponseDraftVersionParametersJSON struct {
 	Conditions  apijson.Field
-	Scope       apijson.Field
-	Period      apijson.Field
 	Filters     apijson.Field
+	Period      apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Scope       apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -971,12 +971,11 @@ func (r authRuleV2GetResponseCurrentVersionJSON) RawJSON() string {
 type AuthRuleV2GetResponseCurrentVersionParameters struct {
 	// This field can have the runtime type of
 	// [[]AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersCondition].
-	Conditions interface{}                                        `json:"conditions,required"`
-	Scope      AuthRuleV2GetResponseCurrentVersionParametersScope `json:"scope"`
-	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
-	Period interface{} `json:"period,required"`
+	Conditions interface{} `json:"conditions,required"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters,required"`
+	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
+	Period interface{} `json:"period,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -986,8 +985,9 @@ type AuthRuleV2GetResponseCurrentVersionParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64                                           `json:"limit_count,nullable"`
-	JSON       authRuleV2GetResponseCurrentVersionParametersJSON `json:"-"`
+	LimitCount float64                                            `json:"limit_count,nullable"`
+	Scope      AuthRuleV2GetResponseCurrentVersionParametersScope `json:"scope"`
+	JSON       authRuleV2GetResponseCurrentVersionParametersJSON  `json:"-"`
 	union      AuthRuleV2GetResponseCurrentVersionParametersUnion
 }
 
@@ -995,11 +995,11 @@ type AuthRuleV2GetResponseCurrentVersionParameters struct {
 // the struct [AuthRuleV2GetResponseCurrentVersionParameters]
 type authRuleV2GetResponseCurrentVersionParametersJSON struct {
 	Conditions  apijson.Field
-	Scope       apijson.Field
-	Period      apijson.Field
 	Filters     apijson.Field
+	Period      apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Scope       apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -1285,12 +1285,11 @@ func (r authRuleV2GetResponseDraftVersionJSON) RawJSON() string {
 type AuthRuleV2GetResponseDraftVersionParameters struct {
 	// This field can have the runtime type of
 	// [[]AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersCondition].
-	Conditions interface{}                                      `json:"conditions,required"`
-	Scope      AuthRuleV2GetResponseDraftVersionParametersScope `json:"scope"`
-	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
-	Period interface{} `json:"period,required"`
+	Conditions interface{} `json:"conditions,required"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters,required"`
+	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
+	Period interface{} `json:"period,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -1300,8 +1299,9 @@ type AuthRuleV2GetResponseDraftVersionParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64                                         `json:"limit_count,nullable"`
-	JSON       authRuleV2GetResponseDraftVersionParametersJSON `json:"-"`
+	LimitCount float64                                          `json:"limit_count,nullable"`
+	Scope      AuthRuleV2GetResponseDraftVersionParametersScope `json:"scope"`
+	JSON       authRuleV2GetResponseDraftVersionParametersJSON  `json:"-"`
 	union      AuthRuleV2GetResponseDraftVersionParametersUnion
 }
 
@@ -1309,11 +1309,11 @@ type AuthRuleV2GetResponseDraftVersionParameters struct {
 // the struct [AuthRuleV2GetResponseDraftVersionParameters]
 type authRuleV2GetResponseDraftVersionParametersJSON struct {
 	Conditions  apijson.Field
-	Scope       apijson.Field
-	Period      apijson.Field
 	Filters     apijson.Field
+	Period      apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Scope       apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -1671,12 +1671,11 @@ func (r authRuleV2UpdateResponseCurrentVersionJSON) RawJSON() string {
 type AuthRuleV2UpdateResponseCurrentVersionParameters struct {
 	// This field can have the runtime type of
 	// [[]AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersCondition].
-	Conditions interface{}                                           `json:"conditions,required"`
-	Scope      AuthRuleV2UpdateResponseCurrentVersionParametersScope `json:"scope"`
-	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
-	Period interface{} `json:"period,required"`
+	Conditions interface{} `json:"conditions,required"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters,required"`
+	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
+	Period interface{} `json:"period,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -1686,8 +1685,9 @@ type AuthRuleV2UpdateResponseCurrentVersionParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64                                              `json:"limit_count,nullable"`
-	JSON       authRuleV2UpdateResponseCurrentVersionParametersJSON `json:"-"`
+	LimitCount float64                                               `json:"limit_count,nullable"`
+	Scope      AuthRuleV2UpdateResponseCurrentVersionParametersScope `json:"scope"`
+	JSON       authRuleV2UpdateResponseCurrentVersionParametersJSON  `json:"-"`
 	union      AuthRuleV2UpdateResponseCurrentVersionParametersUnion
 }
 
@@ -1695,11 +1695,11 @@ type AuthRuleV2UpdateResponseCurrentVersionParameters struct {
 // for the struct [AuthRuleV2UpdateResponseCurrentVersionParameters]
 type authRuleV2UpdateResponseCurrentVersionParametersJSON struct {
 	Conditions  apijson.Field
-	Scope       apijson.Field
-	Period      apijson.Field
 	Filters     apijson.Field
+	Period      apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Scope       apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -1985,12 +1985,11 @@ func (r authRuleV2UpdateResponseDraftVersionJSON) RawJSON() string {
 type AuthRuleV2UpdateResponseDraftVersionParameters struct {
 	// This field can have the runtime type of
 	// [[]AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersCondition].
-	Conditions interface{}                                         `json:"conditions,required"`
-	Scope      AuthRuleV2UpdateResponseDraftVersionParametersScope `json:"scope"`
-	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
-	Period interface{} `json:"period,required"`
+	Conditions interface{} `json:"conditions,required"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters,required"`
+	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
+	Period interface{} `json:"period,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -2000,8 +1999,9 @@ type AuthRuleV2UpdateResponseDraftVersionParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64                                            `json:"limit_count,nullable"`
-	JSON       authRuleV2UpdateResponseDraftVersionParametersJSON `json:"-"`
+	LimitCount float64                                             `json:"limit_count,nullable"`
+	Scope      AuthRuleV2UpdateResponseDraftVersionParametersScope `json:"scope"`
+	JSON       authRuleV2UpdateResponseDraftVersionParametersJSON  `json:"-"`
 	union      AuthRuleV2UpdateResponseDraftVersionParametersUnion
 }
 
@@ -2009,11 +2009,11 @@ type AuthRuleV2UpdateResponseDraftVersionParameters struct {
 // for the struct [AuthRuleV2UpdateResponseDraftVersionParameters]
 type authRuleV2UpdateResponseDraftVersionParametersJSON struct {
 	Conditions  apijson.Field
-	Scope       apijson.Field
-	Period      apijson.Field
 	Filters     apijson.Field
+	Period      apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Scope       apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -2371,12 +2371,11 @@ func (r authRuleV2ListResponseCurrentVersionJSON) RawJSON() string {
 type AuthRuleV2ListResponseCurrentVersionParameters struct {
 	// This field can have the runtime type of
 	// [[]AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersCondition].
-	Conditions interface{}                                         `json:"conditions,required"`
-	Scope      AuthRuleV2ListResponseCurrentVersionParametersScope `json:"scope"`
-	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
-	Period interface{} `json:"period,required"`
+	Conditions interface{} `json:"conditions,required"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters,required"`
+	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
+	Period interface{} `json:"period,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -2386,8 +2385,9 @@ type AuthRuleV2ListResponseCurrentVersionParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64                                            `json:"limit_count,nullable"`
-	JSON       authRuleV2ListResponseCurrentVersionParametersJSON `json:"-"`
+	LimitCount float64                                             `json:"limit_count,nullable"`
+	Scope      AuthRuleV2ListResponseCurrentVersionParametersScope `json:"scope"`
+	JSON       authRuleV2ListResponseCurrentVersionParametersJSON  `json:"-"`
 	union      AuthRuleV2ListResponseCurrentVersionParametersUnion
 }
 
@@ -2395,11 +2395,11 @@ type AuthRuleV2ListResponseCurrentVersionParameters struct {
 // for the struct [AuthRuleV2ListResponseCurrentVersionParameters]
 type authRuleV2ListResponseCurrentVersionParametersJSON struct {
 	Conditions  apijson.Field
-	Scope       apijson.Field
-	Period      apijson.Field
 	Filters     apijson.Field
+	Period      apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Scope       apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -2685,12 +2685,11 @@ func (r authRuleV2ListResponseDraftVersionJSON) RawJSON() string {
 type AuthRuleV2ListResponseDraftVersionParameters struct {
 	// This field can have the runtime type of
 	// [[]AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersCondition].
-	Conditions interface{}                                       `json:"conditions,required"`
-	Scope      AuthRuleV2ListResponseDraftVersionParametersScope `json:"scope"`
-	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
-	Period interface{} `json:"period,required"`
+	Conditions interface{} `json:"conditions,required"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters,required"`
+	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
+	Period interface{} `json:"period,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -2700,8 +2699,9 @@ type AuthRuleV2ListResponseDraftVersionParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64                                          `json:"limit_count,nullable"`
-	JSON       authRuleV2ListResponseDraftVersionParametersJSON `json:"-"`
+	LimitCount float64                                           `json:"limit_count,nullable"`
+	Scope      AuthRuleV2ListResponseDraftVersionParametersScope `json:"scope"`
+	JSON       authRuleV2ListResponseDraftVersionParametersJSON  `json:"-"`
 	union      AuthRuleV2ListResponseDraftVersionParametersUnion
 }
 
@@ -2709,11 +2709,11 @@ type AuthRuleV2ListResponseDraftVersionParameters struct {
 // the struct [AuthRuleV2ListResponseDraftVersionParameters]
 type authRuleV2ListResponseDraftVersionParametersJSON struct {
 	Conditions  apijson.Field
-	Scope       apijson.Field
-	Period      apijson.Field
 	Filters     apijson.Field
+	Period      apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Scope       apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -3071,12 +3071,11 @@ func (r authRuleV2ApplyResponseCurrentVersionJSON) RawJSON() string {
 type AuthRuleV2ApplyResponseCurrentVersionParameters struct {
 	// This field can have the runtime type of
 	// [[]AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersCondition].
-	Conditions interface{}                                          `json:"conditions,required"`
-	Scope      AuthRuleV2ApplyResponseCurrentVersionParametersScope `json:"scope"`
-	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
-	Period interface{} `json:"period,required"`
+	Conditions interface{} `json:"conditions,required"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters,required"`
+	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
+	Period interface{} `json:"period,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -3086,8 +3085,9 @@ type AuthRuleV2ApplyResponseCurrentVersionParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64                                             `json:"limit_count,nullable"`
-	JSON       authRuleV2ApplyResponseCurrentVersionParametersJSON `json:"-"`
+	LimitCount float64                                              `json:"limit_count,nullable"`
+	Scope      AuthRuleV2ApplyResponseCurrentVersionParametersScope `json:"scope"`
+	JSON       authRuleV2ApplyResponseCurrentVersionParametersJSON  `json:"-"`
 	union      AuthRuleV2ApplyResponseCurrentVersionParametersUnion
 }
 
@@ -3095,11 +3095,11 @@ type AuthRuleV2ApplyResponseCurrentVersionParameters struct {
 // for the struct [AuthRuleV2ApplyResponseCurrentVersionParameters]
 type authRuleV2ApplyResponseCurrentVersionParametersJSON struct {
 	Conditions  apijson.Field
-	Scope       apijson.Field
-	Period      apijson.Field
 	Filters     apijson.Field
+	Period      apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Scope       apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -3385,12 +3385,11 @@ func (r authRuleV2ApplyResponseDraftVersionJSON) RawJSON() string {
 type AuthRuleV2ApplyResponseDraftVersionParameters struct {
 	// This field can have the runtime type of
 	// [[]AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersCondition].
-	Conditions interface{}                                        `json:"conditions,required"`
-	Scope      AuthRuleV2ApplyResponseDraftVersionParametersScope `json:"scope"`
-	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
-	Period interface{} `json:"period,required"`
+	Conditions interface{} `json:"conditions,required"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters,required"`
+	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
+	Period interface{} `json:"period,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -3400,8 +3399,9 @@ type AuthRuleV2ApplyResponseDraftVersionParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64                                           `json:"limit_count,nullable"`
-	JSON       authRuleV2ApplyResponseDraftVersionParametersJSON `json:"-"`
+	LimitCount float64                                            `json:"limit_count,nullable"`
+	Scope      AuthRuleV2ApplyResponseDraftVersionParametersScope `json:"scope"`
+	JSON       authRuleV2ApplyResponseDraftVersionParametersJSON  `json:"-"`
 	union      AuthRuleV2ApplyResponseDraftVersionParametersUnion
 }
 
@@ -3409,11 +3409,11 @@ type AuthRuleV2ApplyResponseDraftVersionParameters struct {
 // the struct [AuthRuleV2ApplyResponseDraftVersionParameters]
 type authRuleV2ApplyResponseDraftVersionParametersJSON struct {
 	Conditions  apijson.Field
-	Scope       apijson.Field
-	Period      apijson.Field
 	Filters     apijson.Field
+	Period      apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Scope       apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -3771,12 +3771,11 @@ func (r authRuleV2DraftResponseCurrentVersionJSON) RawJSON() string {
 type AuthRuleV2DraftResponseCurrentVersionParameters struct {
 	// This field can have the runtime type of
 	// [[]AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersCondition].
-	Conditions interface{}                                          `json:"conditions,required"`
-	Scope      AuthRuleV2DraftResponseCurrentVersionParametersScope `json:"scope"`
-	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
-	Period interface{} `json:"period,required"`
+	Conditions interface{} `json:"conditions,required"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters,required"`
+	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
+	Period interface{} `json:"period,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -3786,8 +3785,9 @@ type AuthRuleV2DraftResponseCurrentVersionParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64                                             `json:"limit_count,nullable"`
-	JSON       authRuleV2DraftResponseCurrentVersionParametersJSON `json:"-"`
+	LimitCount float64                                              `json:"limit_count,nullable"`
+	Scope      AuthRuleV2DraftResponseCurrentVersionParametersScope `json:"scope"`
+	JSON       authRuleV2DraftResponseCurrentVersionParametersJSON  `json:"-"`
 	union      AuthRuleV2DraftResponseCurrentVersionParametersUnion
 }
 
@@ -3795,11 +3795,11 @@ type AuthRuleV2DraftResponseCurrentVersionParameters struct {
 // for the struct [AuthRuleV2DraftResponseCurrentVersionParameters]
 type authRuleV2DraftResponseCurrentVersionParametersJSON struct {
 	Conditions  apijson.Field
-	Scope       apijson.Field
-	Period      apijson.Field
 	Filters     apijson.Field
+	Period      apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Scope       apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -4085,12 +4085,11 @@ func (r authRuleV2DraftResponseDraftVersionJSON) RawJSON() string {
 type AuthRuleV2DraftResponseDraftVersionParameters struct {
 	// This field can have the runtime type of
 	// [[]AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersCondition].
-	Conditions interface{}                                        `json:"conditions,required"`
-	Scope      AuthRuleV2DraftResponseDraftVersionParametersScope `json:"scope"`
-	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
-	Period interface{} `json:"period,required"`
+	Conditions interface{} `json:"conditions,required"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters,required"`
+	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
+	Period interface{} `json:"period,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -4100,8 +4099,9 @@ type AuthRuleV2DraftResponseDraftVersionParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64                                           `json:"limit_count,nullable"`
-	JSON       authRuleV2DraftResponseDraftVersionParametersJSON `json:"-"`
+	LimitCount float64                                            `json:"limit_count,nullable"`
+	Scope      AuthRuleV2DraftResponseDraftVersionParametersScope `json:"scope"`
+	JSON       authRuleV2DraftResponseDraftVersionParametersJSON  `json:"-"`
 	union      AuthRuleV2DraftResponseDraftVersionParametersUnion
 }
 
@@ -4109,11 +4109,11 @@ type AuthRuleV2DraftResponseDraftVersionParameters struct {
 // the struct [AuthRuleV2DraftResponseDraftVersionParameters]
 type authRuleV2DraftResponseDraftVersionParametersJSON struct {
 	Conditions  apijson.Field
-	Scope       apijson.Field
-	Period      apijson.Field
 	Filters     apijson.Field
+	Period      apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Scope       apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -4471,12 +4471,11 @@ func (r authRuleV2PromoteResponseCurrentVersionJSON) RawJSON() string {
 type AuthRuleV2PromoteResponseCurrentVersionParameters struct {
 	// This field can have the runtime type of
 	// [[]AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersCondition].
-	Conditions interface{}                                            `json:"conditions,required"`
-	Scope      AuthRuleV2PromoteResponseCurrentVersionParametersScope `json:"scope"`
-	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
-	Period interface{} `json:"period,required"`
+	Conditions interface{} `json:"conditions,required"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters,required"`
+	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
+	Period interface{} `json:"period,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -4486,8 +4485,9 @@ type AuthRuleV2PromoteResponseCurrentVersionParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64                                               `json:"limit_count,nullable"`
-	JSON       authRuleV2PromoteResponseCurrentVersionParametersJSON `json:"-"`
+	LimitCount float64                                                `json:"limit_count,nullable"`
+	Scope      AuthRuleV2PromoteResponseCurrentVersionParametersScope `json:"scope"`
+	JSON       authRuleV2PromoteResponseCurrentVersionParametersJSON  `json:"-"`
 	union      AuthRuleV2PromoteResponseCurrentVersionParametersUnion
 }
 
@@ -4495,11 +4495,11 @@ type AuthRuleV2PromoteResponseCurrentVersionParameters struct {
 // for the struct [AuthRuleV2PromoteResponseCurrentVersionParameters]
 type authRuleV2PromoteResponseCurrentVersionParametersJSON struct {
 	Conditions  apijson.Field
-	Scope       apijson.Field
-	Period      apijson.Field
 	Filters     apijson.Field
+	Period      apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Scope       apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -4785,12 +4785,11 @@ func (r authRuleV2PromoteResponseDraftVersionJSON) RawJSON() string {
 type AuthRuleV2PromoteResponseDraftVersionParameters struct {
 	// This field can have the runtime type of
 	// [[]AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersCondition].
-	Conditions interface{}                                          `json:"conditions,required"`
-	Scope      AuthRuleV2PromoteResponseDraftVersionParametersScope `json:"scope"`
-	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
-	Period interface{} `json:"period,required"`
+	Conditions interface{} `json:"conditions,required"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters,required"`
+	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
+	Period interface{} `json:"period,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -4800,8 +4799,9 @@ type AuthRuleV2PromoteResponseDraftVersionParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64                                             `json:"limit_count,nullable"`
-	JSON       authRuleV2PromoteResponseDraftVersionParametersJSON `json:"-"`
+	LimitCount float64                                              `json:"limit_count,nullable"`
+	Scope      AuthRuleV2PromoteResponseDraftVersionParametersScope `json:"scope"`
+	JSON       authRuleV2PromoteResponseDraftVersionParametersJSON  `json:"-"`
 	union      AuthRuleV2PromoteResponseDraftVersionParametersUnion
 }
 
@@ -4809,11 +4809,11 @@ type AuthRuleV2PromoteResponseDraftVersionParameters struct {
 // for the struct [AuthRuleV2PromoteResponseDraftVersionParameters]
 type authRuleV2PromoteResponseDraftVersionParametersJSON struct {
 	Conditions  apijson.Field
-	Scope       apijson.Field
-	Period      apijson.Field
 	Filters     apijson.Field
+	Period      apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Scope       apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -5132,12 +5132,12 @@ func (r AuthRuleV2NewParams) MarshalJSON() (data []byte, err error) {
 
 type AuthRuleV2NewParamsBody struct {
 	AccountTokens param.Field[interface{}] `json:"account_tokens,required"`
-	// The type of Auth Rule
-	Type       param.Field[AuthRuleV2NewParamsBodyType] `json:"type"`
-	Parameters param.Field[interface{}]                 `json:"parameters,required"`
-	CardTokens param.Field[interface{}]                 `json:"card_tokens,required"`
+	CardTokens    param.Field[interface{}] `json:"card_tokens,required"`
+	Parameters    param.Field[interface{}] `json:"parameters,required"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel param.Field[bool] `json:"program_level"`
+	// The type of Auth Rule
+	Type param.Field[AuthRuleV2NewParamsBodyType] `json:"type"`
 }
 
 func (r AuthRuleV2NewParamsBody) MarshalJSON() (data []byte, err error) {
@@ -5172,10 +5172,9 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokens) implementsAut
 
 // Parameters for the current version of the Auth Rule
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters struct {
-	Conditions param.Field[interface{}]                                                              `json:"conditions,required"`
-	Scope      param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersScope] `json:"scope"`
-	Period     param.Field[interface{}]                                                              `json:"period,required"`
-	Filters    param.Field[interface{}]                                                              `json:"filters,required"`
+	Conditions param.Field[interface{}] `json:"conditions,required"`
+	Filters    param.Field[interface{}] `json:"filters,required"`
+	Period     param.Field[interface{}] `json:"period,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -5185,7 +5184,8 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters struct 
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount param.Field[float64] `json:"limit_count"`
+	LimitCount param.Field[float64]                                                                  `json:"limit_count"`
+	Scope      param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersScope] `json:"scope"`
 }
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters) MarshalJSON() (data []byte, err error) {
@@ -5394,10 +5394,9 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokens) implementsAuthRu
 
 // Parameters for the current version of the Auth Rule
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters struct {
-	Conditions param.Field[interface{}]                                                           `json:"conditions,required"`
-	Scope      param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersScope] `json:"scope"`
-	Period     param.Field[interface{}]                                                           `json:"period,required"`
-	Filters    param.Field[interface{}]                                                           `json:"filters,required"`
+	Conditions param.Field[interface{}] `json:"conditions,required"`
+	Filters    param.Field[interface{}] `json:"filters,required"`
+	Period     param.Field[interface{}] `json:"period,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -5407,7 +5406,8 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount param.Field[float64] `json:"limit_count"`
+	LimitCount param.Field[float64]                                                               `json:"limit_count"`
+	Scope      param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersScope] `json:"scope"`
 }
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters) MarshalJSON() (data []byte, err error) {
@@ -5616,10 +5616,9 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevel) implementsAuth
 
 // Parameters for the current version of the Auth Rule
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters struct {
-	Conditions param.Field[interface{}]                                                             `json:"conditions,required"`
-	Scope      param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersScope] `json:"scope"`
-	Period     param.Field[interface{}]                                                             `json:"period,required"`
-	Filters    param.Field[interface{}]                                                             `json:"filters,required"`
+	Conditions param.Field[interface{}] `json:"conditions,required"`
+	Filters    param.Field[interface{}] `json:"filters,required"`
+	Period     param.Field[interface{}] `json:"period,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -5629,7 +5628,8 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount param.Field[float64] `json:"limit_count"`
+	LimitCount param.Field[float64]                                                                 `json:"limit_count"`
+	Scope      param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersScope] `json:"scope"`
 }
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters) MarshalJSON() (data []byte, err error) {
@@ -5967,10 +5967,9 @@ func (r AuthRuleV2DraftParams) MarshalJSON() (data []byte, err error) {
 
 // Parameters for the current version of the Auth Rule
 type AuthRuleV2DraftParamsParameters struct {
-	Conditions param.Field[interface{}]                          `json:"conditions,required"`
-	Scope      param.Field[AuthRuleV2DraftParamsParametersScope] `json:"scope"`
-	Period     param.Field[interface{}]                          `json:"period,required"`
-	Filters    param.Field[interface{}]                          `json:"filters,required"`
+	Conditions param.Field[interface{}] `json:"conditions,required"`
+	Filters    param.Field[interface{}] `json:"filters,required"`
+	Period     param.Field[interface{}] `json:"period,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -5980,7 +5979,8 @@ type AuthRuleV2DraftParamsParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount param.Field[float64] `json:"limit_count"`
+	LimitCount param.Field[float64]                              `json:"limit_count"`
+	Scope      param.Field[AuthRuleV2DraftParamsParametersScope] `json:"scope"`
 }
 
 func (r AuthRuleV2DraftParamsParameters) MarshalJSON() (data []byte, err error) {
