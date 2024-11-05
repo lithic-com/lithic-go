@@ -112,7 +112,7 @@ func (r *FinancialAccountService) ChargeOff(ctx context.Context, financialAccoun
 		return
 	}
 	path := fmt.Sprintf("v1/financial_accounts/%s/charge_off", financialAccountToken)
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
 
