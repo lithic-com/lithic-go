@@ -823,6 +823,12 @@ type CardNewParams struct {
 	// before use. Specifies the configuration (i.e., physical card art) that the card
 	// should be manufactured with.
 	ProductID param.Field[string] `json:"product_id"`
+	// Restricted field limited to select use cases. Lithic will reach out directly if
+	// this field should be used. Globally unique identifier for the replacement card's
+	// account. If this field is specified, `replacement_for` must also be specified.
+	// If `replacement_for` is specified and this field is omitted, the replacement
+	// card's account will be inferred from the card being replaced.
+	ReplacementAccountToken param.Field[string] `json:"replacement_account_token" format:"uuid"`
 	// Only applicable to cards of type `PHYSICAL`. Globally unique identifier for the
 	// card that this physical card will replace.
 	ReplacementFor  param.Field[string]                      `json:"replacement_for" format:"uuid"`
