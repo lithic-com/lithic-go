@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.62.1 (2024-11-08)
+
+Full Changelog: [v0.62.0...v0.62.1](https://github.com/lithic-com/lithic-go/compare/v0.62.0...v0.62.1)
+
+### Bug Fixes
+
+* **api:** escape key values when encoding maps ([#407](https://github.com/lithic-com/lithic-go/issues/407)) ([fc95aad](https://github.com/lithic-com/lithic-go/commit/fc95aadd2a99b0e5e8fa8afcf14c3d95d68e1b17))
+
+
+### Chores
+
+* **api:** adds replacement_account_token to Card create parameters ([#406](https://github.com/lithic-com/lithic-go/issues/406)) ([dd703be](https://github.com/lithic-com/lithic-go/commit/dd703be858ad4700dcb752849be4b98d47eac8e8))
+
+
+### Refactors
+
+* sort fields for squashed union structs ([#404](https://github.com/lithic-com/lithic-go/issues/404)) ([635b5dd](https://github.com/lithic-com/lithic-go/commit/635b5dda2307d1da4b093f3199f4ea60dd93dd41))
+
 ## 0.62.0 (2024-11-05)
 
 Full Changelog: [v0.61.0...v0.62.0](https://github.com/lithic-com/lithic-go/compare/v0.61.0...v0.62.0)
