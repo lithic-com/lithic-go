@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.62.3 (2024-11-11)
+
+Full Changelog: [v0.62.2...v0.62.3](https://github.com/lithic-com/lithic-go/compare/v0.62.2...v0.62.3)
+
+### Bug Fixes
+
+* **client:** no panic on missing BaseURL ([#411](https://github.com/lithic-com/lithic-go/issues/411)) ([fd4d510](https://github.com/lithic-com/lithic-go/commit/fd4d510d400b78683968c1d3707de2c8dc85e533))
+
 ## 0.62.2 (2024-11-11)
 
 Full Changelog: [v0.62.1...v0.62.2](https://github.com/lithic-com/lithic-go/compare/v0.62.1...v0.62.2)
