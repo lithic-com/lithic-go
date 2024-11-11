@@ -35,7 +35,7 @@ func NewBalanceService(opts ...option.RequestOption) (r *BalanceService) {
 	return
 }
 
-// Get the balances for a program or a given end-user account
+// Get the balances for a program, business, or a given end-user account
 func (r *BalanceService) List(ctx context.Context, query BalanceListParams, opts ...option.RequestOption) (res *pagination.SinglePage[Balance], err error) {
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
@@ -53,7 +53,7 @@ func (r *BalanceService) List(ctx context.Context, query BalanceListParams, opts
 	return res, nil
 }
 
-// Get the balances for a program or a given end-user account
+// Get the balances for a program, business, or a given end-user account
 func (r *BalanceService) ListAutoPaging(ctx context.Context, query BalanceListParams, opts ...option.RequestOption) *pagination.SinglePageAutoPager[Balance] {
 	return pagination.NewSinglePageAutoPager(r.List(ctx, query, opts...))
 }
@@ -134,6 +134,8 @@ type BalanceListParams struct {
 	// UTC date and time of the balances to retrieve. Defaults to latest available
 	// balances
 	BalanceDate param.Field[time.Time] `query:"balance_date" format:"date-time"`
+	// List balances for all financial accounts of a given business_account_token.
+	BusinessAccountToken param.Field[string] `query:"business_account_token" format:"uuid"`
 	// List balances for a given Financial Account type.
 	FinancialAccountType param.Field[BalanceListParamsFinancialAccountType] `query:"financial_account_type"`
 }
