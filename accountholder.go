@@ -1998,27 +1998,27 @@ func (r AccountHolderNewParams) MarshalJSON() (data []byte, err error) {
 }
 
 type AccountHolderNewParamsBody struct {
-	BeneficialOwnerEntities    param.Field[interface{}] `json:"beneficial_owner_entities,required"`
-	BeneficialOwnerIndividuals param.Field[interface{}] `json:"beneficial_owner_individuals,required"`
-	BusinessEntity             param.Field[interface{}] `json:"business_entity,required"`
-	ControlPerson              param.Field[interface{}] `json:"control_person,required"`
-	Individual                 param.Field[interface{}] `json:"individual,required"`
 	// Specifies the type of KYB workflow to run.
 	Workflow param.Field[AccountHolderNewParamsBodyWorkflow] `json:"workflow,required"`
 	// KYC Exempt user's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
-	Address param.Field[shared.AddressParam] `json:"address"`
+	Address                    param.Field[shared.AddressParam] `json:"address"`
+	BeneficialOwnerEntities    param.Field[interface{}]         `json:"beneficial_owner_entities"`
+	BeneficialOwnerIndividuals param.Field[interface{}]         `json:"beneficial_owner_individuals"`
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
 	// users of businesses. Pass the account_token of the enrolled business associated
 	// with the AUTHORIZED_USER in this field.
-	BusinessAccountToken param.Field[string] `json:"business_account_token"`
+	BusinessAccountToken param.Field[string]      `json:"business_account_token"`
+	BusinessEntity       param.Field[interface{}] `json:"business_entity"`
+	ControlPerson        param.Field[interface{}] `json:"control_person"`
 	// The KYC Exempt user's email
 	Email param.Field[string] `json:"email"`
 	// A user provided id that can be used to link an account holder with an external
 	// system
 	ExternalID param.Field[string] `json:"external_id"`
 	// The KYC Exempt user's first name
-	FirstName param.Field[string] `json:"first_name"`
+	FirstName  param.Field[string]      `json:"first_name"`
+	Individual param.Field[interface{}] `json:"individual"`
 	// An RFC 3339 timestamp indicating when precomputed KYC was completed on the
 	// business with a pass result.
 	//
