@@ -29,6 +29,7 @@ func TestBalanceListWithOptionalParams(t *testing.T) {
 	_, err := client.Balances.List(context.TODO(), lithic.BalanceListParams{
 		AccountToken:         lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		BalanceDate:          lithic.F(time.Now()),
+		BusinessAccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		FinancialAccountType: lithic.F(lithic.BalanceListParamsFinancialAccountTypeIssuing),
 	})
 	if err != nil {
