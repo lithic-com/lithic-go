@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.62.2 (2024-11-11)
+
+Full Changelog: [v0.62.1...v0.62.2](https://github.com/lithic-com/lithic-go/compare/v0.62.1...v0.62.2)
+
+### Bug Fixes
+
+* correct required fields for flattened unions ([#410](https://github.com/lithic-com/lithic-go/issues/410)) ([b42cfdb](https://github.com/lithic-com/lithic-go/commit/b42cfdb6bf83bfdb5e630b8e97f56c034cdb8f5a))
+
+
+### Chores
+
+* **api:** add business_account_token param for listing Balances ([#408](https://github.com/lithic-com/lithic-go/issues/408)) ([9c5c9db](https://github.com/lithic-com/lithic-go/commit/9c5c9db42f29817f12fc1e3337865cbb9409328f))
+
 ## 0.62.1 (2024-11-08)
 
 Full Changelog: [v0.62.0...v0.62.1](https://github.com/lithic-com/lithic-go/compare/v0.62.0...v0.62.1)
