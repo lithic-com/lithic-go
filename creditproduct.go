@@ -15,6 +15,7 @@ import (
 type CreditProductService struct {
 	Options        []option.RequestOption
 	ExtendedCredit *CreditProductExtendedCreditService
+	PrimeRates     *CreditProductPrimeRateService
 }
 
 // NewCreditProductService generates a new service that applies the given options
@@ -24,5 +25,6 @@ func NewCreditProductService(opts ...option.RequestOption) (r *CreditProductServ
 	r = &CreditProductService{}
 	r.Options = opts
 	r.ExtendedCredit = NewCreditProductExtendedCreditService(opts...)
+	r.PrimeRates = NewCreditProductPrimeRateService(opts...)
 	return
 }
