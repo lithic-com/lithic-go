@@ -25,7 +25,7 @@ func TestCreditProductExtendedCreditGet(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My Lithic API Key"),
 	)
-	_, err := client.CreditProducts.ExtendedCredit.Get(context.TODO(), "credit_product_id")
+	_, err := client.CreditProducts.ExtendedCredit.Get(context.TODO(), "credit_product_token")
 	if err != nil {
 		var apierr *lithic.Error
 		if errors.As(err, &apierr) {

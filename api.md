@@ -567,7 +567,18 @@ Response Types:
 
 Methods:
 
-- <code title="get /v1/credit_products/{credit_product_id}/extended_credit">client.CreditProducts.ExtendedCredit.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CreditProductExtendedCreditService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, creditProductID <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExtendedCredit">ExtendedCredit</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="get /v1/credit_products/{credit_product_token}/extended_credit">client.CreditProducts.ExtendedCredit.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CreditProductExtendedCreditService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, creditProductToken <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExtendedCredit">ExtendedCredit</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
+## PrimeRates
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CreditProductPrimeRateGetResponse">CreditProductPrimeRateGetResponse</a>
+
+Methods:
+
+- <code title="post /v1/credit_products/{credit_product_token}/prime_rates">client.CreditProducts.PrimeRates.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CreditProductPrimeRateService.New">New</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, creditProductToken <a href="https://pkg.go.dev/builtin#string">string</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CreditProductPrimeRateNewParams">CreditProductPrimeRateNewParams</a>) <a href="https://pkg.go.dev/builtin#error">error</a></code>
+- <code title="get /v1/credit_products/{credit_product_token}/prime_rates">client.CreditProducts.PrimeRates.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CreditProductPrimeRateService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, creditProductToken <a href="https://pkg.go.dev/builtin#string">string</a>, query <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CreditProductPrimeRateGetParams">CreditProductPrimeRateGetParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CreditProductPrimeRateGetResponse">CreditProductPrimeRateGetResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 
 # ExternalPayments
 
