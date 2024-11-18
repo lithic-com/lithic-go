@@ -302,7 +302,7 @@ func TestAccountHolderSimulateEnrollmentDocumentReviewWithOptionalParams(t *test
 	_, err := client.AccountHolders.SimulateEnrollmentDocumentReview(context.TODO(), lithic.AccountHolderSimulateEnrollmentDocumentReviewParams{
 		DocumentUploadToken:         lithic.F("b11cd67b-0a52-4180-8365-314f3def5426"),
 		Status:                      lithic.F(lithic.AccountHolderSimulateEnrollmentDocumentReviewParamsStatusUploaded),
-		AcceptedEntityStatusReasons: lithic.F([]string{"string", "string", "string"}),
+		AcceptedEntityStatusReasons: lithic.F([]string{"string"}),
 		StatusReason:                lithic.F(lithic.AccountHolderSimulateEnrollmentDocumentReviewParamsStatusReasonDocumentMissingRequiredData),
 	})
 	if err != nil {
@@ -329,7 +329,7 @@ func TestAccountHolderSimulateEnrollmentReviewWithOptionalParams(t *testing.T) {
 	_, err := client.AccountHolders.SimulateEnrollmentReview(context.TODO(), lithic.AccountHolderSimulateEnrollmentReviewParams{
 		AccountHolderToken: lithic.F("1415964d-4400-4d79-9fb3-eee0faaee4e4"),
 		Status:             lithic.F(lithic.AccountHolderSimulateEnrollmentReviewParamsStatusAccepted),
-		StatusReasons:      lithic.F([]lithic.AccountHolderSimulateEnrollmentReviewParamsStatusReason{lithic.AccountHolderSimulateEnrollmentReviewParamsStatusReasonPrimaryBusinessEntityIDVerificationFailure, lithic.AccountHolderSimulateEnrollmentReviewParamsStatusReasonPrimaryBusinessEntityAddressVerificationFailure, lithic.AccountHolderSimulateEnrollmentReviewParamsStatusReasonPrimaryBusinessEntityNameVerificationFailure}),
+		StatusReasons:      lithic.F([]lithic.AccountHolderSimulateEnrollmentReviewParamsStatusReason{lithic.AccountHolderSimulateEnrollmentReviewParamsStatusReasonPrimaryBusinessEntityIDVerificationFailure}),
 	})
 	if err != nil {
 		var apierr *lithic.Error
