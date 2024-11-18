@@ -52,7 +52,7 @@ func TestEventListWithOptionalParams(t *testing.T) {
 		Begin:         lithic.F(time.Now()),
 		End:           lithic.F(time.Now()),
 		EndingBefore:  lithic.F("ending_before"),
-		EventTypes:    lithic.F([]lithic.EventListParamsEventType{lithic.EventListParamsEventTypeAccountHolderCreated, lithic.EventListParamsEventTypeAccountHolderUpdated, lithic.EventListParamsEventTypeAccountHolderVerification}),
+		EventTypes:    lithic.F([]lithic.EventListParamsEventType{lithic.EventListParamsEventTypeAccountHolderCreated}),
 		PageSize:      lithic.F(int64(1)),
 		StartingAfter: lithic.F("starting_after"),
 		WithContent:   lithic.F(true),
