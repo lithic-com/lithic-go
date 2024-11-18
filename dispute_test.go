@@ -114,7 +114,7 @@ func TestDisputeListWithOptionalParams(t *testing.T) {
 		PageSize:          lithic.F(int64(1)),
 		StartingAfter:     lithic.F("starting_after"),
 		Status:            lithic.F(lithic.DisputeListParamsStatusArbitration),
-		TransactionTokens: lithic.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+		TransactionTokens: lithic.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
 	})
 	if err != nil {
 		var apierr *lithic.Error
