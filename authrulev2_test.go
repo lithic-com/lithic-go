@@ -28,17 +28,9 @@ func TestAuthRuleV2NewWithOptionalParams(t *testing.T) {
 	)
 	_, err := client.AuthRules.V2.New(context.TODO(), lithic.AuthRuleV2NewParams{
 		Body: lithic.AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokens{
-			AccountTokens: lithic.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+			AccountTokens: lithic.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
 			Parameters: lithic.F[lithic.AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersUnion](lithic.AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParameters{
 				Conditions: lithic.F([]lithic.AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersCondition{{
-					Attribute: lithic.F(lithic.AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeMcc),
-					Operation: lithic.F(lithic.AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsOperationIsOneOf),
-					Value:     lithic.F[lithic.AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsValueUnion](shared.UnionString("string")),
-				}, {
-					Attribute: lithic.F(lithic.AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeMcc),
-					Operation: lithic.F(lithic.AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsOperationIsOneOf),
-					Value:     lithic.F[lithic.AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsValueUnion](shared.UnionString("string")),
-				}, {
 					Attribute: lithic.F(lithic.AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeMcc),
 					Operation: lithic.F(lithic.AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsOperationIsOneOf),
 					Value:     lithic.F[lithic.AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsValueUnion](shared.UnionString("string")),
@@ -151,7 +143,7 @@ func TestAuthRuleV2Apply(t *testing.T) {
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.AuthRuleV2ApplyParams{
 			Body: lithic.AuthRuleV2ApplyParamsBodyApplyAuthRuleRequestAccountTokens{
-				AccountTokens: lithic.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e", "182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+				AccountTokens: lithic.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
 			},
 		},
 	)
@@ -182,14 +174,6 @@ func TestAuthRuleV2DraftWithOptionalParams(t *testing.T) {
 		lithic.AuthRuleV2DraftParams{
 			Parameters: lithic.F[lithic.AuthRuleV2DraftParamsParametersUnion](lithic.AuthRuleV2DraftParamsParametersConditionalBlockParameters{
 				Conditions: lithic.F([]lithic.AuthRuleV2DraftParamsParametersConditionalBlockParametersCondition{{
-					Attribute: lithic.F(lithic.AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeMcc),
-					Operation: lithic.F(lithic.AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsOperationIsOneOf),
-					Value:     lithic.F[lithic.AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsValueUnion](shared.UnionString("string")),
-				}, {
-					Attribute: lithic.F(lithic.AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeMcc),
-					Operation: lithic.F(lithic.AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsOperationIsOneOf),
-					Value:     lithic.F[lithic.AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsValueUnion](shared.UnionString("string")),
-				}, {
 					Attribute: lithic.F(lithic.AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeMcc),
 					Operation: lithic.F(lithic.AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsOperationIsOneOf),
 					Value:     lithic.F[lithic.AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsValueUnion](shared.UnionString("string")),
