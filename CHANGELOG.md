@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.63.0 (2024-11-19)
+
+Full Changelog: [v0.62.3...v0.63.0](https://github.com/lithic-com/lithic-go/compare/v0.62.3...v0.63.0)
+
+### Features
+
+* **api:** adds PrimeRates API ([#413](https://github.com/lithic-com/lithic-go/issues/413)) ([f8ec404](https://github.com/lithic-com/lithic-go/commit/f8ec404c7d2377436b000612d15fa145d0cb0aa9))
+
+
+### Chores
+
+* **tests:** limit array example length ([#415](https://github.com/lithic-com/lithic-go/issues/415)) ([022b222](https://github.com/lithic-com/lithic-go/commit/022b2224e9a6737a046d0ad47213776f6ce11d9e))
+
 ## 0.62.3 (2024-11-11)
 
 Full Changelog: [v0.62.2...v0.62.3](https://github.com/lithic-com/lithic-go/compare/v0.62.2...v0.62.3)
