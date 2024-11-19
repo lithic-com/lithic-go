@@ -33,13 +33,13 @@ func NewCreditProductExtendedCreditService(opts ...option.RequestOption) (r *Cre
 }
 
 // Get the extended credit for a given credit product under a program
-func (r *CreditProductExtendedCreditService) Get(ctx context.Context, creditProductID string, opts ...option.RequestOption) (res *ExtendedCredit, err error) {
+func (r *CreditProductExtendedCreditService) Get(ctx context.Context, creditProductToken string, opts ...option.RequestOption) (res *ExtendedCredit, err error) {
 	opts = append(r.Options[:], opts...)
-	if creditProductID == "" {
-		err = errors.New("missing required credit_product_id parameter")
+	if creditProductToken == "" {
+		err = errors.New("missing required credit_product_token parameter")
 		return
 	}
-	path := fmt.Sprintf("v1/credit_products/%s/extended_credit", creditProductID)
+	path := fmt.Sprintf("v1/credit_products/%s/extended_credit", creditProductToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
 }
