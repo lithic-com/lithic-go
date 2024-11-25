@@ -509,13 +509,13 @@ type VelocityLimitParams struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64                 `json:"limit_count,nullable"`
+	LimitCount int64                   `json:"limit_count,nullable"`
 	JSON       velocityLimitParamsJSON `json:"-"`
 }
 
@@ -598,7 +598,7 @@ func (r velocityLimitParamsFiltersJSON) RawJSON() string {
 // The size of the trailing window to calculate Spend Velocity over in seconds. The
 // minimum value is 10 seconds, and the maximum value is 2678400 seconds.
 //
-// Union satisfied by [shared.UnionFloat] or
+// Union satisfied by [shared.UnionInt] or
 // [shared.VelocityLimitParamsPeriodWindow].
 type VelocityLimitParamsPeriodUnion interface {
 	ImplementsSharedVelocityLimitParamsPeriodUnion()
@@ -610,7 +610,7 @@ func init() {
 		"",
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(UnionFloat(0)),
+			Type:       reflect.TypeOf(UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.String,

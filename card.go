@@ -277,6 +277,10 @@ type Card struct {
 	//   - `SINGLE_USE` - Card is closed upon first successful authorization.
 	//   - `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first merchant that
 	//     successfully authorizes the card.
+	//   - `UNLOCKED` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
+	//     VIRTUAL instead.
+	//   - `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please
+	//     use VIRTUAL instead.
 	Type CardType `json:"type,required"`
 	// List of identifiers for the Auth Rule(s) that are applied on the card. This
 	// field is deprecated and will no longer be populated in the `Card` object. The
@@ -311,8 +315,11 @@ type Card struct {
 	// Only applicable to cards of type `PHYSICAL`. This must be configured with Lithic
 	// before use. Specifies the configuration (i.e., physical card art) that the card
 	// should be manufactured with.
-	ProductID string   `json:"product_id"`
-	JSON      cardJSON `json:"-"`
+	ProductID string `json:"product_id"`
+	// If the card is a replacement for another card, the globally unique identifier
+	// for the card that was replaced.
+	ReplacementFor string   `json:"replacement_for,nullable" format:"uuid"`
+	JSON           cardJSON `json:"-"`
 }
 
 // cardJSON contains the JSON metadata for the struct [Card]
@@ -339,6 +346,7 @@ type cardJSON struct {
 	Pan                 apijson.Field
 	PendingCommands     apijson.Field
 	ProductID           apijson.Field
+	ReplacementFor      apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
 }
@@ -516,6 +524,10 @@ func (r CardState) IsKnown() bool {
 //   - `SINGLE_USE` - Card is closed upon first successful authorization.
 //   - `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first merchant that
 //     successfully authorizes the card.
+//   - `UNLOCKED` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
+//     VIRTUAL instead.
+//   - `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please
+//     use VIRTUAL instead.
 type CardType string
 
 const (
@@ -523,11 +535,13 @@ const (
 	CardTypePhysical       CardType = "PHYSICAL"
 	CardTypeSingleUse      CardType = "SINGLE_USE"
 	CardTypeVirtual        CardType = "VIRTUAL"
+	CardTypeUnlocked       CardType = "UNLOCKED"
+	CardTypeDigitalWallet  CardType = "DIGITAL_WALLET"
 )
 
 func (r CardType) IsKnown() bool {
 	switch r {
-	case CardTypeMerchantLocked, CardTypePhysical, CardTypeSingleUse, CardTypeVirtual:
+	case CardTypeMerchantLocked, CardTypePhysical, CardTypeSingleUse, CardTypeVirtual, CardTypeUnlocked, CardTypeDigitalWallet:
 		return true
 	}
 	return false
@@ -710,6 +724,10 @@ type CardNewParams struct {
 	//   - `SINGLE_USE` - Card is closed upon first successful authorization.
 	//   - `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first merchant that
 	//     successfully authorizes the card.
+	//   - `UNLOCKED` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
+	//     VIRTUAL instead.
+	//   - `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please
+	//     use VIRTUAL instead.
 	Type param.Field[CardNewParamsType] `json:"type,required"`
 	// Globally unique identifier for the account that the card will be associated
 	// with. Required for programs enrolling users using the
@@ -812,6 +830,10 @@ func (r CardNewParams) MarshalJSON() (data []byte, err error) {
 //   - `SINGLE_USE` - Card is closed upon first successful authorization.
 //   - `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first merchant that
 //     successfully authorizes the card.
+//   - `UNLOCKED` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
+//     VIRTUAL instead.
+//   - `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please
+//     use VIRTUAL instead.
 type CardNewParamsType string
 
 const (
@@ -819,11 +841,13 @@ const (
 	CardNewParamsTypePhysical       CardNewParamsType = "PHYSICAL"
 	CardNewParamsTypeSingleUse      CardNewParamsType = "SINGLE_USE"
 	CardNewParamsTypeVirtual        CardNewParamsType = "VIRTUAL"
+	CardNewParamsTypeUnlocked       CardNewParamsType = "UNLOCKED"
+	CardNewParamsTypeDigitalWallet  CardNewParamsType = "DIGITAL_WALLET"
 )
 
 func (r CardNewParamsType) IsKnown() bool {
 	switch r {
-	case CardNewParamsTypeMerchantLocked, CardNewParamsTypePhysical, CardNewParamsTypeSingleUse, CardNewParamsTypeVirtual:
+	case CardNewParamsTypeMerchantLocked, CardNewParamsTypePhysical, CardNewParamsTypeSingleUse, CardNewParamsTypeVirtual, CardNewParamsTypeUnlocked, CardNewParamsTypeDigitalWallet:
 		return true
 	}
 	return false
