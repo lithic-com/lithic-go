@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.64.0 (2024-11-26)
+
+Full Changelog: [v0.63.0...v0.64.0](https://github.com/lithic-com/lithic-go/compare/v0.63.0...v0.64.0)
+
+### Features
+
+* **api:** updates to Auth Rules numeric types, new Card Types and Authorization Rule Backtests ([bf025e3](https://github.com/lithic-com/lithic-go/commit/bf025e3a7e0cf9ab9a295715626d1de713d35e8b))
+
+
+### Bug Fixes
+
+* **internal:** update next ([88a36f9](https://github.com/lithic-com/lithic-go/commit/88a36f95633138f23af7d28014390c03b699b5fb))
+
+
+### Chores
+
+* **api:** add backtest methods to AuthRules ([#419](https://github.com/lithic-com/lithic-go/issues/419)) ([4d63e87](https://github.com/lithic-com/lithic-go/commit/4d63e87a0c7cd01c5d4e65541c0741f6253ab859))
+
 ## 0.63.0 (2024-11-19)
 
 Full Changelog: [v0.62.3...v0.63.0](https://github.com/lithic-com/lithic-go/compare/v0.62.3...v0.63.0)
