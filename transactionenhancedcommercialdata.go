@@ -32,7 +32,8 @@ func NewTransactionEnhancedCommercialDataService(opts ...option.RequestOption) (
 	return
 }
 
-// Get all L2/L3 enhanced commercial data associated with a transaction.
+// Get all L2/L3 enhanced commercial data associated with a transaction. Not
+// available in sandbox.
 func (r *TransactionEnhancedCommercialDataService) Get(ctx context.Context, transactionToken string, opts ...option.RequestOption) (res *TransactionEnhancedCommercialDataGetResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	if transactionToken == "" {
