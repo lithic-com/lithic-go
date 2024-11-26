@@ -80,11 +80,12 @@ func (r *TransactionService) ListAutoPaging(ctx context.Context, query Transacti
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
-// Simulates an authorization request from the payment network as if it came from a
-// merchant acquirer. If you're configured for ASA, simulating auths requires your
-// ASA client to be set up properly (respond with a valid JSON to the ASA request).
-// For users that are not configured for ASA, a daily transaction limit of $5000
-// USD is applied by default. This limit can be modified via the
+// Simulates an authorization request from the card network as if it came from a
+// merchant acquirer. If you are configured for ASA, simulating authorizations
+// requires your ASA client to be set up properly, i.e. be able to respond to the
+// ASA request with a valid JSON. For users that are not configured for ASA, a
+// daily transaction limit of $5000 USD is applied by default. You can update this
+// limit via the
 // [update account](https://docs.lithic.com/reference/patchaccountbytoken)
 // endpoint.
 func (r *TransactionService) SimulateAuthorization(ctx context.Context, body TransactionSimulateAuthorizationParams, opts ...option.RequestOption) (res *TransactionSimulateAuthorizationResponse, err error) {
@@ -94,9 +95,9 @@ func (r *TransactionService) SimulateAuthorization(ctx context.Context, body Tra
 	return
 }
 
-// Simulates an authorization advice request from the payment network as if it came
-// from a merchant acquirer. An authorization advice request changes the amount of
-// the transaction.
+// Simulates an authorization advice from the card network as if it came from a
+// merchant acquirer. An authorization advice changes the pending amount of the
+// transaction.
 func (r *TransactionService) SimulateAuthorizationAdvice(ctx context.Context, body TransactionSimulateAuthorizationAdviceParams, opts ...option.RequestOption) (res *TransactionSimulateAuthorizationAdviceResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "v1/simulate/authorization_advice"
@@ -104,12 +105,12 @@ func (r *TransactionService) SimulateAuthorizationAdvice(ctx context.Context, bo
 	return
 }
 
-// Clears an existing authorization. After this event, the transaction is no longer
-// pending.
+// Clears an existing authorization, either debit or credit. After this event, the
+// transaction transitions from `PENDING` to `SETTLED` status.
 //
-// If no `amount` is supplied to this endpoint, the amount of the transaction will
-// be captured. Any transaction that has any amount completed at all do not have
-// access to this behavior.
+// If `amount` is not set, the full amount of the transaction will be cleared.
+// Transactions that have already cleared, either partially or fully, cannot be
+// cleared again using this endpoint.
 func (r *TransactionService) SimulateClearing(ctx context.Context, body TransactionSimulateClearingParams, opts ...option.RequestOption) (res *TransactionSimulateClearingResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "v1/simulate/clearing"
@@ -117,9 +118,8 @@ func (r *TransactionService) SimulateClearing(ctx context.Context, body Transact
 	return
 }
 
-// Simulates a credit authorization advice message from the payment network. This
-// message indicates that a credit authorization was approved on your behalf by the
-// network.
+// Simulates a credit authorization advice from the card network. This message
+// indicates that the network approved a credit authorization on your behalf.
 func (r *TransactionService) SimulateCreditAuthorization(ctx context.Context, body TransactionSimulateCreditAuthorizationParams, opts ...option.RequestOption) (res *TransactionSimulateCreditAuthorizationResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "v1/simulate/credit_authorization_advice"
@@ -127,8 +127,9 @@ func (r *TransactionService) SimulateCreditAuthorization(ctx context.Context, bo
 	return
 }
 
-// Returns (aka refunds) an amount back to a card. Returns are cleared immediately
-// and do not spend time in a `PENDING` state.
+// Returns, or refunds, an amount back to a card. Returns simulated via this
+// endpoint clear immediately, without prior authorization, and result in a
+// `SETTLED` transaction status.
 func (r *TransactionService) SimulateReturn(ctx context.Context, body TransactionSimulateReturnParams, opts ...option.RequestOption) (res *TransactionSimulateReturnResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "v1/simulate/return"
@@ -136,9 +137,9 @@ func (r *TransactionService) SimulateReturn(ctx context.Context, body Transactio
 	return
 }
 
-// Voids a settled credit transaction – i.e., a transaction with a negative amount
-// and `SETTLED` status. These can be credit authorizations that have already
-// cleared or financial credit authorizations.
+// Reverses a return, i.e. a credit transaction with a `SETTLED` status. Returns
+// can be financial credit authorizations, or credit authorizations that have
+// cleared.
 func (r *TransactionService) SimulateReturnReversal(ctx context.Context, body TransactionSimulateReturnReversalParams, opts ...option.RequestOption) (res *TransactionSimulateReturnReversalResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "v1/simulate/return_reversal"
@@ -146,11 +147,10 @@ func (r *TransactionService) SimulateReturnReversal(ctx context.Context, body Tr
 	return
 }
 
-// Voids an existing, uncleared (aka pending) authorization. If amount is not sent
-// the full amount will be voided. Cannot be used on partially completed
-// transactions, but can be used on partially voided transactions. _Note that
-// simulating an authorization expiry on credit authorizations or credit
-// authorization advice is not currently supported but will be added soon._
+// Voids a pending authorization. If `amount` is not set, the full amount will be
+// voided. Can be used on partially voided transactions but not partially cleared
+// transactions. _Simulating an authorization expiry on credit authorizations or
+// credit authorization advice is not currently supported but will be added soon._
 func (r *TransactionService) SimulateVoid(ctx context.Context, body TransactionSimulateVoidParams, opts ...option.RequestOption) (res *TransactionSimulateVoidResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "v1/simulate/void"
@@ -284,10 +284,11 @@ func (r transactionAmountsJSON) RawJSON() string {
 }
 
 type TransactionAmountsCardholder struct {
-	// The aggregate settled amount in the cardholder billing currency.
+	// The estimated settled amount of the transaction in the cardholder billing
+	// currency.
 	Amount int64 `json:"amount,required"`
-	// The conversion rate used to convert the merchant amount to the cardholder
-	// billing amount.
+	// The exchange rate used to convert the merchant amount to the cardholder billing
+	// amount.
 	ConversionRate string `json:"conversion_rate,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
@@ -315,8 +316,7 @@ func (r transactionAmountsCardholderJSON) RawJSON() string {
 }
 
 type TransactionAmountsHold struct {
-	// The aggregate authorization amount of the transaction in the anticipated
-	// settlement currency.
+	// The pending amount of the transaction in the anticipated settlement currency.
 	Amount int64 `json:"amount,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
@@ -343,7 +343,7 @@ func (r transactionAmountsHoldJSON) RawJSON() string {
 }
 
 type TransactionAmountsMerchant struct {
-	// The aggregate settled amount in the merchant currency.
+	// The settled amount of the transaction in the merchant currency.
 	Amount int64 `json:"amount,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
@@ -370,7 +370,7 @@ func (r transactionAmountsMerchantJSON) RawJSON() string {
 }
 
 type TransactionAmountsSettlement struct {
-	// The aggregate settled amount in the settlement currency.
+	// The settled amount of the transaction in the settlement currency.
 	Amount int64 `json:"amount,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
@@ -1080,10 +1080,10 @@ func (r transactionEventsAmountsJSON) RawJSON() string {
 }
 
 type TransactionEventsAmountsCardholder struct {
-	// The amount in the cardholder billing currency.
+	// Amount of the event in the cardholder billing currency.
 	Amount int64 `json:"amount,required"`
-	// The conversion rate used to convert the merchant amount to the cardholder
-	// billing amount.
+	// Exchange rate used to convert the merchant amount to the cardholder billing
+	// amount.
 	ConversionRate string `json:"conversion_rate,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
@@ -1111,7 +1111,7 @@ func (r transactionEventsAmountsCardholderJSON) RawJSON() string {
 }
 
 type TransactionEventsAmountsMerchant struct {
-	// The amount in the merchant currency.
+	// Amount of the event in the merchant currency.
 	Amount int64 `json:"amount,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
@@ -1139,8 +1139,9 @@ func (r transactionEventsAmountsMerchantJSON) RawJSON() string {
 
 type TransactionEventsAmountsSettlement struct {
 	// Amount of the event, if it is financial, in the settlement currency.
+	// Non-financial events do not contain this amount because they do not move funds.
 	Amount int64 `json:"amount,required"`
-	// Conversion rate used to convert the merchant amount to the settlement amount.
+	// Exchange rate used to convert the merchant amount to the settlement amount.
 	ConversionRate string `json:"conversion_rate,required"`
 	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
 	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
@@ -1531,8 +1532,8 @@ func (r TransactionListParamsResult) IsKnown() bool {
 type TransactionSimulateAuthorizationParams struct {
 	// Amount (in cents) to authorize. For credit authorizations and financial credit
 	// authorizations, any value entered will be converted into a negative amount in
-	// the simulated transaction. For example, entering 100 in this field will appear
-	// as a -100 amount in the transaction. For balance inquiries, this field must be
+	// the simulated transaction. For example, entering 100 in this field will result
+	// in a -100 amount in the transaction. For balance inquiries, this field must be
 	// set to 0.
 	Amount param.Field[int64] `json:"amount,required"`
 	// Merchant descriptor.
@@ -1559,12 +1560,12 @@ type TransactionSimulateAuthorizationParams struct {
 	//
 	//   - `AUTHORIZATION` is a dual message purchase authorization, meaning a subsequent
 	//     clearing step is required to settle the transaction.
-	//   - `BALANCE_INQUIRY` is a $0 authorization that includes a request for the
-	//     balance held on the card, and is most typically seen when a cardholder
-	//     requests to view a card's balance at an ATM.
+	//   - `BALANCE_INQUIRY` is a $0 authorization requesting the balance held on the
+	//     card, and is most often observed when a cardholder requests to view a card's
+	//     balance at an ATM.
 	//   - `CREDIT_AUTHORIZATION` is a dual message request from a merchant to authorize
-	//     a refund or credit, meaning a subsequent clearing step is required to settle
-	//     the transaction.
+	//     a refund, meaning a subsequent clearing step is required to settle the
+	//     transaction.
 	//   - `FINANCIAL_AUTHORIZATION` is a single message request from a merchant to debit
 	//     funds immediately (such as an ATM withdrawal), and no subsequent clearing is
 	//     required to settle the transaction.
@@ -1582,12 +1583,12 @@ func (r TransactionSimulateAuthorizationParams) MarshalJSON() (data []byte, err 
 //
 //   - `AUTHORIZATION` is a dual message purchase authorization, meaning a subsequent
 //     clearing step is required to settle the transaction.
-//   - `BALANCE_INQUIRY` is a $0 authorization that includes a request for the
-//     balance held on the card, and is most typically seen when a cardholder
-//     requests to view a card's balance at an ATM.
+//   - `BALANCE_INQUIRY` is a $0 authorization requesting the balance held on the
+//     card, and is most often observed when a cardholder requests to view a card's
+//     balance at an ATM.
 //   - `CREDIT_AUTHORIZATION` is a dual message request from a merchant to authorize
-//     a refund or credit, meaning a subsequent clearing step is required to settle
-//     the transaction.
+//     a refund, meaning a subsequent clearing step is required to settle the
+//     transaction.
 //   - `FINANCIAL_AUTHORIZATION` is a single message request from a merchant to debit
 //     funds immediately (such as an ATM withdrawal), and no subsequent clearing is
 //     required to settle the transaction.
@@ -1613,7 +1614,7 @@ func (r TransactionSimulateAuthorizationParamsStatus) IsKnown() bool {
 }
 
 type TransactionSimulateAuthorizationAdviceParams struct {
-	// The transaction token returned from the /v1/simulate/authorize response.
+	// The transaction token returned from the /v1/simulate/authorize. response.
 	Token param.Field[string] `json:"token,required" format:"uuid"`
 	// Amount (in cents) to authorize. This amount will override the transaction's
 	// amount that was originally set by /v1/simulate/authorize.
@@ -1627,12 +1628,15 @@ func (r TransactionSimulateAuthorizationAdviceParams) MarshalJSON() (data []byte
 type TransactionSimulateClearingParams struct {
 	// The transaction token returned from the /v1/simulate/authorize response.
 	Token param.Field[string] `json:"token,required" format:"uuid"`
-	// Amount (in cents) to complete. Typically this will match the original
-	// authorization, but may be more or less.
+	// Amount (in cents) to clear. Typically this will match the amount in the original
+	// authorization, but can be higher or lower. The sign of this amount will
+	// automatically match the sign of the original authorization's amount. For
+	// example, entering 100 in this field will result in a -100 amount in the
+	// transaction, if the original authorization is a credit authorization.
 	//
-	// If no amount is supplied to this endpoint, the amount of the transaction will be
-	// captured. Any transaction that has any amount completed at all do not have
-	// access to this behavior.
+	// If `amount` is not set, the full amount of the transaction will be cleared.
+	// Transactions that have already cleared, either partially or fully, cannot be
+	// cleared again using this endpoint.
 	Amount param.Field[int64] `json:"amount"`
 }
 
@@ -1686,8 +1690,8 @@ func (r TransactionSimulateReturnReversalParams) MarshalJSON() (data []byte, err
 type TransactionSimulateVoidParams struct {
 	// The transaction token returned from the /v1/simulate/authorize response.
 	Token param.Field[string] `json:"token,required" format:"uuid"`
-	// Amount (in cents) to void. Typically this will match the original authorization,
-	// but may be less.
+	// Amount (in cents) to void. Typically this will match the amount in the original
+	// authorization, but can be less.
 	Amount param.Field[int64] `json:"amount"`
 	// Type of event to simulate. Defaults to `AUTHORIZATION_REVERSAL`.
 	//
