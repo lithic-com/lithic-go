@@ -27,7 +27,8 @@ import (
 // automatically. You should not instantiate this service directly, and instead use
 // the [NewAuthRuleV2Service] method instead.
 type AuthRuleV2Service struct {
-	Options []option.RequestOption
+	Options   []option.RequestOption
+	Backtests *AuthRuleV2BacktestService
 }
 
 // NewAuthRuleV2Service generates a new service that applies the given options to
@@ -36,6 +37,7 @@ type AuthRuleV2Service struct {
 func NewAuthRuleV2Service(opts ...option.RequestOption) (r *AuthRuleV2Service) {
 	r = &AuthRuleV2Service{}
 	r.Options = opts
+	r.Backtests = NewAuthRuleV2BacktestService(opts...)
 	return
 }
 
