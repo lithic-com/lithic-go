@@ -75,8 +75,10 @@ type SettlementDetail struct {
 	// The type of settlement record.
 	Type SettlementDetailType `json:"type,required"`
 	// Date and time when the transaction first occurred. UTC time zone.
-	Updated time.Time            `json:"updated,required" format:"date-time"`
-	JSON    settlementDetailJSON `json:"-"`
+	Updated time.Time `json:"updated,required" format:"date-time"`
+	// Network's description of a fee, only present on records with type `FEE`.
+	FeeDescription string               `json:"fee_description"`
+	JSON           settlementDetailJSON `json:"-"`
 }
 
 // settlementDetailJSON contains the JSON metadata for the struct
@@ -102,6 +104,7 @@ type settlementDetailJSON struct {
 	TransactionsGrossAmount         apijson.Field
 	Type                            apijson.Field
 	Updated                         apijson.Field
+	FeeDescription                  apijson.Field
 	raw                             string
 	ExtraFields                     map[string]apijson.Field
 }
