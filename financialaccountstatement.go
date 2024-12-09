@@ -102,8 +102,6 @@ type Statement struct {
 	EndingBalance int64 `json:"ending_balance,required"`
 	// Globally unique identifier for a financial account
 	FinancialAccountToken string `json:"financial_account_token,required" format:"uuid"`
-	// Date of when the next statement will be created
-	NextStatementDate time.Time `json:"next_statement_date,required" format:"date"`
 	// Date when the payment is due
 	PaymentDueDate time.Time             `json:"payment_due_date,required" format:"date"`
 	PeriodTotals   StatementPeriodTotals `json:"period_totals,required"`
@@ -137,7 +135,6 @@ type statementJSON struct {
 	DaysInBillingCycle    apijson.Field
 	EndingBalance         apijson.Field
 	FinancialAccountToken apijson.Field
-	NextStatementDate     apijson.Field
 	PaymentDueDate        apijson.Field
 	PeriodTotals          apijson.Field
 	StartingBalance       apijson.Field

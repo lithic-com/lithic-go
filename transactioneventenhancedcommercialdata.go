@@ -34,7 +34,8 @@ func NewTransactionEventEnhancedCommercialDataService(opts ...option.RequestOpti
 	return
 }
 
-// Get L2/L3 enhanced commercial data associated with a transaction event.
+// Get L2/L3 enhanced commercial data associated with a transaction event. Not
+// available in sandbox.
 func (r *TransactionEventEnhancedCommercialDataService) Get(ctx context.Context, eventToken string, opts ...option.RequestOption) (res *EnhancedData, err error) {
 	opts = append(r.Options[:], opts...)
 	if eventToken == "" {
@@ -80,9 +81,9 @@ func (r enhancedDataJSON) RawJSON() string {
 type EnhancedDataCommon struct {
 	LineItems []EnhancedDataCommonLineItem `json:"line_items,required"`
 	Tax       EnhancedDataCommonTax        `json:"tax,required"`
-	// An optional customer identifier.
+	// A customer identifier.
 	CustomerReferenceNumber string `json:"customer_reference_number"`
-	// An optional merchant identifier.
+	// A merchant identifier.
 	MerchantReferenceNumber string `json:"merchant_reference_number"`
 	// The date of the order.
 	OrderDate time.Time              `json:"order_date" format:"date"`
@@ -189,15 +190,15 @@ func (r EnhancedDataCommonTaxExempt) IsKnown() bool {
 type EnhancedDataFleet struct {
 	AmountTotals EnhancedDataFleetAmountTotals `json:"amount_totals,required"`
 	Fuel         EnhancedDataFleetFuel         `json:"fuel,required"`
-	// The driver number entered into at the terminal at the time of sale, with leading
-	// zeroes stripped.
+	// The driver number entered into the terminal at the time of sale, with leading
+	// zeros stripped.
 	DriverNumber string `json:"driver_number"`
-	// The odometer reading entered into at the terminal at the time of sale.
+	// The odometer reading entered into the terminal at the time of sale.
 	Odometer int64 `json:"odometer"`
 	// The type of fuel service.
 	ServiceType EnhancedDataFleetServiceType `json:"service_type"`
-	// The vehicle number entered into at the terminal at the time of sale, with
-	// leading zeroes stripped.
+	// The vehicle number entered into the terminal at the time of sale, with leading
+	// zeros stripped.
 	VehicleNumber string                `json:"vehicle_number"`
 	JSON          enhancedDataFleetJSON `json:"-"`
 }

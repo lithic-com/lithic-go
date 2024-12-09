@@ -94,6 +94,18 @@ Methods:
 - <code title="post /v2/auth_rules/{auth_rule_token}/promote">client.AuthRules.V2.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleV2Service.Promote">Promote</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, authRuleToken <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleV2PromoteResponse">AuthRuleV2PromoteResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 - <code title="post /v2/auth_rules/{auth_rule_token}/report">client.AuthRules.V2.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleV2Service.Report">Report</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, authRuleToken <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleV2ReportResponse">AuthRuleV2ReportResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 
+### Backtests
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#BacktestResults">BacktestResults</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleV2BacktestNewResponse">AuthRuleV2BacktestNewResponse</a>
+
+Methods:
+
+- <code title="post /v2/auth_rules/{auth_rule_token}/backtests">client.AuthRules.V2.Backtests.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleV2BacktestService.New">New</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, authRuleToken <a href="https://pkg.go.dev/builtin#string">string</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleV2BacktestNewParams">AuthRuleV2BacktestNewParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleV2BacktestNewResponse">AuthRuleV2BacktestNewResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="get /v2/auth_rules/{auth_rule_token}/backtests/{auth_rule_backtest_token}">client.AuthRules.V2.Backtests.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleV2BacktestService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, authRuleToken <a href="https://pkg.go.dev/builtin#string">string</a>, authRuleBacktestToken <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#BacktestResults">BacktestResults</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
 # AuthStreamEnrollment
 
 Response Types:

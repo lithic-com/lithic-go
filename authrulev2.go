@@ -27,7 +27,8 @@ import (
 // automatically. You should not instantiate this service directly, and instead use
 // the [NewAuthRuleV2Service] method instead.
 type AuthRuleV2Service struct {
-	Options []option.RequestOption
+	Options   []option.RequestOption
+	Backtests *AuthRuleV2BacktestService
 }
 
 // NewAuthRuleV2Service generates a new service that applies the given options to
@@ -36,6 +37,7 @@ type AuthRuleV2Service struct {
 func NewAuthRuleV2Service(opts ...option.RequestOption) (r *AuthRuleV2Service) {
 	r = &AuthRuleV2Service{}
 	r.Options = opts
+	r.Backtests = NewAuthRuleV2BacktestService(opts...)
 	return
 }
 
@@ -202,6 +204,7 @@ func (r *AuthRuleV2Service) Report(ctx context.Context, authRuleToken string, op
 }
 
 type AuthRuleV2NewResponse struct {
+	// Auth Rule Token
 	Token string `json:"token,required" format:"uuid"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
@@ -277,13 +280,13 @@ type AuthRuleV2NewResponseCurrentVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                        `json:"period"`
 	Scope  AuthRuleV2NewResponseCurrentVersionParametersScope `json:"scope"`
@@ -510,7 +513,7 @@ func (r AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersC
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -526,7 +529,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -591,13 +594,13 @@ type AuthRuleV2NewResponseDraftVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                      `json:"period"`
 	Scope  AuthRuleV2NewResponseDraftVersionParametersScope `json:"scope"`
@@ -824,7 +827,7 @@ func (r AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersCon
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -840,7 +843,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -902,6 +905,7 @@ func (r AuthRuleV2NewResponseType) IsKnown() bool {
 }
 
 type AuthRuleV2GetResponse struct {
+	// Auth Rule Token
 	Token string `json:"token,required" format:"uuid"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
@@ -977,13 +981,13 @@ type AuthRuleV2GetResponseCurrentVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                        `json:"period"`
 	Scope  AuthRuleV2GetResponseCurrentVersionParametersScope `json:"scope"`
@@ -1210,7 +1214,7 @@ func (r AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersC
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -1226,7 +1230,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -1291,13 +1295,13 @@ type AuthRuleV2GetResponseDraftVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                      `json:"period"`
 	Scope  AuthRuleV2GetResponseDraftVersionParametersScope `json:"scope"`
@@ -1524,7 +1528,7 @@ func (r AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersCon
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -1540,7 +1544,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -1602,6 +1606,7 @@ func (r AuthRuleV2GetResponseType) IsKnown() bool {
 }
 
 type AuthRuleV2UpdateResponse struct {
+	// Auth Rule Token
 	Token string `json:"token,required" format:"uuid"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
@@ -1677,13 +1682,13 @@ type AuthRuleV2UpdateResponseCurrentVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                           `json:"period"`
 	Scope  AuthRuleV2UpdateResponseCurrentVersionParametersScope `json:"scope"`
@@ -1910,7 +1915,7 @@ func (r AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParamete
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -1926,7 +1931,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -1991,13 +1996,13 @@ type AuthRuleV2UpdateResponseDraftVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                         `json:"period"`
 	Scope  AuthRuleV2UpdateResponseDraftVersionParametersScope `json:"scope"`
@@ -2224,7 +2229,7 @@ func (r AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParameters
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -2240,7 +2245,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -2302,6 +2307,7 @@ func (r AuthRuleV2UpdateResponseType) IsKnown() bool {
 }
 
 type AuthRuleV2ListResponse struct {
+	// Auth Rule Token
 	Token string `json:"token,required" format:"uuid"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
@@ -2377,13 +2383,13 @@ type AuthRuleV2ListResponseCurrentVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                         `json:"period"`
 	Scope  AuthRuleV2ListResponseCurrentVersionParametersScope `json:"scope"`
@@ -2610,7 +2616,7 @@ func (r AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParameters
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -2626,7 +2632,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -2691,13 +2697,13 @@ type AuthRuleV2ListResponseDraftVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                       `json:"period"`
 	Scope  AuthRuleV2ListResponseDraftVersionParametersScope `json:"scope"`
@@ -2924,7 +2930,7 @@ func (r AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersCo
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -2940,7 +2946,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -3002,6 +3008,7 @@ func (r AuthRuleV2ListResponseType) IsKnown() bool {
 }
 
 type AuthRuleV2ApplyResponse struct {
+	// Auth Rule Token
 	Token string `json:"token,required" format:"uuid"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
@@ -3077,13 +3084,13 @@ type AuthRuleV2ApplyResponseCurrentVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                          `json:"period"`
 	Scope  AuthRuleV2ApplyResponseCurrentVersionParametersScope `json:"scope"`
@@ -3310,7 +3317,7 @@ func (r AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParameter
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -3326,7 +3333,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -3391,13 +3398,13 @@ type AuthRuleV2ApplyResponseDraftVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                        `json:"period"`
 	Scope  AuthRuleV2ApplyResponseDraftVersionParametersScope `json:"scope"`
@@ -3624,7 +3631,7 @@ func (r AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersC
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -3640,7 +3647,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -3702,6 +3709,7 @@ func (r AuthRuleV2ApplyResponseType) IsKnown() bool {
 }
 
 type AuthRuleV2DraftResponse struct {
+	// Auth Rule Token
 	Token string `json:"token,required" format:"uuid"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
@@ -3777,13 +3785,13 @@ type AuthRuleV2DraftResponseCurrentVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                          `json:"period"`
 	Scope  AuthRuleV2DraftResponseCurrentVersionParametersScope `json:"scope"`
@@ -4010,7 +4018,7 @@ func (r AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParameter
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -4026,7 +4034,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -4091,13 +4099,13 @@ type AuthRuleV2DraftResponseDraftVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                        `json:"period"`
 	Scope  AuthRuleV2DraftResponseDraftVersionParametersScope `json:"scope"`
@@ -4324,7 +4332,7 @@ func (r AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersC
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -4340,7 +4348,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -4402,6 +4410,7 @@ func (r AuthRuleV2DraftResponseType) IsKnown() bool {
 }
 
 type AuthRuleV2PromoteResponse struct {
+	// Auth Rule Token
 	Token string `json:"token,required" format:"uuid"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
@@ -4477,13 +4486,13 @@ type AuthRuleV2PromoteResponseCurrentVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                            `json:"period"`
 	Scope  AuthRuleV2PromoteResponseCurrentVersionParametersScope `json:"scope"`
@@ -4710,7 +4719,7 @@ func (r AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParamet
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -4726,7 +4735,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -4791,13 +4800,13 @@ type AuthRuleV2PromoteResponseDraftVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                          `json:"period"`
 	Scope  AuthRuleV2PromoteResponseDraftVersionParametersScope `json:"scope"`
@@ -5024,7 +5033,7 @@ func (r AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParameter
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -5040,7 +5049,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -5177,13 +5186,13 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters struct 
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount param.Field[float64] `json:"limit_amount"`
+	LimitAmount param.Field[int64] `json:"limit_amount"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount param.Field[float64]                                                                  `json:"limit_count"`
+	LimitCount param.Field[int64]                                                                    `json:"limit_count"`
 	Period     param.Field[interface{}]                                                              `json:"period"`
 	Scope      param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersScope] `json:"scope"`
 }
@@ -5334,7 +5343,7 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersCondi
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Satisfied by [shared.UnionString], [shared.UnionFloat],
+// Satisfied by [shared.UnionString], [shared.UnionInt],
 // [AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsValueUnion()
@@ -5399,13 +5408,13 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount param.Field[float64] `json:"limit_amount"`
+	LimitAmount param.Field[int64] `json:"limit_amount"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount param.Field[float64]                                                               `json:"limit_count"`
+	LimitCount param.Field[int64]                                                                 `json:"limit_count"`
 	Period     param.Field[interface{}]                                                           `json:"period"`
 	Scope      param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersScope] `json:"scope"`
 }
@@ -5556,7 +5565,7 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditio
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Satisfied by [shared.UnionString], [shared.UnionFloat],
+// Satisfied by [shared.UnionString], [shared.UnionInt],
 // [AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsValueUnion()
@@ -5621,13 +5630,13 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount param.Field[float64] `json:"limit_amount"`
+	LimitAmount param.Field[int64] `json:"limit_amount"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount param.Field[float64]                                                                 `json:"limit_count"`
+	LimitCount param.Field[int64]                                                                   `json:"limit_count"`
 	Period     param.Field[interface{}]                                                             `json:"period"`
 	Scope      param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersScope] `json:"scope"`
 }
@@ -5778,7 +5787,7 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersCondit
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Satisfied by [shared.UnionString], [shared.UnionFloat],
+// Satisfied by [shared.UnionString], [shared.UnionInt],
 // [AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsValueUnion()
@@ -5972,13 +5981,13 @@ type AuthRuleV2DraftParamsParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount param.Field[float64] `json:"limit_amount"`
+	LimitAmount param.Field[int64] `json:"limit_amount"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount param.Field[float64]                              `json:"limit_count"`
+	LimitCount param.Field[int64]                                `json:"limit_count"`
 	Period     param.Field[interface{}]                          `json:"period"`
 	Scope      param.Field[AuthRuleV2DraftParamsParametersScope] `json:"scope"`
 }
@@ -6126,7 +6135,7 @@ func (r AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsOpera
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Satisfied by [shared.UnionString], [shared.UnionFloat],
+// Satisfied by [shared.UnionString], [shared.UnionInt],
 // [AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsValueUnion()
