@@ -1027,8 +1027,9 @@ type TransactionEvent struct {
 	EffectivePolarity TransactionEventsEffectivePolarity `json:"effective_polarity,required"`
 	Result            TransactionEventsResult            `json:"result,required"`
 	// Type of transaction event
-	Type TransactionEventsType `json:"type,required"`
-	JSON transactionEventJSON  `json:"-"`
+	Type        TransactionEventsType         `json:"type,required"`
+	RuleResults []TransactionEventsRuleResult `json:"rule_results"`
+	JSON        transactionEventJSON          `json:"-"`
 }
 
 // transactionEventJSON contains the JSON metadata for the struct
@@ -1042,6 +1043,7 @@ type transactionEventJSON struct {
 	EffectivePolarity apijson.Field
 	Result            apijson.Field
 	Type              apijson.Field
+	RuleResults       apijson.Field
 	raw               string
 	ExtraFields       map[string]apijson.Field
 }
@@ -1308,6 +1310,104 @@ const (
 func (r TransactionEventsType) IsKnown() bool {
 	switch r {
 	case TransactionEventsTypeAuthorization, TransactionEventsTypeAuthorizationAdvice, TransactionEventsTypeAuthorizationExpiry, TransactionEventsTypeAuthorizationReversal, TransactionEventsTypeBalanceInquiry, TransactionEventsTypeClearing, TransactionEventsTypeCorrectionCredit, TransactionEventsTypeCorrectionDebit, TransactionEventsTypeCreditAuthorization, TransactionEventsTypeCreditAuthorizationAdvice, TransactionEventsTypeFinancialAuthorization, TransactionEventsTypeFinancialCreditAuthorization, TransactionEventsTypeReturn, TransactionEventsTypeReturnReversal:
+		return true
+	}
+	return false
+}
+
+type TransactionEventsRuleResult struct {
+	// The Auth Rule Token associated with the rule from which the decline originated.
+	// If this is set to null, then the decline was not associated with a
+	// customer-configured Auth Rule. This may happen in cases where a transaction is
+	// declined due to a Lithic-configured security or compliance rule, for example.
+	AuthRuleToken string `json:"auth_rule_token,required,nullable" format:"uuid"`
+	// A human-readable explanation outlining the motivation for the rule's decline.
+	Explanation string `json:"explanation,required,nullable"`
+	// The name for the rule, if any was configured.
+	Name   string                             `json:"name,required,nullable"`
+	Result TransactionEventsRuleResultsResult `json:"result,required"`
+	JSON   transactionEventsRuleResultJSON    `json:"-"`
+}
+
+// transactionEventsRuleResultJSON contains the JSON metadata for the struct
+// [TransactionEventsRuleResult]
+type transactionEventsRuleResultJSON struct {
+	AuthRuleToken apijson.Field
+	Explanation   apijson.Field
+	Name          apijson.Field
+	Result        apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
+}
+
+func (r *TransactionEventsRuleResult) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionEventsRuleResultJSON) RawJSON() string {
+	return r.raw
+}
+
+type TransactionEventsRuleResultsResult string
+
+const (
+	TransactionEventsRuleResultsResultAccountDailySpendLimitExceeded              TransactionEventsRuleResultsResult = "ACCOUNT_DAILY_SPEND_LIMIT_EXCEEDED"
+	TransactionEventsRuleResultsResultAccountDelinquent                           TransactionEventsRuleResultsResult = "ACCOUNT_DELINQUENT"
+	TransactionEventsRuleResultsResultAccountInactive                             TransactionEventsRuleResultsResult = "ACCOUNT_INACTIVE"
+	TransactionEventsRuleResultsResultAccountLifetimeSpendLimitExceeded           TransactionEventsRuleResultsResult = "ACCOUNT_LIFETIME_SPEND_LIMIT_EXCEEDED"
+	TransactionEventsRuleResultsResultAccountMonthlySpendLimitExceeded            TransactionEventsRuleResultsResult = "ACCOUNT_MONTHLY_SPEND_LIMIT_EXCEEDED"
+	TransactionEventsRuleResultsResultAccountUnderReview                          TransactionEventsRuleResultsResult = "ACCOUNT_UNDER_REVIEW"
+	TransactionEventsRuleResultsResultAddressIncorrect                            TransactionEventsRuleResultsResult = "ADDRESS_INCORRECT"
+	TransactionEventsRuleResultsResultApproved                                    TransactionEventsRuleResultsResult = "APPROVED"
+	TransactionEventsRuleResultsResultAuthRuleAllowedCountry                      TransactionEventsRuleResultsResult = "AUTH_RULE_ALLOWED_COUNTRY"
+	TransactionEventsRuleResultsResultAuthRuleAllowedMcc                          TransactionEventsRuleResultsResult = "AUTH_RULE_ALLOWED_MCC"
+	TransactionEventsRuleResultsResultAuthRuleBlockedCountry                      TransactionEventsRuleResultsResult = "AUTH_RULE_BLOCKED_COUNTRY"
+	TransactionEventsRuleResultsResultAuthRuleBlockedMcc                          TransactionEventsRuleResultsResult = "AUTH_RULE_BLOCKED_MCC"
+	TransactionEventsRuleResultsResultCardClosed                                  TransactionEventsRuleResultsResult = "CARD_CLOSED"
+	TransactionEventsRuleResultsResultCardCryptogramValidationFailure             TransactionEventsRuleResultsResult = "CARD_CRYPTOGRAM_VALIDATION_FAILURE"
+	TransactionEventsRuleResultsResultCardExpired                                 TransactionEventsRuleResultsResult = "CARD_EXPIRED"
+	TransactionEventsRuleResultsResultCardExpiryDateIncorrect                     TransactionEventsRuleResultsResult = "CARD_EXPIRY_DATE_INCORRECT"
+	TransactionEventsRuleResultsResultCardInvalid                                 TransactionEventsRuleResultsResult = "CARD_INVALID"
+	TransactionEventsRuleResultsResultCardNotActivated                            TransactionEventsRuleResultsResult = "CARD_NOT_ACTIVATED"
+	TransactionEventsRuleResultsResultCardPaused                                  TransactionEventsRuleResultsResult = "CARD_PAUSED"
+	TransactionEventsRuleResultsResultCardPinIncorrect                            TransactionEventsRuleResultsResult = "CARD_PIN_INCORRECT"
+	TransactionEventsRuleResultsResultCardRestricted                              TransactionEventsRuleResultsResult = "CARD_RESTRICTED"
+	TransactionEventsRuleResultsResultCardSecurityCodeIncorrect                   TransactionEventsRuleResultsResult = "CARD_SECURITY_CODE_INCORRECT"
+	TransactionEventsRuleResultsResultCardSpendLimitExceeded                      TransactionEventsRuleResultsResult = "CARD_SPEND_LIMIT_EXCEEDED"
+	TransactionEventsRuleResultsResultContactCardIssuer                           TransactionEventsRuleResultsResult = "CONTACT_CARD_ISSUER"
+	TransactionEventsRuleResultsResultCustomerAsaTimeout                          TransactionEventsRuleResultsResult = "CUSTOMER_ASA_TIMEOUT"
+	TransactionEventsRuleResultsResultCustomAsaResult                             TransactionEventsRuleResultsResult = "CUSTOM_ASA_RESULT"
+	TransactionEventsRuleResultsResultDeclined                                    TransactionEventsRuleResultsResult = "DECLINED"
+	TransactionEventsRuleResultsResultDoNotHonor                                  TransactionEventsRuleResultsResult = "DO_NOT_HONOR"
+	TransactionEventsRuleResultsResultDriverNumberInvalid                         TransactionEventsRuleResultsResult = "DRIVER_NUMBER_INVALID"
+	TransactionEventsRuleResultsResultFormatError                                 TransactionEventsRuleResultsResult = "FORMAT_ERROR"
+	TransactionEventsRuleResultsResultInsufficientFundingSourceBalance            TransactionEventsRuleResultsResult = "INSUFFICIENT_FUNDING_SOURCE_BALANCE"
+	TransactionEventsRuleResultsResultInsufficientFunds                           TransactionEventsRuleResultsResult = "INSUFFICIENT_FUNDS"
+	TransactionEventsRuleResultsResultLithicSystemError                           TransactionEventsRuleResultsResult = "LITHIC_SYSTEM_ERROR"
+	TransactionEventsRuleResultsResultLithicSystemRateLimit                       TransactionEventsRuleResultsResult = "LITHIC_SYSTEM_RATE_LIMIT"
+	TransactionEventsRuleResultsResultMalformedAsaResponse                        TransactionEventsRuleResultsResult = "MALFORMED_ASA_RESPONSE"
+	TransactionEventsRuleResultsResultMerchantInvalid                             TransactionEventsRuleResultsResult = "MERCHANT_INVALID"
+	TransactionEventsRuleResultsResultMerchantLockedCardAttemptedElsewhere        TransactionEventsRuleResultsResult = "MERCHANT_LOCKED_CARD_ATTEMPTED_ELSEWHERE"
+	TransactionEventsRuleResultsResultMerchantNotPermitted                        TransactionEventsRuleResultsResult = "MERCHANT_NOT_PERMITTED"
+	TransactionEventsRuleResultsResultOverReversalAttempted                       TransactionEventsRuleResultsResult = "OVER_REVERSAL_ATTEMPTED"
+	TransactionEventsRuleResultsResultPinBlocked                                  TransactionEventsRuleResultsResult = "PIN_BLOCKED"
+	TransactionEventsRuleResultsResultProgramCardSpendLimitExceeded               TransactionEventsRuleResultsResult = "PROGRAM_CARD_SPEND_LIMIT_EXCEEDED"
+	TransactionEventsRuleResultsResultProgramSuspended                            TransactionEventsRuleResultsResult = "PROGRAM_SUSPENDED"
+	TransactionEventsRuleResultsResultProgramUsageRestriction                     TransactionEventsRuleResultsResult = "PROGRAM_USAGE_RESTRICTION"
+	TransactionEventsRuleResultsResultReversalUnmatched                           TransactionEventsRuleResultsResult = "REVERSAL_UNMATCHED"
+	TransactionEventsRuleResultsResultSecurityViolation                           TransactionEventsRuleResultsResult = "SECURITY_VIOLATION"
+	TransactionEventsRuleResultsResultSingleUseCardReattempted                    TransactionEventsRuleResultsResult = "SINGLE_USE_CARD_REATTEMPTED"
+	TransactionEventsRuleResultsResultTransactionInvalid                          TransactionEventsRuleResultsResult = "TRANSACTION_INVALID"
+	TransactionEventsRuleResultsResultTransactionNotPermittedToAcquirerOrTerminal TransactionEventsRuleResultsResult = "TRANSACTION_NOT_PERMITTED_TO_ACQUIRER_OR_TERMINAL"
+	TransactionEventsRuleResultsResultTransactionNotPermittedToIssuerOrCardholder TransactionEventsRuleResultsResult = "TRANSACTION_NOT_PERMITTED_TO_ISSUER_OR_CARDHOLDER"
+	TransactionEventsRuleResultsResultTransactionPreviouslyCompleted              TransactionEventsRuleResultsResult = "TRANSACTION_PREVIOUSLY_COMPLETED"
+	TransactionEventsRuleResultsResultUnauthorizedMerchant                        TransactionEventsRuleResultsResult = "UNAUTHORIZED_MERCHANT"
+	TransactionEventsRuleResultsResultVehicleNumberInvalid                        TransactionEventsRuleResultsResult = "VEHICLE_NUMBER_INVALID"
+)
+
+func (r TransactionEventsRuleResultsResult) IsKnown() bool {
+	switch r {
+	case TransactionEventsRuleResultsResultAccountDailySpendLimitExceeded, TransactionEventsRuleResultsResultAccountDelinquent, TransactionEventsRuleResultsResultAccountInactive, TransactionEventsRuleResultsResultAccountLifetimeSpendLimitExceeded, TransactionEventsRuleResultsResultAccountMonthlySpendLimitExceeded, TransactionEventsRuleResultsResultAccountUnderReview, TransactionEventsRuleResultsResultAddressIncorrect, TransactionEventsRuleResultsResultApproved, TransactionEventsRuleResultsResultAuthRuleAllowedCountry, TransactionEventsRuleResultsResultAuthRuleAllowedMcc, TransactionEventsRuleResultsResultAuthRuleBlockedCountry, TransactionEventsRuleResultsResultAuthRuleBlockedMcc, TransactionEventsRuleResultsResultCardClosed, TransactionEventsRuleResultsResultCardCryptogramValidationFailure, TransactionEventsRuleResultsResultCardExpired, TransactionEventsRuleResultsResultCardExpiryDateIncorrect, TransactionEventsRuleResultsResultCardInvalid, TransactionEventsRuleResultsResultCardNotActivated, TransactionEventsRuleResultsResultCardPaused, TransactionEventsRuleResultsResultCardPinIncorrect, TransactionEventsRuleResultsResultCardRestricted, TransactionEventsRuleResultsResultCardSecurityCodeIncorrect, TransactionEventsRuleResultsResultCardSpendLimitExceeded, TransactionEventsRuleResultsResultContactCardIssuer, TransactionEventsRuleResultsResultCustomerAsaTimeout, TransactionEventsRuleResultsResultCustomAsaResult, TransactionEventsRuleResultsResultDeclined, TransactionEventsRuleResultsResultDoNotHonor, TransactionEventsRuleResultsResultDriverNumberInvalid, TransactionEventsRuleResultsResultFormatError, TransactionEventsRuleResultsResultInsufficientFundingSourceBalance, TransactionEventsRuleResultsResultInsufficientFunds, TransactionEventsRuleResultsResultLithicSystemError, TransactionEventsRuleResultsResultLithicSystemRateLimit, TransactionEventsRuleResultsResultMalformedAsaResponse, TransactionEventsRuleResultsResultMerchantInvalid, TransactionEventsRuleResultsResultMerchantLockedCardAttemptedElsewhere, TransactionEventsRuleResultsResultMerchantNotPermitted, TransactionEventsRuleResultsResultOverReversalAttempted, TransactionEventsRuleResultsResultPinBlocked, TransactionEventsRuleResultsResultProgramCardSpendLimitExceeded, TransactionEventsRuleResultsResultProgramSuspended, TransactionEventsRuleResultsResultProgramUsageRestriction, TransactionEventsRuleResultsResultReversalUnmatched, TransactionEventsRuleResultsResultSecurityViolation, TransactionEventsRuleResultsResultSingleUseCardReattempted, TransactionEventsRuleResultsResultTransactionInvalid, TransactionEventsRuleResultsResultTransactionNotPermittedToAcquirerOrTerminal, TransactionEventsRuleResultsResultTransactionNotPermittedToIssuerOrCardholder, TransactionEventsRuleResultsResultTransactionPreviouslyCompleted, TransactionEventsRuleResultsResultUnauthorizedMerchant, TransactionEventsRuleResultsResultVehicleNumberInvalid:
 		return true
 	}
 	return false
