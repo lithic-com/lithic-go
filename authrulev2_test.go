@@ -29,6 +29,7 @@ func TestAuthRuleV2NewWithOptionalParams(t *testing.T) {
 	_, err := client.AuthRules.V2.New(context.TODO(), lithic.AuthRuleV2NewParams{
 		Body: lithic.AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokens{
 			AccountTokens: lithic.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+			Name:          lithic.F("name"),
 			Parameters: lithic.F[lithic.AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersUnion](lithic.AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParameters{
 				Conditions: lithic.F([]lithic.AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersCondition{{
 					Attribute: lithic.F(lithic.AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeMcc),
@@ -86,6 +87,7 @@ func TestAuthRuleV2UpdateWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.AuthRuleV2UpdateParams{
+			Name:  lithic.F("name"),
 			State: lithic.F(lithic.AuthRuleV2UpdateParamsStateInactive),
 		},
 	)
@@ -126,7 +128,7 @@ func TestAuthRuleV2ListWithOptionalParams(t *testing.T) {
 	}
 }
 
-func TestAuthRuleV2Apply(t *testing.T) {
+func TestAuthRuleV2ApplyWithOptionalParams(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
