@@ -1027,7 +1027,17 @@ type TransactionEvent struct {
 	EffectivePolarity TransactionEventsEffectivePolarity `json:"effective_polarity,required"`
 	Result            TransactionEventsResult            `json:"result,required"`
 	// Type of transaction event
-	Type        TransactionEventsType         `json:"type,required"`
+	Type TransactionEventsType `json:"type,required"`
+	// Information provided by the card network in each event. This includes common
+	// identifiers shared between you, Lithic, the card network and in some cases the
+	// acquirer. These identifiers often link together events within the same
+	// transaction lifecycle and can be used to locate a particular transaction, such
+	// as during processing of disputes. Not all fields are available in all events,
+	// and the presence of these fields is dependent on the card network and the event
+	// type.
+	//
+	// Now available in sandbox, and available in production on December 17th, 2024.
+	NetworkInfo TransactionEventsNetworkInfo  `json:"network_info,nullable"`
 	RuleResults []TransactionEventsRuleResult `json:"rule_results"`
 	JSON        transactionEventJSON          `json:"-"`
 }
@@ -1043,6 +1053,7 @@ type transactionEventJSON struct {
 	EffectivePolarity apijson.Field
 	Result            apijson.Field
 	Type              apijson.Field
+	NetworkInfo       apijson.Field
 	RuleResults       apijson.Field
 	raw               string
 	ExtraFields       map[string]apijson.Field
@@ -1315,6 +1326,118 @@ func (r TransactionEventsType) IsKnown() bool {
 	return false
 }
 
+// Information provided by the card network in each event. This includes common
+// identifiers shared between you, Lithic, the card network and in some cases the
+// acquirer. These identifiers often link together events within the same
+// transaction lifecycle and can be used to locate a particular transaction, such
+// as during processing of disputes. Not all fields are available in all events,
+// and the presence of these fields is dependent on the card network and the event
+// type.
+//
+// Now available in sandbox, and available in production on December 17th, 2024.
+type TransactionEventsNetworkInfo struct {
+	Acquirer   TransactionEventsNetworkInfoAcquirer   `json:"acquirer,required,nullable"`
+	Mastercard TransactionEventsNetworkInfoMastercard `json:"mastercard,required,nullable"`
+	Visa       TransactionEventsNetworkInfoVisa       `json:"visa,required,nullable"`
+	JSON       transactionEventsNetworkInfoJSON       `json:"-"`
+}
+
+// transactionEventsNetworkInfoJSON contains the JSON metadata for the struct
+// [TransactionEventsNetworkInfo]
+type transactionEventsNetworkInfoJSON struct {
+	Acquirer    apijson.Field
+	Mastercard  apijson.Field
+	Visa        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *TransactionEventsNetworkInfo) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionEventsNetworkInfoJSON) RawJSON() string {
+	return r.raw
+}
+
+type TransactionEventsNetworkInfoAcquirer struct {
+	// Identifier assigned by the acquirer, applicable to dual-message transactions
+	// only. The acquirer reference number (ARN) is only populated once a transaction
+	// has been cleared, and it is not available in all transactions (such as automated
+	// fuel dispenser transactions). A single transaction can contain multiple ARNs if
+	// the merchant sends multiple clearings.
+	AcquirerReferenceNumber string `json:"acquirer_reference_number,required,nullable"`
+	// Identifier assigned by the acquirer.
+	RetrievalReferenceNumber string                                   `json:"retrieval_reference_number,required,nullable"`
+	JSON                     transactionEventsNetworkInfoAcquirerJSON `json:"-"`
+}
+
+// transactionEventsNetworkInfoAcquirerJSON contains the JSON metadata for the
+// struct [TransactionEventsNetworkInfoAcquirer]
+type transactionEventsNetworkInfoAcquirerJSON struct {
+	AcquirerReferenceNumber  apijson.Field
+	RetrievalReferenceNumber apijson.Field
+	raw                      string
+	ExtraFields              map[string]apijson.Field
+}
+
+func (r *TransactionEventsNetworkInfoAcquirer) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionEventsNetworkInfoAcquirerJSON) RawJSON() string {
+	return r.raw
+}
+
+type TransactionEventsNetworkInfoMastercard struct {
+	// Identifier assigned by Mastercard.
+	BanknetReferenceNumber string `json:"banknet_reference_number,required,nullable"`
+	// Identifier assigned by Mastercard, applicable to single-message transactions
+	// only.
+	SwitchSerialNumber string                                     `json:"switch_serial_number,required,nullable"`
+	JSON               transactionEventsNetworkInfoMastercardJSON `json:"-"`
+}
+
+// transactionEventsNetworkInfoMastercardJSON contains the JSON metadata for the
+// struct [TransactionEventsNetworkInfoMastercard]
+type transactionEventsNetworkInfoMastercardJSON struct {
+	BanknetReferenceNumber apijson.Field
+	SwitchSerialNumber     apijson.Field
+	raw                    string
+	ExtraFields            map[string]apijson.Field
+}
+
+func (r *TransactionEventsNetworkInfoMastercard) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionEventsNetworkInfoMastercardJSON) RawJSON() string {
+	return r.raw
+}
+
+type TransactionEventsNetworkInfoVisa struct {
+	// Identifier assigned by Visa.
+	TransactionID string                               `json:"transaction_id,required,nullable"`
+	JSON          transactionEventsNetworkInfoVisaJSON `json:"-"`
+}
+
+// transactionEventsNetworkInfoVisaJSON contains the JSON metadata for the struct
+// [TransactionEventsNetworkInfoVisa]
+type transactionEventsNetworkInfoVisaJSON struct {
+	TransactionID apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
+}
+
+func (r *TransactionEventsNetworkInfoVisa) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionEventsNetworkInfoVisaJSON) RawJSON() string {
+	return r.raw
+}
+
+// Available in production on December 17th, 2024.
 type TransactionEventsRuleResult struct {
 	// The Auth Rule Token associated with the rule from which the decline originated.
 	// If this is set to null, then the decline was not associated with a
@@ -1656,6 +1779,8 @@ type TransactionSimulateAuthorizationParams struct {
 	// Partial approval is when part of a transaction is approved and another payment
 	// must be used for the remainder.
 	PartialApprovalCapable param.Field[bool] `json:"partial_approval_capable"`
+	// Simulate entering a PIN. If omitted, PIN check will not be performed.
+	Pin param.Field[string] `json:"pin"`
 	// Type of event to simulate.
 	//
 	//   - `AUTHORIZATION` is a dual message purchase authorization, meaning a subsequent
