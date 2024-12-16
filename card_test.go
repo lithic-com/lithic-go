@@ -53,7 +53,7 @@ func TestCardNewWithOptionalParams(t *testing.T) {
 			Address2:    lithic.F("Unit 25A"),
 			Email:       lithic.F("johnny@appleseed.com"),
 			Line2Text:   lithic.F("The Bluth Company"),
-			PhoneNumber: lithic.F("+12124007676"),
+			PhoneNumber: lithic.F("+15555555555"),
 		}),
 		ShippingMethod:     lithic.F(lithic.CardNewParamsShippingMethod2Day),
 		SpendLimit:         lithic.F(int64(1000)),
@@ -155,6 +155,51 @@ func TestCardListWithOptionalParams(t *testing.T) {
 	}
 }
 
+func TestCardConvertPhysicalWithOptionalParams(t *testing.T) {
+	baseURL := "http://localhost:4010"
+	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+		baseURL = envURL
+	}
+	if !testutil.CheckTestServer(t, baseURL) {
+		return
+	}
+	client := lithic.NewClient(
+		option.WithBaseURL(baseURL),
+		option.WithAPIKey("My Lithic API Key"),
+	)
+	_, err := client.Cards.ConvertPhysical(
+		context.TODO(),
+		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+		lithic.CardConvertPhysicalParams{
+			ShippingAddress: lithic.F(shared.ShippingAddressParam{
+				Address1:    lithic.F("5 Broad Street"),
+				City:        lithic.F("NEW YORK"),
+				Country:     lithic.F("USA"),
+				FirstName:   lithic.F("Janet"),
+				LastName:    lithic.F("Yellen"),
+				PostalCode:  lithic.F("10001"),
+				State:       lithic.F("NY"),
+				Address2:    lithic.F("Unit 5A"),
+				Email:       lithic.F("johnny@appleseed.com"),
+				Line2Text:   lithic.F("The Bluth Company"),
+				PhoneNumber: lithic.F("+15555555555"),
+			}),
+			Carrier: lithic.F(shared.CarrierParam{
+				QrCodeURL: lithic.F("https://lithic.com/activate-card/1"),
+			}),
+			ProductID:      lithic.F("100"),
+			ShippingMethod: lithic.F(lithic.CardConvertPhysicalParamsShippingMethod2Day),
+		},
+	)
+	if err != nil {
+		var apierr *lithic.Error
+		if errors.As(err, &apierr) {
+			t.Log(string(apierr.DumpRequest(true)))
+		}
+		t.Fatalf("err should be nil: %s", err.Error())
+	}
+}
+
 func TestCardEmbed(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
@@ -244,7 +289,7 @@ func TestCardReissueWithOptionalParams(t *testing.T) {
 				Address2:    lithic.F("Unit 5A"),
 				Email:       lithic.F("johnny@appleseed.com"),
 				Line2Text:   lithic.F("The Bluth Company"),
-				PhoneNumber: lithic.F("+12124007676"),
+				PhoneNumber: lithic.F("+15555555555"),
 			}),
 			ShippingMethod: lithic.F(lithic.CardReissueParamsShippingMethod2Day),
 		},
@@ -285,7 +330,7 @@ func TestCardRenewWithOptionalParams(t *testing.T) {
 				Address2:    lithic.F("Unit 5A"),
 				Email:       lithic.F("johnny@appleseed.com"),
 				Line2Text:   lithic.F("The Bluth Company"),
-				PhoneNumber: lithic.F("+12124007676"),
+				PhoneNumber: lithic.F("+15555555555"),
 			}),
 			Carrier: lithic.F(shared.CarrierParam{
 				QrCodeURL: lithic.F("https://lithic.com/activate-card/1"),
