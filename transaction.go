@@ -1025,9 +1025,6 @@ type TransactionEvent struct {
 	DetailedResults []TransactionEventsDetailedResult `json:"detailed_results,required"`
 	// Indicates whether the transaction event is a credit or debit to the account.
 	EffectivePolarity TransactionEventsEffectivePolarity `json:"effective_polarity,required"`
-	Result            TransactionEventsResult            `json:"result,required"`
-	// Type of transaction event
-	Type TransactionEventsType `json:"type,required"`
 	// Information provided by the card network in each event. This includes common
 	// identifiers shared between you, Lithic, the card network and in some cases the
 	// acquirer. These identifiers often link together events within the same
@@ -1035,11 +1032,12 @@ type TransactionEvent struct {
 	// as during processing of disputes. Not all fields are available in all events,
 	// and the presence of these fields is dependent on the card network and the event
 	// type.
-	//
-	// Now available in sandbox, and available in production on December 17th, 2024.
-	NetworkInfo TransactionEventsNetworkInfo  `json:"network_info,nullable"`
-	RuleResults []TransactionEventsRuleResult `json:"rule_results"`
-	JSON        transactionEventJSON          `json:"-"`
+	NetworkInfo TransactionEventsNetworkInfo  `json:"network_info,required,nullable"`
+	Result      TransactionEventsResult       `json:"result,required"`
+	RuleResults []TransactionEventsRuleResult `json:"rule_results,required"`
+	// Type of transaction event
+	Type TransactionEventsType `json:"type,required"`
+	JSON transactionEventJSON  `json:"-"`
 }
 
 // transactionEventJSON contains the JSON metadata for the struct
@@ -1051,10 +1049,10 @@ type transactionEventJSON struct {
 	Created           apijson.Field
 	DetailedResults   apijson.Field
 	EffectivePolarity apijson.Field
-	Result            apijson.Field
-	Type              apijson.Field
 	NetworkInfo       apijson.Field
+	Result            apijson.Field
 	RuleResults       apijson.Field
+	Type              apijson.Field
 	raw               string
 	ExtraFields       map[string]apijson.Field
 }
@@ -1262,70 +1260,6 @@ func (r TransactionEventsEffectivePolarity) IsKnown() bool {
 	return false
 }
 
-type TransactionEventsResult string
-
-const (
-	TransactionEventsResultAccountStateTransactionFail TransactionEventsResult = "ACCOUNT_STATE_TRANSACTION_FAIL"
-	TransactionEventsResultApproved                    TransactionEventsResult = "APPROVED"
-	TransactionEventsResultBankConnectionError         TransactionEventsResult = "BANK_CONNECTION_ERROR"
-	TransactionEventsResultBankNotVerified             TransactionEventsResult = "BANK_NOT_VERIFIED"
-	TransactionEventsResultCardClosed                  TransactionEventsResult = "CARD_CLOSED"
-	TransactionEventsResultCardPaused                  TransactionEventsResult = "CARD_PAUSED"
-	TransactionEventsResultDeclined                    TransactionEventsResult = "DECLINED"
-	TransactionEventsResultFraudAdvice                 TransactionEventsResult = "FRAUD_ADVICE"
-	TransactionEventsResultIgnoredTtlExpiry            TransactionEventsResult = "IGNORED_TTL_EXPIRY"
-	TransactionEventsResultInactiveAccount             TransactionEventsResult = "INACTIVE_ACCOUNT"
-	TransactionEventsResultIncorrectPin                TransactionEventsResult = "INCORRECT_PIN"
-	TransactionEventsResultInvalidCardDetails          TransactionEventsResult = "INVALID_CARD_DETAILS"
-	TransactionEventsResultInsufficientFunds           TransactionEventsResult = "INSUFFICIENT_FUNDS"
-	TransactionEventsResultInsufficientFundsPreload    TransactionEventsResult = "INSUFFICIENT_FUNDS_PRELOAD"
-	TransactionEventsResultInvalidTransaction          TransactionEventsResult = "INVALID_TRANSACTION"
-	TransactionEventsResultMerchantBlacklist           TransactionEventsResult = "MERCHANT_BLACKLIST"
-	TransactionEventsResultOriginalNotFound            TransactionEventsResult = "ORIGINAL_NOT_FOUND"
-	TransactionEventsResultPreviouslyCompleted         TransactionEventsResult = "PREVIOUSLY_COMPLETED"
-	TransactionEventsResultSingleUseRecharged          TransactionEventsResult = "SINGLE_USE_RECHARGED"
-	TransactionEventsResultSwitchInoperativeAdvice     TransactionEventsResult = "SWITCH_INOPERATIVE_ADVICE"
-	TransactionEventsResultUnauthorizedMerchant        TransactionEventsResult = "UNAUTHORIZED_MERCHANT"
-	TransactionEventsResultUnknownHostTimeout          TransactionEventsResult = "UNKNOWN_HOST_TIMEOUT"
-	TransactionEventsResultUserTransactionLimit        TransactionEventsResult = "USER_TRANSACTION_LIMIT"
-)
-
-func (r TransactionEventsResult) IsKnown() bool {
-	switch r {
-	case TransactionEventsResultAccountStateTransactionFail, TransactionEventsResultApproved, TransactionEventsResultBankConnectionError, TransactionEventsResultBankNotVerified, TransactionEventsResultCardClosed, TransactionEventsResultCardPaused, TransactionEventsResultDeclined, TransactionEventsResultFraudAdvice, TransactionEventsResultIgnoredTtlExpiry, TransactionEventsResultInactiveAccount, TransactionEventsResultIncorrectPin, TransactionEventsResultInvalidCardDetails, TransactionEventsResultInsufficientFunds, TransactionEventsResultInsufficientFundsPreload, TransactionEventsResultInvalidTransaction, TransactionEventsResultMerchantBlacklist, TransactionEventsResultOriginalNotFound, TransactionEventsResultPreviouslyCompleted, TransactionEventsResultSingleUseRecharged, TransactionEventsResultSwitchInoperativeAdvice, TransactionEventsResultUnauthorizedMerchant, TransactionEventsResultUnknownHostTimeout, TransactionEventsResultUserTransactionLimit:
-		return true
-	}
-	return false
-}
-
-// Type of transaction event
-type TransactionEventsType string
-
-const (
-	TransactionEventsTypeAuthorization                TransactionEventsType = "AUTHORIZATION"
-	TransactionEventsTypeAuthorizationAdvice          TransactionEventsType = "AUTHORIZATION_ADVICE"
-	TransactionEventsTypeAuthorizationExpiry          TransactionEventsType = "AUTHORIZATION_EXPIRY"
-	TransactionEventsTypeAuthorizationReversal        TransactionEventsType = "AUTHORIZATION_REVERSAL"
-	TransactionEventsTypeBalanceInquiry               TransactionEventsType = "BALANCE_INQUIRY"
-	TransactionEventsTypeClearing                     TransactionEventsType = "CLEARING"
-	TransactionEventsTypeCorrectionCredit             TransactionEventsType = "CORRECTION_CREDIT"
-	TransactionEventsTypeCorrectionDebit              TransactionEventsType = "CORRECTION_DEBIT"
-	TransactionEventsTypeCreditAuthorization          TransactionEventsType = "CREDIT_AUTHORIZATION"
-	TransactionEventsTypeCreditAuthorizationAdvice    TransactionEventsType = "CREDIT_AUTHORIZATION_ADVICE"
-	TransactionEventsTypeFinancialAuthorization       TransactionEventsType = "FINANCIAL_AUTHORIZATION"
-	TransactionEventsTypeFinancialCreditAuthorization TransactionEventsType = "FINANCIAL_CREDIT_AUTHORIZATION"
-	TransactionEventsTypeReturn                       TransactionEventsType = "RETURN"
-	TransactionEventsTypeReturnReversal               TransactionEventsType = "RETURN_REVERSAL"
-)
-
-func (r TransactionEventsType) IsKnown() bool {
-	switch r {
-	case TransactionEventsTypeAuthorization, TransactionEventsTypeAuthorizationAdvice, TransactionEventsTypeAuthorizationExpiry, TransactionEventsTypeAuthorizationReversal, TransactionEventsTypeBalanceInquiry, TransactionEventsTypeClearing, TransactionEventsTypeCorrectionCredit, TransactionEventsTypeCorrectionDebit, TransactionEventsTypeCreditAuthorization, TransactionEventsTypeCreditAuthorizationAdvice, TransactionEventsTypeFinancialAuthorization, TransactionEventsTypeFinancialCreditAuthorization, TransactionEventsTypeReturn, TransactionEventsTypeReturnReversal:
-		return true
-	}
-	return false
-}
-
 // Information provided by the card network in each event. This includes common
 // identifiers shared between you, Lithic, the card network and in some cases the
 // acquirer. These identifiers often link together events within the same
@@ -1333,8 +1267,6 @@ func (r TransactionEventsType) IsKnown() bool {
 // as during processing of disputes. Not all fields are available in all events,
 // and the presence of these fields is dependent on the card network and the event
 // type.
-//
-// Now available in sandbox, and available in production on December 17th, 2024.
 type TransactionEventsNetworkInfo struct {
 	Acquirer   TransactionEventsNetworkInfoAcquirer   `json:"acquirer,required,nullable"`
 	Mastercard TransactionEventsNetworkInfoMastercard `json:"mastercard,required,nullable"`
@@ -1437,7 +1369,42 @@ func (r transactionEventsNetworkInfoVisaJSON) RawJSON() string {
 	return r.raw
 }
 
-// Available in production on December 17th, 2024.
+type TransactionEventsResult string
+
+const (
+	TransactionEventsResultAccountStateTransactionFail TransactionEventsResult = "ACCOUNT_STATE_TRANSACTION_FAIL"
+	TransactionEventsResultApproved                    TransactionEventsResult = "APPROVED"
+	TransactionEventsResultBankConnectionError         TransactionEventsResult = "BANK_CONNECTION_ERROR"
+	TransactionEventsResultBankNotVerified             TransactionEventsResult = "BANK_NOT_VERIFIED"
+	TransactionEventsResultCardClosed                  TransactionEventsResult = "CARD_CLOSED"
+	TransactionEventsResultCardPaused                  TransactionEventsResult = "CARD_PAUSED"
+	TransactionEventsResultDeclined                    TransactionEventsResult = "DECLINED"
+	TransactionEventsResultFraudAdvice                 TransactionEventsResult = "FRAUD_ADVICE"
+	TransactionEventsResultIgnoredTtlExpiry            TransactionEventsResult = "IGNORED_TTL_EXPIRY"
+	TransactionEventsResultInactiveAccount             TransactionEventsResult = "INACTIVE_ACCOUNT"
+	TransactionEventsResultIncorrectPin                TransactionEventsResult = "INCORRECT_PIN"
+	TransactionEventsResultInvalidCardDetails          TransactionEventsResult = "INVALID_CARD_DETAILS"
+	TransactionEventsResultInsufficientFunds           TransactionEventsResult = "INSUFFICIENT_FUNDS"
+	TransactionEventsResultInsufficientFundsPreload    TransactionEventsResult = "INSUFFICIENT_FUNDS_PRELOAD"
+	TransactionEventsResultInvalidTransaction          TransactionEventsResult = "INVALID_TRANSACTION"
+	TransactionEventsResultMerchantBlacklist           TransactionEventsResult = "MERCHANT_BLACKLIST"
+	TransactionEventsResultOriginalNotFound            TransactionEventsResult = "ORIGINAL_NOT_FOUND"
+	TransactionEventsResultPreviouslyCompleted         TransactionEventsResult = "PREVIOUSLY_COMPLETED"
+	TransactionEventsResultSingleUseRecharged          TransactionEventsResult = "SINGLE_USE_RECHARGED"
+	TransactionEventsResultSwitchInoperativeAdvice     TransactionEventsResult = "SWITCH_INOPERATIVE_ADVICE"
+	TransactionEventsResultUnauthorizedMerchant        TransactionEventsResult = "UNAUTHORIZED_MERCHANT"
+	TransactionEventsResultUnknownHostTimeout          TransactionEventsResult = "UNKNOWN_HOST_TIMEOUT"
+	TransactionEventsResultUserTransactionLimit        TransactionEventsResult = "USER_TRANSACTION_LIMIT"
+)
+
+func (r TransactionEventsResult) IsKnown() bool {
+	switch r {
+	case TransactionEventsResultAccountStateTransactionFail, TransactionEventsResultApproved, TransactionEventsResultBankConnectionError, TransactionEventsResultBankNotVerified, TransactionEventsResultCardClosed, TransactionEventsResultCardPaused, TransactionEventsResultDeclined, TransactionEventsResultFraudAdvice, TransactionEventsResultIgnoredTtlExpiry, TransactionEventsResultInactiveAccount, TransactionEventsResultIncorrectPin, TransactionEventsResultInvalidCardDetails, TransactionEventsResultInsufficientFunds, TransactionEventsResultInsufficientFundsPreload, TransactionEventsResultInvalidTransaction, TransactionEventsResultMerchantBlacklist, TransactionEventsResultOriginalNotFound, TransactionEventsResultPreviouslyCompleted, TransactionEventsResultSingleUseRecharged, TransactionEventsResultSwitchInoperativeAdvice, TransactionEventsResultUnauthorizedMerchant, TransactionEventsResultUnknownHostTimeout, TransactionEventsResultUserTransactionLimit:
+		return true
+	}
+	return false
+}
+
 type TransactionEventsRuleResult struct {
 	// The Auth Rule Token associated with the rule from which the decline originated.
 	// If this is set to null, then the decline was not associated with a
@@ -1447,7 +1414,8 @@ type TransactionEventsRuleResult struct {
 	// A human-readable explanation outlining the motivation for the rule's decline.
 	Explanation string `json:"explanation,required,nullable"`
 	// The name for the rule, if any was configured.
-	Name   string                             `json:"name,required,nullable"`
+	Name string `json:"name,required,nullable"`
+	// The detailed_result associated with this rule's decline.
 	Result TransactionEventsRuleResultsResult `json:"result,required"`
 	JSON   transactionEventsRuleResultJSON    `json:"-"`
 }
@@ -1471,6 +1439,7 @@ func (r transactionEventsRuleResultJSON) RawJSON() string {
 	return r.raw
 }
 
+// The detailed_result associated with this rule's decline.
 type TransactionEventsRuleResultsResult string
 
 const (
@@ -1531,6 +1500,34 @@ const (
 func (r TransactionEventsRuleResultsResult) IsKnown() bool {
 	switch r {
 	case TransactionEventsRuleResultsResultAccountDailySpendLimitExceeded, TransactionEventsRuleResultsResultAccountDelinquent, TransactionEventsRuleResultsResultAccountInactive, TransactionEventsRuleResultsResultAccountLifetimeSpendLimitExceeded, TransactionEventsRuleResultsResultAccountMonthlySpendLimitExceeded, TransactionEventsRuleResultsResultAccountUnderReview, TransactionEventsRuleResultsResultAddressIncorrect, TransactionEventsRuleResultsResultApproved, TransactionEventsRuleResultsResultAuthRuleAllowedCountry, TransactionEventsRuleResultsResultAuthRuleAllowedMcc, TransactionEventsRuleResultsResultAuthRuleBlockedCountry, TransactionEventsRuleResultsResultAuthRuleBlockedMcc, TransactionEventsRuleResultsResultCardClosed, TransactionEventsRuleResultsResultCardCryptogramValidationFailure, TransactionEventsRuleResultsResultCardExpired, TransactionEventsRuleResultsResultCardExpiryDateIncorrect, TransactionEventsRuleResultsResultCardInvalid, TransactionEventsRuleResultsResultCardNotActivated, TransactionEventsRuleResultsResultCardPaused, TransactionEventsRuleResultsResultCardPinIncorrect, TransactionEventsRuleResultsResultCardRestricted, TransactionEventsRuleResultsResultCardSecurityCodeIncorrect, TransactionEventsRuleResultsResultCardSpendLimitExceeded, TransactionEventsRuleResultsResultContactCardIssuer, TransactionEventsRuleResultsResultCustomerAsaTimeout, TransactionEventsRuleResultsResultCustomAsaResult, TransactionEventsRuleResultsResultDeclined, TransactionEventsRuleResultsResultDoNotHonor, TransactionEventsRuleResultsResultDriverNumberInvalid, TransactionEventsRuleResultsResultFormatError, TransactionEventsRuleResultsResultInsufficientFundingSourceBalance, TransactionEventsRuleResultsResultInsufficientFunds, TransactionEventsRuleResultsResultLithicSystemError, TransactionEventsRuleResultsResultLithicSystemRateLimit, TransactionEventsRuleResultsResultMalformedAsaResponse, TransactionEventsRuleResultsResultMerchantInvalid, TransactionEventsRuleResultsResultMerchantLockedCardAttemptedElsewhere, TransactionEventsRuleResultsResultMerchantNotPermitted, TransactionEventsRuleResultsResultOverReversalAttempted, TransactionEventsRuleResultsResultPinBlocked, TransactionEventsRuleResultsResultProgramCardSpendLimitExceeded, TransactionEventsRuleResultsResultProgramSuspended, TransactionEventsRuleResultsResultProgramUsageRestriction, TransactionEventsRuleResultsResultReversalUnmatched, TransactionEventsRuleResultsResultSecurityViolation, TransactionEventsRuleResultsResultSingleUseCardReattempted, TransactionEventsRuleResultsResultTransactionInvalid, TransactionEventsRuleResultsResultTransactionNotPermittedToAcquirerOrTerminal, TransactionEventsRuleResultsResultTransactionNotPermittedToIssuerOrCardholder, TransactionEventsRuleResultsResultTransactionPreviouslyCompleted, TransactionEventsRuleResultsResultUnauthorizedMerchant, TransactionEventsRuleResultsResultVehicleNumberInvalid:
+		return true
+	}
+	return false
+}
+
+// Type of transaction event
+type TransactionEventsType string
+
+const (
+	TransactionEventsTypeAuthorization                TransactionEventsType = "AUTHORIZATION"
+	TransactionEventsTypeAuthorizationAdvice          TransactionEventsType = "AUTHORIZATION_ADVICE"
+	TransactionEventsTypeAuthorizationExpiry          TransactionEventsType = "AUTHORIZATION_EXPIRY"
+	TransactionEventsTypeAuthorizationReversal        TransactionEventsType = "AUTHORIZATION_REVERSAL"
+	TransactionEventsTypeBalanceInquiry               TransactionEventsType = "BALANCE_INQUIRY"
+	TransactionEventsTypeClearing                     TransactionEventsType = "CLEARING"
+	TransactionEventsTypeCorrectionCredit             TransactionEventsType = "CORRECTION_CREDIT"
+	TransactionEventsTypeCorrectionDebit              TransactionEventsType = "CORRECTION_DEBIT"
+	TransactionEventsTypeCreditAuthorization          TransactionEventsType = "CREDIT_AUTHORIZATION"
+	TransactionEventsTypeCreditAuthorizationAdvice    TransactionEventsType = "CREDIT_AUTHORIZATION_ADVICE"
+	TransactionEventsTypeFinancialAuthorization       TransactionEventsType = "FINANCIAL_AUTHORIZATION"
+	TransactionEventsTypeFinancialCreditAuthorization TransactionEventsType = "FINANCIAL_CREDIT_AUTHORIZATION"
+	TransactionEventsTypeReturn                       TransactionEventsType = "RETURN"
+	TransactionEventsTypeReturnReversal               TransactionEventsType = "RETURN_REVERSAL"
+)
+
+func (r TransactionEventsType) IsKnown() bool {
+	switch r {
+	case TransactionEventsTypeAuthorization, TransactionEventsTypeAuthorizationAdvice, TransactionEventsTypeAuthorizationExpiry, TransactionEventsTypeAuthorizationReversal, TransactionEventsTypeBalanceInquiry, TransactionEventsTypeClearing, TransactionEventsTypeCorrectionCredit, TransactionEventsTypeCorrectionDebit, TransactionEventsTypeCreditAuthorization, TransactionEventsTypeCreditAuthorizationAdvice, TransactionEventsTypeFinancialAuthorization, TransactionEventsTypeFinancialCreditAuthorization, TransactionEventsTypeReturn, TransactionEventsTypeReturnReversal:
 		return true
 	}
 	return false

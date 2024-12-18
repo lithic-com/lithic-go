@@ -216,51 +216,6 @@ func TestAccountHolderListDocuments(t *testing.T) {
 	}
 }
 
-func TestAccountHolderResubmit(t *testing.T) {
-	baseURL := "http://localhost:4010"
-	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
-		baseURL = envURL
-	}
-	if !testutil.CheckTestServer(t, baseURL) {
-		return
-	}
-	client := lithic.NewClient(
-		option.WithBaseURL(baseURL),
-		option.WithAPIKey("My Lithic API Key"),
-	)
-	_, err := client.AccountHolders.Resubmit(
-		context.TODO(),
-		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
-		lithic.AccountHolderResubmitParams{
-			Individual: lithic.F(lithic.AccountHolderResubmitParamsIndividual{
-				Address: lithic.F(shared.AddressParam{
-					Address1:   lithic.F("123 Old Forest Way"),
-					City:       lithic.F("Omaha"),
-					Country:    lithic.F("USA"),
-					PostalCode: lithic.F("68022"),
-					State:      lithic.F("NE"),
-					Address2:   lithic.F("address2"),
-				}),
-				Dob:          lithic.F("1991-03-08 08:00:00"),
-				Email:        lithic.F("tom@middle-earth.com"),
-				FirstName:    lithic.F("Tom"),
-				GovernmentID: lithic.F("111-23-1412"),
-				LastName:     lithic.F("Bombadil"),
-				PhoneNumber:  lithic.F("+15555555555"),
-			}),
-			TosTimestamp: lithic.F("2018-05-29T21:16:05Z"),
-			Workflow:     lithic.F(lithic.AccountHolderResubmitParamsWorkflowKYCAdvanced),
-		},
-	)
-	if err != nil {
-		var apierr *lithic.Error
-		if errors.As(err, &apierr) {
-			t.Log(string(apierr.DumpRequest(true)))
-		}
-		t.Fatalf("err should be nil: %s", err.Error())
-	}
-}
-
 func TestAccountHolderGetDocument(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
