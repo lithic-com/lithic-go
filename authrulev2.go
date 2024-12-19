@@ -27,7 +27,8 @@ import (
 // automatically. You should not instantiate this service directly, and instead use
 // the [NewAuthRuleV2Service] method instead.
 type AuthRuleV2Service struct {
-	Options []option.RequestOption
+	Options   []option.RequestOption
+	Backtests *AuthRuleV2BacktestService
 }
 
 // NewAuthRuleV2Service generates a new service that applies the given options to
@@ -36,6 +37,7 @@ type AuthRuleV2Service struct {
 func NewAuthRuleV2Service(opts ...option.RequestOption) (r *AuthRuleV2Service) {
 	r = &AuthRuleV2Service{}
 	r.Options = opts
+	r.Backtests = NewAuthRuleV2BacktestService(opts...)
 	return
 }
 
@@ -202,6 +204,7 @@ func (r *AuthRuleV2Service) Report(ctx context.Context, authRuleToken string, op
 }
 
 type AuthRuleV2NewResponse struct {
+	// Auth Rule Token
 	Token string `json:"token,required" format:"uuid"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
@@ -209,28 +212,34 @@ type AuthRuleV2NewResponse struct {
 	CardTokens     []string                            `json:"card_tokens,required" format:"uuid"`
 	CurrentVersion AuthRuleV2NewResponseCurrentVersion `json:"current_version,required,nullable"`
 	DraftVersion   AuthRuleV2NewResponseDraftVersion   `json:"draft_version,required,nullable"`
+	// Auth Rule Name
+	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel bool `json:"program_level,required"`
 	// The state of the Auth Rule
 	State AuthRuleV2NewResponseState `json:"state,required"`
 	// The type of Auth Rule
 	Type AuthRuleV2NewResponseType `json:"type,required"`
-	JSON authRuleV2NewResponseJSON `json:"-"`
+	// Card tokens to which the Auth Rule does not apply.
+	ExcludedCardTokens []string                  `json:"excluded_card_tokens" format:"uuid"`
+	JSON               authRuleV2NewResponseJSON `json:"-"`
 }
 
 // authRuleV2NewResponseJSON contains the JSON metadata for the struct
 // [AuthRuleV2NewResponse]
 type authRuleV2NewResponseJSON struct {
-	Token          apijson.Field
-	AccountTokens  apijson.Field
-	CardTokens     apijson.Field
-	CurrentVersion apijson.Field
-	DraftVersion   apijson.Field
-	ProgramLevel   apijson.Field
-	State          apijson.Field
-	Type           apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
+	Token              apijson.Field
+	AccountTokens      apijson.Field
+	CardTokens         apijson.Field
+	CurrentVersion     apijson.Field
+	DraftVersion       apijson.Field
+	Name               apijson.Field
+	ProgramLevel       apijson.Field
+	State              apijson.Field
+	Type               apijson.Field
+	ExcludedCardTokens apijson.Field
+	raw                string
+	ExtraFields        map[string]apijson.Field
 }
 
 func (r *AuthRuleV2NewResponse) UnmarshalJSON(data []byte) (err error) {
@@ -277,13 +286,13 @@ type AuthRuleV2NewResponseCurrentVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                        `json:"period"`
 	Scope  AuthRuleV2NewResponseCurrentVersionParametersScope `json:"scope"`
@@ -408,6 +417,10 @@ type AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersCond
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+	//     trailing hour up and until the authorization.
+	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+	//     trailing 24 hours up and until the authorization.
 	Attribute AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsOperation `json:"operation"`
@@ -466,23 +479,29 @@ func (r authRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersC
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+//     trailing hour up and until the authorization.
+//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+//     trailing 24 hours up and until the authorization.
 type AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc                     AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry                 AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency                AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID              AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor              AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift          AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode            AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount       AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore               AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
 )
 
 func (r AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore:
+	case AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore, AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H:
 		return true
 	}
 	return false
@@ -510,7 +529,7 @@ func (r AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersC
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -526,7 +545,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -591,13 +610,13 @@ type AuthRuleV2NewResponseDraftVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                      `json:"period"`
 	Scope  AuthRuleV2NewResponseDraftVersionParametersScope `json:"scope"`
@@ -722,6 +741,10 @@ type AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersCondit
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+	//     trailing hour up and until the authorization.
+	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+	//     trailing 24 hours up and until the authorization.
 	Attribute AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsOperation `json:"operation"`
@@ -780,23 +803,29 @@ func (r authRuleV2NewResponseDraftVersionParametersConditionalBlockParametersCon
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+//     trailing hour up and until the authorization.
+//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+//     trailing 24 hours up and until the authorization.
 type AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc                     AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry                 AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency                AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID              AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor              AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift          AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode            AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount       AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore               AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
 )
 
 func (r AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore:
+	case AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore, AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H:
 		return true
 	}
 	return false
@@ -824,7 +853,7 @@ func (r AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersCon
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -840,7 +869,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -902,6 +931,7 @@ func (r AuthRuleV2NewResponseType) IsKnown() bool {
 }
 
 type AuthRuleV2GetResponse struct {
+	// Auth Rule Token
 	Token string `json:"token,required" format:"uuid"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
@@ -909,28 +939,34 @@ type AuthRuleV2GetResponse struct {
 	CardTokens     []string                            `json:"card_tokens,required" format:"uuid"`
 	CurrentVersion AuthRuleV2GetResponseCurrentVersion `json:"current_version,required,nullable"`
 	DraftVersion   AuthRuleV2GetResponseDraftVersion   `json:"draft_version,required,nullable"`
+	// Auth Rule Name
+	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel bool `json:"program_level,required"`
 	// The state of the Auth Rule
 	State AuthRuleV2GetResponseState `json:"state,required"`
 	// The type of Auth Rule
 	Type AuthRuleV2GetResponseType `json:"type,required"`
-	JSON authRuleV2GetResponseJSON `json:"-"`
+	// Card tokens to which the Auth Rule does not apply.
+	ExcludedCardTokens []string                  `json:"excluded_card_tokens" format:"uuid"`
+	JSON               authRuleV2GetResponseJSON `json:"-"`
 }
 
 // authRuleV2GetResponseJSON contains the JSON metadata for the struct
 // [AuthRuleV2GetResponse]
 type authRuleV2GetResponseJSON struct {
-	Token          apijson.Field
-	AccountTokens  apijson.Field
-	CardTokens     apijson.Field
-	CurrentVersion apijson.Field
-	DraftVersion   apijson.Field
-	ProgramLevel   apijson.Field
-	State          apijson.Field
-	Type           apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
+	Token              apijson.Field
+	AccountTokens      apijson.Field
+	CardTokens         apijson.Field
+	CurrentVersion     apijson.Field
+	DraftVersion       apijson.Field
+	Name               apijson.Field
+	ProgramLevel       apijson.Field
+	State              apijson.Field
+	Type               apijson.Field
+	ExcludedCardTokens apijson.Field
+	raw                string
+	ExtraFields        map[string]apijson.Field
 }
 
 func (r *AuthRuleV2GetResponse) UnmarshalJSON(data []byte) (err error) {
@@ -977,13 +1013,13 @@ type AuthRuleV2GetResponseCurrentVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                        `json:"period"`
 	Scope  AuthRuleV2GetResponseCurrentVersionParametersScope `json:"scope"`
@@ -1108,6 +1144,10 @@ type AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersCond
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+	//     trailing hour up and until the authorization.
+	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+	//     trailing 24 hours up and until the authorization.
 	Attribute AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsOperation `json:"operation"`
@@ -1166,23 +1206,29 @@ func (r authRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersC
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+//     trailing hour up and until the authorization.
+//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+//     trailing 24 hours up and until the authorization.
 type AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc                     AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry                 AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency                AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID              AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor              AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift          AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode            AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount       AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore               AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
 )
 
 func (r AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore:
+	case AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore, AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H:
 		return true
 	}
 	return false
@@ -1210,7 +1256,7 @@ func (r AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersC
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -1226,7 +1272,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -1291,13 +1337,13 @@ type AuthRuleV2GetResponseDraftVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                      `json:"period"`
 	Scope  AuthRuleV2GetResponseDraftVersionParametersScope `json:"scope"`
@@ -1422,6 +1468,10 @@ type AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersCondit
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+	//     trailing hour up and until the authorization.
+	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+	//     trailing 24 hours up and until the authorization.
 	Attribute AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsOperation `json:"operation"`
@@ -1480,23 +1530,29 @@ func (r authRuleV2GetResponseDraftVersionParametersConditionalBlockParametersCon
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+//     trailing hour up and until the authorization.
+//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+//     trailing 24 hours up and until the authorization.
 type AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc                     AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry                 AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency                AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID              AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor              AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift          AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode            AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount       AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore               AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
 )
 
 func (r AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore:
+	case AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore, AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H:
 		return true
 	}
 	return false
@@ -1524,7 +1580,7 @@ func (r AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersCon
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -1540,7 +1596,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -1602,6 +1658,7 @@ func (r AuthRuleV2GetResponseType) IsKnown() bool {
 }
 
 type AuthRuleV2UpdateResponse struct {
+	// Auth Rule Token
 	Token string `json:"token,required" format:"uuid"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
@@ -1609,28 +1666,34 @@ type AuthRuleV2UpdateResponse struct {
 	CardTokens     []string                               `json:"card_tokens,required" format:"uuid"`
 	CurrentVersion AuthRuleV2UpdateResponseCurrentVersion `json:"current_version,required,nullable"`
 	DraftVersion   AuthRuleV2UpdateResponseDraftVersion   `json:"draft_version,required,nullable"`
+	// Auth Rule Name
+	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel bool `json:"program_level,required"`
 	// The state of the Auth Rule
 	State AuthRuleV2UpdateResponseState `json:"state,required"`
 	// The type of Auth Rule
 	Type AuthRuleV2UpdateResponseType `json:"type,required"`
-	JSON authRuleV2UpdateResponseJSON `json:"-"`
+	// Card tokens to which the Auth Rule does not apply.
+	ExcludedCardTokens []string                     `json:"excluded_card_tokens" format:"uuid"`
+	JSON               authRuleV2UpdateResponseJSON `json:"-"`
 }
 
 // authRuleV2UpdateResponseJSON contains the JSON metadata for the struct
 // [AuthRuleV2UpdateResponse]
 type authRuleV2UpdateResponseJSON struct {
-	Token          apijson.Field
-	AccountTokens  apijson.Field
-	CardTokens     apijson.Field
-	CurrentVersion apijson.Field
-	DraftVersion   apijson.Field
-	ProgramLevel   apijson.Field
-	State          apijson.Field
-	Type           apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
+	Token              apijson.Field
+	AccountTokens      apijson.Field
+	CardTokens         apijson.Field
+	CurrentVersion     apijson.Field
+	DraftVersion       apijson.Field
+	Name               apijson.Field
+	ProgramLevel       apijson.Field
+	State              apijson.Field
+	Type               apijson.Field
+	ExcludedCardTokens apijson.Field
+	raw                string
+	ExtraFields        map[string]apijson.Field
 }
 
 func (r *AuthRuleV2UpdateResponse) UnmarshalJSON(data []byte) (err error) {
@@ -1677,13 +1740,13 @@ type AuthRuleV2UpdateResponseCurrentVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                           `json:"period"`
 	Scope  AuthRuleV2UpdateResponseCurrentVersionParametersScope `json:"scope"`
@@ -1808,6 +1871,10 @@ type AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersC
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+	//     trailing hour up and until the authorization.
+	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+	//     trailing 24 hours up and until the authorization.
 	Attribute AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsOperation `json:"operation"`
@@ -1866,23 +1933,29 @@ func (r authRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParamete
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+//     trailing hour up and until the authorization.
+//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+//     trailing 24 hours up and until the authorization.
 type AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc                     AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry                 AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency                AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID              AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor              AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift          AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode            AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount       AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore               AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
 )
 
 func (r AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore:
+	case AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H:
 		return true
 	}
 	return false
@@ -1910,7 +1983,7 @@ func (r AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParamete
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -1926,7 +1999,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -1991,13 +2064,13 @@ type AuthRuleV2UpdateResponseDraftVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                         `json:"period"`
 	Scope  AuthRuleV2UpdateResponseDraftVersionParametersScope `json:"scope"`
@@ -2122,6 +2195,10 @@ type AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersCon
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+	//     trailing hour up and until the authorization.
+	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+	//     trailing 24 hours up and until the authorization.
 	Attribute AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsOperation `json:"operation"`
@@ -2180,23 +2257,29 @@ func (r authRuleV2UpdateResponseDraftVersionParametersConditionalBlockParameters
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+//     trailing hour up and until the authorization.
+//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+//     trailing 24 hours up and until the authorization.
 type AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc                     AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry                 AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency                AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID              AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor              AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift          AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode            AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount       AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore               AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
 )
 
 func (r AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore:
+	case AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore, AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H:
 		return true
 	}
 	return false
@@ -2224,7 +2307,7 @@ func (r AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParameters
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -2240,7 +2323,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -2302,6 +2385,7 @@ func (r AuthRuleV2UpdateResponseType) IsKnown() bool {
 }
 
 type AuthRuleV2ListResponse struct {
+	// Auth Rule Token
 	Token string `json:"token,required" format:"uuid"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
@@ -2309,28 +2393,34 @@ type AuthRuleV2ListResponse struct {
 	CardTokens     []string                             `json:"card_tokens,required" format:"uuid"`
 	CurrentVersion AuthRuleV2ListResponseCurrentVersion `json:"current_version,required,nullable"`
 	DraftVersion   AuthRuleV2ListResponseDraftVersion   `json:"draft_version,required,nullable"`
+	// Auth Rule Name
+	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel bool `json:"program_level,required"`
 	// The state of the Auth Rule
 	State AuthRuleV2ListResponseState `json:"state,required"`
 	// The type of Auth Rule
 	Type AuthRuleV2ListResponseType `json:"type,required"`
-	JSON authRuleV2ListResponseJSON `json:"-"`
+	// Card tokens to which the Auth Rule does not apply.
+	ExcludedCardTokens []string                   `json:"excluded_card_tokens" format:"uuid"`
+	JSON               authRuleV2ListResponseJSON `json:"-"`
 }
 
 // authRuleV2ListResponseJSON contains the JSON metadata for the struct
 // [AuthRuleV2ListResponse]
 type authRuleV2ListResponseJSON struct {
-	Token          apijson.Field
-	AccountTokens  apijson.Field
-	CardTokens     apijson.Field
-	CurrentVersion apijson.Field
-	DraftVersion   apijson.Field
-	ProgramLevel   apijson.Field
-	State          apijson.Field
-	Type           apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
+	Token              apijson.Field
+	AccountTokens      apijson.Field
+	CardTokens         apijson.Field
+	CurrentVersion     apijson.Field
+	DraftVersion       apijson.Field
+	Name               apijson.Field
+	ProgramLevel       apijson.Field
+	State              apijson.Field
+	Type               apijson.Field
+	ExcludedCardTokens apijson.Field
+	raw                string
+	ExtraFields        map[string]apijson.Field
 }
 
 func (r *AuthRuleV2ListResponse) UnmarshalJSON(data []byte) (err error) {
@@ -2377,13 +2467,13 @@ type AuthRuleV2ListResponseCurrentVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                         `json:"period"`
 	Scope  AuthRuleV2ListResponseCurrentVersionParametersScope `json:"scope"`
@@ -2508,6 +2598,10 @@ type AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersCon
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+	//     trailing hour up and until the authorization.
+	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+	//     trailing 24 hours up and until the authorization.
 	Attribute AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsOperation `json:"operation"`
@@ -2566,23 +2660,29 @@ func (r authRuleV2ListResponseCurrentVersionParametersConditionalBlockParameters
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+//     trailing hour up and until the authorization.
+//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+//     trailing 24 hours up and until the authorization.
 type AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc                     AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry                 AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency                AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID              AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor              AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift          AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode            AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount       AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore               AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
 )
 
 func (r AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore:
+	case AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore, AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H:
 		return true
 	}
 	return false
@@ -2610,7 +2710,7 @@ func (r AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParameters
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -2626,7 +2726,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -2691,13 +2791,13 @@ type AuthRuleV2ListResponseDraftVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                       `json:"period"`
 	Scope  AuthRuleV2ListResponseDraftVersionParametersScope `json:"scope"`
@@ -2822,6 +2922,10 @@ type AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersCondi
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+	//     trailing hour up and until the authorization.
+	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+	//     trailing 24 hours up and until the authorization.
 	Attribute AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsOperation `json:"operation"`
@@ -2880,23 +2984,29 @@ func (r authRuleV2ListResponseDraftVersionParametersConditionalBlockParametersCo
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+//     trailing hour up and until the authorization.
+//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+//     trailing 24 hours up and until the authorization.
 type AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc                     AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry                 AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency                AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID              AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor              AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift          AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode            AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount       AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore               AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
 )
 
 func (r AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore:
+	case AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore, AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H:
 		return true
 	}
 	return false
@@ -2924,7 +3034,7 @@ func (r AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersCo
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -2940,7 +3050,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -3002,6 +3112,7 @@ func (r AuthRuleV2ListResponseType) IsKnown() bool {
 }
 
 type AuthRuleV2ApplyResponse struct {
+	// Auth Rule Token
 	Token string `json:"token,required" format:"uuid"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
@@ -3009,28 +3120,34 @@ type AuthRuleV2ApplyResponse struct {
 	CardTokens     []string                              `json:"card_tokens,required" format:"uuid"`
 	CurrentVersion AuthRuleV2ApplyResponseCurrentVersion `json:"current_version,required,nullable"`
 	DraftVersion   AuthRuleV2ApplyResponseDraftVersion   `json:"draft_version,required,nullable"`
+	// Auth Rule Name
+	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel bool `json:"program_level,required"`
 	// The state of the Auth Rule
 	State AuthRuleV2ApplyResponseState `json:"state,required"`
 	// The type of Auth Rule
 	Type AuthRuleV2ApplyResponseType `json:"type,required"`
-	JSON authRuleV2ApplyResponseJSON `json:"-"`
+	// Card tokens to which the Auth Rule does not apply.
+	ExcludedCardTokens []string                    `json:"excluded_card_tokens" format:"uuid"`
+	JSON               authRuleV2ApplyResponseJSON `json:"-"`
 }
 
 // authRuleV2ApplyResponseJSON contains the JSON metadata for the struct
 // [AuthRuleV2ApplyResponse]
 type authRuleV2ApplyResponseJSON struct {
-	Token          apijson.Field
-	AccountTokens  apijson.Field
-	CardTokens     apijson.Field
-	CurrentVersion apijson.Field
-	DraftVersion   apijson.Field
-	ProgramLevel   apijson.Field
-	State          apijson.Field
-	Type           apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
+	Token              apijson.Field
+	AccountTokens      apijson.Field
+	CardTokens         apijson.Field
+	CurrentVersion     apijson.Field
+	DraftVersion       apijson.Field
+	Name               apijson.Field
+	ProgramLevel       apijson.Field
+	State              apijson.Field
+	Type               apijson.Field
+	ExcludedCardTokens apijson.Field
+	raw                string
+	ExtraFields        map[string]apijson.Field
 }
 
 func (r *AuthRuleV2ApplyResponse) UnmarshalJSON(data []byte) (err error) {
@@ -3077,13 +3194,13 @@ type AuthRuleV2ApplyResponseCurrentVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                          `json:"period"`
 	Scope  AuthRuleV2ApplyResponseCurrentVersionParametersScope `json:"scope"`
@@ -3208,6 +3325,10 @@ type AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersCo
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+	//     trailing hour up and until the authorization.
+	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+	//     trailing 24 hours up and until the authorization.
 	Attribute AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsOperation `json:"operation"`
@@ -3266,23 +3387,29 @@ func (r authRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParameter
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+//     trailing hour up and until the authorization.
+//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+//     trailing 24 hours up and until the authorization.
 type AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc                     AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry                 AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency                AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID              AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor              AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift          AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode            AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount       AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore               AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
 )
 
 func (r AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore:
+	case AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H:
 		return true
 	}
 	return false
@@ -3310,7 +3437,7 @@ func (r AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParameter
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -3326,7 +3453,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -3391,13 +3518,13 @@ type AuthRuleV2ApplyResponseDraftVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                        `json:"period"`
 	Scope  AuthRuleV2ApplyResponseDraftVersionParametersScope `json:"scope"`
@@ -3522,6 +3649,10 @@ type AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersCond
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+	//     trailing hour up and until the authorization.
+	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+	//     trailing 24 hours up and until the authorization.
 	Attribute AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsOperation `json:"operation"`
@@ -3580,23 +3711,29 @@ func (r authRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersC
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+//     trailing hour up and until the authorization.
+//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+//     trailing 24 hours up and until the authorization.
 type AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc                     AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry                 AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency                AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID              AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor              AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift          AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode            AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount       AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore               AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
 )
 
 func (r AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore:
+	case AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore, AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H:
 		return true
 	}
 	return false
@@ -3624,7 +3761,7 @@ func (r AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersC
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -3640,7 +3777,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -3702,6 +3839,7 @@ func (r AuthRuleV2ApplyResponseType) IsKnown() bool {
 }
 
 type AuthRuleV2DraftResponse struct {
+	// Auth Rule Token
 	Token string `json:"token,required" format:"uuid"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
@@ -3709,28 +3847,34 @@ type AuthRuleV2DraftResponse struct {
 	CardTokens     []string                              `json:"card_tokens,required" format:"uuid"`
 	CurrentVersion AuthRuleV2DraftResponseCurrentVersion `json:"current_version,required,nullable"`
 	DraftVersion   AuthRuleV2DraftResponseDraftVersion   `json:"draft_version,required,nullable"`
+	// Auth Rule Name
+	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel bool `json:"program_level,required"`
 	// The state of the Auth Rule
 	State AuthRuleV2DraftResponseState `json:"state,required"`
 	// The type of Auth Rule
 	Type AuthRuleV2DraftResponseType `json:"type,required"`
-	JSON authRuleV2DraftResponseJSON `json:"-"`
+	// Card tokens to which the Auth Rule does not apply.
+	ExcludedCardTokens []string                    `json:"excluded_card_tokens" format:"uuid"`
+	JSON               authRuleV2DraftResponseJSON `json:"-"`
 }
 
 // authRuleV2DraftResponseJSON contains the JSON metadata for the struct
 // [AuthRuleV2DraftResponse]
 type authRuleV2DraftResponseJSON struct {
-	Token          apijson.Field
-	AccountTokens  apijson.Field
-	CardTokens     apijson.Field
-	CurrentVersion apijson.Field
-	DraftVersion   apijson.Field
-	ProgramLevel   apijson.Field
-	State          apijson.Field
-	Type           apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
+	Token              apijson.Field
+	AccountTokens      apijson.Field
+	CardTokens         apijson.Field
+	CurrentVersion     apijson.Field
+	DraftVersion       apijson.Field
+	Name               apijson.Field
+	ProgramLevel       apijson.Field
+	State              apijson.Field
+	Type               apijson.Field
+	ExcludedCardTokens apijson.Field
+	raw                string
+	ExtraFields        map[string]apijson.Field
 }
 
 func (r *AuthRuleV2DraftResponse) UnmarshalJSON(data []byte) (err error) {
@@ -3777,13 +3921,13 @@ type AuthRuleV2DraftResponseCurrentVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                          `json:"period"`
 	Scope  AuthRuleV2DraftResponseCurrentVersionParametersScope `json:"scope"`
@@ -3908,6 +4052,10 @@ type AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersCo
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+	//     trailing hour up and until the authorization.
+	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+	//     trailing 24 hours up and until the authorization.
 	Attribute AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsOperation `json:"operation"`
@@ -3966,23 +4114,29 @@ func (r authRuleV2DraftResponseCurrentVersionParametersConditionalBlockParameter
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+//     trailing hour up and until the authorization.
+//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+//     trailing 24 hours up and until the authorization.
 type AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc                     AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry                 AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency                AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID              AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor              AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift          AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode            AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount       AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore               AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
 )
 
 func (r AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore:
+	case AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore, AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H:
 		return true
 	}
 	return false
@@ -4010,7 +4164,7 @@ func (r AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParameter
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -4026,7 +4180,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -4091,13 +4245,13 @@ type AuthRuleV2DraftResponseDraftVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                        `json:"period"`
 	Scope  AuthRuleV2DraftResponseDraftVersionParametersScope `json:"scope"`
@@ -4222,6 +4376,10 @@ type AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersCond
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+	//     trailing hour up and until the authorization.
+	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+	//     trailing 24 hours up and until the authorization.
 	Attribute AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsOperation `json:"operation"`
@@ -4280,23 +4438,29 @@ func (r authRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersC
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+//     trailing hour up and until the authorization.
+//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+//     trailing 24 hours up and until the authorization.
 type AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc                     AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry                 AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency                AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID              AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor              AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift          AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode            AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount       AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore               AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
 )
 
 func (r AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore:
+	case AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore, AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H:
 		return true
 	}
 	return false
@@ -4324,7 +4488,7 @@ func (r AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersC
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -4340,7 +4504,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -4402,6 +4566,7 @@ func (r AuthRuleV2DraftResponseType) IsKnown() bool {
 }
 
 type AuthRuleV2PromoteResponse struct {
+	// Auth Rule Token
 	Token string `json:"token,required" format:"uuid"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
@@ -4409,28 +4574,34 @@ type AuthRuleV2PromoteResponse struct {
 	CardTokens     []string                                `json:"card_tokens,required" format:"uuid"`
 	CurrentVersion AuthRuleV2PromoteResponseCurrentVersion `json:"current_version,required,nullable"`
 	DraftVersion   AuthRuleV2PromoteResponseDraftVersion   `json:"draft_version,required,nullable"`
+	// Auth Rule Name
+	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel bool `json:"program_level,required"`
 	// The state of the Auth Rule
 	State AuthRuleV2PromoteResponseState `json:"state,required"`
 	// The type of Auth Rule
 	Type AuthRuleV2PromoteResponseType `json:"type,required"`
-	JSON authRuleV2PromoteResponseJSON `json:"-"`
+	// Card tokens to which the Auth Rule does not apply.
+	ExcludedCardTokens []string                      `json:"excluded_card_tokens" format:"uuid"`
+	JSON               authRuleV2PromoteResponseJSON `json:"-"`
 }
 
 // authRuleV2PromoteResponseJSON contains the JSON metadata for the struct
 // [AuthRuleV2PromoteResponse]
 type authRuleV2PromoteResponseJSON struct {
-	Token          apijson.Field
-	AccountTokens  apijson.Field
-	CardTokens     apijson.Field
-	CurrentVersion apijson.Field
-	DraftVersion   apijson.Field
-	ProgramLevel   apijson.Field
-	State          apijson.Field
-	Type           apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
+	Token              apijson.Field
+	AccountTokens      apijson.Field
+	CardTokens         apijson.Field
+	CurrentVersion     apijson.Field
+	DraftVersion       apijson.Field
+	Name               apijson.Field
+	ProgramLevel       apijson.Field
+	State              apijson.Field
+	Type               apijson.Field
+	ExcludedCardTokens apijson.Field
+	raw                string
+	ExtraFields        map[string]apijson.Field
 }
 
 func (r *AuthRuleV2PromoteResponse) UnmarshalJSON(data []byte) (err error) {
@@ -4477,13 +4648,13 @@ type AuthRuleV2PromoteResponseCurrentVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                            `json:"period"`
 	Scope  AuthRuleV2PromoteResponseCurrentVersionParametersScope `json:"scope"`
@@ -4608,6 +4779,10 @@ type AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParameters
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+	//     trailing hour up and until the authorization.
+	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+	//     trailing 24 hours up and until the authorization.
 	Attribute AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsOperation `json:"operation"`
@@ -4666,23 +4841,29 @@ func (r authRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParamet
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+//     trailing hour up and until the authorization.
+//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+//     trailing 24 hours up and until the authorization.
 type AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc                     AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry                 AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency                AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID              AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor              AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift          AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode            AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount       AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore               AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
 )
 
 func (r AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore:
+	case AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeRiskScore, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H:
 		return true
 	}
 	return false
@@ -4710,7 +4891,7 @@ func (r AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParamet
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -4726,7 +4907,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -4791,13 +4972,13 @@ type AuthRuleV2PromoteResponseDraftVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount float64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount,nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount float64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [shared.VelocityLimitParamsPeriodUnion].
 	Period interface{}                                          `json:"period"`
 	Scope  AuthRuleV2PromoteResponseDraftVersionParametersScope `json:"scope"`
@@ -4922,6 +5103,10 @@ type AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersCo
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+	//     trailing hour up and until the authorization.
+	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+	//     trailing 24 hours up and until the authorization.
 	Attribute AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsOperation `json:"operation"`
@@ -4980,23 +5165,29 @@ func (r authRuleV2PromoteResponseDraftVersionParametersConditionalBlockParameter
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+//     trailing hour up and until the authorization.
+//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+//     trailing 24 hours up and until the authorization.
 type AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc                     AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry                 AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency                AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID              AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor              AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift          AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode            AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount       AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore               AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
 )
 
 func (r AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore:
+	case AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeRiskScore, AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H:
 		return true
 	}
 	return false
@@ -5024,7 +5215,7 @@ func (r AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParameter
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionFloat] or
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
 // [AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion()
@@ -5040,7 +5231,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -5131,9 +5322,12 @@ func (r AuthRuleV2NewParams) MarshalJSON() (data []byte, err error) {
 }
 
 type AuthRuleV2NewParamsBody struct {
-	AccountTokens param.Field[interface{}] `json:"account_tokens"`
-	CardTokens    param.Field[interface{}] `json:"card_tokens"`
-	Parameters    param.Field[interface{}] `json:"parameters"`
+	AccountTokens      param.Field[interface{}] `json:"account_tokens"`
+	CardTokens         param.Field[interface{}] `json:"card_tokens"`
+	ExcludedCardTokens param.Field[interface{}] `json:"excluded_card_tokens"`
+	// Auth Rule Name
+	Name       param.Field[string]      `json:"name"`
+	Parameters param.Field[interface{}] `json:"parameters"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel param.Field[bool] `json:"program_level"`
 	// The type of Auth Rule
@@ -5157,6 +5351,8 @@ type AuthRuleV2NewParamsBodyUnion interface {
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokens struct {
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens param.Field[[]string] `json:"account_tokens,required" format:"uuid"`
+	// Auth Rule Name
+	Name param.Field[string] `json:"name"`
 	// Parameters for the current version of the Auth Rule
 	Parameters param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersUnion] `json:"parameters"`
 	// The type of Auth Rule
@@ -5177,13 +5373,13 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters struct 
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount param.Field[float64] `json:"limit_amount"`
+	LimitAmount param.Field[int64] `json:"limit_amount"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount param.Field[float64]                                                                  `json:"limit_count"`
+	LimitCount param.Field[int64]                                                                    `json:"limit_count"`
 	Period     param.Field[interface{}]                                                              `json:"period"`
 	Scope      param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersScope] `json:"scope"`
 }
@@ -5248,6 +5444,10 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditio
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+	//     trailing hour up and until the authorization.
+	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+	//     trailing 24 hours up and until the authorization.
 	Attribute param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute] `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsOperation] `json:"operation"`
@@ -5290,23 +5490,29 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersCondi
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+//     trailing hour up and until the authorization.
+//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+//     trailing 24 hours up and until the authorization.
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeMcc                     AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeCountry                 AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeCurrency                AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeMerchantID              AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeDescriptor              AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeLiabilityShift          AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributePanEntryMode            AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeTransactionAmount       AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeRiskScore               AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
 )
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeRiskScore:
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeRiskScore, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H:
 		return true
 	}
 	return false
@@ -5334,7 +5540,7 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersCondi
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Satisfied by [shared.UnionString], [shared.UnionFloat],
+// Satisfied by [shared.UnionString], [shared.UnionInt],
 // [AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsValueUnion()
@@ -5379,6 +5585,8 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensType) IsKnown()
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokens struct {
 	// Card tokens to which the Auth Rule applies.
 	CardTokens param.Field[[]string] `json:"card_tokens,required" format:"uuid"`
+	// Auth Rule Name
+	Name param.Field[string] `json:"name"`
 	// Parameters for the current version of the Auth Rule
 	Parameters param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersUnion] `json:"parameters"`
 	// The type of Auth Rule
@@ -5399,13 +5607,13 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount param.Field[float64] `json:"limit_amount"`
+	LimitAmount param.Field[int64] `json:"limit_amount"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount param.Field[float64]                                                               `json:"limit_count"`
+	LimitCount param.Field[int64]                                                                 `json:"limit_count"`
 	Period     param.Field[interface{}]                                                           `json:"period"`
 	Scope      param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersScope] `json:"scope"`
 }
@@ -5470,6 +5678,10 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+	//     trailing hour up and until the authorization.
+	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+	//     trailing 24 hours up and until the authorization.
 	Attribute param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute] `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsOperation] `json:"operation"`
@@ -5512,23 +5724,29 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditio
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+//     trailing hour up and until the authorization.
+//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+//     trailing 24 hours up and until the authorization.
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeMcc                     AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeCountry                 AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeCurrency                AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeMerchantID              AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeDescriptor              AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeLiabilityShift          AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributePanEntryMode            AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeTransactionAmount       AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeRiskScore               AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
 )
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeRiskScore:
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeRiskScore, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H:
 		return true
 	}
 	return false
@@ -5556,7 +5774,7 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditio
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Satisfied by [shared.UnionString], [shared.UnionFloat],
+// Satisfied by [shared.UnionString], [shared.UnionInt],
 // [AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsValueUnion()
@@ -5601,6 +5819,10 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensType) IsKnown() bo
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevel struct {
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel param.Field[bool] `json:"program_level,required"`
+	// Card tokens to which the Auth Rule does not apply.
+	ExcludedCardTokens param.Field[[]string] `json:"excluded_card_tokens" format:"uuid"`
+	// Auth Rule Name
+	Name param.Field[string] `json:"name"`
 	// Parameters for the current version of the Auth Rule
 	Parameters param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersUnion] `json:"parameters"`
 	// The type of Auth Rule
@@ -5621,13 +5843,13 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount param.Field[float64] `json:"limit_amount"`
+	LimitAmount param.Field[int64] `json:"limit_amount"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount param.Field[float64]                                                                 `json:"limit_count"`
+	LimitCount param.Field[int64]                                                                   `json:"limit_count"`
 	Period     param.Field[interface{}]                                                             `json:"period"`
 	Scope      param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersScope] `json:"scope"`
 }
@@ -5692,6 +5914,10 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersCondition
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+	//     trailing hour up and until the authorization.
+	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+	//     trailing 24 hours up and until the authorization.
 	Attribute param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute] `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsOperation] `json:"operation"`
@@ -5734,23 +5960,29 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersCondit
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+//     trailing hour up and until the authorization.
+//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+//     trailing 24 hours up and until the authorization.
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeMcc                     AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeCountry                 AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeCurrency                AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeMerchantID              AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeDescriptor              AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeLiabilityShift          AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributePanEntryMode            AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeTransactionAmount       AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeRiskScore               AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
 )
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeRiskScore:
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeRiskScore, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H:
 		return true
 	}
 	return false
@@ -5778,7 +6010,7 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersCondit
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Satisfied by [shared.UnionString], [shared.UnionFloat],
+// Satisfied by [shared.UnionString], [shared.UnionInt],
 // [AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsValueUnion()
@@ -5837,6 +6069,8 @@ func (r AuthRuleV2NewParamsBodyType) IsKnown() bool {
 }
 
 type AuthRuleV2UpdateParams struct {
+	// Auth Rule Name
+	Name param.Field[string] `json:"name"`
 	// The desired state of the Auth Rule.
 	//
 	// Note that only deactivating an Auth Rule through this endpoint is supported at
@@ -5900,8 +6134,9 @@ func (r AuthRuleV2ApplyParams) MarshalJSON() (data []byte, err error) {
 }
 
 type AuthRuleV2ApplyParamsBody struct {
-	AccountTokens param.Field[interface{}] `json:"account_tokens"`
-	CardTokens    param.Field[interface{}] `json:"card_tokens"`
+	AccountTokens      param.Field[interface{}] `json:"account_tokens"`
+	CardTokens         param.Field[interface{}] `json:"card_tokens"`
+	ExcludedCardTokens param.Field[interface{}] `json:"excluded_card_tokens"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel param.Field[bool] `json:"program_level"`
 }
@@ -5947,6 +6182,8 @@ func (r AuthRuleV2ApplyParamsBodyApplyAuthRuleRequestCardTokens) implementsAuthR
 type AuthRuleV2ApplyParamsBodyApplyAuthRuleRequestProgramLevel struct {
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel param.Field[bool] `json:"program_level,required"`
+	// Card tokens to which the Auth Rule does not apply.
+	ExcludedCardTokens param.Field[[]string] `json:"excluded_card_tokens" format:"uuid"`
 }
 
 func (r AuthRuleV2ApplyParamsBodyApplyAuthRuleRequestProgramLevel) MarshalJSON() (data []byte, err error) {
@@ -5972,13 +6209,13 @@ type AuthRuleV2DraftParamsParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount param.Field[float64] `json:"limit_amount"`
+	LimitAmount param.Field[int64] `json:"limit_amount"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount param.Field[float64]                              `json:"limit_count"`
+	LimitCount param.Field[int64]                                `json:"limit_count"`
 	Period     param.Field[interface{}]                          `json:"period"`
 	Scope      param.Field[AuthRuleV2DraftParamsParametersScope] `json:"scope"`
 }
@@ -6040,6 +6277,10 @@ type AuthRuleV2DraftParamsParametersConditionalBlockParametersCondition struct {
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+	//     trailing hour up and until the authorization.
+	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+	//     trailing 24 hours up and until the authorization.
 	Attribute param.Field[AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute] `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation param.Field[AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsOperation] `json:"operation"`
@@ -6082,23 +6323,29 @@ func (r AuthRuleV2DraftParamsParametersConditionalBlockParametersCondition) Mars
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
+//     trailing hour up and until the authorization.
+//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
+//     trailing 24 hours up and until the authorization.
 type AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute string
 
 const (
-	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeMcc               AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "MCC"
-	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeCountry           AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeCurrency          AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeMerchantID        AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeDescriptor        AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeLiabilityShift    AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributePanEntryMode      AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeTransactionAmount AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeRiskScore         AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeMcc                     AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "MCC"
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeCountry                 AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeCurrency                AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeMerchantID              AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeDescriptor              AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeLiabilityShift          AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "LIABILITY_SHIFT"
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributePanEntryMode            AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeTransactionAmount       AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeRiskScore               AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
 )
 
 func (r AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeRiskScore:
+	case AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeMcc, AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeCountry, AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeCurrency, AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeMerchantID, AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeDescriptor, AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeLiabilityShift, AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributePanEntryMode, AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeRiskScore, AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsAttributeCardTransactionCount24H:
 		return true
 	}
 	return false
@@ -6126,7 +6373,7 @@ func (r AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsOpera
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Satisfied by [shared.UnionString], [shared.UnionFloat],
+// Satisfied by [shared.UnionString], [shared.UnionInt],
 // [AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsValueArray].
 type AuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsValueUnion interface {
 	ImplementsAuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsValueUnion()

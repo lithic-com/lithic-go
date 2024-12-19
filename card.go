@@ -47,7 +47,7 @@ func NewCardService(opts ...option.RequestOption) (r *CardService) {
 	return
 }
 
-// Create a new virtual or physical card. Parameters `pin`, `shipping_address`, and
+// Create a new virtual or physical card. Parameters `shipping_address` and
 // `product_id` only apply to physical cards.
 func (r *CardService) New(ctx context.Context, body CardNewParams, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
@@ -69,7 +69,7 @@ func (r *CardService) Get(ctx context.Context, cardToken string, opts ...option.
 }
 
 // Update the specified properties of the card. Unsupplied properties will remain
-// unchanged. `pin` parameter only applies to physical cards.
+// unchanged.
 //
 // _Note: setting a card to a `CLOSED` state is a final action that cannot be
 // undone._
@@ -107,6 +107,27 @@ func (r *CardService) ListAutoPaging(ctx context.Context, query CardListParams, 
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
+// Convert a virtual card into a physical card and manufacture it. Customer must
+// supply relevant fields for physical card creation including `product_id`,
+// `carrier`, `shipping_method`, and `shipping_address`. The card token will be
+// unchanged. The card's type will be altered to `PHYSICAL`. The card will be set
+// to state `PENDING_FULFILLMENT` and fulfilled at next fulfillment cycle. Virtual
+// cards created on card programs which do not support physical cards cannot be
+// converted. The card program cannot be changed as part of the conversion. Cards
+// must be in a state of either `OPEN` or `PAUSED` to be converted. Only applies to
+// cards of type `VIRTUAL` (or existing cards with deprecated types of
+// `DIGITAL_WALLET` and `UNLOCKED`).
+func (r *CardService) ConvertPhysical(ctx context.Context, cardToken string, body CardConvertPhysicalParams, opts ...option.RequestOption) (res *Card, err error) {
+	opts = append(r.Options[:], opts...)
+	if cardToken == "" {
+		err = errors.New("missing required card_token parameter")
+		return
+	}
+	path := fmt.Sprintf("v1/cards/%s/convert_physical", cardToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+	return
+}
+
 // Handling full card PANs and CVV codes requires that you comply with the Payment
 // Card Industry Data Security Standards (PCI DSS). Some clients choose to reduce
 // their compliance obligations by leveraging our embedded card UI solution
@@ -116,9 +137,10 @@ func (r *CardService) ListAutoPaging(ctx context.Context, query CardListParams, 
 // that we provide, optionally styled in the customer's branding using a specified
 // css stylesheet. A user's browser makes the request directly to api.lithic.com,
 // so card PANs and CVVs never touch the API customer's servers while full card
-// data is displayed to their end-users. The response contains an HTML document.
-// This means that the url for the request can be inserted straight into the `src`
-// attribute of an iframe.
+// data is displayed to their end-users. The response contains an HTML document
+// (see Embedded Card UI or Changelog for upcoming changes in January). This means
+// that the url for the request can be inserted straight into the `src` attribute
+// of an iframe.
 //
 // ```html
 // <iframe
@@ -235,9 +257,11 @@ func (r *CardService) Provision(ctx context.Context, cardToken string, body Card
 	return
 }
 
-// Initiate print and shipment of a duplicate physical card.
-//
-// Only applies to cards of type `PHYSICAL`.
+// Initiate print and shipment of a duplicate physical card (e.g. card is
+// physically damaged). The PAN, expiry, and CVC2 will remain the same and the
+// original card can continue to be used until the new card is activated. Only
+// applies to cards of type `PHYSICAL`. A card can be replaced or renewed a total
+// of 8 times.
 func (r *CardService) Reissue(ctx context.Context, cardToken string, body CardReissueParams, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
 	if cardToken == "" {
@@ -249,9 +273,12 @@ func (r *CardService) Reissue(ctx context.Context, cardToken string, body CardRe
 	return
 }
 
-// Initiate print and shipment of a renewed physical card.
-//
-// Only applies to cards of type `PHYSICAL`.
+// Creates a new card with the same card token and PAN, but updated expiry and CVC2
+// code. The original card will keep working for card-present transactions until
+// the new card is activated. For card-not-present transactions, the original card
+// details (expiry, CVC2) will also keep working until the new card is activated.
+// Applies to card types `PHYSICAL` and `VIRTUAL`. A card can be replaced or
+// renewed a total of 8 times.
 func (r *CardService) Renew(ctx context.Context, cardToken string, body CardRenewParams, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
 	if cardToken == "" {
@@ -337,8 +364,9 @@ type Card struct {
 	//   - `PENDING_ACTIVATION` - At regular intervals, cards of type `PHYSICAL` in state
 	//     `PENDING_FULFILLMENT` are sent to the card production warehouse and updated to
 	//     state `PENDING_ACTIVATION` . Similar to `PENDING_FULFILLMENT`, cards in this
-	//     state can be used for e-commerce transactions. API clients should update the
-	//     card's state to `OPEN` only after the cardholder confirms receipt of the card.
+	//     state can be used for e-commerce transactions or can be added to mobile
+	//     wallets. API clients should update the card's state to `OPEN` only after the
+	//     cardholder confirms receipt of the card.
 	//
 	// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
 	// manufactured.
@@ -355,6 +383,10 @@ type Card struct {
 	//   - `SINGLE_USE` - Card is closed upon first successful authorization.
 	//   - `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first merchant that
 	//     successfully authorizes the card.
+	//   - `UNLOCKED` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
+	//     VIRTUAL instead.
+	//   - `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please
+	//     use VIRTUAL instead.
 	Type CardType `json:"type,required"`
 	// List of identifiers for the Auth Rule(s) that are applied on the card. This
 	// field is deprecated and will no longer be populated in the `Card` object. The
@@ -389,8 +421,11 @@ type Card struct {
 	// Only applicable to cards of type `PHYSICAL`. This must be configured with Lithic
 	// before use. Specifies the configuration (i.e., physical card art) that the card
 	// should be manufactured with.
-	ProductID string   `json:"product_id"`
-	JSON      cardJSON `json:"-"`
+	ProductID string `json:"product_id"`
+	// If the card is a replacement for another card, the globally unique identifier
+	// for the card that was replaced.
+	ReplacementFor string   `json:"replacement_for,nullable" format:"uuid"`
+	JSON           cardJSON `json:"-"`
 }
 
 // cardJSON contains the JSON metadata for the struct [Card]
@@ -417,6 +452,7 @@ type cardJSON struct {
 	Pan                 apijson.Field
 	PendingCommands     apijson.Field
 	ProductID           apijson.Field
+	ReplacementFor      apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
 }
@@ -559,8 +595,9 @@ func (r CardPinStatus) IsKnown() bool {
 //   - `PENDING_ACTIVATION` - At regular intervals, cards of type `PHYSICAL` in state
 //     `PENDING_FULFILLMENT` are sent to the card production warehouse and updated to
 //     state `PENDING_ACTIVATION` . Similar to `PENDING_FULFILLMENT`, cards in this
-//     state can be used for e-commerce transactions. API clients should update the
-//     card's state to `OPEN` only after the cardholder confirms receipt of the card.
+//     state can be used for e-commerce transactions or can be added to mobile
+//     wallets. API clients should update the card's state to `OPEN` only after the
+//     cardholder confirms receipt of the card.
 //
 // In sandbox, the same daily batch fulfillment occurs, but no cards are actually
 // manufactured.
@@ -594,6 +631,10 @@ func (r CardState) IsKnown() bool {
 //   - `SINGLE_USE` - Card is closed upon first successful authorization.
 //   - `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first merchant that
 //     successfully authorizes the card.
+//   - `UNLOCKED` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
+//     VIRTUAL instead.
+//   - `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please
+//     use VIRTUAL instead.
 type CardType string
 
 const (
@@ -601,11 +642,13 @@ const (
 	CardTypePhysical       CardType = "PHYSICAL"
 	CardTypeSingleUse      CardType = "SINGLE_USE"
 	CardTypeVirtual        CardType = "VIRTUAL"
+	CardTypeUnlocked       CardType = "UNLOCKED"
+	CardTypeDigitalWallet  CardType = "DIGITAL_WALLET"
 )
 
 func (r CardType) IsKnown() bool {
 	switch r {
-	case CardTypeMerchantLocked, CardTypePhysical, CardTypeSingleUse, CardTypeVirtual:
+	case CardTypeMerchantLocked, CardTypePhysical, CardTypeSingleUse, CardTypeVirtual, CardTypeUnlocked, CardTypeDigitalWallet:
 		return true
 	}
 	return false
@@ -788,6 +831,10 @@ type CardNewParams struct {
 	//   - `SINGLE_USE` - Card is closed upon first successful authorization.
 	//   - `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first merchant that
 	//     successfully authorizes the card.
+	//   - `UNLOCKED` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
+	//     VIRTUAL instead.
+	//   - `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please
+	//     use VIRTUAL instead.
 	Type param.Field[CardNewParamsType] `json:"type,required"`
 	// Globally unique identifier for the account that the card will be associated
 	// with. Required for programs enrolling users using the
@@ -815,7 +862,7 @@ type CardNewParams struct {
 	ExpYear param.Field[string] `json:"exp_year"`
 	// Friendly name to identify the card.
 	Memo param.Field[string] `json:"memo"`
-	// Encrypted PIN block (in base64). Only applies to cards of type `PHYSICAL` and
+	// Encrypted PIN block (in base64). Applies to cards of type `PHYSICAL` and
 	// `VIRTUAL`. See
 	// [Encrypted PIN Block](https://docs.lithic.com/docs/cards#encrypted-pin-block).
 	Pin param.Field[string] `json:"pin"`
@@ -829,8 +876,9 @@ type CardNewParams struct {
 	// If `replacement_for` is specified and this field is omitted, the replacement
 	// card's account will be inferred from the card being replaced.
 	ReplacementAccountToken param.Field[string] `json:"replacement_account_token" format:"uuid"`
-	// Only applicable to cards of type `PHYSICAL`. Globally unique identifier for the
-	// card that this physical card will replace.
+	// Globally unique identifier for the card that this card will replace. If the card
+	// type is `PHYSICAL` it will be replaced by a `PHYSICAL` card. If the card type is
+	// `VIRTUAL` it will be replaced by a `VIRTUAL` card.
 	ReplacementFor  param.Field[string]                      `json:"replacement_for" format:"uuid"`
 	ShippingAddress param.Field[shared.ShippingAddressParam] `json:"shipping_address"`
 	// Shipping method for the card. Only applies to cards of type PHYSICAL. Use of
@@ -890,6 +938,10 @@ func (r CardNewParams) MarshalJSON() (data []byte, err error) {
 //   - `SINGLE_USE` - Card is closed upon first successful authorization.
 //   - `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first merchant that
 //     successfully authorizes the card.
+//   - `UNLOCKED` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
+//     VIRTUAL instead.
+//   - `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please
+//     use VIRTUAL instead.
 type CardNewParamsType string
 
 const (
@@ -897,11 +949,13 @@ const (
 	CardNewParamsTypePhysical       CardNewParamsType = "PHYSICAL"
 	CardNewParamsTypeSingleUse      CardNewParamsType = "SINGLE_USE"
 	CardNewParamsTypeVirtual        CardNewParamsType = "VIRTUAL"
+	CardNewParamsTypeUnlocked       CardNewParamsType = "UNLOCKED"
+	CardNewParamsTypeDigitalWallet  CardNewParamsType = "DIGITAL_WALLET"
 )
 
 func (r CardNewParamsType) IsKnown() bool {
 	switch r {
-	case CardNewParamsTypeMerchantLocked, CardNewParamsTypePhysical, CardNewParamsTypeSingleUse, CardNewParamsTypeVirtual:
+	case CardNewParamsTypeMerchantLocked, CardNewParamsTypePhysical, CardNewParamsTypeSingleUse, CardNewParamsTypeVirtual, CardNewParamsTypeUnlocked, CardNewParamsTypeDigitalWallet:
 		return true
 	}
 	return false
@@ -1091,6 +1145,65 @@ const (
 func (r CardListParamsState) IsKnown() bool {
 	switch r {
 	case CardListParamsStateClosed, CardListParamsStateOpen, CardListParamsStatePaused, CardListParamsStatePendingActivation, CardListParamsStatePendingFulfillment:
+		return true
+	}
+	return false
+}
+
+type CardConvertPhysicalParams struct {
+	// The shipping address this card will be sent to.
+	ShippingAddress param.Field[shared.ShippingAddressParam] `json:"shipping_address,required"`
+	// If omitted, the previous carrier will be used.
+	Carrier param.Field[shared.CarrierParam] `json:"carrier"`
+	// Specifies the configuration (e.g. physical card art) that the card should be
+	// manufactured with, and only applies to cards of type `PHYSICAL`. This must be
+	// configured with Lithic before use.
+	ProductID param.Field[string] `json:"product_id"`
+	// Shipping method for the card. Use of options besides `STANDARD` require
+	// additional permissions.
+	//
+	//   - `STANDARD` - USPS regular mail or similar international option, with no
+	//     tracking
+	//   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
+	//     with tracking
+	//   - `PRIORITY` - USPS Priority, 1-3 day shipping, with tracking
+	//   - `EXPRESS` - FedEx Express, 3-day shipping, with tracking
+	//   - `2_DAY` - FedEx 2-day shipping, with tracking
+	//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
+	//     tracking
+	ShippingMethod param.Field[CardConvertPhysicalParamsShippingMethod] `json:"shipping_method"`
+}
+
+func (r CardConvertPhysicalParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// Shipping method for the card. Use of options besides `STANDARD` require
+// additional permissions.
+//
+//   - `STANDARD` - USPS regular mail or similar international option, with no
+//     tracking
+//   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
+//     with tracking
+//   - `PRIORITY` - USPS Priority, 1-3 day shipping, with tracking
+//   - `EXPRESS` - FedEx Express, 3-day shipping, with tracking
+//   - `2_DAY` - FedEx 2-day shipping, with tracking
+//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
+//     tracking
+type CardConvertPhysicalParamsShippingMethod string
+
+const (
+	CardConvertPhysicalParamsShippingMethod2Day                 CardConvertPhysicalParamsShippingMethod = "2-DAY"
+	CardConvertPhysicalParamsShippingMethodExpedited            CardConvertPhysicalParamsShippingMethod = "EXPEDITED"
+	CardConvertPhysicalParamsShippingMethodExpress              CardConvertPhysicalParamsShippingMethod = "EXPRESS"
+	CardConvertPhysicalParamsShippingMethodPriority             CardConvertPhysicalParamsShippingMethod = "PRIORITY"
+	CardConvertPhysicalParamsShippingMethodStandard             CardConvertPhysicalParamsShippingMethod = "STANDARD"
+	CardConvertPhysicalParamsShippingMethodStandardWithTracking CardConvertPhysicalParamsShippingMethod = "STANDARD_WITH_TRACKING"
+)
+
+func (r CardConvertPhysicalParamsShippingMethod) IsKnown() bool {
+	switch r {
+	case CardConvertPhysicalParamsShippingMethod2Day, CardConvertPhysicalParamsShippingMethodExpedited, CardConvertPhysicalParamsShippingMethodExpress, CardConvertPhysicalParamsShippingMethodPriority, CardConvertPhysicalParamsShippingMethodStandard, CardConvertPhysicalParamsShippingMethodStandardWithTracking:
 		return true
 	}
 	return false

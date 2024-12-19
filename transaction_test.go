@@ -88,6 +88,7 @@ func TestTransactionSimulateAuthorizationWithOptionalParams(t *testing.T) {
 		MerchantAmount:         lithic.F(int64(0)),
 		MerchantCurrency:       lithic.F("GBP"),
 		PartialApprovalCapable: lithic.F(true),
+		Pin:                    lithic.F("1234"),
 		Status:                 lithic.F(lithic.TransactionSimulateAuthorizationParamsStatusAuthorization),
 	})
 	if err != nil {

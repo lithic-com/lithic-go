@@ -129,25 +129,6 @@ func (r *AccountHolderService) ListDocuments(ctx context.Context, accountHolderT
 	return
 }
 
-// Resubmit a KYC submission. This endpoint should be used in cases where a KYC
-// submission returned a `PENDING_RESUBMIT` result, meaning one or more critical
-// KYC fields may have been mis-entered and the individual's identity has not yet
-// been successfully verified. This step must be completed in order to proceed with
-// the KYC evaluation.
-//
-// Two resubmission attempts are permitted via this endpoint before a `REJECTED`
-// status is returned and the account creation process is ended.
-func (r *AccountHolderService) Resubmit(ctx context.Context, accountHolderToken string, body AccountHolderResubmitParams, opts ...option.RequestOption) (res *AccountHolder, err error) {
-	opts = append(r.Options[:], opts...)
-	if accountHolderToken == "" {
-		err = errors.New("missing required account_holder_token parameter")
-		return
-	}
-	path := fmt.Sprintf("v1/account_holders/%s/resubmit", accountHolderToken)
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
-}
-
 // Check the status of an account holder document upload, or retrieve the upload
 // URLs to process your image uploads.
 //
@@ -186,8 +167,7 @@ func (r *AccountHolderService) SimulateEnrollmentDocumentReview(ctx context.Cont
 }
 
 // Simulates an enrollment review for an account holder. This endpoint is only
-// applicable for workflows that may required intervention such as `KYB_BASIC` or
-// `KYC_ADVANCED`.
+// applicable for workflows that may required intervention such as `KYB_BASIC`.
 func (r *AccountHolderService) SimulateEnrollmentReview(ctx context.Context, body AccountHolderSimulateEnrollmentReviewParams, opts ...option.RequestOption) (res *AccountHolderSimulateEnrollmentReviewResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "v1/simulate/account_holders/enrollment_review"
@@ -272,8 +252,8 @@ type AccountHolder struct {
 	//
 	// > Primary phone of Account Holder, entered in E.164 format.
 	PhoneNumber string `json:"phone_number"`
-	// Only present for "KYB_BASIC" and "KYC_ADVANCED" workflows. A list of documents
-	// required for the account holder to be approved.
+	// Only present for "KYB_BASIC" workflow. A list of documents required for the
+	// account holder to be approved.
 	RequiredDocuments []RequiredDocument `json:"required_documents"`
 	// <Deprecated. Use verification_application.status instead>
 	//
@@ -281,9 +261,7 @@ type AccountHolder struct {
 	//
 	// Note:
 	//
-	//   - `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
-	//     `KYC_ADVANCED` workflow.
-	//   - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
+	// - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
 	Status AccountHolderStatus `json:"status"`
 	// <Deprecated. Use verification_application.status_reasons> Reason for the
 	// evaluation status.
@@ -579,9 +557,7 @@ func (r accountHolderIndividualJSON) RawJSON() string {
 //
 // Note:
 //
-//   - `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
-//     `KYC_ADVANCED` workflow.
-//   - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
+// - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
 type AccountHolderStatus string
 
 const (
@@ -651,9 +627,7 @@ type AccountHolderVerificationApplication struct {
 	//
 	// Note:
 	//
-	//   - `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
-	//     `KYC_ADVANCED` workflow.
-	//   - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
+	// - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
 	Status AccountHolderVerificationApplicationStatus `json:"status"`
 	// Reason for the evaluation status.
 	StatusReasons []AccountHolderVerificationApplicationStatusReason `json:"status_reasons"`
@@ -685,9 +659,7 @@ func (r accountHolderVerificationApplicationJSON) RawJSON() string {
 //
 // Note:
 //
-//   - `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
-//     `KYC_ADVANCED` workflow.
-//   - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
+// - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
 type AccountHolderVerificationApplicationStatus string
 
 const (
@@ -971,14 +943,13 @@ func (r KYCIndividualParam) MarshalJSON() (data []byte, err error) {
 type KYCWorkflow string
 
 const (
-	KYCWorkflowKYCAdvanced KYCWorkflow = "KYC_ADVANCED"
-	KYCWorkflowKYCBasic    KYCWorkflow = "KYC_BASIC"
-	KYCWorkflowKYCByo      KYCWorkflow = "KYC_BYO"
+	KYCWorkflowKYCBasic KYCWorkflow = "KYC_BASIC"
+	KYCWorkflowKYCByo   KYCWorkflow = "KYC_BYO"
 )
 
 func (r KYCWorkflow) IsKnown() bool {
 	switch r {
-	case KYCWorkflowKYCAdvanced, KYCWorkflowKYCBasic, KYCWorkflowKYCByo:
+	case KYCWorkflowKYCBasic, KYCWorkflowKYCByo:
 		return true
 	}
 	return false
@@ -1085,9 +1056,7 @@ type AccountHolderNewResponse struct {
 	//
 	// Note:
 	//
-	//   - `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
-	//     `KYC_ADVANCED` workflow.
-	//   - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
+	// - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
 	Status AccountHolderNewResponseStatus `json:"status,required"`
 	// Reason for the evaluation status.
 	StatusReasons []AccountHolderNewResponseStatusReason `json:"status_reasons,required"`
@@ -1096,8 +1065,8 @@ type AccountHolderNewResponse struct {
 	// Customer-provided token that indicates a relationship with an object outside of
 	// the Lithic ecosystem.
 	ExternalID string `json:"external_id" format:"string"`
-	// Only present for "KYB_BASIC" and "KYC_ADVANCED" workflows. A list of documents
-	// required for the account holder to be approved.
+	// Only present for "KYB_BASIC" workflow. A list of documents required for the
+	// account holder to be approved.
 	RequiredDocuments []RequiredDocument           `json:"required_documents"`
 	JSON              accountHolderNewResponseJSON `json:"-"`
 }
@@ -1128,9 +1097,7 @@ func (r accountHolderNewResponseJSON) RawJSON() string {
 //
 // Note:
 //
-//   - `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
-//     `KYC_ADVANCED` workflow.
-//   - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
+// - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
 type AccountHolderNewResponseStatus string
 
 const (
@@ -2062,17 +2029,16 @@ type AccountHolderNewParamsBodyUnion interface {
 type AccountHolderNewParamsBodyWorkflow string
 
 const (
-	AccountHolderNewParamsBodyWorkflowKYBBasic    AccountHolderNewParamsBodyWorkflow = "KYB_BASIC"
-	AccountHolderNewParamsBodyWorkflowKYBByo      AccountHolderNewParamsBodyWorkflow = "KYB_BYO"
-	AccountHolderNewParamsBodyWorkflowKYCAdvanced AccountHolderNewParamsBodyWorkflow = "KYC_ADVANCED"
-	AccountHolderNewParamsBodyWorkflowKYCBasic    AccountHolderNewParamsBodyWorkflow = "KYC_BASIC"
-	AccountHolderNewParamsBodyWorkflowKYCByo      AccountHolderNewParamsBodyWorkflow = "KYC_BYO"
-	AccountHolderNewParamsBodyWorkflowKYCExempt   AccountHolderNewParamsBodyWorkflow = "KYC_EXEMPT"
+	AccountHolderNewParamsBodyWorkflowKYBBasic  AccountHolderNewParamsBodyWorkflow = "KYB_BASIC"
+	AccountHolderNewParamsBodyWorkflowKYBByo    AccountHolderNewParamsBodyWorkflow = "KYB_BYO"
+	AccountHolderNewParamsBodyWorkflowKYCBasic  AccountHolderNewParamsBodyWorkflow = "KYC_BASIC"
+	AccountHolderNewParamsBodyWorkflowKYCByo    AccountHolderNewParamsBodyWorkflow = "KYC_BYO"
+	AccountHolderNewParamsBodyWorkflowKYCExempt AccountHolderNewParamsBodyWorkflow = "KYC_EXEMPT"
 )
 
 func (r AccountHolderNewParamsBodyWorkflow) IsKnown() bool {
 	switch r {
-	case AccountHolderNewParamsBodyWorkflowKYBBasic, AccountHolderNewParamsBodyWorkflowKYBByo, AccountHolderNewParamsBodyWorkflowKYCAdvanced, AccountHolderNewParamsBodyWorkflowKYCBasic, AccountHolderNewParamsBodyWorkflowKYCByo, AccountHolderNewParamsBodyWorkflowKYCExempt:
+	case AccountHolderNewParamsBodyWorkflowKYBBasic, AccountHolderNewParamsBodyWorkflowKYBByo, AccountHolderNewParamsBodyWorkflowKYCBasic, AccountHolderNewParamsBodyWorkflowKYCByo, AccountHolderNewParamsBodyWorkflowKYCExempt:
 		return true
 	}
 	return false
@@ -2153,63 +2119,6 @@ func (r AccountHolderListParams) URLQuery() (v url.Values) {
 		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
-}
-
-type AccountHolderResubmitParams struct {
-	// Information on individual for whom the account is being opened and KYC is being
-	// re-run.
-	Individual param.Field[AccountHolderResubmitParamsIndividual] `json:"individual,required"`
-	// An RFC 3339 timestamp indicating when the account holder accepted the applicable
-	// legal agreements (e.g., cardholder terms) as agreed upon during API customer's
-	// implementation with Lithic.
-	TosTimestamp param.Field[string]                              `json:"tos_timestamp,required"`
-	Workflow     param.Field[AccountHolderResubmitParamsWorkflow] `json:"workflow,required"`
-}
-
-func (r AccountHolderResubmitParams) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
-}
-
-// Information on individual for whom the account is being opened and KYC is being
-// re-run.
-type AccountHolderResubmitParamsIndividual struct {
-	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
-	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
-	Address param.Field[shared.AddressParam] `json:"address,required"`
-	// Individual's date of birth, as an RFC 3339 date.
-	Dob param.Field[string] `json:"dob,required"`
-	// Individual's email address. If utilizing Lithic for chargeback processing, this
-	// customer email address may be used to communicate dispute status and resolution.
-	Email param.Field[string] `json:"email,required"`
-	// Individual's first name, as it appears on government-issued identity documents.
-	FirstName param.Field[string] `json:"first_name,required"`
-	// Government-issued identification number (required for identity verification and
-	// compliance with banking regulations). Social Security Numbers (SSN) and
-	// Individual Taxpayer Identification Numbers (ITIN) are currently supported,
-	// entered as full nine-digits, with or without hyphens
-	GovernmentID param.Field[string] `json:"government_id,required"`
-	// Individual's last name, as it appears on government-issued identity documents.
-	LastName param.Field[string] `json:"last_name,required"`
-	// Individual's phone number, entered in E.164 format.
-	PhoneNumber param.Field[string] `json:"phone_number,required"`
-}
-
-func (r AccountHolderResubmitParamsIndividual) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
-}
-
-type AccountHolderResubmitParamsWorkflow string
-
-const (
-	AccountHolderResubmitParamsWorkflowKYCAdvanced AccountHolderResubmitParamsWorkflow = "KYC_ADVANCED"
-)
-
-func (r AccountHolderResubmitParamsWorkflow) IsKnown() bool {
-	switch r {
-	case AccountHolderResubmitParamsWorkflowKYCAdvanced:
-		return true
-	}
-	return false
 }
 
 type AccountHolderSimulateEnrollmentDocumentReviewParams struct {

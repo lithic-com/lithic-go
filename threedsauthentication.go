@@ -415,10 +415,10 @@ type ThreeDSAuthenticationGetResponseMerchantRiskIndicator struct {
 	// In prepaid or gift card purchase transactions, purchase amount total in major
 	// units (e.g., a purchase of USD $205.10 would be 205). Maps to EMV 3DS field
 	// giftCardAmount.
-	GiftCardAmount float64 `json:"gift_card_amount,nullable"`
+	GiftCardAmount int64 `json:"gift_card_amount,nullable"`
 	// In prepaid or gift card purchase transactions, count of individual prepaid or
 	// gift cards/codes purchased. Maps to EMV 3DS field giftCardCount.
-	GiftCardCount float64 `json:"gift_card_count,nullable"`
+	GiftCardCount int64 `json:"gift_card_count,nullable"`
 	// In prepaid or gift card purchase transactions, currency code of the gift card.
 	// Maps to EMV 3DS field giftCardCurr.
 	GiftCardCurrency string `json:"gift_card_currency,nullable"`
@@ -569,7 +569,7 @@ type ThreeDSAuthenticationGetResponseAdditionalData struct {
 	NetworkDecision ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecision `json:"network_decision,nullable"`
 	// Mastercard only: Assessment by the network of the authentication risk level,
 	// with a higher value indicating a higher amount of risk.
-	NetworkRiskScore float64                                            `json:"network_risk_score,nullable"`
+	NetworkRiskScore int64                                              `json:"network_risk_score,nullable"`
 	JSON             threeDSAuthenticationGetResponseAdditionalDataJSON `json:"-"`
 }
 

@@ -58,7 +58,7 @@ func (r *ReportSettlementService) ListDetailsAutoPaging(ctx context.Context, rep
 	return pagination.NewCursorPageAutoPager(r.ListDetails(ctx, reportDate, query, opts...))
 }
 
-// Get the settlement report for a specified report date.
+// Get the settlement report for a specified report date. Not available in sandbox.
 func (r *ReportSettlementService) Summary(ctx context.Context, reportDate time.Time, opts ...option.RequestOption) (res *SettlementReport, err error) {
 	opts = append(r.Options[:], opts...)
 	path := fmt.Sprintf("v1/reports/settlement/summary/%s", reportDate.Format("2006-01-02"))
