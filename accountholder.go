@@ -38,12 +38,13 @@ func NewAccountHolderService(opts ...option.RequestOption) (r *AccountHolderServ
 	return
 }
 
-// Run an individual or business's information through the Customer Identification
-// Program (CIP). All calls to this endpoint will return an immediate response -
-// though in some cases, the response may indicate the enrollment is under review
-// or further action will be needed to complete the account enrollment process.
-// This endpoint can only be used on accounts that are part of the program that the
-// calling API key manages.
+// Create an account holder and initiate the appropriate onboarding workflow.
+// Account holders and accounts have a 1:1 relationship. When an account holder is
+// successfully created an associated account is also created. All calls to this
+// endpoint will return an immediate response - though in some cases, the response
+// may indicate the enrollment is under review or further action will be needed to
+// complete the account enrollment process. This endpoint can only be used on
+// accounts that are part of the program that the calling API key manages.
 //
 // Note: If you choose to set a timeout for this request, we recommend 5 minutes.
 func (r *AccountHolderService) New(ctx context.Context, body AccountHolderNewParams, opts ...option.RequestOption) (res *AccountHolderNewResponse, err error) {
@@ -967,7 +968,7 @@ type KYCExemptParam struct {
 	KYCExemptionType param.Field[KYCExemptKYCExemptionType] `json:"kyc_exemption_type,required"`
 	// The KYC Exempt user's last name
 	LastName param.Field[string] `json:"last_name,required"`
-	// The KYC Exempt user's phone number
+	// The KYC Exempt user's phone number, entered in E.164 format.
 	PhoneNumber param.Field[string] `json:"phone_number,required"`
 	// Specifies the workflow type. This must be 'KYC_EXEMPT'
 	Workflow param.Field[KYCExemptWorkflow] `json:"workflow,required"`
@@ -2003,7 +2004,7 @@ type AccountHolderNewParamsBody struct {
 	// Short description of the company's line of business (i.e., what does the company
 	// do?).
 	NatureOfBusiness param.Field[string] `json:"nature_of_business"`
-	// The KYC Exempt user's phone number
+	// The KYC Exempt user's phone number, entered in E.164 format.
 	PhoneNumber param.Field[string] `json:"phone_number"`
 	// An RFC 3339 timestamp indicating when the account holder accepted the applicable
 	// legal agreements (e.g., cardholder terms) as agreed upon during API customer's
@@ -2274,11 +2275,12 @@ const (
 	AccountHolderUploadDocumentParamsDocumentTypeUtilityBillStatement      AccountHolderUploadDocumentParamsDocumentType = "UTILITY_BILL_STATEMENT"
 	AccountHolderUploadDocumentParamsDocumentTypeSsnCard                   AccountHolderUploadDocumentParamsDocumentType = "SSN_CARD"
 	AccountHolderUploadDocumentParamsDocumentTypeItinLetter                AccountHolderUploadDocumentParamsDocumentType = "ITIN_LETTER"
+	AccountHolderUploadDocumentParamsDocumentTypeFincenBoiReport           AccountHolderUploadDocumentParamsDocumentType = "FINCEN_BOI_REPORT"
 )
 
 func (r AccountHolderUploadDocumentParamsDocumentType) IsKnown() bool {
 	switch r {
-	case AccountHolderUploadDocumentParamsDocumentTypeEinLetter, AccountHolderUploadDocumentParamsDocumentTypeTaxReturn, AccountHolderUploadDocumentParamsDocumentTypeOperatingAgreement, AccountHolderUploadDocumentParamsDocumentTypeCertificateOfFormation, AccountHolderUploadDocumentParamsDocumentTypeDriversLicense, AccountHolderUploadDocumentParamsDocumentTypePassport, AccountHolderUploadDocumentParamsDocumentTypePassportCard, AccountHolderUploadDocumentParamsDocumentTypeCertificateOfGoodStanding, AccountHolderUploadDocumentParamsDocumentTypeArticlesOfIncorporation, AccountHolderUploadDocumentParamsDocumentTypeArticlesOfOrganization, AccountHolderUploadDocumentParamsDocumentTypeBylaws, AccountHolderUploadDocumentParamsDocumentTypeGovernmentBusinessLicense, AccountHolderUploadDocumentParamsDocumentTypePartnershipAgreement, AccountHolderUploadDocumentParamsDocumentTypeSs4Form, AccountHolderUploadDocumentParamsDocumentTypeBankStatement, AccountHolderUploadDocumentParamsDocumentTypeUtilityBillStatement, AccountHolderUploadDocumentParamsDocumentTypeSsnCard, AccountHolderUploadDocumentParamsDocumentTypeItinLetter:
+	case AccountHolderUploadDocumentParamsDocumentTypeEinLetter, AccountHolderUploadDocumentParamsDocumentTypeTaxReturn, AccountHolderUploadDocumentParamsDocumentTypeOperatingAgreement, AccountHolderUploadDocumentParamsDocumentTypeCertificateOfFormation, AccountHolderUploadDocumentParamsDocumentTypeDriversLicense, AccountHolderUploadDocumentParamsDocumentTypePassport, AccountHolderUploadDocumentParamsDocumentTypePassportCard, AccountHolderUploadDocumentParamsDocumentTypeCertificateOfGoodStanding, AccountHolderUploadDocumentParamsDocumentTypeArticlesOfIncorporation, AccountHolderUploadDocumentParamsDocumentTypeArticlesOfOrganization, AccountHolderUploadDocumentParamsDocumentTypeBylaws, AccountHolderUploadDocumentParamsDocumentTypeGovernmentBusinessLicense, AccountHolderUploadDocumentParamsDocumentTypePartnershipAgreement, AccountHolderUploadDocumentParamsDocumentTypeSs4Form, AccountHolderUploadDocumentParamsDocumentTypeBankStatement, AccountHolderUploadDocumentParamsDocumentTypeUtilityBillStatement, AccountHolderUploadDocumentParamsDocumentTypeSsnCard, AccountHolderUploadDocumentParamsDocumentTypeItinLetter, AccountHolderUploadDocumentParamsDocumentTypeFincenBoiReport:
 		return true
 	}
 	return false
