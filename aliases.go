@@ -633,6 +633,9 @@ const DocumentDocumentTypeSsnCard = shared.DocumentDocumentTypeSsnCard
 // This is an alias to an internal value.
 const DocumentDocumentTypeItinLetter = shared.DocumentDocumentTypeItinLetter
 
+// This is an alias to an internal value.
+const DocumentDocumentTypeFincenBoiReport = shared.DocumentDocumentTypeFincenBoiReport
+
 // Represents a single image of the document to upload.
 //
 // This is an alias to an internal type.

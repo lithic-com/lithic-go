@@ -1722,6 +1722,8 @@ type TransactionListParams struct {
 	// A cursor representing an item's token after which a page of results should
 	// begin. Used to retrieve the next page of results after this item.
 	StartingAfter param.Field[string] `query:"starting_after"`
+	// Filters for transactions using transaction status field.
+	Status param.Field[TransactionListParamsStatus] `query:"status"`
 }
 
 // URLQuery serializes [TransactionListParams]'s query parameters as `url.Values`.
@@ -1744,6 +1746,25 @@ const (
 func (r TransactionListParamsResult) IsKnown() bool {
 	switch r {
 	case TransactionListParamsResultApproved, TransactionListParamsResultDeclined:
+		return true
+	}
+	return false
+}
+
+// Filters for transactions using transaction status field.
+type TransactionListParamsStatus string
+
+const (
+	TransactionListParamsStatusPending  TransactionListParamsStatus = "PENDING"
+	TransactionListParamsStatusVoided   TransactionListParamsStatus = "VOIDED"
+	TransactionListParamsStatusSettled  TransactionListParamsStatus = "SETTLED"
+	TransactionListParamsStatusDeclined TransactionListParamsStatus = "DECLINED"
+	TransactionListParamsStatusExpired  TransactionListParamsStatus = "EXPIRED"
+)
+
+func (r TransactionListParamsStatus) IsKnown() bool {
+	switch r {
+	case TransactionListParamsStatusPending, TransactionListParamsStatusVoided, TransactionListParamsStatusSettled, TransactionListParamsStatusDeclined, TransactionListParamsStatusExpired:
 		return true
 	}
 	return false
