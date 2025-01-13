@@ -89,7 +89,7 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 				FirstName:    lithic.F("Tom"),
 				GovernmentID: lithic.F("111-23-1412"),
 				LastName:     lithic.F("Timothy"),
-				PhoneNumber:  lithic.F("+12024008176"),
+				PhoneNumber:  lithic.F("+15555555555"),
 			}),
 			NatureOfBusiness:   lithic.F("Software company selling solutions to the restaurant industry"),
 			TosTimestamp:       lithic.F("2022-03-08T08:00:00Z"),

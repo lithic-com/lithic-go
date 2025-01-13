@@ -57,6 +57,7 @@ func TestTransactionListWithOptionalParams(t *testing.T) {
 		PageSize:      lithic.F(int64(1)),
 		Result:        lithic.F(lithic.TransactionListParamsResultApproved),
 		StartingAfter: lithic.F("starting_after"),
+		Status:        lithic.F(lithic.TransactionListParamsStatusPending),
 	})
 	if err != nil {
 		var apierr *lithic.Error
