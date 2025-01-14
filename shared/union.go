@@ -4,79 +4,11 @@ package shared
 
 type UnionString string
 
-func (UnionString) ImplementsAuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionString) ImplementsAuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionString) ImplementsAuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionString) ImplementsAuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionString) ImplementsAuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionString) ImplementsAuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionString) ImplementsAuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionString) ImplementsAuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionString) ImplementsAuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionString) ImplementsAuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionString) ImplementsAuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionString) ImplementsAuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionString) ImplementsAuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionString) ImplementsAuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionString) ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionString) ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionString) ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionString) ImplementsAuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsValueUnion() {
-}
+func (UnionString) ImplementsAuthRuleConditionValueUnionParam() {}
+func (UnionString) ImplementsAuthRuleConditionValueUnion()      {}
 
 type UnionInt int64
 
-func (UnionInt) ImplementsSharedVelocityLimitParamsPeriodUnion() {}
-func (UnionInt) ImplementsAuthRuleV2NewResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2NewResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2GetResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2GetResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2UpdateResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2UpdateResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2ListResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2ListResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2ApplyResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2ApplyResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2DraftResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2DraftResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2PromoteResponseCurrentVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2PromoteResponseDraftVersionParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalBlockParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2DraftParamsParametersConditionalBlockParametersConditionsValueUnion() {
-}
+func (UnionInt) ImplementsAuthRuleConditionValueUnionParam() {}
+func (UnionInt) ImplementsAuthRuleConditionValueUnion()      {}
+func (UnionInt) ImplementsVelocityLimitParamsPeriodUnion()   {}

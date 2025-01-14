@@ -3,16 +3,12 @@
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#AddressParam">AddressParam</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#CarrierParam">CarrierParam</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#ShippingAddressParam">ShippingAddressParam</a>
-- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#VelocityLimitParams">VelocityLimitParams</a>
-- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#VelocityLimitParamsPeriodWindow">VelocityLimitParamsPeriodWindow</a>
 
 # Shared Response Types
 
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#Address">Address</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#Currency">Currency</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#Document">Document</a>
-- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#VelocityLimitParams">VelocityLimitParams</a>
-- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#VelocityLimitParamsPeriodWindow">VelocityLimitParamsPeriodWindow</a>
 
 # lithic
 
@@ -71,8 +67,21 @@ Methods:
 
 ## V2
 
+Params Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleConditionParam">AuthRuleConditionParam</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ConditionalAttribute">ConditionalAttribute</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ConditionalBlockParameters">ConditionalBlockParameters</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#VelocityLimitParams">VelocityLimitParams</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#VelocityLimitParamsPeriodWindow">VelocityLimitParamsPeriodWindow</a>
+
 Response Types:
 
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleCondition">AuthRuleCondition</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ConditionalAttribute">ConditionalAttribute</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ConditionalBlockParameters">ConditionalBlockParameters</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#VelocityLimitParams">VelocityLimitParams</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#VelocityLimitParamsPeriodWindow">VelocityLimitParamsPeriodWindow</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleV2NewResponse">AuthRuleV2NewResponse</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleV2GetResponse">AuthRuleV2GetResponse</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleV2UpdateResponse">AuthRuleV2UpdateResponse</a>
