@@ -211,6 +211,8 @@ type Tokenization struct {
 	CardToken string `json:"card_token,required" format:"uuid"`
 	// Date and time when the tokenization first occurred. UTC time zone.
 	CreatedAt time.Time `json:"created_at,required" format:"date-time"`
+	// The network's dynamic pan for the tokenized transaction.
+	Dpan string `json:"dpan,required,nullable"`
 	// The status of the tokenization request
 	Status TokenizationStatus `json:"status,required"`
 	// The entity that requested the tokenization. Represents a Digital Wallet or
@@ -238,6 +240,7 @@ type tokenizationJSON struct {
 	AccountToken         apijson.Field
 	CardToken            apijson.Field
 	CreatedAt            apijson.Field
+	Dpan                 apijson.Field
 	Status               apijson.Field
 	TokenRequestorName   apijson.Field
 	TokenUniqueReference apijson.Field
