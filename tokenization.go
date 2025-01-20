@@ -211,7 +211,7 @@ type Tokenization struct {
 	CardToken string `json:"card_token,required" format:"uuid"`
 	// Date and time when the tokenization first occurred. UTC time zone.
 	CreatedAt time.Time `json:"created_at,required" format:"date-time"`
-	// The network's dynamic pan for the tokenized transaction.
+	// The dynamic pan assigned to the token by the network.
 	Dpan string `json:"dpan,required,nullable"`
 	// The status of the tokenization request
 	Status TokenizationStatus `json:"status,required"`
