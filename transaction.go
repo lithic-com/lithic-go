@@ -169,14 +169,20 @@ type Transaction struct {
 	AcquirerFee int64 `json:"acquirer_fee,required,nullable"`
 	// Unique identifier assigned to a transaction by the acquirer that can be used in
 	// dispute and chargeback filing.
+	//
+	// Deprecated: deprecated
 	AcquirerReferenceNumber string `json:"acquirer_reference_number,required,nullable"`
 	// When the transaction is pending, this represents the authorization amount of the
 	// transaction in the anticipated settlement currency. Once the transaction has
 	// settled, this field represents the settled amount in the settlement currency.
+	//
+	// Deprecated: deprecated
 	Amount  int64              `json:"amount,required"`
 	Amounts TransactionAmounts `json:"amounts,required"`
 	// The authorization amount of the transaction in the anticipated settlement
 	// currency.
+	//
+	// Deprecated: deprecated
 	AuthorizationAmount int64 `json:"authorization_amount,required,nullable"`
 	// A fixed-width 6-digit numeric identifier that can be used to identify a
 	// transaction with networks.
@@ -189,8 +195,12 @@ type Transaction struct {
 	Created  time.Time           `json:"created,required" format:"date-time"`
 	Merchant TransactionMerchant `json:"merchant,required"`
 	// Analogous to the 'amount', but in the merchant currency.
+	//
+	// Deprecated: deprecated
 	MerchantAmount int64 `json:"merchant_amount,required,nullable"`
 	// Analogous to the 'authorization_amount', but in the merchant currency.
+	//
+	// Deprecated: deprecated
 	MerchantAuthorizationAmount int64 `json:"merchant_authorization_amount,required,nullable"`
 	// 3-digit alphabetic ISO 4217 code for the local currency of the transaction.
 	MerchantCurrency string `json:"merchant_currency,required"`
@@ -207,6 +217,8 @@ type Transaction struct {
 	Pos              TransactionPos    `json:"pos,required"`
 	Result           TransactionResult `json:"result,required"`
 	// The settled amount of the transaction in the settlement currency.
+	//
+	// Deprecated: deprecated
 	SettledAmount int64 `json:"settled_amount,required"`
 	// Status of the transaction.
 	Status    TransactionStatus    `json:"status,required"`

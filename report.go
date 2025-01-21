@@ -186,16 +186,22 @@ type SettlementReport struct {
 	Created time.Time `json:"created,required" format:"date-time"`
 	// Three-digit alphabetic ISO 4217 code. (This field is deprecated and will be
 	// removed in a future version of the API.)
+	//
+	// Deprecated: deprecated
 	Currency string                     `json:"currency,required"`
 	Details  []SettlementSummaryDetails `json:"details,required"`
 	// The total gross amount of disputes settlements. (This field is deprecated and
 	// will be removed in a future version of the API. To compute total amounts, Lithic
 	// recommends that customers sum the relevant settlement amounts found within
 	// `details`.)
+	//
+	// Deprecated: deprecated
 	DisputesGrossAmount int64 `json:"disputes_gross_amount,required"`
 	// The total amount of interchange. (This field is deprecated and will be removed
 	// in a future version of the API. To compute total amounts, Lithic recommends that
 	// customers sum the relevant settlement amounts found within `details`.)
+	//
+	// Deprecated: deprecated
 	InterchangeGrossAmount int64 `json:"interchange_gross_amount,required"`
 	// Indicates that all data expected on the given report date is available.
 	IsComplete bool `json:"is_complete,required"`
@@ -203,6 +209,8 @@ type SettlementReport struct {
 	// deprecated and will be removed in a future version of the API. To compute total
 	// amounts, Lithic recommends that customers sum the relevant settlement amounts
 	// found within `details`.)
+	//
+	// Deprecated: deprecated
 	OtherFeesGrossAmount int64 `json:"other_fees_gross_amount,required"`
 	// Date of when the report was first generated.
 	ReportDate string `json:"report_date,required"`
@@ -210,11 +218,15 @@ type SettlementReport struct {
 	// interchange, fees). (This field is deprecated and will be removed in a future
 	// version of the API. To compute total amounts, Lithic recommends that customers
 	// sum the relevant settlement amounts found within `details`.)
+	//
+	// Deprecated: deprecated
 	SettledNetAmount int64 `json:"settled_net_amount,required"`
 	// The total amount of settlement impacting transactions (excluding interchange,
 	// fees, and disputes). (This field is deprecated and will be removed in a future
 	// version of the API. To compute total amounts, Lithic recommends that customers
 	// sum the relevant settlement amounts found within `details`.)
+	//
+	// Deprecated: deprecated
 	TransactionsGrossAmount int64 `json:"transactions_gross_amount,required"`
 	// Date and time when the transaction first occurred. UTC time zone.
 	Updated time.Time            `json:"updated,required" format:"date-time"`
