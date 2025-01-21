@@ -314,6 +314,8 @@ type Card struct {
 	// field is deprecated and will no longer be populated in the `Card` object. The
 	// key will be removed from the schema in a future release. Use the `/auth_rules`
 	// endpoints to fetch Auth Rule information instead.
+	//
+	// Deprecated: deprecated
 	AuthRuleTokens []string `json:"auth_rule_tokens"`
 	// 3-digit alphabetic ISO 4217 code for the currency of the cardholder.
 	CardholderCurrency string `json:"cardholder_currency"`

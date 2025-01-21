@@ -133,9 +133,12 @@ type Account struct {
 	// field is deprecated and will no longer be populated in the `account_holder`
 	// object. The key will be removed from the schema in a future release. Use the
 	// `/auth_rules` endpoints to fetch Auth Rule information instead.
+	//
+	// Deprecated: deprecated
 	AuthRuleTokens []string `json:"auth_rule_tokens"`
 	// 3-digit alphabetic ISO 4217 code for the currency of the cardholder.
-	CardholderCurrency  string                     `json:"cardholder_currency"`
+	CardholderCurrency string `json:"cardholder_currency"`
+	// Deprecated: deprecated
 	VerificationAddress AccountVerificationAddress `json:"verification_address"`
 	JSON                accountJSON                `json:"-"`
 }
@@ -255,6 +258,7 @@ func (r accountAccountHolderJSON) RawJSON() string {
 	return r.raw
 }
 
+// Deprecated: deprecated
 type AccountVerificationAddress struct {
 	// Valid deliverable address (no PO boxes).
 	Address1 string `json:"address1,required"`
@@ -458,6 +462,8 @@ func (r AccountUpdateParamsState) IsKnown() bool {
 // transactions if enabled via Auth Rules. This field is deprecated as AVS checks
 // are no longer supported by Authorization Rules. The field will be removed from
 // the schema in a future release.
+//
+// Deprecated: deprecated
 type AccountUpdateParamsVerificationAddress struct {
 	Address1   param.Field[string] `json:"address1"`
 	Address2   param.Field[string] `json:"address2"`
