@@ -1,5 +1,47 @@
 # Changelog
 
+## 0.64.0 (2025-01-21)
+
+Full Changelog: [v0.63.0...v0.64.0](https://github.com/lithic-com/lithic-go/compare/v0.63.0...v0.64.0)
+
+### ⚠ BREAKING CHANGES
+
+* **types:** improve auth rules types ([#428](https://github.com/lithic-com/lithic-go/issues/428))
+* **api:** removes AccountHolder `resubmit` endpoint and `KYC_ADVANCED` workflow ([#422](https://github.com/lithic-com/lithic-go/issues/422))
+
+### Features
+
+* **api:** adds EventRuleResult to Transaction Events ([#420](https://github.com/lithic-com/lithic-go/issues/420)) ([c7a271e](https://github.com/lithic-com/lithic-go/commit/c7a271edc42cc0103184ffab170bf5d98c53a628))
+* **api:** removes AccountHolder `resubmit` endpoint and `KYC_ADVANCED` workflow ([#422](https://github.com/lithic-com/lithic-go/issues/422)) ([ee46446](https://github.com/lithic-com/lithic-go/commit/ee4644639e08df0837aacddcb64c8e567ab42097))
+* **api:** updates to Auth Rules numeric types, new Card Types and Authorization Rule Backtests ([bf025e3](https://github.com/lithic-com/lithic-go/commit/bf025e3a7e0cf9ab9a295715626d1de713d35e8b))
+* support deprecated markers ([#434](https://github.com/lithic-com/lithic-go/issues/434)) ([7dcdf7d](https://github.com/lithic-com/lithic-go/commit/7dcdf7d2b03b07fb964c14625d1627245afae32c))
+* **types:** improve auth rules types ([#428](https://github.com/lithic-com/lithic-go/issues/428)) ([c90f44e](https://github.com/lithic-com/lithic-go/commit/c90f44e591e25deffa2bf0aae34245cbfb6b9899))
+
+
+### Bug Fixes
+
+* fix apijson.Port for embedded structs ([#431](https://github.com/lithic-com/lithic-go/issues/431)) ([9162400](https://github.com/lithic-com/lithic-go/commit/9162400a9b1cf570af9a0c79686892bfea1f160b))
+* fix apijson.Port for embedded structs ([#432](https://github.com/lithic-com/lithic-go/issues/432)) ([87bfd6f](https://github.com/lithic-com/lithic-go/commit/87bfd6ffa8b1a94a1a0d6ebbf3df678d04b92657))
+* **internal:** update next ([88a36f9](https://github.com/lithic-com/lithic-go/commit/88a36f95633138f23af7d28014390c03b699b5fb))
+* reuse model in pagination items type ([#433](https://github.com/lithic-com/lithic-go/issues/433)) ([3c5bd15](https://github.com/lithic-com/lithic-go/commit/3c5bd159ff07a68855636ec8c429e50210cf2351))
+
+
+### Chores
+
+* **api:** add backtest methods to AuthRules ([#419](https://github.com/lithic-com/lithic-go/issues/419)) ([4d63e87](https://github.com/lithic-com/lithic-go/commit/4d63e87a0c7cd01c5d4e65541c0741f6253ab859))
+* **api:** adds `dpan` property to Tokenization ([#429](https://github.com/lithic-com/lithic-go/issues/429)) ([5b07971](https://github.com/lithic-com/lithic-go/commit/5b07971752446560331b39267009084eda079bb8))
+* **api:** new ConvertPhysical endpoint to convert a virtual card to a physical card ([#421](https://github.com/lithic-com/lithic-go/issues/421)) ([eea41f0](https://github.com/lithic-com/lithic-go/commit/eea41f03f7cd3e6b0776008e9162bf2c27fdbd28))
+* **api:** updates to documentation and additional filter for status on Transactions ([#427](https://github.com/lithic-com/lithic-go/issues/427)) ([ef8d694](https://github.com/lithic-com/lithic-go/commit/ef8d694095607c0252827bc27b1aac6fd8533b3b))
+* bump license year ([#424](https://github.com/lithic-com/lithic-go/issues/424)) ([d1f5120](https://github.com/lithic-com/lithic-go/commit/d1f5120dce6743f01cc0ff87a8a32800e56e3f29))
+* **docs:** updates documentation for DPANs ([#430](https://github.com/lithic-com/lithic-go/issues/430)) ([35260e6](https://github.com/lithic-com/lithic-go/commit/35260e65910787a960ab6f832a3e580859a321d9))
+* **internal:** update examples ([#425](https://github.com/lithic-com/lithic-go/issues/425)) ([69db4a6](https://github.com/lithic-com/lithic-go/commit/69db4a6c9e439449546e273f6cea28e9253f376f))
+
+
+### Documentation
+
+* **readme:** fix misplaced period ([#426](https://github.com/lithic-com/lithic-go/issues/426)) ([7908a0f](https://github.com/lithic-com/lithic-go/commit/7908a0f34301bcd27fd8f0a94538594e5045d723))
+* **readme:** fix typo ([#423](https://github.com/lithic-com/lithic-go/issues/423)) ([d46e23f](https://github.com/lithic-com/lithic-go/commit/d46e23fef17323800012f1cc099a3ae0de3c8ddf))
+
 ## 0.63.0 (2024-11-19)
 
 Full Changelog: [v0.62.3...v0.63.0](https://github.com/lithic-com/lithic-go/compare/v0.62.3...v0.63.0)
