@@ -86,6 +86,17 @@ type ThreeDSAuthenticationGetResponse struct {
 	// NON_PAYMENT_AUTHENTICATION, additional_data and transaction fields are not
 	// populated.
 	MessageCategory ThreeDSAuthenticationGetResponseMessageCategory `json:"message_category,required"`
+	// Indicates whether a challenge is requested for this transaction
+	//
+	//   - `NO_PREFERENCE` - No Preference
+	//   - `NO_CHALLENGE_REQUESTED` - No Challenge Requested
+	//   - `CHALLENGE_PREFERENCE` - Challenge requested (3DS Requestor preference)
+	//   - `CHALLENGE_MANDATE` - Challenge requested (Mandate)
+	//   - `NO_CHALLENGE_RISK_ALREADY_ASSESSED` - No Challenge requested (Transactional
+	//     risk analysis is already performed)
+	//   - `DATA_SHARE_ONLY` - No Challenge requested (Data Share Only)
+	//   - `OTHER` - Other indicators not captured by above. These are rarely used
+	ThreeDSRequestorChallengeIndicator ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicator `json:"three_ds_requestor_challenge_indicator,required"`
 	// Object containing additional data about the 3DS request that is beyond the EMV
 	// 3DS standard spec (e.g., specific fields that only certain card networks send
 	// but are not required across all 3DS requests).
@@ -115,25 +126,26 @@ type ThreeDSAuthenticationGetResponse struct {
 // threeDSAuthenticationGetResponseJSON contains the JSON metadata for the struct
 // [ThreeDSAuthenticationGetResponse]
 type threeDSAuthenticationGetResponseJSON struct {
-	Token                     apijson.Field
-	AccountType               apijson.Field
-	AuthenticationResult      apijson.Field
-	CardExpiryCheck           apijson.Field
-	CardToken                 apijson.Field
-	Cardholder                apijson.Field
-	Channel                   apijson.Field
-	Created                   apijson.Field
-	DecisionMadeBy            apijson.Field
-	Merchant                  apijson.Field
-	MessageCategory           apijson.Field
-	AdditionalData            apijson.Field
-	App                       apijson.Field
-	AuthenticationRequestType apijson.Field
-	Browser                   apijson.Field
-	ThreeRiRequestType        apijson.Field
-	Transaction               apijson.Field
-	raw                       string
-	ExtraFields               map[string]apijson.Field
+	Token                              apijson.Field
+	AccountType                        apijson.Field
+	AuthenticationResult               apijson.Field
+	CardExpiryCheck                    apijson.Field
+	CardToken                          apijson.Field
+	Cardholder                         apijson.Field
+	Channel                            apijson.Field
+	Created                            apijson.Field
+	DecisionMadeBy                     apijson.Field
+	Merchant                           apijson.Field
+	MessageCategory                    apijson.Field
+	ThreeDSRequestorChallengeIndicator apijson.Field
+	AdditionalData                     apijson.Field
+	App                                apijson.Field
+	AuthenticationRequestType          apijson.Field
+	Browser                            apijson.Field
+	ThreeRiRequestType                 apijson.Field
+	Transaction                        apijson.Field
+	raw                                string
+	ExtraFields                        map[string]apijson.Field
 }
 
 func (r *ThreeDSAuthenticationGetResponse) UnmarshalJSON(data []byte) (err error) {
@@ -555,6 +567,36 @@ const (
 func (r ThreeDSAuthenticationGetResponseMessageCategory) IsKnown() bool {
 	switch r {
 	case ThreeDSAuthenticationGetResponseMessageCategoryNonPaymentAuthentication, ThreeDSAuthenticationGetResponseMessageCategoryPaymentAuthentication:
+		return true
+	}
+	return false
+}
+
+// Indicates whether a challenge is requested for this transaction
+//
+//   - `NO_PREFERENCE` - No Preference
+//   - `NO_CHALLENGE_REQUESTED` - No Challenge Requested
+//   - `CHALLENGE_PREFERENCE` - Challenge requested (3DS Requestor preference)
+//   - `CHALLENGE_MANDATE` - Challenge requested (Mandate)
+//   - `NO_CHALLENGE_RISK_ALREADY_ASSESSED` - No Challenge requested (Transactional
+//     risk analysis is already performed)
+//   - `DATA_SHARE_ONLY` - No Challenge requested (Data Share Only)
+//   - `OTHER` - Other indicators not captured by above. These are rarely used
+type ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicator string
+
+const (
+	ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicatorNoPreference                   ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicator = "NO_PREFERENCE"
+	ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicatorNoChallengeRequested           ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicator = "NO_CHALLENGE_REQUESTED"
+	ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicatorChallengePreference            ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicator = "CHALLENGE_PREFERENCE"
+	ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicatorChallengeMandate               ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicator = "CHALLENGE_MANDATE"
+	ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicatorNoChallengeRiskAlreadyAssessed ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicator = "NO_CHALLENGE_RISK_ALREADY_ASSESSED"
+	ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicatorDataShareOnly                  ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicator = "DATA_SHARE_ONLY"
+	ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicatorOther                          ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicator = "OTHER"
+)
+
+func (r ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicator) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicatorNoPreference, ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicatorNoChallengeRequested, ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicatorChallengePreference, ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicatorChallengeMandate, ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicatorNoChallengeRiskAlreadyAssessed, ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicatorDataShareOnly, ThreeDSAuthenticationGetResponseThreeDSRequestorChallengeIndicatorOther:
 		return true
 	}
 	return false

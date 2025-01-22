@@ -1030,6 +1030,8 @@ type TransactionEvent struct {
 	// Transaction event identifier.
 	Token string `json:"token,required" format:"uuid"`
 	// Amount of the event in the settlement currency.
+	//
+	// Deprecated: deprecated
 	Amount  int64                    `json:"amount,required"`
 	Amounts TransactionEventsAmounts `json:"amounts,required"`
 	// RFC 3339 date and time this event entered the system. UTC time zone.
