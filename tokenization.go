@@ -231,25 +231,28 @@ type Tokenization struct {
 	DigitalCardArtToken string `json:"digital_card_art_token" format:"uuid"`
 	// A list of events related to the tokenization.
 	Events []TokenizationEvent `json:"events"`
-	JSON   tokenizationJSON    `json:"-"`
+	// The network's unique reference for the card that is tokenized.
+	PaymentAccountReferenceID string           `json:"payment_account_reference_id,nullable"`
+	JSON                      tokenizationJSON `json:"-"`
 }
 
 // tokenizationJSON contains the JSON metadata for the struct [Tokenization]
 type tokenizationJSON struct {
-	Token                apijson.Field
-	AccountToken         apijson.Field
-	CardToken            apijson.Field
-	CreatedAt            apijson.Field
-	Dpan                 apijson.Field
-	Status               apijson.Field
-	TokenRequestorName   apijson.Field
-	TokenUniqueReference apijson.Field
-	TokenizationChannel  apijson.Field
-	UpdatedAt            apijson.Field
-	DigitalCardArtToken  apijson.Field
-	Events               apijson.Field
-	raw                  string
-	ExtraFields          map[string]apijson.Field
+	Token                     apijson.Field
+	AccountToken              apijson.Field
+	CardToken                 apijson.Field
+	CreatedAt                 apijson.Field
+	Dpan                      apijson.Field
+	Status                    apijson.Field
+	TokenRequestorName        apijson.Field
+	TokenUniqueReference      apijson.Field
+	TokenizationChannel       apijson.Field
+	UpdatedAt                 apijson.Field
+	DigitalCardArtToken       apijson.Field
+	Events                    apijson.Field
+	PaymentAccountReferenceID apijson.Field
+	raw                       string
+	ExtraFields               map[string]apijson.Field
 }
 
 func (r *Tokenization) UnmarshalJSON(data []byte) (err error) {
