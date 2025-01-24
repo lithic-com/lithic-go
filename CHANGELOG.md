@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.65.0 (2025-01-24)
+
+Full Changelog: [v0.64.0...v0.65.0](https://github.com/lithic-com/lithic-go/compare/v0.64.0...v0.65.0)
+
+### Features
+
+* **api:** adds additional fields to TransactionEvents ([#437](https://github.com/lithic-com/lithic-go/issues/437)) ([6dffc6d](https://github.com/lithic-com/lithic-go/commit/6dffc6d33ab928b9fa66d777f676b623c8b154c4))
+
+
+### Chores
+
+* **api:** additional field added to 3DS Responses and Tokenization ([#435](https://github.com/lithic-com/lithic-go/issues/435)) ([237c922](https://github.com/lithic-com/lithic-go/commit/237c92222cb24dd37747309d13600e76e688c3c6))
+
 ## 0.64.0 (2025-01-21)
 
 Full Changelog: [v0.63.0...v0.64.0](https://github.com/lithic-com/lithic-go/compare/v0.63.0...v0.64.0)
