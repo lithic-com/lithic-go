@@ -1045,7 +1045,9 @@ type TransactionEvent struct {
 	// transaction lifecycle and can be used to locate a particular transaction, such
 	// as during processing of disputes. Not all fields are available in all events,
 	// and the presence of these fields is dependent on the card network and the event
-	// type.
+	// type. If the field is populated by the network, we will pass it through as is
+	// unless otherwise specified. Please consult the official network documentation
+	// for more details about these fields and how to use them.
 	NetworkInfo TransactionEventsNetworkInfo  `json:"network_info,required,nullable"`
 	Result      TransactionEventsResult       `json:"result,required"`
 	RuleResults []TransactionEventsRuleResult `json:"rule_results,required"`
@@ -1280,7 +1282,9 @@ func (r TransactionEventsEffectivePolarity) IsKnown() bool {
 // transaction lifecycle and can be used to locate a particular transaction, such
 // as during processing of disputes. Not all fields are available in all events,
 // and the presence of these fields is dependent on the card network and the event
-// type.
+// type. If the field is populated by the network, we will pass it through as is
+// unless otherwise specified. Please consult the official network documentation
+// for more details about these fields and how to use them.
 type TransactionEventsNetworkInfo struct {
 	Acquirer   TransactionEventsNetworkInfoAcquirer   `json:"acquirer,required,nullable"`
 	Mastercard TransactionEventsNetworkInfoMastercard `json:"mastercard,required,nullable"`
@@ -1340,17 +1344,35 @@ type TransactionEventsNetworkInfoMastercard struct {
 	BanknetReferenceNumber string `json:"banknet_reference_number,required,nullable"`
 	// Identifier assigned by Mastercard, applicable to single-message transactions
 	// only.
-	SwitchSerialNumber string                                     `json:"switch_serial_number,required,nullable"`
-	JSON               transactionEventsNetworkInfoMastercardJSON `json:"-"`
+	SwitchSerialNumber string `json:"switch_serial_number,required,nullable"`
+	// [Available on January 28th] Identifier assigned by Mastercard. Matches the
+	// `banknet_reference_number` of a prior related event. May be populated in
+	// authorization reversals, incremental authorizations (authorization requests that
+	// augment a previously authorized amount), automated fuel dispenser authorization
+	// advices and clearings, and financial authorizations. If the original banknet
+	// reference number contains all zeroes, then no actual reference number could be
+	// found by the network or acquirer. If Mastercard converts a transaction from
+	// dual-message to single-message, such as for certain ATM transactions, it will
+	// populate the original banknet reference number in the resulting financial
+	// authorization with the banknet reference number of the initial authorization,
+	// which Lithic does not receive.
+	OriginalBanknetReferenceNumber string `json:"original_banknet_reference_number,nullable"`
+	// [Available on January 28th] Identifier assigned by Mastercard. Matches the
+	// `switch_serial_number` of a prior related event. May be populated in returns and
+	// return reversals. Applicable to single-message transactions only.
+	OriginalSwitchSerialNumber string                                     `json:"original_switch_serial_number,nullable"`
+	JSON                       transactionEventsNetworkInfoMastercardJSON `json:"-"`
 }
 
 // transactionEventsNetworkInfoMastercardJSON contains the JSON metadata for the
 // struct [TransactionEventsNetworkInfoMastercard]
 type transactionEventsNetworkInfoMastercardJSON struct {
-	BanknetReferenceNumber apijson.Field
-	SwitchSerialNumber     apijson.Field
-	raw                    string
-	ExtraFields            map[string]apijson.Field
+	BanknetReferenceNumber         apijson.Field
+	SwitchSerialNumber             apijson.Field
+	OriginalBanknetReferenceNumber apijson.Field
+	OriginalSwitchSerialNumber     apijson.Field
+	raw                            string
+	ExtraFields                    map[string]apijson.Field
 }
 
 func (r *TransactionEventsNetworkInfoMastercard) UnmarshalJSON(data []byte) (err error) {
@@ -1363,16 +1385,22 @@ func (r transactionEventsNetworkInfoMastercardJSON) RawJSON() string {
 
 type TransactionEventsNetworkInfoVisa struct {
 	// Identifier assigned by Visa.
-	TransactionID string                               `json:"transaction_id,required,nullable"`
-	JSON          transactionEventsNetworkInfoVisaJSON `json:"-"`
+	TransactionID string `json:"transaction_id,required,nullable"`
+	// [Available on January 28th] Identifier assigned by Visa. Matches the
+	// `transaction_id` of a prior related event. May be populated in incremental
+	// authorizations (authorization requests that augment a previously authorized
+	// amount), authorization advices, financial authorizations, and clearings.
+	OriginalTransactionID string                               `json:"original_transaction_id,nullable"`
+	JSON                  transactionEventsNetworkInfoVisaJSON `json:"-"`
 }
 
 // transactionEventsNetworkInfoVisaJSON contains the JSON metadata for the struct
 // [TransactionEventsNetworkInfoVisa]
 type transactionEventsNetworkInfoVisaJSON struct {
-	TransactionID apijson.Field
-	raw           string
-	ExtraFields   map[string]apijson.Field
+	TransactionID         apijson.Field
+	OriginalTransactionID apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
 }
 
 func (r *TransactionEventsNetworkInfoVisa) UnmarshalJSON(data []byte) (err error) {
