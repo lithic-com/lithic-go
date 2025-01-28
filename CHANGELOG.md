@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.66.0 (2025-01-28)
+
+Full Changelog: [v0.65.0...v0.66.0](https://github.com/lithic-com/lithic-go/compare/v0.65.0...v0.66.0)
+
+### Features
+
+* **api:** adds additional request types for updating an Auth Rule ([#438](https://github.com/lithic-com/lithic-go/issues/438)) ([eda879f](https://github.com/lithic-com/lithic-go/commit/eda879f4e8be7bc18dfcbf2ae19715b334e79c97))
+
+
+### Bug Fixes
+
+* fix interface implementation stub names for unions ([#440](https://github.com/lithic-com/lithic-go/issues/440)) ([b0b3e45](https://github.com/lithic-com/lithic-go/commit/b0b3e456f92720fda3681a1e576c4f03adaa1e30))
+
 ## 0.65.0 (2025-01-24)
 
 Full Changelog: [v0.64.0...v0.65.0](https://github.com/lithic-com/lithic-go/compare/v0.64.0...v0.65.0)
