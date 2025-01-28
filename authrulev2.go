@@ -49,7 +49,7 @@ func (r *AuthRuleV2Service) New(ctx context.Context, body AuthRuleV2NewParams, o
 	return
 }
 
-// Fetches an authorization rule by its token
+// Fetches a V2 authorization rule by its token
 func (r *AuthRuleV2Service) Get(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (res *AuthRuleV2GetResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	if authRuleToken == "" {
@@ -61,7 +61,11 @@ func (r *AuthRuleV2Service) Get(ctx context.Context, authRuleToken string, opts 
 	return
 }
 
-// Updates an authorization rule's properties
+// Updates a V2 authorization rule's properties
+//
+// If `account_tokens`, `card_tokens`, `program_level`, or `excluded_card_tokens`
+// is provided, this will replace existing associations with the provided list of
+// entities.
 func (r *AuthRuleV2Service) Update(ctx context.Context, authRuleToken string, body AuthRuleV2UpdateParams, opts ...option.RequestOption) (res *AuthRuleV2UpdateResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	if authRuleToken == "" {
@@ -96,11 +100,23 @@ func (r *AuthRuleV2Service) ListAutoPaging(ctx context.Context, query AuthRuleV2
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
-// Associates an authorization rules with a card program, the provided account(s)
+// Deletes a V2 authorization rule
+func (r *AuthRuleV2Service) Delete(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (err error) {
+	opts = append(r.Options[:], opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	if authRuleToken == "" {
+		err = errors.New("missing required auth_rule_token parameter")
+		return
+	}
+	path := fmt.Sprintf("v2/auth_rules/%s", authRuleToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, nil, opts...)
+	return
+}
+
+// Associates a V2 authorization rule with a card program, the provided account(s)
 // or card(s).
 //
-// This endpoint will replace any existing associations with the provided list of
-// entities.
+// Prefer using the `PATCH` method for this operation.
 func (r *AuthRuleV2Service) Apply(ctx context.Context, authRuleToken string, body AuthRuleV2ApplyParams, opts ...option.RequestOption) (res *AuthRuleV2ApplyResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	if authRuleToken == "" {
@@ -112,8 +128,7 @@ func (r *AuthRuleV2Service) Apply(ctx context.Context, authRuleToken string, bod
 	return
 }
 
-// Creates a new draft version of an authorization rules that will be ran in shadow
-// mode.
+// Creates a new draft version of a rule that will be ran in shadow mode.
 //
 // This can also be utilized to reset the draft parameters, causing a draft version
 // to no longer be ran in shadow mode.
@@ -128,7 +143,7 @@ func (r *AuthRuleV2Service) Draft(ctx context.Context, authRuleToken string, bod
 	return
 }
 
-// Promotes a draft version of an authorization rule to the currently active
+// Promotes the draft version of an authorization rule to the currently active
 // version such that it is enforced in the authorization stream.
 func (r *AuthRuleV2Service) Promote(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (res *AuthRuleV2PromoteResponse, err error) {
 	opts = append(r.Options[:], opts...)
@@ -288,7 +303,7 @@ func (r AuthRuleConditionOperation) IsKnown() bool {
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
 // Union satisfied by [shared.UnionString], [shared.UnionInt] or
-// [AuthRuleConditionValueArray].
+// [AuthRuleConditionValueListOfStrings].
 type AuthRuleConditionValueUnion interface {
 	ImplementsAuthRuleConditionValueUnion()
 }
@@ -307,14 +322,14 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AuthRuleConditionValueArray{}),
+			Type:       reflect.TypeOf(AuthRuleConditionValueListOfStrings{}),
 		},
 	)
 }
 
-type AuthRuleConditionValueArray []string
+type AuthRuleConditionValueListOfStrings []string
 
-func (r AuthRuleConditionValueArray) ImplementsAuthRuleConditionValueUnion() {}
+func (r AuthRuleConditionValueListOfStrings) ImplementsAuthRuleConditionValueUnion() {}
 
 type AuthRuleConditionParam struct {
 	// The attribute to target.
@@ -366,14 +381,14 @@ func (r AuthRuleConditionParam) MarshalJSON() (data []byte, err error) {
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
 // Satisfied by [shared.UnionString], [shared.UnionInt],
-// [AuthRuleConditionValueArrayParam].
+// [AuthRuleConditionValueListOfStringsParam].
 type AuthRuleConditionValueUnionParam interface {
 	ImplementsAuthRuleConditionValueUnionParam()
 }
 
-type AuthRuleConditionValueArrayParam []string
+type AuthRuleConditionValueListOfStringsParam []string
 
-func (r AuthRuleConditionValueArrayParam) ImplementsAuthRuleConditionValueUnionParam() {}
+func (r AuthRuleConditionValueListOfStringsParam) ImplementsAuthRuleConditionValueUnionParam() {}
 
 // The attribute to target.
 //
@@ -486,7 +501,7 @@ func (r ConditionalBlockParameters) implementsAuthRuleV2PromoteResponseDraftVers
 type VelocityLimitParams struct {
 	Filters VelocityLimitParamsFilters `json:"filters,required"`
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds.
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
 	Period VelocityLimitParamsPeriodUnion `json:"period,required"`
 	Scope  VelocityLimitParamsScope       `json:"scope,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
@@ -579,7 +594,7 @@ func (r velocityLimitParamsFiltersJSON) RawJSON() string {
 }
 
 // The size of the trailing window to calculate Spend Velocity over in seconds. The
-// minimum value is 10 seconds, and the maximum value is 2678400 seconds.
+// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
 //
 // Union satisfied by [shared.UnionInt] or [VelocityLimitParamsPeriodWindow].
 type VelocityLimitParamsPeriodUnion interface {
@@ -686,7 +701,7 @@ func (r authRuleV2NewResponseJSON) RawJSON() string {
 }
 
 type AuthRuleV2NewResponseCurrentVersion struct {
-	// Parameters for the current version of the Auth Rule
+	// Parameters for the Auth Rule
 	Parameters AuthRuleV2NewResponseCurrentVersionParameters `json:"parameters,required"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
@@ -711,7 +726,7 @@ func (r authRuleV2NewResponseCurrentVersionJSON) RawJSON() string {
 	return r.raw
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 type AuthRuleV2NewResponseCurrentVersionParameters struct {
 	// This field can have the runtime type of [[]AuthRuleCondition].
 	Conditions interface{} `json:"conditions"`
@@ -769,7 +784,7 @@ func (r AuthRuleV2NewResponseCurrentVersionParameters) AsUnion() AuthRuleV2NewRe
 	return r.union
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
 type AuthRuleV2NewResponseCurrentVersionParametersUnion interface {
@@ -807,7 +822,7 @@ func (r AuthRuleV2NewResponseCurrentVersionParametersScope) IsKnown() bool {
 }
 
 type AuthRuleV2NewResponseDraftVersion struct {
-	// Parameters for the current version of the Auth Rule
+	// Parameters for the Auth Rule
 	Parameters AuthRuleV2NewResponseDraftVersionParameters `json:"parameters,required"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
@@ -832,7 +847,7 @@ func (r authRuleV2NewResponseDraftVersionJSON) RawJSON() string {
 	return r.raw
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 type AuthRuleV2NewResponseDraftVersionParameters struct {
 	// This field can have the runtime type of [[]AuthRuleCondition].
 	Conditions interface{} `json:"conditions"`
@@ -890,7 +905,7 @@ func (r AuthRuleV2NewResponseDraftVersionParameters) AsUnion() AuthRuleV2NewResp
 	return r.union
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
 type AuthRuleV2NewResponseDraftVersionParametersUnion interface {
@@ -1007,7 +1022,7 @@ func (r authRuleV2GetResponseJSON) RawJSON() string {
 }
 
 type AuthRuleV2GetResponseCurrentVersion struct {
-	// Parameters for the current version of the Auth Rule
+	// Parameters for the Auth Rule
 	Parameters AuthRuleV2GetResponseCurrentVersionParameters `json:"parameters,required"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
@@ -1032,7 +1047,7 @@ func (r authRuleV2GetResponseCurrentVersionJSON) RawJSON() string {
 	return r.raw
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 type AuthRuleV2GetResponseCurrentVersionParameters struct {
 	// This field can have the runtime type of [[]AuthRuleCondition].
 	Conditions interface{} `json:"conditions"`
@@ -1090,7 +1105,7 @@ func (r AuthRuleV2GetResponseCurrentVersionParameters) AsUnion() AuthRuleV2GetRe
 	return r.union
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
 type AuthRuleV2GetResponseCurrentVersionParametersUnion interface {
@@ -1128,7 +1143,7 @@ func (r AuthRuleV2GetResponseCurrentVersionParametersScope) IsKnown() bool {
 }
 
 type AuthRuleV2GetResponseDraftVersion struct {
-	// Parameters for the current version of the Auth Rule
+	// Parameters for the Auth Rule
 	Parameters AuthRuleV2GetResponseDraftVersionParameters `json:"parameters,required"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
@@ -1153,7 +1168,7 @@ func (r authRuleV2GetResponseDraftVersionJSON) RawJSON() string {
 	return r.raw
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 type AuthRuleV2GetResponseDraftVersionParameters struct {
 	// This field can have the runtime type of [[]AuthRuleCondition].
 	Conditions interface{} `json:"conditions"`
@@ -1211,7 +1226,7 @@ func (r AuthRuleV2GetResponseDraftVersionParameters) AsUnion() AuthRuleV2GetResp
 	return r.union
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
 type AuthRuleV2GetResponseDraftVersionParametersUnion interface {
@@ -1328,7 +1343,7 @@ func (r authRuleV2UpdateResponseJSON) RawJSON() string {
 }
 
 type AuthRuleV2UpdateResponseCurrentVersion struct {
-	// Parameters for the current version of the Auth Rule
+	// Parameters for the Auth Rule
 	Parameters AuthRuleV2UpdateResponseCurrentVersionParameters `json:"parameters,required"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
@@ -1353,7 +1368,7 @@ func (r authRuleV2UpdateResponseCurrentVersionJSON) RawJSON() string {
 	return r.raw
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 type AuthRuleV2UpdateResponseCurrentVersionParameters struct {
 	// This field can have the runtime type of [[]AuthRuleCondition].
 	Conditions interface{} `json:"conditions"`
@@ -1411,7 +1426,7 @@ func (r AuthRuleV2UpdateResponseCurrentVersionParameters) AsUnion() AuthRuleV2Up
 	return r.union
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
 type AuthRuleV2UpdateResponseCurrentVersionParametersUnion interface {
@@ -1449,7 +1464,7 @@ func (r AuthRuleV2UpdateResponseCurrentVersionParametersScope) IsKnown() bool {
 }
 
 type AuthRuleV2UpdateResponseDraftVersion struct {
-	// Parameters for the current version of the Auth Rule
+	// Parameters for the Auth Rule
 	Parameters AuthRuleV2UpdateResponseDraftVersionParameters `json:"parameters,required"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
@@ -1474,7 +1489,7 @@ func (r authRuleV2UpdateResponseDraftVersionJSON) RawJSON() string {
 	return r.raw
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 type AuthRuleV2UpdateResponseDraftVersionParameters struct {
 	// This field can have the runtime type of [[]AuthRuleCondition].
 	Conditions interface{} `json:"conditions"`
@@ -1532,7 +1547,7 @@ func (r AuthRuleV2UpdateResponseDraftVersionParameters) AsUnion() AuthRuleV2Upda
 	return r.union
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
 type AuthRuleV2UpdateResponseDraftVersionParametersUnion interface {
@@ -1649,7 +1664,7 @@ func (r authRuleV2ListResponseJSON) RawJSON() string {
 }
 
 type AuthRuleV2ListResponseCurrentVersion struct {
-	// Parameters for the current version of the Auth Rule
+	// Parameters for the Auth Rule
 	Parameters AuthRuleV2ListResponseCurrentVersionParameters `json:"parameters,required"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
@@ -1674,7 +1689,7 @@ func (r authRuleV2ListResponseCurrentVersionJSON) RawJSON() string {
 	return r.raw
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 type AuthRuleV2ListResponseCurrentVersionParameters struct {
 	// This field can have the runtime type of [[]AuthRuleCondition].
 	Conditions interface{} `json:"conditions"`
@@ -1732,7 +1747,7 @@ func (r AuthRuleV2ListResponseCurrentVersionParameters) AsUnion() AuthRuleV2List
 	return r.union
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
 type AuthRuleV2ListResponseCurrentVersionParametersUnion interface {
@@ -1770,7 +1785,7 @@ func (r AuthRuleV2ListResponseCurrentVersionParametersScope) IsKnown() bool {
 }
 
 type AuthRuleV2ListResponseDraftVersion struct {
-	// Parameters for the current version of the Auth Rule
+	// Parameters for the Auth Rule
 	Parameters AuthRuleV2ListResponseDraftVersionParameters `json:"parameters,required"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
@@ -1795,7 +1810,7 @@ func (r authRuleV2ListResponseDraftVersionJSON) RawJSON() string {
 	return r.raw
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 type AuthRuleV2ListResponseDraftVersionParameters struct {
 	// This field can have the runtime type of [[]AuthRuleCondition].
 	Conditions interface{} `json:"conditions"`
@@ -1853,7 +1868,7 @@ func (r AuthRuleV2ListResponseDraftVersionParameters) AsUnion() AuthRuleV2ListRe
 	return r.union
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
 type AuthRuleV2ListResponseDraftVersionParametersUnion interface {
@@ -1970,7 +1985,7 @@ func (r authRuleV2ApplyResponseJSON) RawJSON() string {
 }
 
 type AuthRuleV2ApplyResponseCurrentVersion struct {
-	// Parameters for the current version of the Auth Rule
+	// Parameters for the Auth Rule
 	Parameters AuthRuleV2ApplyResponseCurrentVersionParameters `json:"parameters,required"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
@@ -1995,7 +2010,7 @@ func (r authRuleV2ApplyResponseCurrentVersionJSON) RawJSON() string {
 	return r.raw
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 type AuthRuleV2ApplyResponseCurrentVersionParameters struct {
 	// This field can have the runtime type of [[]AuthRuleCondition].
 	Conditions interface{} `json:"conditions"`
@@ -2053,7 +2068,7 @@ func (r AuthRuleV2ApplyResponseCurrentVersionParameters) AsUnion() AuthRuleV2App
 	return r.union
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
 type AuthRuleV2ApplyResponseCurrentVersionParametersUnion interface {
@@ -2091,7 +2106,7 @@ func (r AuthRuleV2ApplyResponseCurrentVersionParametersScope) IsKnown() bool {
 }
 
 type AuthRuleV2ApplyResponseDraftVersion struct {
-	// Parameters for the current version of the Auth Rule
+	// Parameters for the Auth Rule
 	Parameters AuthRuleV2ApplyResponseDraftVersionParameters `json:"parameters,required"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
@@ -2116,7 +2131,7 @@ func (r authRuleV2ApplyResponseDraftVersionJSON) RawJSON() string {
 	return r.raw
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 type AuthRuleV2ApplyResponseDraftVersionParameters struct {
 	// This field can have the runtime type of [[]AuthRuleCondition].
 	Conditions interface{} `json:"conditions"`
@@ -2174,7 +2189,7 @@ func (r AuthRuleV2ApplyResponseDraftVersionParameters) AsUnion() AuthRuleV2Apply
 	return r.union
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
 type AuthRuleV2ApplyResponseDraftVersionParametersUnion interface {
@@ -2291,7 +2306,7 @@ func (r authRuleV2DraftResponseJSON) RawJSON() string {
 }
 
 type AuthRuleV2DraftResponseCurrentVersion struct {
-	// Parameters for the current version of the Auth Rule
+	// Parameters for the Auth Rule
 	Parameters AuthRuleV2DraftResponseCurrentVersionParameters `json:"parameters,required"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
@@ -2316,7 +2331,7 @@ func (r authRuleV2DraftResponseCurrentVersionJSON) RawJSON() string {
 	return r.raw
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 type AuthRuleV2DraftResponseCurrentVersionParameters struct {
 	// This field can have the runtime type of [[]AuthRuleCondition].
 	Conditions interface{} `json:"conditions"`
@@ -2374,7 +2389,7 @@ func (r AuthRuleV2DraftResponseCurrentVersionParameters) AsUnion() AuthRuleV2Dra
 	return r.union
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
 type AuthRuleV2DraftResponseCurrentVersionParametersUnion interface {
@@ -2412,7 +2427,7 @@ func (r AuthRuleV2DraftResponseCurrentVersionParametersScope) IsKnown() bool {
 }
 
 type AuthRuleV2DraftResponseDraftVersion struct {
-	// Parameters for the current version of the Auth Rule
+	// Parameters for the Auth Rule
 	Parameters AuthRuleV2DraftResponseDraftVersionParameters `json:"parameters,required"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
@@ -2437,7 +2452,7 @@ func (r authRuleV2DraftResponseDraftVersionJSON) RawJSON() string {
 	return r.raw
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 type AuthRuleV2DraftResponseDraftVersionParameters struct {
 	// This field can have the runtime type of [[]AuthRuleCondition].
 	Conditions interface{} `json:"conditions"`
@@ -2495,7 +2510,7 @@ func (r AuthRuleV2DraftResponseDraftVersionParameters) AsUnion() AuthRuleV2Draft
 	return r.union
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
 type AuthRuleV2DraftResponseDraftVersionParametersUnion interface {
@@ -2612,7 +2627,7 @@ func (r authRuleV2PromoteResponseJSON) RawJSON() string {
 }
 
 type AuthRuleV2PromoteResponseCurrentVersion struct {
-	// Parameters for the current version of the Auth Rule
+	// Parameters for the Auth Rule
 	Parameters AuthRuleV2PromoteResponseCurrentVersionParameters `json:"parameters,required"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
@@ -2637,7 +2652,7 @@ func (r authRuleV2PromoteResponseCurrentVersionJSON) RawJSON() string {
 	return r.raw
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 type AuthRuleV2PromoteResponseCurrentVersionParameters struct {
 	// This field can have the runtime type of [[]AuthRuleCondition].
 	Conditions interface{} `json:"conditions"`
@@ -2695,7 +2710,7 @@ func (r AuthRuleV2PromoteResponseCurrentVersionParameters) AsUnion() AuthRuleV2P
 	return r.union
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
 type AuthRuleV2PromoteResponseCurrentVersionParametersUnion interface {
@@ -2733,7 +2748,7 @@ func (r AuthRuleV2PromoteResponseCurrentVersionParametersScope) IsKnown() bool {
 }
 
 type AuthRuleV2PromoteResponseDraftVersion struct {
-	// Parameters for the current version of the Auth Rule
+	// Parameters for the Auth Rule
 	Parameters AuthRuleV2PromoteResponseDraftVersionParameters `json:"parameters,required"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
@@ -2758,7 +2773,7 @@ func (r authRuleV2PromoteResponseDraftVersionJSON) RawJSON() string {
 	return r.raw
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 type AuthRuleV2PromoteResponseDraftVersionParameters struct {
 	// This field can have the runtime type of [[]AuthRuleCondition].
 	Conditions interface{} `json:"conditions"`
@@ -2816,7 +2831,7 @@ func (r AuthRuleV2PromoteResponseDraftVersionParameters) AsUnion() AuthRuleV2Pro
 	return r.union
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
 type AuthRuleV2PromoteResponseDraftVersionParametersUnion interface {
@@ -2946,7 +2961,7 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokens struct {
 	AccountTokens param.Field[[]string] `json:"account_tokens,required" format:"uuid"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
-	// Parameters for the current version of the Auth Rule
+	// Parameters for the Auth Rule
 	Parameters param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersUnion] `json:"parameters"`
 	// The type of Auth Rule
 	Type param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensType] `json:"type"`
@@ -2959,7 +2974,7 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokens) MarshalJSON()
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokens) implementsAuthRuleV2NewParamsBodyUnion() {
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters struct {
 	Conditions param.Field[interface{}] `json:"conditions"`
 	Filters    param.Field[interface{}] `json:"filters"`
@@ -2984,7 +2999,7 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters) Mar
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters) implementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersUnion() {
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 //
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters].
@@ -3028,7 +3043,7 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokens struct {
 	CardTokens param.Field[[]string] `json:"card_tokens,required" format:"uuid"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
-	// Parameters for the current version of the Auth Rule
+	// Parameters for the Auth Rule
 	Parameters param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersUnion] `json:"parameters"`
 	// The type of Auth Rule
 	Type param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensType] `json:"type"`
@@ -3041,7 +3056,7 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokens) MarshalJSON() (d
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokens) implementsAuthRuleV2NewParamsBodyUnion() {
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters struct {
 	Conditions param.Field[interface{}] `json:"conditions"`
 	Filters    param.Field[interface{}] `json:"filters"`
@@ -3066,7 +3081,7 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters) Marsha
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters) implementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersUnion() {
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 //
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters].
@@ -3112,7 +3127,7 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevel struct {
 	ExcludedCardTokens param.Field[[]string] `json:"excluded_card_tokens" format:"uuid"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
-	// Parameters for the current version of the Auth Rule
+	// Parameters for the Auth Rule
 	Parameters param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersUnion] `json:"parameters"`
 	// The type of Auth Rule
 	Type param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelType] `json:"type"`
@@ -3125,7 +3140,7 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevel) MarshalJSON() 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevel) implementsAuthRuleV2NewParamsBodyUnion() {
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters struct {
 	Conditions param.Field[interface{}] `json:"conditions"`
 	Filters    param.Field[interface{}] `json:"filters"`
@@ -3150,7 +3165,7 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters) Mars
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters) implementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersUnion() {
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 //
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters].
@@ -3206,6 +3221,45 @@ func (r AuthRuleV2NewParamsBodyType) IsKnown() bool {
 }
 
 type AuthRuleV2UpdateParams struct {
+	Body AuthRuleV2UpdateParamsBodyUnion `json:"body,required"`
+}
+
+func (r AuthRuleV2UpdateParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r.Body)
+}
+
+type AuthRuleV2UpdateParamsBody struct {
+	AccountTokens      param.Field[interface{}] `json:"account_tokens"`
+	CardTokens         param.Field[interface{}] `json:"card_tokens"`
+	ExcludedCardTokens param.Field[interface{}] `json:"excluded_card_tokens"`
+	// Auth Rule Name
+	Name param.Field[string] `json:"name"`
+	// Whether the Auth Rule applies to all authorizations on the card program.
+	ProgramLevel param.Field[bool] `json:"program_level"`
+	// The desired state of the Auth Rule.
+	//
+	// Note that only deactivating an Auth Rule through this endpoint is supported at
+	// this time. If you need to (re-)activate an Auth Rule the /promote endpoint
+	// should be used to promote a draft to the currently active version.
+	State param.Field[AuthRuleV2UpdateParamsBodyState] `json:"state"`
+}
+
+func (r AuthRuleV2UpdateParamsBody) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleV2UpdateParamsBody) implementsAuthRuleV2UpdateParamsBodyUnion() {}
+
+// Satisfied by [AuthRuleV2UpdateParamsBodyAccountLevelRule],
+// [AuthRuleV2UpdateParamsBodyCardLevelRule],
+// [AuthRuleV2UpdateParamsBodyProgramLevelRule], [AuthRuleV2UpdateParamsBody].
+type AuthRuleV2UpdateParamsBodyUnion interface {
+	implementsAuthRuleV2UpdateParamsBodyUnion()
+}
+
+type AuthRuleV2UpdateParamsBodyAccountLevelRule struct {
+	// Account tokens to which the Auth Rule applies.
+	AccountTokens param.Field[[]string] `json:"account_tokens" format:"uuid"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
 	// The desired state of the Auth Rule.
@@ -3213,11 +3267,110 @@ type AuthRuleV2UpdateParams struct {
 	// Note that only deactivating an Auth Rule through this endpoint is supported at
 	// this time. If you need to (re-)activate an Auth Rule the /promote endpoint
 	// should be used to promote a draft to the currently active version.
-	State param.Field[AuthRuleV2UpdateParamsState] `json:"state"`
+	State param.Field[AuthRuleV2UpdateParamsBodyAccountLevelRuleState] `json:"state"`
 }
 
-func (r AuthRuleV2UpdateParams) MarshalJSON() (data []byte, err error) {
+func (r AuthRuleV2UpdateParamsBodyAccountLevelRule) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleV2UpdateParamsBodyAccountLevelRule) implementsAuthRuleV2UpdateParamsBodyUnion() {}
+
+// The desired state of the Auth Rule.
+//
+// Note that only deactivating an Auth Rule through this endpoint is supported at
+// this time. If you need to (re-)activate an Auth Rule the /promote endpoint
+// should be used to promote a draft to the currently active version.
+type AuthRuleV2UpdateParamsBodyAccountLevelRuleState string
+
+const (
+	AuthRuleV2UpdateParamsBodyAccountLevelRuleStateInactive AuthRuleV2UpdateParamsBodyAccountLevelRuleState = "INACTIVE"
+)
+
+func (r AuthRuleV2UpdateParamsBodyAccountLevelRuleState) IsKnown() bool {
+	switch r {
+	case AuthRuleV2UpdateParamsBodyAccountLevelRuleStateInactive:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2UpdateParamsBodyCardLevelRule struct {
+	// Card tokens to which the Auth Rule applies.
+	CardTokens param.Field[[]string] `json:"card_tokens" format:"uuid"`
+	// Auth Rule Name
+	Name param.Field[string] `json:"name"`
+	// The desired state of the Auth Rule.
+	//
+	// Note that only deactivating an Auth Rule through this endpoint is supported at
+	// this time. If you need to (re-)activate an Auth Rule the /promote endpoint
+	// should be used to promote a draft to the currently active version.
+	State param.Field[AuthRuleV2UpdateParamsBodyCardLevelRuleState] `json:"state"`
+}
+
+func (r AuthRuleV2UpdateParamsBodyCardLevelRule) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleV2UpdateParamsBodyCardLevelRule) implementsAuthRuleV2UpdateParamsBodyUnion() {}
+
+// The desired state of the Auth Rule.
+//
+// Note that only deactivating an Auth Rule through this endpoint is supported at
+// this time. If you need to (re-)activate an Auth Rule the /promote endpoint
+// should be used to promote a draft to the currently active version.
+type AuthRuleV2UpdateParamsBodyCardLevelRuleState string
+
+const (
+	AuthRuleV2UpdateParamsBodyCardLevelRuleStateInactive AuthRuleV2UpdateParamsBodyCardLevelRuleState = "INACTIVE"
+)
+
+func (r AuthRuleV2UpdateParamsBodyCardLevelRuleState) IsKnown() bool {
+	switch r {
+	case AuthRuleV2UpdateParamsBodyCardLevelRuleStateInactive:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2UpdateParamsBodyProgramLevelRule struct {
+	// Card tokens to which the Auth Rule does not apply.
+	ExcludedCardTokens param.Field[[]string] `json:"excluded_card_tokens" format:"uuid"`
+	// Auth Rule Name
+	Name param.Field[string] `json:"name"`
+	// Whether the Auth Rule applies to all authorizations on the card program.
+	ProgramLevel param.Field[bool] `json:"program_level"`
+	// The desired state of the Auth Rule.
+	//
+	// Note that only deactivating an Auth Rule through this endpoint is supported at
+	// this time. If you need to (re-)activate an Auth Rule the /promote endpoint
+	// should be used to promote a draft to the currently active version.
+	State param.Field[AuthRuleV2UpdateParamsBodyProgramLevelRuleState] `json:"state"`
+}
+
+func (r AuthRuleV2UpdateParamsBodyProgramLevelRule) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleV2UpdateParamsBodyProgramLevelRule) implementsAuthRuleV2UpdateParamsBodyUnion() {}
+
+// The desired state of the Auth Rule.
+//
+// Note that only deactivating an Auth Rule through this endpoint is supported at
+// this time. If you need to (re-)activate an Auth Rule the /promote endpoint
+// should be used to promote a draft to the currently active version.
+type AuthRuleV2UpdateParamsBodyProgramLevelRuleState string
+
+const (
+	AuthRuleV2UpdateParamsBodyProgramLevelRuleStateInactive AuthRuleV2UpdateParamsBodyProgramLevelRuleState = "INACTIVE"
+)
+
+func (r AuthRuleV2UpdateParamsBodyProgramLevelRuleState) IsKnown() bool {
+	switch r {
+	case AuthRuleV2UpdateParamsBodyProgramLevelRuleStateInactive:
+		return true
+	}
+	return false
 }
 
 // The desired state of the Auth Rule.
@@ -3225,15 +3378,15 @@ func (r AuthRuleV2UpdateParams) MarshalJSON() (data []byte, err error) {
 // Note that only deactivating an Auth Rule through this endpoint is supported at
 // this time. If you need to (re-)activate an Auth Rule the /promote endpoint
 // should be used to promote a draft to the currently active version.
-type AuthRuleV2UpdateParamsState string
+type AuthRuleV2UpdateParamsBodyState string
 
 const (
-	AuthRuleV2UpdateParamsStateInactive AuthRuleV2UpdateParamsState = "INACTIVE"
+	AuthRuleV2UpdateParamsBodyStateInactive AuthRuleV2UpdateParamsBodyState = "INACTIVE"
 )
 
-func (r AuthRuleV2UpdateParamsState) IsKnown() bool {
+func (r AuthRuleV2UpdateParamsBodyState) IsKnown() bool {
 	switch r {
-	case AuthRuleV2UpdateParamsStateInactive:
+	case AuthRuleV2UpdateParamsBodyStateInactive:
 		return true
 	}
 	return false
@@ -3331,7 +3484,7 @@ func (r AuthRuleV2ApplyParamsBodyApplyAuthRuleRequestProgramLevel) implementsAut
 }
 
 type AuthRuleV2DraftParams struct {
-	// Parameters for the current version of the Auth Rule
+	// Parameters for the Auth Rule
 	Parameters param.Field[AuthRuleV2DraftParamsParametersUnion] `json:"parameters"`
 }
 
@@ -3339,7 +3492,7 @@ func (r AuthRuleV2DraftParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 type AuthRuleV2DraftParamsParameters struct {
 	Conditions param.Field[interface{}] `json:"conditions"`
 	Filters    param.Field[interface{}] `json:"filters"`
@@ -3363,7 +3516,7 @@ func (r AuthRuleV2DraftParamsParameters) MarshalJSON() (data []byte, err error) 
 
 func (r AuthRuleV2DraftParamsParameters) implementsAuthRuleV2DraftParamsParametersUnion() {}
 
-// Parameters for the current version of the Auth Rule
+// Parameters for the Auth Rule
 //
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [AuthRuleV2DraftParamsParameters].
