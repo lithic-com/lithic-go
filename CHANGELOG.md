@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.66.1 (2025-01-31)
+
+Full Changelog: [v0.66.0...v0.66.1](https://github.com/lithic-com/lithic-go/compare/v0.66.0...v0.66.1)
+
+### Bug Fixes
+
+* fix unicode encoding for json ([#443](https://github.com/lithic-com/lithic-go/issues/443)) ([59773ed](https://github.com/lithic-com/lithic-go/commit/59773ed1883db7f61a2551e41e4f3e83ee0a25e7))
+
+
+### Chores
+
+* refactor client tests ([#441](https://github.com/lithic-com/lithic-go/issues/441)) ([14606ef](https://github.com/lithic-com/lithic-go/commit/14606eff396afde7ab77f9830005d309615bcae7))
+
+
+### Documentation
+
+* document raw responses ([#444](https://github.com/lithic-com/lithic-go/issues/444)) ([7dd3568](https://github.com/lithic-com/lithic-go/commit/7dd356843bd6e00a2f313e76acfe969b22778ab1))
+
 ## 0.66.0 (2025-01-28)
 
 Full Changelog: [v0.65.0...v0.66.0](https://github.com/lithic-com/lithic-go/compare/v0.65.0...v0.66.0)
