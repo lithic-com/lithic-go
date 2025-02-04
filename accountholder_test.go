@@ -58,7 +58,7 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 				FirstName:    lithic.F("Timmy"),
 				GovernmentID: lithic.F("211-23-1412"),
 				LastName:     lithic.F("Turner"),
-				PhoneNumber:  lithic.F("+12024007611"),
+				PhoneNumber:  lithic.F("+15555555555"),
 			}}),
 			BusinessEntity: lithic.F(lithic.KYBBusinessEntityParam{
 				Address: lithic.F(shared.AddressParam{

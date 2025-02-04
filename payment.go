@@ -262,6 +262,8 @@ type PaymentEvent struct {
 	//   - `ACH_RECEIPT_SETTLED` - ACH receipt funds have settled.
 	//   - `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to available
 	//     balance.
+	//   - `ACH_RETURN_SETTLED` - ACH receipt return settled by the Receiving Depository
+	//     Financial Institution.
 	Type PaymentEventsType `json:"type,required"`
 	// More detailed reasons for the event
 	DetailedResults []PaymentEventsDetailedResult `json:"detailed_results"`
@@ -323,6 +325,8 @@ func (r PaymentEventsResult) IsKnown() bool {
 //   - `ACH_RECEIPT_SETTLED` - ACH receipt funds have settled.
 //   - `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to available
 //     balance.
+//   - `ACH_RETURN_SETTLED` - ACH receipt return settled by the Receiving Depository
+//     Financial Institution.
 type PaymentEventsType string
 
 const (
@@ -336,11 +340,12 @@ const (
 	PaymentEventsTypeACHReceiptSettled       PaymentEventsType = "ACH_RECEIPT_SETTLED"
 	PaymentEventsTypeACHReturnInitiated      PaymentEventsType = "ACH_RETURN_INITIATED"
 	PaymentEventsTypeACHReturnProcessed      PaymentEventsType = "ACH_RETURN_PROCESSED"
+	PaymentEventsTypeACHReturnSettled        PaymentEventsType = "ACH_RETURN_SETTLED"
 )
 
 func (r PaymentEventsType) IsKnown() bool {
 	switch r {
-	case PaymentEventsTypeACHOriginationCancelled, PaymentEventsTypeACHOriginationInitiated, PaymentEventsTypeACHOriginationProcessed, PaymentEventsTypeACHOriginationSettled, PaymentEventsTypeACHOriginationReleased, PaymentEventsTypeACHOriginationReviewed, PaymentEventsTypeACHReceiptProcessed, PaymentEventsTypeACHReceiptSettled, PaymentEventsTypeACHReturnInitiated, PaymentEventsTypeACHReturnProcessed:
+	case PaymentEventsTypeACHOriginationCancelled, PaymentEventsTypeACHOriginationInitiated, PaymentEventsTypeACHOriginationProcessed, PaymentEventsTypeACHOriginationSettled, PaymentEventsTypeACHOriginationReleased, PaymentEventsTypeACHOriginationReviewed, PaymentEventsTypeACHReceiptProcessed, PaymentEventsTypeACHReceiptSettled, PaymentEventsTypeACHReturnInitiated, PaymentEventsTypeACHReturnProcessed, PaymentEventsTypeACHReturnSettled:
 		return true
 	}
 	return false
@@ -878,11 +883,12 @@ const (
 	PaymentSimulateActionParamsEventTypeACHReceiptSettled       PaymentSimulateActionParamsEventType = "ACH_RECEIPT_SETTLED"
 	PaymentSimulateActionParamsEventTypeACHReturnInitiated      PaymentSimulateActionParamsEventType = "ACH_RETURN_INITIATED"
 	PaymentSimulateActionParamsEventTypeACHReturnProcessed      PaymentSimulateActionParamsEventType = "ACH_RETURN_PROCESSED"
+	PaymentSimulateActionParamsEventTypeACHReturnSettled        PaymentSimulateActionParamsEventType = "ACH_RETURN_SETTLED"
 )
 
 func (r PaymentSimulateActionParamsEventType) IsKnown() bool {
 	switch r {
-	case PaymentSimulateActionParamsEventTypeACHOriginationReviewed, PaymentSimulateActionParamsEventTypeACHOriginationReleased, PaymentSimulateActionParamsEventTypeACHOriginationProcessed, PaymentSimulateActionParamsEventTypeACHOriginationSettled, PaymentSimulateActionParamsEventTypeACHReceiptSettled, PaymentSimulateActionParamsEventTypeACHReturnInitiated, PaymentSimulateActionParamsEventTypeACHReturnProcessed:
+	case PaymentSimulateActionParamsEventTypeACHOriginationReviewed, PaymentSimulateActionParamsEventTypeACHOriginationReleased, PaymentSimulateActionParamsEventTypeACHOriginationProcessed, PaymentSimulateActionParamsEventTypeACHOriginationSettled, PaymentSimulateActionParamsEventTypeACHReceiptSettled, PaymentSimulateActionParamsEventTypeACHReturnInitiated, PaymentSimulateActionParamsEventTypeACHReturnProcessed, PaymentSimulateActionParamsEventTypeACHReturnSettled:
 		return true
 	}
 	return false
