@@ -1340,37 +1340,38 @@ func (r transactionEventsNetworkInfoAcquirerJSON) RawJSON() string {
 }
 
 type TransactionEventsNetworkInfoMastercard struct {
-	// Identifier assigned by Mastercard.
+	// Identifier assigned by Mastercard. Guaranteed by Mastercard to be unique for any
+	// transaction within a specific financial network on any processing day.
 	BanknetReferenceNumber string `json:"banknet_reference_number,required,nullable"`
+	// Identifier assigned by Mastercard. Matches the `banknet_reference_number` of a
+	// prior related event. May be populated in authorization reversals, incremental
+	// authorizations (authorization requests that augment a previously authorized
+	// amount), automated fuel dispenser authorization advices and clearings, and
+	// financial authorizations. If the original banknet reference number contains all
+	// zeroes, then no actual reference number could be found by the network or
+	// acquirer. If Mastercard converts a transaction from dual-message to
+	// single-message, such as for certain ATM transactions, it will populate the
+	// original banknet reference number in the resulting financial authorization with
+	// the banknet reference number of the initial authorization, which Lithic does not
+	// receive.
+	OriginalBanknetReferenceNumber string `json:"original_banknet_reference_number,required,nullable"`
+	// Identifier assigned by Mastercard. Matches the `switch_serial_number` of a prior
+	// related event. May be populated in returns and return reversals. Applicable to
+	// single-message transactions only.
+	OriginalSwitchSerialNumber string `json:"original_switch_serial_number,required,nullable"`
 	// Identifier assigned by Mastercard, applicable to single-message transactions
 	// only.
-	SwitchSerialNumber string `json:"switch_serial_number,required,nullable"`
-	// [Available on January 28th] Identifier assigned by Mastercard. Matches the
-	// `banknet_reference_number` of a prior related event. May be populated in
-	// authorization reversals, incremental authorizations (authorization requests that
-	// augment a previously authorized amount), automated fuel dispenser authorization
-	// advices and clearings, and financial authorizations. If the original banknet
-	// reference number contains all zeroes, then no actual reference number could be
-	// found by the network or acquirer. If Mastercard converts a transaction from
-	// dual-message to single-message, such as for certain ATM transactions, it will
-	// populate the original banknet reference number in the resulting financial
-	// authorization with the banknet reference number of the initial authorization,
-	// which Lithic does not receive.
-	OriginalBanknetReferenceNumber string `json:"original_banknet_reference_number,nullable"`
-	// [Available on January 28th] Identifier assigned by Mastercard. Matches the
-	// `switch_serial_number` of a prior related event. May be populated in returns and
-	// return reversals. Applicable to single-message transactions only.
-	OriginalSwitchSerialNumber string                                     `json:"original_switch_serial_number,nullable"`
-	JSON                       transactionEventsNetworkInfoMastercardJSON `json:"-"`
+	SwitchSerialNumber string                                     `json:"switch_serial_number,required,nullable"`
+	JSON               transactionEventsNetworkInfoMastercardJSON `json:"-"`
 }
 
 // transactionEventsNetworkInfoMastercardJSON contains the JSON metadata for the
 // struct [TransactionEventsNetworkInfoMastercard]
 type transactionEventsNetworkInfoMastercardJSON struct {
 	BanknetReferenceNumber         apijson.Field
-	SwitchSerialNumber             apijson.Field
 	OriginalBanknetReferenceNumber apijson.Field
 	OriginalSwitchSerialNumber     apijson.Field
+	SwitchSerialNumber             apijson.Field
 	raw                            string
 	ExtraFields                    map[string]apijson.Field
 }
@@ -1384,21 +1385,23 @@ func (r transactionEventsNetworkInfoMastercardJSON) RawJSON() string {
 }
 
 type TransactionEventsNetworkInfoVisa struct {
-	// Identifier assigned by Visa.
-	TransactionID string `json:"transaction_id,required,nullable"`
-	// [Available on January 28th] Identifier assigned by Visa. Matches the
-	// `transaction_id` of a prior related event. May be populated in incremental
-	// authorizations (authorization requests that augment a previously authorized
-	// amount), authorization advices, financial authorizations, and clearings.
-	OriginalTransactionID string                               `json:"original_transaction_id,nullable"`
-	JSON                  transactionEventsNetworkInfoVisaJSON `json:"-"`
+	// Identifier assigned by Visa. Matches the `transaction_id` of a prior related
+	// event. May be populated in incremental authorizations (authorization requests
+	// that augment a previously authorized amount), authorization advices, financial
+	// authorizations, and clearings.
+	OriginalTransactionID string `json:"original_transaction_id,required,nullable"`
+	// Identifier assigned by Visa to link original messages to subsequent messages.
+	// Guaranteed by Visa to be unique for each original authorization and financial
+	// authorization.
+	TransactionID string                               `json:"transaction_id,required,nullable"`
+	JSON          transactionEventsNetworkInfoVisaJSON `json:"-"`
 }
 
 // transactionEventsNetworkInfoVisaJSON contains the JSON metadata for the struct
 // [TransactionEventsNetworkInfoVisa]
 type transactionEventsNetworkInfoVisaJSON struct {
-	TransactionID         apijson.Field
 	OriginalTransactionID apijson.Field
+	TransactionID         apijson.Field
 	raw                   string
 	ExtraFields           map[string]apijson.Field
 }

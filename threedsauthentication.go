@@ -64,7 +64,7 @@ type ThreeDSAuthenticationGetResponse struct {
 	// field `acctType`.
 	AccountType ThreeDSAuthenticationGetResponseAccountType `json:"account_type,required,nullable"`
 	// Indicates the outcome of the 3DS authentication process.
-	AuthenticationResult ThreeDSAuthenticationGetResponseAuthenticationResult `json:"authentication_result,required,nullable"`
+	AuthenticationResult ThreeDSAuthenticationGetResponseAuthenticationResult `json:"authentication_result,required"`
 	// Indicates whether the expiration date provided by the cardholder during checkout
 	// matches Lithic's record of the card's expiration date.
 	CardExpiryCheck ThreeDSAuthenticationGetResponseCardExpiryCheck `json:"card_expiry_check,required"`
@@ -111,6 +111,8 @@ type ThreeDSAuthenticationGetResponse struct {
 	// Object containing data about the browser used in the e-commerce transaction.
 	// Present if the channel is 'BROWSER'.
 	Browser ThreeDSAuthenticationGetResponseBrowser `json:"browser"`
+	// Entity that orchestrates the challenge.
+	ChallengeOrchestratedBy ThreeDSAuthenticationGetResponseChallengeOrchestratedBy `json:"challenge_orchestrated_by,nullable"`
 	// Type of 3DS Requestor Initiated (3RI) request i.e., a 3DS authentication that
 	// takes place at the initiation of the merchant rather than the cardholder. The
 	// most common example of this is where a merchant is authenticating before billing
@@ -142,6 +144,7 @@ type threeDSAuthenticationGetResponseJSON struct {
 	App                                apijson.Field
 	AuthenticationRequestType          apijson.Field
 	Browser                            apijson.Field
+	ChallengeOrchestratedBy            apijson.Field
 	ThreeRiRequestType                 apijson.Field
 	Transaction                        apijson.Field
 	raw                                string
@@ -178,13 +181,15 @@ func (r ThreeDSAuthenticationGetResponseAccountType) IsKnown() bool {
 type ThreeDSAuthenticationGetResponseAuthenticationResult string
 
 const (
-	ThreeDSAuthenticationGetResponseAuthenticationResultDecline ThreeDSAuthenticationGetResponseAuthenticationResult = "DECLINE"
-	ThreeDSAuthenticationGetResponseAuthenticationResultSuccess ThreeDSAuthenticationGetResponseAuthenticationResult = "SUCCESS"
+	ThreeDSAuthenticationGetResponseAuthenticationResultDecline          ThreeDSAuthenticationGetResponseAuthenticationResult = "DECLINE"
+	ThreeDSAuthenticationGetResponseAuthenticationResultSuccess          ThreeDSAuthenticationGetResponseAuthenticationResult = "SUCCESS"
+	ThreeDSAuthenticationGetResponseAuthenticationResultPendingChallenge ThreeDSAuthenticationGetResponseAuthenticationResult = "PENDING_CHALLENGE"
+	ThreeDSAuthenticationGetResponseAuthenticationResultPendingDecision  ThreeDSAuthenticationGetResponseAuthenticationResult = "PENDING_DECISION"
 )
 
 func (r ThreeDSAuthenticationGetResponseAuthenticationResult) IsKnown() bool {
 	switch r {
-	case ThreeDSAuthenticationGetResponseAuthenticationResultDecline, ThreeDSAuthenticationGetResponseAuthenticationResultSuccess:
+	case ThreeDSAuthenticationGetResponseAuthenticationResultDecline, ThreeDSAuthenticationGetResponseAuthenticationResultSuccess, ThreeDSAuthenticationGetResponseAuthenticationResultPendingChallenge, ThreeDSAuthenticationGetResponseAuthenticationResultPendingDecision:
 		return true
 	}
 	return false
@@ -747,6 +752,23 @@ func (r *ThreeDSAuthenticationGetResponseBrowser) UnmarshalJSON(data []byte) (er
 
 func (r threeDSAuthenticationGetResponseBrowserJSON) RawJSON() string {
 	return r.raw
+}
+
+// Entity that orchestrates the challenge.
+type ThreeDSAuthenticationGetResponseChallengeOrchestratedBy string
+
+const (
+	ThreeDSAuthenticationGetResponseChallengeOrchestratedByLithic      ThreeDSAuthenticationGetResponseChallengeOrchestratedBy = "LITHIC"
+	ThreeDSAuthenticationGetResponseChallengeOrchestratedByCustomer    ThreeDSAuthenticationGetResponseChallengeOrchestratedBy = "CUSTOMER"
+	ThreeDSAuthenticationGetResponseChallengeOrchestratedByNoChallenge ThreeDSAuthenticationGetResponseChallengeOrchestratedBy = "NO_CHALLENGE"
+)
+
+func (r ThreeDSAuthenticationGetResponseChallengeOrchestratedBy) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseChallengeOrchestratedByLithic, ThreeDSAuthenticationGetResponseChallengeOrchestratedByCustomer, ThreeDSAuthenticationGetResponseChallengeOrchestratedByNoChallenge:
+		return true
+	}
+	return false
 }
 
 // Type of 3DS Requestor Initiated (3RI) request i.e., a 3DS authentication that
