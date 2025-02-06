@@ -39,6 +39,9 @@ func (r cursorPageJSON) RawJSON() string {
 // there is no next page, this function will return a 'nil' for the page value, but
 // will not return an error
 func (r *CursorPage[T]) GetNextPage() (res *CursorPage[T], err error) {
+	if !r.JSON.HasMore.IsMissing() && r.HasMore == false {
+		return nil, nil
+	}
 	items := r.Data
 	if items == nil || len(items) == 0 {
 		return nil, nil
@@ -138,6 +141,9 @@ func (r singlePageJSON) RawJSON() string {
 // there is no next page, this function will return a 'nil' for the page value, but
 // will not return an error
 func (r *SinglePage[T]) GetNextPage() (res *SinglePage[T], err error) {
+	if !r.JSON.HasMore.IsMissing() && r.HasMore == false {
+		return nil, nil
+	}
 	// This page represents a response that isn't actually paginated at the API level
 	// so there will never be a next page.
 	cfg := (*requestconfig.RequestConfig)(nil)
