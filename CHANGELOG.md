@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.67.0 (2025-02-07)
+
+Full Changelog: [v0.66.1...v0.67.0](https://github.com/lithic-com/lithic-go/compare/v0.66.1...v0.67.0)
+
+### Features
+
+* **client:** send `X-Stainless-Timeout` header ([#445](https://github.com/lithic-com/lithic-go/issues/445)) ([41ef2f1](https://github.com/lithic-com/lithic-go/commit/41ef2f1f3d8158b4244a7a53a9b6ee97a315b35a))
+* **pagination:** avoid fetching when has_more: false ([#449](https://github.com/lithic-com/lithic-go/issues/449)) ([5de31e5](https://github.com/lithic-com/lithic-go/commit/5de31e5f6bdf08b7068084d96c7e58e75ac221f4))
+
+
+### Bug Fixes
+
+* fix early cancel when RequestTimeout is provided for streaming requests ([#450](https://github.com/lithic-com/lithic-go/issues/450)) ([f165e52](https://github.com/lithic-com/lithic-go/commit/f165e52fba83b7efa72dcc7df21a89d06ce14cd0))
+
+
+### Chores
+
+* add UnionUnmarshaler for responses that are interfaces ([#448](https://github.com/lithic-com/lithic-go/issues/448)) ([5af84eb](https://github.com/lithic-com/lithic-go/commit/5af84eb0f6db1f21c19f139c7f80b62376e80c05))
+* **api:** new PaymentEventType for ACH Returns and small updates to 3DS AuthenticationResult ([#447](https://github.com/lithic-com/lithic-go/issues/447)) ([9ba6cbb](https://github.com/lithic-com/lithic-go/commit/9ba6cbb1c4f17670e3006d2b87100ba0b7ec03f5))
+
 ## 0.66.1 (2025-01-31)
 
 Full Changelog: [v0.66.0...v0.66.1](https://github.com/lithic-com/lithic-go/compare/v0.66.0...v0.66.1)
