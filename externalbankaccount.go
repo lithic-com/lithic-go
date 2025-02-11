@@ -1510,13 +1510,29 @@ type ExternalBankAccountUpdateParams struct {
 	// will appear in statements
 	Owner param.Field[string] `json:"owner"`
 	// Owner Type
-	OwnerType param.Field[OwnerType] `json:"owner_type"`
+	OwnerType param.Field[OwnerType]                           `json:"owner_type"`
+	Type      param.Field[ExternalBankAccountUpdateParamsType] `json:"type"`
 	// User Defined ID
 	UserDefinedID param.Field[string] `json:"user_defined_id"`
 }
 
 func (r ExternalBankAccountUpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
+}
+
+type ExternalBankAccountUpdateParamsType string
+
+const (
+	ExternalBankAccountUpdateParamsTypeChecking ExternalBankAccountUpdateParamsType = "CHECKING"
+	ExternalBankAccountUpdateParamsTypeSavings  ExternalBankAccountUpdateParamsType = "SAVINGS"
+)
+
+func (r ExternalBankAccountUpdateParamsType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountUpdateParamsTypeChecking, ExternalBankAccountUpdateParamsTypeSavings:
+		return true
+	}
+	return false
 }
 
 type ExternalBankAccountListParams struct {
