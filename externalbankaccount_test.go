@@ -115,6 +115,7 @@ func TestExternalBankAccountUpdateWithOptionalParams(t *testing.T) {
 			Name:            lithic.F("name"),
 			Owner:           lithic.F("owner"),
 			OwnerType:       lithic.F(lithic.OwnerTypeIndividual),
+			Type:            lithic.F(lithic.ExternalBankAccountUpdateParamsTypeChecking),
 			UserDefinedID:   lithic.F("x"),
 		},
 	)
