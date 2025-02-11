@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.67.1 (2025-02-11)
+
+Full Changelog: [v0.67.0...v0.67.1](https://github.com/lithic-com/lithic-go/compare/v0.67.0...v0.67.1)
+
+### Bug Fixes
+
+* do not call path.Base on ContentType ([#451](https://github.com/lithic-com/lithic-go/issues/451)) ([3310645](https://github.com/lithic-com/lithic-go/commit/331064504c7fc903948563463853db141b0b9e0d))
+
+
+### Chores
+
+* **api:** new 3DS Event and new `challenge_metadata` property on Authentications ([#453](https://github.com/lithic-com/lithic-go/issues/453)) ([7abae71](https://github.com/lithic-com/lithic-go/commit/7abae71aacf6f9d9e56ccacbf04588a4abeef617))
+
 ## 0.67.0 (2025-02-07)
 
 Full Changelog: [v0.66.1...v0.67.0](https://github.com/lithic-com/lithic-go/compare/v0.66.1...v0.67.0)
