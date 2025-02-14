@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.67.2 (2025-02-14)
+
+Full Changelog: [v0.67.1...v0.67.2](https://github.com/lithic-com/lithic-go/compare/v0.67.1...v0.67.2)
+
+### Bug Fixes
+
+* **client:** don't truncate manually specified filenames ([#456](https://github.com/lithic-com/lithic-go/issues/456)) ([2d769b5](https://github.com/lithic-com/lithic-go/commit/2d769b5c4dc14ff44b719fd8767729a51e186558))
+
+
+### Chores
+
+* **internal:** update test values ([#454](https://github.com/lithic-com/lithic-go/issues/454)) ([f7bfb18](https://github.com/lithic-com/lithic-go/commit/f7bfb18917b43f831ef4c29f670df8d837a1d06b))
+
 ## 0.67.1 (2025-02-11)
 
 Full Changelog: [v0.67.0...v0.67.1](https://github.com/lithic-com/lithic-go/compare/v0.67.0...v0.67.1)
