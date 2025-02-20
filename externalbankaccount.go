@@ -1248,7 +1248,7 @@ func (r ExternalBankAccountRetryPrenoteResponseVerificationState) IsKnown() bool
 }
 
 type ExternalBankAccountNewParams struct {
-	Body ExternalBankAccountNewParamsBodyUnion `json:"body,required"`
+	Body ExternalBankAccountNewParamsBodyUnion `json:"body"`
 }
 
 func (r ExternalBankAccountNewParams) MarshalJSON() (data []byte, err error) {
