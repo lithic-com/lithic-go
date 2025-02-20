@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.67.3 (2025-02-20)
+
+Full Changelog: [v0.67.2...v0.67.3](https://github.com/lithic-com/lithic-go/compare/v0.67.2...v0.67.3)
+
+### Bug Fixes
+
+* **client:** mark some request bodies as optional ([#457](https://github.com/lithic-com/lithic-go/issues/457)) ([7d80ac3](https://github.com/lithic-com/lithic-go/commit/7d80ac374c8637e09072a26d0c8f35821c8a3b1e))
+
 ## 0.67.2 (2025-02-14)
 
 Full Changelog: [v0.67.1...v0.67.2](https://github.com/lithic-com/lithic-go/compare/v0.67.1...v0.67.2)
