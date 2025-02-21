@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.67.4 (2025-02-21)
+
+Full Changelog: [v0.67.3...v0.67.4](https://github.com/lithic-com/lithic-go/compare/v0.67.3...v0.67.4)
+
+### Chores
+
+* **internal:** fix devcontainers setup ([#459](https://github.com/lithic-com/lithic-go/issues/459)) ([93f5ea2](https://github.com/lithic-com/lithic-go/commit/93f5ea2b819b2fbd1350b6c1928d7d33b8d5fb39))
+
 ## 0.67.3 (2025-02-20)
 
 Full Changelog: [v0.67.2...v0.67.3](https://github.com/lithic-com/lithic-go/compare/v0.67.2...v0.67.3)
