@@ -116,12 +116,13 @@ type FinancialTransactionListParamsCategory string
 const (
 	FinancialTransactionListParamsCategoryACH      FinancialTransactionListParamsCategory = "ACH"
 	FinancialTransactionListParamsCategoryCard     FinancialTransactionListParamsCategory = "CARD"
+	FinancialTransactionListParamsCategoryInternal FinancialTransactionListParamsCategory = "INTERNAL"
 	FinancialTransactionListParamsCategoryTransfer FinancialTransactionListParamsCategory = "TRANSFER"
 )
 
 func (r FinancialTransactionListParamsCategory) IsKnown() bool {
 	switch r {
-	case FinancialTransactionListParamsCategoryACH, FinancialTransactionListParamsCategoryCard, FinancialTransactionListParamsCategoryTransfer:
+	case FinancialTransactionListParamsCategoryACH, FinancialTransactionListParamsCategoryCard, FinancialTransactionListParamsCategoryInternal, FinancialTransactionListParamsCategoryTransfer:
 		return true
 	}
 	return false
