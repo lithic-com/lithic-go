@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"reflect"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -17,6 +18,7 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/packages/pagination"
 	"github.com/lithic-com/lithic-go/shared"
+	"github.com/tidwall/gjson"
 )
 
 // AccountHolderService contains methods and other services that help with
@@ -67,7 +69,15 @@ func (r *AccountHolderService) Get(ctx context.Context, accountHolderToken strin
 	return
 }
 
-// Update the information associated with a particular account holder.
+// Update the information associated with a particular account holder (including
+// business owners and control persons associated to a business account). If Lithic
+// is performing KYB or KYC and additional verification is required we will run the
+// individual's or business's updated information again and return whether the
+// status is accepted or pending (i.e., further action required). All calls to this
+// endpoint will return an immediate response - though in some cases, the response
+// may indicate the workflow is under review or further action will be needed to
+// complete the evaluation process. This endpoint can only be used on existing
+// accounts that are part of the program that the calling API key manages.
 func (r *AccountHolderService) Update(ctx context.Context, accountHolderToken string, body AccountHolderUpdateParams, opts ...option.RequestOption) (res *AccountHolderUpdateResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	if accountHolderToken == "" {
@@ -703,6 +713,28 @@ func (r AccountHolderVerificationApplicationStatusReason) IsKnown() bool {
 	return false
 }
 
+type AddressUpdateParam struct {
+	// Valid deliverable address (no PO boxes).
+	Address1 param.Field[string] `json:"address1"`
+	// Unit or apartment number (if applicable).
+	Address2 param.Field[string] `json:"address2"`
+	// Name of city.
+	City param.Field[string] `json:"city"`
+	// Valid country code. Only USA is currently supported, entered in uppercase ISO
+	// 3166-1 alpha-3 three-character format.
+	Country param.Field[string] `json:"country"`
+	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
+	// five-digit ZIP or nine-digit ZIP+4.
+	PostalCode param.Field[string] `json:"postal_code"`
+	// Valid state code. Only USA state codes are currently supported, entered in
+	// uppercase ISO 3166-2 two-character format.
+	State param.Field[string] `json:"state"`
+}
+
+func (r AddressUpdateParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
 type KYBParam struct {
 	// List of all entities with >25% ownership in the company. If no entity or
 	// individual owns >25% of the company, and the largest shareholder is an entity,
@@ -884,6 +916,90 @@ func (r KYBWorkflow) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+type KYBBusinessEntity struct {
+	// Business”s physical address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable.
+	Address KYBBusinessEntityAddress `json:"address,required"`
+	// Government-issued identification number. US Federal Employer Identification
+	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
+	// without hyphens.
+	GovernmentID string `json:"government_id,required"`
+	// Legal (formal) business name.
+	LegalBusinessName string `json:"legal_business_name,required"`
+	// One or more of the business's phone number(s), entered as a list in E.164
+	// format.
+	PhoneNumbers []string `json:"phone_numbers,required"`
+	// Any name that the business operates under that is not its legal business name
+	// (if applicable).
+	DbaBusinessName string `json:"dba_business_name"`
+	// Parent company name (if applicable).
+	ParentCompany string                `json:"parent_company"`
+	JSON          kybBusinessEntityJSON `json:"-"`
+}
+
+// kybBusinessEntityJSON contains the JSON metadata for the struct
+// [KYBBusinessEntity]
+type kybBusinessEntityJSON struct {
+	Address           apijson.Field
+	GovernmentID      apijson.Field
+	LegalBusinessName apijson.Field
+	PhoneNumbers      apijson.Field
+	DbaBusinessName   apijson.Field
+	ParentCompany     apijson.Field
+	raw               string
+	ExtraFields       map[string]apijson.Field
+}
+
+func (r *KYBBusinessEntity) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r kybBusinessEntityJSON) RawJSON() string {
+	return r.raw
+}
+
+// Business”s physical address - PO boxes, UPS drops, and FedEx drops are not
+// acceptable; APO/FPO are acceptable.
+type KYBBusinessEntityAddress struct {
+	// Valid deliverable address (no PO boxes).
+	Address1 string `json:"address1,required"`
+	// Name of city.
+	City string `json:"city,required"`
+	// Valid country code. Only USA is currently supported, entered in uppercase ISO
+	// 3166-1 alpha-3 three-character format.
+	Country string `json:"country,required"`
+	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
+	// five-digit ZIP or nine-digit ZIP+4.
+	PostalCode string `json:"postal_code,required"`
+	// Valid state code. Only USA state codes are currently supported, entered in
+	// uppercase ISO 3166-2 two-character format.
+	State string `json:"state,required"`
+	// Unit or apartment number (if applicable).
+	Address2 string                       `json:"address2"`
+	JSON     kybBusinessEntityAddressJSON `json:"-"`
+}
+
+// kybBusinessEntityAddressJSON contains the JSON metadata for the struct
+// [KYBBusinessEntityAddress]
+type kybBusinessEntityAddressJSON struct {
+	Address1    apijson.Field
+	City        apijson.Field
+	Country     apijson.Field
+	PostalCode  apijson.Field
+	State       apijson.Field
+	Address2    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *KYBBusinessEntityAddress) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r kybBusinessEntityAddressJSON) RawJSON() string {
+	return r.raw
 }
 
 type KYCParam struct {
@@ -1156,36 +1272,884 @@ func (r AccountHolderNewResponseStatusReason) IsKnown() bool {
 }
 
 type AccountHolderUpdateResponse struct {
-	// The token for the account holder that was updated
-	Token string `json:"token"`
-	// Only applicable for customers using the KYC-Exempt workflow to enroll businesses
-	// with authorized users. Pass the account_token of the enrolled business
-	// associated with the AUTHORIZED_USER in this field.
-	BusinessAccountToken string `json:"business_account_token"`
-	// The newly updated email for the account holder
+	// Globally unique identifier for the account holder.
+	Token string `json:"token" format:"uuid"`
+	// Globally unique identifier for the account.
+	AccountToken string `json:"account_token" format:"uuid"`
+	// This field can have the runtime type of
+	// [AccountHolderUpdateResponsePatchResponseAddress].
+	Address interface{} `json:"address"`
+	// This field can have the runtime type of [[]KYBBusinessEntity].
+	BeneficialOwnerEntities interface{} `json:"beneficial_owner_entities"`
+	// This field can have the runtime type of
+	// [[]AccountHolderUpdateResponseKybkycPatchResponseBeneficialOwnerIndividual].
+	BeneficialOwnerIndividuals interface{} `json:"beneficial_owner_individuals"`
+	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
+	// users of businesses. Pass the account_token of the enrolled business associated
+	// with the AUTHORIZED_USER in this field.
+	BusinessAccountToken string `json:"business_account_token" format:"uuid"`
+	// Only present when user_type == "BUSINESS". Information about the business for
+	// which the account is being opened and KYB is being run.
+	BusinessEntity KYBBusinessEntity `json:"business_entity"`
+	// This field can have the runtime type of
+	// [AccountHolderUpdateResponseKYBKYCPatchResponseControlPerson].
+	ControlPerson interface{} `json:"control_person"`
+	// Timestamp of when the account holder was created.
+	Created time.Time `json:"created" format:"date-time"`
+	// < Deprecated. Use control_person.email when user_type == "BUSINESS". Use
+	// individual.phone_number when user_type == "INDIVIDUAL".
+	//
+	// > Primary email of Account Holder.
 	Email string `json:"email"`
-	// The newly updated phone_number for the account holder
-	PhoneNumber string                          `json:"phone_number"`
-	JSON        accountHolderUpdateResponseJSON `json:"-"`
+	// The type of KYC exemption for a KYC-Exempt Account Holder. "None" if the account
+	// holder is not KYC-Exempt.
+	ExemptionType AccountHolderUpdateResponseExemptionType `json:"exemption_type"`
+	// Customer-provided token that indicates a relationship with an object outside of
+	// the Lithic ecosystem.
+	ExternalID string `json:"external_id" format:"string"`
+	// The first name for the account holder
+	FirstName string `json:"first_name"`
+	// This field can have the runtime type of
+	// [AccountHolderUpdateResponseKYBKYCPatchResponseIndividual].
+	Individual interface{} `json:"individual"`
+	// The last name for the account holder
+	LastName string `json:"last_name"`
+	// The legal business name for the account holder
+	LegalBusinessName string `json:"legal_business_name"`
+	// Only present when user_type == "BUSINESS". User-submitted description of the
+	// business.
+	NatureOfBusiness string `json:"nature_of_business" format:"string"`
+	// < Deprecated. Use control_person.phone_number when user_type == "BUSINESS". Use
+	// individual.phone_number when user_type == "INDIVIDUAL".
+	//
+	// > Primary phone of Account Holder, entered in E.164 format.
+	PhoneNumber string `json:"phone_number"`
+	// This field can have the runtime type of [[]RequiredDocument].
+	RequiredDocuments interface{} `json:"required_documents"`
+	// <Deprecated. Use verification_application.status instead>
+	//
+	// KYC and KYB evaluation states.
+	//
+	// Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
+	// `ADVANCED` workflow.
+	Status AccountHolderUpdateResponseStatus `json:"status"`
+	// This field can have the runtime type of
+	// [[]AccountHolderUpdateResponseKybkycPatchResponseStatusReason].
+	StatusReasons interface{} `json:"status_reasons"`
+	// The type of Account Holder. If the type is "INDIVIDUAL", the "individual"
+	// attribute will be present.
+	//
+	// If the type is "BUSINESS" then the "business_entity", "control_person",
+	// "beneficial_owner_individuals", "beneficial_owner_entities",
+	//
+	// "nature_of_business", and "website_url" attributes will be present.
+	UserType AccountHolderUpdateResponseUserType `json:"user_type"`
+	// This field can have the runtime type of
+	// [AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplication].
+	VerificationApplication interface{} `json:"verification_application"`
+	// Only present when user_type == "BUSINESS". Business's primary website.
+	WebsiteURL string                          `json:"website_url" format:"string"`
+	JSON       accountHolderUpdateResponseJSON `json:"-"`
+	union      AccountHolderUpdateResponseUnion
 }
 
 // accountHolderUpdateResponseJSON contains the JSON metadata for the struct
 // [AccountHolderUpdateResponse]
 type accountHolderUpdateResponseJSON struct {
+	Token                      apijson.Field
+	AccountToken               apijson.Field
+	Address                    apijson.Field
+	BeneficialOwnerEntities    apijson.Field
+	BeneficialOwnerIndividuals apijson.Field
+	BusinessAccountToken       apijson.Field
+	BusinessEntity             apijson.Field
+	ControlPerson              apijson.Field
+	Created                    apijson.Field
+	Email                      apijson.Field
+	ExemptionType              apijson.Field
+	ExternalID                 apijson.Field
+	FirstName                  apijson.Field
+	Individual                 apijson.Field
+	LastName                   apijson.Field
+	LegalBusinessName          apijson.Field
+	NatureOfBusiness           apijson.Field
+	PhoneNumber                apijson.Field
+	RequiredDocuments          apijson.Field
+	Status                     apijson.Field
+	StatusReasons              apijson.Field
+	UserType                   apijson.Field
+	VerificationApplication    apijson.Field
+	WebsiteURL                 apijson.Field
+	raw                        string
+	ExtraFields                map[string]apijson.Field
+}
+
+func (r accountHolderUpdateResponseJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r *AccountHolderUpdateResponse) UnmarshalJSON(data []byte) (err error) {
+	*r = AccountHolderUpdateResponse{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a [AccountHolderUpdateResponseUnion] interface which you can
+// cast to the specific types for more type safety.
+//
+// Possible runtime types of the union are
+// [AccountHolderUpdateResponseKYBKYCPatchResponse],
+// [AccountHolderUpdateResponsePatchResponse].
+func (r AccountHolderUpdateResponse) AsUnion() AccountHolderUpdateResponseUnion {
+	return r.union
+}
+
+// Union satisfied by [AccountHolderUpdateResponseKYBKYCPatchResponse] or
+// [AccountHolderUpdateResponsePatchResponse].
+type AccountHolderUpdateResponseUnion interface {
+	implementsAccountHolderUpdateResponse()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AccountHolderUpdateResponseUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AccountHolderUpdateResponseKYBKYCPatchResponse{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AccountHolderUpdateResponsePatchResponse{}),
+		},
+	)
+}
+
+type AccountHolderUpdateResponseKYBKYCPatchResponse struct {
+	// Globally unique identifier for the account holder.
+	Token string `json:"token" format:"uuid"`
+	// Globally unique identifier for the account.
+	AccountToken string `json:"account_token" format:"uuid"`
+	// Only present when user_type == "BUSINESS". List of all entities with >25%
+	// ownership in the company.
+	BeneficialOwnerEntities []KYBBusinessEntity `json:"beneficial_owner_entities"`
+	// Only present when user_type == "BUSINESS". List of all individuals with >25%
+	// ownership in the company.
+	BeneficialOwnerIndividuals []AccountHolderUpdateResponseKybkycPatchResponseBeneficialOwnerIndividual `json:"beneficial_owner_individuals"`
+	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
+	// users of businesses. Pass the account_token of the enrolled business associated
+	// with the AUTHORIZED_USER in this field.
+	BusinessAccountToken string `json:"business_account_token" format:"uuid"`
+	// Only present when user_type == "BUSINESS". Information about the business for
+	// which the account is being opened and KYB is being run.
+	BusinessEntity KYBBusinessEntity `json:"business_entity"`
+	// Only present when user_type == "BUSINESS".
+	//
+	// An individual with significant responsibility for managing the legal entity
+	// (e.g., a Chief Executive Officer, Chief Financial Officer, Chief Operating
+	// Officer,
+	//
+	// Managing Member, General Partner, President, Vice President, or Treasurer). This
+	// can be an executive, or someone who will have program-wide access
+	//
+	// to the cards that Lithic will provide. In some cases, this individual could also
+	// be a beneficial owner listed above.
+	ControlPerson AccountHolderUpdateResponseKYBKYCPatchResponseControlPerson `json:"control_person"`
+	// Timestamp of when the account holder was created.
+	Created time.Time `json:"created" format:"date-time"`
+	// < Deprecated. Use control_person.email when user_type == "BUSINESS". Use
+	// individual.phone_number when user_type == "INDIVIDUAL".
+	//
+	// > Primary email of Account Holder.
+	Email string `json:"email"`
+	// The type of KYC exemption for a KYC-Exempt Account Holder. "None" if the account
+	// holder is not KYC-Exempt.
+	ExemptionType AccountHolderUpdateResponseKYBKYCPatchResponseExemptionType `json:"exemption_type"`
+	// Customer-provided token that indicates a relationship with an object outside of
+	// the Lithic ecosystem.
+	ExternalID string `json:"external_id" format:"string"`
+	// Only present when user_type == "INDIVIDUAL". Information about the individual
+	// for which the account is being opened and KYC is being run.
+	Individual AccountHolderUpdateResponseKYBKYCPatchResponseIndividual `json:"individual"`
+	// Only present when user_type == "BUSINESS". User-submitted description of the
+	// business.
+	NatureOfBusiness string `json:"nature_of_business" format:"string"`
+	// < Deprecated. Use control_person.phone_number when user_type == "BUSINESS". Use
+	// individual.phone_number when user_type == "INDIVIDUAL".
+	//
+	// > Primary phone of Account Holder, entered in E.164 format.
+	PhoneNumber string `json:"phone_number"`
+	// Only present for "KYB_BASIC" and "KYC_ADVANCED" workflows. A list of documents
+	// required for the account holder to be approved.
+	RequiredDocuments []RequiredDocument `json:"required_documents"`
+	// <Deprecated. Use verification_application.status instead>
+	//
+	// KYC and KYB evaluation states.
+	//
+	// Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
+	// `ADVANCED` workflow.
+	Status AccountHolderUpdateResponseKYBKYCPatchResponseStatus `json:"status"`
+	// <Deprecated. Use verification_application.status_reasons> Reason for the
+	// evaluation status.
+	StatusReasons []AccountHolderUpdateResponseKybkycPatchResponseStatusReason `json:"status_reasons"`
+	// The type of Account Holder. If the type is "INDIVIDUAL", the "individual"
+	// attribute will be present.
+	//
+	// If the type is "BUSINESS" then the "business_entity", "control_person",
+	// "beneficial_owner_individuals", "beneficial_owner_entities",
+	//
+	// "nature_of_business", and "website_url" attributes will be present.
+	UserType AccountHolderUpdateResponseKYBKYCPatchResponseUserType `json:"user_type"`
+	// Information about the most recent identity verification attempt
+	VerificationApplication AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplication `json:"verification_application"`
+	// Only present when user_type == "BUSINESS". Business's primary website.
+	WebsiteURL string                                             `json:"website_url" format:"string"`
+	JSON       accountHolderUpdateResponseKybkycPatchResponseJSON `json:"-"`
+}
+
+// accountHolderUpdateResponseKybkycPatchResponseJSON contains the JSON metadata
+// for the struct [AccountHolderUpdateResponseKYBKYCPatchResponse]
+type accountHolderUpdateResponseKybkycPatchResponseJSON struct {
+	Token                      apijson.Field
+	AccountToken               apijson.Field
+	BeneficialOwnerEntities    apijson.Field
+	BeneficialOwnerIndividuals apijson.Field
+	BusinessAccountToken       apijson.Field
+	BusinessEntity             apijson.Field
+	ControlPerson              apijson.Field
+	Created                    apijson.Field
+	Email                      apijson.Field
+	ExemptionType              apijson.Field
+	ExternalID                 apijson.Field
+	Individual                 apijson.Field
+	NatureOfBusiness           apijson.Field
+	PhoneNumber                apijson.Field
+	RequiredDocuments          apijson.Field
+	Status                     apijson.Field
+	StatusReasons              apijson.Field
+	UserType                   apijson.Field
+	VerificationApplication    apijson.Field
+	WebsiteURL                 apijson.Field
+	raw                        string
+	ExtraFields                map[string]apijson.Field
+}
+
+func (r *AccountHolderUpdateResponseKYBKYCPatchResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountHolderUpdateResponseKybkycPatchResponseJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AccountHolderUpdateResponseKYBKYCPatchResponse) implementsAccountHolderUpdateResponse() {}
+
+type AccountHolderUpdateResponseKybkycPatchResponseBeneficialOwnerIndividual struct {
+	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
+	Address AccountHolderUpdateResponseKYBKYCPatchResponseBeneficialOwnerIndividualsAddress `json:"address"`
+	// Individual's date of birth, as an RFC 3339 date.
+	Dob string `json:"dob"`
+	// Individual's email address. If utilizing Lithic for chargeback processing, this
+	// customer email address may be used to communicate dispute status and resolution.
+	Email string `json:"email"`
+	// Individual's first name, as it appears on government-issued identity documents.
+	FirstName string `json:"first_name"`
+	// Individual's last name, as it appears on government-issued identity documents.
+	LastName string `json:"last_name"`
+	// Individual's phone number, entered in E.164 format.
+	PhoneNumber string                                                                      `json:"phone_number"`
+	JSON        accountHolderUpdateResponseKybkycPatchResponseBeneficialOwnerIndividualJSON `json:"-"`
+}
+
+// accountHolderUpdateResponseKybkycPatchResponseBeneficialOwnerIndividualJSON
+// contains the JSON metadata for the struct
+// [AccountHolderUpdateResponseKybkycPatchResponseBeneficialOwnerIndividual]
+type accountHolderUpdateResponseKybkycPatchResponseBeneficialOwnerIndividualJSON struct {
+	Address     apijson.Field
+	Dob         apijson.Field
+	Email       apijson.Field
+	FirstName   apijson.Field
+	LastName    apijson.Field
+	PhoneNumber apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AccountHolderUpdateResponseKybkycPatchResponseBeneficialOwnerIndividual) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountHolderUpdateResponseKybkycPatchResponseBeneficialOwnerIndividualJSON) RawJSON() string {
+	return r.raw
+}
+
+// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
+// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
+type AccountHolderUpdateResponseKYBKYCPatchResponseBeneficialOwnerIndividualsAddress struct {
+	// Valid deliverable address (no PO boxes).
+	Address1 string `json:"address1,required"`
+	// Name of city.
+	City string `json:"city,required"`
+	// Valid country code. Only USA is currently supported, entered in uppercase ISO
+	// 3166-1 alpha-3 three-character format.
+	Country string `json:"country,required"`
+	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
+	// five-digit ZIP or nine-digit ZIP+4.
+	PostalCode string `json:"postal_code,required"`
+	// Valid state code. Only USA state codes are currently supported, entered in
+	// uppercase ISO 3166-2 two-character format.
+	State string `json:"state,required"`
+	// Unit or apartment number (if applicable).
+	Address2 string                                                                              `json:"address2"`
+	JSON     accountHolderUpdateResponseKybkycPatchResponseBeneficialOwnerIndividualsAddressJSON `json:"-"`
+}
+
+// accountHolderUpdateResponseKybkycPatchResponseBeneficialOwnerIndividualsAddressJSON
+// contains the JSON metadata for the struct
+// [AccountHolderUpdateResponseKYBKYCPatchResponseBeneficialOwnerIndividualsAddress]
+type accountHolderUpdateResponseKybkycPatchResponseBeneficialOwnerIndividualsAddressJSON struct {
+	Address1    apijson.Field
+	City        apijson.Field
+	Country     apijson.Field
+	PostalCode  apijson.Field
+	State       apijson.Field
+	Address2    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AccountHolderUpdateResponseKYBKYCPatchResponseBeneficialOwnerIndividualsAddress) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountHolderUpdateResponseKybkycPatchResponseBeneficialOwnerIndividualsAddressJSON) RawJSON() string {
+	return r.raw
+}
+
+// Only present when user_type == "BUSINESS".
+//
+// An individual with significant responsibility for managing the legal entity
+// (e.g., a Chief Executive Officer, Chief Financial Officer, Chief Operating
+// Officer,
+//
+// Managing Member, General Partner, President, Vice President, or Treasurer). This
+// can be an executive, or someone who will have program-wide access
+//
+// to the cards that Lithic will provide. In some cases, this individual could also
+// be a beneficial owner listed above.
+type AccountHolderUpdateResponseKYBKYCPatchResponseControlPerson struct {
+	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
+	Address AccountHolderUpdateResponseKYBKYCPatchResponseControlPersonAddress `json:"address"`
+	// Individual's date of birth, as an RFC 3339 date.
+	Dob string `json:"dob"`
+	// Individual's email address. If utilizing Lithic for chargeback processing, this
+	// customer email address may be used to communicate dispute status and resolution.
+	Email string `json:"email"`
+	// Individual's first name, as it appears on government-issued identity documents.
+	FirstName string `json:"first_name"`
+	// Individual's last name, as it appears on government-issued identity documents.
+	LastName string `json:"last_name"`
+	// Individual's phone number, entered in E.164 format.
+	PhoneNumber string                                                          `json:"phone_number"`
+	JSON        accountHolderUpdateResponseKybkycPatchResponseControlPersonJSON `json:"-"`
+}
+
+// accountHolderUpdateResponseKybkycPatchResponseControlPersonJSON contains the
+// JSON metadata for the struct
+// [AccountHolderUpdateResponseKYBKYCPatchResponseControlPerson]
+type accountHolderUpdateResponseKybkycPatchResponseControlPersonJSON struct {
+	Address     apijson.Field
+	Dob         apijson.Field
+	Email       apijson.Field
+	FirstName   apijson.Field
+	LastName    apijson.Field
+	PhoneNumber apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AccountHolderUpdateResponseKYBKYCPatchResponseControlPerson) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountHolderUpdateResponseKybkycPatchResponseControlPersonJSON) RawJSON() string {
+	return r.raw
+}
+
+// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
+// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
+type AccountHolderUpdateResponseKYBKYCPatchResponseControlPersonAddress struct {
+	// Valid deliverable address (no PO boxes).
+	Address1 string `json:"address1,required"`
+	// Name of city.
+	City string `json:"city,required"`
+	// Valid country code. Only USA is currently supported, entered in uppercase ISO
+	// 3166-1 alpha-3 three-character format.
+	Country string `json:"country,required"`
+	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
+	// five-digit ZIP or nine-digit ZIP+4.
+	PostalCode string `json:"postal_code,required"`
+	// Valid state code. Only USA state codes are currently supported, entered in
+	// uppercase ISO 3166-2 two-character format.
+	State string `json:"state,required"`
+	// Unit or apartment number (if applicable).
+	Address2 string                                                                 `json:"address2"`
+	JSON     accountHolderUpdateResponseKybkycPatchResponseControlPersonAddressJSON `json:"-"`
+}
+
+// accountHolderUpdateResponseKybkycPatchResponseControlPersonAddressJSON contains
+// the JSON metadata for the struct
+// [AccountHolderUpdateResponseKYBKYCPatchResponseControlPersonAddress]
+type accountHolderUpdateResponseKybkycPatchResponseControlPersonAddressJSON struct {
+	Address1    apijson.Field
+	City        apijson.Field
+	Country     apijson.Field
+	PostalCode  apijson.Field
+	State       apijson.Field
+	Address2    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AccountHolderUpdateResponseKYBKYCPatchResponseControlPersonAddress) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountHolderUpdateResponseKybkycPatchResponseControlPersonAddressJSON) RawJSON() string {
+	return r.raw
+}
+
+// The type of KYC exemption for a KYC-Exempt Account Holder. "None" if the account
+// holder is not KYC-Exempt.
+type AccountHolderUpdateResponseKYBKYCPatchResponseExemptionType string
+
+const (
+	AccountHolderUpdateResponseKYBKYCPatchResponseExemptionTypeAuthorizedUser  AccountHolderUpdateResponseKYBKYCPatchResponseExemptionType = "AUTHORIZED_USER"
+	AccountHolderUpdateResponseKYBKYCPatchResponseExemptionTypePrepaidCardUser AccountHolderUpdateResponseKYBKYCPatchResponseExemptionType = "PREPAID_CARD_USER"
+)
+
+func (r AccountHolderUpdateResponseKYBKYCPatchResponseExemptionType) IsKnown() bool {
+	switch r {
+	case AccountHolderUpdateResponseKYBKYCPatchResponseExemptionTypeAuthorizedUser, AccountHolderUpdateResponseKYBKYCPatchResponseExemptionTypePrepaidCardUser:
+		return true
+	}
+	return false
+}
+
+// Only present when user_type == "INDIVIDUAL". Information about the individual
+// for which the account is being opened and KYC is being run.
+type AccountHolderUpdateResponseKYBKYCPatchResponseIndividual struct {
+	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
+	Address AccountHolderUpdateResponseKYBKYCPatchResponseIndividualAddress `json:"address"`
+	// Individual's date of birth, as an RFC 3339 date.
+	Dob string `json:"dob"`
+	// Individual's email address. If utilizing Lithic for chargeback processing, this
+	// customer email address may be used to communicate dispute status and resolution.
+	Email string `json:"email"`
+	// Individual's first name, as it appears on government-issued identity documents.
+	FirstName string `json:"first_name"`
+	// Individual's last name, as it appears on government-issued identity documents.
+	LastName string `json:"last_name"`
+	// Individual's phone number, entered in E.164 format.
+	PhoneNumber string                                                       `json:"phone_number"`
+	JSON        accountHolderUpdateResponseKybkycPatchResponseIndividualJSON `json:"-"`
+}
+
+// accountHolderUpdateResponseKybkycPatchResponseIndividualJSON contains the JSON
+// metadata for the struct
+// [AccountHolderUpdateResponseKYBKYCPatchResponseIndividual]
+type accountHolderUpdateResponseKybkycPatchResponseIndividualJSON struct {
+	Address     apijson.Field
+	Dob         apijson.Field
+	Email       apijson.Field
+	FirstName   apijson.Field
+	LastName    apijson.Field
+	PhoneNumber apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AccountHolderUpdateResponseKYBKYCPatchResponseIndividual) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountHolderUpdateResponseKybkycPatchResponseIndividualJSON) RawJSON() string {
+	return r.raw
+}
+
+// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
+// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
+type AccountHolderUpdateResponseKYBKYCPatchResponseIndividualAddress struct {
+	// Valid deliverable address (no PO boxes).
+	Address1 string `json:"address1,required"`
+	// Name of city.
+	City string `json:"city,required"`
+	// Valid country code. Only USA is currently supported, entered in uppercase ISO
+	// 3166-1 alpha-3 three-character format.
+	Country string `json:"country,required"`
+	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
+	// five-digit ZIP or nine-digit ZIP+4.
+	PostalCode string `json:"postal_code,required"`
+	// Valid state code. Only USA state codes are currently supported, entered in
+	// uppercase ISO 3166-2 two-character format.
+	State string `json:"state,required"`
+	// Unit or apartment number (if applicable).
+	Address2 string                                                              `json:"address2"`
+	JSON     accountHolderUpdateResponseKybkycPatchResponseIndividualAddressJSON `json:"-"`
+}
+
+// accountHolderUpdateResponseKybkycPatchResponseIndividualAddressJSON contains the
+// JSON metadata for the struct
+// [AccountHolderUpdateResponseKYBKYCPatchResponseIndividualAddress]
+type accountHolderUpdateResponseKybkycPatchResponseIndividualAddressJSON struct {
+	Address1    apijson.Field
+	City        apijson.Field
+	Country     apijson.Field
+	PostalCode  apijson.Field
+	State       apijson.Field
+	Address2    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AccountHolderUpdateResponseKYBKYCPatchResponseIndividualAddress) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountHolderUpdateResponseKybkycPatchResponseIndividualAddressJSON) RawJSON() string {
+	return r.raw
+}
+
+// <Deprecated. Use verification_application.status instead>
+//
+// KYC and KYB evaluation states.
+//
+// Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
+// `ADVANCED` workflow.
+type AccountHolderUpdateResponseKYBKYCPatchResponseStatus string
+
+const (
+	AccountHolderUpdateResponseKYBKYCPatchResponseStatusAccepted        AccountHolderUpdateResponseKYBKYCPatchResponseStatus = "ACCEPTED"
+	AccountHolderUpdateResponseKYBKYCPatchResponseStatusPendingDocument AccountHolderUpdateResponseKYBKYCPatchResponseStatus = "PENDING_DOCUMENT"
+	AccountHolderUpdateResponseKYBKYCPatchResponseStatusPendingResubmit AccountHolderUpdateResponseKYBKYCPatchResponseStatus = "PENDING_RESUBMIT"
+	AccountHolderUpdateResponseKYBKYCPatchResponseStatusRejected        AccountHolderUpdateResponseKYBKYCPatchResponseStatus = "REJECTED"
+)
+
+func (r AccountHolderUpdateResponseKYBKYCPatchResponseStatus) IsKnown() bool {
+	switch r {
+	case AccountHolderUpdateResponseKYBKYCPatchResponseStatusAccepted, AccountHolderUpdateResponseKYBKYCPatchResponseStatusPendingDocument, AccountHolderUpdateResponseKYBKYCPatchResponseStatusPendingResubmit, AccountHolderUpdateResponseKYBKYCPatchResponseStatusRejected:
+		return true
+	}
+	return false
+}
+
+// Status Reasons for KYC/KYB enrollment states
+type AccountHolderUpdateResponseKybkycPatchResponseStatusReason string
+
+const (
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonAddressVerificationFailure                      AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "ADDRESS_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonAgeThresholdFailure                             AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "AGE_THRESHOLD_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonCompleteVerificationFailure                     AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "COMPLETE_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonDobVerificationFailure                          AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "DOB_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonIDVerificationFailure                           AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "ID_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonMaxDocumentAttempts                             AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "MAX_DOCUMENT_ATTEMPTS"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonMaxResubmissionAttempts                         AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "MAX_RESUBMISSION_ATTEMPTS"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonNameVerificationFailure                         AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "NAME_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonOtherVerificationFailure                        AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "OTHER_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonRiskThresholdFailure                            AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "RISK_THRESHOLD_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonWatchlistAlertFailure                           AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "WATCHLIST_ALERT_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonPrimaryBusinessEntityIDVerificationFailure      AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "PRIMARY_BUSINESS_ENTITY_ID_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonPrimaryBusinessEntityAddressVerificationFailure AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "PRIMARY_BUSINESS_ENTITY_ADDRESS_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonPrimaryBusinessEntityNameVerificationFailure    AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "PRIMARY_BUSINESS_ENTITY_NAME_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonPrimaryBusinessEntityBusinessOfficersNotMatched AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "PRIMARY_BUSINESS_ENTITY_BUSINESS_OFFICERS_NOT_MATCHED"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonPrimaryBusinessEntitySosFilingInactive          AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "PRIMARY_BUSINESS_ENTITY_SOS_FILING_INACTIVE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonPrimaryBusinessEntitySosNotMatched              AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "PRIMARY_BUSINESS_ENTITY_SOS_NOT_MATCHED"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonPrimaryBusinessEntityCmraFailure                AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "PRIMARY_BUSINESS_ENTITY_CMRA_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonPrimaryBusinessEntityWatchlistFailure           AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "PRIMARY_BUSINESS_ENTITY_WATCHLIST_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonPrimaryBusinessEntityRegisteredAgentFailure     AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "PRIMARY_BUSINESS_ENTITY_REGISTERED_AGENT_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonControlPersonBlocklistAlertFailure              AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "CONTROL_PERSON_BLOCKLIST_ALERT_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonControlPersonIDVerificationFailure              AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "CONTROL_PERSON_ID_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonControlPersonDobVerificationFailure             AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "CONTROL_PERSON_DOB_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseStatusReasonControlPersonNameVerificationFailure            AccountHolderUpdateResponseKybkycPatchResponseStatusReason = "CONTROL_PERSON_NAME_VERIFICATION_FAILURE"
+)
+
+func (r AccountHolderUpdateResponseKybkycPatchResponseStatusReason) IsKnown() bool {
+	switch r {
+	case AccountHolderUpdateResponseKybkycPatchResponseStatusReasonAddressVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonAgeThresholdFailure, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonCompleteVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonDobVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonIDVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonMaxDocumentAttempts, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonMaxResubmissionAttempts, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonNameVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonOtherVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonRiskThresholdFailure, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonWatchlistAlertFailure, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonPrimaryBusinessEntityIDVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonPrimaryBusinessEntityAddressVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonPrimaryBusinessEntityNameVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonPrimaryBusinessEntityBusinessOfficersNotMatched, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonPrimaryBusinessEntitySosFilingInactive, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonPrimaryBusinessEntitySosNotMatched, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonPrimaryBusinessEntityCmraFailure, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonPrimaryBusinessEntityWatchlistFailure, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonPrimaryBusinessEntityRegisteredAgentFailure, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonControlPersonBlocklistAlertFailure, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonControlPersonIDVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonControlPersonDobVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseStatusReasonControlPersonNameVerificationFailure:
+		return true
+	}
+	return false
+}
+
+// The type of Account Holder. If the type is "INDIVIDUAL", the "individual"
+// attribute will be present.
+//
+// If the type is "BUSINESS" then the "business_entity", "control_person",
+// "beneficial_owner_individuals", "beneficial_owner_entities",
+//
+// "nature_of_business", and "website_url" attributes will be present.
+type AccountHolderUpdateResponseKYBKYCPatchResponseUserType string
+
+const (
+	AccountHolderUpdateResponseKYBKYCPatchResponseUserTypeBusiness   AccountHolderUpdateResponseKYBKYCPatchResponseUserType = "BUSINESS"
+	AccountHolderUpdateResponseKYBKYCPatchResponseUserTypeIndividual AccountHolderUpdateResponseKYBKYCPatchResponseUserType = "INDIVIDUAL"
+)
+
+func (r AccountHolderUpdateResponseKYBKYCPatchResponseUserType) IsKnown() bool {
+	switch r {
+	case AccountHolderUpdateResponseKYBKYCPatchResponseUserTypeBusiness, AccountHolderUpdateResponseKYBKYCPatchResponseUserTypeIndividual:
+		return true
+	}
+	return false
+}
+
+// Information about the most recent identity verification attempt
+type AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplication struct {
+	// Timestamp of when the application was created.
+	Created time.Time `json:"created,required" format:"date-time"`
+	// KYC and KYB evaluation states.
+	//
+	// Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
+	// `ADVANCED` workflow.
+	Status AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplicationStatus `json:"status,required"`
+	// Reason for the evaluation status.
+	StatusReasons []AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason `json:"status_reasons,required"`
+	// Timestamp of when the application was last updated.
+	Updated time.Time                                                                 `json:"updated,required" format:"date-time"`
+	JSON    accountHolderUpdateResponseKybkycPatchResponseVerificationApplicationJSON `json:"-"`
+}
+
+// accountHolderUpdateResponseKybkycPatchResponseVerificationApplicationJSON
+// contains the JSON metadata for the struct
+// [AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplication]
+type accountHolderUpdateResponseKybkycPatchResponseVerificationApplicationJSON struct {
+	Created       apijson.Field
+	Status        apijson.Field
+	StatusReasons apijson.Field
+	Updated       apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
+}
+
+func (r *AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplication) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountHolderUpdateResponseKybkycPatchResponseVerificationApplicationJSON) RawJSON() string {
+	return r.raw
+}
+
+// KYC and KYB evaluation states.
+//
+// Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
+// `ADVANCED` workflow.
+type AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplicationStatus string
+
+const (
+	AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplicationStatusAccepted        AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplicationStatus = "ACCEPTED"
+	AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplicationStatusPendingDocument AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplicationStatus = "PENDING_DOCUMENT"
+	AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplicationStatusPendingResubmit AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplicationStatus = "PENDING_RESUBMIT"
+	AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplicationStatusRejected        AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplicationStatus = "REJECTED"
+)
+
+func (r AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplicationStatus) IsKnown() bool {
+	switch r {
+	case AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplicationStatusAccepted, AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplicationStatusPendingDocument, AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplicationStatusPendingResubmit, AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplicationStatusRejected:
+		return true
+	}
+	return false
+}
+
+// Status Reasons for KYC/KYB enrollment states
+type AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason string
+
+const (
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonAddressVerificationFailure                      AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "ADDRESS_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonAgeThresholdFailure                             AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "AGE_THRESHOLD_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonCompleteVerificationFailure                     AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "COMPLETE_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonDobVerificationFailure                          AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "DOB_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonIDVerificationFailure                           AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "ID_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonMaxDocumentAttempts                             AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "MAX_DOCUMENT_ATTEMPTS"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonMaxResubmissionAttempts                         AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "MAX_RESUBMISSION_ATTEMPTS"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonNameVerificationFailure                         AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "NAME_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonOtherVerificationFailure                        AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "OTHER_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonRiskThresholdFailure                            AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "RISK_THRESHOLD_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonWatchlistAlertFailure                           AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "WATCHLIST_ALERT_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonPrimaryBusinessEntityIDVerificationFailure      AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "PRIMARY_BUSINESS_ENTITY_ID_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonPrimaryBusinessEntityAddressVerificationFailure AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "PRIMARY_BUSINESS_ENTITY_ADDRESS_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonPrimaryBusinessEntityNameVerificationFailure    AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "PRIMARY_BUSINESS_ENTITY_NAME_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonPrimaryBusinessEntityBusinessOfficersNotMatched AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "PRIMARY_BUSINESS_ENTITY_BUSINESS_OFFICERS_NOT_MATCHED"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonPrimaryBusinessEntitySosFilingInactive          AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "PRIMARY_BUSINESS_ENTITY_SOS_FILING_INACTIVE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonPrimaryBusinessEntitySosNotMatched              AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "PRIMARY_BUSINESS_ENTITY_SOS_NOT_MATCHED"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonPrimaryBusinessEntityCmraFailure                AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "PRIMARY_BUSINESS_ENTITY_CMRA_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonPrimaryBusinessEntityWatchlistFailure           AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "PRIMARY_BUSINESS_ENTITY_WATCHLIST_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonPrimaryBusinessEntityRegisteredAgentFailure     AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "PRIMARY_BUSINESS_ENTITY_REGISTERED_AGENT_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonControlPersonBlocklistAlertFailure              AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "CONTROL_PERSON_BLOCKLIST_ALERT_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonControlPersonIDVerificationFailure              AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "CONTROL_PERSON_ID_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonControlPersonDobVerificationFailure             AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "CONTROL_PERSON_DOB_VERIFICATION_FAILURE"
+	AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonControlPersonNameVerificationFailure            AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason = "CONTROL_PERSON_NAME_VERIFICATION_FAILURE"
+)
+
+func (r AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason) IsKnown() bool {
+	switch r {
+	case AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonAddressVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonAgeThresholdFailure, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonCompleteVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonDobVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonIDVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonMaxDocumentAttempts, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonMaxResubmissionAttempts, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonNameVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonOtherVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonRiskThresholdFailure, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonWatchlistAlertFailure, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonPrimaryBusinessEntityIDVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonPrimaryBusinessEntityAddressVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonPrimaryBusinessEntityNameVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonPrimaryBusinessEntityBusinessOfficersNotMatched, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonPrimaryBusinessEntitySosFilingInactive, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonPrimaryBusinessEntitySosNotMatched, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonPrimaryBusinessEntityCmraFailure, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonPrimaryBusinessEntityWatchlistFailure, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonPrimaryBusinessEntityRegisteredAgentFailure, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonControlPersonBlocklistAlertFailure, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonControlPersonIDVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonControlPersonDobVerificationFailure, AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReasonControlPersonNameVerificationFailure:
+		return true
+	}
+	return false
+}
+
+type AccountHolderUpdateResponsePatchResponse struct {
+	// The token for the account holder that was updated
+	Token string `json:"token"`
+	// The address for the account holder
+	Address AccountHolderUpdateResponsePatchResponseAddress `json:"address"`
+	// The token for the business account that the account holder is associated with
+	BusinessAccountToken string `json:"business_account_token"`
+	// The email for the account holder
+	Email string `json:"email"`
+	// The first name for the account holder
+	FirstName string `json:"first_name"`
+	// The last name for the account holder
+	LastName string `json:"last_name"`
+	// The legal business name for the account holder
+	LegalBusinessName string `json:"legal_business_name"`
+	// The phone_number for the account holder
+	PhoneNumber string                                       `json:"phone_number"`
+	JSON        accountHolderUpdateResponsePatchResponseJSON `json:"-"`
+}
+
+// accountHolderUpdateResponsePatchResponseJSON contains the JSON metadata for the
+// struct [AccountHolderUpdateResponsePatchResponse]
+type accountHolderUpdateResponsePatchResponseJSON struct {
 	Token                apijson.Field
+	Address              apijson.Field
 	BusinessAccountToken apijson.Field
 	Email                apijson.Field
+	FirstName            apijson.Field
+	LastName             apijson.Field
+	LegalBusinessName    apijson.Field
 	PhoneNumber          apijson.Field
 	raw                  string
 	ExtraFields          map[string]apijson.Field
 }
 
-func (r *AccountHolderUpdateResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *AccountHolderUpdateResponsePatchResponse) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r accountHolderUpdateResponseJSON) RawJSON() string {
+func (r accountHolderUpdateResponsePatchResponseJSON) RawJSON() string {
 	return r.raw
+}
+
+func (r AccountHolderUpdateResponsePatchResponse) implementsAccountHolderUpdateResponse() {}
+
+// The address for the account holder
+type AccountHolderUpdateResponsePatchResponseAddress struct {
+	// Valid deliverable address (no PO boxes).
+	Address1 string `json:"address1,required"`
+	// Name of city.
+	City string `json:"city,required"`
+	// Valid country code. Only USA is currently supported, entered in uppercase ISO
+	// 3166-1 alpha-3 three-character format.
+	Country string `json:"country,required"`
+	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
+	// five-digit ZIP or nine-digit ZIP+4.
+	PostalCode string `json:"postal_code,required"`
+	// Valid state code. Only USA state codes are currently supported, entered in
+	// uppercase ISO 3166-2 two-character format.
+	State string `json:"state,required"`
+	// Unit or apartment number (if applicable).
+	Address2 string                                              `json:"address2"`
+	JSON     accountHolderUpdateResponsePatchResponseAddressJSON `json:"-"`
+}
+
+// accountHolderUpdateResponsePatchResponseAddressJSON contains the JSON metadata
+// for the struct [AccountHolderUpdateResponsePatchResponseAddress]
+type accountHolderUpdateResponsePatchResponseAddressJSON struct {
+	Address1    apijson.Field
+	City        apijson.Field
+	Country     apijson.Field
+	PostalCode  apijson.Field
+	State       apijson.Field
+	Address2    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AccountHolderUpdateResponsePatchResponseAddress) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountHolderUpdateResponsePatchResponseAddressJSON) RawJSON() string {
+	return r.raw
+}
+
+// The type of KYC exemption for a KYC-Exempt Account Holder. "None" if the account
+// holder is not KYC-Exempt.
+type AccountHolderUpdateResponseExemptionType string
+
+const (
+	AccountHolderUpdateResponseExemptionTypeAuthorizedUser  AccountHolderUpdateResponseExemptionType = "AUTHORIZED_USER"
+	AccountHolderUpdateResponseExemptionTypePrepaidCardUser AccountHolderUpdateResponseExemptionType = "PREPAID_CARD_USER"
+)
+
+func (r AccountHolderUpdateResponseExemptionType) IsKnown() bool {
+	switch r {
+	case AccountHolderUpdateResponseExemptionTypeAuthorizedUser, AccountHolderUpdateResponseExemptionTypePrepaidCardUser:
+		return true
+	}
+	return false
+}
+
+// <Deprecated. Use verification_application.status instead>
+//
+// KYC and KYB evaluation states.
+//
+// Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
+// `ADVANCED` workflow.
+type AccountHolderUpdateResponseStatus string
+
+const (
+	AccountHolderUpdateResponseStatusAccepted        AccountHolderUpdateResponseStatus = "ACCEPTED"
+	AccountHolderUpdateResponseStatusPendingDocument AccountHolderUpdateResponseStatus = "PENDING_DOCUMENT"
+	AccountHolderUpdateResponseStatusPendingResubmit AccountHolderUpdateResponseStatus = "PENDING_RESUBMIT"
+	AccountHolderUpdateResponseStatusRejected        AccountHolderUpdateResponseStatus = "REJECTED"
+)
+
+func (r AccountHolderUpdateResponseStatus) IsKnown() bool {
+	switch r {
+	case AccountHolderUpdateResponseStatusAccepted, AccountHolderUpdateResponseStatusPendingDocument, AccountHolderUpdateResponseStatusPendingResubmit, AccountHolderUpdateResponseStatusRejected:
+		return true
+	}
+	return false
+}
+
+// The type of Account Holder. If the type is "INDIVIDUAL", the "individual"
+// attribute will be present.
+//
+// If the type is "BUSINESS" then the "business_entity", "control_person",
+// "beneficial_owner_individuals", "beneficial_owner_entities",
+//
+// "nature_of_business", and "website_url" attributes will be present.
+type AccountHolderUpdateResponseUserType string
+
+const (
+	AccountHolderUpdateResponseUserTypeBusiness   AccountHolderUpdateResponseUserType = "BUSINESS"
+	AccountHolderUpdateResponseUserTypeIndividual AccountHolderUpdateResponseUserType = "INDIVIDUAL"
+)
+
+func (r AccountHolderUpdateResponseUserType) IsKnown() bool {
+	switch r {
+	case AccountHolderUpdateResponseUserTypeBusiness, AccountHolderUpdateResponseUserTypeIndividual:
+		return true
+	}
+	return false
 }
 
 type AccountHolderListDocumentsResponse struct {
@@ -1216,7 +2180,7 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 	AccountToken string `json:"account_token" format:"uuid"`
 	// Only present when user_type == "BUSINESS". List of all entities with >25%
 	// ownership in the company.
-	BeneficialOwnerEntities []AccountHolderSimulateEnrollmentReviewResponseBeneficialOwnerEntity `json:"beneficial_owner_entities"`
+	BeneficialOwnerEntities []KYBBusinessEntity `json:"beneficial_owner_entities"`
 	// Only present when user_type == "BUSINESS". List of all individuals with >25%
 	// ownership in the company.
 	BeneficialOwnerIndividuals []AccountHolderSimulateEnrollmentReviewResponseBeneficialOwnerIndividual `json:"beneficial_owner_individuals"`
@@ -1226,7 +2190,7 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 	BusinessAccountToken string `json:"business_account_token" format:"uuid"`
 	// Only present when user_type == "BUSINESS". Information about the business for
 	// which the account is being opened and KYB is being run.
-	BusinessEntity AccountHolderSimulateEnrollmentReviewResponseBusinessEntity `json:"business_entity"`
+	BusinessEntity KYBBusinessEntity `json:"business_entity"`
 	// Only present when user_type == "BUSINESS".
 	//
 	// An individual with significant responsibility for managing the legal entity
@@ -1326,92 +2290,6 @@ func (r accountHolderSimulateEnrollmentReviewResponseJSON) RawJSON() string {
 	return r.raw
 }
 
-type AccountHolderSimulateEnrollmentReviewResponseBeneficialOwnerEntity struct {
-	// Business”s physical address - PO boxes, UPS drops, and FedEx drops are not
-	// acceptable; APO/FPO are acceptable.
-	Address AccountHolderSimulateEnrollmentReviewResponseBeneficialOwnerEntitiesAddress `json:"address,required"`
-	// Government-issued identification number. US Federal Employer Identification
-	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
-	// without hyphens.
-	GovernmentID string `json:"government_id,required"`
-	// Legal (formal) business name.
-	LegalBusinessName string `json:"legal_business_name,required"`
-	// One or more of the business's phone number(s), entered as a list in E.164
-	// format.
-	PhoneNumbers []string `json:"phone_numbers,required"`
-	// Any name that the business operates under that is not its legal business name
-	// (if applicable).
-	DbaBusinessName string `json:"dba_business_name"`
-	// Parent company name (if applicable).
-	ParentCompany string                                                                 `json:"parent_company"`
-	JSON          accountHolderSimulateEnrollmentReviewResponseBeneficialOwnerEntityJSON `json:"-"`
-}
-
-// accountHolderSimulateEnrollmentReviewResponseBeneficialOwnerEntityJSON contains
-// the JSON metadata for the struct
-// [AccountHolderSimulateEnrollmentReviewResponseBeneficialOwnerEntity]
-type accountHolderSimulateEnrollmentReviewResponseBeneficialOwnerEntityJSON struct {
-	Address           apijson.Field
-	GovernmentID      apijson.Field
-	LegalBusinessName apijson.Field
-	PhoneNumbers      apijson.Field
-	DbaBusinessName   apijson.Field
-	ParentCompany     apijson.Field
-	raw               string
-	ExtraFields       map[string]apijson.Field
-}
-
-func (r *AccountHolderSimulateEnrollmentReviewResponseBeneficialOwnerEntity) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r accountHolderSimulateEnrollmentReviewResponseBeneficialOwnerEntityJSON) RawJSON() string {
-	return r.raw
-}
-
-// Business”s physical address - PO boxes, UPS drops, and FedEx drops are not
-// acceptable; APO/FPO are acceptable.
-type AccountHolderSimulateEnrollmentReviewResponseBeneficialOwnerEntitiesAddress struct {
-	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
-	// Name of city.
-	City string `json:"city,required"`
-	// Valid country code. Only USA is currently supported, entered in uppercase ISO
-	// 3166-1 alpha-3 three-character format.
-	Country string `json:"country,required"`
-	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
-	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode string `json:"postal_code,required"`
-	// Valid state code. Only USA state codes are currently supported, entered in
-	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state,required"`
-	// Unit or apartment number (if applicable).
-	Address2 string                                                                          `json:"address2"`
-	JSON     accountHolderSimulateEnrollmentReviewResponseBeneficialOwnerEntitiesAddressJSON `json:"-"`
-}
-
-// accountHolderSimulateEnrollmentReviewResponseBeneficialOwnerEntitiesAddressJSON
-// contains the JSON metadata for the struct
-// [AccountHolderSimulateEnrollmentReviewResponseBeneficialOwnerEntitiesAddress]
-type accountHolderSimulateEnrollmentReviewResponseBeneficialOwnerEntitiesAddressJSON struct {
-	Address1    apijson.Field
-	City        apijson.Field
-	Country     apijson.Field
-	PostalCode  apijson.Field
-	State       apijson.Field
-	Address2    apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AccountHolderSimulateEnrollmentReviewResponseBeneficialOwnerEntitiesAddress) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r accountHolderSimulateEnrollmentReviewResponseBeneficialOwnerEntitiesAddressJSON) RawJSON() string {
-	return r.raw
-}
-
 type AccountHolderSimulateEnrollmentReviewResponseBeneficialOwnerIndividual struct {
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
@@ -1492,94 +2370,6 @@ func (r *AccountHolderSimulateEnrollmentReviewResponseBeneficialOwnerIndividuals
 }
 
 func (r accountHolderSimulateEnrollmentReviewResponseBeneficialOwnerIndividualsAddressJSON) RawJSON() string {
-	return r.raw
-}
-
-// Only present when user_type == "BUSINESS". Information about the business for
-// which the account is being opened and KYB is being run.
-type AccountHolderSimulateEnrollmentReviewResponseBusinessEntity struct {
-	// Business”s physical address - PO boxes, UPS drops, and FedEx drops are not
-	// acceptable; APO/FPO are acceptable.
-	Address AccountHolderSimulateEnrollmentReviewResponseBusinessEntityAddress `json:"address,required"`
-	// Government-issued identification number. US Federal Employer Identification
-	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
-	// without hyphens.
-	GovernmentID string `json:"government_id,required"`
-	// Legal (formal) business name.
-	LegalBusinessName string `json:"legal_business_name,required"`
-	// One or more of the business's phone number(s), entered as a list in E.164
-	// format.
-	PhoneNumbers []string `json:"phone_numbers,required"`
-	// Any name that the business operates under that is not its legal business name
-	// (if applicable).
-	DbaBusinessName string `json:"dba_business_name"`
-	// Parent company name (if applicable).
-	ParentCompany string                                                          `json:"parent_company"`
-	JSON          accountHolderSimulateEnrollmentReviewResponseBusinessEntityJSON `json:"-"`
-}
-
-// accountHolderSimulateEnrollmentReviewResponseBusinessEntityJSON contains the
-// JSON metadata for the struct
-// [AccountHolderSimulateEnrollmentReviewResponseBusinessEntity]
-type accountHolderSimulateEnrollmentReviewResponseBusinessEntityJSON struct {
-	Address           apijson.Field
-	GovernmentID      apijson.Field
-	LegalBusinessName apijson.Field
-	PhoneNumbers      apijson.Field
-	DbaBusinessName   apijson.Field
-	ParentCompany     apijson.Field
-	raw               string
-	ExtraFields       map[string]apijson.Field
-}
-
-func (r *AccountHolderSimulateEnrollmentReviewResponseBusinessEntity) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r accountHolderSimulateEnrollmentReviewResponseBusinessEntityJSON) RawJSON() string {
-	return r.raw
-}
-
-// Business”s physical address - PO boxes, UPS drops, and FedEx drops are not
-// acceptable; APO/FPO are acceptable.
-type AccountHolderSimulateEnrollmentReviewResponseBusinessEntityAddress struct {
-	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
-	// Name of city.
-	City string `json:"city,required"`
-	// Valid country code. Only USA is currently supported, entered in uppercase ISO
-	// 3166-1 alpha-3 three-character format.
-	Country string `json:"country,required"`
-	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
-	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode string `json:"postal_code,required"`
-	// Valid state code. Only USA state codes are currently supported, entered in
-	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state,required"`
-	// Unit or apartment number (if applicable).
-	Address2 string                                                                 `json:"address2"`
-	JSON     accountHolderSimulateEnrollmentReviewResponseBusinessEntityAddressJSON `json:"-"`
-}
-
-// accountHolderSimulateEnrollmentReviewResponseBusinessEntityAddressJSON contains
-// the JSON metadata for the struct
-// [AccountHolderSimulateEnrollmentReviewResponseBusinessEntityAddress]
-type accountHolderSimulateEnrollmentReviewResponseBusinessEntityAddressJSON struct {
-	Address1    apijson.Field
-	City        apijson.Field
-	Country     apijson.Field
-	PostalCode  apijson.Field
-	State       apijson.Field
-	Address2    apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AccountHolderSimulateEnrollmentReviewResponseBusinessEntityAddress) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r accountHolderSimulateEnrollmentReviewResponseBusinessEntityAddressJSON) RawJSON() string {
 	return r.raw
 }
 
@@ -2062,23 +2852,306 @@ func (r AccountHolderNewParamsBodyKYCExemptionType) IsKnown() bool {
 }
 
 type AccountHolderUpdateParams struct {
-	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
-	// users of businesses. Pass the account_token of the enrolled business associated
-	// with the AUTHORIZED_USER in this field.
-	BusinessAccountToken param.Field[string] `json:"business_account_token"`
-	// Account holder's email address. The primary purpose of this field is for
-	// cardholder identification and verification during the digital wallet
-	// tokenization process.
-	Email param.Field[string] `json:"email"`
-	// Account holder's phone number, entered in E.164 format. The primary purpose of
-	// this field is for cardholder identification and verification during the digital
-	// wallet tokenization process.
-	PhoneNumber param.Field[string] `json:"phone_number"`
+	// The KYB request payload for updating a business.
+	Body AccountHolderUpdateParamsBodyUnion `json:"body,required"`
 }
 
 func (r AccountHolderUpdateParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r.Body)
+}
+
+// The KYB request payload for updating a business.
+type AccountHolderUpdateParamsBody struct {
+	// Allowed for: KYC-Exempt, BYO-KYC, BYO-KYB.
+	Address                    param.Field[AddressUpdateParam] `json:"address"`
+	BeneficialOwnerEntities    param.Field[interface{}]        `json:"beneficial_owner_entities"`
+	BeneficialOwnerIndividuals param.Field[interface{}]        `json:"beneficial_owner_individuals"`
+	// Allowed for: KYC-Exempt, BYO-KYC. The token of the business account to which the
+	// account holder is associated.
+	BusinessAccountToken param.Field[string]      `json:"business_account_token"`
+	BusinessEntity       param.Field[interface{}] `json:"business_entity"`
+	ControlPerson        param.Field[interface{}] `json:"control_person"`
+	// Allowed for all Account Holders. Account holder's email address. The primary
+	// purpose of this field is for cardholder identification and verification during
+	// the digital wallet tokenization process.
+	Email param.Field[string] `json:"email"`
+	// A user provided id that can be used to link an account holder with an external
+	// system
+	ExternalID param.Field[string] `json:"external_id"`
+	// Allowed for KYC-Exempt, BYO-KYC. Account holder's first name.
+	FirstName  param.Field[string]      `json:"first_name"`
+	Individual param.Field[interface{}] `json:"individual"`
+	// Allowed for KYC-Exempt, BYO-KYC. Account holder's last name.
+	LastName param.Field[string] `json:"last_name"`
+	// Allowed for BYO-KYB. Legal business name of the account holder.
+	LegalBusinessName param.Field[string] `json:"legal_business_name"`
+	// Short description of the company's line of business (i.e., what does the company
+	// do?).
+	NatureOfBusiness param.Field[string] `json:"nature_of_business"`
+	// Allowed for all Account Holders. Account holder's phone number, entered in E.164
+	// format. The primary purpose of this field is for cardholder identification and
+	// verification during the digital wallet tokenization process.
+	PhoneNumber param.Field[string] `json:"phone_number"`
+	// Company website URL.
+	WebsiteURL param.Field[string] `json:"website_url"`
+}
+
+func (r AccountHolderUpdateParamsBody) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
+
+func (r AccountHolderUpdateParamsBody) implementsAccountHolderUpdateParamsBodyUnion() {}
+
+// The KYB request payload for updating a business.
+//
+// Satisfied by [AccountHolderUpdateParamsBodyKYBPatchRequest],
+// [AccountHolderUpdateParamsBodyKYCPatchRequest],
+// [AccountHolderUpdateParamsBodyPatchRequest], [AccountHolderUpdateParamsBody].
+type AccountHolderUpdateParamsBodyUnion interface {
+	implementsAccountHolderUpdateParamsBodyUnion()
+}
+
+// The KYB request payload for updating a business.
+type AccountHolderUpdateParamsBodyKYBPatchRequest struct {
+	// List of all entities with >25% ownership in the company. If no entity or
+	// individual owns >25% of the company, and the largest shareholder is an entity,
+	// please identify them in this field. See
+	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)(Section
+	// I) for more background. If no business owner is an entity, pass in an empty
+	// list. However, either this parameter or `beneficial_owner_individuals` must be
+	// populated. on entities that should be included.
+	BeneficialOwnerEntities param.Field[[]AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerEntity] `json:"beneficial_owner_entities"`
+	// List of all individuals with >25% ownership in the company. If no entity or
+	// individual owns >25% of the company, and the largest shareholder is an
+	// individual, please identify them in this field. See
+	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)(Section
+	// I) for more background on individuals that should be included. If no individual
+	// is an entity, pass in an empty list. However, either this parameter or
+	// `beneficial_owner_entities` must be populated.
+	BeneficialOwnerIndividuals param.Field[[]AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerIndividual] `json:"beneficial_owner_individuals"`
+	// Information for business for which the account is being opened and KYB is being
+	// run.
+	BusinessEntity param.Field[AccountHolderUpdateParamsBodyKYBPatchRequestBusinessEntity] `json:"business_entity"`
+	// An individual with significant responsibility for managing the legal entity
+	// (e.g., a Chief Executive Officer, Chief Financial Officer, Chief Operating
+	// Officer, Managing Member, General Partner, President, Vice President, or
+	// Treasurer). This can be an executive, or someone who will have program-wide
+	// access to the cards that Lithic will provide. In some cases, this individual
+	// could also be a beneficial owner listed above. See
+	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
+	// (Section II) for more background.
+	ControlPerson param.Field[AccountHolderUpdateParamsBodyKYBPatchRequestControlPerson] `json:"control_person"`
+	// A user provided id that can be used to link an account holder with an external
+	// system
+	ExternalID param.Field[string] `json:"external_id"`
+	// Short description of the company's line of business (i.e., what does the company
+	// do?).
+	NatureOfBusiness param.Field[string] `json:"nature_of_business"`
+	// Company website URL.
+	WebsiteURL param.Field[string] `json:"website_url"`
+}
+
+func (r AccountHolderUpdateParamsBodyKYBPatchRequest) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AccountHolderUpdateParamsBodyKYBPatchRequest) implementsAccountHolderUpdateParamsBodyUnion() {
+}
+
+type AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerEntity struct {
+	// Globally unique identifier for an entity.
+	EntityToken param.Field[string] `json:"entity_token,required" format:"uuid"`
+	// Business”s physical address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable.
+	Address param.Field[AddressUpdateParam] `json:"address"`
+	// Any name that the business operates under that is not its legal business name
+	// (if applicable).
+	DbaBusinessName param.Field[string] `json:"dba_business_name"`
+	// Government-issued identification number. US Federal Employer Identification
+	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
+	// without hyphens.
+	GovernmentID param.Field[string] `json:"government_id"`
+	// Legal (formal) business name.
+	LegalBusinessName param.Field[string] `json:"legal_business_name"`
+	// Parent company name (if applicable).
+	ParentCompany param.Field[string] `json:"parent_company"`
+	// One or more of the business's phone number(s), entered as a list in E.164
+	// format.
+	PhoneNumbers param.Field[[]string] `json:"phone_numbers"`
+}
+
+func (r AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerEntity) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// Individuals associated with a KYB application. Phone number is optional.
+type AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerIndividual struct {
+	// Globally unique identifier for an entity.
+	EntityToken param.Field[string] `json:"entity_token,required" format:"uuid"`
+	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
+	Address param.Field[AddressUpdateParam] `json:"address"`
+	// Individual's date of birth, as an RFC 3339 date.
+	Dob param.Field[string] `json:"dob"`
+	// Individual's email address. If utilizing Lithic for chargeback processing, this
+	// customer email address may be used to communicate dispute status and resolution.
+	Email param.Field[string] `json:"email"`
+	// Individual's first name, as it appears on government-issued identity documents.
+	FirstName param.Field[string] `json:"first_name"`
+	// Government-issued identification number (required for identity verification and
+	// compliance with banking regulations). Social Security Numbers (SSN) and
+	// Individual Taxpayer Identification Numbers (ITIN) are currently supported,
+	// entered as full nine-digits, with or without hyphens
+	GovernmentID param.Field[string] `json:"government_id"`
+	// Individual's last name, as it appears on government-issued identity documents.
+	LastName param.Field[string] `json:"last_name"`
+	// Individual's phone number, entered in E.164 format.
+	PhoneNumber param.Field[string] `json:"phone_number"`
+}
+
+func (r AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerIndividual) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// Information for business for which the account is being opened and KYB is being
+// run.
+type AccountHolderUpdateParamsBodyKYBPatchRequestBusinessEntity struct {
+	// Globally unique identifier for an entity.
+	EntityToken param.Field[string] `json:"entity_token,required" format:"uuid"`
+	// Business”s physical address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable.
+	Address param.Field[AddressUpdateParam] `json:"address"`
+	// Any name that the business operates under that is not its legal business name
+	// (if applicable).
+	DbaBusinessName param.Field[string] `json:"dba_business_name"`
+	// Government-issued identification number. US Federal Employer Identification
+	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
+	// without hyphens.
+	GovernmentID param.Field[string] `json:"government_id"`
+	// Legal (formal) business name.
+	LegalBusinessName param.Field[string] `json:"legal_business_name"`
+	// Parent company name (if applicable).
+	ParentCompany param.Field[string] `json:"parent_company"`
+	// One or more of the business's phone number(s), entered as a list in E.164
+	// format.
+	PhoneNumbers param.Field[[]string] `json:"phone_numbers"`
+}
+
+func (r AccountHolderUpdateParamsBodyKYBPatchRequestBusinessEntity) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// An individual with significant responsibility for managing the legal entity
+// (e.g., a Chief Executive Officer, Chief Financial Officer, Chief Operating
+// Officer, Managing Member, General Partner, President, Vice President, or
+// Treasurer). This can be an executive, or someone who will have program-wide
+// access to the cards that Lithic will provide. In some cases, this individual
+// could also be a beneficial owner listed above. See
+// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
+// (Section II) for more background.
+type AccountHolderUpdateParamsBodyKYBPatchRequestControlPerson struct {
+	// Globally unique identifier for an entity.
+	EntityToken param.Field[string] `json:"entity_token,required" format:"uuid"`
+	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
+	Address param.Field[AddressUpdateParam] `json:"address"`
+	// Individual's date of birth, as an RFC 3339 date.
+	Dob param.Field[string] `json:"dob"`
+	// Individual's email address. If utilizing Lithic for chargeback processing, this
+	// customer email address may be used to communicate dispute status and resolution.
+	Email param.Field[string] `json:"email"`
+	// Individual's first name, as it appears on government-issued identity documents.
+	FirstName param.Field[string] `json:"first_name"`
+	// Government-issued identification number (required for identity verification and
+	// compliance with banking regulations). Social Security Numbers (SSN) and
+	// Individual Taxpayer Identification Numbers (ITIN) are currently supported,
+	// entered as full nine-digits, with or without hyphens
+	GovernmentID param.Field[string] `json:"government_id"`
+	// Individual's last name, as it appears on government-issued identity documents.
+	LastName param.Field[string] `json:"last_name"`
+	// Individual's phone number, entered in E.164 format.
+	PhoneNumber param.Field[string] `json:"phone_number"`
+}
+
+func (r AccountHolderUpdateParamsBodyKYBPatchRequestControlPerson) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// The KYC request payload for updating an account holder.
+type AccountHolderUpdateParamsBodyKYCPatchRequest struct {
+	// A user provided id that can be used to link an account holder with an external
+	// system
+	ExternalID param.Field[string] `json:"external_id"`
+	// Information on the individual for whom the account is being opened and KYC is
+	// being run.
+	Individual param.Field[AccountHolderUpdateParamsBodyKYCPatchRequestIndividual] `json:"individual"`
+}
+
+func (r AccountHolderUpdateParamsBodyKYCPatchRequest) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AccountHolderUpdateParamsBodyKYCPatchRequest) implementsAccountHolderUpdateParamsBodyUnion() {
+}
+
+// Information on the individual for whom the account is being opened and KYC is
+// being run.
+type AccountHolderUpdateParamsBodyKYCPatchRequestIndividual struct {
+	// Globally unique identifier for an entity.
+	EntityToken param.Field[string] `json:"entity_token,required" format:"uuid"`
+	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
+	Address param.Field[AddressUpdateParam] `json:"address"`
+	// Individual's date of birth, as an RFC 3339 date.
+	Dob param.Field[string] `json:"dob"`
+	// Individual's email address. If utilizing Lithic for chargeback processing, this
+	// customer email address may be used to communicate dispute status and resolution.
+	Email param.Field[string] `json:"email"`
+	// Individual's first name, as it appears on government-issued identity documents.
+	FirstName param.Field[string] `json:"first_name"`
+	// Government-issued identification number (required for identity verification and
+	// compliance with banking regulations). Social Security Numbers (SSN) and
+	// Individual Taxpayer Identification Numbers (ITIN) are currently supported,
+	// entered as full nine-digits, with or without hyphens
+	GovernmentID param.Field[string] `json:"government_id"`
+	// Individual's last name, as it appears on government-issued identity documents.
+	LastName param.Field[string] `json:"last_name"`
+	// Individual's phone number, entered in E.164 format.
+	PhoneNumber param.Field[string] `json:"phone_number"`
+}
+
+func (r AccountHolderUpdateParamsBodyKYCPatchRequestIndividual) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// The legacy request for updating an account holder.
+type AccountHolderUpdateParamsBodyPatchRequest struct {
+	// Allowed for: KYC-Exempt, BYO-KYC, BYO-KYB.
+	Address param.Field[AddressUpdateParam] `json:"address"`
+	// Allowed for: KYC-Exempt, BYO-KYC. The token of the business account to which the
+	// account holder is associated.
+	BusinessAccountToken param.Field[string] `json:"business_account_token"`
+	// Allowed for all Account Holders. Account holder's email address. The primary
+	// purpose of this field is for cardholder identification and verification during
+	// the digital wallet tokenization process.
+	Email param.Field[string] `json:"email"`
+	// Allowed for KYC-Exempt, BYO-KYC. Account holder's first name.
+	FirstName param.Field[string] `json:"first_name"`
+	// Allowed for KYC-Exempt, BYO-KYC. Account holder's last name.
+	LastName param.Field[string] `json:"last_name"`
+	// Allowed for BYO-KYB. Legal business name of the account holder.
+	LegalBusinessName param.Field[string] `json:"legal_business_name"`
+	// Allowed for all Account Holders. Account holder's phone number, entered in E.164
+	// format. The primary purpose of this field is for cardholder identification and
+	// verification during the digital wallet tokenization process.
+	PhoneNumber param.Field[string] `json:"phone_number"`
+}
+
+func (r AccountHolderUpdateParamsBodyPatchRequest) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AccountHolderUpdateParamsBodyPatchRequest) implementsAccountHolderUpdateParamsBodyUnion() {}
 
 type AccountHolderListParams struct {
 	// Date string in RFC 3339 format. Only entries created after the specified time
