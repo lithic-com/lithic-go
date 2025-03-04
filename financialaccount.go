@@ -126,13 +126,17 @@ type FinancialAccount struct {
 	Created             time.Time                           `json:"created,required" format:"date-time"`
 	CreditConfiguration FinancialAccountCreditConfiguration `json:"credit_configuration,required,nullable"`
 	// Whether financial account is for the benefit of another entity
-	IsForBenefitOf bool                 `json:"is_for_benefit_of,required"`
-	Nickname       string               `json:"nickname,required,nullable"`
-	Type           FinancialAccountType `json:"type,required"`
-	Updated        time.Time            `json:"updated,required" format:"date-time"`
-	AccountNumber  string               `json:"account_number,nullable"`
-	RoutingNumber  string               `json:"routing_number,nullable"`
-	JSON           financialAccountJSON `json:"-"`
+	IsForBenefitOf bool   `json:"is_for_benefit_of,required"`
+	Nickname       string `json:"nickname,required,nullable"`
+	// Status of the financial account
+	Status        FinancialAccountStatus `json:"status,required"`
+	Type          FinancialAccountType   `json:"type,required"`
+	Updated       time.Time              `json:"updated,required" format:"date-time"`
+	AccountNumber string                 `json:"account_number,nullable"`
+	RoutingNumber string                 `json:"routing_number,nullable"`
+	// Reason for the financial account status change
+	StatusChangeReason FinancialAccountStatusChangeReason `json:"status_change_reason,nullable"`
+	JSON               financialAccountJSON               `json:"-"`
 }
 
 // financialAccountJSON contains the JSON metadata for the struct
@@ -144,10 +148,12 @@ type financialAccountJSON struct {
 	CreditConfiguration apijson.Field
 	IsForBenefitOf      apijson.Field
 	Nickname            apijson.Field
+	Status              apijson.Field
 	Type                apijson.Field
 	Updated             apijson.Field
 	AccountNumber       apijson.Field
 	RoutingNumber       apijson.Field
+	StatusChangeReason  apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
 }
@@ -231,6 +237,24 @@ func (r FinancialAccountCreditConfigurationFinancialAccountState) IsKnown() bool
 	return false
 }
 
+// Status of the financial account
+type FinancialAccountStatus string
+
+const (
+	FinancialAccountStatusOpen      FinancialAccountStatus = "OPEN"
+	FinancialAccountStatusClosed    FinancialAccountStatus = "CLOSED"
+	FinancialAccountStatusSuspended FinancialAccountStatus = "SUSPENDED"
+	FinancialAccountStatusPending   FinancialAccountStatus = "PENDING"
+)
+
+func (r FinancialAccountStatus) IsKnown() bool {
+	switch r {
+	case FinancialAccountStatusOpen, FinancialAccountStatusClosed, FinancialAccountStatusSuspended, FinancialAccountStatusPending:
+		return true
+	}
+	return false
+}
+
 type FinancialAccountType string
 
 const (
@@ -242,6 +266,25 @@ const (
 func (r FinancialAccountType) IsKnown() bool {
 	switch r {
 	case FinancialAccountTypeIssuing, FinancialAccountTypeReserve, FinancialAccountTypeOperating:
+		return true
+	}
+	return false
+}
+
+// Reason for the financial account status change
+type FinancialAccountStatusChangeReason string
+
+const (
+	FinancialAccountStatusChangeReasonChargedOffDelinquent FinancialAccountStatusChangeReason = "CHARGED_OFF_DELINQUENT"
+	FinancialAccountStatusChangeReasonChargedOffFraud      FinancialAccountStatusChangeReason = "CHARGED_OFF_FRAUD"
+	FinancialAccountStatusChangeReasonEndUserRequest       FinancialAccountStatusChangeReason = "END_USER_REQUEST"
+	FinancialAccountStatusChangeReasonBankRequest          FinancialAccountStatusChangeReason = "BANK_REQUEST"
+	FinancialAccountStatusChangeReasonDelinquent           FinancialAccountStatusChangeReason = "DELINQUENT"
+)
+
+func (r FinancialAccountStatusChangeReason) IsKnown() bool {
+	switch r {
+	case FinancialAccountStatusChangeReasonChargedOffDelinquent, FinancialAccountStatusChangeReasonChargedOffFraud, FinancialAccountStatusChangeReasonEndUserRequest, FinancialAccountStatusChangeReasonBankRequest, FinancialAccountStatusChangeReasonDelinquent:
 		return true
 	}
 	return false

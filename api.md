@@ -38,6 +38,7 @@ Methods:
 
 Params Types:
 
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AddressUpdateParam">AddressUpdateParam</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#KYBParam">KYBParam</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#KYCParam">KYCParam</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#KYCExemptParam">KYCExemptParam</a>
@@ -45,6 +46,7 @@ Params Types:
 Response Types:
 
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolder">AccountHolder</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#KYBBusinessEntity">KYBBusinessEntity</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#RequiredDocument">RequiredDocument</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderNewResponse">AccountHolderNewResponse</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderUpdateResponse">AccountHolderUpdateResponse</a>
@@ -507,6 +509,7 @@ Methods:
 
 - <code title="get /v1/three_ds_authentication/{three_ds_authentication_token}">client.ThreeDS.Authentication.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSAuthenticationService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, threeDSAuthenticationToken <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSAuthenticationGetResponse">ThreeDSAuthenticationGetResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 - <code title="post /v1/three_ds_authentication/simulate">client.ThreeDS.Authentication.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSAuthenticationService.Simulate">Simulate</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSAuthenticationSimulateParams">ThreeDSAuthenticationSimulateParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSAuthenticationSimulateResponse">ThreeDSAuthenticationSimulateResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="post /v1/three_ds_decisioning/simulate/enter_otp">client.ThreeDS.Authentication.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSAuthenticationService.SimulateOtpEntry">SimulateOtpEntry</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSAuthenticationSimulateOtpEntryParams">ThreeDSAuthenticationSimulateOtpEntryParams</a>) <a href="https://pkg.go.dev/builtin#error">error</a></code>
 
 ## Decisioning
 
@@ -518,15 +521,12 @@ Params Types:
 Response Types:
 
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDecisioningGetSecretResponse">ThreeDSDecisioningGetSecretResponse</a>
-- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDecisioningSimulateChallengeResponse">ThreeDSDecisioningSimulateChallengeResponse</a>
 
 Methods:
 
 - <code title="post /v1/three_ds_decisioning/challenge_response">client.ThreeDS.Decisioning.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDecisioningService.ChallengeResponse">ChallengeResponse</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDecisioningChallengeResponseParams">ThreeDSDecisioningChallengeResponseParams</a>) <a href="https://pkg.go.dev/builtin#error">error</a></code>
 - <code title="get /v1/three_ds_decisioning/secret">client.ThreeDS.Decisioning.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDecisioningService.GetSecret">GetSecret</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDecisioningGetSecretResponse">ThreeDSDecisioningGetSecretResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 - <code title="post /v1/three_ds_decisioning/secret/rotate">client.ThreeDS.Decisioning.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDecisioningService.RotateSecret">RotateSecret</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>) <a href="https://pkg.go.dev/builtin#error">error</a></code>
-- <code title="post /v1/three_ds_decisioning/simulate/challenge">client.ThreeDS.Decisioning.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDecisioningService.SimulateChallenge">SimulateChallenge</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDecisioningSimulateChallengeParams">ThreeDSDecisioningSimulateChallengeParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDecisioningSimulateChallengeResponse">ThreeDSDecisioningSimulateChallengeResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
-- <code title="post /v1/three_ds_decisioning/simulate/challenge_response">client.ThreeDS.Decisioning.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDecisioningService.SimulateChallengeResponse">SimulateChallengeResponse</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSDecisioningSimulateChallengeResponseParams">ThreeDSDecisioningSimulateChallengeResponseParams</a>) <a href="https://pkg.go.dev/builtin#error">error</a></code>
 
 # Reports
 
@@ -542,6 +542,18 @@ Methods:
 
 - <code title="get /v1/reports/settlement/details/{report_date}">client.Reports.Settlement.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ReportSettlementService.ListDetails">ListDetails</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, reportDate <a href="https://pkg.go.dev/builtin#time.Time">time.Time</a>, query <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ReportSettlementListDetailsParams">ReportSettlementListDetailsParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/packages/pagination">pagination</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/packages/pagination#CursorPage">CursorPage</a>[<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#SettlementDetail">SettlementDetail</a>], <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 - <code title="get /v1/reports/settlement/summary/{report_date}">client.Reports.Settlement.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ReportSettlementService.Summary">Summary</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, reportDate <a href="https://pkg.go.dev/builtin#time.Time">time.Time</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#SettlementReport">SettlementReport</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
+### NetworkTotals
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ReportSettlementNetworkTotalGetResponse">ReportSettlementNetworkTotalGetResponse</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ReportSettlementNetworkTotalListResponse">ReportSettlementNetworkTotalListResponse</a>
+
+Methods:
+
+- <code title="get /v1/reports/settlement/network_totals/{token}">client.Reports.Settlement.NetworkTotals.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ReportSettlementNetworkTotalService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, token <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ReportSettlementNetworkTotalGetResponse">ReportSettlementNetworkTotalGetResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="get /v1/reports/settlement/network_totals">client.Reports.Settlement.NetworkTotals.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ReportSettlementNetworkTotalService.List">List</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, query <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ReportSettlementNetworkTotalListParams">ReportSettlementNetworkTotalListParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/packages/pagination">pagination</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/packages/pagination#CursorPage">CursorPage</a>[<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ReportSettlementNetworkTotalListResponse">ReportSettlementNetworkTotalListResponse</a>], <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 
 # CardPrograms
 
