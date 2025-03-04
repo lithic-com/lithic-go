@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.68.0 (2025-03-04)
+
+Full Changelog: [v0.67.3...v0.68.0](https://github.com/lithic-com/lithic-go/compare/v0.67.3...v0.68.0)
+
+### Features
+
+* **api:** new Settlement API endpoints and changes to update Account Holder endpoint ([#463](https://github.com/lithic-com/lithic-go/issues/463)) ([ba9317e](https://github.com/lithic-com/lithic-go/commit/ba9317e7236d6fe06587a868774d5803f810dff2))
+
+
+### Chores
+
+* **api:** adds new `Internal` Category for FinancialTransactions ([#461](https://github.com/lithic-com/lithic-go/issues/461)) ([0d75f20](https://github.com/lithic-com/lithic-go/commit/0d75f2031129724e6ed6ea8c55001afba748e521))
+* **internal:** fix devcontainers setup ([#459](https://github.com/lithic-com/lithic-go/issues/459)) ([93f5ea2](https://github.com/lithic-com/lithic-go/commit/93f5ea2b819b2fbd1350b6c1928d7d33b8d5fb39))
+
+
+### Documentation
+
+* update URLs from stainlessapi.com to stainless.com ([#462](https://github.com/lithic-com/lithic-go/issues/462)) ([579a8fc](https://github.com/lithic-com/lithic-go/commit/579a8fc26087b8a2b279ffaa1f1db45eaee9c1e9))
+
 ## 0.67.3 (2025-02-20)
 
 Full Changelog: [v0.67.2...v0.67.3](https://github.com/lithic-com/lithic-go/compare/v0.67.2...v0.67.3)
