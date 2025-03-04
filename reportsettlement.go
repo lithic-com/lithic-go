@@ -23,7 +23,8 @@ import (
 // automatically. You should not instantiate this service directly, and instead use
 // the [NewReportSettlementService] method instead.
 type ReportSettlementService struct {
-	Options []option.RequestOption
+	Options       []option.RequestOption
+	NetworkTotals *ReportSettlementNetworkTotalService
 }
 
 // NewReportSettlementService generates a new service that applies the given
@@ -32,6 +33,7 @@ type ReportSettlementService struct {
 func NewReportSettlementService(opts ...option.RequestOption) (r *ReportSettlementService) {
 	r = &ReportSettlementService{}
 	r.Options = opts
+	r.NetworkTotals = NewReportSettlementNetworkTotalService(opts...)
 	return
 }
 

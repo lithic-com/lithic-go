@@ -254,6 +254,9 @@ type AuthRuleCondition struct {
 	//     trailing hour up and until the authorization.
 	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
 	//     trailing 24 hours up and until the authorization.
+	//   - `CARD_STATE`: The current state of the card associated with the transaction.
+	//     Valid values are `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`,
+	//     `PENDING_FULFILLMENT`.
 	Attribute ConditionalAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleConditionOperation `json:"operation"`
@@ -367,6 +370,9 @@ type AuthRuleConditionParam struct {
 	//     trailing hour up and until the authorization.
 	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
 	//     trailing 24 hours up and until the authorization.
+	//   - `CARD_STATE`: The current state of the card associated with the transaction.
+	//     Valid values are `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`,
+	//     `PENDING_FULFILLMENT`.
 	Attribute param.Field[ConditionalAttribute] `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation param.Field[AuthRuleConditionOperation] `json:"operation"`
@@ -425,6 +431,9 @@ func (r AuthRuleConditionValueListOfStringsParam) ImplementsAuthRuleConditionVal
 //     trailing hour up and until the authorization.
 //   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
 //     trailing 24 hours up and until the authorization.
+//   - `CARD_STATE`: The current state of the card associated with the transaction.
+//     Valid values are `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`,
+//     `PENDING_FULFILLMENT`.
 type ConditionalAttribute string
 
 const (
@@ -439,11 +448,12 @@ const (
 	ConditionalAttributeRiskScore               ConditionalAttribute = "RISK_SCORE"
 	ConditionalAttributeCardTransactionCount1H  ConditionalAttribute = "CARD_TRANSACTION_COUNT_1H"
 	ConditionalAttributeCardTransactionCount24H ConditionalAttribute = "CARD_TRANSACTION_COUNT_24H"
+	ConditionalAttributeCardState               ConditionalAttribute = "CARD_STATE"
 )
 
 func (r ConditionalAttribute) IsKnown() bool {
 	switch r {
-	case ConditionalAttributeMcc, ConditionalAttributeCountry, ConditionalAttributeCurrency, ConditionalAttributeMerchantID, ConditionalAttributeDescriptor, ConditionalAttributeLiabilityShift, ConditionalAttributePanEntryMode, ConditionalAttributeTransactionAmount, ConditionalAttributeRiskScore, ConditionalAttributeCardTransactionCount1H, ConditionalAttributeCardTransactionCount24H:
+	case ConditionalAttributeMcc, ConditionalAttributeCountry, ConditionalAttributeCurrency, ConditionalAttributeMerchantID, ConditionalAttributeDescriptor, ConditionalAttributeLiabilityShift, ConditionalAttributePanEntryMode, ConditionalAttributeTransactionAmount, ConditionalAttributeRiskScore, ConditionalAttributeCardTransactionCount1H, ConditionalAttributeCardTransactionCount24H, ConditionalAttributeCardState:
 		return true
 	}
 	return false
@@ -634,18 +644,21 @@ func (r VelocityLimitParamsScope) IsKnown() bool {
 // The window of time to calculate Spend Velocity over.
 //
 //   - `DAY`: Velocity over the current day since midnight Eastern Time.
+//   - `WEEK`: Velocity over the current week since 00:00 / 12 AM on Monday in
+//     Eastern Time.
 //   - `MONTH`: Velocity over the current month since 00:00 / 12 AM on the first of
 //     the month in Eastern Time.
 type VelocityLimitParamsPeriodWindow string
 
 const (
 	VelocityLimitParamsPeriodWindowDay   VelocityLimitParamsPeriodWindow = "DAY"
+	VelocityLimitParamsPeriodWindowWeek  VelocityLimitParamsPeriodWindow = "WEEK"
 	VelocityLimitParamsPeriodWindowMonth VelocityLimitParamsPeriodWindow = "MONTH"
 )
 
 func (r VelocityLimitParamsPeriodWindow) IsKnown() bool {
 	switch r {
-	case VelocityLimitParamsPeriodWindowDay, VelocityLimitParamsPeriodWindowMonth:
+	case VelocityLimitParamsPeriodWindowDay, VelocityLimitParamsPeriodWindowWeek, VelocityLimitParamsPeriodWindowMonth:
 		return true
 	}
 	return false

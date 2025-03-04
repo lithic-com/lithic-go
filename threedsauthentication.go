@@ -57,6 +57,18 @@ func (r *ThreeDSAuthenticationService) Simulate(ctx context.Context, body ThreeD
 	return
 }
 
+// Endpoint for simulating entering OTP into 3DS Challenge UI. A call to
+// /v1/three_ds_authentication/simulate that resulted in triggered SMS-OTP
+// challenge must precede. Only a single attempt is supported; upon entering OTP,
+// the challenge is either approved or declined.
+func (r *ThreeDSAuthenticationService) SimulateOtpEntry(ctx context.Context, body ThreeDSAuthenticationSimulateOtpEntryParams, opts ...option.RequestOption) (err error) {
+	opts = append(r.Options[:], opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	path := "v1/three_ds_decisioning/simulate/enter_otp"
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
+	return
+}
+
 type ThreeDSAuthenticationGetResponse struct {
 	// Globally unique identifier for the 3DS authentication.
 	Token string `json:"token,required" format:"uuid"`
@@ -958,7 +970,8 @@ type ThreeDSAuthenticationSimulateParamsMerchant struct {
 	// listed in ISO 18245. Supported merchant category codes can be found
 	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
 	Mcc param.Field[string] `json:"mcc,required"`
-	// Merchant descriptor, corresponds to `descriptor` in authorization.
+	// Merchant descriptor, corresponds to `descriptor` in authorization. If CHALLENGE
+	// keyword is included, Lithic will trigger a challenge.
 	Name param.Field[string] `json:"name,required"`
 }
 
@@ -993,4 +1006,16 @@ func (r ThreeDSAuthenticationSimulateParamsCardExpiryCheck) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+type ThreeDSAuthenticationSimulateOtpEntryParams struct {
+	// A unique token returned as part of a /v1/three_ds_authentication/simulate call
+	// that resulted in PENDING_CHALLENGE authentication result.
+	Token param.Field[string] `json:"token,required" format:"uuid"`
+	// The OTP entered by the cardholder
+	Otp param.Field[string] `json:"otp,required"`
+}
+
+func (r ThreeDSAuthenticationSimulateOtpEntryParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }
