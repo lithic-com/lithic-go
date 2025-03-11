@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.69.0 (2025-03-11)
+
+Full Changelog: [v0.68.0...v0.69.0](https://github.com/lithic-com/lithic-go/compare/v0.68.0...v0.69.0)
+
+### Features
+
+* add SKIP_BREW env var to ./scripts/bootstrap ([#466](https://github.com/lithic-com/lithic-go/issues/466)) ([72d2f6d](https://github.com/lithic-com/lithic-go/commit/72d2f6d155ec664667c887d0d46694c035207878))
+* **client:** accept RFC6838 JSON content types ([#467](https://github.com/lithic-com/lithic-go/issues/467)) ([26250d6](https://github.com/lithic-com/lithic-go/commit/26250d6143f90e520c736b3fca8831fbd7f021e8))
+* **client:** allow custom baseurls without trailing slash ([#464](https://github.com/lithic-com/lithic-go/issues/464)) ([5bd2500](https://github.com/lithic-com/lithic-go/commit/5bd2500c5b39d22d751a5b7141d90c9e518f9169))
+* **client:** update currency data type ([#470](https://github.com/lithic-com/lithic-go/issues/470)) ([011d635](https://github.com/lithic-com/lithic-go/commit/011d635da782ed92b76fd2788783d8855d0c0adf))
+
+
+### Chores
+
+* **api:** release of Network Totals reporting and new filters for Velocity Limit Rules ([#469](https://github.com/lithic-com/lithic-go/issues/469)) ([7047b1d](https://github.com/lithic-com/lithic-go/commit/7047b1dbc776d11541a00232e3ede7d5af069aa8))
+* **client:** deprecate some fields ([011d635](https://github.com/lithic-com/lithic-go/commit/011d635da782ed92b76fd2788783d8855d0c0adf))
+
+
+### Documentation
+
+* update some descriptions ([011d635](https://github.com/lithic-com/lithic-go/commit/011d635da782ed92b76fd2788783d8855d0c0adf))
+
+
+### Refactors
+
+* tidy up dependencies ([#468](https://github.com/lithic-com/lithic-go/issues/468)) ([b063b41](https://github.com/lithic-com/lithic-go/commit/b063b41c082b43defe76584b0cfe9b903dc9c781))
+
 ## 0.68.0 (2025-03-04)
 
 Full Changelog: [v0.67.3...v0.68.0](https://github.com/lithic-com/lithic-go/compare/v0.67.3...v0.68.0)
