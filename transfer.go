@@ -51,7 +51,8 @@ type Transfer struct {
 	Category TransferCategory `json:"category"`
 	// Date and time when the transfer occurred. UTC time zone.
 	Created time.Time `json:"created" format:"date-time"`
-	// 3-digit alphabetic ISO 4217 code for the settling currency of the transaction.
+	// 3-character alphabetic ISO 4217 code for the settling currency of the
+	// transaction.
 	Currency string `json:"currency"`
 	// A string that provides a description of the transfer; may be useful to display
 	// to users.
