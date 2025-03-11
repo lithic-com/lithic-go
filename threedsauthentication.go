@@ -982,7 +982,7 @@ func (r ThreeDSAuthenticationSimulateParamsMerchant) MarshalJSON() (data []byte,
 type ThreeDSAuthenticationSimulateParamsTransaction struct {
 	// Amount (in cents) to authenticate.
 	Amount param.Field[int64] `json:"amount,required"`
-	// 3-digit alphabetic ISO 4217 currency code.
+	// 3-character alphabetic ISO 4217 currency code.
 	Currency param.Field[string] `json:"currency,required"`
 }
 

@@ -58,7 +58,7 @@ type ExternalBankAccountMicroDepositNewResponse struct {
 	// An ISO 8601 string representing when this funding source was added to the Lithic
 	// account.
 	Created time.Time `json:"created,required" format:"date-time"`
-	// currency of the external account 3-digit alphabetic ISO 4217 code
+	// currency of the external account 3-character alphabetic ISO 4217 code
 	Currency string `json:"currency,required"`
 	// The last 4 digits of the bank account. Derived by Lithic from the account number
 	// passed

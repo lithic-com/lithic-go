@@ -78,7 +78,7 @@ type ReportSettlementNetworkTotalGetResponse struct {
 	Amounts ReportSettlementNetworkTotalGetResponseAmounts `json:"amounts,required"`
 	// RFC 3339 timestamp for when the record was created. UTC time zone.
 	Created time.Time `json:"created,required" format:"date-time"`
-	// Three-digit alphabetic ISO 4217 code.
+	// 3-character alphabetic ISO 4217 code.
 	Currency string `json:"currency,required"`
 	// The institution that activity occurred on. For Mastercard: ICA (Interbank Card
 	// Association). For Maestro: institution ID. For Visa: lowest level SRE
@@ -185,7 +185,7 @@ type ReportSettlementNetworkTotalListResponse struct {
 	Amounts ReportSettlementNetworkTotalListResponseAmounts `json:"amounts,required"`
 	// RFC 3339 timestamp for when the record was created. UTC time zone.
 	Created time.Time `json:"created,required" format:"date-time"`
-	// Three-digit alphabetic ISO 4217 code.
+	// 3-character alphabetic ISO 4217 code.
 	Currency string `json:"currency,required"`
 	// The institution that activity occurred on. For Mastercard: ICA (Interbank Card
 	// Association). For Maestro: institution ID. For Visa: lowest level SRE
