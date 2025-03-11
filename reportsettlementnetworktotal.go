@@ -37,8 +37,7 @@ func NewReportSettlementNetworkTotalService(opts ...option.RequestOption) (r *Re
 	return
 }
 
-// (Available March 4, 2025) Retrieve a specific network total record by token. Not
-// available in sandbox.
+// Retrieve a specific network total record by token. Not available in sandbox.
 func (r *ReportSettlementNetworkTotalService) Get(ctx context.Context, token string, opts ...option.RequestOption) (res *ReportSettlementNetworkTotalGetResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	if token == "" {
@@ -50,8 +49,7 @@ func (r *ReportSettlementNetworkTotalService) Get(ctx context.Context, token str
 	return
 }
 
-// (Available March 4, 2025) List network total records with optional filters. Not
-// available in sandbox.
+// List network total records with optional filters. Not available in sandbox.
 func (r *ReportSettlementNetworkTotalService) List(ctx context.Context, query ReportSettlementNetworkTotalListParams, opts ...option.RequestOption) (res *pagination.CursorPage[ReportSettlementNetworkTotalListResponse], err error) {
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
@@ -69,8 +67,7 @@ func (r *ReportSettlementNetworkTotalService) List(ctx context.Context, query Re
 	return res, nil
 }
 
-// (Available March 4, 2025) List network total records with optional filters. Not
-// available in sandbox.
+// List network total records with optional filters. Not available in sandbox.
 func (r *ReportSettlementNetworkTotalService) ListAutoPaging(ctx context.Context, query ReportSettlementNetworkTotalListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[ReportSettlementNetworkTotalListResponse] {
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
