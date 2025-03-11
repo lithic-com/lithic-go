@@ -303,7 +303,8 @@ type FinancialTransaction struct {
 	Category FinancialTransactionCategory `json:"category,required"`
 	// Date and time when the financial transaction first occurred. UTC time zone.
 	Created time.Time `json:"created,required" format:"date-time"`
-	// 3-digit alphabetic ISO 4217 code for the settling currency of the transaction.
+	// 3-character alphabetic ISO 4217 code for the settling currency of the
+	// transaction.
 	Currency string `json:"currency,required"`
 	// A string that provides a description of the financial transaction; may be useful
 	// to display to users.
