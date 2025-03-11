@@ -99,7 +99,8 @@ type StatementLineItemsData struct {
 	Category StatementLineItemsDataCategory `json:"category,required"`
 	// Timestamp of when the line item was generated
 	Created time.Time `json:"created,required" format:"date-time"`
-	// 3-digit alphabetic ISO 4217 code for the settling currency of the transaction
+	// 3-character alphabetic ISO 4217 code for the settling currency of the
+	// transaction
 	Currency string `json:"currency,required"`
 	// Date that the transaction effected the account balance
 	EffectiveDate time.Time                       `json:"effective_date,required" format:"date"`

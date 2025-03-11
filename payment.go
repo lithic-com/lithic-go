@@ -135,7 +135,7 @@ type Payment struct {
 	Category PaymentCategory `json:"category,required"`
 	// Date and time when the payment first occurred. UTC time zone.
 	Created time.Time `json:"created,required" format:"date-time"`
-	// 3-digit alphabetic ISO 4217 code for the settling currency of the payment.
+	// 3-character alphabetic ISO 4217 code for the settling currency of the payment.
 	Currency string `json:"currency,required"`
 	// A string that provides a description of the payment; may be useful to display to
 	// users.

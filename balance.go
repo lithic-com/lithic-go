@@ -64,7 +64,7 @@ type Balance struct {
 	AvailableAmount int64 `json:"available_amount,required"`
 	// Date and time for when the balance was first created.
 	Created time.Time `json:"created,required" format:"date-time"`
-	// 3-digit alphabetic ISO 4217 code for the local currency of the balance.
+	// 3-character alphabetic ISO 4217 code for the local currency of the balance.
 	Currency string `json:"currency,required"`
 	// Globally unique identifier for the financial account that holds this balance.
 	FinancialAccountToken string `json:"financial_account_token,required" format:"uuid"`

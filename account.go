@@ -136,7 +136,7 @@ type Account struct {
 	//
 	// Deprecated: deprecated
 	AuthRuleTokens []string `json:"auth_rule_tokens"`
-	// 3-digit alphabetic ISO 4217 code for the currency of the cardholder.
+	// 3-character alphabetic ISO 4217 code for the currency of the cardholder.
 	CardholderCurrency string `json:"cardholder_currency"`
 	// Deprecated: deprecated
 	VerificationAddress AccountVerificationAddress `json:"verification_address"`
