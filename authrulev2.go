@@ -576,6 +576,13 @@ func (r VelocityLimitParams) implementsAuthRuleV2PromoteResponseCurrentVersionPa
 func (r VelocityLimitParams) implementsAuthRuleV2PromoteResponseDraftVersionParameters() {}
 
 type VelocityLimitParamsFilters struct {
+	// ISO-3166-1 alpha-3 Country Codes to exclude from the velocity calculation.
+	// Transactions matching any of the provided will be excluded from the calculated
+	// velocity.
+	ExcludeCountries []string `json:"exclude_countries,nullable"`
+	// Merchant Category Codes to exclude from the velocity calculation. Transactions
+	// matching this MCC will be excluded from the calculated velocity.
+	ExcludeMccs []string `json:"exclude_mccs,nullable"`
 	// ISO-3166-1 alpha-3 Country Codes to include in the velocity calculation.
 	// Transactions not matching any of the provided will not be included in the
 	// calculated velocity.
@@ -589,6 +596,8 @@ type VelocityLimitParamsFilters struct {
 // velocityLimitParamsFiltersJSON contains the JSON metadata for the struct
 // [VelocityLimitParamsFilters]
 type velocityLimitParamsFiltersJSON struct {
+	ExcludeCountries apijson.Field
+	ExcludeMccs      apijson.Field
 	IncludeCountries apijson.Field
 	IncludeMccs      apijson.Field
 	raw              string
