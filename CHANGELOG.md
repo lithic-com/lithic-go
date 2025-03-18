@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.70.0 (2025-03-18)
+
+Full Changelog: [v0.69.0...v0.70.0](https://github.com/lithic-com/lithic-go/compare/v0.69.0...v0.70.0)
+
+### Features
+
+* **api:** updates to 2 `FinancialAccounts` endpoints and new `ExpireAuthorization` endpoint ([#474](https://github.com/lithic-com/lithic-go/issues/474)) ([7c08b54](https://github.com/lithic-com/lithic-go/commit/7c08b54e3327e4f614d436387d089446fc13f776))
+* **client:** improve default client options support ([#471](https://github.com/lithic-com/lithic-go/issues/471)) ([dddd5f9](https://github.com/lithic-com/lithic-go/commit/dddd5f97b45737bd4985f0a9990a99d7506df656))
+
+
+### Chores
+
+* **internal:** remove extra empty newlines ([#473](https://github.com/lithic-com/lithic-go/issues/473)) ([596060e](https://github.com/lithic-com/lithic-go/commit/596060e680f963368c91f5bdc1d0e5923787768b))
+
 ## 0.69.0 (2025-03-11)
 
 Full Changelog: [v0.68.0...v0.69.0](https://github.com/lithic-com/lithic-go/compare/v0.68.0...v0.69.0)
