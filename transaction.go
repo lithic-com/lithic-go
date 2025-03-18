@@ -80,6 +80,19 @@ func (r *TransactionService) ListAutoPaging(ctx context.Context, query Transacti
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
+// Expire authorization
+func (r *TransactionService) ExpireAuthorization(ctx context.Context, transactionToken string, opts ...option.RequestOption) (err error) {
+	opts = append(r.Options[:], opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	if transactionToken == "" {
+		err = errors.New("missing required transaction_token parameter")
+		return
+	}
+	path := fmt.Sprintf("v1/transactions/%s/expire_authorization", transactionToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
+	return
+}
+
 // Simulates an authorization request from the card network as if it came from a
 // merchant acquirer. If you are configured for ASA, simulating authorizations
 // requires your ASA client to be set up properly, i.e. be able to respond to the

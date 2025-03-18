@@ -107,14 +107,14 @@ func (r *FinancialAccountService) ListAutoPaging(ctx context.Context, query Fina
 	return pagination.NewSinglePageAutoPager(r.List(ctx, query, opts...))
 }
 
-// Update issuing account state to charged off
-func (r *FinancialAccountService) ChargeOff(ctx context.Context, financialAccountToken string, body FinancialAccountChargeOffParams, opts ...option.RequestOption) (res *FinancialAccountCreditConfig, err error) {
+// Update financial account status
+func (r *FinancialAccountService) UpdateStatus(ctx context.Context, financialAccountToken string, body FinancialAccountUpdateStatusParams, opts ...option.RequestOption) (res *FinancialAccount, err error) {
 	opts = append(r.Options[:], opts...)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
 		return
 	}
-	path := fmt.Sprintf("v1/financial_accounts/%s/charge_off", financialAccountToken)
+	path := fmt.Sprintf("v1/financial_accounts/%s/update_status", financialAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -258,14 +258,17 @@ func (r FinancialAccountStatus) IsKnown() bool {
 type FinancialAccountType string
 
 const (
-	FinancialAccountTypeIssuing   FinancialAccountType = "ISSUING"
-	FinancialAccountTypeReserve   FinancialAccountType = "RESERVE"
-	FinancialAccountTypeOperating FinancialAccountType = "OPERATING"
+	FinancialAccountTypeIssuing             FinancialAccountType = "ISSUING"
+	FinancialAccountTypeReserve             FinancialAccountType = "RESERVE"
+	FinancialAccountTypeOperating           FinancialAccountType = "OPERATING"
+	FinancialAccountTypeChargedOffFees      FinancialAccountType = "CHARGED_OFF_FEES"
+	FinancialAccountTypeChargedOffInterest  FinancialAccountType = "CHARGED_OFF_INTEREST"
+	FinancialAccountTypeChargedOffPrincipal FinancialAccountType = "CHARGED_OFF_PRINCIPAL"
 )
 
 func (r FinancialAccountType) IsKnown() bool {
 	switch r {
-	case FinancialAccountTypeIssuing, FinancialAccountTypeReserve, FinancialAccountTypeOperating:
+	case FinancialAccountTypeIssuing, FinancialAccountTypeReserve, FinancialAccountTypeOperating, FinancialAccountTypeChargedOffFees, FinancialAccountTypeChargedOffInterest, FinancialAccountTypeChargedOffPrincipal:
 		return true
 	}
 	return false
@@ -629,26 +632,48 @@ func (r FinancialAccountListParamsType) IsKnown() bool {
 	return false
 }
 
-type FinancialAccountChargeOffParams struct {
-	// Reason for the financial account being marked as Charged Off
-	Reason param.Field[FinancialAccountChargeOffParamsReason] `json:"reason,required"`
+type FinancialAccountUpdateStatusParams struct {
+	// Status of the financial account
+	Status param.Field[FinancialAccountUpdateStatusParamsStatus] `json:"status,required"`
+	// Reason for the financial account status change
+	StatusChangeReason param.Field[FinancialAccountUpdateStatusParamsStatusChangeReason] `json:"status_change_reason,required"`
 }
 
-func (r FinancialAccountChargeOffParams) MarshalJSON() (data []byte, err error) {
+func (r FinancialAccountUpdateStatusParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-// Reason for the financial account being marked as Charged Off
-type FinancialAccountChargeOffParamsReason string
+// Status of the financial account
+type FinancialAccountUpdateStatusParamsStatus string
 
 const (
-	FinancialAccountChargeOffParamsReasonDelinquent FinancialAccountChargeOffParamsReason = "DELINQUENT"
-	FinancialAccountChargeOffParamsReasonFraud      FinancialAccountChargeOffParamsReason = "FRAUD"
+	FinancialAccountUpdateStatusParamsStatusOpen      FinancialAccountUpdateStatusParamsStatus = "OPEN"
+	FinancialAccountUpdateStatusParamsStatusClosed    FinancialAccountUpdateStatusParamsStatus = "CLOSED"
+	FinancialAccountUpdateStatusParamsStatusSuspended FinancialAccountUpdateStatusParamsStatus = "SUSPENDED"
+	FinancialAccountUpdateStatusParamsStatusPending   FinancialAccountUpdateStatusParamsStatus = "PENDING"
 )
 
-func (r FinancialAccountChargeOffParamsReason) IsKnown() bool {
+func (r FinancialAccountUpdateStatusParamsStatus) IsKnown() bool {
 	switch r {
-	case FinancialAccountChargeOffParamsReasonDelinquent, FinancialAccountChargeOffParamsReasonFraud:
+	case FinancialAccountUpdateStatusParamsStatusOpen, FinancialAccountUpdateStatusParamsStatusClosed, FinancialAccountUpdateStatusParamsStatusSuspended, FinancialAccountUpdateStatusParamsStatusPending:
+		return true
+	}
+	return false
+}
+
+// Reason for the financial account status change
+type FinancialAccountUpdateStatusParamsStatusChangeReason string
+
+const (
+	FinancialAccountUpdateStatusParamsStatusChangeReasonChargedOffFraud      FinancialAccountUpdateStatusParamsStatusChangeReason = "CHARGED_OFF_FRAUD"
+	FinancialAccountUpdateStatusParamsStatusChangeReasonEndUserRequest       FinancialAccountUpdateStatusParamsStatusChangeReason = "END_USER_REQUEST"
+	FinancialAccountUpdateStatusParamsStatusChangeReasonBankRequest          FinancialAccountUpdateStatusParamsStatusChangeReason = "BANK_REQUEST"
+	FinancialAccountUpdateStatusParamsStatusChangeReasonChargedOffDelinquent FinancialAccountUpdateStatusParamsStatusChangeReason = "CHARGED_OFF_DELINQUENT"
+)
+
+func (r FinancialAccountUpdateStatusParamsStatusChangeReason) IsKnown() bool {
+	switch r {
+	case FinancialAccountUpdateStatusParamsStatusChangeReasonChargedOffFraud, FinancialAccountUpdateStatusParamsStatusChangeReasonEndUserRequest, FinancialAccountUpdateStatusParamsStatusChangeReasonBankRequest, FinancialAccountUpdateStatusParamsStatusChangeReasonChargedOffDelinquent:
 		return true
 	}
 	return false
