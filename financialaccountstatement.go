@@ -103,7 +103,7 @@ type Statement struct {
 	// Globally unique identifier for a financial account
 	FinancialAccountToken string `json:"financial_account_token,required" format:"uuid"`
 	// Date when the payment is due
-	PaymentDueDate time.Time             `json:"payment_due_date,required" format:"date"`
+	PaymentDueDate time.Time             `json:"payment_due_date,required,nullable" format:"date"`
 	PeriodTotals   StatementPeriodTotals `json:"period_totals,required"`
 	// Balance at the start of the billing period
 	StartingBalance int64 `json:"starting_balance,required"`
@@ -287,11 +287,12 @@ type StatementStatementType string
 const (
 	StatementStatementTypeInitial   StatementStatementType = "INITIAL"
 	StatementStatementTypePeriodEnd StatementStatementType = "PERIOD_END"
+	StatementStatementTypeFinal     StatementStatementType = "FINAL"
 )
 
 func (r StatementStatementType) IsKnown() bool {
 	switch r {
-	case StatementStatementTypeInitial, StatementStatementTypePeriodEnd:
+	case StatementStatementTypeInitial, StatementStatementTypePeriodEnd, StatementStatementTypeFinal:
 		return true
 	}
 	return false
