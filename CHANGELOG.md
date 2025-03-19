@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.70.1 (2025-03-19)
+
+Full Changelog: [v0.70.0...v0.70.1](https://github.com/lithic-com/lithic-go/compare/v0.70.0...v0.70.1)
+
+### Chores
+
+* **internal:** update .stats.yml ([#475](https://github.com/lithic-com/lithic-go/issues/475)) ([e0c2065](https://github.com/lithic-com/lithic-go/commit/e0c20655be86b2c3f32fe6e00352dbd569477691))
+
 ## 0.70.0 (2025-03-18)
 
 Full Changelog: [v0.69.0...v0.70.0](https://github.com/lithic-com/lithic-go/compare/v0.69.0...v0.70.0)
