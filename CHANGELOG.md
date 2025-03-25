@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.71.0 (2025-03-25)
+
+Full Changelog: [v0.70.0...v0.71.0](https://github.com/lithic-com/lithic-go/compare/v0.70.0...v0.71.0)
+
+### Features
+
+* **client:** support v2 ([#477](https://github.com/lithic-com/lithic-go/issues/477)) ([bc010e2](https://github.com/lithic-com/lithic-go/commit/bc010e2aab8e6ede9e5794b9ec5649f3c8e9d0fc))
+
+
+### Bug Fixes
+
+* **test:** return early after test failure ([#481](https://github.com/lithic-com/lithic-go/issues/481)) ([db2e73f](https://github.com/lithic-com/lithic-go/commit/db2e73ffabe7b4c7fcf2921c03e4eedb22c17219))
+
+
+### Chores
+
+* add request options to client tests ([#480](https://github.com/lithic-com/lithic-go/issues/480)) ([03d8154](https://github.com/lithic-com/lithic-go/commit/03d8154625dbd600f48da1aeda373546828c2ed5))
+* **api:** new attribute targets for Auth Rules and new Financial Account State schema ([#479](https://github.com/lithic-com/lithic-go/issues/479)) ([2e8ec92](https://github.com/lithic-com/lithic-go/commit/2e8ec924be41c370f5d7b009dd2de4eebdab6084))
+* **internal:** update .stats.yml ([#475](https://github.com/lithic-com/lithic-go/issues/475)) ([e0c2065](https://github.com/lithic-com/lithic-go/commit/e0c20655be86b2c3f32fe6e00352dbd569477691))
+
 ## 0.70.0 (2025-03-18)
 
 Full Changelog: [v0.69.0...v0.70.0](https://github.com/lithic-com/lithic-go/compare/v0.69.0...v0.70.0)
