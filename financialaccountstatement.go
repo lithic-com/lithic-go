@@ -167,6 +167,8 @@ type StatementAccountStanding struct {
 	ConsecutiveMinimumPaymentsMissed int64 `json:"consecutive_minimum_payments_missed,required"`
 	// Number of days past due
 	DaysPastDue int64 `json:"days_past_due,required"`
+	// Information about the financial account state
+	FinancialAccountState StatementAccountStandingFinancialAccountState `json:"financial_account_state,required"`
 	// Whether the account currently has grace or not
 	HasGrace bool `json:"has_grace,required"`
 	// Current overall period number
@@ -182,6 +184,7 @@ type statementAccountStandingJSON struct {
 	ConsecutiveMinimumPaymentsMade   apijson.Field
 	ConsecutiveMinimumPaymentsMissed apijson.Field
 	DaysPastDue                      apijson.Field
+	FinancialAccountState            apijson.Field
 	HasGrace                         apijson.Field
 	PeriodNumber                     apijson.Field
 	PeriodState                      apijson.Field
@@ -195,6 +198,69 @@ func (r *StatementAccountStanding) UnmarshalJSON(data []byte) (err error) {
 
 func (r statementAccountStandingJSON) RawJSON() string {
 	return r.raw
+}
+
+// Information about the financial account state
+type StatementAccountStandingFinancialAccountState struct {
+	// Status of the financial account
+	Status StatementAccountStandingFinancialAccountStateStatus `json:"status,required"`
+	// Reason for the financial account status change
+	StatusChangeReason StatementAccountStandingFinancialAccountStateStatusChangeReason `json:"status_change_reason,nullable"`
+	JSON               statementAccountStandingFinancialAccountStateJSON               `json:"-"`
+}
+
+// statementAccountStandingFinancialAccountStateJSON contains the JSON metadata for
+// the struct [StatementAccountStandingFinancialAccountState]
+type statementAccountStandingFinancialAccountStateJSON struct {
+	Status             apijson.Field
+	StatusChangeReason apijson.Field
+	raw                string
+	ExtraFields        map[string]apijson.Field
+}
+
+func (r *StatementAccountStandingFinancialAccountState) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r statementAccountStandingFinancialAccountStateJSON) RawJSON() string {
+	return r.raw
+}
+
+// Status of the financial account
+type StatementAccountStandingFinancialAccountStateStatus string
+
+const (
+	StatementAccountStandingFinancialAccountStateStatusOpen      StatementAccountStandingFinancialAccountStateStatus = "OPEN"
+	StatementAccountStandingFinancialAccountStateStatusClosed    StatementAccountStandingFinancialAccountStateStatus = "CLOSED"
+	StatementAccountStandingFinancialAccountStateStatusSuspended StatementAccountStandingFinancialAccountStateStatus = "SUSPENDED"
+	StatementAccountStandingFinancialAccountStateStatusPending   StatementAccountStandingFinancialAccountStateStatus = "PENDING"
+)
+
+func (r StatementAccountStandingFinancialAccountStateStatus) IsKnown() bool {
+	switch r {
+	case StatementAccountStandingFinancialAccountStateStatusOpen, StatementAccountStandingFinancialAccountStateStatusClosed, StatementAccountStandingFinancialAccountStateStatusSuspended, StatementAccountStandingFinancialAccountStateStatusPending:
+		return true
+	}
+	return false
+}
+
+// Reason for the financial account status change
+type StatementAccountStandingFinancialAccountStateStatusChangeReason string
+
+const (
+	StatementAccountStandingFinancialAccountStateStatusChangeReasonChargedOffDelinquent StatementAccountStandingFinancialAccountStateStatusChangeReason = "CHARGED_OFF_DELINQUENT"
+	StatementAccountStandingFinancialAccountStateStatusChangeReasonChargedOffFraud      StatementAccountStandingFinancialAccountStateStatusChangeReason = "CHARGED_OFF_FRAUD"
+	StatementAccountStandingFinancialAccountStateStatusChangeReasonEndUserRequest       StatementAccountStandingFinancialAccountStateStatusChangeReason = "END_USER_REQUEST"
+	StatementAccountStandingFinancialAccountStateStatusChangeReasonBankRequest          StatementAccountStandingFinancialAccountStateStatusChangeReason = "BANK_REQUEST"
+	StatementAccountStandingFinancialAccountStateStatusChangeReasonDelinquent           StatementAccountStandingFinancialAccountStateStatusChangeReason = "DELINQUENT"
+)
+
+func (r StatementAccountStandingFinancialAccountStateStatusChangeReason) IsKnown() bool {
+	switch r {
+	case StatementAccountStandingFinancialAccountStateStatusChangeReasonChargedOffDelinquent, StatementAccountStandingFinancialAccountStateStatusChangeReasonChargedOffFraud, StatementAccountStandingFinancialAccountStateStatusChangeReasonEndUserRequest, StatementAccountStandingFinancialAccountStateStatusChangeReasonBankRequest, StatementAccountStandingFinancialAccountStateStatusChangeReasonDelinquent:
+		return true
+	}
+	return false
 }
 
 type StatementAccountStandingPeriodState string
