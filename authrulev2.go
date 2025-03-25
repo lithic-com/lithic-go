@@ -250,6 +250,8 @@ type AuthRuleCondition struct {
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_15M`: The number of transactions on the card in the
+	//     trailing 15 minutes before the authorization.
 	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
 	//     trailing hour up and until the authorization.
 	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
@@ -257,6 +259,13 @@ type AuthRuleCondition struct {
 	//   - `CARD_STATE`: The current state of the card associated with the transaction.
 	//     Valid values are `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`,
 	//     `PENDING_FULFILLMENT`.
+	//   - `PIN_ENTERED`: Indicates whether a PIN was entered during the transaction.
+	//     Valid values are `TRUE`, `FALSE`.
+	//   - `PIN_STATUS`: The current state of card's PIN. Valid values are `NOT_SET`,
+	//     `OK`, `BLOCKED`.
+	//   - `WALLET_TYPE`: For transactions using a digital wallet token, indicates the
+	//     source of the token. Valid values are `APPLE_PAY`, `GOOGLE_PAY`,
+	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	Attribute ConditionalAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleConditionOperation `json:"operation"`
@@ -366,6 +375,8 @@ type AuthRuleConditionParam struct {
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
 	//     multiplying the raw score by 10x.
+	//   - `CARD_TRANSACTION_COUNT_15M`: The number of transactions on the card in the
+	//     trailing 15 minutes before the authorization.
 	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
 	//     trailing hour up and until the authorization.
 	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
@@ -373,6 +384,13 @@ type AuthRuleConditionParam struct {
 	//   - `CARD_STATE`: The current state of the card associated with the transaction.
 	//     Valid values are `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`,
 	//     `PENDING_FULFILLMENT`.
+	//   - `PIN_ENTERED`: Indicates whether a PIN was entered during the transaction.
+	//     Valid values are `TRUE`, `FALSE`.
+	//   - `PIN_STATUS`: The current state of card's PIN. Valid values are `NOT_SET`,
+	//     `OK`, `BLOCKED`.
+	//   - `WALLET_TYPE`: For transactions using a digital wallet token, indicates the
+	//     source of the token. Valid values are `APPLE_PAY`, `GOOGLE_PAY`,
+	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	Attribute param.Field[ConditionalAttribute] `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation param.Field[AuthRuleConditionOperation] `json:"operation"`
@@ -427,6 +445,8 @@ func (r AuthRuleConditionValueListOfStringsParam) ImplementsAuthRuleConditionVal
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
 //     multiplying the raw score by 10x.
+//   - `CARD_TRANSACTION_COUNT_15M`: The number of transactions on the card in the
+//     trailing 15 minutes before the authorization.
 //   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
 //     trailing hour up and until the authorization.
 //   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
@@ -434,6 +454,13 @@ func (r AuthRuleConditionValueListOfStringsParam) ImplementsAuthRuleConditionVal
 //   - `CARD_STATE`: The current state of the card associated with the transaction.
 //     Valid values are `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`,
 //     `PENDING_FULFILLMENT`.
+//   - `PIN_ENTERED`: Indicates whether a PIN was entered during the transaction.
+//     Valid values are `TRUE`, `FALSE`.
+//   - `PIN_STATUS`: The current state of card's PIN. Valid values are `NOT_SET`,
+//     `OK`, `BLOCKED`.
+//   - `WALLET_TYPE`: For transactions using a digital wallet token, indicates the
+//     source of the token. Valid values are `APPLE_PAY`, `GOOGLE_PAY`,
+//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 type ConditionalAttribute string
 
 const (
@@ -446,14 +473,18 @@ const (
 	ConditionalAttributePanEntryMode            ConditionalAttribute = "PAN_ENTRY_MODE"
 	ConditionalAttributeTransactionAmount       ConditionalAttribute = "TRANSACTION_AMOUNT"
 	ConditionalAttributeRiskScore               ConditionalAttribute = "RISK_SCORE"
+	ConditionalAttributeCardTransactionCount15M ConditionalAttribute = "CARD_TRANSACTION_COUNT_15M"
 	ConditionalAttributeCardTransactionCount1H  ConditionalAttribute = "CARD_TRANSACTION_COUNT_1H"
 	ConditionalAttributeCardTransactionCount24H ConditionalAttribute = "CARD_TRANSACTION_COUNT_24H"
 	ConditionalAttributeCardState               ConditionalAttribute = "CARD_STATE"
+	ConditionalAttributePinEntered              ConditionalAttribute = "PIN_ENTERED"
+	ConditionalAttributePinStatus               ConditionalAttribute = "PIN_STATUS"
+	ConditionalAttributeWalletType              ConditionalAttribute = "WALLET_TYPE"
 )
 
 func (r ConditionalAttribute) IsKnown() bool {
 	switch r {
-	case ConditionalAttributeMcc, ConditionalAttributeCountry, ConditionalAttributeCurrency, ConditionalAttributeMerchantID, ConditionalAttributeDescriptor, ConditionalAttributeLiabilityShift, ConditionalAttributePanEntryMode, ConditionalAttributeTransactionAmount, ConditionalAttributeRiskScore, ConditionalAttributeCardTransactionCount1H, ConditionalAttributeCardTransactionCount24H, ConditionalAttributeCardState:
+	case ConditionalAttributeMcc, ConditionalAttributeCountry, ConditionalAttributeCurrency, ConditionalAttributeMerchantID, ConditionalAttributeDescriptor, ConditionalAttributeLiabilityShift, ConditionalAttributePanEntryMode, ConditionalAttributeTransactionAmount, ConditionalAttributeRiskScore, ConditionalAttributeCardTransactionCount15M, ConditionalAttributeCardTransactionCount1H, ConditionalAttributeCardTransactionCount24H, ConditionalAttributeCardState, ConditionalAttributePinEntered, ConditionalAttributePinStatus, ConditionalAttributeWalletType:
 		return true
 	}
 	return false
