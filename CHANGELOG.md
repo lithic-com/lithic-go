@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.71.1 (2025-03-27)
+
+Full Changelog: [v0.71.0...v0.71.1](https://github.com/lithic-com/lithic-go/compare/v0.71.0...v0.71.1)
+
+### Chores
+
+* fix typos ([#482](https://github.com/lithic-com/lithic-go/issues/482)) ([885d231](https://github.com/lithic-com/lithic-go/commit/885d23189694ceefbbe064d40c0253274ff562ce))
+* **internal:** remove workflow condition ([#485](https://github.com/lithic-com/lithic-go/issues/485)) ([0a6bdd8](https://github.com/lithic-com/lithic-go/commit/0a6bdd83ed71986e52e943b9c63e0e4890885cc6))
+
 ## 0.71.0 (2025-03-25)
 
 Full Changelog: [v0.70.0...v0.71.0](https://github.com/lithic-com/lithic-go/compare/v0.70.0...v0.71.0)
