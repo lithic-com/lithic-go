@@ -44,7 +44,7 @@ type SettlementDetail struct {
 	CardToken string `json:"card_token,required" format:"uuid"`
 	// Date and time when the transaction first occurred. UTC time zone.
 	Created time.Time `json:"created,required" format:"date-time"`
-	// Three-character alphabetic ISO 4217 code.
+	// Three-digit alphabetic ISO 4217 code.
 	Currency string `json:"currency,required"`
 	// The total gross amount of disputes settlements.
 	DisputesGrossAmount int64 `json:"disputes_gross_amount,required"`
@@ -184,7 +184,7 @@ func (r SettlementDetailType) IsKnown() bool {
 type SettlementReport struct {
 	// Date and time when the transaction first occurred. UTC time zone.
 	Created time.Time `json:"created,required" format:"date-time"`
-	// 3-character alphabetic ISO 4217 code. (This field is deprecated and will be
+	// Three-digit alphabetic ISO 4217 code. (This field is deprecated and will be
 	// removed in a future version of the API.)
 	//
 	// Deprecated: deprecated
@@ -260,7 +260,7 @@ func (r settlementReportJSON) RawJSON() string {
 }
 
 type SettlementSummaryDetails struct {
-	// 3-character alphabetic ISO 4217 code.
+	// ISO 4217 alpha 3 code.
 	Currency string `json:"currency"`
 	// The total gross amount of disputes settlements.
 	DisputesGrossAmount int64 `json:"disputes_gross_amount"`

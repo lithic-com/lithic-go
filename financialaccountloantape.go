@@ -168,8 +168,6 @@ type LoanTapeAccountStanding struct {
 	ConsecutiveMinimumPaymentsMissed int64 `json:"consecutive_minimum_payments_missed,required"`
 	// Number of days past due
 	DaysPastDue int64 `json:"days_past_due,required"`
-	// Information about the financial account state
-	FinancialAccountState LoanTapeAccountStandingFinancialAccountState `json:"financial_account_state,required"`
 	// Whether the account currently has grace or not
 	HasGrace bool `json:"has_grace,required"`
 	// Current overall period number
@@ -185,7 +183,6 @@ type loanTapeAccountStandingJSON struct {
 	ConsecutiveMinimumPaymentsMade   apijson.Field
 	ConsecutiveMinimumPaymentsMissed apijson.Field
 	DaysPastDue                      apijson.Field
-	FinancialAccountState            apijson.Field
 	HasGrace                         apijson.Field
 	PeriodNumber                     apijson.Field
 	PeriodState                      apijson.Field
@@ -199,69 +196,6 @@ func (r *LoanTapeAccountStanding) UnmarshalJSON(data []byte) (err error) {
 
 func (r loanTapeAccountStandingJSON) RawJSON() string {
 	return r.raw
-}
-
-// Information about the financial account state
-type LoanTapeAccountStandingFinancialAccountState struct {
-	// Status of the financial account
-	Status LoanTapeAccountStandingFinancialAccountStateStatus `json:"status,required"`
-	// Reason for the financial account status change
-	StatusChangeReason LoanTapeAccountStandingFinancialAccountStateStatusChangeReason `json:"status_change_reason,nullable"`
-	JSON               loanTapeAccountStandingFinancialAccountStateJSON               `json:"-"`
-}
-
-// loanTapeAccountStandingFinancialAccountStateJSON contains the JSON metadata for
-// the struct [LoanTapeAccountStandingFinancialAccountState]
-type loanTapeAccountStandingFinancialAccountStateJSON struct {
-	Status             apijson.Field
-	StatusChangeReason apijson.Field
-	raw                string
-	ExtraFields        map[string]apijson.Field
-}
-
-func (r *LoanTapeAccountStandingFinancialAccountState) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r loanTapeAccountStandingFinancialAccountStateJSON) RawJSON() string {
-	return r.raw
-}
-
-// Status of the financial account
-type LoanTapeAccountStandingFinancialAccountStateStatus string
-
-const (
-	LoanTapeAccountStandingFinancialAccountStateStatusOpen      LoanTapeAccountStandingFinancialAccountStateStatus = "OPEN"
-	LoanTapeAccountStandingFinancialAccountStateStatusClosed    LoanTapeAccountStandingFinancialAccountStateStatus = "CLOSED"
-	LoanTapeAccountStandingFinancialAccountStateStatusSuspended LoanTapeAccountStandingFinancialAccountStateStatus = "SUSPENDED"
-	LoanTapeAccountStandingFinancialAccountStateStatusPending   LoanTapeAccountStandingFinancialAccountStateStatus = "PENDING"
-)
-
-func (r LoanTapeAccountStandingFinancialAccountStateStatus) IsKnown() bool {
-	switch r {
-	case LoanTapeAccountStandingFinancialAccountStateStatusOpen, LoanTapeAccountStandingFinancialAccountStateStatusClosed, LoanTapeAccountStandingFinancialAccountStateStatusSuspended, LoanTapeAccountStandingFinancialAccountStateStatusPending:
-		return true
-	}
-	return false
-}
-
-// Reason for the financial account status change
-type LoanTapeAccountStandingFinancialAccountStateStatusChangeReason string
-
-const (
-	LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonChargedOffDelinquent LoanTapeAccountStandingFinancialAccountStateStatusChangeReason = "CHARGED_OFF_DELINQUENT"
-	LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonChargedOffFraud      LoanTapeAccountStandingFinancialAccountStateStatusChangeReason = "CHARGED_OFF_FRAUD"
-	LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonEndUserRequest       LoanTapeAccountStandingFinancialAccountStateStatusChangeReason = "END_USER_REQUEST"
-	LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonBankRequest          LoanTapeAccountStandingFinancialAccountStateStatusChangeReason = "BANK_REQUEST"
-	LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonDelinquent           LoanTapeAccountStandingFinancialAccountStateStatusChangeReason = "DELINQUENT"
-)
-
-func (r LoanTapeAccountStandingFinancialAccountStateStatusChangeReason) IsKnown() bool {
-	switch r {
-	case LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonChargedOffDelinquent, LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonChargedOffFraud, LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonEndUserRequest, LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonBankRequest, LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonDelinquent:
-		return true
-	}
-	return false
 }
 
 type LoanTapeAccountStandingPeriodState string

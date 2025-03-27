@@ -121,7 +121,7 @@ func TestEventSubscriptionListWithOptionalParams(t *testing.T) {
 }
 
 func TestEventSubscriptionDelete(t *testing.T) {
-	t.Skip("Prism Mock server doesn't want Accept header, but server requires it.")
+	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -177,7 +177,7 @@ func TestEventSubscriptionListAttemptsWithOptionalParams(t *testing.T) {
 }
 
 func TestEventSubscriptionRecoverWithOptionalParams(t *testing.T) {
-	t.Skip("Prism Mock server doesn't want Accept header, but server requires it.")
+	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -207,7 +207,7 @@ func TestEventSubscriptionRecoverWithOptionalParams(t *testing.T) {
 }
 
 func TestEventSubscriptionReplayMissingWithOptionalParams(t *testing.T) {
-	t.Skip("Prism Mock server doesn't want Accept header, but server requires it.")
+	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -259,7 +259,7 @@ func TestEventSubscriptionGetSecret(t *testing.T) {
 }
 
 func TestEventSubscriptionRotateSecret(t *testing.T) {
-	t.Skip("Prism Mock server doesn't want Accept header, but server requires it.")
+	t.Skip("Prism Mock server doesnt want Accept header, but server requires it.")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL

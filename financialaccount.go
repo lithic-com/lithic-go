@@ -107,14 +107,14 @@ func (r *FinancialAccountService) ListAutoPaging(ctx context.Context, query Fina
 	return pagination.NewSinglePageAutoPager(r.List(ctx, query, opts...))
 }
 
-// Update financial account status
-func (r *FinancialAccountService) UpdateStatus(ctx context.Context, financialAccountToken string, body FinancialAccountUpdateStatusParams, opts ...option.RequestOption) (res *FinancialAccount, err error) {
+// Update issuing account state to charged off
+func (r *FinancialAccountService) ChargeOff(ctx context.Context, financialAccountToken string, body FinancialAccountChargeOffParams, opts ...option.RequestOption) (res *FinancialAccountCreditConfig, err error) {
 	opts = append(r.Options[:], opts...)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
 		return
 	}
-	path := fmt.Sprintf("v1/financial_accounts/%s/update_status", financialAccountToken)
+	path := fmt.Sprintf("v1/financial_accounts/%s/charge_off", financialAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
 }
@@ -126,17 +126,13 @@ type FinancialAccount struct {
 	Created             time.Time                           `json:"created,required" format:"date-time"`
 	CreditConfiguration FinancialAccountCreditConfiguration `json:"credit_configuration,required,nullable"`
 	// Whether financial account is for the benefit of another entity
-	IsForBenefitOf bool   `json:"is_for_benefit_of,required"`
-	Nickname       string `json:"nickname,required,nullable"`
-	// Status of the financial account
-	Status        FinancialAccountStatus `json:"status,required"`
-	Type          FinancialAccountType   `json:"type,required"`
-	Updated       time.Time              `json:"updated,required" format:"date-time"`
-	AccountNumber string                 `json:"account_number,nullable"`
-	RoutingNumber string                 `json:"routing_number,nullable"`
-	// Reason for the financial account status change
-	StatusChangeReason FinancialAccountStatusChangeReason `json:"status_change_reason,nullable"`
-	JSON               financialAccountJSON               `json:"-"`
+	IsForBenefitOf bool                 `json:"is_for_benefit_of,required"`
+	Nickname       string               `json:"nickname,required,nullable"`
+	Type           FinancialAccountType `json:"type,required"`
+	Updated        time.Time            `json:"updated,required" format:"date-time"`
+	AccountNumber  string               `json:"account_number,nullable"`
+	RoutingNumber  string               `json:"routing_number,nullable"`
+	JSON           financialAccountJSON `json:"-"`
 }
 
 // financialAccountJSON contains the JSON metadata for the struct
@@ -148,12 +144,10 @@ type financialAccountJSON struct {
 	CreditConfiguration apijson.Field
 	IsForBenefitOf      apijson.Field
 	Nickname            apijson.Field
-	Status              apijson.Field
 	Type                apijson.Field
 	Updated             apijson.Field
 	AccountNumber       apijson.Field
 	RoutingNumber       apijson.Field
-	StatusChangeReason  apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
 }
@@ -237,57 +231,17 @@ func (r FinancialAccountCreditConfigurationFinancialAccountState) IsKnown() bool
 	return false
 }
 
-// Status of the financial account
-type FinancialAccountStatus string
-
-const (
-	FinancialAccountStatusOpen      FinancialAccountStatus = "OPEN"
-	FinancialAccountStatusClosed    FinancialAccountStatus = "CLOSED"
-	FinancialAccountStatusSuspended FinancialAccountStatus = "SUSPENDED"
-	FinancialAccountStatusPending   FinancialAccountStatus = "PENDING"
-)
-
-func (r FinancialAccountStatus) IsKnown() bool {
-	switch r {
-	case FinancialAccountStatusOpen, FinancialAccountStatusClosed, FinancialAccountStatusSuspended, FinancialAccountStatusPending:
-		return true
-	}
-	return false
-}
-
 type FinancialAccountType string
 
 const (
-	FinancialAccountTypeIssuing             FinancialAccountType = "ISSUING"
-	FinancialAccountTypeReserve             FinancialAccountType = "RESERVE"
-	FinancialAccountTypeOperating           FinancialAccountType = "OPERATING"
-	FinancialAccountTypeChargedOffFees      FinancialAccountType = "CHARGED_OFF_FEES"
-	FinancialAccountTypeChargedOffInterest  FinancialAccountType = "CHARGED_OFF_INTEREST"
-	FinancialAccountTypeChargedOffPrincipal FinancialAccountType = "CHARGED_OFF_PRINCIPAL"
+	FinancialAccountTypeIssuing   FinancialAccountType = "ISSUING"
+	FinancialAccountTypeReserve   FinancialAccountType = "RESERVE"
+	FinancialAccountTypeOperating FinancialAccountType = "OPERATING"
 )
 
 func (r FinancialAccountType) IsKnown() bool {
 	switch r {
-	case FinancialAccountTypeIssuing, FinancialAccountTypeReserve, FinancialAccountTypeOperating, FinancialAccountTypeChargedOffFees, FinancialAccountTypeChargedOffInterest, FinancialAccountTypeChargedOffPrincipal:
-		return true
-	}
-	return false
-}
-
-// Reason for the financial account status change
-type FinancialAccountStatusChangeReason string
-
-const (
-	FinancialAccountStatusChangeReasonChargedOffDelinquent FinancialAccountStatusChangeReason = "CHARGED_OFF_DELINQUENT"
-	FinancialAccountStatusChangeReasonChargedOffFraud      FinancialAccountStatusChangeReason = "CHARGED_OFF_FRAUD"
-	FinancialAccountStatusChangeReasonEndUserRequest       FinancialAccountStatusChangeReason = "END_USER_REQUEST"
-	FinancialAccountStatusChangeReasonBankRequest          FinancialAccountStatusChangeReason = "BANK_REQUEST"
-	FinancialAccountStatusChangeReasonDelinquent           FinancialAccountStatusChangeReason = "DELINQUENT"
-)
-
-func (r FinancialAccountStatusChangeReason) IsKnown() bool {
-	switch r {
-	case FinancialAccountStatusChangeReasonChargedOffDelinquent, FinancialAccountStatusChangeReasonChargedOffFraud, FinancialAccountStatusChangeReasonEndUserRequest, FinancialAccountStatusChangeReasonBankRequest, FinancialAccountStatusChangeReasonDelinquent:
+	case FinancialAccountTypeIssuing, FinancialAccountTypeReserve, FinancialAccountTypeOperating:
 		return true
 	}
 	return false
@@ -300,14 +254,12 @@ type FinancialTransaction struct {
 	//
 	//   - `CARD` - Issuing card transaction.
 	//   - `ACH` - Transaction over ACH.
-	//   - `INTERNAL` - Transaction for internal adjustment.
 	//   - `TRANSFER` - Internal transfer of funds between financial accounts in your
 	//     program.
 	Category FinancialTransactionCategory `json:"category,required"`
 	// Date and time when the financial transaction first occurred. UTC time zone.
 	Created time.Time `json:"created,required" format:"date-time"`
-	// 3-character alphabetic ISO 4217 code for the settling currency of the
-	// transaction.
+	// 3-digit alphabetic ISO 4217 code for the settling currency of the transaction.
 	Currency string `json:"currency,required"`
 	// A string that provides a description of the financial transaction; may be useful
 	// to display to users.
@@ -369,7 +321,6 @@ func (r financialTransactionJSON) RawJSON() string {
 //
 //   - `CARD` - Issuing card transaction.
 //   - `ACH` - Transaction over ACH.
-//   - `INTERNAL` - Transaction for internal adjustment.
 //   - `TRANSFER` - Internal transfer of funds between financial accounts in your
 //     program.
 type FinancialTransactionCategory string
@@ -377,13 +328,12 @@ type FinancialTransactionCategory string
 const (
 	FinancialTransactionCategoryACH      FinancialTransactionCategory = "ACH"
 	FinancialTransactionCategoryCard     FinancialTransactionCategory = "CARD"
-	FinancialTransactionCategoryInternal FinancialTransactionCategory = "INTERNAL"
 	FinancialTransactionCategoryTransfer FinancialTransactionCategory = "TRANSFER"
 )
 
 func (r FinancialTransactionCategory) IsKnown() bool {
 	switch r {
-	case FinancialTransactionCategoryACH, FinancialTransactionCategoryCard, FinancialTransactionCategoryInternal, FinancialTransactionCategoryTransfer:
+	case FinancialTransactionCategoryACH, FinancialTransactionCategoryCard, FinancialTransactionCategoryTransfer:
 		return true
 	}
 	return false
@@ -497,7 +447,6 @@ const (
 	FinancialTransactionEventsTypeFinancialCreditAuthorization FinancialTransactionEventsType = "FINANCIAL_CREDIT_AUTHORIZATION"
 	FinancialTransactionEventsTypeInterest                     FinancialTransactionEventsType = "INTEREST"
 	FinancialTransactionEventsTypeInterestReversal             FinancialTransactionEventsType = "INTEREST_REVERSAL"
-	FinancialTransactionEventsTypeInternalAdjustment           FinancialTransactionEventsType = "INTERNAL_ADJUSTMENT"
 	FinancialTransactionEventsTypeLatePayment                  FinancialTransactionEventsType = "LATE_PAYMENT"
 	FinancialTransactionEventsTypeLatePaymentReversal          FinancialTransactionEventsType = "LATE_PAYMENT_REVERSAL"
 	FinancialTransactionEventsTypeProvisionalCredit            FinancialTransactionEventsType = "PROVISIONAL_CREDIT"
@@ -512,7 +461,7 @@ const (
 
 func (r FinancialTransactionEventsType) IsKnown() bool {
 	switch r {
-	case FinancialTransactionEventsTypeACHOriginationCancelled, FinancialTransactionEventsTypeACHOriginationInitiated, FinancialTransactionEventsTypeACHOriginationProcessed, FinancialTransactionEventsTypeACHOriginationReleased, FinancialTransactionEventsTypeACHOriginationReviewed, FinancialTransactionEventsTypeACHOriginationSettled, FinancialTransactionEventsTypeACHReceiptProcessed, FinancialTransactionEventsTypeACHReceiptSettled, FinancialTransactionEventsTypeACHReturnInitiated, FinancialTransactionEventsTypeACHReturnProcessed, FinancialTransactionEventsTypeACHReturnSettled, FinancialTransactionEventsTypeAuthorization, FinancialTransactionEventsTypeAuthorizationAdvice, FinancialTransactionEventsTypeAuthorizationExpiry, FinancialTransactionEventsTypeAuthorizationReversal, FinancialTransactionEventsTypeBalanceInquiry, FinancialTransactionEventsTypeBillingError, FinancialTransactionEventsTypeBillingErrorReversal, FinancialTransactionEventsTypeCardToCard, FinancialTransactionEventsTypeCashBack, FinancialTransactionEventsTypeCashBackReversal, FinancialTransactionEventsTypeClearing, FinancialTransactionEventsTypeCorrectionCredit, FinancialTransactionEventsTypeCorrectionDebit, FinancialTransactionEventsTypeCreditAuthorization, FinancialTransactionEventsTypeCreditAuthorizationAdvice, FinancialTransactionEventsTypeCurrencyConversion, FinancialTransactionEventsTypeCurrencyConversionReversal, FinancialTransactionEventsTypeDisputeWon, FinancialTransactionEventsTypeExternalACHCanceled, FinancialTransactionEventsTypeExternalACHInitiated, FinancialTransactionEventsTypeExternalACHReleased, FinancialTransactionEventsTypeExternalACHReversed, FinancialTransactionEventsTypeExternalACHSettled, FinancialTransactionEventsTypeExternalCheckCanceled, FinancialTransactionEventsTypeExternalCheckInitiated, FinancialTransactionEventsTypeExternalCheckReleased, FinancialTransactionEventsTypeExternalCheckReversed, FinancialTransactionEventsTypeExternalCheckSettled, FinancialTransactionEventsTypeExternalTransferCanceled, FinancialTransactionEventsTypeExternalTransferInitiated, FinancialTransactionEventsTypeExternalTransferReleased, FinancialTransactionEventsTypeExternalTransferReversed, FinancialTransactionEventsTypeExternalTransferSettled, FinancialTransactionEventsTypeExternalWireCanceled, FinancialTransactionEventsTypeExternalWireInitiated, FinancialTransactionEventsTypeExternalWireReleased, FinancialTransactionEventsTypeExternalWireReversed, FinancialTransactionEventsTypeExternalWireSettled, FinancialTransactionEventsTypeFinancialAuthorization, FinancialTransactionEventsTypeFinancialCreditAuthorization, FinancialTransactionEventsTypeInterest, FinancialTransactionEventsTypeInterestReversal, FinancialTransactionEventsTypeInternalAdjustment, FinancialTransactionEventsTypeLatePayment, FinancialTransactionEventsTypeLatePaymentReversal, FinancialTransactionEventsTypeProvisionalCredit, FinancialTransactionEventsTypeProvisionalCreditReversal, FinancialTransactionEventsTypeReturn, FinancialTransactionEventsTypeReturnReversal, FinancialTransactionEventsTypeTransfer, FinancialTransactionEventsTypeTransferInsufficientFunds, FinancialTransactionEventsTypeReturnedPayment, FinancialTransactionEventsTypeReturnedPaymentReversal:
+	case FinancialTransactionEventsTypeACHOriginationCancelled, FinancialTransactionEventsTypeACHOriginationInitiated, FinancialTransactionEventsTypeACHOriginationProcessed, FinancialTransactionEventsTypeACHOriginationReleased, FinancialTransactionEventsTypeACHOriginationReviewed, FinancialTransactionEventsTypeACHOriginationSettled, FinancialTransactionEventsTypeACHReceiptProcessed, FinancialTransactionEventsTypeACHReceiptSettled, FinancialTransactionEventsTypeACHReturnInitiated, FinancialTransactionEventsTypeACHReturnProcessed, FinancialTransactionEventsTypeACHReturnSettled, FinancialTransactionEventsTypeAuthorization, FinancialTransactionEventsTypeAuthorizationAdvice, FinancialTransactionEventsTypeAuthorizationExpiry, FinancialTransactionEventsTypeAuthorizationReversal, FinancialTransactionEventsTypeBalanceInquiry, FinancialTransactionEventsTypeBillingError, FinancialTransactionEventsTypeBillingErrorReversal, FinancialTransactionEventsTypeCardToCard, FinancialTransactionEventsTypeCashBack, FinancialTransactionEventsTypeCashBackReversal, FinancialTransactionEventsTypeClearing, FinancialTransactionEventsTypeCorrectionCredit, FinancialTransactionEventsTypeCorrectionDebit, FinancialTransactionEventsTypeCreditAuthorization, FinancialTransactionEventsTypeCreditAuthorizationAdvice, FinancialTransactionEventsTypeCurrencyConversion, FinancialTransactionEventsTypeCurrencyConversionReversal, FinancialTransactionEventsTypeDisputeWon, FinancialTransactionEventsTypeExternalACHCanceled, FinancialTransactionEventsTypeExternalACHInitiated, FinancialTransactionEventsTypeExternalACHReleased, FinancialTransactionEventsTypeExternalACHReversed, FinancialTransactionEventsTypeExternalACHSettled, FinancialTransactionEventsTypeExternalCheckCanceled, FinancialTransactionEventsTypeExternalCheckInitiated, FinancialTransactionEventsTypeExternalCheckReleased, FinancialTransactionEventsTypeExternalCheckReversed, FinancialTransactionEventsTypeExternalCheckSettled, FinancialTransactionEventsTypeExternalTransferCanceled, FinancialTransactionEventsTypeExternalTransferInitiated, FinancialTransactionEventsTypeExternalTransferReleased, FinancialTransactionEventsTypeExternalTransferReversed, FinancialTransactionEventsTypeExternalTransferSettled, FinancialTransactionEventsTypeExternalWireCanceled, FinancialTransactionEventsTypeExternalWireInitiated, FinancialTransactionEventsTypeExternalWireReleased, FinancialTransactionEventsTypeExternalWireReversed, FinancialTransactionEventsTypeExternalWireSettled, FinancialTransactionEventsTypeFinancialAuthorization, FinancialTransactionEventsTypeFinancialCreditAuthorization, FinancialTransactionEventsTypeInterest, FinancialTransactionEventsTypeInterestReversal, FinancialTransactionEventsTypeLatePayment, FinancialTransactionEventsTypeLatePaymentReversal, FinancialTransactionEventsTypeProvisionalCredit, FinancialTransactionEventsTypeProvisionalCreditReversal, FinancialTransactionEventsTypeReturn, FinancialTransactionEventsTypeReturnReversal, FinancialTransactionEventsTypeTransfer, FinancialTransactionEventsTypeTransferInsufficientFunds, FinancialTransactionEventsTypeReturnedPayment, FinancialTransactionEventsTypeReturnedPaymentReversal:
 		return true
 	}
 	return false
@@ -632,48 +581,26 @@ func (r FinancialAccountListParamsType) IsKnown() bool {
 	return false
 }
 
-type FinancialAccountUpdateStatusParams struct {
-	// Status of the financial account
-	Status param.Field[FinancialAccountUpdateStatusParamsStatus] `json:"status,required"`
-	// Reason for the financial account status change
-	StatusChangeReason param.Field[FinancialAccountUpdateStatusParamsStatusChangeReason] `json:"status_change_reason,required"`
+type FinancialAccountChargeOffParams struct {
+	// Reason for the financial account being marked as Charged Off
+	Reason param.Field[FinancialAccountChargeOffParamsReason] `json:"reason,required"`
 }
 
-func (r FinancialAccountUpdateStatusParams) MarshalJSON() (data []byte, err error) {
+func (r FinancialAccountChargeOffParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-// Status of the financial account
-type FinancialAccountUpdateStatusParamsStatus string
+// Reason for the financial account being marked as Charged Off
+type FinancialAccountChargeOffParamsReason string
 
 const (
-	FinancialAccountUpdateStatusParamsStatusOpen      FinancialAccountUpdateStatusParamsStatus = "OPEN"
-	FinancialAccountUpdateStatusParamsStatusClosed    FinancialAccountUpdateStatusParamsStatus = "CLOSED"
-	FinancialAccountUpdateStatusParamsStatusSuspended FinancialAccountUpdateStatusParamsStatus = "SUSPENDED"
-	FinancialAccountUpdateStatusParamsStatusPending   FinancialAccountUpdateStatusParamsStatus = "PENDING"
+	FinancialAccountChargeOffParamsReasonDelinquent FinancialAccountChargeOffParamsReason = "DELINQUENT"
+	FinancialAccountChargeOffParamsReasonFraud      FinancialAccountChargeOffParamsReason = "FRAUD"
 )
 
-func (r FinancialAccountUpdateStatusParamsStatus) IsKnown() bool {
+func (r FinancialAccountChargeOffParamsReason) IsKnown() bool {
 	switch r {
-	case FinancialAccountUpdateStatusParamsStatusOpen, FinancialAccountUpdateStatusParamsStatusClosed, FinancialAccountUpdateStatusParamsStatusSuspended, FinancialAccountUpdateStatusParamsStatusPending:
-		return true
-	}
-	return false
-}
-
-// Reason for the financial account status change
-type FinancialAccountUpdateStatusParamsStatusChangeReason string
-
-const (
-	FinancialAccountUpdateStatusParamsStatusChangeReasonChargedOffFraud      FinancialAccountUpdateStatusParamsStatusChangeReason = "CHARGED_OFF_FRAUD"
-	FinancialAccountUpdateStatusParamsStatusChangeReasonEndUserRequest       FinancialAccountUpdateStatusParamsStatusChangeReason = "END_USER_REQUEST"
-	FinancialAccountUpdateStatusParamsStatusChangeReasonBankRequest          FinancialAccountUpdateStatusParamsStatusChangeReason = "BANK_REQUEST"
-	FinancialAccountUpdateStatusParamsStatusChangeReasonChargedOffDelinquent FinancialAccountUpdateStatusParamsStatusChangeReason = "CHARGED_OFF_DELINQUENT"
-)
-
-func (r FinancialAccountUpdateStatusParamsStatusChangeReason) IsKnown() bool {
-	switch r {
-	case FinancialAccountUpdateStatusParamsStatusChangeReasonChargedOffFraud, FinancialAccountUpdateStatusParamsStatusChangeReasonEndUserRequest, FinancialAccountUpdateStatusParamsStatusChangeReasonBankRequest, FinancialAccountUpdateStatusParamsStatusChangeReasonChargedOffDelinquent:
+	case FinancialAccountChargeOffParamsReasonDelinquent, FinancialAccountChargeOffParamsReasonFraud:
 		return true
 	}
 	return false

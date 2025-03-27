@@ -101,8 +101,7 @@ type BookTransferResponse struct {
 	Category BookTransferResponseCategory `json:"category,required"`
 	// Date and time when the transfer occurred. UTC time zone.
 	Created time.Time `json:"created,required" format:"date-time"`
-	// 3-character alphabetic ISO 4217 code for the settling currency of the
-	// transaction.
+	// 3-digit alphabetic ISO 4217 code for the settling currency of the transaction.
 	Currency string `json:"currency,required"`
 	// A list of all financial events that have modified this transfer.
 	Events []BookTransferResponseEvent `json:"events,required"`

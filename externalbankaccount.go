@@ -207,7 +207,7 @@ type ExternalBankAccountNewResponse struct {
 	// An ISO 8601 string representing when this funding source was added to the Lithic
 	// account.
 	Created time.Time `json:"created,required" format:"date-time"`
-	// currency of the external account 3-character alphabetic ISO 4217 code
+	// currency of the external account 3-digit alphabetic ISO 4217 code
 	Currency string `json:"currency,required"`
 	// The last 4 digits of the bank account. Derived by Lithic from the account number
 	// passed
@@ -388,7 +388,7 @@ type ExternalBankAccountGetResponse struct {
 	// An ISO 8601 string representing when this funding source was added to the Lithic
 	// account.
 	Created time.Time `json:"created,required" format:"date-time"`
-	// currency of the external account 3-character alphabetic ISO 4217 code
+	// currency of the external account 3-digit alphabetic ISO 4217 code
 	Currency string `json:"currency,required"`
 	// The last 4 digits of the bank account. Derived by Lithic from the account number
 	// passed
@@ -569,7 +569,7 @@ type ExternalBankAccountUpdateResponse struct {
 	// An ISO 8601 string representing when this funding source was added to the Lithic
 	// account.
 	Created time.Time `json:"created,required" format:"date-time"`
-	// currency of the external account 3-character alphabetic ISO 4217 code
+	// currency of the external account 3-digit alphabetic ISO 4217 code
 	Currency string `json:"currency,required"`
 	// The last 4 digits of the bank account. Derived by Lithic from the account number
 	// passed
@@ -750,7 +750,7 @@ type ExternalBankAccountListResponse struct {
 	// An ISO 8601 string representing when this funding source was added to the Lithic
 	// account.
 	Created time.Time `json:"created,required" format:"date-time"`
-	// currency of the external account 3-character alphabetic ISO 4217 code
+	// currency of the external account 3-digit alphabetic ISO 4217 code
 	Currency string `json:"currency,required"`
 	// The last 4 digits of the bank account. Derived by Lithic from the account number
 	// passed
@@ -931,7 +931,7 @@ type ExternalBankAccountRetryMicroDepositsResponse struct {
 	// An ISO 8601 string representing when this funding source was added to the Lithic
 	// account.
 	Created time.Time `json:"created,required" format:"date-time"`
-	// currency of the external account 3-character alphabetic ISO 4217 code
+	// currency of the external account 3-digit alphabetic ISO 4217 code
 	Currency string `json:"currency,required"`
 	// The last 4 digits of the bank account. Derived by Lithic from the account number
 	// passed
@@ -1112,7 +1112,7 @@ type ExternalBankAccountRetryPrenoteResponse struct {
 	// An ISO 8601 string representing when this funding source was added to the Lithic
 	// account.
 	Created time.Time `json:"created,required" format:"date-time"`
-	// currency of the external account 3-character alphabetic ISO 4217 code
+	// currency of the external account 3-digit alphabetic ISO 4217 code
 	Currency string `json:"currency,required"`
 	// The last 4 digits of the bank account. Derived by Lithic from the account number
 	// passed
@@ -1276,7 +1276,7 @@ type ExternalBankAccountNewParamsBody struct {
 	// The country that the bank account is located in using ISO 3166-1. We will only
 	// accept USA bank accounts e.g., USA
 	Country param.Field[string] `json:"country"`
-	// currency of the external account 3-character alphabetic ISO 4217 code
+	// currency of the external account 3-digit alphabetic ISO 4217 code
 	Currency param.Field[string] `json:"currency"`
 	// Date of Birth of the Individual that owns the external bank account
 	Dob param.Field[time.Time] `json:"dob" format:"date"`
@@ -1317,7 +1317,7 @@ type ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest str
 	// The country that the bank account is located in using ISO 3166-1. We will only
 	// accept USA bank accounts e.g., USA
 	Country param.Field[string] `json:"country,required"`
-	// currency of the external account 3-character alphabetic ISO 4217 code
+	// currency of the external account 3-digit alphabetic ISO 4217 code
 	Currency param.Field[string] `json:"currency,required"`
 	// The financial account token of the operating account to fund the micro deposits
 	FinancialAccountToken param.Field[string] `json:"financial_account_token,required" format:"uuid"`
@@ -1410,7 +1410,7 @@ type ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIReque
 	// The country that the bank account is located in using ISO 3166-1. We will only
 	// accept USA bank accounts e.g., USA
 	Country param.Field[string] `json:"country,required"`
-	// currency of the external account 3-character alphabetic ISO 4217 code
+	// currency of the external account 3-digit alphabetic ISO 4217 code
 	Currency param.Field[string] `json:"currency,required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
@@ -1510,29 +1510,13 @@ type ExternalBankAccountUpdateParams struct {
 	// will appear in statements
 	Owner param.Field[string] `json:"owner"`
 	// Owner Type
-	OwnerType param.Field[OwnerType]                           `json:"owner_type"`
-	Type      param.Field[ExternalBankAccountUpdateParamsType] `json:"type"`
+	OwnerType param.Field[OwnerType] `json:"owner_type"`
 	// User Defined ID
 	UserDefinedID param.Field[string] `json:"user_defined_id"`
 }
 
 func (r ExternalBankAccountUpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
-}
-
-type ExternalBankAccountUpdateParamsType string
-
-const (
-	ExternalBankAccountUpdateParamsTypeChecking ExternalBankAccountUpdateParamsType = "CHECKING"
-	ExternalBankAccountUpdateParamsTypeSavings  ExternalBankAccountUpdateParamsType = "SAVINGS"
-)
-
-func (r ExternalBankAccountUpdateParamsType) IsKnown() bool {
-	switch r {
-	case ExternalBankAccountUpdateParamsTypeChecking, ExternalBankAccountUpdateParamsTypeSavings:
-		return true
-	}
-	return false
 }
 
 type ExternalBankAccountListParams struct {

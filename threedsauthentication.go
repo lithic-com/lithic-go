@@ -57,18 +57,6 @@ func (r *ThreeDSAuthenticationService) Simulate(ctx context.Context, body ThreeD
 	return
 }
 
-// Endpoint for simulating entering OTP into 3DS Challenge UI. A call to
-// /v1/three_ds_authentication/simulate that resulted in triggered SMS-OTP
-// challenge must precede. Only a single attempt is supported; upon entering OTP,
-// the challenge is either approved or declined.
-func (r *ThreeDSAuthenticationService) SimulateOtpEntry(ctx context.Context, body ThreeDSAuthenticationSimulateOtpEntryParams, opts ...option.RequestOption) (err error) {
-	opts = append(r.Options[:], opts...)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
-	path := "v1/three_ds_decisioning/simulate/enter_otp"
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
-	return
-}
-
 type ThreeDSAuthenticationGetResponse struct {
 	// Globally unique identifier for the 3DS authentication.
 	Token string `json:"token,required" format:"uuid"`
@@ -89,6 +77,8 @@ type ThreeDSAuthenticationGetResponse struct {
 	Channel ThreeDSAuthenticationGetResponseChannel `json:"channel,required"`
 	// Date and time when the authentication was created in Lithic's system.
 	Created time.Time `json:"created,required" format:"date-time"`
+	// Entity that made the authentication decision.
+	DecisionMadeBy ThreeDSAuthenticationGetResponseDecisionMadeBy `json:"decision_made_by,required,nullable"`
 	// Object containing data about the merchant involved in the e-commerce
 	// transaction.
 	Merchant ThreeDSAuthenticationGetResponseMerchant `json:"merchant,required"`
@@ -121,12 +111,8 @@ type ThreeDSAuthenticationGetResponse struct {
 	// Object containing data about the browser used in the e-commerce transaction.
 	// Present if the channel is 'BROWSER'.
 	Browser ThreeDSAuthenticationGetResponseBrowser `json:"browser"`
-	// Metadata about the challenge method and delivery.
-	ChallengeMetadata ThreeDSAuthenticationGetResponseChallengeMetadata `json:"challenge_metadata,nullable"`
 	// Entity that orchestrates the challenge.
 	ChallengeOrchestratedBy ThreeDSAuthenticationGetResponseChallengeOrchestratedBy `json:"challenge_orchestrated_by,nullable"`
-	// Entity that made the authentication decision.
-	DecisionMadeBy ThreeDSAuthenticationGetResponseDecisionMadeBy `json:"decision_made_by,nullable"`
 	// Type of 3DS Requestor Initiated (3RI) request i.e., a 3DS authentication that
 	// takes place at the initiation of the merchant rather than the cardholder. The
 	// most common example of this is where a merchant is authenticating before billing
@@ -150,6 +136,7 @@ type threeDSAuthenticationGetResponseJSON struct {
 	Cardholder                         apijson.Field
 	Channel                            apijson.Field
 	Created                            apijson.Field
+	DecisionMadeBy                     apijson.Field
 	Merchant                           apijson.Field
 	MessageCategory                    apijson.Field
 	ThreeDSRequestorChallengeIndicator apijson.Field
@@ -157,9 +144,7 @@ type threeDSAuthenticationGetResponseJSON struct {
 	App                                apijson.Field
 	AuthenticationRequestType          apijson.Field
 	Browser                            apijson.Field
-	ChallengeMetadata                  apijson.Field
 	ChallengeOrchestratedBy            apijson.Field
-	DecisionMadeBy                     apijson.Field
 	ThreeRiRequestType                 apijson.Field
 	Transaction                        apijson.Field
 	raw                                string
@@ -371,6 +356,25 @@ const (
 func (r ThreeDSAuthenticationGetResponseChannel) IsKnown() bool {
 	switch r {
 	case ThreeDSAuthenticationGetResponseChannelAppBased, ThreeDSAuthenticationGetResponseChannelBrowser, ThreeDSAuthenticationGetResponseChannelThreeDSRequestorInitiated:
+		return true
+	}
+	return false
+}
+
+// Entity that made the authentication decision.
+type ThreeDSAuthenticationGetResponseDecisionMadeBy string
+
+const (
+	ThreeDSAuthenticationGetResponseDecisionMadeByCustomerEndpoint ThreeDSAuthenticationGetResponseDecisionMadeBy = "CUSTOMER_ENDPOINT"
+	ThreeDSAuthenticationGetResponseDecisionMadeByLithicDefault    ThreeDSAuthenticationGetResponseDecisionMadeBy = "LITHIC_DEFAULT"
+	ThreeDSAuthenticationGetResponseDecisionMadeByLithicRules      ThreeDSAuthenticationGetResponseDecisionMadeBy = "LITHIC_RULES"
+	ThreeDSAuthenticationGetResponseDecisionMadeByNetwork          ThreeDSAuthenticationGetResponseDecisionMadeBy = "NETWORK"
+	ThreeDSAuthenticationGetResponseDecisionMadeByUnknown          ThreeDSAuthenticationGetResponseDecisionMadeBy = "UNKNOWN"
+)
+
+func (r ThreeDSAuthenticationGetResponseDecisionMadeBy) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseDecisionMadeByCustomerEndpoint, ThreeDSAuthenticationGetResponseDecisionMadeByLithicDefault, ThreeDSAuthenticationGetResponseDecisionMadeByLithicRules, ThreeDSAuthenticationGetResponseDecisionMadeByNetwork, ThreeDSAuthenticationGetResponseDecisionMadeByUnknown:
 		return true
 	}
 	return false
@@ -750,48 +754,6 @@ func (r threeDSAuthenticationGetResponseBrowserJSON) RawJSON() string {
 	return r.raw
 }
 
-// Metadata about the challenge method and delivery.
-type ThreeDSAuthenticationGetResponseChallengeMetadata struct {
-	// The type of challenge method used for authentication.
-	MethodType ThreeDSAuthenticationGetResponseChallengeMetadataMethodType `json:"method_type,required"`
-	// The phone number used for delivering the OTP. Relevant only for SMS_OTP method.
-	PhoneNumber string                                                `json:"phone_number,nullable"`
-	JSON        threeDSAuthenticationGetResponseChallengeMetadataJSON `json:"-"`
-}
-
-// threeDSAuthenticationGetResponseChallengeMetadataJSON contains the JSON metadata
-// for the struct [ThreeDSAuthenticationGetResponseChallengeMetadata]
-type threeDSAuthenticationGetResponseChallengeMetadataJSON struct {
-	MethodType  apijson.Field
-	PhoneNumber apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *ThreeDSAuthenticationGetResponseChallengeMetadata) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r threeDSAuthenticationGetResponseChallengeMetadataJSON) RawJSON() string {
-	return r.raw
-}
-
-// The type of challenge method used for authentication.
-type ThreeDSAuthenticationGetResponseChallengeMetadataMethodType string
-
-const (
-	ThreeDSAuthenticationGetResponseChallengeMetadataMethodTypeSMSOtp    ThreeDSAuthenticationGetResponseChallengeMetadataMethodType = "SMS_OTP"
-	ThreeDSAuthenticationGetResponseChallengeMetadataMethodTypeOutOfBand ThreeDSAuthenticationGetResponseChallengeMetadataMethodType = "OUT_OF_BAND"
-)
-
-func (r ThreeDSAuthenticationGetResponseChallengeMetadataMethodType) IsKnown() bool {
-	switch r {
-	case ThreeDSAuthenticationGetResponseChallengeMetadataMethodTypeSMSOtp, ThreeDSAuthenticationGetResponseChallengeMetadataMethodTypeOutOfBand:
-		return true
-	}
-	return false
-}
-
 // Entity that orchestrates the challenge.
 type ThreeDSAuthenticationGetResponseChallengeOrchestratedBy string
 
@@ -804,25 +766,6 @@ const (
 func (r ThreeDSAuthenticationGetResponseChallengeOrchestratedBy) IsKnown() bool {
 	switch r {
 	case ThreeDSAuthenticationGetResponseChallengeOrchestratedByLithic, ThreeDSAuthenticationGetResponseChallengeOrchestratedByCustomer, ThreeDSAuthenticationGetResponseChallengeOrchestratedByNoChallenge:
-		return true
-	}
-	return false
-}
-
-// Entity that made the authentication decision.
-type ThreeDSAuthenticationGetResponseDecisionMadeBy string
-
-const (
-	ThreeDSAuthenticationGetResponseDecisionMadeByCustomerEndpoint ThreeDSAuthenticationGetResponseDecisionMadeBy = "CUSTOMER_ENDPOINT"
-	ThreeDSAuthenticationGetResponseDecisionMadeByLithicDefault    ThreeDSAuthenticationGetResponseDecisionMadeBy = "LITHIC_DEFAULT"
-	ThreeDSAuthenticationGetResponseDecisionMadeByLithicRules      ThreeDSAuthenticationGetResponseDecisionMadeBy = "LITHIC_RULES"
-	ThreeDSAuthenticationGetResponseDecisionMadeByNetwork          ThreeDSAuthenticationGetResponseDecisionMadeBy = "NETWORK"
-	ThreeDSAuthenticationGetResponseDecisionMadeByUnknown          ThreeDSAuthenticationGetResponseDecisionMadeBy = "UNKNOWN"
-)
-
-func (r ThreeDSAuthenticationGetResponseDecisionMadeBy) IsKnown() bool {
-	switch r {
-	case ThreeDSAuthenticationGetResponseDecisionMadeByCustomerEndpoint, ThreeDSAuthenticationGetResponseDecisionMadeByLithicDefault, ThreeDSAuthenticationGetResponseDecisionMadeByLithicRules, ThreeDSAuthenticationGetResponseDecisionMadeByNetwork, ThreeDSAuthenticationGetResponseDecisionMadeByUnknown:
 		return true
 	}
 	return false
@@ -970,8 +913,7 @@ type ThreeDSAuthenticationSimulateParamsMerchant struct {
 	// listed in ISO 18245. Supported merchant category codes can be found
 	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
 	Mcc param.Field[string] `json:"mcc,required"`
-	// Merchant descriptor, corresponds to `descriptor` in authorization. If CHALLENGE
-	// keyword is included, Lithic will trigger a challenge.
+	// Merchant descriptor, corresponds to `descriptor` in authorization.
 	Name param.Field[string] `json:"name,required"`
 }
 
@@ -982,7 +924,7 @@ func (r ThreeDSAuthenticationSimulateParamsMerchant) MarshalJSON() (data []byte,
 type ThreeDSAuthenticationSimulateParamsTransaction struct {
 	// Amount (in cents) to authenticate.
 	Amount param.Field[int64] `json:"amount,required"`
-	// 3-character alphabetic ISO 4217 currency code.
+	// 3-digit alphabetic ISO 4217 currency code.
 	Currency param.Field[string] `json:"currency,required"`
 }
 
@@ -1006,16 +948,4 @@ func (r ThreeDSAuthenticationSimulateParamsCardExpiryCheck) IsKnown() bool {
 		return true
 	}
 	return false
-}
-
-type ThreeDSAuthenticationSimulateOtpEntryParams struct {
-	// A unique token returned as part of a /v1/three_ds_authentication/simulate call
-	// that resulted in PENDING_CHALLENGE authentication result.
-	Token param.Field[string] `json:"token,required" format:"uuid"`
-	// The OTP entered by the cardholder
-	Otp param.Field[string] `json:"otp,required"`
-}
-
-func (r ThreeDSAuthenticationSimulateOtpEntryParams) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
 }

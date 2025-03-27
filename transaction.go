@@ -80,19 +80,6 @@ func (r *TransactionService) ListAutoPaging(ctx context.Context, query Transacti
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
-// Expire authorization
-func (r *TransactionService) ExpireAuthorization(ctx context.Context, transactionToken string, opts ...option.RequestOption) (err error) {
-	opts = append(r.Options[:], opts...)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
-	if transactionToken == "" {
-		err = errors.New("missing required transaction_token parameter")
-		return
-	}
-	path := fmt.Sprintf("v1/transactions/%s/expire_authorization", transactionToken)
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
-	return
-}
-
 // Simulates an authorization request from the card network as if it came from a
 // merchant acquirer. If you are configured for ASA, simulating authorizations
 // requires your ASA client to be set up properly, i.e. be able to respond to the
@@ -215,9 +202,7 @@ type Transaction struct {
 	//
 	// Deprecated: deprecated
 	MerchantAuthorizationAmount int64 `json:"merchant_authorization_amount,required,nullable"`
-	// 3-character alphabetic ISO 4217 code for the local currency of the transaction.
-	//
-	// Deprecated: deprecated
+	// 3-digit alphabetic ISO 4217 code for the local currency of the transaction.
 	MerchantCurrency string `json:"merchant_currency,required"`
 	// Card network of the authorization. Can be `INTERLINK`, `MAESTRO`, `MASTERCARD`,
 	// `VISA`, or `UNKNOWN`. Value is `UNKNOWN` when Lithic cannot determine the
@@ -317,7 +302,9 @@ type TransactionAmountsCardholder struct {
 	// The exchange rate used to convert the merchant amount to the cardholder billing
 	// amount.
 	ConversionRate string `json:"conversion_rate,required"`
-	// 3-character alphabetic ISO 4217 currency
+	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
+	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
+	// `EUR`, `USD`.
 	Currency shared.Currency                  `json:"currency,required"`
 	JSON     transactionAmountsCardholderJSON `json:"-"`
 }
@@ -343,7 +330,9 @@ func (r transactionAmountsCardholderJSON) RawJSON() string {
 type TransactionAmountsHold struct {
 	// The pending amount of the transaction in the anticipated settlement currency.
 	Amount int64 `json:"amount,required"`
-	// 3-character alphabetic ISO 4217 currency
+	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
+	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
+	// `EUR`, `USD`.
 	Currency shared.Currency            `json:"currency,required"`
 	JSON     transactionAmountsHoldJSON `json:"-"`
 }
@@ -368,7 +357,9 @@ func (r transactionAmountsHoldJSON) RawJSON() string {
 type TransactionAmountsMerchant struct {
 	// The settled amount of the transaction in the merchant currency.
 	Amount int64 `json:"amount,required"`
-	// 3-character alphabetic ISO 4217 currency
+	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
+	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
+	// `EUR`, `USD`.
 	Currency shared.Currency                `json:"currency,required"`
 	JSON     transactionAmountsMerchantJSON `json:"-"`
 }
@@ -393,7 +384,9 @@ func (r transactionAmountsMerchantJSON) RawJSON() string {
 type TransactionAmountsSettlement struct {
 	// The settled amount of the transaction in the settlement currency.
 	Amount int64 `json:"amount,required"`
-	// 3-character alphabetic ISO 4217 currency
+	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
+	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
+	// `EUR`, `USD`.
 	Currency shared.Currency                  `json:"currency,required"`
 	JSON     transactionAmountsSettlementJSON `json:"-"`
 }
@@ -1119,7 +1112,9 @@ type TransactionEventsAmountsCardholder struct {
 	// Exchange rate used to convert the merchant amount to the cardholder billing
 	// amount.
 	ConversionRate string `json:"conversion_rate,required"`
-	// 3-character alphabetic ISO 4217 currency
+	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
+	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
+	// `EUR`, `USD`.
 	Currency shared.Currency                        `json:"currency,required"`
 	JSON     transactionEventsAmountsCardholderJSON `json:"-"`
 }
@@ -1145,7 +1140,9 @@ func (r transactionEventsAmountsCardholderJSON) RawJSON() string {
 type TransactionEventsAmountsMerchant struct {
 	// Amount of the event in the merchant currency.
 	Amount int64 `json:"amount,required"`
-	// 3-character alphabetic ISO 4217 currency
+	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
+	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
+	// `EUR`, `USD`.
 	Currency shared.Currency                      `json:"currency,required"`
 	JSON     transactionEventsAmountsMerchantJSON `json:"-"`
 }
@@ -1173,7 +1170,9 @@ type TransactionEventsAmountsSettlement struct {
 	Amount int64 `json:"amount,required"`
 	// Exchange rate used to convert the merchant amount to the settlement amount.
 	ConversionRate string `json:"conversion_rate,required"`
-	// 3-character alphabetic ISO 4217 currency
+	// ISO 4217 currency. Its enumerants are ISO 4217 currencies except for some
+	// special currencies like `XXX`. Enumerants names are lowercase currency code e.g.
+	// `EUR`, `USD`.
 	Currency shared.Currency                        `json:"currency,required"`
 	JSON     transactionEventsAmountsSettlementJSON `json:"-"`
 }
@@ -1836,7 +1835,7 @@ type TransactionSimulateAuthorizationParams struct {
 	// Amount of the transaction to be simulated in currency specified in
 	// merchant_currency, including any acquirer fees.
 	MerchantAmount param.Field[int64] `json:"merchant_amount"`
-	// 3-character alphabetic ISO 4217 currency code. Note: Simulator only accepts USD,
+	// 3-digit alphabetic ISO 4217 currency code. Note: Simulator only accepts USD,
 	// GBP, EUR and defaults to GBP if another ISO 4217 code is provided
 	MerchantCurrency param.Field[string] `json:"merchant_currency"`
 	// Set to true if the terminal is capable of partial approval otherwise false.

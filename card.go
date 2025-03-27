@@ -317,7 +317,7 @@ type Card struct {
 	//
 	// Deprecated: deprecated
 	AuthRuleTokens []string `json:"auth_rule_tokens"`
-	// 3-character alphabetic ISO 4217 code for the currency of the cardholder.
+	// 3-digit alphabetic ISO 4217 code for the currency of the cardholder.
 	CardholderCurrency string `json:"cardholder_currency"`
 	// Three digit cvv printed on the back of the card.
 	Cvv string `json:"cvv"`
