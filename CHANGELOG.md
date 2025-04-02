@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.71.1 (2025-04-02)
+
+Full Changelog: [v0.71.0...v0.71.1](https://github.com/lithic-com/lithic-go/compare/v0.71.0...v0.71.1)
+
+### Bug Fixes
+
+* **client:** return error on bad custom url instead of panic ([#486](https://github.com/lithic-com/lithic-go/issues/486)) ([1c43550](https://github.com/lithic-com/lithic-go/commit/1c43550452db2bdc5f92d53587e26b4eb2bd5bb5))
+
+
+### Chores
+
+* fix typos ([#482](https://github.com/lithic-com/lithic-go/issues/482)) ([885d231](https://github.com/lithic-com/lithic-go/commit/885d23189694ceefbbe064d40c0253274ff562ce))
+* internal codegen changes ([7f19e3a](https://github.com/lithic-com/lithic-go/commit/7f19e3ac6968eabb3d07bc03069f512319d29e6c))
+* internal codegen changes ([9b25269](https://github.com/lithic-com/lithic-go/commit/9b25269e63768dc824d5014999624561e41fba0c))
+* **internal:** remove workflow condition ([#485](https://github.com/lithic-com/lithic-go/issues/485)) ([0a6bdd8](https://github.com/lithic-com/lithic-go/commit/0a6bdd83ed71986e52e943b9c63e0e4890885cc6))
+
 ## 0.71.0 (2025-03-25)
 
 Full Changelog: [v0.70.0...v0.71.0](https://github.com/lithic-com/lithic-go/compare/v0.70.0...v0.71.0)
