@@ -273,12 +273,15 @@ func (r *CardService) Reissue(ctx context.Context, cardToken string, body CardRe
 	return
 }
 
-// Creates a new card with the same card token and PAN, but updated expiry and CVC2
-// code. The original card will keep working for card-present transactions until
-// the new card is activated. For card-not-present transactions, the original card
-// details (expiry, CVC2) will also keep working until the new card is activated.
-// Applies to card types `PHYSICAL` and `VIRTUAL`. A card can be replaced or
-// renewed a total of 8 times.
+// Applies to card types `PHYSICAL` and `VIRTUAL`. For `PHYSICAL`, creates a new
+// card with the same card token and PAN, but updated expiry and CVC2 code. The
+// original card will keep working for card-present transactions until the new card
+// is activated. For card-not-present transactions, the original card details
+// (expiry, CVC2) will also keep working until the new card is activated. A
+// `PHYSICAL` card can be replaced or renewed a total of 8 times. For `VIRTUAL`,
+// the card will retain the same card token and PAN and receive an updated expiry
+// and CVC2 code. `product_id`, `shipping_method`, `shipping_address`, `carrier`
+// are only relevant for renewing `PHYSICAL` cards.
 func (r *CardService) Renew(ctx context.Context, cardToken string, body CardRenewParams, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
 	if cardToken == "" {
@@ -1161,8 +1164,8 @@ type CardConvertPhysicalParams struct {
 	// manufactured with, and only applies to cards of type `PHYSICAL`. This must be
 	// configured with Lithic before use.
 	ProductID param.Field[string] `json:"product_id"`
-	// Shipping method for the card. Use of options besides `STANDARD` require
-	// additional permissions.
+	// Shipping method for the card. Only applies to cards of type PHYSICAL. Use of
+	// options besides `STANDARD` require additional permissions.
 	//
 	//   - `STANDARD` - USPS regular mail or similar international option, with no
 	//     tracking
@@ -1180,8 +1183,8 @@ func (r CardConvertPhysicalParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-// Shipping method for the card. Use of options besides `STANDARD` require
-// additional permissions.
+// Shipping method for the card. Only applies to cards of type PHYSICAL. Use of
+// options besides `STANDARD` require additional permissions.
 //
 //   - `STANDARD` - USPS regular mail or similar international option, with no
 //     tracking
@@ -1195,7 +1198,7 @@ func (r CardConvertPhysicalParams) MarshalJSON() (data []byte, err error) {
 type CardConvertPhysicalParamsShippingMethod string
 
 const (
-	CardConvertPhysicalParamsShippingMethod2Day                 CardConvertPhysicalParamsShippingMethod = "2-DAY"
+	CardConvertPhysicalParamsShippingMethod2Day                 CardConvertPhysicalParamsShippingMethod = "2_DAY"
 	CardConvertPhysicalParamsShippingMethodExpedited            CardConvertPhysicalParamsShippingMethod = "EXPEDITED"
 	CardConvertPhysicalParamsShippingMethodExpress              CardConvertPhysicalParamsShippingMethod = "EXPRESS"
 	CardConvertPhysicalParamsShippingMethodPriority             CardConvertPhysicalParamsShippingMethod = "PRIORITY"
@@ -1336,8 +1339,8 @@ type CardReissueParams struct {
 	ProductID param.Field[string] `json:"product_id"`
 	// If omitted, the previous shipping address will be used.
 	ShippingAddress param.Field[shared.ShippingAddressParam] `json:"shipping_address"`
-	// Shipping method for the card. Use of options besides `STANDARD` require
-	// additional permissions.
+	// Shipping method for the card. Only applies to cards of type PHYSICAL. Use of
+	// options besides `STANDARD` require additional permissions.
 	//
 	//   - `STANDARD` - USPS regular mail or similar international option, with no
 	//     tracking
@@ -1355,8 +1358,8 @@ func (r CardReissueParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-// Shipping method for the card. Use of options besides `STANDARD` require
-// additional permissions.
+// Shipping method for the card. Only applies to cards of type PHYSICAL. Use of
+// options besides `STANDARD` require additional permissions.
 //
 //   - `STANDARD` - USPS regular mail or similar international option, with no
 //     tracking
@@ -1370,7 +1373,7 @@ func (r CardReissueParams) MarshalJSON() (data []byte, err error) {
 type CardReissueParamsShippingMethod string
 
 const (
-	CardReissueParamsShippingMethod2Day                 CardReissueParamsShippingMethod = "2-DAY"
+	CardReissueParamsShippingMethod2Day                 CardReissueParamsShippingMethod = "2_DAY"
 	CardReissueParamsShippingMethodExpedited            CardReissueParamsShippingMethod = "EXPEDITED"
 	CardReissueParamsShippingMethodExpress              CardReissueParamsShippingMethod = "EXPRESS"
 	CardReissueParamsShippingMethodPriority             CardReissueParamsShippingMethod = "PRIORITY"
@@ -1401,8 +1404,8 @@ type CardRenewParams struct {
 	// manufactured with, and only applies to cards of type `PHYSICAL`. This must be
 	// configured with Lithic before use.
 	ProductID param.Field[string] `json:"product_id"`
-	// Shipping method for the card. Use of options besides `STANDARD` require
-	// additional permissions.
+	// Shipping method for the card. Only applies to cards of type PHYSICAL. Use of
+	// options besides `STANDARD` require additional permissions.
 	//
 	//   - `STANDARD` - USPS regular mail or similar international option, with no
 	//     tracking
@@ -1420,8 +1423,8 @@ func (r CardRenewParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-// Shipping method for the card. Use of options besides `STANDARD` require
-// additional permissions.
+// Shipping method for the card. Only applies to cards of type PHYSICAL. Use of
+// options besides `STANDARD` require additional permissions.
 //
 //   - `STANDARD` - USPS regular mail or similar international option, with no
 //     tracking
@@ -1435,7 +1438,7 @@ func (r CardRenewParams) MarshalJSON() (data []byte, err error) {
 type CardRenewParamsShippingMethod string
 
 const (
-	CardRenewParamsShippingMethod2Day                 CardRenewParamsShippingMethod = "2-DAY"
+	CardRenewParamsShippingMethod2Day                 CardRenewParamsShippingMethod = "2_DAY"
 	CardRenewParamsShippingMethodExpedited            CardRenewParamsShippingMethod = "EXPEDITED"
 	CardRenewParamsShippingMethodExpress              CardRenewParamsShippingMethod = "EXPRESS"
 	CardRenewParamsShippingMethodPriority             CardRenewParamsShippingMethod = "PRIORITY"

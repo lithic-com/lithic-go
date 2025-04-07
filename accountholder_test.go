@@ -29,21 +29,6 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 	)
 	_, err := client.AccountHolders.New(context.TODO(), lithic.AccountHolderNewParams{
 		Body: lithic.KYBParam{
-			BeneficialOwnerEntities: lithic.F([]lithic.KYBBeneficialOwnerEntityParam{{
-				Address: lithic.F(shared.AddressParam{
-					Address1:   lithic.F("300 Normal Forest Way"),
-					City:       lithic.F("Portland"),
-					Country:    lithic.F("USA"),
-					PostalCode: lithic.F("90210"),
-					State:      lithic.F("OR"),
-					Address2:   lithic.F("address2"),
-				}),
-				GovernmentID:      lithic.F("98-7654321"),
-				LegalBusinessName: lithic.F("Majority Holdings LLC"),
-				PhoneNumbers:      lithic.F([]string{"+15555555555"}),
-				DbaBusinessName:   lithic.F("dba_business_name"),
-				ParentCompany:     lithic.F("parent_company"),
-			}}),
 			BeneficialOwnerIndividuals: lithic.F([]lithic.KYBBeneficialOwnerIndividualParam{{
 				Address: lithic.F(shared.AddressParam{
 					Address1:   lithic.F("300 Normal Forest Way"),
@@ -91,9 +76,24 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 				LastName:     lithic.F("Timothy"),
 				PhoneNumber:  lithic.F("+15555555555"),
 			}),
-			NatureOfBusiness:   lithic.F("Software company selling solutions to the restaurant industry"),
-			TosTimestamp:       lithic.F("2022-03-08T08:00:00Z"),
-			Workflow:           lithic.F(lithic.KYBWorkflowKYBBasic),
+			NatureOfBusiness: lithic.F("Software company selling solutions to the restaurant industry"),
+			TosTimestamp:     lithic.F("2022-03-08T08:00:00Z"),
+			Workflow:         lithic.F(lithic.KYBWorkflowKYBBasic),
+			BeneficialOwnerEntities: lithic.F([]lithic.KYBBeneficialOwnerEntityParam{{
+				Address: lithic.F(shared.AddressParam{
+					Address1:   lithic.F("300 Normal Forest Way"),
+					City:       lithic.F("Portland"),
+					Country:    lithic.F("USA"),
+					PostalCode: lithic.F("90210"),
+					State:      lithic.F("OR"),
+					Address2:   lithic.F("address2"),
+				}),
+				GovernmentID:      lithic.F("98-7654321"),
+				LegalBusinessName: lithic.F("Majority Holdings LLC"),
+				PhoneNumbers:      lithic.F([]string{"+15555555555"}),
+				DbaBusinessName:   lithic.F("dba_business_name"),
+				ParentCompany:     lithic.F("parent_company"),
+			}}),
 			ExternalID:         lithic.F("external_id"),
 			KYBPassedTimestamp: lithic.F("2022-03-08T08:00:00Z"),
 			WebsiteURL:         lithic.F("https://www.mybusiness.com"),
