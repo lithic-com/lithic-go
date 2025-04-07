@@ -222,8 +222,7 @@ type AccountHolder struct {
 	Created time.Time `json:"created,required" format:"date-time"`
 	// Globally unique identifier for the account.
 	AccountToken string `json:"account_token" format:"uuid"`
-	// Only present when user_type == "BUSINESS". List of all entities with >25%
-	// ownership in the company.
+	// Deprecated. Only present when user_type == "BUSINESS".
 	BeneficialOwnerEntities []AccountHolderBeneficialOwnerEntity `json:"beneficial_owner_entities"`
 	// Only present when user_type == "BUSINESS". List of all individuals with >25%
 	// ownership in the company.
@@ -736,21 +735,11 @@ func (r AddressUpdateParam) MarshalJSON() (data []byte, err error) {
 }
 
 type KYBParam struct {
-	// List of all entities with >25% ownership in the company. If no entity or
-	// individual owns >25% of the company, and the largest shareholder is an entity,
-	// please identify them in this field. See
-	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
-	// (Section I) for more background. If no business owner is an entity, pass in an
-	// empty list. However, either this parameter or `beneficial_owner_individuals`
-	// must be populated. on entities that should be included.
-	BeneficialOwnerEntities param.Field[[]KYBBeneficialOwnerEntityParam] `json:"beneficial_owner_entities,required"`
 	// List of all direct and indirect individuals with >25% ownership in the company.
-	// If no entity or individual owns >25% of the company, and the largest shareholder
-	// is an individual, please identify them in this field. See
+	// If no individual owns >25% of the company, please identify the largest
+	// shareholder in this field. See
 	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
-	// (Section I) for more background on individuals that should be included. If no
-	// individual is an entity, pass in an empty list. However, either this parameter
-	// or `beneficial_owner_entities` must be populated.
+	// (Section I) for more background on individuals that should be included.
 	BeneficialOwnerIndividuals param.Field[[]KYBBeneficialOwnerIndividualParam] `json:"beneficial_owner_individuals,required"`
 	// Information for business for which the account is being opened and KYB is being
 	// run.
@@ -773,6 +762,8 @@ type KYBParam struct {
 	TosTimestamp param.Field[string] `json:"tos_timestamp,required"`
 	// Specifies the type of KYB workflow to run.
 	Workflow param.Field[KYBWorkflow] `json:"workflow,required"`
+	// Deprecated.
+	BeneficialOwnerEntities param.Field[[]KYBBeneficialOwnerEntityParam] `json:"beneficial_owner_entities"`
 	// A user provided id that can be used to link an account holder with an external
 	// system
 	ExternalID param.Field[string] `json:"external_id"`
@@ -790,30 +781,6 @@ func (r KYBParam) MarshalJSON() (data []byte, err error) {
 }
 
 func (r KYBParam) implementsAccountHolderNewParamsBodyUnion() {}
-
-type KYBBeneficialOwnerEntityParam struct {
-	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
-	// acceptable; APO/FPO are acceptable.
-	Address param.Field[shared.AddressParam] `json:"address,required"`
-	// Government-issued identification number. US Federal Employer Identification
-	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
-	// without hyphens.
-	GovernmentID param.Field[string] `json:"government_id,required"`
-	// Legal (formal) business name.
-	LegalBusinessName param.Field[string] `json:"legal_business_name,required"`
-	// One or more of the business's phone number(s), entered as a list in E.164
-	// format.
-	PhoneNumbers param.Field[[]string] `json:"phone_numbers,required"`
-	// Any name that the business operates under that is not its legal business name
-	// (if applicable).
-	DbaBusinessName param.Field[string] `json:"dba_business_name"`
-	// Parent company name (if applicable).
-	ParentCompany param.Field[string] `json:"parent_company"`
-}
-
-func (r KYBBeneficialOwnerEntityParam) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
-}
 
 // Individuals associated with a KYB application. Phone number is optional.
 type KYBBeneficialOwnerIndividualParam struct {
@@ -916,6 +883,30 @@ func (r KYBWorkflow) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+type KYBBeneficialOwnerEntityParam struct {
+	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable.
+	Address param.Field[shared.AddressParam] `json:"address,required"`
+	// Government-issued identification number. US Federal Employer Identification
+	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
+	// without hyphens.
+	GovernmentID param.Field[string] `json:"government_id,required"`
+	// Legal (formal) business name.
+	LegalBusinessName param.Field[string] `json:"legal_business_name,required"`
+	// One or more of the business's phone number(s), entered as a list in E.164
+	// format.
+	PhoneNumbers param.Field[[]string] `json:"phone_numbers,required"`
+	// Any name that the business operates under that is not its legal business name
+	// (if applicable).
+	DbaBusinessName param.Field[string] `json:"dba_business_name"`
+	// Parent company name (if applicable).
+	ParentCompany param.Field[string] `json:"parent_company"`
+}
+
+func (r KYBBeneficialOwnerEntityParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }
 
 type KYBBusinessEntity struct {

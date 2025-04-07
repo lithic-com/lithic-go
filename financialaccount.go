@@ -134,9 +134,9 @@ type FinancialAccount struct {
 	Updated       time.Time              `json:"updated,required" format:"date-time"`
 	AccountNumber string                 `json:"account_number,nullable"`
 	RoutingNumber string                 `json:"routing_number,nullable"`
-	// Reason for the financial account status change
-	StatusChangeReason FinancialAccountStatusChangeReason `json:"status_change_reason,nullable"`
-	JSON               financialAccountJSON               `json:"-"`
+	// Substatus for the financial account
+	Substatus FinancialAccountSubstatus `json:"substatus,nullable"`
+	JSON      financialAccountJSON      `json:"-"`
 }
 
 // financialAccountJSON contains the JSON metadata for the struct
@@ -153,7 +153,7 @@ type financialAccountJSON struct {
 	Updated             apijson.Field
 	AccountNumber       apijson.Field
 	RoutingNumber       apijson.Field
-	StatusChangeReason  apijson.Field
+	Substatus           apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
 }
@@ -274,20 +274,20 @@ func (r FinancialAccountType) IsKnown() bool {
 	return false
 }
 
-// Reason for the financial account status change
-type FinancialAccountStatusChangeReason string
+// Substatus for the financial account
+type FinancialAccountSubstatus string
 
 const (
-	FinancialAccountStatusChangeReasonChargedOffDelinquent FinancialAccountStatusChangeReason = "CHARGED_OFF_DELINQUENT"
-	FinancialAccountStatusChangeReasonChargedOffFraud      FinancialAccountStatusChangeReason = "CHARGED_OFF_FRAUD"
-	FinancialAccountStatusChangeReasonEndUserRequest       FinancialAccountStatusChangeReason = "END_USER_REQUEST"
-	FinancialAccountStatusChangeReasonBankRequest          FinancialAccountStatusChangeReason = "BANK_REQUEST"
-	FinancialAccountStatusChangeReasonDelinquent           FinancialAccountStatusChangeReason = "DELINQUENT"
+	FinancialAccountSubstatusChargedOffDelinquent FinancialAccountSubstatus = "CHARGED_OFF_DELINQUENT"
+	FinancialAccountSubstatusChargedOffFraud      FinancialAccountSubstatus = "CHARGED_OFF_FRAUD"
+	FinancialAccountSubstatusEndUserRequest       FinancialAccountSubstatus = "END_USER_REQUEST"
+	FinancialAccountSubstatusBankRequest          FinancialAccountSubstatus = "BANK_REQUEST"
+	FinancialAccountSubstatusDelinquent           FinancialAccountSubstatus = "DELINQUENT"
 )
 
-func (r FinancialAccountStatusChangeReason) IsKnown() bool {
+func (r FinancialAccountSubstatus) IsKnown() bool {
 	switch r {
-	case FinancialAccountStatusChangeReasonChargedOffDelinquent, FinancialAccountStatusChangeReasonChargedOffFraud, FinancialAccountStatusChangeReasonEndUserRequest, FinancialAccountStatusChangeReasonBankRequest, FinancialAccountStatusChangeReasonDelinquent:
+	case FinancialAccountSubstatusChargedOffDelinquent, FinancialAccountSubstatusChargedOffFraud, FinancialAccountSubstatusEndUserRequest, FinancialAccountSubstatusBankRequest, FinancialAccountSubstatusDelinquent:
 		return true
 	}
 	return false
@@ -635,8 +635,8 @@ func (r FinancialAccountListParamsType) IsKnown() bool {
 type FinancialAccountUpdateStatusParams struct {
 	// Status of the financial account
 	Status param.Field[FinancialAccountUpdateStatusParamsStatus] `json:"status,required"`
-	// Reason for the financial account status change
-	StatusChangeReason param.Field[FinancialAccountUpdateStatusParamsStatusChangeReason] `json:"status_change_reason,required"`
+	// Substatus for the financial account
+	Substatus param.Field[FinancialAccountUpdateStatusParamsSubstatus] `json:"substatus,required"`
 }
 
 func (r FinancialAccountUpdateStatusParams) MarshalJSON() (data []byte, err error) {
@@ -661,19 +661,19 @@ func (r FinancialAccountUpdateStatusParamsStatus) IsKnown() bool {
 	return false
 }
 
-// Reason for the financial account status change
-type FinancialAccountUpdateStatusParamsStatusChangeReason string
+// Substatus for the financial account
+type FinancialAccountUpdateStatusParamsSubstatus string
 
 const (
-	FinancialAccountUpdateStatusParamsStatusChangeReasonChargedOffFraud      FinancialAccountUpdateStatusParamsStatusChangeReason = "CHARGED_OFF_FRAUD"
-	FinancialAccountUpdateStatusParamsStatusChangeReasonEndUserRequest       FinancialAccountUpdateStatusParamsStatusChangeReason = "END_USER_REQUEST"
-	FinancialAccountUpdateStatusParamsStatusChangeReasonBankRequest          FinancialAccountUpdateStatusParamsStatusChangeReason = "BANK_REQUEST"
-	FinancialAccountUpdateStatusParamsStatusChangeReasonChargedOffDelinquent FinancialAccountUpdateStatusParamsStatusChangeReason = "CHARGED_OFF_DELINQUENT"
+	FinancialAccountUpdateStatusParamsSubstatusChargedOffFraud      FinancialAccountUpdateStatusParamsSubstatus = "CHARGED_OFF_FRAUD"
+	FinancialAccountUpdateStatusParamsSubstatusEndUserRequest       FinancialAccountUpdateStatusParamsSubstatus = "END_USER_REQUEST"
+	FinancialAccountUpdateStatusParamsSubstatusBankRequest          FinancialAccountUpdateStatusParamsSubstatus = "BANK_REQUEST"
+	FinancialAccountUpdateStatusParamsSubstatusChargedOffDelinquent FinancialAccountUpdateStatusParamsSubstatus = "CHARGED_OFF_DELINQUENT"
 )
 
-func (r FinancialAccountUpdateStatusParamsStatusChangeReason) IsKnown() bool {
+func (r FinancialAccountUpdateStatusParamsSubstatus) IsKnown() bool {
 	switch r {
-	case FinancialAccountUpdateStatusParamsStatusChangeReasonChargedOffFraud, FinancialAccountUpdateStatusParamsStatusChangeReasonEndUserRequest, FinancialAccountUpdateStatusParamsStatusChangeReasonBankRequest, FinancialAccountUpdateStatusParamsStatusChangeReasonChargedOffDelinquent:
+	case FinancialAccountUpdateStatusParamsSubstatusChargedOffFraud, FinancialAccountUpdateStatusParamsSubstatusEndUserRequest, FinancialAccountUpdateStatusParamsSubstatusBankRequest, FinancialAccountUpdateStatusParamsSubstatusChargedOffDelinquent:
 		return true
 	}
 	return false

@@ -205,18 +205,18 @@ func (r loanTapeAccountStandingJSON) RawJSON() string {
 type LoanTapeAccountStandingFinancialAccountState struct {
 	// Status of the financial account
 	Status LoanTapeAccountStandingFinancialAccountStateStatus `json:"status,required"`
-	// Reason for the financial account status change
-	StatusChangeReason LoanTapeAccountStandingFinancialAccountStateStatusChangeReason `json:"status_change_reason,nullable"`
-	JSON               loanTapeAccountStandingFinancialAccountStateJSON               `json:"-"`
+	// Substatus for the financial account
+	Substatus LoanTapeAccountStandingFinancialAccountStateSubstatus `json:"substatus,nullable"`
+	JSON      loanTapeAccountStandingFinancialAccountStateJSON      `json:"-"`
 }
 
 // loanTapeAccountStandingFinancialAccountStateJSON contains the JSON metadata for
 // the struct [LoanTapeAccountStandingFinancialAccountState]
 type loanTapeAccountStandingFinancialAccountStateJSON struct {
-	Status             apijson.Field
-	StatusChangeReason apijson.Field
-	raw                string
-	ExtraFields        map[string]apijson.Field
+	Status      apijson.Field
+	Substatus   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *LoanTapeAccountStandingFinancialAccountState) UnmarshalJSON(data []byte) (err error) {
@@ -245,20 +245,20 @@ func (r LoanTapeAccountStandingFinancialAccountStateStatus) IsKnown() bool {
 	return false
 }
 
-// Reason for the financial account status change
-type LoanTapeAccountStandingFinancialAccountStateStatusChangeReason string
+// Substatus for the financial account
+type LoanTapeAccountStandingFinancialAccountStateSubstatus string
 
 const (
-	LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonChargedOffDelinquent LoanTapeAccountStandingFinancialAccountStateStatusChangeReason = "CHARGED_OFF_DELINQUENT"
-	LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonChargedOffFraud      LoanTapeAccountStandingFinancialAccountStateStatusChangeReason = "CHARGED_OFF_FRAUD"
-	LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonEndUserRequest       LoanTapeAccountStandingFinancialAccountStateStatusChangeReason = "END_USER_REQUEST"
-	LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonBankRequest          LoanTapeAccountStandingFinancialAccountStateStatusChangeReason = "BANK_REQUEST"
-	LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonDelinquent           LoanTapeAccountStandingFinancialAccountStateStatusChangeReason = "DELINQUENT"
+	LoanTapeAccountStandingFinancialAccountStateSubstatusChargedOffDelinquent LoanTapeAccountStandingFinancialAccountStateSubstatus = "CHARGED_OFF_DELINQUENT"
+	LoanTapeAccountStandingFinancialAccountStateSubstatusChargedOffFraud      LoanTapeAccountStandingFinancialAccountStateSubstatus = "CHARGED_OFF_FRAUD"
+	LoanTapeAccountStandingFinancialAccountStateSubstatusEndUserRequest       LoanTapeAccountStandingFinancialAccountStateSubstatus = "END_USER_REQUEST"
+	LoanTapeAccountStandingFinancialAccountStateSubstatusBankRequest          LoanTapeAccountStandingFinancialAccountStateSubstatus = "BANK_REQUEST"
+	LoanTapeAccountStandingFinancialAccountStateSubstatusDelinquent           LoanTapeAccountStandingFinancialAccountStateSubstatus = "DELINQUENT"
 )
 
-func (r LoanTapeAccountStandingFinancialAccountStateStatusChangeReason) IsKnown() bool {
+func (r LoanTapeAccountStandingFinancialAccountStateSubstatus) IsKnown() bool {
 	switch r {
-	case LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonChargedOffDelinquent, LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonChargedOffFraud, LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonEndUserRequest, LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonBankRequest, LoanTapeAccountStandingFinancialAccountStateStatusChangeReasonDelinquent:
+	case LoanTapeAccountStandingFinancialAccountStateSubstatusChargedOffDelinquent, LoanTapeAccountStandingFinancialAccountStateSubstatusChargedOffFraud, LoanTapeAccountStandingFinancialAccountStateSubstatusEndUserRequest, LoanTapeAccountStandingFinancialAccountStateSubstatusBankRequest, LoanTapeAccountStandingFinancialAccountStateSubstatusDelinquent:
 		return true
 	}
 	return false
