@@ -204,18 +204,18 @@ func (r statementAccountStandingJSON) RawJSON() string {
 type StatementAccountStandingFinancialAccountState struct {
 	// Status of the financial account
 	Status StatementAccountStandingFinancialAccountStateStatus `json:"status,required"`
-	// Reason for the financial account status change
-	StatusChangeReason StatementAccountStandingFinancialAccountStateStatusChangeReason `json:"status_change_reason,nullable"`
-	JSON               statementAccountStandingFinancialAccountStateJSON               `json:"-"`
+	// Substatus for the financial account
+	Substatus StatementAccountStandingFinancialAccountStateSubstatus `json:"substatus,nullable"`
+	JSON      statementAccountStandingFinancialAccountStateJSON      `json:"-"`
 }
 
 // statementAccountStandingFinancialAccountStateJSON contains the JSON metadata for
 // the struct [StatementAccountStandingFinancialAccountState]
 type statementAccountStandingFinancialAccountStateJSON struct {
-	Status             apijson.Field
-	StatusChangeReason apijson.Field
-	raw                string
-	ExtraFields        map[string]apijson.Field
+	Status      apijson.Field
+	Substatus   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *StatementAccountStandingFinancialAccountState) UnmarshalJSON(data []byte) (err error) {
@@ -244,20 +244,20 @@ func (r StatementAccountStandingFinancialAccountStateStatus) IsKnown() bool {
 	return false
 }
 
-// Reason for the financial account status change
-type StatementAccountStandingFinancialAccountStateStatusChangeReason string
+// Substatus for the financial account
+type StatementAccountStandingFinancialAccountStateSubstatus string
 
 const (
-	StatementAccountStandingFinancialAccountStateStatusChangeReasonChargedOffDelinquent StatementAccountStandingFinancialAccountStateStatusChangeReason = "CHARGED_OFF_DELINQUENT"
-	StatementAccountStandingFinancialAccountStateStatusChangeReasonChargedOffFraud      StatementAccountStandingFinancialAccountStateStatusChangeReason = "CHARGED_OFF_FRAUD"
-	StatementAccountStandingFinancialAccountStateStatusChangeReasonEndUserRequest       StatementAccountStandingFinancialAccountStateStatusChangeReason = "END_USER_REQUEST"
-	StatementAccountStandingFinancialAccountStateStatusChangeReasonBankRequest          StatementAccountStandingFinancialAccountStateStatusChangeReason = "BANK_REQUEST"
-	StatementAccountStandingFinancialAccountStateStatusChangeReasonDelinquent           StatementAccountStandingFinancialAccountStateStatusChangeReason = "DELINQUENT"
+	StatementAccountStandingFinancialAccountStateSubstatusChargedOffDelinquent StatementAccountStandingFinancialAccountStateSubstatus = "CHARGED_OFF_DELINQUENT"
+	StatementAccountStandingFinancialAccountStateSubstatusChargedOffFraud      StatementAccountStandingFinancialAccountStateSubstatus = "CHARGED_OFF_FRAUD"
+	StatementAccountStandingFinancialAccountStateSubstatusEndUserRequest       StatementAccountStandingFinancialAccountStateSubstatus = "END_USER_REQUEST"
+	StatementAccountStandingFinancialAccountStateSubstatusBankRequest          StatementAccountStandingFinancialAccountStateSubstatus = "BANK_REQUEST"
+	StatementAccountStandingFinancialAccountStateSubstatusDelinquent           StatementAccountStandingFinancialAccountStateSubstatus = "DELINQUENT"
 )
 
-func (r StatementAccountStandingFinancialAccountStateStatusChangeReason) IsKnown() bool {
+func (r StatementAccountStandingFinancialAccountStateSubstatus) IsKnown() bool {
 	switch r {
-	case StatementAccountStandingFinancialAccountStateStatusChangeReasonChargedOffDelinquent, StatementAccountStandingFinancialAccountStateStatusChangeReasonChargedOffFraud, StatementAccountStandingFinancialAccountStateStatusChangeReasonEndUserRequest, StatementAccountStandingFinancialAccountStateStatusChangeReasonBankRequest, StatementAccountStandingFinancialAccountStateStatusChangeReasonDelinquent:
+	case StatementAccountStandingFinancialAccountStateSubstatusChargedOffDelinquent, StatementAccountStandingFinancialAccountStateSubstatusChargedOffFraud, StatementAccountStandingFinancialAccountStateSubstatusEndUserRequest, StatementAccountStandingFinancialAccountStateSubstatusBankRequest, StatementAccountStandingFinancialAccountStateSubstatusDelinquent:
 		return true
 	}
 	return false

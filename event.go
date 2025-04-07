@@ -25,8 +25,9 @@ import (
 // automatically. You should not instantiate this service directly, and instead use
 // the [NewEventService] method instead.
 type EventService struct {
-	Options       []option.RequestOption
-	Subscriptions *EventSubscriptionService
+	Options            []option.RequestOption
+	Subscriptions      *EventSubscriptionService
+	EventSubscriptions *EventEventSubscriptionService
 }
 
 // NewEventService generates a new service that applies the given options to each
@@ -36,6 +37,7 @@ func NewEventService(opts ...option.RequestOption) (r *EventService) {
 	r = &EventService{}
 	r.Options = opts
 	r.Subscriptions = NewEventSubscriptionService(opts...)
+	r.EventSubscriptions = NewEventEventSubscriptionService(opts...)
 	return
 }
 

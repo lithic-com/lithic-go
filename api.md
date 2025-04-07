@@ -292,6 +292,12 @@ Methods:
 - <code title="post /v1/event_subscriptions/{event_subscription_token}/secret/rotate">client.Events.Subscriptions.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#EventSubscriptionService.RotateSecret">RotateSecret</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, eventSubscriptionToken <a href="https://pkg.go.dev/builtin#string">string</a>) <a href="https://pkg.go.dev/builtin#error">error</a></code>
 - <code title="post /v1/simulate/event_subscriptions/{event_subscription_token}/send_example">client.Events.Subscriptions.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#EventSubscriptionService.SendSimulatedExample">SendSimulatedExample</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, eventSubscriptionToken <a href="https://pkg.go.dev/builtin#string">string</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#EventSubscriptionSendSimulatedExampleParams">EventSubscriptionSendSimulatedExampleParams</a>) <a href="https://pkg.go.dev/builtin#error">error</a></code>
 
+## EventSubscriptions
+
+Methods:
+
+- <code title="post /v1/events/{event_token}/event_subscriptions/{event_subscription_token}/resend">client.Events.EventSubscriptions.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#EventEventSubscriptionService.Resend">Resend</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, eventToken <a href="https://pkg.go.dev/builtin#string">string</a>, eventSubscriptionToken <a href="https://pkg.go.dev/builtin#string">string</a>) <a href="https://pkg.go.dev/builtin#error">error</a></code>
+
 # Transfers
 
 Response Types:
