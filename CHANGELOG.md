@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.72.0 (2025-04-07)
+
+Full Changelog: [v0.71.1...v0.72.0](https://github.com/lithic-com/lithic-go/compare/v0.71.1...v0.72.0)
+
+### Features
+
+* **api:** new resend endpoint for Event Subscriptions ([#488](https://github.com/lithic-com/lithic-go/issues/488)) ([770514b](https://github.com/lithic-com/lithic-go/commit/770514bf6e0792123ef985333a9586212579919b))
+
 ## 0.71.1 (2025-04-02)
 
 Full Changelog: [v0.71.0...v0.71.1](https://github.com/lithic-com/lithic-go/compare/v0.71.0...v0.71.1)
