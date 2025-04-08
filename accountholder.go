@@ -222,10 +222,15 @@ type AccountHolder struct {
 	Created time.Time `json:"created,required" format:"date-time"`
 	// Globally unique identifier for the account.
 	AccountToken string `json:"account_token" format:"uuid"`
-	// Deprecated. Only present when user_type == "BUSINESS".
+	// Deprecated.
+	//
+	// Deprecated: deprecated
 	BeneficialOwnerEntities []AccountHolderBeneficialOwnerEntity `json:"beneficial_owner_entities"`
-	// Only present when user_type == "BUSINESS". List of all individuals with >25%
-	// ownership in the company.
+	// Only present when user_type == "BUSINESS". List of all direct and indirect
+	// individuals with 25% or more ownership in the company. If no individual owns 25%
+	// of the company, please identify the largest shareholder in this field. See
+	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
+	// (Section I) for more background on individuals that should be included.
 	BeneficialOwnerIndividuals []AccountHolderBeneficialOwnerIndividual `json:"beneficial_owner_individuals"`
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
 	// users of businesses. Pass the account_token of the enrolled business associated
@@ -278,8 +283,8 @@ type AccountHolder struct {
 	StatusReasons []AccountHolderStatusReason `json:"status_reasons"`
 	// The type of Account Holder. If the type is "INDIVIDUAL", the "individual"
 	// attribute will be present. If the type is "BUSINESS" then the "business_entity",
-	// "control_person", "beneficial_owner_individuals", "beneficial_owner_entities",
-	// "nature_of_business", and "website_url" attributes will be present.
+	// "control_person", "beneficial_owner_individuals", "nature_of_business", and
+	// "website_url" attributes will be present.
 	UserType AccountHolderUserType `json:"user_type"`
 	// Information about the most recent identity verification attempt
 	VerificationApplication AccountHolderVerificationApplication `json:"verification_application"`
@@ -612,8 +617,8 @@ func (r AccountHolderStatusReason) IsKnown() bool {
 
 // The type of Account Holder. If the type is "INDIVIDUAL", the "individual"
 // attribute will be present. If the type is "BUSINESS" then the "business_entity",
-// "control_person", "beneficial_owner_individuals", "beneficial_owner_entities",
-// "nature_of_business", and "website_url" attributes will be present.
+// "control_person", "beneficial_owner_individuals", "nature_of_business", and
+// "website_url" attributes will be present.
 type AccountHolderUserType string
 
 const (
@@ -735,8 +740,8 @@ func (r AddressUpdateParam) MarshalJSON() (data []byte, err error) {
 }
 
 type KYBParam struct {
-	// List of all direct and indirect individuals with >25% ownership in the company.
-	// If no individual owns >25% of the company, please identify the largest
+	// List of all direct and indirect individuals with 25% or more ownership in the
+	// company. If no individual owns 25% of the company, please identify the largest
 	// shareholder in this field. See
 	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
 	// (Section I) for more background on individuals that should be included.
@@ -763,6 +768,8 @@ type KYBParam struct {
 	// Specifies the type of KYB workflow to run.
 	Workflow param.Field[KYBWorkflow] `json:"workflow,required"`
 	// Deprecated.
+	//
+	// Deprecated: deprecated
 	BeneficialOwnerEntities param.Field[[]KYBBeneficialOwnerEntityParam] `json:"beneficial_owner_entities"`
 	// A user provided id that can be used to link an account holder with an external
 	// system
@@ -1331,9 +1338,8 @@ type AccountHolderUpdateResponse struct {
 	// attribute will be present.
 	//
 	// If the type is "BUSINESS" then the "business_entity", "control_person",
-	// "beneficial_owner_individuals", "beneficial_owner_entities",
-	//
-	// "nature_of_business", and "website_url" attributes will be present.
+	// "beneficial_owner_individuals", "nature_of_business", and "website_url"
+	// attributes will be present.
 	UserType AccountHolderUpdateResponseUserType `json:"user_type"`
 	// This field can have the runtime type of
 	// [AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplication].
@@ -1424,11 +1430,13 @@ type AccountHolderUpdateResponseKYBKYCPatchResponse struct {
 	Token string `json:"token" format:"uuid"`
 	// Globally unique identifier for the account.
 	AccountToken string `json:"account_token" format:"uuid"`
-	// Only present when user_type == "BUSINESS". List of all entities with >25%
-	// ownership in the company.
+	// Deprecated.
 	BeneficialOwnerEntities []KYBBusinessEntity `json:"beneficial_owner_entities"`
-	// Only present when user_type == "BUSINESS". List of all individuals with >25%
-	// ownership in the company.
+	// Only present when user_type == "BUSINESS". List of all direct and indirect
+	// individuals with 25% or more ownership in the company. If no individual owns 25%
+	// of the company, please identify the largest shareholder in this field. See
+	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
+	// (Section I) for more background on individuals that should be included.
 	BeneficialOwnerIndividuals []AccountHolderUpdateResponseKybkycPatchResponseBeneficialOwnerIndividual `json:"beneficial_owner_individuals"`
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
 	// users of businesses. Pass the account_token of the enrolled business associated
@@ -1490,9 +1498,8 @@ type AccountHolderUpdateResponseKYBKYCPatchResponse struct {
 	// attribute will be present.
 	//
 	// If the type is "BUSINESS" then the "business_entity", "control_person",
-	// "beneficial_owner_individuals", "beneficial_owner_entities",
-	//
-	// "nature_of_business", and "website_url" attributes will be present.
+	// "beneficial_owner_individuals", "nature_of_business", and "website_url"
+	// attributes will be present.
 	UserType AccountHolderUpdateResponseKYBKYCPatchResponseUserType `json:"user_type"`
 	// Information about the most recent identity verification attempt
 	VerificationApplication AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplication `json:"verification_application"`
@@ -1882,9 +1889,8 @@ func (r AccountHolderUpdateResponseKybkycPatchResponseStatusReason) IsKnown() bo
 // attribute will be present.
 //
 // If the type is "BUSINESS" then the "business_entity", "control_person",
-// "beneficial_owner_individuals", "beneficial_owner_entities",
-//
-// "nature_of_business", and "website_url" attributes will be present.
+// "beneficial_owner_individuals", "nature_of_business", and "website_url"
+// attributes will be present.
 type AccountHolderUpdateResponseKYBKYCPatchResponseUserType string
 
 const (
@@ -2125,9 +2131,8 @@ func (r AccountHolderUpdateResponseStatus) IsKnown() bool {
 // attribute will be present.
 //
 // If the type is "BUSINESS" then the "business_entity", "control_person",
-// "beneficial_owner_individuals", "beneficial_owner_entities",
-//
-// "nature_of_business", and "website_url" attributes will be present.
+// "beneficial_owner_individuals", "nature_of_business", and "website_url"
+// attributes will be present.
 type AccountHolderUpdateResponseUserType string
 
 const (
@@ -2169,11 +2174,13 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 	Token string `json:"token" format:"uuid"`
 	// Globally unique identifier for the account.
 	AccountToken string `json:"account_token" format:"uuid"`
-	// Only present when user_type == "BUSINESS". List of all entities with >25%
-	// ownership in the company.
+	// Deprecated.
 	BeneficialOwnerEntities []KYBBusinessEntity `json:"beneficial_owner_entities"`
-	// Only present when user_type == "BUSINESS". List of all individuals with >25%
-	// ownership in the company.
+	// Only present when user_type == "BUSINESS". List of all direct and indirect
+	// individuals with 25% or more ownership in the company. If no individual owns 25%
+	// of the company, please identify the largest shareholder in this field. See
+	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
+	// (Section I) for more background on individuals that should be included.
 	BeneficialOwnerIndividuals []AccountHolderSimulateEnrollmentReviewResponseBeneficialOwnerIndividual `json:"beneficial_owner_individuals"`
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
 	// users of businesses. Pass the account_token of the enrolled business associated
@@ -2235,9 +2242,8 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 	// attribute will be present.
 	//
 	// If the type is "BUSINESS" then the "business_entity", "control_person",
-	// "beneficial_owner_individuals", "beneficial_owner_entities",
-	//
-	// "nature_of_business", and "website_url" attributes will be present.
+	// "beneficial_owner_individuals", "nature_of_business", and "website_url"
+	// attributes will be present.
 	UserType AccountHolderSimulateEnrollmentReviewResponseUserType `json:"user_type"`
 	// Information about the most recent identity verification attempt
 	VerificationApplication AccountHolderSimulateEnrollmentReviewResponseVerificationApplication `json:"verification_application"`
@@ -2625,9 +2631,8 @@ func (r AccountHolderSimulateEnrollmentReviewResponseStatusReason) IsKnown() boo
 // attribute will be present.
 //
 // If the type is "BUSINESS" then the "business_entity", "control_person",
-// "beneficial_owner_individuals", "beneficial_owner_entities",
-//
-// "nature_of_business", and "website_url" attributes will be present.
+// "beneficial_owner_individuals", "nature_of_business", and "website_url"
+// attributes will be present.
 type AccountHolderSimulateEnrollmentReviewResponseUserType string
 
 const (
@@ -2904,21 +2909,15 @@ type AccountHolderUpdateParamsBodyUnion interface {
 
 // The KYB request payload for updating a business.
 type AccountHolderUpdateParamsBodyKYBPatchRequest struct {
-	// List of all entities with >25% ownership in the company. If no entity or
-	// individual owns >25% of the company, and the largest shareholder is an entity,
-	// please identify them in this field. See
-	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)(Section
-	// I) for more background. If no business owner is an entity, pass in an empty
-	// list. However, either this parameter or `beneficial_owner_individuals` must be
-	// populated. on entities that should be included.
+	// Deprecated.
+	//
+	// Deprecated: deprecated
 	BeneficialOwnerEntities param.Field[[]AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerEntity] `json:"beneficial_owner_entities"`
-	// List of all individuals with >25% ownership in the company. If no entity or
-	// individual owns >25% of the company, and the largest shareholder is an
-	// individual, please identify them in this field. See
-	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)(Section
-	// I) for more background on individuals that should be included. If no individual
-	// is an entity, pass in an empty list. However, either this parameter or
-	// `beneficial_owner_entities` must be populated.
+	// List of all direct and indirect individuals with 25% or more ownership in the
+	// company. If no individual owns 25% of the company, please identify the largest
+	// shareholder in this field. See
+	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
+	// (Section I) for more background on individuals that should be included.
 	BeneficialOwnerIndividuals param.Field[[]AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerIndividual] `json:"beneficial_owner_individuals"`
 	// Information for business for which the account is being opened and KYB is being
 	// run.
