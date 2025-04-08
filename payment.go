@@ -166,9 +166,11 @@ type Payment struct {
 	//   - `SETTLED` - The payment is completed.
 	Status PaymentStatus `json:"status,required"`
 	// Date and time when the financial transaction was last updated. UTC time zone.
-	Updated       time.Time   `json:"updated,required" format:"date-time"`
-	UserDefinedID string      `json:"user_defined_id,required,nullable"`
-	JSON          paymentJSON `json:"-"`
+	Updated       time.Time `json:"updated,required" format:"date-time"`
+	UserDefinedID string    `json:"user_defined_id,required,nullable"`
+	// Date when the financial transaction expected to be released after settlement
+	ExpectedReleaseDate time.Time   `json:"expected_release_date" format:"date"`
+	JSON                paymentJSON `json:"-"`
 }
 
 // paymentJSON contains the JSON metadata for the struct [Payment]
@@ -191,6 +193,7 @@ type paymentJSON struct {
 	Status                   apijson.Field
 	Updated                  apijson.Field
 	UserDefinedID            apijson.Field
+	ExpectedReleaseDate      apijson.Field
 	raw                      string
 	ExtraFields              map[string]apijson.Field
 }

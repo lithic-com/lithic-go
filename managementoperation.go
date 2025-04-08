@@ -93,20 +93,21 @@ func (r *ManagementOperationService) Reverse(ctx context.Context, managementOper
 }
 
 type ManagementOperationTransaction struct {
-	Token                 string                                  `json:"token,required" format:"uuid"`
-	Category              ManagementOperationTransactionCategory  `json:"category,required"`
-	Created               time.Time                               `json:"created,required" format:"date-time"`
-	Currency              string                                  `json:"currency,required"`
-	Direction             ManagementOperationTransactionDirection `json:"direction,required"`
-	Events                []ManagementOperationTransactionEvent   `json:"events,required"`
-	FinancialAccountToken string                                  `json:"financial_account_token,required" format:"uuid"`
-	PendingAmount         int64                                   `json:"pending_amount,required"`
-	Result                ManagementOperationTransactionResult    `json:"result,required"`
-	SettledAmount         int64                                   `json:"settled_amount,required"`
-	Status                ManagementOperationTransactionStatus    `json:"status,required"`
-	Updated               time.Time                               `json:"updated,required" format:"date-time"`
-	UserDefinedID         string                                  `json:"user_defined_id"`
-	JSON                  managementOperationTransactionJSON      `json:"-"`
+	Token                 string                                          `json:"token,required" format:"uuid"`
+	Category              ManagementOperationTransactionCategory          `json:"category,required"`
+	Created               time.Time                                       `json:"created,required" format:"date-time"`
+	Currency              string                                          `json:"currency,required"`
+	Direction             ManagementOperationTransactionDirection         `json:"direction,required"`
+	Events                []ManagementOperationTransactionEvent           `json:"events,required"`
+	FinancialAccountToken string                                          `json:"financial_account_token,required" format:"uuid"`
+	PendingAmount         int64                                           `json:"pending_amount,required"`
+	Result                ManagementOperationTransactionResult            `json:"result,required"`
+	SettledAmount         int64                                           `json:"settled_amount,required"`
+	Status                ManagementOperationTransactionStatus            `json:"status,required"`
+	TransactionSeries     ManagementOperationTransactionTransactionSeries `json:"transaction_series,required,nullable"`
+	Updated               time.Time                                       `json:"updated,required" format:"date-time"`
+	UserDefinedID         string                                          `json:"user_defined_id"`
+	JSON                  managementOperationTransactionJSON              `json:"-"`
 }
 
 // managementOperationTransactionJSON contains the JSON metadata for the struct
@@ -123,6 +124,7 @@ type managementOperationTransactionJSON struct {
 	Result                apijson.Field
 	SettledAmount         apijson.Field
 	Status                apijson.Field
+	TransactionSeries     apijson.Field
 	Updated               apijson.Field
 	UserDefinedID         apijson.Field
 	raw                   string
@@ -294,6 +296,31 @@ func (r ManagementOperationTransactionStatus) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+type ManagementOperationTransactionTransactionSeries struct {
+	RelatedTransactionEventToken string                                              `json:"related_transaction_event_token,required,nullable" format:"uuid"`
+	RelatedTransactionToken      string                                              `json:"related_transaction_token,required,nullable" format:"uuid"`
+	Type                         string                                              `json:"type,required"`
+	JSON                         managementOperationTransactionTransactionSeriesJSON `json:"-"`
+}
+
+// managementOperationTransactionTransactionSeriesJSON contains the JSON metadata
+// for the struct [ManagementOperationTransactionTransactionSeries]
+type managementOperationTransactionTransactionSeriesJSON struct {
+	RelatedTransactionEventToken apijson.Field
+	RelatedTransactionToken      apijson.Field
+	Type                         apijson.Field
+	raw                          string
+	ExtraFields                  map[string]apijson.Field
+}
+
+func (r *ManagementOperationTransactionTransactionSeries) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r managementOperationTransactionTransactionSeriesJSON) RawJSON() string {
+	return r.raw
 }
 
 type ManagementOperationNewParams struct {
