@@ -28,7 +28,7 @@ func TestCardNewWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Cards.New(context.TODO(), lithic.CardNewParams{
-		Type:             lithic.F(lithic.CardNewParamsTypeMerchantLocked),
+		Type:             lithic.F(lithic.CardNewParamsTypeVirtual),
 		AccountToken:     lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		CardProgramToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Carrier: lithic.F(shared.CarrierParam{
@@ -57,7 +57,7 @@ func TestCardNewWithOptionalParams(t *testing.T) {
 		}),
 		ShippingMethod:     lithic.F(lithic.CardNewParamsShippingMethod2Day),
 		SpendLimit:         lithic.F(int64(1000)),
-		SpendLimitDuration: lithic.F(lithic.SpendLimitDurationAnnually),
+		SpendLimitDuration: lithic.F(lithic.SpendLimitDurationTransaction),
 		State:              lithic.F(lithic.CardNewParamsStateOpen),
 	})
 	if err != nil {
@@ -112,8 +112,8 @@ func TestCardUpdateWithOptionalParams(t *testing.T) {
 			Pin:                 lithic.F("pin"),
 			PinStatus:           lithic.F(lithic.CardUpdateParamsPinStatusOk),
 			SpendLimit:          lithic.F(int64(100)),
-			SpendLimitDuration:  lithic.F(lithic.SpendLimitDurationAnnually),
-			State:               lithic.F(lithic.CardUpdateParamsStateClosed),
+			SpendLimitDuration:  lithic.F(lithic.SpendLimitDurationForever),
+			State:               lithic.F(lithic.CardUpdateParamsStateOpen),
 		},
 	)
 	if err != nil {
@@ -188,7 +188,7 @@ func TestCardConvertPhysicalWithOptionalParams(t *testing.T) {
 				QrCodeURL: lithic.F("https://lithic.com/activate-card/1"),
 			}),
 			ProductID:      lithic.F("100"),
-			ShippingMethod: lithic.F(lithic.CardConvertPhysicalParamsShippingMethod2Day),
+			ShippingMethod: lithic.F(lithic.CardConvertPhysicalParamsShippingMethodStandard),
 		},
 	)
 	if err != nil {
@@ -244,7 +244,7 @@ func TestCardProvisionWithOptionalParams(t *testing.T) {
 			Certificate:           lithic.F("U3RhaW5sZXNzIHJvY2tz"),
 			ClientDeviceID:        lithic.F("client_device_id"),
 			ClientWalletAccountID: lithic.F("client_wallet_account_id"),
-			DigitalWallet:         lithic.F(lithic.CardProvisionParamsDigitalWalletApplePay),
+			DigitalWallet:         lithic.F(lithic.CardProvisionParamsDigitalWalletGooglePay),
 			Nonce:                 lithic.F("U3RhaW5sZXNzIHJvY2tz"),
 			NonceSignature:        lithic.F("U3RhaW5sZXNzIHJvY2tz"),
 		},
@@ -291,7 +291,7 @@ func TestCardReissueWithOptionalParams(t *testing.T) {
 				Line2Text:   lithic.F("The Bluth Company"),
 				PhoneNumber: lithic.F("+15555555555"),
 			}),
-			ShippingMethod: lithic.F(lithic.CardReissueParamsShippingMethod2Day),
+			ShippingMethod: lithic.F(lithic.CardReissueParamsShippingMethodStandard),
 		},
 	)
 	if err != nil {
@@ -338,7 +338,7 @@ func TestCardRenewWithOptionalParams(t *testing.T) {
 			ExpMonth:       lithic.F("06"),
 			ExpYear:        lithic.F("2027"),
 			ProductID:      lithic.F("100"),
-			ShippingMethod: lithic.F(lithic.CardRenewParamsShippingMethod2Day),
+			ShippingMethod: lithic.F(lithic.CardRenewParamsShippingMethodStandard),
 		},
 	)
 	if err != nil {

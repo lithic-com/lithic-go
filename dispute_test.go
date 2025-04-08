@@ -28,7 +28,7 @@ func TestDisputeNewWithOptionalParams(t *testing.T) {
 	)
 	_, err := client.Disputes.New(context.TODO(), lithic.DisputeNewParams{
 		Amount:            lithic.F(int64(10000)),
-		Reason:            lithic.F(lithic.DisputeNewParamsReasonAtmCashMisdispense),
+		Reason:            lithic.F(lithic.DisputeNewParamsReasonFraudCardPresent),
 		TransactionToken:  lithic.F("12345624-aa69-4cbc-a946-30d90181b621"),
 		CustomerFiledDate: lithic.F(time.Now()),
 		CustomerNote:      lithic.F("customer_note"),
