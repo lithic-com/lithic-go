@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.73.0 (2025-04-08)
+
+Full Changelog: [v0.72.0...v0.73.0](https://github.com/lithic-com/lithic-go/compare/v0.72.0...v0.73.0)
+
+### Features
+
+* **api:** introduce TransactionSeries and update ShippingMethod fields ([#493](https://github.com/lithic-com/lithic-go/issues/493)) ([ecf8985](https://github.com/lithic-com/lithic-go/commit/ecf8985c28c54c79b58cfc9517f8618438ad5dd4))
+* **client:** support custom http clients ([#491](https://github.com/lithic-com/lithic-go/issues/491)) ([ef921bb](https://github.com/lithic-com/lithic-go/commit/ef921bb32a5c383ed8d3f208eaa775e992662dfe))
+
+
+### Chores
+
+* **tests:** improve enum examples ([#494](https://github.com/lithic-com/lithic-go/issues/494)) ([f3b6d31](https://github.com/lithic-com/lithic-go/commit/f3b6d316eb0d1b0bfc665daa7878791505127381))
+
 ## 0.72.0 (2025-04-07)
 
 Full Changelog: [v0.71.1...v0.72.0](https://github.com/lithic-com/lithic-go/compare/v0.71.1...v0.72.0)
