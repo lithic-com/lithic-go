@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.74.1 (2025-04-09)
+
+Full Changelog: [v0.74.0...v0.74.1](https://github.com/lithic-com/lithic-go/compare/v0.74.0...v0.74.1)
+
+### Chores
+
+* **internal:** reduce CI branch coverage ([628a86c](https://github.com/lithic-com/lithic-go/commit/628a86c6da9466df2d1810b9d23c8a87b243a55b))
+
 ## 0.74.0 (2025-04-09)
 
 Full Changelog: [v0.73.0...v0.74.0](https://github.com/lithic-com/lithic-go/compare/v0.73.0...v0.74.0)
