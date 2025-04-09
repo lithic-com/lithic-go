@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.74.0 (2025-04-09)
+
+Full Changelog: [v0.73.0...v0.74.0](https://github.com/lithic-com/lithic-go/compare/v0.73.0...v0.74.0)
+
+### Features
+
+* **api:** manual updates ([2ecf324](https://github.com/lithic-com/lithic-go/commit/2ecf324375bdcdb22936c7f7c7f39691e979fc76))
+
+
+### Chores
+
+* configure new SDK language ([edf97d0](https://github.com/lithic-com/lithic-go/commit/edf97d0f30919ac51b052a92036ab21a8249fd81))
+* **internal:** expand CI branch coverage ([#495](https://github.com/lithic-com/lithic-go/issues/495)) ([c50cc15](https://github.com/lithic-com/lithic-go/commit/c50cc15de9de14095862e31320d552f83c7b70e9))
+
 ## 0.73.0 (2025-04-08)
 
 Full Changelog: [v0.72.0...v0.73.0](https://github.com/lithic-com/lithic-go/compare/v0.72.0...v0.73.0)
