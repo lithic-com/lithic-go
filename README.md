@@ -2,8 +2,8 @@
 
 <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go"><img src="https://pkg.go.dev/badge/github.com/lithic-com/lithic-go.svg" alt="Go Reference"></a>
 
-The Lithic Go library provides convenient access to [the Lithic REST
-API](https://docs.lithic.com) from applications written in Go. The full API of this library can be found in [api.md](api.md).
+The Lithic Go library provides convenient access to the [Lithic REST API](https://docs.lithic.com)
+from applications written in Go.
 
 ## Installation
 
