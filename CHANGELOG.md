@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.74.1 (2025-04-15)
+
+Full Changelog: [v0.74.0...v0.74.1](https://github.com/lithic-com/lithic-go/compare/v0.74.0...v0.74.1)
+
+### Chores
+
+* **docs:** document pre-request options ([d1d78cb](https://github.com/lithic-com/lithic-go/commit/d1d78cbd4a74e96ad2566601acbd067bfc9fd36e))
+* **internal:** codegen related update ([f7d5244](https://github.com/lithic-com/lithic-go/commit/f7d5244ee953a29d2b748d9e0dd3a1a93f70d3e3))
+* **internal:** reduce CI branch coverage ([628a86c](https://github.com/lithic-com/lithic-go/commit/628a86c6da9466df2d1810b9d23c8a87b243a55b))
+
+
+### Documentation
+
+* update documentation links to be more uniform ([cbb3f52](https://github.com/lithic-com/lithic-go/commit/cbb3f528661b87c444281849a586a5522045020f))
+
 ## 0.74.0 (2025-04-09)
 
 Full Changelog: [v0.73.0...v0.74.0](https://github.com/lithic-com/lithic-go/compare/v0.73.0...v0.74.0)
