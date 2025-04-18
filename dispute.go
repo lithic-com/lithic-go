@@ -257,8 +257,6 @@ type Dispute struct {
 	Reason DisputeReason `json:"reason,required"`
 	// Date the representment was received.
 	RepresentmentDate time.Time `json:"representment_date,required,nullable" format:"date-time"`
-	// Resolution amount net of network fees.
-	ResolutionAmount int64 `json:"resolution_amount,required,nullable"`
 	// Date that the dispute was resolved.
 	ResolutionDate time.Time `json:"resolution_date,required,nullable" format:"date-time"`
 	// Note by Dispute team on the case resolution.
@@ -316,7 +314,6 @@ type disputeJSON struct {
 	PrimaryClaimID     apijson.Field
 	Reason             apijson.Field
 	RepresentmentDate  apijson.Field
-	ResolutionAmount   apijson.Field
 	ResolutionDate     apijson.Field
 	ResolutionNote     apijson.Field
 	ResolutionReason   apijson.Field
