@@ -166,8 +166,8 @@ You can use `.ListAutoPaging()` methods to iterate through items across all page
 iter := client.Cards.ListAutoPaging(context.TODO(), lithic.CardListParams{})
 // Automatically fetches more pages as needed.
 for iter.Next() {
-	card := iter.Current()
-	fmt.Printf("%+v\n", card)
+	cardListResponse := iter.Current()
+	fmt.Printf("%+v\n", cardListResponse)
 }
 if err := iter.Err(); err != nil {
 	panic(err.Error())

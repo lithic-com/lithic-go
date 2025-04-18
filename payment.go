@@ -915,7 +915,7 @@ func (r PaymentSimulateActionParamsDeclineReason) IsKnown() bool {
 }
 
 type PaymentSimulateReceiptParams struct {
-	// Payment token
+	// Customer-generated payment token used to uniquely identify the simulated payment
 	Token param.Field[string] `json:"token,required" format:"uuid"`
 	// Amount
 	Amount param.Field[int64] `json:"amount,required"`

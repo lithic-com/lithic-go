@@ -831,7 +831,10 @@ type TransactionPosTerminal struct {
 	PinCapability TransactionPosTerminalPinCapability `json:"pin_capability,required"`
 	// POS Type
 	Type TransactionPosTerminalType `json:"type,required"`
-	JSON transactionPosTerminalJSON `json:"-"`
+	// Uniquely identifies a terminal at the card acceptor location of acquiring
+	// institutions or merchant POS Systems
+	AcceptorTerminalID string                     `json:"acceptor_terminal_id,nullable"`
+	JSON               transactionPosTerminalJSON `json:"-"`
 }
 
 // transactionPosTerminalJSON contains the JSON metadata for the struct
@@ -844,6 +847,7 @@ type transactionPosTerminalJSON struct {
 	PartialApprovalCapable apijson.Field
 	PinCapability          apijson.Field
 	Type                   apijson.Field
+	AcceptorTerminalID     apijson.Field
 	raw                    string
 	ExtraFields            map[string]apijson.Field
 }
@@ -1059,25 +1063,27 @@ type TransactionEvent struct {
 	Result      TransactionEventsResult       `json:"result,required"`
 	RuleResults []TransactionEventsRuleResult `json:"rule_results,required"`
 	// Type of transaction event
-	Type TransactionEventsType `json:"type,required"`
-	JSON transactionEventJSON  `json:"-"`
+	Type                TransactionEventsType                `json:"type,required"`
+	NetworkSpecificData TransactionEventsNetworkSpecificData `json:"network_specific_data"`
+	JSON                transactionEventJSON                 `json:"-"`
 }
 
 // transactionEventJSON contains the JSON metadata for the struct
 // [TransactionEvent]
 type transactionEventJSON struct {
-	Token             apijson.Field
-	Amount            apijson.Field
-	Amounts           apijson.Field
-	Created           apijson.Field
-	DetailedResults   apijson.Field
-	EffectivePolarity apijson.Field
-	NetworkInfo       apijson.Field
-	Result            apijson.Field
-	RuleResults       apijson.Field
-	Type              apijson.Field
-	raw               string
-	ExtraFields       map[string]apijson.Field
+	Token               apijson.Field
+	Amount              apijson.Field
+	Amounts             apijson.Field
+	Created             apijson.Field
+	DetailedResults     apijson.Field
+	EffectivePolarity   apijson.Field
+	NetworkInfo         apijson.Field
+	Result              apijson.Field
+	RuleResults         apijson.Field
+	Type                apijson.Field
+	NetworkSpecificData apijson.Field
+	raw                 string
+	ExtraFields         map[string]apijson.Field
 }
 
 func (r *TransactionEvent) UnmarshalJSON(data []byte) (err error) {
@@ -1577,6 +1583,111 @@ func (r TransactionEventsType) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+type TransactionEventsNetworkSpecificData struct {
+	Mastercard TransactionEventsNetworkSpecificDataMastercard `json:"mastercard,required"`
+	Visa       TransactionEventsNetworkSpecificDataVisa       `json:"visa,required"`
+	JSON       transactionEventsNetworkSpecificDataJSON       `json:"-"`
+}
+
+// transactionEventsNetworkSpecificDataJSON contains the JSON metadata for the
+// struct [TransactionEventsNetworkSpecificData]
+type transactionEventsNetworkSpecificDataJSON struct {
+	Mastercard  apijson.Field
+	Visa        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *TransactionEventsNetworkSpecificData) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionEventsNetworkSpecificDataJSON) RawJSON() string {
+	return r.raw
+}
+
+type TransactionEventsNetworkSpecificDataMastercard struct {
+	// Indicates the electronic commerce security level and UCAF collection.
+	EcommerceSecurityLevelIndicator string `json:"ecommerce_security_level_indicator,required,nullable"`
+	// The On-behalf Service performed on the transaction and the results. Contains all
+	// applicable, on-behalf service results that were performed on a given
+	// transaction.
+	OnBehalfServiceResult []TransactionEventsNetworkSpecificDataMastercardOnBehalfServiceResult `json:"on_behalf_service_result,required,nullable"`
+	// Indicates the type of additional transaction purpose.
+	TransactionTypeIdentifier string                                             `json:"transaction_type_identifier,required,nullable"`
+	JSON                      transactionEventsNetworkSpecificDataMastercardJSON `json:"-"`
+}
+
+// transactionEventsNetworkSpecificDataMastercardJSON contains the JSON metadata
+// for the struct [TransactionEventsNetworkSpecificDataMastercard]
+type transactionEventsNetworkSpecificDataMastercardJSON struct {
+	EcommerceSecurityLevelIndicator apijson.Field
+	OnBehalfServiceResult           apijson.Field
+	TransactionTypeIdentifier       apijson.Field
+	raw                             string
+	ExtraFields                     map[string]apijson.Field
+}
+
+func (r *TransactionEventsNetworkSpecificDataMastercard) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionEventsNetworkSpecificDataMastercardJSON) RawJSON() string {
+	return r.raw
+}
+
+type TransactionEventsNetworkSpecificDataMastercardOnBehalfServiceResult struct {
+	// Indicates the results of the service processing.
+	Result1 string `json:"result_1,required"`
+	// Identifies the results of the service processing.
+	Result2 string `json:"result_2,required"`
+	// Indicates the service performed on the transaction.
+	Service string                                                                  `json:"service,required"`
+	JSON    transactionEventsNetworkSpecificDataMastercardOnBehalfServiceResultJSON `json:"-"`
+}
+
+// transactionEventsNetworkSpecificDataMastercardOnBehalfServiceResultJSON contains
+// the JSON metadata for the struct
+// [TransactionEventsNetworkSpecificDataMastercardOnBehalfServiceResult]
+type transactionEventsNetworkSpecificDataMastercardOnBehalfServiceResultJSON struct {
+	Result1     apijson.Field
+	Result2     apijson.Field
+	Service     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *TransactionEventsNetworkSpecificDataMastercardOnBehalfServiceResult) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionEventsNetworkSpecificDataMastercardOnBehalfServiceResultJSON) RawJSON() string {
+	return r.raw
+}
+
+type TransactionEventsNetworkSpecificDataVisa struct {
+	// Identifies the purpose or category of a transaction, used to classify and
+	// process transactions according to Visa’s rules.
+	BusinessApplicationIdentifier string                                       `json:"business_application_identifier,required,nullable"`
+	JSON                          transactionEventsNetworkSpecificDataVisaJSON `json:"-"`
+}
+
+// transactionEventsNetworkSpecificDataVisaJSON contains the JSON metadata for the
+// struct [TransactionEventsNetworkSpecificDataVisa]
+type transactionEventsNetworkSpecificDataVisaJSON struct {
+	BusinessApplicationIdentifier apijson.Field
+	raw                           string
+	ExtraFields                   map[string]apijson.Field
+}
+
+func (r *TransactionEventsNetworkSpecificDataVisa) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionEventsNetworkSpecificDataVisaJSON) RawJSON() string {
+	return r.raw
 }
 
 type TransactionSimulateAuthorizationResponse struct {
