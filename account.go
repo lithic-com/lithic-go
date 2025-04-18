@@ -107,8 +107,7 @@ type Account struct {
 	// account_token returned by the enroll endpoint. If using this parameter, do not
 	// include pagination.
 	Token string `json:"token,required" format:"uuid"`
-	// Timestamp of when the account was created. For accounts created before
-	// 2023-05-11, this field will be null.
+	// Timestamp of when the account was created.
 	Created time.Time `json:"created,required,nullable" format:"date-time"`
 	// Spend limit information for the user containing the daily, monthly, and lifetime
 	// spend limit of the account. Any charges to a card owned by this account will be

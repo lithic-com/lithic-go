@@ -142,15 +142,16 @@ func (r managementOperationTransactionJSON) RawJSON() string {
 type ManagementOperationTransactionCategory string
 
 const (
-	ManagementOperationTransactionCategoryManagementFee        ManagementOperationTransactionCategory = "MANAGEMENT_FEE"
-	ManagementOperationTransactionCategoryManagementDispute    ManagementOperationTransactionCategory = "MANAGEMENT_DISPUTE"
-	ManagementOperationTransactionCategoryManagementReward     ManagementOperationTransactionCategory = "MANAGEMENT_REWARD"
-	ManagementOperationTransactionCategoryManagementAdjustment ManagementOperationTransactionCategory = "MANAGEMENT_ADJUSTMENT"
+	ManagementOperationTransactionCategoryManagementFee          ManagementOperationTransactionCategory = "MANAGEMENT_FEE"
+	ManagementOperationTransactionCategoryManagementDispute      ManagementOperationTransactionCategory = "MANAGEMENT_DISPUTE"
+	ManagementOperationTransactionCategoryManagementReward       ManagementOperationTransactionCategory = "MANAGEMENT_REWARD"
+	ManagementOperationTransactionCategoryManagementAdjustment   ManagementOperationTransactionCategory = "MANAGEMENT_ADJUSTMENT"
+	ManagementOperationTransactionCategoryManagementDisbursement ManagementOperationTransactionCategory = "MANAGEMENT_DISBURSEMENT"
 )
 
 func (r ManagementOperationTransactionCategory) IsKnown() bool {
 	switch r {
-	case ManagementOperationTransactionCategoryManagementFee, ManagementOperationTransactionCategoryManagementDispute, ManagementOperationTransactionCategoryManagementReward, ManagementOperationTransactionCategoryManagementAdjustment:
+	case ManagementOperationTransactionCategoryManagementFee, ManagementOperationTransactionCategoryManagementDispute, ManagementOperationTransactionCategoryManagementReward, ManagementOperationTransactionCategoryManagementAdjustment, ManagementOperationTransactionCategoryManagementDisbursement:
 		return true
 	}
 	return false
@@ -240,26 +241,30 @@ func (r ManagementOperationTransactionEventsResult) IsKnown() bool {
 type ManagementOperationTransactionEventsType string
 
 const (
-	ManagementOperationTransactionEventsTypeCashBack                   ManagementOperationTransactionEventsType = "CASH_BACK"
-	ManagementOperationTransactionEventsTypeCurrencyConversion         ManagementOperationTransactionEventsType = "CURRENCY_CONVERSION"
-	ManagementOperationTransactionEventsTypeInterest                   ManagementOperationTransactionEventsType = "INTEREST"
-	ManagementOperationTransactionEventsTypeLatePayment                ManagementOperationTransactionEventsType = "LATE_PAYMENT"
-	ManagementOperationTransactionEventsTypeBillingError               ManagementOperationTransactionEventsType = "BILLING_ERROR"
-	ManagementOperationTransactionEventsTypeProvisionalCredit          ManagementOperationTransactionEventsType = "PROVISIONAL_CREDIT"
 	ManagementOperationTransactionEventsTypeLossWriteOff               ManagementOperationTransactionEventsType = "LOSS_WRITE_OFF"
+	ManagementOperationTransactionEventsTypeCashBack                   ManagementOperationTransactionEventsType = "CASH_BACK"
 	ManagementOperationTransactionEventsTypeCashBackReversal           ManagementOperationTransactionEventsType = "CASH_BACK_REVERSAL"
+	ManagementOperationTransactionEventsTypeCurrencyConversion         ManagementOperationTransactionEventsType = "CURRENCY_CONVERSION"
 	ManagementOperationTransactionEventsTypeCurrencyConversionReversal ManagementOperationTransactionEventsType = "CURRENCY_CONVERSION_REVERSAL"
+	ManagementOperationTransactionEventsTypeInterest                   ManagementOperationTransactionEventsType = "INTEREST"
 	ManagementOperationTransactionEventsTypeInterestReversal           ManagementOperationTransactionEventsType = "INTEREST_REVERSAL"
+	ManagementOperationTransactionEventsTypeLatePayment                ManagementOperationTransactionEventsType = "LATE_PAYMENT"
 	ManagementOperationTransactionEventsTypeLatePaymentReversal        ManagementOperationTransactionEventsType = "LATE_PAYMENT_REVERSAL"
+	ManagementOperationTransactionEventsTypeBillingError               ManagementOperationTransactionEventsType = "BILLING_ERROR"
 	ManagementOperationTransactionEventsTypeBillingErrorReversal       ManagementOperationTransactionEventsType = "BILLING_ERROR_REVERSAL"
+	ManagementOperationTransactionEventsTypeProvisionalCredit          ManagementOperationTransactionEventsType = "PROVISIONAL_CREDIT"
 	ManagementOperationTransactionEventsTypeProvisionalCreditReversal  ManagementOperationTransactionEventsType = "PROVISIONAL_CREDIT_REVERSAL"
 	ManagementOperationTransactionEventsTypeReturnedPayment            ManagementOperationTransactionEventsType = "RETURNED_PAYMENT"
 	ManagementOperationTransactionEventsTypeReturnedPaymentReversal    ManagementOperationTransactionEventsType = "RETURNED_PAYMENT_REVERSAL"
+	ManagementOperationTransactionEventsTypeDisputeWon                 ManagementOperationTransactionEventsType = "DISPUTE_WON"
+	ManagementOperationTransactionEventsTypeDisputeWonReversal         ManagementOperationTransactionEventsType = "DISPUTE_WON_REVERSAL"
+	ManagementOperationTransactionEventsTypeDisburse                   ManagementOperationTransactionEventsType = "DISBURSE"
+	ManagementOperationTransactionEventsTypeDisburseReversal           ManagementOperationTransactionEventsType = "DISBURSE_REVERSAL"
 )
 
 func (r ManagementOperationTransactionEventsType) IsKnown() bool {
 	switch r {
-	case ManagementOperationTransactionEventsTypeCashBack, ManagementOperationTransactionEventsTypeCurrencyConversion, ManagementOperationTransactionEventsTypeInterest, ManagementOperationTransactionEventsTypeLatePayment, ManagementOperationTransactionEventsTypeBillingError, ManagementOperationTransactionEventsTypeProvisionalCredit, ManagementOperationTransactionEventsTypeLossWriteOff, ManagementOperationTransactionEventsTypeCashBackReversal, ManagementOperationTransactionEventsTypeCurrencyConversionReversal, ManagementOperationTransactionEventsTypeInterestReversal, ManagementOperationTransactionEventsTypeLatePaymentReversal, ManagementOperationTransactionEventsTypeBillingErrorReversal, ManagementOperationTransactionEventsTypeProvisionalCreditReversal, ManagementOperationTransactionEventsTypeReturnedPayment, ManagementOperationTransactionEventsTypeReturnedPaymentReversal:
+	case ManagementOperationTransactionEventsTypeLossWriteOff, ManagementOperationTransactionEventsTypeCashBack, ManagementOperationTransactionEventsTypeCashBackReversal, ManagementOperationTransactionEventsTypeCurrencyConversion, ManagementOperationTransactionEventsTypeCurrencyConversionReversal, ManagementOperationTransactionEventsTypeInterest, ManagementOperationTransactionEventsTypeInterestReversal, ManagementOperationTransactionEventsTypeLatePayment, ManagementOperationTransactionEventsTypeLatePaymentReversal, ManagementOperationTransactionEventsTypeBillingError, ManagementOperationTransactionEventsTypeBillingErrorReversal, ManagementOperationTransactionEventsTypeProvisionalCredit, ManagementOperationTransactionEventsTypeProvisionalCreditReversal, ManagementOperationTransactionEventsTypeReturnedPayment, ManagementOperationTransactionEventsTypeReturnedPaymentReversal, ManagementOperationTransactionEventsTypeDisputeWon, ManagementOperationTransactionEventsTypeDisputeWonReversal, ManagementOperationTransactionEventsTypeDisburse, ManagementOperationTransactionEventsTypeDisburseReversal:
 		return true
 	}
 	return false
@@ -343,15 +348,16 @@ func (r ManagementOperationNewParams) MarshalJSON() (data []byte, err error) {
 type ManagementOperationNewParamsCategory string
 
 const (
-	ManagementOperationNewParamsCategoryManagementFee        ManagementOperationNewParamsCategory = "MANAGEMENT_FEE"
-	ManagementOperationNewParamsCategoryManagementDispute    ManagementOperationNewParamsCategory = "MANAGEMENT_DISPUTE"
-	ManagementOperationNewParamsCategoryManagementReward     ManagementOperationNewParamsCategory = "MANAGEMENT_REWARD"
-	ManagementOperationNewParamsCategoryManagementAdjustment ManagementOperationNewParamsCategory = "MANAGEMENT_ADJUSTMENT"
+	ManagementOperationNewParamsCategoryManagementFee          ManagementOperationNewParamsCategory = "MANAGEMENT_FEE"
+	ManagementOperationNewParamsCategoryManagementDispute      ManagementOperationNewParamsCategory = "MANAGEMENT_DISPUTE"
+	ManagementOperationNewParamsCategoryManagementReward       ManagementOperationNewParamsCategory = "MANAGEMENT_REWARD"
+	ManagementOperationNewParamsCategoryManagementAdjustment   ManagementOperationNewParamsCategory = "MANAGEMENT_ADJUSTMENT"
+	ManagementOperationNewParamsCategoryManagementDisbursement ManagementOperationNewParamsCategory = "MANAGEMENT_DISBURSEMENT"
 )
 
 func (r ManagementOperationNewParamsCategory) IsKnown() bool {
 	switch r {
-	case ManagementOperationNewParamsCategoryManagementFee, ManagementOperationNewParamsCategoryManagementDispute, ManagementOperationNewParamsCategoryManagementReward, ManagementOperationNewParamsCategoryManagementAdjustment:
+	case ManagementOperationNewParamsCategoryManagementFee, ManagementOperationNewParamsCategoryManagementDispute, ManagementOperationNewParamsCategoryManagementReward, ManagementOperationNewParamsCategoryManagementAdjustment, ManagementOperationNewParamsCategoryManagementDisbursement:
 		return true
 	}
 	return false
@@ -375,26 +381,30 @@ func (r ManagementOperationNewParamsDirection) IsKnown() bool {
 type ManagementOperationNewParamsEventType string
 
 const (
-	ManagementOperationNewParamsEventTypeCashBack                   ManagementOperationNewParamsEventType = "CASH_BACK"
-	ManagementOperationNewParamsEventTypeCurrencyConversion         ManagementOperationNewParamsEventType = "CURRENCY_CONVERSION"
-	ManagementOperationNewParamsEventTypeInterest                   ManagementOperationNewParamsEventType = "INTEREST"
-	ManagementOperationNewParamsEventTypeLatePayment                ManagementOperationNewParamsEventType = "LATE_PAYMENT"
-	ManagementOperationNewParamsEventTypeBillingError               ManagementOperationNewParamsEventType = "BILLING_ERROR"
-	ManagementOperationNewParamsEventTypeProvisionalCredit          ManagementOperationNewParamsEventType = "PROVISIONAL_CREDIT"
 	ManagementOperationNewParamsEventTypeLossWriteOff               ManagementOperationNewParamsEventType = "LOSS_WRITE_OFF"
+	ManagementOperationNewParamsEventTypeCashBack                   ManagementOperationNewParamsEventType = "CASH_BACK"
 	ManagementOperationNewParamsEventTypeCashBackReversal           ManagementOperationNewParamsEventType = "CASH_BACK_REVERSAL"
+	ManagementOperationNewParamsEventTypeCurrencyConversion         ManagementOperationNewParamsEventType = "CURRENCY_CONVERSION"
 	ManagementOperationNewParamsEventTypeCurrencyConversionReversal ManagementOperationNewParamsEventType = "CURRENCY_CONVERSION_REVERSAL"
+	ManagementOperationNewParamsEventTypeInterest                   ManagementOperationNewParamsEventType = "INTEREST"
 	ManagementOperationNewParamsEventTypeInterestReversal           ManagementOperationNewParamsEventType = "INTEREST_REVERSAL"
+	ManagementOperationNewParamsEventTypeLatePayment                ManagementOperationNewParamsEventType = "LATE_PAYMENT"
 	ManagementOperationNewParamsEventTypeLatePaymentReversal        ManagementOperationNewParamsEventType = "LATE_PAYMENT_REVERSAL"
+	ManagementOperationNewParamsEventTypeBillingError               ManagementOperationNewParamsEventType = "BILLING_ERROR"
 	ManagementOperationNewParamsEventTypeBillingErrorReversal       ManagementOperationNewParamsEventType = "BILLING_ERROR_REVERSAL"
+	ManagementOperationNewParamsEventTypeProvisionalCredit          ManagementOperationNewParamsEventType = "PROVISIONAL_CREDIT"
 	ManagementOperationNewParamsEventTypeProvisionalCreditReversal  ManagementOperationNewParamsEventType = "PROVISIONAL_CREDIT_REVERSAL"
 	ManagementOperationNewParamsEventTypeReturnedPayment            ManagementOperationNewParamsEventType = "RETURNED_PAYMENT"
 	ManagementOperationNewParamsEventTypeReturnedPaymentReversal    ManagementOperationNewParamsEventType = "RETURNED_PAYMENT_REVERSAL"
+	ManagementOperationNewParamsEventTypeDisputeWon                 ManagementOperationNewParamsEventType = "DISPUTE_WON"
+	ManagementOperationNewParamsEventTypeDisputeWonReversal         ManagementOperationNewParamsEventType = "DISPUTE_WON_REVERSAL"
+	ManagementOperationNewParamsEventTypeDisburse                   ManagementOperationNewParamsEventType = "DISBURSE"
+	ManagementOperationNewParamsEventTypeDisburseReversal           ManagementOperationNewParamsEventType = "DISBURSE_REVERSAL"
 )
 
 func (r ManagementOperationNewParamsEventType) IsKnown() bool {
 	switch r {
-	case ManagementOperationNewParamsEventTypeCashBack, ManagementOperationNewParamsEventTypeCurrencyConversion, ManagementOperationNewParamsEventTypeInterest, ManagementOperationNewParamsEventTypeLatePayment, ManagementOperationNewParamsEventTypeBillingError, ManagementOperationNewParamsEventTypeProvisionalCredit, ManagementOperationNewParamsEventTypeLossWriteOff, ManagementOperationNewParamsEventTypeCashBackReversal, ManagementOperationNewParamsEventTypeCurrencyConversionReversal, ManagementOperationNewParamsEventTypeInterestReversal, ManagementOperationNewParamsEventTypeLatePaymentReversal, ManagementOperationNewParamsEventTypeBillingErrorReversal, ManagementOperationNewParamsEventTypeProvisionalCreditReversal, ManagementOperationNewParamsEventTypeReturnedPayment, ManagementOperationNewParamsEventTypeReturnedPaymentReversal:
+	case ManagementOperationNewParamsEventTypeLossWriteOff, ManagementOperationNewParamsEventTypeCashBack, ManagementOperationNewParamsEventTypeCashBackReversal, ManagementOperationNewParamsEventTypeCurrencyConversion, ManagementOperationNewParamsEventTypeCurrencyConversionReversal, ManagementOperationNewParamsEventTypeInterest, ManagementOperationNewParamsEventTypeInterestReversal, ManagementOperationNewParamsEventTypeLatePayment, ManagementOperationNewParamsEventTypeLatePaymentReversal, ManagementOperationNewParamsEventTypeBillingError, ManagementOperationNewParamsEventTypeBillingErrorReversal, ManagementOperationNewParamsEventTypeProvisionalCredit, ManagementOperationNewParamsEventTypeProvisionalCreditReversal, ManagementOperationNewParamsEventTypeReturnedPayment, ManagementOperationNewParamsEventTypeReturnedPaymentReversal, ManagementOperationNewParamsEventTypeDisputeWon, ManagementOperationNewParamsEventTypeDisputeWonReversal, ManagementOperationNewParamsEventTypeDisburse, ManagementOperationNewParamsEventTypeDisburseReversal:
 		return true
 	}
 	return false
@@ -438,15 +448,16 @@ func (r ManagementOperationListParams) URLQuery() (v url.Values) {
 type ManagementOperationListParamsCategory string
 
 const (
-	ManagementOperationListParamsCategoryManagementFee        ManagementOperationListParamsCategory = "MANAGEMENT_FEE"
-	ManagementOperationListParamsCategoryManagementDispute    ManagementOperationListParamsCategory = "MANAGEMENT_DISPUTE"
-	ManagementOperationListParamsCategoryManagementReward     ManagementOperationListParamsCategory = "MANAGEMENT_REWARD"
-	ManagementOperationListParamsCategoryManagementAdjustment ManagementOperationListParamsCategory = "MANAGEMENT_ADJUSTMENT"
+	ManagementOperationListParamsCategoryManagementFee          ManagementOperationListParamsCategory = "MANAGEMENT_FEE"
+	ManagementOperationListParamsCategoryManagementDispute      ManagementOperationListParamsCategory = "MANAGEMENT_DISPUTE"
+	ManagementOperationListParamsCategoryManagementReward       ManagementOperationListParamsCategory = "MANAGEMENT_REWARD"
+	ManagementOperationListParamsCategoryManagementAdjustment   ManagementOperationListParamsCategory = "MANAGEMENT_ADJUSTMENT"
+	ManagementOperationListParamsCategoryManagementDisbursement ManagementOperationListParamsCategory = "MANAGEMENT_DISBURSEMENT"
 )
 
 func (r ManagementOperationListParamsCategory) IsKnown() bool {
 	switch r {
-	case ManagementOperationListParamsCategoryManagementFee, ManagementOperationListParamsCategoryManagementDispute, ManagementOperationListParamsCategoryManagementReward, ManagementOperationListParamsCategoryManagementAdjustment:
+	case ManagementOperationListParamsCategoryManagementFee, ManagementOperationListParamsCategoryManagementDispute, ManagementOperationListParamsCategoryManagementReward, ManagementOperationListParamsCategoryManagementAdjustment, ManagementOperationListParamsCategoryManagementDisbursement:
 		return true
 	}
 	return false

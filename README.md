@@ -2,8 +2,8 @@
 
 <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go"><img src="https://pkg.go.dev/badge/github.com/lithic-com/lithic-go.svg" alt="Go Reference"></a>
 
-The Lithic Go library provides convenient access to [the Lithic REST
-API](https://docs.lithic.com) from applications written in Go. The full API of this library can be found in [api.md](api.md).
+The Lithic Go library provides convenient access to the [Lithic REST API](https://docs.lithic.com)
+from applications written in Go.
 
 ## Installation
 
@@ -22,7 +22,7 @@ Or to pin the version:
 <!-- x-release-please-start-version -->
 
 ```sh
-go get -u 'github.com/lithic-com/lithic-go@v0.74.0'
+go get -u 'github.com/lithic-com/lithic-go@v0.75.0'
 ```
 
 <!-- x-release-please-end -->
@@ -166,8 +166,8 @@ You can use `.ListAutoPaging()` methods to iterate through items across all page
 iter := client.Cards.ListAutoPaging(context.TODO(), lithic.CardListParams{})
 // Automatically fetches more pages as needed.
 for iter.Next() {
-	card := iter.Current()
-	fmt.Printf("%+v\n", card)
+	cardListResponse := iter.Current()
+	fmt.Printf("%+v\n", cardListResponse)
 }
 if err := iter.Err(); err != nil {
 	panic(err.Error())

@@ -31,7 +31,7 @@ func TestManagementOperationNewWithOptionalParams(t *testing.T) {
 		Category:              lithic.F(lithic.ManagementOperationNewParamsCategoryManagementFee),
 		Direction:             lithic.F(lithic.ManagementOperationNewParamsDirectionCredit),
 		EffectiveDate:         lithic.F(time.Now()),
-		EventType:             lithic.F(lithic.ManagementOperationNewParamsEventTypeCashBack),
+		EventType:             lithic.F(lithic.ManagementOperationNewParamsEventTypeLossWriteOff),
 		FinancialAccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Token:                 lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Memo:                  lithic.F("memo"),
