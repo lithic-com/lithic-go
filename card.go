@@ -46,7 +46,7 @@ func NewCardService(opts ...option.RequestOption) (r *CardService) {
 
 // Create a new virtual or physical card. Parameters `shipping_address` and
 // `product_id` only apply to physical cards.
-func (r *CardService) New(ctx context.Context, body CardNewParams, opts ...option.RequestOption) (res *CardNewResponse, err error) {
+func (r *CardService) New(ctx context.Context, body CardNewParams, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "v1/cards"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -54,7 +54,7 @@ func (r *CardService) New(ctx context.Context, body CardNewParams, opts ...optio
 }
 
 // Get card configuration such as spend limit and state.
-func (r *CardService) Get(ctx context.Context, cardToken string, opts ...option.RequestOption) (res *CardGetResponse, err error) {
+func (r *CardService) Get(ctx context.Context, cardToken string, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
@@ -70,7 +70,7 @@ func (r *CardService) Get(ctx context.Context, cardToken string, opts ...option.
 //
 // _Note: setting a card to a `CLOSED` state is a final action that cannot be
 // undone._
-func (r *CardService) Update(ctx context.Context, cardToken string, body CardUpdateParams, opts ...option.RequestOption) (res *CardUpdateResponse, err error) {
+func (r *CardService) Update(ctx context.Context, cardToken string, body CardUpdateParams, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
@@ -82,7 +82,7 @@ func (r *CardService) Update(ctx context.Context, cardToken string, body CardUpd
 }
 
 // List cards.
-func (r *CardService) List(ctx context.Context, query CardListParams, opts ...option.RequestOption) (res *pagination.CursorPage[CardListResponse], err error) {
+func (r *CardService) List(ctx context.Context, query CardListParams, opts ...option.RequestOption) (res *pagination.CursorPage[NonPCICard], err error) {
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -100,7 +100,7 @@ func (r *CardService) List(ctx context.Context, query CardListParams, opts ...op
 }
 
 // List cards.
-func (r *CardService) ListAutoPaging(ctx context.Context, query CardListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[CardListResponse] {
+func (r *CardService) ListAutoPaging(ctx context.Context, query CardListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[NonPCICard] {
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
@@ -114,7 +114,7 @@ func (r *CardService) ListAutoPaging(ctx context.Context, query CardListParams, 
 // must be in an `OPEN` state to be converted. Only applies to cards of type
 // `VIRTUAL` (or existing cards with deprecated types of `DIGITAL_WALLET` and
 // `UNLOCKED`).
-func (r *CardService) ConvertPhysical(ctx context.Context, cardToken string, body CardConvertPhysicalParams, opts ...option.RequestOption) (res *CardConvertPhysicalResponse, err error) {
+func (r *CardService) ConvertPhysical(ctx context.Context, cardToken string, body CardConvertPhysicalParams, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
@@ -184,7 +184,7 @@ func (r *CardService) Provision(ctx context.Context, cardToken string, body Card
 // original card can continue to be used until the new card is activated. Only
 // applies to cards of type `PHYSICAL`. A card can be replaced or renewed a total
 // of 8 times.
-func (r *CardService) Reissue(ctx context.Context, cardToken string, body CardReissueParams, opts ...option.RequestOption) (res *CardReissueResponse, err error) {
+func (r *CardService) Reissue(ctx context.Context, cardToken string, body CardReissueParams, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
@@ -204,7 +204,7 @@ func (r *CardService) Reissue(ctx context.Context, cardToken string, body CardRe
 // the card will retain the same card token and PAN and receive an updated expiry
 // and CVC2 code. `product_id`, `shipping_method`, `shipping_address`, `carrier`
 // are only relevant for renewing `PHYSICAL` cards.
-func (r *CardService) Renew(ctx context.Context, cardToken string, body CardRenewParams, opts ...option.RequestOption) (res *CardRenewResponse, err error) {
+func (r *CardService) Renew(ctx context.Context, cardToken string, body CardRenewParams, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
@@ -235,11 +235,39 @@ func (r *CardService) GetSpendLimits(ctx context.Context, cardToken string, opts
 // [support@lithic.com](mailto:support@lithic.com) for questions. _Note: this is a
 // `POST` endpoint because it is more secure to send sensitive data in a request
 // body than in a URL._
-func (r *CardService) SearchByPan(ctx context.Context, body CardSearchByPanParams, opts ...option.RequestOption) (res *CardSearchByPanResponse, err error) {
+func (r *CardService) SearchByPan(ctx context.Context, body CardSearchByPanParams, opts ...option.RequestOption) (res *Card, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "v1/cards/search_by_pan"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
+}
+
+// Card details with potentially PCI sensitive information for Enterprise customers
+type Card struct {
+	// Three digit cvv printed on the back of the card.
+	Cvv string `json:"cvv"`
+	// Primary Account Number (PAN) (i.e. the card number). Customers must be PCI
+	// compliant to have PAN returned as a field in production. Please contact
+	// support@lithic.com for questions.
+	Pan  string   `json:"pan"`
+	JSON cardJSON `json:"-"`
+	NonPCICard
+}
+
+// cardJSON contains the JSON metadata for the struct [Card]
+type cardJSON struct {
+	Cvv         apijson.Field
+	Pan         apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *Card) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardJSON) RawJSON() string {
+	return r.raw
 }
 
 type CardSpendLimits struct {
@@ -356,6 +384,308 @@ func (r cardSpendLimitsSpendVelocityJSON) RawJSON() string {
 	return r.raw
 }
 
+// Card details without PCI information
+type NonPCICard struct {
+	// Globally unique identifier.
+	Token string `json:"token,required"`
+	// Globally unique identifier for the account to which the card belongs.
+	AccountToken string `json:"account_token,required"`
+	// Globally unique identifier for the card program on which the card exists.
+	CardProgramToken string `json:"card_program_token,required"`
+	// An RFC 3339 timestamp for when the card was created. UTC time zone.
+	Created time.Time `json:"created,required" format:"date-time"`
+	// Deprecated: Funding account for the card.
+	Funding NonPCICardFunding `json:"funding,required"`
+	// Last four digits of the card number.
+	LastFour string `json:"last_four,required"`
+	// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
+	// attempts).
+	PinStatus NonPCICardPinStatus `json:"pin_status,required"`
+	// Amount (in cents) to limit approved authorizations (e.g. 100000 would be a
+	// $1,000 limit). Transaction requests above the spend limit will be declined.
+	SpendLimit int64 `json:"spend_limit,required"`
+	// Spend limit duration
+	SpendLimitDuration NonPCICardSpendLimitDuration `json:"spend_limit_duration,required"`
+	// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
+	// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
+	// they match card and account parameters). _ `PAUSED` - Card will decline
+	// authorizations, but can be resumed at a later time. _ `PENDING_FULFILLMENT` -
+	// The initial state for cards of type `PHYSICAL`. The card is provisioned pending
+	// manufacturing and fulfillment. Cards in this state can accept authorizations for
+	// e-commerce purchases, but not for "Card Present" purchases where the physical
+	// card itself is present. \* `PENDING_ACTIVATION` - At regular intervals, cards of
+	// type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card production
+	// warehouse and updated to state `PENDING_ACTIVATION`. Similar to
+	// `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
+	// transactions or can be added to mobile wallets. API clients should update the
+	// card's state to `OPEN` only after the cardholder confirms receipt of the card.
+	// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
+	// manufactured.
+	State NonPCICardState `json:"state,required"`
+	// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
+	// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
+	// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
+	// offer white label branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe
+	// functionality. _ `SINGLE_USE` - Card is closed upon first successful
+	// authorization. _ `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first
+	// merchant that successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_
+	// Similar behavior to VIRTUAL cards, please use VIRTUAL instead. _
+	// `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
+	// VIRTUAL instead.
+	Type NonPCICardType `json:"type,required"`
+	// List of identifiers for the Auth Rule(s) that are applied on the card. This
+	// field is deprecated and will no longer be populated in the `Card` object. The
+	// key will be removed from the schema in a future release. Use the `/auth_rules`
+	// endpoints to fetch Auth Rule information instead.
+	//
+	// Deprecated: deprecated
+	AuthRuleTokens []string `json:"auth_rule_tokens"`
+	// 3-character alphabetic ISO 4217 code for the currency of the cardholder.
+	CardholderCurrency string `json:"cardholder_currency"`
+	// Specifies the digital card art to be displayed in the user's digital wallet
+	// after tokenization. This artwork must be approved by Mastercard and configured
+	// by Lithic to use.
+	DigitalCardArtToken string `json:"digital_card_art_token"`
+	// Two digit (MM) expiry month.
+	ExpMonth string `json:"exp_month"`
+	// Four digit (yyyy) expiry year.
+	ExpYear string `json:"exp_year"`
+	// Hostname of card's locked merchant (will be empty if not applicable).
+	Hostname string `json:"hostname"`
+	// Friendly name to identify the card.
+	Memo string `json:"memo"`
+	// Indicates if there are offline PIN changes pending card interaction with an
+	// offline PIN terminal. Possible commands are: CHANGE_PIN, UNBLOCK_PIN. Applicable
+	// only to cards issued in markets supporting offline PINs.
+	PendingCommands []string `json:"pending_commands"`
+	// Only applicable to cards of type `PHYSICAL`. This must be configured with Lithic
+	// before use. Specifies the configuration (i.e., physical card art) that the card
+	// should be manufactured with.
+	ProductID string `json:"product_id"`
+	// If the card is a replacement for another card, the globally unique identifier
+	// for the card that was replaced.
+	ReplacementFor string         `json:"replacement_for,nullable"`
+	JSON           nonPCICardJSON `json:"-"`
+}
+
+// nonPCICardJSON contains the JSON metadata for the struct [NonPCICard]
+type nonPCICardJSON struct {
+	Token               apijson.Field
+	AccountToken        apijson.Field
+	CardProgramToken    apijson.Field
+	Created             apijson.Field
+	Funding             apijson.Field
+	LastFour            apijson.Field
+	PinStatus           apijson.Field
+	SpendLimit          apijson.Field
+	SpendLimitDuration  apijson.Field
+	State               apijson.Field
+	Type                apijson.Field
+	AuthRuleTokens      apijson.Field
+	CardholderCurrency  apijson.Field
+	DigitalCardArtToken apijson.Field
+	ExpMonth            apijson.Field
+	ExpYear             apijson.Field
+	Hostname            apijson.Field
+	Memo                apijson.Field
+	PendingCommands     apijson.Field
+	ProductID           apijson.Field
+	ReplacementFor      apijson.Field
+	raw                 string
+	ExtraFields         map[string]apijson.Field
+}
+
+func (r *NonPCICard) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r nonPCICardJSON) RawJSON() string {
+	return r.raw
+}
+
+// Deprecated: Funding account for the card.
+type NonPCICardFunding struct {
+	// A globally unique identifier for this FundingAccount.
+	Token string `json:"token,required" format:"uuid"`
+	// An RFC 3339 string representing when this funding source was added to the Lithic
+	// account. This may be `null`. UTC time zone.
+	Created time.Time `json:"created,required" format:"date-time"`
+	// The last 4 digits of the account (e.g. bank account, debit card) associated with
+	// this FundingAccount. This may be null.
+	LastFour string `json:"last_four,required"`
+	// State of funding source. Funding source states: _ `ENABLED` - The funding
+	// account is available to use for card creation and transactions. _ `PENDING` -
+	// The funding account is still being verified e.g. bank micro-deposits
+	// verification. \* `DELETED` - The founding account has been deleted.
+	State NonPCICardFundingState `json:"state,required"`
+	// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
+	// `DEPOSITORY_SAVINGS` - Bank savings account.
+	Type NonPCICardFundingType `json:"type,required"`
+	// Account name identifying the funding source. This may be `null`.
+	AccountName string `json:"account_name"`
+	// The nickname given to the `FundingAccount` or `null` if it has no nickname.
+	Nickname string                `json:"nickname"`
+	JSON     nonPCICardFundingJSON `json:"-"`
+}
+
+// nonPCICardFundingJSON contains the JSON metadata for the struct
+// [NonPCICardFunding]
+type nonPCICardFundingJSON struct {
+	Token       apijson.Field
+	Created     apijson.Field
+	LastFour    apijson.Field
+	State       apijson.Field
+	Type        apijson.Field
+	AccountName apijson.Field
+	Nickname    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *NonPCICardFunding) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r nonPCICardFundingJSON) RawJSON() string {
+	return r.raw
+}
+
+// State of funding source. Funding source states: _ `ENABLED` - The funding
+// account is available to use for card creation and transactions. _ `PENDING` -
+// The funding account is still being verified e.g. bank micro-deposits
+// verification. \* `DELETED` - The founding account has been deleted.
+type NonPCICardFundingState string
+
+const (
+	NonPCICardFundingStateDeleted NonPCICardFundingState = "DELETED"
+	NonPCICardFundingStateEnabled NonPCICardFundingState = "ENABLED"
+	NonPCICardFundingStatePending NonPCICardFundingState = "PENDING"
+)
+
+func (r NonPCICardFundingState) IsKnown() bool {
+	switch r {
+	case NonPCICardFundingStateDeleted, NonPCICardFundingStateEnabled, NonPCICardFundingStatePending:
+		return true
+	}
+	return false
+}
+
+// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
+// `DEPOSITORY_SAVINGS` - Bank savings account.
+type NonPCICardFundingType string
+
+const (
+	NonPCICardFundingTypeDepositoryChecking NonPCICardFundingType = "DEPOSITORY_CHECKING"
+	NonPCICardFundingTypeDepositorySavings  NonPCICardFundingType = "DEPOSITORY_SAVINGS"
+)
+
+func (r NonPCICardFundingType) IsKnown() bool {
+	switch r {
+	case NonPCICardFundingTypeDepositoryChecking, NonPCICardFundingTypeDepositorySavings:
+		return true
+	}
+	return false
+}
+
+// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
+// attempts).
+type NonPCICardPinStatus string
+
+const (
+	NonPCICardPinStatusOk      NonPCICardPinStatus = "OK"
+	NonPCICardPinStatusBlocked NonPCICardPinStatus = "BLOCKED"
+	NonPCICardPinStatusNotSet  NonPCICardPinStatus = "NOT_SET"
+)
+
+func (r NonPCICardPinStatus) IsKnown() bool {
+	switch r {
+	case NonPCICardPinStatusOk, NonPCICardPinStatusBlocked, NonPCICardPinStatusNotSet:
+		return true
+	}
+	return false
+}
+
+// Spend limit duration
+type NonPCICardSpendLimitDuration string
+
+const (
+	NonPCICardSpendLimitDurationAnnually    NonPCICardSpendLimitDuration = "ANNUALLY"
+	NonPCICardSpendLimitDurationForever     NonPCICardSpendLimitDuration = "FOREVER"
+	NonPCICardSpendLimitDurationMonthly     NonPCICardSpendLimitDuration = "MONTHLY"
+	NonPCICardSpendLimitDurationTransaction NonPCICardSpendLimitDuration = "TRANSACTION"
+	NonPCICardSpendLimitDurationDaily       NonPCICardSpendLimitDuration = "DAILY"
+)
+
+func (r NonPCICardSpendLimitDuration) IsKnown() bool {
+	switch r {
+	case NonPCICardSpendLimitDurationAnnually, NonPCICardSpendLimitDurationForever, NonPCICardSpendLimitDurationMonthly, NonPCICardSpendLimitDurationTransaction, NonPCICardSpendLimitDurationDaily:
+		return true
+	}
+	return false
+}
+
+// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
+// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
+// they match card and account parameters). _ `PAUSED` - Card will decline
+// authorizations, but can be resumed at a later time. _ `PENDING_FULFILLMENT` -
+// The initial state for cards of type `PHYSICAL`. The card is provisioned pending
+// manufacturing and fulfillment. Cards in this state can accept authorizations for
+// e-commerce purchases, but not for "Card Present" purchases where the physical
+// card itself is present. \* `PENDING_ACTIVATION` - At regular intervals, cards of
+// type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card production
+// warehouse and updated to state `PENDING_ACTIVATION`. Similar to
+// `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
+// transactions or can be added to mobile wallets. API clients should update the
+// card's state to `OPEN` only after the cardholder confirms receipt of the card.
+// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
+// manufactured.
+type NonPCICardState string
+
+const (
+	NonPCICardStateClosed             NonPCICardState = "CLOSED"
+	NonPCICardStateOpen               NonPCICardState = "OPEN"
+	NonPCICardStatePaused             NonPCICardState = "PAUSED"
+	NonPCICardStatePendingActivation  NonPCICardState = "PENDING_ACTIVATION"
+	NonPCICardStatePendingFulfillment NonPCICardState = "PENDING_FULFILLMENT"
+)
+
+func (r NonPCICardState) IsKnown() bool {
+	switch r {
+	case NonPCICardStateClosed, NonPCICardStateOpen, NonPCICardStatePaused, NonPCICardStatePendingActivation, NonPCICardStatePendingFulfillment:
+		return true
+	}
+	return false
+}
+
+// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
+// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
+// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
+// offer white label branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe
+// functionality. _ `SINGLE_USE` - Card is closed upon first successful
+// authorization. _ `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first
+// merchant that successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_
+// Similar behavior to VIRTUAL cards, please use VIRTUAL instead. _
+// `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
+// VIRTUAL instead.
+type NonPCICardType string
+
+const (
+	NonPCICardTypeMerchantLocked NonPCICardType = "MERCHANT_LOCKED"
+	NonPCICardTypePhysical       NonPCICardType = "PHYSICAL"
+	NonPCICardTypeSingleUse      NonPCICardType = "SINGLE_USE"
+	NonPCICardTypeVirtual        NonPCICardType = "VIRTUAL"
+	NonPCICardTypeUnlocked       NonPCICardType = "UNLOCKED"
+	NonPCICardTypeDigitalWallet  NonPCICardType = "DIGITAL_WALLET"
+)
+
+func (r NonPCICardType) IsKnown() bool {
+	switch r {
+	case NonPCICardTypeMerchantLocked, NonPCICardTypePhysical, NonPCICardTypeSingleUse, NonPCICardTypeVirtual, NonPCICardTypeUnlocked, NonPCICardTypeDigitalWallet:
+		return true
+	}
+	return false
+}
+
 // Spend limit duration values:
 //
 //   - `ANNUALLY` - Card will authorize transactions up to spend limit for the
@@ -385,1551 +715,6 @@ func (r SpendLimitDuration) IsKnown() bool {
 	return false
 }
 
-// Card details with potentially PCI sensitive information for Enterprise customers
-type CardNewResponse struct {
-	// Globally unique identifier.
-	Token string `json:"token,required"`
-	// Globally unique identifier for the account to which the card belongs.
-	AccountToken string `json:"account_token,required"`
-	// Globally unique identifier for the card program on which the card exists.
-	CardProgramToken string `json:"card_program_token,required"`
-	// An RFC 3339 timestamp for when the card was created. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// Deprecated: Funding account for the card.
-	Funding CardNewResponseFunding `json:"funding,required"`
-	// Last four digits of the card number.
-	LastFour string `json:"last_four,required"`
-	// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
-	// attempts).
-	PinStatus CardNewResponsePinStatus `json:"pin_status,required"`
-	// Amount (in cents) to limit approved authorizations (e.g. 100000 would be a
-	// $1,000 limit). Transaction requests above the spend limit will be declined.
-	SpendLimit int64 `json:"spend_limit,required"`
-	// Spend limit duration
-	SpendLimitDuration CardNewResponseSpendLimitDuration `json:"spend_limit_duration,required"`
-	// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
-	// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
-	// they match card and account parameters). _ `PAUSED` - Card will decline
-	// authorizations, but can be resumed at a later time. _ `PENDING_FULFILLMENT` -
-	// The initial state for cards of type `PHYSICAL`. The card is provisioned pending
-	// manufacturing and fulfillment. Cards in this state can accept authorizations for
-	// e-commerce purchases, but not for "Card Present" purchases where the physical
-	// card itself is present. \* `PENDING_ACTIVATION` - At regular intervals, cards of
-	// type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card production
-	// warehouse and updated to state `PENDING_ACTIVATION`. Similar to
-	// `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
-	// transactions or can be added to mobile wallets. API clients should update the
-	// card's state to `OPEN` only after the cardholder confirms receipt of the card.
-	// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
-	// manufactured.
-	State CardNewResponseState `json:"state,required"`
-	// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
-	// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
-	// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
-	// offer white label branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe
-	// functionality. _ `SINGLE_USE` - Card is closed upon first successful
-	// authorization. _ `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first
-	// merchant that successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_
-	// Similar behavior to VIRTUAL cards, please use VIRTUAL instead. _
-	// `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
-	// VIRTUAL instead.
-	Type CardNewResponseType `json:"type,required"`
-	// List of identifiers for the Auth Rule(s) that are applied on the card. This
-	// field is deprecated and will no longer be populated in the `Card` object. The
-	// key will be removed from the schema in a future release. Use the `/auth_rules`
-	// endpoints to fetch Auth Rule information instead.
-	//
-	// Deprecated: deprecated
-	AuthRuleTokens []string `json:"auth_rule_tokens"`
-	// 3-character alphabetic ISO 4217 code for the currency of the cardholder.
-	CardholderCurrency string `json:"cardholder_currency"`
-	// Three digit cvv printed on the back of the card.
-	Cvv string `json:"cvv"`
-	// Specifies the digital card art to be displayed in the user's digital wallet
-	// after tokenization. This artwork must be approved by Mastercard and configured
-	// by Lithic to use.
-	DigitalCardArtToken string `json:"digital_card_art_token"`
-	// Two digit (MM) expiry month.
-	ExpMonth string `json:"exp_month"`
-	// Four digit (yyyy) expiry year.
-	ExpYear string `json:"exp_year"`
-	// Hostname of card's locked merchant (will be empty if not applicable).
-	Hostname string `json:"hostname"`
-	// Friendly name to identify the card.
-	Memo string `json:"memo"`
-	// Primary Account Number (PAN) (i.e. the card number). Customers must be PCI
-	// compliant to have PAN returned as a field in production. Please contact
-	// support@lithic.com for questions.
-	Pan string `json:"pan"`
-	// Indicates if there are offline PIN changes pending card interaction with an
-	// offline PIN terminal. Possible commands are: CHANGE_PIN, UNBLOCK_PIN. Applicable
-	// only to cards issued in markets supporting offline PINs.
-	PendingCommands []string `json:"pending_commands"`
-	// Only applicable to cards of type `PHYSICAL`. This must be configured with Lithic
-	// before use. Specifies the configuration (i.e., physical card art) that the card
-	// should be manufactured with.
-	ProductID string `json:"product_id"`
-	// If the card is a replacement for another card, the globally unique identifier
-	// for the card that was replaced.
-	ReplacementFor string              `json:"replacement_for,nullable"`
-	JSON           cardNewResponseJSON `json:"-"`
-}
-
-// cardNewResponseJSON contains the JSON metadata for the struct [CardNewResponse]
-type cardNewResponseJSON struct {
-	Token               apijson.Field
-	AccountToken        apijson.Field
-	CardProgramToken    apijson.Field
-	Created             apijson.Field
-	Funding             apijson.Field
-	LastFour            apijson.Field
-	PinStatus           apijson.Field
-	SpendLimit          apijson.Field
-	SpendLimitDuration  apijson.Field
-	State               apijson.Field
-	Type                apijson.Field
-	AuthRuleTokens      apijson.Field
-	CardholderCurrency  apijson.Field
-	Cvv                 apijson.Field
-	DigitalCardArtToken apijson.Field
-	ExpMonth            apijson.Field
-	ExpYear             apijson.Field
-	Hostname            apijson.Field
-	Memo                apijson.Field
-	Pan                 apijson.Field
-	PendingCommands     apijson.Field
-	ProductID           apijson.Field
-	ReplacementFor      apijson.Field
-	raw                 string
-	ExtraFields         map[string]apijson.Field
-}
-
-func (r *CardNewResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r cardNewResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-// Deprecated: Funding account for the card.
-type CardNewResponseFunding struct {
-	// A globally unique identifier for this FundingAccount.
-	Token string `json:"token,required" format:"uuid"`
-	// An RFC 3339 string representing when this funding source was added to the Lithic
-	// account. This may be `null`. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// The last 4 digits of the account (e.g. bank account, debit card) associated with
-	// this FundingAccount. This may be null.
-	LastFour string `json:"last_four,required"`
-	// State of funding source. Funding source states: _ `ENABLED` - The funding
-	// account is available to use for card creation and transactions. _ `PENDING` -
-	// The funding account is still being verified e.g. bank micro-deposits
-	// verification. \* `DELETED` - The founding account has been deleted.
-	State CardNewResponseFundingState `json:"state,required"`
-	// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
-	// `DEPOSITORY_SAVINGS` - Bank savings account.
-	Type CardNewResponseFundingType `json:"type,required"`
-	// Account name identifying the funding source. This may be `null`.
-	AccountName string `json:"account_name"`
-	// The nickname given to the `FundingAccount` or `null` if it has no nickname.
-	Nickname string                     `json:"nickname"`
-	JSON     cardNewResponseFundingJSON `json:"-"`
-}
-
-// cardNewResponseFundingJSON contains the JSON metadata for the struct
-// [CardNewResponseFunding]
-type cardNewResponseFundingJSON struct {
-	Token       apijson.Field
-	Created     apijson.Field
-	LastFour    apijson.Field
-	State       apijson.Field
-	Type        apijson.Field
-	AccountName apijson.Field
-	Nickname    apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *CardNewResponseFunding) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r cardNewResponseFundingJSON) RawJSON() string {
-	return r.raw
-}
-
-// State of funding source. Funding source states: _ `ENABLED` - The funding
-// account is available to use for card creation and transactions. _ `PENDING` -
-// The funding account is still being verified e.g. bank micro-deposits
-// verification. \* `DELETED` - The founding account has been deleted.
-type CardNewResponseFundingState string
-
-const (
-	CardNewResponseFundingStateDeleted CardNewResponseFundingState = "DELETED"
-	CardNewResponseFundingStateEnabled CardNewResponseFundingState = "ENABLED"
-	CardNewResponseFundingStatePending CardNewResponseFundingState = "PENDING"
-)
-
-func (r CardNewResponseFundingState) IsKnown() bool {
-	switch r {
-	case CardNewResponseFundingStateDeleted, CardNewResponseFundingStateEnabled, CardNewResponseFundingStatePending:
-		return true
-	}
-	return false
-}
-
-// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
-// `DEPOSITORY_SAVINGS` - Bank savings account.
-type CardNewResponseFundingType string
-
-const (
-	CardNewResponseFundingTypeDepositoryChecking CardNewResponseFundingType = "DEPOSITORY_CHECKING"
-	CardNewResponseFundingTypeDepositorySavings  CardNewResponseFundingType = "DEPOSITORY_SAVINGS"
-)
-
-func (r CardNewResponseFundingType) IsKnown() bool {
-	switch r {
-	case CardNewResponseFundingTypeDepositoryChecking, CardNewResponseFundingTypeDepositorySavings:
-		return true
-	}
-	return false
-}
-
-// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
-// attempts).
-type CardNewResponsePinStatus string
-
-const (
-	CardNewResponsePinStatusOk      CardNewResponsePinStatus = "OK"
-	CardNewResponsePinStatusBlocked CardNewResponsePinStatus = "BLOCKED"
-	CardNewResponsePinStatusNotSet  CardNewResponsePinStatus = "NOT_SET"
-)
-
-func (r CardNewResponsePinStatus) IsKnown() bool {
-	switch r {
-	case CardNewResponsePinStatusOk, CardNewResponsePinStatusBlocked, CardNewResponsePinStatusNotSet:
-		return true
-	}
-	return false
-}
-
-// Spend limit duration
-type CardNewResponseSpendLimitDuration string
-
-const (
-	CardNewResponseSpendLimitDurationAnnually    CardNewResponseSpendLimitDuration = "ANNUALLY"
-	CardNewResponseSpendLimitDurationForever     CardNewResponseSpendLimitDuration = "FOREVER"
-	CardNewResponseSpendLimitDurationMonthly     CardNewResponseSpendLimitDuration = "MONTHLY"
-	CardNewResponseSpendLimitDurationTransaction CardNewResponseSpendLimitDuration = "TRANSACTION"
-	CardNewResponseSpendLimitDurationDaily       CardNewResponseSpendLimitDuration = "DAILY"
-)
-
-func (r CardNewResponseSpendLimitDuration) IsKnown() bool {
-	switch r {
-	case CardNewResponseSpendLimitDurationAnnually, CardNewResponseSpendLimitDurationForever, CardNewResponseSpendLimitDurationMonthly, CardNewResponseSpendLimitDurationTransaction, CardNewResponseSpendLimitDurationDaily:
-		return true
-	}
-	return false
-}
-
-// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
-// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
-// they match card and account parameters). _ `PAUSED` - Card will decline
-// authorizations, but can be resumed at a later time. _ `PENDING_FULFILLMENT` -
-// The initial state for cards of type `PHYSICAL`. The card is provisioned pending
-// manufacturing and fulfillment. Cards in this state can accept authorizations for
-// e-commerce purchases, but not for "Card Present" purchases where the physical
-// card itself is present. \* `PENDING_ACTIVATION` - At regular intervals, cards of
-// type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card production
-// warehouse and updated to state `PENDING_ACTIVATION`. Similar to
-// `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
-// transactions or can be added to mobile wallets. API clients should update the
-// card's state to `OPEN` only after the cardholder confirms receipt of the card.
-// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
-// manufactured.
-type CardNewResponseState string
-
-const (
-	CardNewResponseStateClosed             CardNewResponseState = "CLOSED"
-	CardNewResponseStateOpen               CardNewResponseState = "OPEN"
-	CardNewResponseStatePaused             CardNewResponseState = "PAUSED"
-	CardNewResponseStatePendingActivation  CardNewResponseState = "PENDING_ACTIVATION"
-	CardNewResponseStatePendingFulfillment CardNewResponseState = "PENDING_FULFILLMENT"
-)
-
-func (r CardNewResponseState) IsKnown() bool {
-	switch r {
-	case CardNewResponseStateClosed, CardNewResponseStateOpen, CardNewResponseStatePaused, CardNewResponseStatePendingActivation, CardNewResponseStatePendingFulfillment:
-		return true
-	}
-	return false
-}
-
-// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
-// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
-// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
-// offer white label branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe
-// functionality. _ `SINGLE_USE` - Card is closed upon first successful
-// authorization. _ `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first
-// merchant that successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_
-// Similar behavior to VIRTUAL cards, please use VIRTUAL instead. _
-// `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
-// VIRTUAL instead.
-type CardNewResponseType string
-
-const (
-	CardNewResponseTypeMerchantLocked CardNewResponseType = "MERCHANT_LOCKED"
-	CardNewResponseTypePhysical       CardNewResponseType = "PHYSICAL"
-	CardNewResponseTypeSingleUse      CardNewResponseType = "SINGLE_USE"
-	CardNewResponseTypeVirtual        CardNewResponseType = "VIRTUAL"
-	CardNewResponseTypeUnlocked       CardNewResponseType = "UNLOCKED"
-	CardNewResponseTypeDigitalWallet  CardNewResponseType = "DIGITAL_WALLET"
-)
-
-func (r CardNewResponseType) IsKnown() bool {
-	switch r {
-	case CardNewResponseTypeMerchantLocked, CardNewResponseTypePhysical, CardNewResponseTypeSingleUse, CardNewResponseTypeVirtual, CardNewResponseTypeUnlocked, CardNewResponseTypeDigitalWallet:
-		return true
-	}
-	return false
-}
-
-// Card details with potentially PCI sensitive information for Enterprise customers
-type CardGetResponse struct {
-	// Globally unique identifier.
-	Token string `json:"token,required"`
-	// Globally unique identifier for the account to which the card belongs.
-	AccountToken string `json:"account_token,required"`
-	// Globally unique identifier for the card program on which the card exists.
-	CardProgramToken string `json:"card_program_token,required"`
-	// An RFC 3339 timestamp for when the card was created. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// Deprecated: Funding account for the card.
-	Funding CardGetResponseFunding `json:"funding,required"`
-	// Last four digits of the card number.
-	LastFour string `json:"last_four,required"`
-	// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
-	// attempts).
-	PinStatus CardGetResponsePinStatus `json:"pin_status,required"`
-	// Amount (in cents) to limit approved authorizations (e.g. 100000 would be a
-	// $1,000 limit). Transaction requests above the spend limit will be declined.
-	SpendLimit int64 `json:"spend_limit,required"`
-	// Spend limit duration
-	SpendLimitDuration CardGetResponseSpendLimitDuration `json:"spend_limit_duration,required"`
-	// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
-	// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
-	// they match card and account parameters). _ `PAUSED` - Card will decline
-	// authorizations, but can be resumed at a later time. _ `PENDING_FULFILLMENT` -
-	// The initial state for cards of type `PHYSICAL`. The card is provisioned pending
-	// manufacturing and fulfillment. Cards in this state can accept authorizations for
-	// e-commerce purchases, but not for "Card Present" purchases where the physical
-	// card itself is present. \* `PENDING_ACTIVATION` - At regular intervals, cards of
-	// type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card production
-	// warehouse and updated to state `PENDING_ACTIVATION`. Similar to
-	// `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
-	// transactions or can be added to mobile wallets. API clients should update the
-	// card's state to `OPEN` only after the cardholder confirms receipt of the card.
-	// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
-	// manufactured.
-	State CardGetResponseState `json:"state,required"`
-	// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
-	// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
-	// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
-	// offer white label branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe
-	// functionality. _ `SINGLE_USE` - Card is closed upon first successful
-	// authorization. _ `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first
-	// merchant that successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_
-	// Similar behavior to VIRTUAL cards, please use VIRTUAL instead. _
-	// `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
-	// VIRTUAL instead.
-	Type CardGetResponseType `json:"type,required"`
-	// List of identifiers for the Auth Rule(s) that are applied on the card. This
-	// field is deprecated and will no longer be populated in the `Card` object. The
-	// key will be removed from the schema in a future release. Use the `/auth_rules`
-	// endpoints to fetch Auth Rule information instead.
-	//
-	// Deprecated: deprecated
-	AuthRuleTokens []string `json:"auth_rule_tokens"`
-	// 3-character alphabetic ISO 4217 code for the currency of the cardholder.
-	CardholderCurrency string `json:"cardholder_currency"`
-	// Three digit cvv printed on the back of the card.
-	Cvv string `json:"cvv"`
-	// Specifies the digital card art to be displayed in the user's digital wallet
-	// after tokenization. This artwork must be approved by Mastercard and configured
-	// by Lithic to use.
-	DigitalCardArtToken string `json:"digital_card_art_token"`
-	// Two digit (MM) expiry month.
-	ExpMonth string `json:"exp_month"`
-	// Four digit (yyyy) expiry year.
-	ExpYear string `json:"exp_year"`
-	// Hostname of card's locked merchant (will be empty if not applicable).
-	Hostname string `json:"hostname"`
-	// Friendly name to identify the card.
-	Memo string `json:"memo"`
-	// Primary Account Number (PAN) (i.e. the card number). Customers must be PCI
-	// compliant to have PAN returned as a field in production. Please contact
-	// support@lithic.com for questions.
-	Pan string `json:"pan"`
-	// Indicates if there are offline PIN changes pending card interaction with an
-	// offline PIN terminal. Possible commands are: CHANGE_PIN, UNBLOCK_PIN. Applicable
-	// only to cards issued in markets supporting offline PINs.
-	PendingCommands []string `json:"pending_commands"`
-	// Only applicable to cards of type `PHYSICAL`. This must be configured with Lithic
-	// before use. Specifies the configuration (i.e., physical card art) that the card
-	// should be manufactured with.
-	ProductID string `json:"product_id"`
-	// If the card is a replacement for another card, the globally unique identifier
-	// for the card that was replaced.
-	ReplacementFor string              `json:"replacement_for,nullable"`
-	JSON           cardGetResponseJSON `json:"-"`
-}
-
-// cardGetResponseJSON contains the JSON metadata for the struct [CardGetResponse]
-type cardGetResponseJSON struct {
-	Token               apijson.Field
-	AccountToken        apijson.Field
-	CardProgramToken    apijson.Field
-	Created             apijson.Field
-	Funding             apijson.Field
-	LastFour            apijson.Field
-	PinStatus           apijson.Field
-	SpendLimit          apijson.Field
-	SpendLimitDuration  apijson.Field
-	State               apijson.Field
-	Type                apijson.Field
-	AuthRuleTokens      apijson.Field
-	CardholderCurrency  apijson.Field
-	Cvv                 apijson.Field
-	DigitalCardArtToken apijson.Field
-	ExpMonth            apijson.Field
-	ExpYear             apijson.Field
-	Hostname            apijson.Field
-	Memo                apijson.Field
-	Pan                 apijson.Field
-	PendingCommands     apijson.Field
-	ProductID           apijson.Field
-	ReplacementFor      apijson.Field
-	raw                 string
-	ExtraFields         map[string]apijson.Field
-}
-
-func (r *CardGetResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r cardGetResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-// Deprecated: Funding account for the card.
-type CardGetResponseFunding struct {
-	// A globally unique identifier for this FundingAccount.
-	Token string `json:"token,required" format:"uuid"`
-	// An RFC 3339 string representing when this funding source was added to the Lithic
-	// account. This may be `null`. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// The last 4 digits of the account (e.g. bank account, debit card) associated with
-	// this FundingAccount. This may be null.
-	LastFour string `json:"last_four,required"`
-	// State of funding source. Funding source states: _ `ENABLED` - The funding
-	// account is available to use for card creation and transactions. _ `PENDING` -
-	// The funding account is still being verified e.g. bank micro-deposits
-	// verification. \* `DELETED` - The founding account has been deleted.
-	State CardGetResponseFundingState `json:"state,required"`
-	// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
-	// `DEPOSITORY_SAVINGS` - Bank savings account.
-	Type CardGetResponseFundingType `json:"type,required"`
-	// Account name identifying the funding source. This may be `null`.
-	AccountName string `json:"account_name"`
-	// The nickname given to the `FundingAccount` or `null` if it has no nickname.
-	Nickname string                     `json:"nickname"`
-	JSON     cardGetResponseFundingJSON `json:"-"`
-}
-
-// cardGetResponseFundingJSON contains the JSON metadata for the struct
-// [CardGetResponseFunding]
-type cardGetResponseFundingJSON struct {
-	Token       apijson.Field
-	Created     apijson.Field
-	LastFour    apijson.Field
-	State       apijson.Field
-	Type        apijson.Field
-	AccountName apijson.Field
-	Nickname    apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *CardGetResponseFunding) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r cardGetResponseFundingJSON) RawJSON() string {
-	return r.raw
-}
-
-// State of funding source. Funding source states: _ `ENABLED` - The funding
-// account is available to use for card creation and transactions. _ `PENDING` -
-// The funding account is still being verified e.g. bank micro-deposits
-// verification. \* `DELETED` - The founding account has been deleted.
-type CardGetResponseFundingState string
-
-const (
-	CardGetResponseFundingStateDeleted CardGetResponseFundingState = "DELETED"
-	CardGetResponseFundingStateEnabled CardGetResponseFundingState = "ENABLED"
-	CardGetResponseFundingStatePending CardGetResponseFundingState = "PENDING"
-)
-
-func (r CardGetResponseFundingState) IsKnown() bool {
-	switch r {
-	case CardGetResponseFundingStateDeleted, CardGetResponseFundingStateEnabled, CardGetResponseFundingStatePending:
-		return true
-	}
-	return false
-}
-
-// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
-// `DEPOSITORY_SAVINGS` - Bank savings account.
-type CardGetResponseFundingType string
-
-const (
-	CardGetResponseFundingTypeDepositoryChecking CardGetResponseFundingType = "DEPOSITORY_CHECKING"
-	CardGetResponseFundingTypeDepositorySavings  CardGetResponseFundingType = "DEPOSITORY_SAVINGS"
-)
-
-func (r CardGetResponseFundingType) IsKnown() bool {
-	switch r {
-	case CardGetResponseFundingTypeDepositoryChecking, CardGetResponseFundingTypeDepositorySavings:
-		return true
-	}
-	return false
-}
-
-// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
-// attempts).
-type CardGetResponsePinStatus string
-
-const (
-	CardGetResponsePinStatusOk      CardGetResponsePinStatus = "OK"
-	CardGetResponsePinStatusBlocked CardGetResponsePinStatus = "BLOCKED"
-	CardGetResponsePinStatusNotSet  CardGetResponsePinStatus = "NOT_SET"
-)
-
-func (r CardGetResponsePinStatus) IsKnown() bool {
-	switch r {
-	case CardGetResponsePinStatusOk, CardGetResponsePinStatusBlocked, CardGetResponsePinStatusNotSet:
-		return true
-	}
-	return false
-}
-
-// Spend limit duration
-type CardGetResponseSpendLimitDuration string
-
-const (
-	CardGetResponseSpendLimitDurationAnnually    CardGetResponseSpendLimitDuration = "ANNUALLY"
-	CardGetResponseSpendLimitDurationForever     CardGetResponseSpendLimitDuration = "FOREVER"
-	CardGetResponseSpendLimitDurationMonthly     CardGetResponseSpendLimitDuration = "MONTHLY"
-	CardGetResponseSpendLimitDurationTransaction CardGetResponseSpendLimitDuration = "TRANSACTION"
-	CardGetResponseSpendLimitDurationDaily       CardGetResponseSpendLimitDuration = "DAILY"
-)
-
-func (r CardGetResponseSpendLimitDuration) IsKnown() bool {
-	switch r {
-	case CardGetResponseSpendLimitDurationAnnually, CardGetResponseSpendLimitDurationForever, CardGetResponseSpendLimitDurationMonthly, CardGetResponseSpendLimitDurationTransaction, CardGetResponseSpendLimitDurationDaily:
-		return true
-	}
-	return false
-}
-
-// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
-// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
-// they match card and account parameters). _ `PAUSED` - Card will decline
-// authorizations, but can be resumed at a later time. _ `PENDING_FULFILLMENT` -
-// The initial state for cards of type `PHYSICAL`. The card is provisioned pending
-// manufacturing and fulfillment. Cards in this state can accept authorizations for
-// e-commerce purchases, but not for "Card Present" purchases where the physical
-// card itself is present. \* `PENDING_ACTIVATION` - At regular intervals, cards of
-// type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card production
-// warehouse and updated to state `PENDING_ACTIVATION`. Similar to
-// `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
-// transactions or can be added to mobile wallets. API clients should update the
-// card's state to `OPEN` only after the cardholder confirms receipt of the card.
-// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
-// manufactured.
-type CardGetResponseState string
-
-const (
-	CardGetResponseStateClosed             CardGetResponseState = "CLOSED"
-	CardGetResponseStateOpen               CardGetResponseState = "OPEN"
-	CardGetResponseStatePaused             CardGetResponseState = "PAUSED"
-	CardGetResponseStatePendingActivation  CardGetResponseState = "PENDING_ACTIVATION"
-	CardGetResponseStatePendingFulfillment CardGetResponseState = "PENDING_FULFILLMENT"
-)
-
-func (r CardGetResponseState) IsKnown() bool {
-	switch r {
-	case CardGetResponseStateClosed, CardGetResponseStateOpen, CardGetResponseStatePaused, CardGetResponseStatePendingActivation, CardGetResponseStatePendingFulfillment:
-		return true
-	}
-	return false
-}
-
-// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
-// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
-// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
-// offer white label branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe
-// functionality. _ `SINGLE_USE` - Card is closed upon first successful
-// authorization. _ `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first
-// merchant that successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_
-// Similar behavior to VIRTUAL cards, please use VIRTUAL instead. _
-// `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
-// VIRTUAL instead.
-type CardGetResponseType string
-
-const (
-	CardGetResponseTypeMerchantLocked CardGetResponseType = "MERCHANT_LOCKED"
-	CardGetResponseTypePhysical       CardGetResponseType = "PHYSICAL"
-	CardGetResponseTypeSingleUse      CardGetResponseType = "SINGLE_USE"
-	CardGetResponseTypeVirtual        CardGetResponseType = "VIRTUAL"
-	CardGetResponseTypeUnlocked       CardGetResponseType = "UNLOCKED"
-	CardGetResponseTypeDigitalWallet  CardGetResponseType = "DIGITAL_WALLET"
-)
-
-func (r CardGetResponseType) IsKnown() bool {
-	switch r {
-	case CardGetResponseTypeMerchantLocked, CardGetResponseTypePhysical, CardGetResponseTypeSingleUse, CardGetResponseTypeVirtual, CardGetResponseTypeUnlocked, CardGetResponseTypeDigitalWallet:
-		return true
-	}
-	return false
-}
-
-// Card details with potentially PCI sensitive information for Enterprise customers
-type CardUpdateResponse struct {
-	// Globally unique identifier.
-	Token string `json:"token,required"`
-	// Globally unique identifier for the account to which the card belongs.
-	AccountToken string `json:"account_token,required"`
-	// Globally unique identifier for the card program on which the card exists.
-	CardProgramToken string `json:"card_program_token,required"`
-	// An RFC 3339 timestamp for when the card was created. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// Deprecated: Funding account for the card.
-	Funding CardUpdateResponseFunding `json:"funding,required"`
-	// Last four digits of the card number.
-	LastFour string `json:"last_four,required"`
-	// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
-	// attempts).
-	PinStatus CardUpdateResponsePinStatus `json:"pin_status,required"`
-	// Amount (in cents) to limit approved authorizations (e.g. 100000 would be a
-	// $1,000 limit). Transaction requests above the spend limit will be declined.
-	SpendLimit int64 `json:"spend_limit,required"`
-	// Spend limit duration
-	SpendLimitDuration CardUpdateResponseSpendLimitDuration `json:"spend_limit_duration,required"`
-	// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
-	// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
-	// they match card and account parameters). _ `PAUSED` - Card will decline
-	// authorizations, but can be resumed at a later time. _ `PENDING_FULFILLMENT` -
-	// The initial state for cards of type `PHYSICAL`. The card is provisioned pending
-	// manufacturing and fulfillment. Cards in this state can accept authorizations for
-	// e-commerce purchases, but not for "Card Present" purchases where the physical
-	// card itself is present. \* `PENDING_ACTIVATION` - At regular intervals, cards of
-	// type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card production
-	// warehouse and updated to state `PENDING_ACTIVATION`. Similar to
-	// `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
-	// transactions or can be added to mobile wallets. API clients should update the
-	// card's state to `OPEN` only after the cardholder confirms receipt of the card.
-	// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
-	// manufactured.
-	State CardUpdateResponseState `json:"state,required"`
-	// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
-	// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
-	// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
-	// offer white label branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe
-	// functionality. _ `SINGLE_USE` - Card is closed upon first successful
-	// authorization. _ `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first
-	// merchant that successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_
-	// Similar behavior to VIRTUAL cards, please use VIRTUAL instead. _
-	// `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
-	// VIRTUAL instead.
-	Type CardUpdateResponseType `json:"type,required"`
-	// List of identifiers for the Auth Rule(s) that are applied on the card. This
-	// field is deprecated and will no longer be populated in the `Card` object. The
-	// key will be removed from the schema in a future release. Use the `/auth_rules`
-	// endpoints to fetch Auth Rule information instead.
-	//
-	// Deprecated: deprecated
-	AuthRuleTokens []string `json:"auth_rule_tokens"`
-	// 3-character alphabetic ISO 4217 code for the currency of the cardholder.
-	CardholderCurrency string `json:"cardholder_currency"`
-	// Three digit cvv printed on the back of the card.
-	Cvv string `json:"cvv"`
-	// Specifies the digital card art to be displayed in the user's digital wallet
-	// after tokenization. This artwork must be approved by Mastercard and configured
-	// by Lithic to use.
-	DigitalCardArtToken string `json:"digital_card_art_token"`
-	// Two digit (MM) expiry month.
-	ExpMonth string `json:"exp_month"`
-	// Four digit (yyyy) expiry year.
-	ExpYear string `json:"exp_year"`
-	// Hostname of card's locked merchant (will be empty if not applicable).
-	Hostname string `json:"hostname"`
-	// Friendly name to identify the card.
-	Memo string `json:"memo"`
-	// Primary Account Number (PAN) (i.e. the card number). Customers must be PCI
-	// compliant to have PAN returned as a field in production. Please contact
-	// support@lithic.com for questions.
-	Pan string `json:"pan"`
-	// Indicates if there are offline PIN changes pending card interaction with an
-	// offline PIN terminal. Possible commands are: CHANGE_PIN, UNBLOCK_PIN. Applicable
-	// only to cards issued in markets supporting offline PINs.
-	PendingCommands []string `json:"pending_commands"`
-	// Only applicable to cards of type `PHYSICAL`. This must be configured with Lithic
-	// before use. Specifies the configuration (i.e., physical card art) that the card
-	// should be manufactured with.
-	ProductID string `json:"product_id"`
-	// If the card is a replacement for another card, the globally unique identifier
-	// for the card that was replaced.
-	ReplacementFor string                 `json:"replacement_for,nullable"`
-	JSON           cardUpdateResponseJSON `json:"-"`
-}
-
-// cardUpdateResponseJSON contains the JSON metadata for the struct
-// [CardUpdateResponse]
-type cardUpdateResponseJSON struct {
-	Token               apijson.Field
-	AccountToken        apijson.Field
-	CardProgramToken    apijson.Field
-	Created             apijson.Field
-	Funding             apijson.Field
-	LastFour            apijson.Field
-	PinStatus           apijson.Field
-	SpendLimit          apijson.Field
-	SpendLimitDuration  apijson.Field
-	State               apijson.Field
-	Type                apijson.Field
-	AuthRuleTokens      apijson.Field
-	CardholderCurrency  apijson.Field
-	Cvv                 apijson.Field
-	DigitalCardArtToken apijson.Field
-	ExpMonth            apijson.Field
-	ExpYear             apijson.Field
-	Hostname            apijson.Field
-	Memo                apijson.Field
-	Pan                 apijson.Field
-	PendingCommands     apijson.Field
-	ProductID           apijson.Field
-	ReplacementFor      apijson.Field
-	raw                 string
-	ExtraFields         map[string]apijson.Field
-}
-
-func (r *CardUpdateResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r cardUpdateResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-// Deprecated: Funding account for the card.
-type CardUpdateResponseFunding struct {
-	// A globally unique identifier for this FundingAccount.
-	Token string `json:"token,required" format:"uuid"`
-	// An RFC 3339 string representing when this funding source was added to the Lithic
-	// account. This may be `null`. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// The last 4 digits of the account (e.g. bank account, debit card) associated with
-	// this FundingAccount. This may be null.
-	LastFour string `json:"last_four,required"`
-	// State of funding source. Funding source states: _ `ENABLED` - The funding
-	// account is available to use for card creation and transactions. _ `PENDING` -
-	// The funding account is still being verified e.g. bank micro-deposits
-	// verification. \* `DELETED` - The founding account has been deleted.
-	State CardUpdateResponseFundingState `json:"state,required"`
-	// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
-	// `DEPOSITORY_SAVINGS` - Bank savings account.
-	Type CardUpdateResponseFundingType `json:"type,required"`
-	// Account name identifying the funding source. This may be `null`.
-	AccountName string `json:"account_name"`
-	// The nickname given to the `FundingAccount` or `null` if it has no nickname.
-	Nickname string                        `json:"nickname"`
-	JSON     cardUpdateResponseFundingJSON `json:"-"`
-}
-
-// cardUpdateResponseFundingJSON contains the JSON metadata for the struct
-// [CardUpdateResponseFunding]
-type cardUpdateResponseFundingJSON struct {
-	Token       apijson.Field
-	Created     apijson.Field
-	LastFour    apijson.Field
-	State       apijson.Field
-	Type        apijson.Field
-	AccountName apijson.Field
-	Nickname    apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *CardUpdateResponseFunding) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r cardUpdateResponseFundingJSON) RawJSON() string {
-	return r.raw
-}
-
-// State of funding source. Funding source states: _ `ENABLED` - The funding
-// account is available to use for card creation and transactions. _ `PENDING` -
-// The funding account is still being verified e.g. bank micro-deposits
-// verification. \* `DELETED` - The founding account has been deleted.
-type CardUpdateResponseFundingState string
-
-const (
-	CardUpdateResponseFundingStateDeleted CardUpdateResponseFundingState = "DELETED"
-	CardUpdateResponseFundingStateEnabled CardUpdateResponseFundingState = "ENABLED"
-	CardUpdateResponseFundingStatePending CardUpdateResponseFundingState = "PENDING"
-)
-
-func (r CardUpdateResponseFundingState) IsKnown() bool {
-	switch r {
-	case CardUpdateResponseFundingStateDeleted, CardUpdateResponseFundingStateEnabled, CardUpdateResponseFundingStatePending:
-		return true
-	}
-	return false
-}
-
-// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
-// `DEPOSITORY_SAVINGS` - Bank savings account.
-type CardUpdateResponseFundingType string
-
-const (
-	CardUpdateResponseFundingTypeDepositoryChecking CardUpdateResponseFundingType = "DEPOSITORY_CHECKING"
-	CardUpdateResponseFundingTypeDepositorySavings  CardUpdateResponseFundingType = "DEPOSITORY_SAVINGS"
-)
-
-func (r CardUpdateResponseFundingType) IsKnown() bool {
-	switch r {
-	case CardUpdateResponseFundingTypeDepositoryChecking, CardUpdateResponseFundingTypeDepositorySavings:
-		return true
-	}
-	return false
-}
-
-// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
-// attempts).
-type CardUpdateResponsePinStatus string
-
-const (
-	CardUpdateResponsePinStatusOk      CardUpdateResponsePinStatus = "OK"
-	CardUpdateResponsePinStatusBlocked CardUpdateResponsePinStatus = "BLOCKED"
-	CardUpdateResponsePinStatusNotSet  CardUpdateResponsePinStatus = "NOT_SET"
-)
-
-func (r CardUpdateResponsePinStatus) IsKnown() bool {
-	switch r {
-	case CardUpdateResponsePinStatusOk, CardUpdateResponsePinStatusBlocked, CardUpdateResponsePinStatusNotSet:
-		return true
-	}
-	return false
-}
-
-// Spend limit duration
-type CardUpdateResponseSpendLimitDuration string
-
-const (
-	CardUpdateResponseSpendLimitDurationAnnually    CardUpdateResponseSpendLimitDuration = "ANNUALLY"
-	CardUpdateResponseSpendLimitDurationForever     CardUpdateResponseSpendLimitDuration = "FOREVER"
-	CardUpdateResponseSpendLimitDurationMonthly     CardUpdateResponseSpendLimitDuration = "MONTHLY"
-	CardUpdateResponseSpendLimitDurationTransaction CardUpdateResponseSpendLimitDuration = "TRANSACTION"
-	CardUpdateResponseSpendLimitDurationDaily       CardUpdateResponseSpendLimitDuration = "DAILY"
-)
-
-func (r CardUpdateResponseSpendLimitDuration) IsKnown() bool {
-	switch r {
-	case CardUpdateResponseSpendLimitDurationAnnually, CardUpdateResponseSpendLimitDurationForever, CardUpdateResponseSpendLimitDurationMonthly, CardUpdateResponseSpendLimitDurationTransaction, CardUpdateResponseSpendLimitDurationDaily:
-		return true
-	}
-	return false
-}
-
-// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
-// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
-// they match card and account parameters). _ `PAUSED` - Card will decline
-// authorizations, but can be resumed at a later time. _ `PENDING_FULFILLMENT` -
-// The initial state for cards of type `PHYSICAL`. The card is provisioned pending
-// manufacturing and fulfillment. Cards in this state can accept authorizations for
-// e-commerce purchases, but not for "Card Present" purchases where the physical
-// card itself is present. \* `PENDING_ACTIVATION` - At regular intervals, cards of
-// type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card production
-// warehouse and updated to state `PENDING_ACTIVATION`. Similar to
-// `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
-// transactions or can be added to mobile wallets. API clients should update the
-// card's state to `OPEN` only after the cardholder confirms receipt of the card.
-// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
-// manufactured.
-type CardUpdateResponseState string
-
-const (
-	CardUpdateResponseStateClosed             CardUpdateResponseState = "CLOSED"
-	CardUpdateResponseStateOpen               CardUpdateResponseState = "OPEN"
-	CardUpdateResponseStatePaused             CardUpdateResponseState = "PAUSED"
-	CardUpdateResponseStatePendingActivation  CardUpdateResponseState = "PENDING_ACTIVATION"
-	CardUpdateResponseStatePendingFulfillment CardUpdateResponseState = "PENDING_FULFILLMENT"
-)
-
-func (r CardUpdateResponseState) IsKnown() bool {
-	switch r {
-	case CardUpdateResponseStateClosed, CardUpdateResponseStateOpen, CardUpdateResponseStatePaused, CardUpdateResponseStatePendingActivation, CardUpdateResponseStatePendingFulfillment:
-		return true
-	}
-	return false
-}
-
-// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
-// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
-// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
-// offer white label branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe
-// functionality. _ `SINGLE_USE` - Card is closed upon first successful
-// authorization. _ `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first
-// merchant that successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_
-// Similar behavior to VIRTUAL cards, please use VIRTUAL instead. _
-// `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
-// VIRTUAL instead.
-type CardUpdateResponseType string
-
-const (
-	CardUpdateResponseTypeMerchantLocked CardUpdateResponseType = "MERCHANT_LOCKED"
-	CardUpdateResponseTypePhysical       CardUpdateResponseType = "PHYSICAL"
-	CardUpdateResponseTypeSingleUse      CardUpdateResponseType = "SINGLE_USE"
-	CardUpdateResponseTypeVirtual        CardUpdateResponseType = "VIRTUAL"
-	CardUpdateResponseTypeUnlocked       CardUpdateResponseType = "UNLOCKED"
-	CardUpdateResponseTypeDigitalWallet  CardUpdateResponseType = "DIGITAL_WALLET"
-)
-
-func (r CardUpdateResponseType) IsKnown() bool {
-	switch r {
-	case CardUpdateResponseTypeMerchantLocked, CardUpdateResponseTypePhysical, CardUpdateResponseTypeSingleUse, CardUpdateResponseTypeVirtual, CardUpdateResponseTypeUnlocked, CardUpdateResponseTypeDigitalWallet:
-		return true
-	}
-	return false
-}
-
-// Card details without PCI information
-type CardListResponse struct {
-	// Globally unique identifier.
-	Token string `json:"token,required"`
-	// Globally unique identifier for the account to which the card belongs.
-	AccountToken string `json:"account_token,required"`
-	// Globally unique identifier for the card program on which the card exists.
-	CardProgramToken string `json:"card_program_token,required"`
-	// An RFC 3339 timestamp for when the card was created. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// Deprecated: Funding account for the card.
-	Funding CardListResponseFunding `json:"funding,required"`
-	// Last four digits of the card number.
-	LastFour string `json:"last_four,required"`
-	// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
-	// attempts).
-	PinStatus CardListResponsePinStatus `json:"pin_status,required"`
-	// Amount (in cents) to limit approved authorizations (e.g. 100000 would be a
-	// $1,000 limit). Transaction requests above the spend limit will be declined.
-	SpendLimit int64 `json:"spend_limit,required"`
-	// Spend limit duration
-	SpendLimitDuration CardListResponseSpendLimitDuration `json:"spend_limit_duration,required"`
-	// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
-	// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
-	// they match card and account parameters). _ `PAUSED` - Card will decline
-	// authorizations, but can be resumed at a later time. _ `PENDING_FULFILLMENT` -
-	// The initial state for cards of type `PHYSICAL`. The card is provisioned pending
-	// manufacturing and fulfillment. Cards in this state can accept authorizations for
-	// e-commerce purchases, but not for "Card Present" purchases where the physical
-	// card itself is present. \* `PENDING_ACTIVATION` - At regular intervals, cards of
-	// type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card production
-	// warehouse and updated to state `PENDING_ACTIVATION`. Similar to
-	// `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
-	// transactions or can be added to mobile wallets. API clients should update the
-	// card's state to `OPEN` only after the cardholder confirms receipt of the card.
-	// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
-	// manufactured.
-	State CardListResponseState `json:"state,required"`
-	// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
-	// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
-	// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
-	// offer white label branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe
-	// functionality. _ `SINGLE_USE` - Card is closed upon first successful
-	// authorization. _ `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first
-	// merchant that successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_
-	// Similar behavior to VIRTUAL cards, please use VIRTUAL instead. _
-	// `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
-	// VIRTUAL instead.
-	Type CardListResponseType `json:"type,required"`
-	// List of identifiers for the Auth Rule(s) that are applied on the card. This
-	// field is deprecated and will no longer be populated in the `Card` object. The
-	// key will be removed from the schema in a future release. Use the `/auth_rules`
-	// endpoints to fetch Auth Rule information instead.
-	//
-	// Deprecated: deprecated
-	AuthRuleTokens []string `json:"auth_rule_tokens"`
-	// 3-character alphabetic ISO 4217 code for the currency of the cardholder.
-	CardholderCurrency string `json:"cardholder_currency"`
-	// Specifies the digital card art to be displayed in the user's digital wallet
-	// after tokenization. This artwork must be approved by Mastercard and configured
-	// by Lithic to use.
-	DigitalCardArtToken string `json:"digital_card_art_token"`
-	// Two digit (MM) expiry month.
-	ExpMonth string `json:"exp_month"`
-	// Four digit (yyyy) expiry year.
-	ExpYear string `json:"exp_year"`
-	// Hostname of card's locked merchant (will be empty if not applicable).
-	Hostname string `json:"hostname"`
-	// Friendly name to identify the card.
-	Memo string `json:"memo"`
-	// Indicates if there are offline PIN changes pending card interaction with an
-	// offline PIN terminal. Possible commands are: CHANGE_PIN, UNBLOCK_PIN. Applicable
-	// only to cards issued in markets supporting offline PINs.
-	PendingCommands []string `json:"pending_commands"`
-	// Only applicable to cards of type `PHYSICAL`. This must be configured with Lithic
-	// before use. Specifies the configuration (i.e., physical card art) that the card
-	// should be manufactured with.
-	ProductID string `json:"product_id"`
-	// If the card is a replacement for another card, the globally unique identifier
-	// for the card that was replaced.
-	ReplacementFor string               `json:"replacement_for,nullable"`
-	JSON           cardListResponseJSON `json:"-"`
-}
-
-// cardListResponseJSON contains the JSON metadata for the struct
-// [CardListResponse]
-type cardListResponseJSON struct {
-	Token               apijson.Field
-	AccountToken        apijson.Field
-	CardProgramToken    apijson.Field
-	Created             apijson.Field
-	Funding             apijson.Field
-	LastFour            apijson.Field
-	PinStatus           apijson.Field
-	SpendLimit          apijson.Field
-	SpendLimitDuration  apijson.Field
-	State               apijson.Field
-	Type                apijson.Field
-	AuthRuleTokens      apijson.Field
-	CardholderCurrency  apijson.Field
-	DigitalCardArtToken apijson.Field
-	ExpMonth            apijson.Field
-	ExpYear             apijson.Field
-	Hostname            apijson.Field
-	Memo                apijson.Field
-	PendingCommands     apijson.Field
-	ProductID           apijson.Field
-	ReplacementFor      apijson.Field
-	raw                 string
-	ExtraFields         map[string]apijson.Field
-}
-
-func (r *CardListResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r cardListResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-// Deprecated: Funding account for the card.
-type CardListResponseFunding struct {
-	// A globally unique identifier for this FundingAccount.
-	Token string `json:"token,required" format:"uuid"`
-	// An RFC 3339 string representing when this funding source was added to the Lithic
-	// account. This may be `null`. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// The last 4 digits of the account (e.g. bank account, debit card) associated with
-	// this FundingAccount. This may be null.
-	LastFour string `json:"last_four,required"`
-	// State of funding source. Funding source states: _ `ENABLED` - The funding
-	// account is available to use for card creation and transactions. _ `PENDING` -
-	// The funding account is still being verified e.g. bank micro-deposits
-	// verification. \* `DELETED` - The founding account has been deleted.
-	State CardListResponseFundingState `json:"state,required"`
-	// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
-	// `DEPOSITORY_SAVINGS` - Bank savings account.
-	Type CardListResponseFundingType `json:"type,required"`
-	// Account name identifying the funding source. This may be `null`.
-	AccountName string `json:"account_name"`
-	// The nickname given to the `FundingAccount` or `null` if it has no nickname.
-	Nickname string                      `json:"nickname"`
-	JSON     cardListResponseFundingJSON `json:"-"`
-}
-
-// cardListResponseFundingJSON contains the JSON metadata for the struct
-// [CardListResponseFunding]
-type cardListResponseFundingJSON struct {
-	Token       apijson.Field
-	Created     apijson.Field
-	LastFour    apijson.Field
-	State       apijson.Field
-	Type        apijson.Field
-	AccountName apijson.Field
-	Nickname    apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *CardListResponseFunding) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r cardListResponseFundingJSON) RawJSON() string {
-	return r.raw
-}
-
-// State of funding source. Funding source states: _ `ENABLED` - The funding
-// account is available to use for card creation and transactions. _ `PENDING` -
-// The funding account is still being verified e.g. bank micro-deposits
-// verification. \* `DELETED` - The founding account has been deleted.
-type CardListResponseFundingState string
-
-const (
-	CardListResponseFundingStateDeleted CardListResponseFundingState = "DELETED"
-	CardListResponseFundingStateEnabled CardListResponseFundingState = "ENABLED"
-	CardListResponseFundingStatePending CardListResponseFundingState = "PENDING"
-)
-
-func (r CardListResponseFundingState) IsKnown() bool {
-	switch r {
-	case CardListResponseFundingStateDeleted, CardListResponseFundingStateEnabled, CardListResponseFundingStatePending:
-		return true
-	}
-	return false
-}
-
-// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
-// `DEPOSITORY_SAVINGS` - Bank savings account.
-type CardListResponseFundingType string
-
-const (
-	CardListResponseFundingTypeDepositoryChecking CardListResponseFundingType = "DEPOSITORY_CHECKING"
-	CardListResponseFundingTypeDepositorySavings  CardListResponseFundingType = "DEPOSITORY_SAVINGS"
-)
-
-func (r CardListResponseFundingType) IsKnown() bool {
-	switch r {
-	case CardListResponseFundingTypeDepositoryChecking, CardListResponseFundingTypeDepositorySavings:
-		return true
-	}
-	return false
-}
-
-// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
-// attempts).
-type CardListResponsePinStatus string
-
-const (
-	CardListResponsePinStatusOk      CardListResponsePinStatus = "OK"
-	CardListResponsePinStatusBlocked CardListResponsePinStatus = "BLOCKED"
-	CardListResponsePinStatusNotSet  CardListResponsePinStatus = "NOT_SET"
-)
-
-func (r CardListResponsePinStatus) IsKnown() bool {
-	switch r {
-	case CardListResponsePinStatusOk, CardListResponsePinStatusBlocked, CardListResponsePinStatusNotSet:
-		return true
-	}
-	return false
-}
-
-// Spend limit duration
-type CardListResponseSpendLimitDuration string
-
-const (
-	CardListResponseSpendLimitDurationAnnually    CardListResponseSpendLimitDuration = "ANNUALLY"
-	CardListResponseSpendLimitDurationForever     CardListResponseSpendLimitDuration = "FOREVER"
-	CardListResponseSpendLimitDurationMonthly     CardListResponseSpendLimitDuration = "MONTHLY"
-	CardListResponseSpendLimitDurationTransaction CardListResponseSpendLimitDuration = "TRANSACTION"
-	CardListResponseSpendLimitDurationDaily       CardListResponseSpendLimitDuration = "DAILY"
-)
-
-func (r CardListResponseSpendLimitDuration) IsKnown() bool {
-	switch r {
-	case CardListResponseSpendLimitDurationAnnually, CardListResponseSpendLimitDurationForever, CardListResponseSpendLimitDurationMonthly, CardListResponseSpendLimitDurationTransaction, CardListResponseSpendLimitDurationDaily:
-		return true
-	}
-	return false
-}
-
-// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
-// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
-// they match card and account parameters). _ `PAUSED` - Card will decline
-// authorizations, but can be resumed at a later time. _ `PENDING_FULFILLMENT` -
-// The initial state for cards of type `PHYSICAL`. The card is provisioned pending
-// manufacturing and fulfillment. Cards in this state can accept authorizations for
-// e-commerce purchases, but not for "Card Present" purchases where the physical
-// card itself is present. \* `PENDING_ACTIVATION` - At regular intervals, cards of
-// type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card production
-// warehouse and updated to state `PENDING_ACTIVATION`. Similar to
-// `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
-// transactions or can be added to mobile wallets. API clients should update the
-// card's state to `OPEN` only after the cardholder confirms receipt of the card.
-// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
-// manufactured.
-type CardListResponseState string
-
-const (
-	CardListResponseStateClosed             CardListResponseState = "CLOSED"
-	CardListResponseStateOpen               CardListResponseState = "OPEN"
-	CardListResponseStatePaused             CardListResponseState = "PAUSED"
-	CardListResponseStatePendingActivation  CardListResponseState = "PENDING_ACTIVATION"
-	CardListResponseStatePendingFulfillment CardListResponseState = "PENDING_FULFILLMENT"
-)
-
-func (r CardListResponseState) IsKnown() bool {
-	switch r {
-	case CardListResponseStateClosed, CardListResponseStateOpen, CardListResponseStatePaused, CardListResponseStatePendingActivation, CardListResponseStatePendingFulfillment:
-		return true
-	}
-	return false
-}
-
-// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
-// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
-// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
-// offer white label branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe
-// functionality. _ `SINGLE_USE` - Card is closed upon first successful
-// authorization. _ `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first
-// merchant that successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_
-// Similar behavior to VIRTUAL cards, please use VIRTUAL instead. _
-// `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
-// VIRTUAL instead.
-type CardListResponseType string
-
-const (
-	CardListResponseTypeMerchantLocked CardListResponseType = "MERCHANT_LOCKED"
-	CardListResponseTypePhysical       CardListResponseType = "PHYSICAL"
-	CardListResponseTypeSingleUse      CardListResponseType = "SINGLE_USE"
-	CardListResponseTypeVirtual        CardListResponseType = "VIRTUAL"
-	CardListResponseTypeUnlocked       CardListResponseType = "UNLOCKED"
-	CardListResponseTypeDigitalWallet  CardListResponseType = "DIGITAL_WALLET"
-)
-
-func (r CardListResponseType) IsKnown() bool {
-	switch r {
-	case CardListResponseTypeMerchantLocked, CardListResponseTypePhysical, CardListResponseTypeSingleUse, CardListResponseTypeVirtual, CardListResponseTypeUnlocked, CardListResponseTypeDigitalWallet:
-		return true
-	}
-	return false
-}
-
-// Card details with potentially PCI sensitive information for Enterprise customers
-type CardConvertPhysicalResponse struct {
-	// Globally unique identifier.
-	Token string `json:"token,required"`
-	// Globally unique identifier for the account to which the card belongs.
-	AccountToken string `json:"account_token,required"`
-	// Globally unique identifier for the card program on which the card exists.
-	CardProgramToken string `json:"card_program_token,required"`
-	// An RFC 3339 timestamp for when the card was created. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// Deprecated: Funding account for the card.
-	Funding CardConvertPhysicalResponseFunding `json:"funding,required"`
-	// Last four digits of the card number.
-	LastFour string `json:"last_four,required"`
-	// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
-	// attempts).
-	PinStatus CardConvertPhysicalResponsePinStatus `json:"pin_status,required"`
-	// Amount (in cents) to limit approved authorizations (e.g. 100000 would be a
-	// $1,000 limit). Transaction requests above the spend limit will be declined.
-	SpendLimit int64 `json:"spend_limit,required"`
-	// Spend limit duration
-	SpendLimitDuration CardConvertPhysicalResponseSpendLimitDuration `json:"spend_limit_duration,required"`
-	// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
-	// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
-	// they match card and account parameters). _ `PAUSED` - Card will decline
-	// authorizations, but can be resumed at a later time. _ `PENDING_FULFILLMENT` -
-	// The initial state for cards of type `PHYSICAL`. The card is provisioned pending
-	// manufacturing and fulfillment. Cards in this state can accept authorizations for
-	// e-commerce purchases, but not for "Card Present" purchases where the physical
-	// card itself is present. \* `PENDING_ACTIVATION` - At regular intervals, cards of
-	// type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card production
-	// warehouse and updated to state `PENDING_ACTIVATION`. Similar to
-	// `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
-	// transactions or can be added to mobile wallets. API clients should update the
-	// card's state to `OPEN` only after the cardholder confirms receipt of the card.
-	// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
-	// manufactured.
-	State CardConvertPhysicalResponseState `json:"state,required"`
-	// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
-	// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
-	// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
-	// offer white label branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe
-	// functionality. _ `SINGLE_USE` - Card is closed upon first successful
-	// authorization. _ `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first
-	// merchant that successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_
-	// Similar behavior to VIRTUAL cards, please use VIRTUAL instead. _
-	// `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
-	// VIRTUAL instead.
-	Type CardConvertPhysicalResponseType `json:"type,required"`
-	// List of identifiers for the Auth Rule(s) that are applied on the card. This
-	// field is deprecated and will no longer be populated in the `Card` object. The
-	// key will be removed from the schema in a future release. Use the `/auth_rules`
-	// endpoints to fetch Auth Rule information instead.
-	//
-	// Deprecated: deprecated
-	AuthRuleTokens []string `json:"auth_rule_tokens"`
-	// 3-character alphabetic ISO 4217 code for the currency of the cardholder.
-	CardholderCurrency string `json:"cardholder_currency"`
-	// Three digit cvv printed on the back of the card.
-	Cvv string `json:"cvv"`
-	// Specifies the digital card art to be displayed in the user's digital wallet
-	// after tokenization. This artwork must be approved by Mastercard and configured
-	// by Lithic to use.
-	DigitalCardArtToken string `json:"digital_card_art_token"`
-	// Two digit (MM) expiry month.
-	ExpMonth string `json:"exp_month"`
-	// Four digit (yyyy) expiry year.
-	ExpYear string `json:"exp_year"`
-	// Hostname of card's locked merchant (will be empty if not applicable).
-	Hostname string `json:"hostname"`
-	// Friendly name to identify the card.
-	Memo string `json:"memo"`
-	// Primary Account Number (PAN) (i.e. the card number). Customers must be PCI
-	// compliant to have PAN returned as a field in production. Please contact
-	// support@lithic.com for questions.
-	Pan string `json:"pan"`
-	// Indicates if there are offline PIN changes pending card interaction with an
-	// offline PIN terminal. Possible commands are: CHANGE_PIN, UNBLOCK_PIN. Applicable
-	// only to cards issued in markets supporting offline PINs.
-	PendingCommands []string `json:"pending_commands"`
-	// Only applicable to cards of type `PHYSICAL`. This must be configured with Lithic
-	// before use. Specifies the configuration (i.e., physical card art) that the card
-	// should be manufactured with.
-	ProductID string `json:"product_id"`
-	// If the card is a replacement for another card, the globally unique identifier
-	// for the card that was replaced.
-	ReplacementFor string                          `json:"replacement_for,nullable"`
-	JSON           cardConvertPhysicalResponseJSON `json:"-"`
-}
-
-// cardConvertPhysicalResponseJSON contains the JSON metadata for the struct
-// [CardConvertPhysicalResponse]
-type cardConvertPhysicalResponseJSON struct {
-	Token               apijson.Field
-	AccountToken        apijson.Field
-	CardProgramToken    apijson.Field
-	Created             apijson.Field
-	Funding             apijson.Field
-	LastFour            apijson.Field
-	PinStatus           apijson.Field
-	SpendLimit          apijson.Field
-	SpendLimitDuration  apijson.Field
-	State               apijson.Field
-	Type                apijson.Field
-	AuthRuleTokens      apijson.Field
-	CardholderCurrency  apijson.Field
-	Cvv                 apijson.Field
-	DigitalCardArtToken apijson.Field
-	ExpMonth            apijson.Field
-	ExpYear             apijson.Field
-	Hostname            apijson.Field
-	Memo                apijson.Field
-	Pan                 apijson.Field
-	PendingCommands     apijson.Field
-	ProductID           apijson.Field
-	ReplacementFor      apijson.Field
-	raw                 string
-	ExtraFields         map[string]apijson.Field
-}
-
-func (r *CardConvertPhysicalResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r cardConvertPhysicalResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-// Deprecated: Funding account for the card.
-type CardConvertPhysicalResponseFunding struct {
-	// A globally unique identifier for this FundingAccount.
-	Token string `json:"token,required" format:"uuid"`
-	// An RFC 3339 string representing when this funding source was added to the Lithic
-	// account. This may be `null`. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// The last 4 digits of the account (e.g. bank account, debit card) associated with
-	// this FundingAccount. This may be null.
-	LastFour string `json:"last_four,required"`
-	// State of funding source. Funding source states: _ `ENABLED` - The funding
-	// account is available to use for card creation and transactions. _ `PENDING` -
-	// The funding account is still being verified e.g. bank micro-deposits
-	// verification. \* `DELETED` - The founding account has been deleted.
-	State CardConvertPhysicalResponseFundingState `json:"state,required"`
-	// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
-	// `DEPOSITORY_SAVINGS` - Bank savings account.
-	Type CardConvertPhysicalResponseFundingType `json:"type,required"`
-	// Account name identifying the funding source. This may be `null`.
-	AccountName string `json:"account_name"`
-	// The nickname given to the `FundingAccount` or `null` if it has no nickname.
-	Nickname string                                 `json:"nickname"`
-	JSON     cardConvertPhysicalResponseFundingJSON `json:"-"`
-}
-
-// cardConvertPhysicalResponseFundingJSON contains the JSON metadata for the struct
-// [CardConvertPhysicalResponseFunding]
-type cardConvertPhysicalResponseFundingJSON struct {
-	Token       apijson.Field
-	Created     apijson.Field
-	LastFour    apijson.Field
-	State       apijson.Field
-	Type        apijson.Field
-	AccountName apijson.Field
-	Nickname    apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *CardConvertPhysicalResponseFunding) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r cardConvertPhysicalResponseFundingJSON) RawJSON() string {
-	return r.raw
-}
-
-// State of funding source. Funding source states: _ `ENABLED` - The funding
-// account is available to use for card creation and transactions. _ `PENDING` -
-// The funding account is still being verified e.g. bank micro-deposits
-// verification. \* `DELETED` - The founding account has been deleted.
-type CardConvertPhysicalResponseFundingState string
-
-const (
-	CardConvertPhysicalResponseFundingStateDeleted CardConvertPhysicalResponseFundingState = "DELETED"
-	CardConvertPhysicalResponseFundingStateEnabled CardConvertPhysicalResponseFundingState = "ENABLED"
-	CardConvertPhysicalResponseFundingStatePending CardConvertPhysicalResponseFundingState = "PENDING"
-)
-
-func (r CardConvertPhysicalResponseFundingState) IsKnown() bool {
-	switch r {
-	case CardConvertPhysicalResponseFundingStateDeleted, CardConvertPhysicalResponseFundingStateEnabled, CardConvertPhysicalResponseFundingStatePending:
-		return true
-	}
-	return false
-}
-
-// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
-// `DEPOSITORY_SAVINGS` - Bank savings account.
-type CardConvertPhysicalResponseFundingType string
-
-const (
-	CardConvertPhysicalResponseFundingTypeDepositoryChecking CardConvertPhysicalResponseFundingType = "DEPOSITORY_CHECKING"
-	CardConvertPhysicalResponseFundingTypeDepositorySavings  CardConvertPhysicalResponseFundingType = "DEPOSITORY_SAVINGS"
-)
-
-func (r CardConvertPhysicalResponseFundingType) IsKnown() bool {
-	switch r {
-	case CardConvertPhysicalResponseFundingTypeDepositoryChecking, CardConvertPhysicalResponseFundingTypeDepositorySavings:
-		return true
-	}
-	return false
-}
-
-// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
-// attempts).
-type CardConvertPhysicalResponsePinStatus string
-
-const (
-	CardConvertPhysicalResponsePinStatusOk      CardConvertPhysicalResponsePinStatus = "OK"
-	CardConvertPhysicalResponsePinStatusBlocked CardConvertPhysicalResponsePinStatus = "BLOCKED"
-	CardConvertPhysicalResponsePinStatusNotSet  CardConvertPhysicalResponsePinStatus = "NOT_SET"
-)
-
-func (r CardConvertPhysicalResponsePinStatus) IsKnown() bool {
-	switch r {
-	case CardConvertPhysicalResponsePinStatusOk, CardConvertPhysicalResponsePinStatusBlocked, CardConvertPhysicalResponsePinStatusNotSet:
-		return true
-	}
-	return false
-}
-
-// Spend limit duration
-type CardConvertPhysicalResponseSpendLimitDuration string
-
-const (
-	CardConvertPhysicalResponseSpendLimitDurationAnnually    CardConvertPhysicalResponseSpendLimitDuration = "ANNUALLY"
-	CardConvertPhysicalResponseSpendLimitDurationForever     CardConvertPhysicalResponseSpendLimitDuration = "FOREVER"
-	CardConvertPhysicalResponseSpendLimitDurationMonthly     CardConvertPhysicalResponseSpendLimitDuration = "MONTHLY"
-	CardConvertPhysicalResponseSpendLimitDurationTransaction CardConvertPhysicalResponseSpendLimitDuration = "TRANSACTION"
-	CardConvertPhysicalResponseSpendLimitDurationDaily       CardConvertPhysicalResponseSpendLimitDuration = "DAILY"
-)
-
-func (r CardConvertPhysicalResponseSpendLimitDuration) IsKnown() bool {
-	switch r {
-	case CardConvertPhysicalResponseSpendLimitDurationAnnually, CardConvertPhysicalResponseSpendLimitDurationForever, CardConvertPhysicalResponseSpendLimitDurationMonthly, CardConvertPhysicalResponseSpendLimitDurationTransaction, CardConvertPhysicalResponseSpendLimitDurationDaily:
-		return true
-	}
-	return false
-}
-
-// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
-// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
-// they match card and account parameters). _ `PAUSED` - Card will decline
-// authorizations, but can be resumed at a later time. _ `PENDING_FULFILLMENT` -
-// The initial state for cards of type `PHYSICAL`. The card is provisioned pending
-// manufacturing and fulfillment. Cards in this state can accept authorizations for
-// e-commerce purchases, but not for "Card Present" purchases where the physical
-// card itself is present. \* `PENDING_ACTIVATION` - At regular intervals, cards of
-// type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card production
-// warehouse and updated to state `PENDING_ACTIVATION`. Similar to
-// `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
-// transactions or can be added to mobile wallets. API clients should update the
-// card's state to `OPEN` only after the cardholder confirms receipt of the card.
-// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
-// manufactured.
-type CardConvertPhysicalResponseState string
-
-const (
-	CardConvertPhysicalResponseStateClosed             CardConvertPhysicalResponseState = "CLOSED"
-	CardConvertPhysicalResponseStateOpen               CardConvertPhysicalResponseState = "OPEN"
-	CardConvertPhysicalResponseStatePaused             CardConvertPhysicalResponseState = "PAUSED"
-	CardConvertPhysicalResponseStatePendingActivation  CardConvertPhysicalResponseState = "PENDING_ACTIVATION"
-	CardConvertPhysicalResponseStatePendingFulfillment CardConvertPhysicalResponseState = "PENDING_FULFILLMENT"
-)
-
-func (r CardConvertPhysicalResponseState) IsKnown() bool {
-	switch r {
-	case CardConvertPhysicalResponseStateClosed, CardConvertPhysicalResponseStateOpen, CardConvertPhysicalResponseStatePaused, CardConvertPhysicalResponseStatePendingActivation, CardConvertPhysicalResponseStatePendingFulfillment:
-		return true
-	}
-	return false
-}
-
-// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
-// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
-// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
-// offer white label branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe
-// functionality. _ `SINGLE_USE` - Card is closed upon first successful
-// authorization. _ `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first
-// merchant that successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_
-// Similar behavior to VIRTUAL cards, please use VIRTUAL instead. _
-// `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
-// VIRTUAL instead.
-type CardConvertPhysicalResponseType string
-
-const (
-	CardConvertPhysicalResponseTypeMerchantLocked CardConvertPhysicalResponseType = "MERCHANT_LOCKED"
-	CardConvertPhysicalResponseTypePhysical       CardConvertPhysicalResponseType = "PHYSICAL"
-	CardConvertPhysicalResponseTypeSingleUse      CardConvertPhysicalResponseType = "SINGLE_USE"
-	CardConvertPhysicalResponseTypeVirtual        CardConvertPhysicalResponseType = "VIRTUAL"
-	CardConvertPhysicalResponseTypeUnlocked       CardConvertPhysicalResponseType = "UNLOCKED"
-	CardConvertPhysicalResponseTypeDigitalWallet  CardConvertPhysicalResponseType = "DIGITAL_WALLET"
-)
-
-func (r CardConvertPhysicalResponseType) IsKnown() bool {
-	switch r {
-	case CardConvertPhysicalResponseTypeMerchantLocked, CardConvertPhysicalResponseTypePhysical, CardConvertPhysicalResponseTypeSingleUse, CardConvertPhysicalResponseTypeVirtual, CardConvertPhysicalResponseTypeUnlocked, CardConvertPhysicalResponseTypeDigitalWallet:
-		return true
-	}
-	return false
-}
-
 type CardProvisionResponse struct {
 	ProvisioningPayload string                    `json:"provisioning_payload"`
 	JSON                cardProvisionResponseJSON `json:"-"`
@@ -1949,939 +734,6 @@ func (r *CardProvisionResponse) UnmarshalJSON(data []byte) (err error) {
 
 func (r cardProvisionResponseJSON) RawJSON() string {
 	return r.raw
-}
-
-// Card details with potentially PCI sensitive information for Enterprise customers
-type CardReissueResponse struct {
-	// Globally unique identifier.
-	Token string `json:"token,required"`
-	// Globally unique identifier for the account to which the card belongs.
-	AccountToken string `json:"account_token,required"`
-	// Globally unique identifier for the card program on which the card exists.
-	CardProgramToken string `json:"card_program_token,required"`
-	// An RFC 3339 timestamp for when the card was created. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// Deprecated: Funding account for the card.
-	Funding CardReissueResponseFunding `json:"funding,required"`
-	// Last four digits of the card number.
-	LastFour string `json:"last_four,required"`
-	// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
-	// attempts).
-	PinStatus CardReissueResponsePinStatus `json:"pin_status,required"`
-	// Amount (in cents) to limit approved authorizations (e.g. 100000 would be a
-	// $1,000 limit). Transaction requests above the spend limit will be declined.
-	SpendLimit int64 `json:"spend_limit,required"`
-	// Spend limit duration
-	SpendLimitDuration CardReissueResponseSpendLimitDuration `json:"spend_limit_duration,required"`
-	// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
-	// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
-	// they match card and account parameters). _ `PAUSED` - Card will decline
-	// authorizations, but can be resumed at a later time. _ `PENDING_FULFILLMENT` -
-	// The initial state for cards of type `PHYSICAL`. The card is provisioned pending
-	// manufacturing and fulfillment. Cards in this state can accept authorizations for
-	// e-commerce purchases, but not for "Card Present" purchases where the physical
-	// card itself is present. \* `PENDING_ACTIVATION` - At regular intervals, cards of
-	// type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card production
-	// warehouse and updated to state `PENDING_ACTIVATION`. Similar to
-	// `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
-	// transactions or can be added to mobile wallets. API clients should update the
-	// card's state to `OPEN` only after the cardholder confirms receipt of the card.
-	// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
-	// manufactured.
-	State CardReissueResponseState `json:"state,required"`
-	// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
-	// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
-	// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
-	// offer white label branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe
-	// functionality. _ `SINGLE_USE` - Card is closed upon first successful
-	// authorization. _ `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first
-	// merchant that successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_
-	// Similar behavior to VIRTUAL cards, please use VIRTUAL instead. _
-	// `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
-	// VIRTUAL instead.
-	Type CardReissueResponseType `json:"type,required"`
-	// List of identifiers for the Auth Rule(s) that are applied on the card. This
-	// field is deprecated and will no longer be populated in the `Card` object. The
-	// key will be removed from the schema in a future release. Use the `/auth_rules`
-	// endpoints to fetch Auth Rule information instead.
-	//
-	// Deprecated: deprecated
-	AuthRuleTokens []string `json:"auth_rule_tokens"`
-	// 3-character alphabetic ISO 4217 code for the currency of the cardholder.
-	CardholderCurrency string `json:"cardholder_currency"`
-	// Three digit cvv printed on the back of the card.
-	Cvv string `json:"cvv"`
-	// Specifies the digital card art to be displayed in the user's digital wallet
-	// after tokenization. This artwork must be approved by Mastercard and configured
-	// by Lithic to use.
-	DigitalCardArtToken string `json:"digital_card_art_token"`
-	// Two digit (MM) expiry month.
-	ExpMonth string `json:"exp_month"`
-	// Four digit (yyyy) expiry year.
-	ExpYear string `json:"exp_year"`
-	// Hostname of card's locked merchant (will be empty if not applicable).
-	Hostname string `json:"hostname"`
-	// Friendly name to identify the card.
-	Memo string `json:"memo"`
-	// Primary Account Number (PAN) (i.e. the card number). Customers must be PCI
-	// compliant to have PAN returned as a field in production. Please contact
-	// support@lithic.com for questions.
-	Pan string `json:"pan"`
-	// Indicates if there are offline PIN changes pending card interaction with an
-	// offline PIN terminal. Possible commands are: CHANGE_PIN, UNBLOCK_PIN. Applicable
-	// only to cards issued in markets supporting offline PINs.
-	PendingCommands []string `json:"pending_commands"`
-	// Only applicable to cards of type `PHYSICAL`. This must be configured with Lithic
-	// before use. Specifies the configuration (i.e., physical card art) that the card
-	// should be manufactured with.
-	ProductID string `json:"product_id"`
-	// If the card is a replacement for another card, the globally unique identifier
-	// for the card that was replaced.
-	ReplacementFor string                  `json:"replacement_for,nullable"`
-	JSON           cardReissueResponseJSON `json:"-"`
-}
-
-// cardReissueResponseJSON contains the JSON metadata for the struct
-// [CardReissueResponse]
-type cardReissueResponseJSON struct {
-	Token               apijson.Field
-	AccountToken        apijson.Field
-	CardProgramToken    apijson.Field
-	Created             apijson.Field
-	Funding             apijson.Field
-	LastFour            apijson.Field
-	PinStatus           apijson.Field
-	SpendLimit          apijson.Field
-	SpendLimitDuration  apijson.Field
-	State               apijson.Field
-	Type                apijson.Field
-	AuthRuleTokens      apijson.Field
-	CardholderCurrency  apijson.Field
-	Cvv                 apijson.Field
-	DigitalCardArtToken apijson.Field
-	ExpMonth            apijson.Field
-	ExpYear             apijson.Field
-	Hostname            apijson.Field
-	Memo                apijson.Field
-	Pan                 apijson.Field
-	PendingCommands     apijson.Field
-	ProductID           apijson.Field
-	ReplacementFor      apijson.Field
-	raw                 string
-	ExtraFields         map[string]apijson.Field
-}
-
-func (r *CardReissueResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r cardReissueResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-// Deprecated: Funding account for the card.
-type CardReissueResponseFunding struct {
-	// A globally unique identifier for this FundingAccount.
-	Token string `json:"token,required" format:"uuid"`
-	// An RFC 3339 string representing when this funding source was added to the Lithic
-	// account. This may be `null`. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// The last 4 digits of the account (e.g. bank account, debit card) associated with
-	// this FundingAccount. This may be null.
-	LastFour string `json:"last_four,required"`
-	// State of funding source. Funding source states: _ `ENABLED` - The funding
-	// account is available to use for card creation and transactions. _ `PENDING` -
-	// The funding account is still being verified e.g. bank micro-deposits
-	// verification. \* `DELETED` - The founding account has been deleted.
-	State CardReissueResponseFundingState `json:"state,required"`
-	// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
-	// `DEPOSITORY_SAVINGS` - Bank savings account.
-	Type CardReissueResponseFundingType `json:"type,required"`
-	// Account name identifying the funding source. This may be `null`.
-	AccountName string `json:"account_name"`
-	// The nickname given to the `FundingAccount` or `null` if it has no nickname.
-	Nickname string                         `json:"nickname"`
-	JSON     cardReissueResponseFundingJSON `json:"-"`
-}
-
-// cardReissueResponseFundingJSON contains the JSON metadata for the struct
-// [CardReissueResponseFunding]
-type cardReissueResponseFundingJSON struct {
-	Token       apijson.Field
-	Created     apijson.Field
-	LastFour    apijson.Field
-	State       apijson.Field
-	Type        apijson.Field
-	AccountName apijson.Field
-	Nickname    apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *CardReissueResponseFunding) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r cardReissueResponseFundingJSON) RawJSON() string {
-	return r.raw
-}
-
-// State of funding source. Funding source states: _ `ENABLED` - The funding
-// account is available to use for card creation and transactions. _ `PENDING` -
-// The funding account is still being verified e.g. bank micro-deposits
-// verification. \* `DELETED` - The founding account has been deleted.
-type CardReissueResponseFundingState string
-
-const (
-	CardReissueResponseFundingStateDeleted CardReissueResponseFundingState = "DELETED"
-	CardReissueResponseFundingStateEnabled CardReissueResponseFundingState = "ENABLED"
-	CardReissueResponseFundingStatePending CardReissueResponseFundingState = "PENDING"
-)
-
-func (r CardReissueResponseFundingState) IsKnown() bool {
-	switch r {
-	case CardReissueResponseFundingStateDeleted, CardReissueResponseFundingStateEnabled, CardReissueResponseFundingStatePending:
-		return true
-	}
-	return false
-}
-
-// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
-// `DEPOSITORY_SAVINGS` - Bank savings account.
-type CardReissueResponseFundingType string
-
-const (
-	CardReissueResponseFundingTypeDepositoryChecking CardReissueResponseFundingType = "DEPOSITORY_CHECKING"
-	CardReissueResponseFundingTypeDepositorySavings  CardReissueResponseFundingType = "DEPOSITORY_SAVINGS"
-)
-
-func (r CardReissueResponseFundingType) IsKnown() bool {
-	switch r {
-	case CardReissueResponseFundingTypeDepositoryChecking, CardReissueResponseFundingTypeDepositorySavings:
-		return true
-	}
-	return false
-}
-
-// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
-// attempts).
-type CardReissueResponsePinStatus string
-
-const (
-	CardReissueResponsePinStatusOk      CardReissueResponsePinStatus = "OK"
-	CardReissueResponsePinStatusBlocked CardReissueResponsePinStatus = "BLOCKED"
-	CardReissueResponsePinStatusNotSet  CardReissueResponsePinStatus = "NOT_SET"
-)
-
-func (r CardReissueResponsePinStatus) IsKnown() bool {
-	switch r {
-	case CardReissueResponsePinStatusOk, CardReissueResponsePinStatusBlocked, CardReissueResponsePinStatusNotSet:
-		return true
-	}
-	return false
-}
-
-// Spend limit duration
-type CardReissueResponseSpendLimitDuration string
-
-const (
-	CardReissueResponseSpendLimitDurationAnnually    CardReissueResponseSpendLimitDuration = "ANNUALLY"
-	CardReissueResponseSpendLimitDurationForever     CardReissueResponseSpendLimitDuration = "FOREVER"
-	CardReissueResponseSpendLimitDurationMonthly     CardReissueResponseSpendLimitDuration = "MONTHLY"
-	CardReissueResponseSpendLimitDurationTransaction CardReissueResponseSpendLimitDuration = "TRANSACTION"
-	CardReissueResponseSpendLimitDurationDaily       CardReissueResponseSpendLimitDuration = "DAILY"
-)
-
-func (r CardReissueResponseSpendLimitDuration) IsKnown() bool {
-	switch r {
-	case CardReissueResponseSpendLimitDurationAnnually, CardReissueResponseSpendLimitDurationForever, CardReissueResponseSpendLimitDurationMonthly, CardReissueResponseSpendLimitDurationTransaction, CardReissueResponseSpendLimitDurationDaily:
-		return true
-	}
-	return false
-}
-
-// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
-// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
-// they match card and account parameters). _ `PAUSED` - Card will decline
-// authorizations, but can be resumed at a later time. _ `PENDING_FULFILLMENT` -
-// The initial state for cards of type `PHYSICAL`. The card is provisioned pending
-// manufacturing and fulfillment. Cards in this state can accept authorizations for
-// e-commerce purchases, but not for "Card Present" purchases where the physical
-// card itself is present. \* `PENDING_ACTIVATION` - At regular intervals, cards of
-// type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card production
-// warehouse and updated to state `PENDING_ACTIVATION`. Similar to
-// `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
-// transactions or can be added to mobile wallets. API clients should update the
-// card's state to `OPEN` only after the cardholder confirms receipt of the card.
-// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
-// manufactured.
-type CardReissueResponseState string
-
-const (
-	CardReissueResponseStateClosed             CardReissueResponseState = "CLOSED"
-	CardReissueResponseStateOpen               CardReissueResponseState = "OPEN"
-	CardReissueResponseStatePaused             CardReissueResponseState = "PAUSED"
-	CardReissueResponseStatePendingActivation  CardReissueResponseState = "PENDING_ACTIVATION"
-	CardReissueResponseStatePendingFulfillment CardReissueResponseState = "PENDING_FULFILLMENT"
-)
-
-func (r CardReissueResponseState) IsKnown() bool {
-	switch r {
-	case CardReissueResponseStateClosed, CardReissueResponseStateOpen, CardReissueResponseStatePaused, CardReissueResponseStatePendingActivation, CardReissueResponseStatePendingFulfillment:
-		return true
-	}
-	return false
-}
-
-// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
-// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
-// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
-// offer white label branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe
-// functionality. _ `SINGLE_USE` - Card is closed upon first successful
-// authorization. _ `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first
-// merchant that successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_
-// Similar behavior to VIRTUAL cards, please use VIRTUAL instead. _
-// `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
-// VIRTUAL instead.
-type CardReissueResponseType string
-
-const (
-	CardReissueResponseTypeMerchantLocked CardReissueResponseType = "MERCHANT_LOCKED"
-	CardReissueResponseTypePhysical       CardReissueResponseType = "PHYSICAL"
-	CardReissueResponseTypeSingleUse      CardReissueResponseType = "SINGLE_USE"
-	CardReissueResponseTypeVirtual        CardReissueResponseType = "VIRTUAL"
-	CardReissueResponseTypeUnlocked       CardReissueResponseType = "UNLOCKED"
-	CardReissueResponseTypeDigitalWallet  CardReissueResponseType = "DIGITAL_WALLET"
-)
-
-func (r CardReissueResponseType) IsKnown() bool {
-	switch r {
-	case CardReissueResponseTypeMerchantLocked, CardReissueResponseTypePhysical, CardReissueResponseTypeSingleUse, CardReissueResponseTypeVirtual, CardReissueResponseTypeUnlocked, CardReissueResponseTypeDigitalWallet:
-		return true
-	}
-	return false
-}
-
-// Card details with potentially PCI sensitive information for Enterprise customers
-type CardRenewResponse struct {
-	// Globally unique identifier.
-	Token string `json:"token,required"`
-	// Globally unique identifier for the account to which the card belongs.
-	AccountToken string `json:"account_token,required"`
-	// Globally unique identifier for the card program on which the card exists.
-	CardProgramToken string `json:"card_program_token,required"`
-	// An RFC 3339 timestamp for when the card was created. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// Deprecated: Funding account for the card.
-	Funding CardRenewResponseFunding `json:"funding,required"`
-	// Last four digits of the card number.
-	LastFour string `json:"last_four,required"`
-	// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
-	// attempts).
-	PinStatus CardRenewResponsePinStatus `json:"pin_status,required"`
-	// Amount (in cents) to limit approved authorizations (e.g. 100000 would be a
-	// $1,000 limit). Transaction requests above the spend limit will be declined.
-	SpendLimit int64 `json:"spend_limit,required"`
-	// Spend limit duration
-	SpendLimitDuration CardRenewResponseSpendLimitDuration `json:"spend_limit_duration,required"`
-	// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
-	// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
-	// they match card and account parameters). _ `PAUSED` - Card will decline
-	// authorizations, but can be resumed at a later time. _ `PENDING_FULFILLMENT` -
-	// The initial state for cards of type `PHYSICAL`. The card is provisioned pending
-	// manufacturing and fulfillment. Cards in this state can accept authorizations for
-	// e-commerce purchases, but not for "Card Present" purchases where the physical
-	// card itself is present. \* `PENDING_ACTIVATION` - At regular intervals, cards of
-	// type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card production
-	// warehouse and updated to state `PENDING_ACTIVATION`. Similar to
-	// `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
-	// transactions or can be added to mobile wallets. API clients should update the
-	// card's state to `OPEN` only after the cardholder confirms receipt of the card.
-	// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
-	// manufactured.
-	State CardRenewResponseState `json:"state,required"`
-	// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
-	// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
-	// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
-	// offer white label branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe
-	// functionality. _ `SINGLE_USE` - Card is closed upon first successful
-	// authorization. _ `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first
-	// merchant that successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_
-	// Similar behavior to VIRTUAL cards, please use VIRTUAL instead. _
-	// `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
-	// VIRTUAL instead.
-	Type CardRenewResponseType `json:"type,required"`
-	// List of identifiers for the Auth Rule(s) that are applied on the card. This
-	// field is deprecated and will no longer be populated in the `Card` object. The
-	// key will be removed from the schema in a future release. Use the `/auth_rules`
-	// endpoints to fetch Auth Rule information instead.
-	//
-	// Deprecated: deprecated
-	AuthRuleTokens []string `json:"auth_rule_tokens"`
-	// 3-character alphabetic ISO 4217 code for the currency of the cardholder.
-	CardholderCurrency string `json:"cardholder_currency"`
-	// Three digit cvv printed on the back of the card.
-	Cvv string `json:"cvv"`
-	// Specifies the digital card art to be displayed in the user's digital wallet
-	// after tokenization. This artwork must be approved by Mastercard and configured
-	// by Lithic to use.
-	DigitalCardArtToken string `json:"digital_card_art_token"`
-	// Two digit (MM) expiry month.
-	ExpMonth string `json:"exp_month"`
-	// Four digit (yyyy) expiry year.
-	ExpYear string `json:"exp_year"`
-	// Hostname of card's locked merchant (will be empty if not applicable).
-	Hostname string `json:"hostname"`
-	// Friendly name to identify the card.
-	Memo string `json:"memo"`
-	// Primary Account Number (PAN) (i.e. the card number). Customers must be PCI
-	// compliant to have PAN returned as a field in production. Please contact
-	// support@lithic.com for questions.
-	Pan string `json:"pan"`
-	// Indicates if there are offline PIN changes pending card interaction with an
-	// offline PIN terminal. Possible commands are: CHANGE_PIN, UNBLOCK_PIN. Applicable
-	// only to cards issued in markets supporting offline PINs.
-	PendingCommands []string `json:"pending_commands"`
-	// Only applicable to cards of type `PHYSICAL`. This must be configured with Lithic
-	// before use. Specifies the configuration (i.e., physical card art) that the card
-	// should be manufactured with.
-	ProductID string `json:"product_id"`
-	// If the card is a replacement for another card, the globally unique identifier
-	// for the card that was replaced.
-	ReplacementFor string                `json:"replacement_for,nullable"`
-	JSON           cardRenewResponseJSON `json:"-"`
-}
-
-// cardRenewResponseJSON contains the JSON metadata for the struct
-// [CardRenewResponse]
-type cardRenewResponseJSON struct {
-	Token               apijson.Field
-	AccountToken        apijson.Field
-	CardProgramToken    apijson.Field
-	Created             apijson.Field
-	Funding             apijson.Field
-	LastFour            apijson.Field
-	PinStatus           apijson.Field
-	SpendLimit          apijson.Field
-	SpendLimitDuration  apijson.Field
-	State               apijson.Field
-	Type                apijson.Field
-	AuthRuleTokens      apijson.Field
-	CardholderCurrency  apijson.Field
-	Cvv                 apijson.Field
-	DigitalCardArtToken apijson.Field
-	ExpMonth            apijson.Field
-	ExpYear             apijson.Field
-	Hostname            apijson.Field
-	Memo                apijson.Field
-	Pan                 apijson.Field
-	PendingCommands     apijson.Field
-	ProductID           apijson.Field
-	ReplacementFor      apijson.Field
-	raw                 string
-	ExtraFields         map[string]apijson.Field
-}
-
-func (r *CardRenewResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r cardRenewResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-// Deprecated: Funding account for the card.
-type CardRenewResponseFunding struct {
-	// A globally unique identifier for this FundingAccount.
-	Token string `json:"token,required" format:"uuid"`
-	// An RFC 3339 string representing when this funding source was added to the Lithic
-	// account. This may be `null`. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// The last 4 digits of the account (e.g. bank account, debit card) associated with
-	// this FundingAccount. This may be null.
-	LastFour string `json:"last_four,required"`
-	// State of funding source. Funding source states: _ `ENABLED` - The funding
-	// account is available to use for card creation and transactions. _ `PENDING` -
-	// The funding account is still being verified e.g. bank micro-deposits
-	// verification. \* `DELETED` - The founding account has been deleted.
-	State CardRenewResponseFundingState `json:"state,required"`
-	// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
-	// `DEPOSITORY_SAVINGS` - Bank savings account.
-	Type CardRenewResponseFundingType `json:"type,required"`
-	// Account name identifying the funding source. This may be `null`.
-	AccountName string `json:"account_name"`
-	// The nickname given to the `FundingAccount` or `null` if it has no nickname.
-	Nickname string                       `json:"nickname"`
-	JSON     cardRenewResponseFundingJSON `json:"-"`
-}
-
-// cardRenewResponseFundingJSON contains the JSON metadata for the struct
-// [CardRenewResponseFunding]
-type cardRenewResponseFundingJSON struct {
-	Token       apijson.Field
-	Created     apijson.Field
-	LastFour    apijson.Field
-	State       apijson.Field
-	Type        apijson.Field
-	AccountName apijson.Field
-	Nickname    apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *CardRenewResponseFunding) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r cardRenewResponseFundingJSON) RawJSON() string {
-	return r.raw
-}
-
-// State of funding source. Funding source states: _ `ENABLED` - The funding
-// account is available to use for card creation and transactions. _ `PENDING` -
-// The funding account is still being verified e.g. bank micro-deposits
-// verification. \* `DELETED` - The founding account has been deleted.
-type CardRenewResponseFundingState string
-
-const (
-	CardRenewResponseFundingStateDeleted CardRenewResponseFundingState = "DELETED"
-	CardRenewResponseFundingStateEnabled CardRenewResponseFundingState = "ENABLED"
-	CardRenewResponseFundingStatePending CardRenewResponseFundingState = "PENDING"
-)
-
-func (r CardRenewResponseFundingState) IsKnown() bool {
-	switch r {
-	case CardRenewResponseFundingStateDeleted, CardRenewResponseFundingStateEnabled, CardRenewResponseFundingStatePending:
-		return true
-	}
-	return false
-}
-
-// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
-// `DEPOSITORY_SAVINGS` - Bank savings account.
-type CardRenewResponseFundingType string
-
-const (
-	CardRenewResponseFundingTypeDepositoryChecking CardRenewResponseFundingType = "DEPOSITORY_CHECKING"
-	CardRenewResponseFundingTypeDepositorySavings  CardRenewResponseFundingType = "DEPOSITORY_SAVINGS"
-)
-
-func (r CardRenewResponseFundingType) IsKnown() bool {
-	switch r {
-	case CardRenewResponseFundingTypeDepositoryChecking, CardRenewResponseFundingTypeDepositorySavings:
-		return true
-	}
-	return false
-}
-
-// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
-// attempts).
-type CardRenewResponsePinStatus string
-
-const (
-	CardRenewResponsePinStatusOk      CardRenewResponsePinStatus = "OK"
-	CardRenewResponsePinStatusBlocked CardRenewResponsePinStatus = "BLOCKED"
-	CardRenewResponsePinStatusNotSet  CardRenewResponsePinStatus = "NOT_SET"
-)
-
-func (r CardRenewResponsePinStatus) IsKnown() bool {
-	switch r {
-	case CardRenewResponsePinStatusOk, CardRenewResponsePinStatusBlocked, CardRenewResponsePinStatusNotSet:
-		return true
-	}
-	return false
-}
-
-// Spend limit duration
-type CardRenewResponseSpendLimitDuration string
-
-const (
-	CardRenewResponseSpendLimitDurationAnnually    CardRenewResponseSpendLimitDuration = "ANNUALLY"
-	CardRenewResponseSpendLimitDurationForever     CardRenewResponseSpendLimitDuration = "FOREVER"
-	CardRenewResponseSpendLimitDurationMonthly     CardRenewResponseSpendLimitDuration = "MONTHLY"
-	CardRenewResponseSpendLimitDurationTransaction CardRenewResponseSpendLimitDuration = "TRANSACTION"
-	CardRenewResponseSpendLimitDurationDaily       CardRenewResponseSpendLimitDuration = "DAILY"
-)
-
-func (r CardRenewResponseSpendLimitDuration) IsKnown() bool {
-	switch r {
-	case CardRenewResponseSpendLimitDurationAnnually, CardRenewResponseSpendLimitDurationForever, CardRenewResponseSpendLimitDurationMonthly, CardRenewResponseSpendLimitDurationTransaction, CardRenewResponseSpendLimitDurationDaily:
-		return true
-	}
-	return false
-}
-
-// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
-// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
-// they match card and account parameters). _ `PAUSED` - Card will decline
-// authorizations, but can be resumed at a later time. _ `PENDING_FULFILLMENT` -
-// The initial state for cards of type `PHYSICAL`. The card is provisioned pending
-// manufacturing and fulfillment. Cards in this state can accept authorizations for
-// e-commerce purchases, but not for "Card Present" purchases where the physical
-// card itself is present. \* `PENDING_ACTIVATION` - At regular intervals, cards of
-// type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card production
-// warehouse and updated to state `PENDING_ACTIVATION`. Similar to
-// `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
-// transactions or can be added to mobile wallets. API clients should update the
-// card's state to `OPEN` only after the cardholder confirms receipt of the card.
-// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
-// manufactured.
-type CardRenewResponseState string
-
-const (
-	CardRenewResponseStateClosed             CardRenewResponseState = "CLOSED"
-	CardRenewResponseStateOpen               CardRenewResponseState = "OPEN"
-	CardRenewResponseStatePaused             CardRenewResponseState = "PAUSED"
-	CardRenewResponseStatePendingActivation  CardRenewResponseState = "PENDING_ACTIVATION"
-	CardRenewResponseStatePendingFulfillment CardRenewResponseState = "PENDING_FULFILLMENT"
-)
-
-func (r CardRenewResponseState) IsKnown() bool {
-	switch r {
-	case CardRenewResponseStateClosed, CardRenewResponseStateOpen, CardRenewResponseStatePaused, CardRenewResponseStatePendingActivation, CardRenewResponseStatePendingFulfillment:
-		return true
-	}
-	return false
-}
-
-// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
-// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
-// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
-// offer white label branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe
-// functionality. _ `SINGLE_USE` - Card is closed upon first successful
-// authorization. _ `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first
-// merchant that successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_
-// Similar behavior to VIRTUAL cards, please use VIRTUAL instead. _
-// `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
-// VIRTUAL instead.
-type CardRenewResponseType string
-
-const (
-	CardRenewResponseTypeMerchantLocked CardRenewResponseType = "MERCHANT_LOCKED"
-	CardRenewResponseTypePhysical       CardRenewResponseType = "PHYSICAL"
-	CardRenewResponseTypeSingleUse      CardRenewResponseType = "SINGLE_USE"
-	CardRenewResponseTypeVirtual        CardRenewResponseType = "VIRTUAL"
-	CardRenewResponseTypeUnlocked       CardRenewResponseType = "UNLOCKED"
-	CardRenewResponseTypeDigitalWallet  CardRenewResponseType = "DIGITAL_WALLET"
-)
-
-func (r CardRenewResponseType) IsKnown() bool {
-	switch r {
-	case CardRenewResponseTypeMerchantLocked, CardRenewResponseTypePhysical, CardRenewResponseTypeSingleUse, CardRenewResponseTypeVirtual, CardRenewResponseTypeUnlocked, CardRenewResponseTypeDigitalWallet:
-		return true
-	}
-	return false
-}
-
-// Card details with potentially PCI sensitive information for Enterprise customers
-type CardSearchByPanResponse struct {
-	// Globally unique identifier.
-	Token string `json:"token,required"`
-	// Globally unique identifier for the account to which the card belongs.
-	AccountToken string `json:"account_token,required"`
-	// Globally unique identifier for the card program on which the card exists.
-	CardProgramToken string `json:"card_program_token,required"`
-	// An RFC 3339 timestamp for when the card was created. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// Deprecated: Funding account for the card.
-	Funding CardSearchByPanResponseFunding `json:"funding,required"`
-	// Last four digits of the card number.
-	LastFour string `json:"last_four,required"`
-	// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
-	// attempts).
-	PinStatus CardSearchByPanResponsePinStatus `json:"pin_status,required"`
-	// Amount (in cents) to limit approved authorizations (e.g. 100000 would be a
-	// $1,000 limit). Transaction requests above the spend limit will be declined.
-	SpendLimit int64 `json:"spend_limit,required"`
-	// Spend limit duration
-	SpendLimitDuration CardSearchByPanResponseSpendLimitDuration `json:"spend_limit_duration,required"`
-	// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
-	// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
-	// they match card and account parameters). _ `PAUSED` - Card will decline
-	// authorizations, but can be resumed at a later time. _ `PENDING_FULFILLMENT` -
-	// The initial state for cards of type `PHYSICAL`. The card is provisioned pending
-	// manufacturing and fulfillment. Cards in this state can accept authorizations for
-	// e-commerce purchases, but not for "Card Present" purchases where the physical
-	// card itself is present. \* `PENDING_ACTIVATION` - At regular intervals, cards of
-	// type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card production
-	// warehouse and updated to state `PENDING_ACTIVATION`. Similar to
-	// `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
-	// transactions or can be added to mobile wallets. API clients should update the
-	// card's state to `OPEN` only after the cardholder confirms receipt of the card.
-	// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
-	// manufactured.
-	State CardSearchByPanResponseState `json:"state,required"`
-	// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
-	// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
-	// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
-	// offer white label branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe
-	// functionality. _ `SINGLE_USE` - Card is closed upon first successful
-	// authorization. _ `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first
-	// merchant that successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_
-	// Similar behavior to VIRTUAL cards, please use VIRTUAL instead. _
-	// `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
-	// VIRTUAL instead.
-	Type CardSearchByPanResponseType `json:"type,required"`
-	// List of identifiers for the Auth Rule(s) that are applied on the card. This
-	// field is deprecated and will no longer be populated in the `Card` object. The
-	// key will be removed from the schema in a future release. Use the `/auth_rules`
-	// endpoints to fetch Auth Rule information instead.
-	//
-	// Deprecated: deprecated
-	AuthRuleTokens []string `json:"auth_rule_tokens"`
-	// 3-character alphabetic ISO 4217 code for the currency of the cardholder.
-	CardholderCurrency string `json:"cardholder_currency"`
-	// Three digit cvv printed on the back of the card.
-	Cvv string `json:"cvv"`
-	// Specifies the digital card art to be displayed in the user's digital wallet
-	// after tokenization. This artwork must be approved by Mastercard and configured
-	// by Lithic to use.
-	DigitalCardArtToken string `json:"digital_card_art_token"`
-	// Two digit (MM) expiry month.
-	ExpMonth string `json:"exp_month"`
-	// Four digit (yyyy) expiry year.
-	ExpYear string `json:"exp_year"`
-	// Hostname of card's locked merchant (will be empty if not applicable).
-	Hostname string `json:"hostname"`
-	// Friendly name to identify the card.
-	Memo string `json:"memo"`
-	// Primary Account Number (PAN) (i.e. the card number). Customers must be PCI
-	// compliant to have PAN returned as a field in production. Please contact
-	// support@lithic.com for questions.
-	Pan string `json:"pan"`
-	// Indicates if there are offline PIN changes pending card interaction with an
-	// offline PIN terminal. Possible commands are: CHANGE_PIN, UNBLOCK_PIN. Applicable
-	// only to cards issued in markets supporting offline PINs.
-	PendingCommands []string `json:"pending_commands"`
-	// Only applicable to cards of type `PHYSICAL`. This must be configured with Lithic
-	// before use. Specifies the configuration (i.e., physical card art) that the card
-	// should be manufactured with.
-	ProductID string `json:"product_id"`
-	// If the card is a replacement for another card, the globally unique identifier
-	// for the card that was replaced.
-	ReplacementFor string                      `json:"replacement_for,nullable"`
-	JSON           cardSearchByPanResponseJSON `json:"-"`
-}
-
-// cardSearchByPanResponseJSON contains the JSON metadata for the struct
-// [CardSearchByPanResponse]
-type cardSearchByPanResponseJSON struct {
-	Token               apijson.Field
-	AccountToken        apijson.Field
-	CardProgramToken    apijson.Field
-	Created             apijson.Field
-	Funding             apijson.Field
-	LastFour            apijson.Field
-	PinStatus           apijson.Field
-	SpendLimit          apijson.Field
-	SpendLimitDuration  apijson.Field
-	State               apijson.Field
-	Type                apijson.Field
-	AuthRuleTokens      apijson.Field
-	CardholderCurrency  apijson.Field
-	Cvv                 apijson.Field
-	DigitalCardArtToken apijson.Field
-	ExpMonth            apijson.Field
-	ExpYear             apijson.Field
-	Hostname            apijson.Field
-	Memo                apijson.Field
-	Pan                 apijson.Field
-	PendingCommands     apijson.Field
-	ProductID           apijson.Field
-	ReplacementFor      apijson.Field
-	raw                 string
-	ExtraFields         map[string]apijson.Field
-}
-
-func (r *CardSearchByPanResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r cardSearchByPanResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-// Deprecated: Funding account for the card.
-type CardSearchByPanResponseFunding struct {
-	// A globally unique identifier for this FundingAccount.
-	Token string `json:"token,required" format:"uuid"`
-	// An RFC 3339 string representing when this funding source was added to the Lithic
-	// account. This may be `null`. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// The last 4 digits of the account (e.g. bank account, debit card) associated with
-	// this FundingAccount. This may be null.
-	LastFour string `json:"last_four,required"`
-	// State of funding source. Funding source states: _ `ENABLED` - The funding
-	// account is available to use for card creation and transactions. _ `PENDING` -
-	// The funding account is still being verified e.g. bank micro-deposits
-	// verification. \* `DELETED` - The founding account has been deleted.
-	State CardSearchByPanResponseFundingState `json:"state,required"`
-	// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
-	// `DEPOSITORY_SAVINGS` - Bank savings account.
-	Type CardSearchByPanResponseFundingType `json:"type,required"`
-	// Account name identifying the funding source. This may be `null`.
-	AccountName string `json:"account_name"`
-	// The nickname given to the `FundingAccount` or `null` if it has no nickname.
-	Nickname string                             `json:"nickname"`
-	JSON     cardSearchByPanResponseFundingJSON `json:"-"`
-}
-
-// cardSearchByPanResponseFundingJSON contains the JSON metadata for the struct
-// [CardSearchByPanResponseFunding]
-type cardSearchByPanResponseFundingJSON struct {
-	Token       apijson.Field
-	Created     apijson.Field
-	LastFour    apijson.Field
-	State       apijson.Field
-	Type        apijson.Field
-	AccountName apijson.Field
-	Nickname    apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *CardSearchByPanResponseFunding) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r cardSearchByPanResponseFundingJSON) RawJSON() string {
-	return r.raw
-}
-
-// State of funding source. Funding source states: _ `ENABLED` - The funding
-// account is available to use for card creation and transactions. _ `PENDING` -
-// The funding account is still being verified e.g. bank micro-deposits
-// verification. \* `DELETED` - The founding account has been deleted.
-type CardSearchByPanResponseFundingState string
-
-const (
-	CardSearchByPanResponseFundingStateDeleted CardSearchByPanResponseFundingState = "DELETED"
-	CardSearchByPanResponseFundingStateEnabled CardSearchByPanResponseFundingState = "ENABLED"
-	CardSearchByPanResponseFundingStatePending CardSearchByPanResponseFundingState = "PENDING"
-)
-
-func (r CardSearchByPanResponseFundingState) IsKnown() bool {
-	switch r {
-	case CardSearchByPanResponseFundingStateDeleted, CardSearchByPanResponseFundingStateEnabled, CardSearchByPanResponseFundingStatePending:
-		return true
-	}
-	return false
-}
-
-// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
-// `DEPOSITORY_SAVINGS` - Bank savings account.
-type CardSearchByPanResponseFundingType string
-
-const (
-	CardSearchByPanResponseFundingTypeDepositoryChecking CardSearchByPanResponseFundingType = "DEPOSITORY_CHECKING"
-	CardSearchByPanResponseFundingTypeDepositorySavings  CardSearchByPanResponseFundingType = "DEPOSITORY_SAVINGS"
-)
-
-func (r CardSearchByPanResponseFundingType) IsKnown() bool {
-	switch r {
-	case CardSearchByPanResponseFundingTypeDepositoryChecking, CardSearchByPanResponseFundingTypeDepositorySavings:
-		return true
-	}
-	return false
-}
-
-// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
-// attempts).
-type CardSearchByPanResponsePinStatus string
-
-const (
-	CardSearchByPanResponsePinStatusOk      CardSearchByPanResponsePinStatus = "OK"
-	CardSearchByPanResponsePinStatusBlocked CardSearchByPanResponsePinStatus = "BLOCKED"
-	CardSearchByPanResponsePinStatusNotSet  CardSearchByPanResponsePinStatus = "NOT_SET"
-)
-
-func (r CardSearchByPanResponsePinStatus) IsKnown() bool {
-	switch r {
-	case CardSearchByPanResponsePinStatusOk, CardSearchByPanResponsePinStatusBlocked, CardSearchByPanResponsePinStatusNotSet:
-		return true
-	}
-	return false
-}
-
-// Spend limit duration
-type CardSearchByPanResponseSpendLimitDuration string
-
-const (
-	CardSearchByPanResponseSpendLimitDurationAnnually    CardSearchByPanResponseSpendLimitDuration = "ANNUALLY"
-	CardSearchByPanResponseSpendLimitDurationForever     CardSearchByPanResponseSpendLimitDuration = "FOREVER"
-	CardSearchByPanResponseSpendLimitDurationMonthly     CardSearchByPanResponseSpendLimitDuration = "MONTHLY"
-	CardSearchByPanResponseSpendLimitDurationTransaction CardSearchByPanResponseSpendLimitDuration = "TRANSACTION"
-	CardSearchByPanResponseSpendLimitDurationDaily       CardSearchByPanResponseSpendLimitDuration = "DAILY"
-)
-
-func (r CardSearchByPanResponseSpendLimitDuration) IsKnown() bool {
-	switch r {
-	case CardSearchByPanResponseSpendLimitDurationAnnually, CardSearchByPanResponseSpendLimitDurationForever, CardSearchByPanResponseSpendLimitDurationMonthly, CardSearchByPanResponseSpendLimitDurationTransaction, CardSearchByPanResponseSpendLimitDurationDaily:
-		return true
-	}
-	return false
-}
-
-// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
-// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
-// they match card and account parameters). _ `PAUSED` - Card will decline
-// authorizations, but can be resumed at a later time. _ `PENDING_FULFILLMENT` -
-// The initial state for cards of type `PHYSICAL`. The card is provisioned pending
-// manufacturing and fulfillment. Cards in this state can accept authorizations for
-// e-commerce purchases, but not for "Card Present" purchases where the physical
-// card itself is present. \* `PENDING_ACTIVATION` - At regular intervals, cards of
-// type `PHYSICAL` in state `PENDING_FULFILLMENT` are sent to the card production
-// warehouse and updated to state `PENDING_ACTIVATION`. Similar to
-// `PENDING_FULFILLMENT`, cards in this state can be used for e-commerce
-// transactions or can be added to mobile wallets. API clients should update the
-// card's state to `OPEN` only after the cardholder confirms receipt of the card.
-// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
-// manufactured.
-type CardSearchByPanResponseState string
-
-const (
-	CardSearchByPanResponseStateClosed             CardSearchByPanResponseState = "CLOSED"
-	CardSearchByPanResponseStateOpen               CardSearchByPanResponseState = "OPEN"
-	CardSearchByPanResponseStatePaused             CardSearchByPanResponseState = "PAUSED"
-	CardSearchByPanResponseStatePendingActivation  CardSearchByPanResponseState = "PENDING_ACTIVATION"
-	CardSearchByPanResponseStatePendingFulfillment CardSearchByPanResponseState = "PENDING_FULFILLMENT"
-)
-
-func (r CardSearchByPanResponseState) IsKnown() bool {
-	switch r {
-	case CardSearchByPanResponseStateClosed, CardSearchByPanResponseStateOpen, CardSearchByPanResponseStatePaused, CardSearchByPanResponseStatePendingActivation, CardSearchByPanResponseStatePendingFulfillment:
-		return true
-	}
-	return false
-}
-
-// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
-// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
-// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
-// offer white label branding, credit, ATM, PIN debit, chip/EMV, NFC and magstripe
-// functionality. _ `SINGLE_USE` - Card is closed upon first successful
-// authorization. _ `MERCHANT_LOCKED` - _[Deprecated]_ Card is locked to the first
-// merchant that successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_
-// Similar behavior to VIRTUAL cards, please use VIRTUAL instead. _
-// `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please use
-// VIRTUAL instead.
-type CardSearchByPanResponseType string
-
-const (
-	CardSearchByPanResponseTypeMerchantLocked CardSearchByPanResponseType = "MERCHANT_LOCKED"
-	CardSearchByPanResponseTypePhysical       CardSearchByPanResponseType = "PHYSICAL"
-	CardSearchByPanResponseTypeSingleUse      CardSearchByPanResponseType = "SINGLE_USE"
-	CardSearchByPanResponseTypeVirtual        CardSearchByPanResponseType = "VIRTUAL"
-	CardSearchByPanResponseTypeUnlocked       CardSearchByPanResponseType = "UNLOCKED"
-	CardSearchByPanResponseTypeDigitalWallet  CardSearchByPanResponseType = "DIGITAL_WALLET"
-)
-
-func (r CardSearchByPanResponseType) IsKnown() bool {
-	switch r {
-	case CardSearchByPanResponseTypeMerchantLocked, CardSearchByPanResponseTypePhysical, CardSearchByPanResponseTypeSingleUse, CardSearchByPanResponseTypeVirtual, CardSearchByPanResponseTypeUnlocked, CardSearchByPanResponseTypeDigitalWallet:
-		return true
-	}
-	return false
 }
 
 type CardNewParams struct {
