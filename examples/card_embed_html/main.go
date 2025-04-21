@@ -13,7 +13,7 @@ func main() {
 	pager := client.Cards.ListAutoPaging(context.TODO(), lithic.CardListParams{PageSize: lithic.Int(2)})
 	println("Listing Cards")
 
-	var card lithic.Card
+	var card lithic.NonPCICard
 	for pager.Next() {
 		card = pager.Current()
 		println(card.Token)
