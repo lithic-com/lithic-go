@@ -1,5 +1,33 @@
 # Changelog
 
+## 0.75.0 (2025-04-21)
+
+Full Changelog: [v0.74.0...v0.75.0](https://github.com/lithic-com/lithic-go/compare/v0.74.0...v0.75.0)
+
+### Features
+
+* **api:** updates to Card definition for PCI clarity ([dd32713](https://github.com/lithic-com/lithic-go/commit/dd327135f437a317cd19697768668bc1360aa04e))
+* **client:** add support for reading base URL from environment variable ([5642ecb](https://github.com/lithic-com/lithic-go/commit/5642ecbf539f20a354349635de38ff365011c67f))
+
+
+### Bug Fixes
+
+* **docs:** fix Card in HTML example ([0586d2f](https://github.com/lithic-com/lithic-go/commit/0586d2f885c4d1f0fa56947ca577f102b37d760b))
+* **internal:** refresh schemas ([bf2256d](https://github.com/lithic-com/lithic-go/commit/bf2256d9d38e3560a2ec0ed4c43d360e1af75bdc))
+* **internals:** fix Card schema definition ([1f3534c](https://github.com/lithic-com/lithic-go/commit/1f3534c43ed127e8457d9918fba7bfbcf8ff0c54))
+
+
+### Chores
+
+* **docs:** document pre-request options ([d1d78cb](https://github.com/lithic-com/lithic-go/commit/d1d78cbd4a74e96ad2566601acbd067bfc9fd36e))
+* **internal:** codegen related update ([f7d5244](https://github.com/lithic-com/lithic-go/commit/f7d5244ee953a29d2b748d9e0dd3a1a93f70d3e3))
+* **internal:** reduce CI branch coverage ([628a86c](https://github.com/lithic-com/lithic-go/commit/628a86c6da9466df2d1810b9d23c8a87b243a55b))
+
+
+### Documentation
+
+* update documentation links to be more uniform ([cbb3f52](https://github.com/lithic-com/lithic-go/commit/cbb3f528661b87c444281849a586a5522045020f))
+
 ## 0.74.0 (2025-04-09)
 
 Full Changelog: [v0.73.0...v0.74.0](https://github.com/lithic-com/lithic-go/compare/v0.73.0...v0.74.0)
