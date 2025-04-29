@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.76.1 (2025-04-29)
+
+Full Changelog: [v0.76.0...v0.76.1](https://github.com/lithic-com/lithic-go/compare/v0.76.0...v0.76.1)
+
+### Bug Fixes
+
+* handle empty bodies in WithJSONSet ([797902e](https://github.com/lithic-com/lithic-go/commit/797902e763686bd05f78b5dce45db7612b2fd33e))
+
 ## 0.76.0 (2025-04-29)
 
 Full Changelog: [v0.75.0...v0.76.0](https://github.com/lithic-com/lithic-go/compare/v0.75.0...v0.76.0)
