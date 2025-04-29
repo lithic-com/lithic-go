@@ -795,6 +795,9 @@ type AuthRuleV2NewResponseCurrentVersionParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount int64 `json:"limit_count,nullable"`
+	// This field can have the runtime type of
+	// [[]AuthRuleV2NewResponseCurrentVersionParametersMerchantLockParametersMerchant].
+	Merchants interface{} `json:"merchants"`
 	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
 	Period interface{}                                        `json:"period"`
 	Scope  AuthRuleV2NewResponseCurrentVersionParametersScope `json:"scope"`
@@ -809,6 +812,7 @@ type authRuleV2NewResponseCurrentVersionParametersJSON struct {
 	Filters     apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Merchants   apijson.Field
 	Period      apijson.Field
 	Scope       apijson.Field
 	raw         string
@@ -832,14 +836,16 @@ func (r *AuthRuleV2NewResponseCurrentVersionParameters) UnmarshalJSON(data []byt
 // which you can cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams].
+// [VelocityLimitParams],
+// [AuthRuleV2NewResponseCurrentVersionParametersMerchantLockParameters].
 func (r AuthRuleV2NewResponseCurrentVersionParameters) AsUnion() AuthRuleV2NewResponseCurrentVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
+// [AuthRuleV2NewResponseCurrentVersionParametersMerchantLockParameters].
 type AuthRuleV2NewResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2NewResponseCurrentVersionParameters()
 }
@@ -856,7 +862,75 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParams{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2NewResponseCurrentVersionParametersMerchantLockParameters{}),
+		},
 	)
+}
+
+type AuthRuleV2NewResponseCurrentVersionParametersMerchantLockParameters struct {
+	// A list of merchant locks defining specific merchants or groups of merchants
+	// (based on descriptors or IDs) that the lock applies to.
+	Merchants []AuthRuleV2NewResponseCurrentVersionParametersMerchantLockParametersMerchant `json:"merchants,required"`
+	JSON      authRuleV2NewResponseCurrentVersionParametersMerchantLockParametersJSON       `json:"-"`
+}
+
+// authRuleV2NewResponseCurrentVersionParametersMerchantLockParametersJSON contains
+// the JSON metadata for the struct
+// [AuthRuleV2NewResponseCurrentVersionParametersMerchantLockParameters]
+type authRuleV2NewResponseCurrentVersionParametersMerchantLockParametersJSON struct {
+	Merchants   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2NewResponseCurrentVersionParametersMerchantLockParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2NewResponseCurrentVersionParametersMerchantLockParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2NewResponseCurrentVersionParametersMerchantLockParameters) implementsAuthRuleV2NewResponseCurrentVersionParameters() {
+}
+
+// Represents a specific merchant lock based on their ID or descriptor. Each
+// merchant object allows transaction rules to work at a granular level and
+// requires at least one of merchant_id or descriptor.
+type AuthRuleV2NewResponseCurrentVersionParametersMerchantLockParametersMerchant struct {
+	// A comment or explanation about the merchant, used internally for rule management
+	// purposes.
+	Comment string `json:"comment"`
+	// Short description of the merchant, often used to provide more human-readable
+	// context about the transaction merchant. This is typically the name or label
+	// shown on transaction summaries.
+	Descriptor string `json:"descriptor"`
+	// Unique alphanumeric identifier for the payment card acceptor (merchant). This
+	// attribute specifies the merchant entity that will be locked or referenced for
+	// authorization rules.
+	MerchantID string                                                                          `json:"merchant_id"`
+	JSON       authRuleV2NewResponseCurrentVersionParametersMerchantLockParametersMerchantJSON `json:"-"`
+}
+
+// authRuleV2NewResponseCurrentVersionParametersMerchantLockParametersMerchantJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2NewResponseCurrentVersionParametersMerchantLockParametersMerchant]
+type authRuleV2NewResponseCurrentVersionParametersMerchantLockParametersMerchantJSON struct {
+	Comment     apijson.Field
+	Descriptor  apijson.Field
+	MerchantID  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2NewResponseCurrentVersionParametersMerchantLockParametersMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2NewResponseCurrentVersionParametersMerchantLockParametersMerchantJSON) RawJSON() string {
+	return r.raw
 }
 
 type AuthRuleV2NewResponseCurrentVersionParametersScope string
@@ -916,6 +990,9 @@ type AuthRuleV2NewResponseDraftVersionParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount int64 `json:"limit_count,nullable"`
+	// This field can have the runtime type of
+	// [[]AuthRuleV2NewResponseDraftVersionParametersMerchantLockParametersMerchant].
+	Merchants interface{} `json:"merchants"`
 	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
 	Period interface{}                                      `json:"period"`
 	Scope  AuthRuleV2NewResponseDraftVersionParametersScope `json:"scope"`
@@ -930,6 +1007,7 @@ type authRuleV2NewResponseDraftVersionParametersJSON struct {
 	Filters     apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Merchants   apijson.Field
 	Period      apijson.Field
 	Scope       apijson.Field
 	raw         string
@@ -953,14 +1031,16 @@ func (r *AuthRuleV2NewResponseDraftVersionParameters) UnmarshalJSON(data []byte)
 // which you can cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams].
+// [VelocityLimitParams],
+// [AuthRuleV2NewResponseDraftVersionParametersMerchantLockParameters].
 func (r AuthRuleV2NewResponseDraftVersionParameters) AsUnion() AuthRuleV2NewResponseDraftVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
+// [AuthRuleV2NewResponseDraftVersionParametersMerchantLockParameters].
 type AuthRuleV2NewResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2NewResponseDraftVersionParameters()
 }
@@ -977,7 +1057,75 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParams{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2NewResponseDraftVersionParametersMerchantLockParameters{}),
+		},
 	)
+}
+
+type AuthRuleV2NewResponseDraftVersionParametersMerchantLockParameters struct {
+	// A list of merchant locks defining specific merchants or groups of merchants
+	// (based on descriptors or IDs) that the lock applies to.
+	Merchants []AuthRuleV2NewResponseDraftVersionParametersMerchantLockParametersMerchant `json:"merchants,required"`
+	JSON      authRuleV2NewResponseDraftVersionParametersMerchantLockParametersJSON       `json:"-"`
+}
+
+// authRuleV2NewResponseDraftVersionParametersMerchantLockParametersJSON contains
+// the JSON metadata for the struct
+// [AuthRuleV2NewResponseDraftVersionParametersMerchantLockParameters]
+type authRuleV2NewResponseDraftVersionParametersMerchantLockParametersJSON struct {
+	Merchants   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2NewResponseDraftVersionParametersMerchantLockParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2NewResponseDraftVersionParametersMerchantLockParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2NewResponseDraftVersionParametersMerchantLockParameters) implementsAuthRuleV2NewResponseDraftVersionParameters() {
+}
+
+// Represents a specific merchant lock based on their ID or descriptor. Each
+// merchant object allows transaction rules to work at a granular level and
+// requires at least one of merchant_id or descriptor.
+type AuthRuleV2NewResponseDraftVersionParametersMerchantLockParametersMerchant struct {
+	// A comment or explanation about the merchant, used internally for rule management
+	// purposes.
+	Comment string `json:"comment"`
+	// Short description of the merchant, often used to provide more human-readable
+	// context about the transaction merchant. This is typically the name or label
+	// shown on transaction summaries.
+	Descriptor string `json:"descriptor"`
+	// Unique alphanumeric identifier for the payment card acceptor (merchant). This
+	// attribute specifies the merchant entity that will be locked or referenced for
+	// authorization rules.
+	MerchantID string                                                                        `json:"merchant_id"`
+	JSON       authRuleV2NewResponseDraftVersionParametersMerchantLockParametersMerchantJSON `json:"-"`
+}
+
+// authRuleV2NewResponseDraftVersionParametersMerchantLockParametersMerchantJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2NewResponseDraftVersionParametersMerchantLockParametersMerchant]
+type authRuleV2NewResponseDraftVersionParametersMerchantLockParametersMerchantJSON struct {
+	Comment     apijson.Field
+	Descriptor  apijson.Field
+	MerchantID  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2NewResponseDraftVersionParametersMerchantLockParametersMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2NewResponseDraftVersionParametersMerchantLockParametersMerchantJSON) RawJSON() string {
+	return r.raw
 }
 
 type AuthRuleV2NewResponseDraftVersionParametersScope string
@@ -1017,11 +1165,12 @@ type AuthRuleV2NewResponseType string
 const (
 	AuthRuleV2NewResponseTypeConditionalBlock AuthRuleV2NewResponseType = "CONDITIONAL_BLOCK"
 	AuthRuleV2NewResponseTypeVelocityLimit    AuthRuleV2NewResponseType = "VELOCITY_LIMIT"
+	AuthRuleV2NewResponseTypeMerchantLock     AuthRuleV2NewResponseType = "MERCHANT_LOCK"
 )
 
 func (r AuthRuleV2NewResponseType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewResponseTypeConditionalBlock, AuthRuleV2NewResponseTypeVelocityLimit:
+	case AuthRuleV2NewResponseTypeConditionalBlock, AuthRuleV2NewResponseTypeVelocityLimit, AuthRuleV2NewResponseTypeMerchantLock:
 		return true
 	}
 	return false
@@ -1116,6 +1265,9 @@ type AuthRuleV2GetResponseCurrentVersionParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount int64 `json:"limit_count,nullable"`
+	// This field can have the runtime type of
+	// [[]AuthRuleV2GetResponseCurrentVersionParametersMerchantLockParametersMerchant].
+	Merchants interface{} `json:"merchants"`
 	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
 	Period interface{}                                        `json:"period"`
 	Scope  AuthRuleV2GetResponseCurrentVersionParametersScope `json:"scope"`
@@ -1130,6 +1282,7 @@ type authRuleV2GetResponseCurrentVersionParametersJSON struct {
 	Filters     apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Merchants   apijson.Field
 	Period      apijson.Field
 	Scope       apijson.Field
 	raw         string
@@ -1153,14 +1306,16 @@ func (r *AuthRuleV2GetResponseCurrentVersionParameters) UnmarshalJSON(data []byt
 // which you can cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams].
+// [VelocityLimitParams],
+// [AuthRuleV2GetResponseCurrentVersionParametersMerchantLockParameters].
 func (r AuthRuleV2GetResponseCurrentVersionParameters) AsUnion() AuthRuleV2GetResponseCurrentVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
+// [AuthRuleV2GetResponseCurrentVersionParametersMerchantLockParameters].
 type AuthRuleV2GetResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2GetResponseCurrentVersionParameters()
 }
@@ -1177,7 +1332,75 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParams{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2GetResponseCurrentVersionParametersMerchantLockParameters{}),
+		},
 	)
+}
+
+type AuthRuleV2GetResponseCurrentVersionParametersMerchantLockParameters struct {
+	// A list of merchant locks defining specific merchants or groups of merchants
+	// (based on descriptors or IDs) that the lock applies to.
+	Merchants []AuthRuleV2GetResponseCurrentVersionParametersMerchantLockParametersMerchant `json:"merchants,required"`
+	JSON      authRuleV2GetResponseCurrentVersionParametersMerchantLockParametersJSON       `json:"-"`
+}
+
+// authRuleV2GetResponseCurrentVersionParametersMerchantLockParametersJSON contains
+// the JSON metadata for the struct
+// [AuthRuleV2GetResponseCurrentVersionParametersMerchantLockParameters]
+type authRuleV2GetResponseCurrentVersionParametersMerchantLockParametersJSON struct {
+	Merchants   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetResponseCurrentVersionParametersMerchantLockParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetResponseCurrentVersionParametersMerchantLockParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2GetResponseCurrentVersionParametersMerchantLockParameters) implementsAuthRuleV2GetResponseCurrentVersionParameters() {
+}
+
+// Represents a specific merchant lock based on their ID or descriptor. Each
+// merchant object allows transaction rules to work at a granular level and
+// requires at least one of merchant_id or descriptor.
+type AuthRuleV2GetResponseCurrentVersionParametersMerchantLockParametersMerchant struct {
+	// A comment or explanation about the merchant, used internally for rule management
+	// purposes.
+	Comment string `json:"comment"`
+	// Short description of the merchant, often used to provide more human-readable
+	// context about the transaction merchant. This is typically the name or label
+	// shown on transaction summaries.
+	Descriptor string `json:"descriptor"`
+	// Unique alphanumeric identifier for the payment card acceptor (merchant). This
+	// attribute specifies the merchant entity that will be locked or referenced for
+	// authorization rules.
+	MerchantID string                                                                          `json:"merchant_id"`
+	JSON       authRuleV2GetResponseCurrentVersionParametersMerchantLockParametersMerchantJSON `json:"-"`
+}
+
+// authRuleV2GetResponseCurrentVersionParametersMerchantLockParametersMerchantJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2GetResponseCurrentVersionParametersMerchantLockParametersMerchant]
+type authRuleV2GetResponseCurrentVersionParametersMerchantLockParametersMerchantJSON struct {
+	Comment     apijson.Field
+	Descriptor  apijson.Field
+	MerchantID  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetResponseCurrentVersionParametersMerchantLockParametersMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetResponseCurrentVersionParametersMerchantLockParametersMerchantJSON) RawJSON() string {
+	return r.raw
 }
 
 type AuthRuleV2GetResponseCurrentVersionParametersScope string
@@ -1237,6 +1460,9 @@ type AuthRuleV2GetResponseDraftVersionParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount int64 `json:"limit_count,nullable"`
+	// This field can have the runtime type of
+	// [[]AuthRuleV2GetResponseDraftVersionParametersMerchantLockParametersMerchant].
+	Merchants interface{} `json:"merchants"`
 	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
 	Period interface{}                                      `json:"period"`
 	Scope  AuthRuleV2GetResponseDraftVersionParametersScope `json:"scope"`
@@ -1251,6 +1477,7 @@ type authRuleV2GetResponseDraftVersionParametersJSON struct {
 	Filters     apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Merchants   apijson.Field
 	Period      apijson.Field
 	Scope       apijson.Field
 	raw         string
@@ -1274,14 +1501,16 @@ func (r *AuthRuleV2GetResponseDraftVersionParameters) UnmarshalJSON(data []byte)
 // which you can cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams].
+// [VelocityLimitParams],
+// [AuthRuleV2GetResponseDraftVersionParametersMerchantLockParameters].
 func (r AuthRuleV2GetResponseDraftVersionParameters) AsUnion() AuthRuleV2GetResponseDraftVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
+// [AuthRuleV2GetResponseDraftVersionParametersMerchantLockParameters].
 type AuthRuleV2GetResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2GetResponseDraftVersionParameters()
 }
@@ -1298,7 +1527,75 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParams{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2GetResponseDraftVersionParametersMerchantLockParameters{}),
+		},
 	)
+}
+
+type AuthRuleV2GetResponseDraftVersionParametersMerchantLockParameters struct {
+	// A list of merchant locks defining specific merchants or groups of merchants
+	// (based on descriptors or IDs) that the lock applies to.
+	Merchants []AuthRuleV2GetResponseDraftVersionParametersMerchantLockParametersMerchant `json:"merchants,required"`
+	JSON      authRuleV2GetResponseDraftVersionParametersMerchantLockParametersJSON       `json:"-"`
+}
+
+// authRuleV2GetResponseDraftVersionParametersMerchantLockParametersJSON contains
+// the JSON metadata for the struct
+// [AuthRuleV2GetResponseDraftVersionParametersMerchantLockParameters]
+type authRuleV2GetResponseDraftVersionParametersMerchantLockParametersJSON struct {
+	Merchants   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetResponseDraftVersionParametersMerchantLockParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetResponseDraftVersionParametersMerchantLockParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2GetResponseDraftVersionParametersMerchantLockParameters) implementsAuthRuleV2GetResponseDraftVersionParameters() {
+}
+
+// Represents a specific merchant lock based on their ID or descriptor. Each
+// merchant object allows transaction rules to work at a granular level and
+// requires at least one of merchant_id or descriptor.
+type AuthRuleV2GetResponseDraftVersionParametersMerchantLockParametersMerchant struct {
+	// A comment or explanation about the merchant, used internally for rule management
+	// purposes.
+	Comment string `json:"comment"`
+	// Short description of the merchant, often used to provide more human-readable
+	// context about the transaction merchant. This is typically the name or label
+	// shown on transaction summaries.
+	Descriptor string `json:"descriptor"`
+	// Unique alphanumeric identifier for the payment card acceptor (merchant). This
+	// attribute specifies the merchant entity that will be locked or referenced for
+	// authorization rules.
+	MerchantID string                                                                        `json:"merchant_id"`
+	JSON       authRuleV2GetResponseDraftVersionParametersMerchantLockParametersMerchantJSON `json:"-"`
+}
+
+// authRuleV2GetResponseDraftVersionParametersMerchantLockParametersMerchantJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2GetResponseDraftVersionParametersMerchantLockParametersMerchant]
+type authRuleV2GetResponseDraftVersionParametersMerchantLockParametersMerchantJSON struct {
+	Comment     apijson.Field
+	Descriptor  apijson.Field
+	MerchantID  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetResponseDraftVersionParametersMerchantLockParametersMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetResponseDraftVersionParametersMerchantLockParametersMerchantJSON) RawJSON() string {
+	return r.raw
 }
 
 type AuthRuleV2GetResponseDraftVersionParametersScope string
@@ -1338,11 +1635,12 @@ type AuthRuleV2GetResponseType string
 const (
 	AuthRuleV2GetResponseTypeConditionalBlock AuthRuleV2GetResponseType = "CONDITIONAL_BLOCK"
 	AuthRuleV2GetResponseTypeVelocityLimit    AuthRuleV2GetResponseType = "VELOCITY_LIMIT"
+	AuthRuleV2GetResponseTypeMerchantLock     AuthRuleV2GetResponseType = "MERCHANT_LOCK"
 )
 
 func (r AuthRuleV2GetResponseType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2GetResponseTypeConditionalBlock, AuthRuleV2GetResponseTypeVelocityLimit:
+	case AuthRuleV2GetResponseTypeConditionalBlock, AuthRuleV2GetResponseTypeVelocityLimit, AuthRuleV2GetResponseTypeMerchantLock:
 		return true
 	}
 	return false
@@ -1437,6 +1735,9 @@ type AuthRuleV2UpdateResponseCurrentVersionParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount int64 `json:"limit_count,nullable"`
+	// This field can have the runtime type of
+	// [[]AuthRuleV2UpdateResponseCurrentVersionParametersMerchantLockParametersMerchant].
+	Merchants interface{} `json:"merchants"`
 	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
 	Period interface{}                                           `json:"period"`
 	Scope  AuthRuleV2UpdateResponseCurrentVersionParametersScope `json:"scope"`
@@ -1451,6 +1752,7 @@ type authRuleV2UpdateResponseCurrentVersionParametersJSON struct {
 	Filters     apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Merchants   apijson.Field
 	Period      apijson.Field
 	Scope       apijson.Field
 	raw         string
@@ -1474,14 +1776,16 @@ func (r *AuthRuleV2UpdateResponseCurrentVersionParameters) UnmarshalJSON(data []
 // interface which you can cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams].
+// [VelocityLimitParams],
+// [AuthRuleV2UpdateResponseCurrentVersionParametersMerchantLockParameters].
 func (r AuthRuleV2UpdateResponseCurrentVersionParameters) AsUnion() AuthRuleV2UpdateResponseCurrentVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
+// [AuthRuleV2UpdateResponseCurrentVersionParametersMerchantLockParameters].
 type AuthRuleV2UpdateResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2UpdateResponseCurrentVersionParameters()
 }
@@ -1498,7 +1802,75 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParams{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2UpdateResponseCurrentVersionParametersMerchantLockParameters{}),
+		},
 	)
+}
+
+type AuthRuleV2UpdateResponseCurrentVersionParametersMerchantLockParameters struct {
+	// A list of merchant locks defining specific merchants or groups of merchants
+	// (based on descriptors or IDs) that the lock applies to.
+	Merchants []AuthRuleV2UpdateResponseCurrentVersionParametersMerchantLockParametersMerchant `json:"merchants,required"`
+	JSON      authRuleV2UpdateResponseCurrentVersionParametersMerchantLockParametersJSON       `json:"-"`
+}
+
+// authRuleV2UpdateResponseCurrentVersionParametersMerchantLockParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2UpdateResponseCurrentVersionParametersMerchantLockParameters]
+type authRuleV2UpdateResponseCurrentVersionParametersMerchantLockParametersJSON struct {
+	Merchants   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2UpdateResponseCurrentVersionParametersMerchantLockParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2UpdateResponseCurrentVersionParametersMerchantLockParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2UpdateResponseCurrentVersionParametersMerchantLockParameters) implementsAuthRuleV2UpdateResponseCurrentVersionParameters() {
+}
+
+// Represents a specific merchant lock based on their ID or descriptor. Each
+// merchant object allows transaction rules to work at a granular level and
+// requires at least one of merchant_id or descriptor.
+type AuthRuleV2UpdateResponseCurrentVersionParametersMerchantLockParametersMerchant struct {
+	// A comment or explanation about the merchant, used internally for rule management
+	// purposes.
+	Comment string `json:"comment"`
+	// Short description of the merchant, often used to provide more human-readable
+	// context about the transaction merchant. This is typically the name or label
+	// shown on transaction summaries.
+	Descriptor string `json:"descriptor"`
+	// Unique alphanumeric identifier for the payment card acceptor (merchant). This
+	// attribute specifies the merchant entity that will be locked or referenced for
+	// authorization rules.
+	MerchantID string                                                                             `json:"merchant_id"`
+	JSON       authRuleV2UpdateResponseCurrentVersionParametersMerchantLockParametersMerchantJSON `json:"-"`
+}
+
+// authRuleV2UpdateResponseCurrentVersionParametersMerchantLockParametersMerchantJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2UpdateResponseCurrentVersionParametersMerchantLockParametersMerchant]
+type authRuleV2UpdateResponseCurrentVersionParametersMerchantLockParametersMerchantJSON struct {
+	Comment     apijson.Field
+	Descriptor  apijson.Field
+	MerchantID  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2UpdateResponseCurrentVersionParametersMerchantLockParametersMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2UpdateResponseCurrentVersionParametersMerchantLockParametersMerchantJSON) RawJSON() string {
+	return r.raw
 }
 
 type AuthRuleV2UpdateResponseCurrentVersionParametersScope string
@@ -1558,6 +1930,9 @@ type AuthRuleV2UpdateResponseDraftVersionParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount int64 `json:"limit_count,nullable"`
+	// This field can have the runtime type of
+	// [[]AuthRuleV2UpdateResponseDraftVersionParametersMerchantLockParametersMerchant].
+	Merchants interface{} `json:"merchants"`
 	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
 	Period interface{}                                         `json:"period"`
 	Scope  AuthRuleV2UpdateResponseDraftVersionParametersScope `json:"scope"`
@@ -1572,6 +1947,7 @@ type authRuleV2UpdateResponseDraftVersionParametersJSON struct {
 	Filters     apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Merchants   apijson.Field
 	Period      apijson.Field
 	Scope       apijson.Field
 	raw         string
@@ -1595,14 +1971,16 @@ func (r *AuthRuleV2UpdateResponseDraftVersionParameters) UnmarshalJSON(data []by
 // interface which you can cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams].
+// [VelocityLimitParams],
+// [AuthRuleV2UpdateResponseDraftVersionParametersMerchantLockParameters].
 func (r AuthRuleV2UpdateResponseDraftVersionParameters) AsUnion() AuthRuleV2UpdateResponseDraftVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
+// [AuthRuleV2UpdateResponseDraftVersionParametersMerchantLockParameters].
 type AuthRuleV2UpdateResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2UpdateResponseDraftVersionParameters()
 }
@@ -1619,7 +1997,75 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParams{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2UpdateResponseDraftVersionParametersMerchantLockParameters{}),
+		},
 	)
+}
+
+type AuthRuleV2UpdateResponseDraftVersionParametersMerchantLockParameters struct {
+	// A list of merchant locks defining specific merchants or groups of merchants
+	// (based on descriptors or IDs) that the lock applies to.
+	Merchants []AuthRuleV2UpdateResponseDraftVersionParametersMerchantLockParametersMerchant `json:"merchants,required"`
+	JSON      authRuleV2UpdateResponseDraftVersionParametersMerchantLockParametersJSON       `json:"-"`
+}
+
+// authRuleV2UpdateResponseDraftVersionParametersMerchantLockParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2UpdateResponseDraftVersionParametersMerchantLockParameters]
+type authRuleV2UpdateResponseDraftVersionParametersMerchantLockParametersJSON struct {
+	Merchants   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2UpdateResponseDraftVersionParametersMerchantLockParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2UpdateResponseDraftVersionParametersMerchantLockParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2UpdateResponseDraftVersionParametersMerchantLockParameters) implementsAuthRuleV2UpdateResponseDraftVersionParameters() {
+}
+
+// Represents a specific merchant lock based on their ID or descriptor. Each
+// merchant object allows transaction rules to work at a granular level and
+// requires at least one of merchant_id or descriptor.
+type AuthRuleV2UpdateResponseDraftVersionParametersMerchantLockParametersMerchant struct {
+	// A comment or explanation about the merchant, used internally for rule management
+	// purposes.
+	Comment string `json:"comment"`
+	// Short description of the merchant, often used to provide more human-readable
+	// context about the transaction merchant. This is typically the name or label
+	// shown on transaction summaries.
+	Descriptor string `json:"descriptor"`
+	// Unique alphanumeric identifier for the payment card acceptor (merchant). This
+	// attribute specifies the merchant entity that will be locked or referenced for
+	// authorization rules.
+	MerchantID string                                                                           `json:"merchant_id"`
+	JSON       authRuleV2UpdateResponseDraftVersionParametersMerchantLockParametersMerchantJSON `json:"-"`
+}
+
+// authRuleV2UpdateResponseDraftVersionParametersMerchantLockParametersMerchantJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2UpdateResponseDraftVersionParametersMerchantLockParametersMerchant]
+type authRuleV2UpdateResponseDraftVersionParametersMerchantLockParametersMerchantJSON struct {
+	Comment     apijson.Field
+	Descriptor  apijson.Field
+	MerchantID  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2UpdateResponseDraftVersionParametersMerchantLockParametersMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2UpdateResponseDraftVersionParametersMerchantLockParametersMerchantJSON) RawJSON() string {
+	return r.raw
 }
 
 type AuthRuleV2UpdateResponseDraftVersionParametersScope string
@@ -1659,11 +2105,12 @@ type AuthRuleV2UpdateResponseType string
 const (
 	AuthRuleV2UpdateResponseTypeConditionalBlock AuthRuleV2UpdateResponseType = "CONDITIONAL_BLOCK"
 	AuthRuleV2UpdateResponseTypeVelocityLimit    AuthRuleV2UpdateResponseType = "VELOCITY_LIMIT"
+	AuthRuleV2UpdateResponseTypeMerchantLock     AuthRuleV2UpdateResponseType = "MERCHANT_LOCK"
 )
 
 func (r AuthRuleV2UpdateResponseType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2UpdateResponseTypeConditionalBlock, AuthRuleV2UpdateResponseTypeVelocityLimit:
+	case AuthRuleV2UpdateResponseTypeConditionalBlock, AuthRuleV2UpdateResponseTypeVelocityLimit, AuthRuleV2UpdateResponseTypeMerchantLock:
 		return true
 	}
 	return false
@@ -1758,6 +2205,9 @@ type AuthRuleV2ListResponseCurrentVersionParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount int64 `json:"limit_count,nullable"`
+	// This field can have the runtime type of
+	// [[]AuthRuleV2ListResponseCurrentVersionParametersMerchantLockParametersMerchant].
+	Merchants interface{} `json:"merchants"`
 	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
 	Period interface{}                                         `json:"period"`
 	Scope  AuthRuleV2ListResponseCurrentVersionParametersScope `json:"scope"`
@@ -1772,6 +2222,7 @@ type authRuleV2ListResponseCurrentVersionParametersJSON struct {
 	Filters     apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Merchants   apijson.Field
 	Period      apijson.Field
 	Scope       apijson.Field
 	raw         string
@@ -1795,14 +2246,16 @@ func (r *AuthRuleV2ListResponseCurrentVersionParameters) UnmarshalJSON(data []by
 // interface which you can cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams].
+// [VelocityLimitParams],
+// [AuthRuleV2ListResponseCurrentVersionParametersMerchantLockParameters].
 func (r AuthRuleV2ListResponseCurrentVersionParameters) AsUnion() AuthRuleV2ListResponseCurrentVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
+// [AuthRuleV2ListResponseCurrentVersionParametersMerchantLockParameters].
 type AuthRuleV2ListResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2ListResponseCurrentVersionParameters()
 }
@@ -1819,7 +2272,75 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParams{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ListResponseCurrentVersionParametersMerchantLockParameters{}),
+		},
 	)
+}
+
+type AuthRuleV2ListResponseCurrentVersionParametersMerchantLockParameters struct {
+	// A list of merchant locks defining specific merchants or groups of merchants
+	// (based on descriptors or IDs) that the lock applies to.
+	Merchants []AuthRuleV2ListResponseCurrentVersionParametersMerchantLockParametersMerchant `json:"merchants,required"`
+	JSON      authRuleV2ListResponseCurrentVersionParametersMerchantLockParametersJSON       `json:"-"`
+}
+
+// authRuleV2ListResponseCurrentVersionParametersMerchantLockParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ListResponseCurrentVersionParametersMerchantLockParameters]
+type authRuleV2ListResponseCurrentVersionParametersMerchantLockParametersJSON struct {
+	Merchants   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResponseCurrentVersionParametersMerchantLockParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResponseCurrentVersionParametersMerchantLockParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ListResponseCurrentVersionParametersMerchantLockParameters) implementsAuthRuleV2ListResponseCurrentVersionParameters() {
+}
+
+// Represents a specific merchant lock based on their ID or descriptor. Each
+// merchant object allows transaction rules to work at a granular level and
+// requires at least one of merchant_id or descriptor.
+type AuthRuleV2ListResponseCurrentVersionParametersMerchantLockParametersMerchant struct {
+	// A comment or explanation about the merchant, used internally for rule management
+	// purposes.
+	Comment string `json:"comment"`
+	// Short description of the merchant, often used to provide more human-readable
+	// context about the transaction merchant. This is typically the name or label
+	// shown on transaction summaries.
+	Descriptor string `json:"descriptor"`
+	// Unique alphanumeric identifier for the payment card acceptor (merchant). This
+	// attribute specifies the merchant entity that will be locked or referenced for
+	// authorization rules.
+	MerchantID string                                                                           `json:"merchant_id"`
+	JSON       authRuleV2ListResponseCurrentVersionParametersMerchantLockParametersMerchantJSON `json:"-"`
+}
+
+// authRuleV2ListResponseCurrentVersionParametersMerchantLockParametersMerchantJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ListResponseCurrentVersionParametersMerchantLockParametersMerchant]
+type authRuleV2ListResponseCurrentVersionParametersMerchantLockParametersMerchantJSON struct {
+	Comment     apijson.Field
+	Descriptor  apijson.Field
+	MerchantID  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResponseCurrentVersionParametersMerchantLockParametersMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResponseCurrentVersionParametersMerchantLockParametersMerchantJSON) RawJSON() string {
+	return r.raw
 }
 
 type AuthRuleV2ListResponseCurrentVersionParametersScope string
@@ -1879,6 +2400,9 @@ type AuthRuleV2ListResponseDraftVersionParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount int64 `json:"limit_count,nullable"`
+	// This field can have the runtime type of
+	// [[]AuthRuleV2ListResponseDraftVersionParametersMerchantLockParametersMerchant].
+	Merchants interface{} `json:"merchants"`
 	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
 	Period interface{}                                       `json:"period"`
 	Scope  AuthRuleV2ListResponseDraftVersionParametersScope `json:"scope"`
@@ -1893,6 +2417,7 @@ type authRuleV2ListResponseDraftVersionParametersJSON struct {
 	Filters     apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Merchants   apijson.Field
 	Period      apijson.Field
 	Scope       apijson.Field
 	raw         string
@@ -1916,14 +2441,16 @@ func (r *AuthRuleV2ListResponseDraftVersionParameters) UnmarshalJSON(data []byte
 // which you can cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams].
+// [VelocityLimitParams],
+// [AuthRuleV2ListResponseDraftVersionParametersMerchantLockParameters].
 func (r AuthRuleV2ListResponseDraftVersionParameters) AsUnion() AuthRuleV2ListResponseDraftVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
+// [AuthRuleV2ListResponseDraftVersionParametersMerchantLockParameters].
 type AuthRuleV2ListResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2ListResponseDraftVersionParameters()
 }
@@ -1940,7 +2467,75 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParams{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ListResponseDraftVersionParametersMerchantLockParameters{}),
+		},
 	)
+}
+
+type AuthRuleV2ListResponseDraftVersionParametersMerchantLockParameters struct {
+	// A list of merchant locks defining specific merchants or groups of merchants
+	// (based on descriptors or IDs) that the lock applies to.
+	Merchants []AuthRuleV2ListResponseDraftVersionParametersMerchantLockParametersMerchant `json:"merchants,required"`
+	JSON      authRuleV2ListResponseDraftVersionParametersMerchantLockParametersJSON       `json:"-"`
+}
+
+// authRuleV2ListResponseDraftVersionParametersMerchantLockParametersJSON contains
+// the JSON metadata for the struct
+// [AuthRuleV2ListResponseDraftVersionParametersMerchantLockParameters]
+type authRuleV2ListResponseDraftVersionParametersMerchantLockParametersJSON struct {
+	Merchants   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResponseDraftVersionParametersMerchantLockParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResponseDraftVersionParametersMerchantLockParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ListResponseDraftVersionParametersMerchantLockParameters) implementsAuthRuleV2ListResponseDraftVersionParameters() {
+}
+
+// Represents a specific merchant lock based on their ID or descriptor. Each
+// merchant object allows transaction rules to work at a granular level and
+// requires at least one of merchant_id or descriptor.
+type AuthRuleV2ListResponseDraftVersionParametersMerchantLockParametersMerchant struct {
+	// A comment or explanation about the merchant, used internally for rule management
+	// purposes.
+	Comment string `json:"comment"`
+	// Short description of the merchant, often used to provide more human-readable
+	// context about the transaction merchant. This is typically the name or label
+	// shown on transaction summaries.
+	Descriptor string `json:"descriptor"`
+	// Unique alphanumeric identifier for the payment card acceptor (merchant). This
+	// attribute specifies the merchant entity that will be locked or referenced for
+	// authorization rules.
+	MerchantID string                                                                         `json:"merchant_id"`
+	JSON       authRuleV2ListResponseDraftVersionParametersMerchantLockParametersMerchantJSON `json:"-"`
+}
+
+// authRuleV2ListResponseDraftVersionParametersMerchantLockParametersMerchantJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ListResponseDraftVersionParametersMerchantLockParametersMerchant]
+type authRuleV2ListResponseDraftVersionParametersMerchantLockParametersMerchantJSON struct {
+	Comment     apijson.Field
+	Descriptor  apijson.Field
+	MerchantID  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResponseDraftVersionParametersMerchantLockParametersMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResponseDraftVersionParametersMerchantLockParametersMerchantJSON) RawJSON() string {
+	return r.raw
 }
 
 type AuthRuleV2ListResponseDraftVersionParametersScope string
@@ -1980,11 +2575,12 @@ type AuthRuleV2ListResponseType string
 const (
 	AuthRuleV2ListResponseTypeConditionalBlock AuthRuleV2ListResponseType = "CONDITIONAL_BLOCK"
 	AuthRuleV2ListResponseTypeVelocityLimit    AuthRuleV2ListResponseType = "VELOCITY_LIMIT"
+	AuthRuleV2ListResponseTypeMerchantLock     AuthRuleV2ListResponseType = "MERCHANT_LOCK"
 )
 
 func (r AuthRuleV2ListResponseType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResponseTypeConditionalBlock, AuthRuleV2ListResponseTypeVelocityLimit:
+	case AuthRuleV2ListResponseTypeConditionalBlock, AuthRuleV2ListResponseTypeVelocityLimit, AuthRuleV2ListResponseTypeMerchantLock:
 		return true
 	}
 	return false
@@ -2079,6 +2675,9 @@ type AuthRuleV2ApplyResponseCurrentVersionParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount int64 `json:"limit_count,nullable"`
+	// This field can have the runtime type of
+	// [[]AuthRuleV2ApplyResponseCurrentVersionParametersMerchantLockParametersMerchant].
+	Merchants interface{} `json:"merchants"`
 	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
 	Period interface{}                                          `json:"period"`
 	Scope  AuthRuleV2ApplyResponseCurrentVersionParametersScope `json:"scope"`
@@ -2093,6 +2692,7 @@ type authRuleV2ApplyResponseCurrentVersionParametersJSON struct {
 	Filters     apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Merchants   apijson.Field
 	Period      apijson.Field
 	Scope       apijson.Field
 	raw         string
@@ -2116,14 +2716,16 @@ func (r *AuthRuleV2ApplyResponseCurrentVersionParameters) UnmarshalJSON(data []b
 // interface which you can cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams].
+// [VelocityLimitParams],
+// [AuthRuleV2ApplyResponseCurrentVersionParametersMerchantLockParameters].
 func (r AuthRuleV2ApplyResponseCurrentVersionParameters) AsUnion() AuthRuleV2ApplyResponseCurrentVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
+// [AuthRuleV2ApplyResponseCurrentVersionParametersMerchantLockParameters].
 type AuthRuleV2ApplyResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2ApplyResponseCurrentVersionParameters()
 }
@@ -2140,7 +2742,75 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParams{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ApplyResponseCurrentVersionParametersMerchantLockParameters{}),
+		},
 	)
+}
+
+type AuthRuleV2ApplyResponseCurrentVersionParametersMerchantLockParameters struct {
+	// A list of merchant locks defining specific merchants or groups of merchants
+	// (based on descriptors or IDs) that the lock applies to.
+	Merchants []AuthRuleV2ApplyResponseCurrentVersionParametersMerchantLockParametersMerchant `json:"merchants,required"`
+	JSON      authRuleV2ApplyResponseCurrentVersionParametersMerchantLockParametersJSON       `json:"-"`
+}
+
+// authRuleV2ApplyResponseCurrentVersionParametersMerchantLockParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ApplyResponseCurrentVersionParametersMerchantLockParameters]
+type authRuleV2ApplyResponseCurrentVersionParametersMerchantLockParametersJSON struct {
+	Merchants   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ApplyResponseCurrentVersionParametersMerchantLockParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ApplyResponseCurrentVersionParametersMerchantLockParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ApplyResponseCurrentVersionParametersMerchantLockParameters) implementsAuthRuleV2ApplyResponseCurrentVersionParameters() {
+}
+
+// Represents a specific merchant lock based on their ID or descriptor. Each
+// merchant object allows transaction rules to work at a granular level and
+// requires at least one of merchant_id or descriptor.
+type AuthRuleV2ApplyResponseCurrentVersionParametersMerchantLockParametersMerchant struct {
+	// A comment or explanation about the merchant, used internally for rule management
+	// purposes.
+	Comment string `json:"comment"`
+	// Short description of the merchant, often used to provide more human-readable
+	// context about the transaction merchant. This is typically the name or label
+	// shown on transaction summaries.
+	Descriptor string `json:"descriptor"`
+	// Unique alphanumeric identifier for the payment card acceptor (merchant). This
+	// attribute specifies the merchant entity that will be locked or referenced for
+	// authorization rules.
+	MerchantID string                                                                            `json:"merchant_id"`
+	JSON       authRuleV2ApplyResponseCurrentVersionParametersMerchantLockParametersMerchantJSON `json:"-"`
+}
+
+// authRuleV2ApplyResponseCurrentVersionParametersMerchantLockParametersMerchantJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ApplyResponseCurrentVersionParametersMerchantLockParametersMerchant]
+type authRuleV2ApplyResponseCurrentVersionParametersMerchantLockParametersMerchantJSON struct {
+	Comment     apijson.Field
+	Descriptor  apijson.Field
+	MerchantID  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ApplyResponseCurrentVersionParametersMerchantLockParametersMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ApplyResponseCurrentVersionParametersMerchantLockParametersMerchantJSON) RawJSON() string {
+	return r.raw
 }
 
 type AuthRuleV2ApplyResponseCurrentVersionParametersScope string
@@ -2200,6 +2870,9 @@ type AuthRuleV2ApplyResponseDraftVersionParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount int64 `json:"limit_count,nullable"`
+	// This field can have the runtime type of
+	// [[]AuthRuleV2ApplyResponseDraftVersionParametersMerchantLockParametersMerchant].
+	Merchants interface{} `json:"merchants"`
 	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
 	Period interface{}                                        `json:"period"`
 	Scope  AuthRuleV2ApplyResponseDraftVersionParametersScope `json:"scope"`
@@ -2214,6 +2887,7 @@ type authRuleV2ApplyResponseDraftVersionParametersJSON struct {
 	Filters     apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Merchants   apijson.Field
 	Period      apijson.Field
 	Scope       apijson.Field
 	raw         string
@@ -2237,14 +2911,16 @@ func (r *AuthRuleV2ApplyResponseDraftVersionParameters) UnmarshalJSON(data []byt
 // which you can cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams].
+// [VelocityLimitParams],
+// [AuthRuleV2ApplyResponseDraftVersionParametersMerchantLockParameters].
 func (r AuthRuleV2ApplyResponseDraftVersionParameters) AsUnion() AuthRuleV2ApplyResponseDraftVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
+// [AuthRuleV2ApplyResponseDraftVersionParametersMerchantLockParameters].
 type AuthRuleV2ApplyResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2ApplyResponseDraftVersionParameters()
 }
@@ -2261,7 +2937,75 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParams{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ApplyResponseDraftVersionParametersMerchantLockParameters{}),
+		},
 	)
+}
+
+type AuthRuleV2ApplyResponseDraftVersionParametersMerchantLockParameters struct {
+	// A list of merchant locks defining specific merchants or groups of merchants
+	// (based on descriptors or IDs) that the lock applies to.
+	Merchants []AuthRuleV2ApplyResponseDraftVersionParametersMerchantLockParametersMerchant `json:"merchants,required"`
+	JSON      authRuleV2ApplyResponseDraftVersionParametersMerchantLockParametersJSON       `json:"-"`
+}
+
+// authRuleV2ApplyResponseDraftVersionParametersMerchantLockParametersJSON contains
+// the JSON metadata for the struct
+// [AuthRuleV2ApplyResponseDraftVersionParametersMerchantLockParameters]
+type authRuleV2ApplyResponseDraftVersionParametersMerchantLockParametersJSON struct {
+	Merchants   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ApplyResponseDraftVersionParametersMerchantLockParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ApplyResponseDraftVersionParametersMerchantLockParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ApplyResponseDraftVersionParametersMerchantLockParameters) implementsAuthRuleV2ApplyResponseDraftVersionParameters() {
+}
+
+// Represents a specific merchant lock based on their ID or descriptor. Each
+// merchant object allows transaction rules to work at a granular level and
+// requires at least one of merchant_id or descriptor.
+type AuthRuleV2ApplyResponseDraftVersionParametersMerchantLockParametersMerchant struct {
+	// A comment or explanation about the merchant, used internally for rule management
+	// purposes.
+	Comment string `json:"comment"`
+	// Short description of the merchant, often used to provide more human-readable
+	// context about the transaction merchant. This is typically the name or label
+	// shown on transaction summaries.
+	Descriptor string `json:"descriptor"`
+	// Unique alphanumeric identifier for the payment card acceptor (merchant). This
+	// attribute specifies the merchant entity that will be locked or referenced for
+	// authorization rules.
+	MerchantID string                                                                          `json:"merchant_id"`
+	JSON       authRuleV2ApplyResponseDraftVersionParametersMerchantLockParametersMerchantJSON `json:"-"`
+}
+
+// authRuleV2ApplyResponseDraftVersionParametersMerchantLockParametersMerchantJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ApplyResponseDraftVersionParametersMerchantLockParametersMerchant]
+type authRuleV2ApplyResponseDraftVersionParametersMerchantLockParametersMerchantJSON struct {
+	Comment     apijson.Field
+	Descriptor  apijson.Field
+	MerchantID  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ApplyResponseDraftVersionParametersMerchantLockParametersMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ApplyResponseDraftVersionParametersMerchantLockParametersMerchantJSON) RawJSON() string {
+	return r.raw
 }
 
 type AuthRuleV2ApplyResponseDraftVersionParametersScope string
@@ -2301,11 +3045,12 @@ type AuthRuleV2ApplyResponseType string
 const (
 	AuthRuleV2ApplyResponseTypeConditionalBlock AuthRuleV2ApplyResponseType = "CONDITIONAL_BLOCK"
 	AuthRuleV2ApplyResponseTypeVelocityLimit    AuthRuleV2ApplyResponseType = "VELOCITY_LIMIT"
+	AuthRuleV2ApplyResponseTypeMerchantLock     AuthRuleV2ApplyResponseType = "MERCHANT_LOCK"
 )
 
 func (r AuthRuleV2ApplyResponseType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ApplyResponseTypeConditionalBlock, AuthRuleV2ApplyResponseTypeVelocityLimit:
+	case AuthRuleV2ApplyResponseTypeConditionalBlock, AuthRuleV2ApplyResponseTypeVelocityLimit, AuthRuleV2ApplyResponseTypeMerchantLock:
 		return true
 	}
 	return false
@@ -2400,6 +3145,9 @@ type AuthRuleV2DraftResponseCurrentVersionParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount int64 `json:"limit_count,nullable"`
+	// This field can have the runtime type of
+	// [[]AuthRuleV2DraftResponseCurrentVersionParametersMerchantLockParametersMerchant].
+	Merchants interface{} `json:"merchants"`
 	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
 	Period interface{}                                          `json:"period"`
 	Scope  AuthRuleV2DraftResponseCurrentVersionParametersScope `json:"scope"`
@@ -2414,6 +3162,7 @@ type authRuleV2DraftResponseCurrentVersionParametersJSON struct {
 	Filters     apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Merchants   apijson.Field
 	Period      apijson.Field
 	Scope       apijson.Field
 	raw         string
@@ -2437,14 +3186,16 @@ func (r *AuthRuleV2DraftResponseCurrentVersionParameters) UnmarshalJSON(data []b
 // interface which you can cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams].
+// [VelocityLimitParams],
+// [AuthRuleV2DraftResponseCurrentVersionParametersMerchantLockParameters].
 func (r AuthRuleV2DraftResponseCurrentVersionParameters) AsUnion() AuthRuleV2DraftResponseCurrentVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
+// [AuthRuleV2DraftResponseCurrentVersionParametersMerchantLockParameters].
 type AuthRuleV2DraftResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2DraftResponseCurrentVersionParameters()
 }
@@ -2461,7 +3212,75 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParams{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2DraftResponseCurrentVersionParametersMerchantLockParameters{}),
+		},
 	)
+}
+
+type AuthRuleV2DraftResponseCurrentVersionParametersMerchantLockParameters struct {
+	// A list of merchant locks defining specific merchants or groups of merchants
+	// (based on descriptors or IDs) that the lock applies to.
+	Merchants []AuthRuleV2DraftResponseCurrentVersionParametersMerchantLockParametersMerchant `json:"merchants,required"`
+	JSON      authRuleV2DraftResponseCurrentVersionParametersMerchantLockParametersJSON       `json:"-"`
+}
+
+// authRuleV2DraftResponseCurrentVersionParametersMerchantLockParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2DraftResponseCurrentVersionParametersMerchantLockParameters]
+type authRuleV2DraftResponseCurrentVersionParametersMerchantLockParametersJSON struct {
+	Merchants   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2DraftResponseCurrentVersionParametersMerchantLockParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2DraftResponseCurrentVersionParametersMerchantLockParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2DraftResponseCurrentVersionParametersMerchantLockParameters) implementsAuthRuleV2DraftResponseCurrentVersionParameters() {
+}
+
+// Represents a specific merchant lock based on their ID or descriptor. Each
+// merchant object allows transaction rules to work at a granular level and
+// requires at least one of merchant_id or descriptor.
+type AuthRuleV2DraftResponseCurrentVersionParametersMerchantLockParametersMerchant struct {
+	// A comment or explanation about the merchant, used internally for rule management
+	// purposes.
+	Comment string `json:"comment"`
+	// Short description of the merchant, often used to provide more human-readable
+	// context about the transaction merchant. This is typically the name or label
+	// shown on transaction summaries.
+	Descriptor string `json:"descriptor"`
+	// Unique alphanumeric identifier for the payment card acceptor (merchant). This
+	// attribute specifies the merchant entity that will be locked or referenced for
+	// authorization rules.
+	MerchantID string                                                                            `json:"merchant_id"`
+	JSON       authRuleV2DraftResponseCurrentVersionParametersMerchantLockParametersMerchantJSON `json:"-"`
+}
+
+// authRuleV2DraftResponseCurrentVersionParametersMerchantLockParametersMerchantJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2DraftResponseCurrentVersionParametersMerchantLockParametersMerchant]
+type authRuleV2DraftResponseCurrentVersionParametersMerchantLockParametersMerchantJSON struct {
+	Comment     apijson.Field
+	Descriptor  apijson.Field
+	MerchantID  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2DraftResponseCurrentVersionParametersMerchantLockParametersMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2DraftResponseCurrentVersionParametersMerchantLockParametersMerchantJSON) RawJSON() string {
+	return r.raw
 }
 
 type AuthRuleV2DraftResponseCurrentVersionParametersScope string
@@ -2521,6 +3340,9 @@ type AuthRuleV2DraftResponseDraftVersionParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount int64 `json:"limit_count,nullable"`
+	// This field can have the runtime type of
+	// [[]AuthRuleV2DraftResponseDraftVersionParametersMerchantLockParametersMerchant].
+	Merchants interface{} `json:"merchants"`
 	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
 	Period interface{}                                        `json:"period"`
 	Scope  AuthRuleV2DraftResponseDraftVersionParametersScope `json:"scope"`
@@ -2535,6 +3357,7 @@ type authRuleV2DraftResponseDraftVersionParametersJSON struct {
 	Filters     apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Merchants   apijson.Field
 	Period      apijson.Field
 	Scope       apijson.Field
 	raw         string
@@ -2558,14 +3381,16 @@ func (r *AuthRuleV2DraftResponseDraftVersionParameters) UnmarshalJSON(data []byt
 // which you can cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams].
+// [VelocityLimitParams],
+// [AuthRuleV2DraftResponseDraftVersionParametersMerchantLockParameters].
 func (r AuthRuleV2DraftResponseDraftVersionParameters) AsUnion() AuthRuleV2DraftResponseDraftVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
+// [AuthRuleV2DraftResponseDraftVersionParametersMerchantLockParameters].
 type AuthRuleV2DraftResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2DraftResponseDraftVersionParameters()
 }
@@ -2582,7 +3407,75 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParams{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2DraftResponseDraftVersionParametersMerchantLockParameters{}),
+		},
 	)
+}
+
+type AuthRuleV2DraftResponseDraftVersionParametersMerchantLockParameters struct {
+	// A list of merchant locks defining specific merchants or groups of merchants
+	// (based on descriptors or IDs) that the lock applies to.
+	Merchants []AuthRuleV2DraftResponseDraftVersionParametersMerchantLockParametersMerchant `json:"merchants,required"`
+	JSON      authRuleV2DraftResponseDraftVersionParametersMerchantLockParametersJSON       `json:"-"`
+}
+
+// authRuleV2DraftResponseDraftVersionParametersMerchantLockParametersJSON contains
+// the JSON metadata for the struct
+// [AuthRuleV2DraftResponseDraftVersionParametersMerchantLockParameters]
+type authRuleV2DraftResponseDraftVersionParametersMerchantLockParametersJSON struct {
+	Merchants   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2DraftResponseDraftVersionParametersMerchantLockParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2DraftResponseDraftVersionParametersMerchantLockParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2DraftResponseDraftVersionParametersMerchantLockParameters) implementsAuthRuleV2DraftResponseDraftVersionParameters() {
+}
+
+// Represents a specific merchant lock based on their ID or descriptor. Each
+// merchant object allows transaction rules to work at a granular level and
+// requires at least one of merchant_id or descriptor.
+type AuthRuleV2DraftResponseDraftVersionParametersMerchantLockParametersMerchant struct {
+	// A comment or explanation about the merchant, used internally for rule management
+	// purposes.
+	Comment string `json:"comment"`
+	// Short description of the merchant, often used to provide more human-readable
+	// context about the transaction merchant. This is typically the name or label
+	// shown on transaction summaries.
+	Descriptor string `json:"descriptor"`
+	// Unique alphanumeric identifier for the payment card acceptor (merchant). This
+	// attribute specifies the merchant entity that will be locked or referenced for
+	// authorization rules.
+	MerchantID string                                                                          `json:"merchant_id"`
+	JSON       authRuleV2DraftResponseDraftVersionParametersMerchantLockParametersMerchantJSON `json:"-"`
+}
+
+// authRuleV2DraftResponseDraftVersionParametersMerchantLockParametersMerchantJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2DraftResponseDraftVersionParametersMerchantLockParametersMerchant]
+type authRuleV2DraftResponseDraftVersionParametersMerchantLockParametersMerchantJSON struct {
+	Comment     apijson.Field
+	Descriptor  apijson.Field
+	MerchantID  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2DraftResponseDraftVersionParametersMerchantLockParametersMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2DraftResponseDraftVersionParametersMerchantLockParametersMerchantJSON) RawJSON() string {
+	return r.raw
 }
 
 type AuthRuleV2DraftResponseDraftVersionParametersScope string
@@ -2622,11 +3515,12 @@ type AuthRuleV2DraftResponseType string
 const (
 	AuthRuleV2DraftResponseTypeConditionalBlock AuthRuleV2DraftResponseType = "CONDITIONAL_BLOCK"
 	AuthRuleV2DraftResponseTypeVelocityLimit    AuthRuleV2DraftResponseType = "VELOCITY_LIMIT"
+	AuthRuleV2DraftResponseTypeMerchantLock     AuthRuleV2DraftResponseType = "MERCHANT_LOCK"
 )
 
 func (r AuthRuleV2DraftResponseType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2DraftResponseTypeConditionalBlock, AuthRuleV2DraftResponseTypeVelocityLimit:
+	case AuthRuleV2DraftResponseTypeConditionalBlock, AuthRuleV2DraftResponseTypeVelocityLimit, AuthRuleV2DraftResponseTypeMerchantLock:
 		return true
 	}
 	return false
@@ -2721,6 +3615,9 @@ type AuthRuleV2PromoteResponseCurrentVersionParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount int64 `json:"limit_count,nullable"`
+	// This field can have the runtime type of
+	// [[]AuthRuleV2PromoteResponseCurrentVersionParametersMerchantLockParametersMerchant].
+	Merchants interface{} `json:"merchants"`
 	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
 	Period interface{}                                            `json:"period"`
 	Scope  AuthRuleV2PromoteResponseCurrentVersionParametersScope `json:"scope"`
@@ -2735,6 +3632,7 @@ type authRuleV2PromoteResponseCurrentVersionParametersJSON struct {
 	Filters     apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Merchants   apijson.Field
 	Period      apijson.Field
 	Scope       apijson.Field
 	raw         string
@@ -2758,14 +3656,16 @@ func (r *AuthRuleV2PromoteResponseCurrentVersionParameters) UnmarshalJSON(data [
 // interface which you can cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams].
+// [VelocityLimitParams],
+// [AuthRuleV2PromoteResponseCurrentVersionParametersMerchantLockParameters].
 func (r AuthRuleV2PromoteResponseCurrentVersionParameters) AsUnion() AuthRuleV2PromoteResponseCurrentVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
+// [AuthRuleV2PromoteResponseCurrentVersionParametersMerchantLockParameters].
 type AuthRuleV2PromoteResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2PromoteResponseCurrentVersionParameters()
 }
@@ -2782,7 +3682,75 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParams{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2PromoteResponseCurrentVersionParametersMerchantLockParameters{}),
+		},
 	)
+}
+
+type AuthRuleV2PromoteResponseCurrentVersionParametersMerchantLockParameters struct {
+	// A list of merchant locks defining specific merchants or groups of merchants
+	// (based on descriptors or IDs) that the lock applies to.
+	Merchants []AuthRuleV2PromoteResponseCurrentVersionParametersMerchantLockParametersMerchant `json:"merchants,required"`
+	JSON      authRuleV2PromoteResponseCurrentVersionParametersMerchantLockParametersJSON       `json:"-"`
+}
+
+// authRuleV2PromoteResponseCurrentVersionParametersMerchantLockParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2PromoteResponseCurrentVersionParametersMerchantLockParameters]
+type authRuleV2PromoteResponseCurrentVersionParametersMerchantLockParametersJSON struct {
+	Merchants   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2PromoteResponseCurrentVersionParametersMerchantLockParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2PromoteResponseCurrentVersionParametersMerchantLockParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2PromoteResponseCurrentVersionParametersMerchantLockParameters) implementsAuthRuleV2PromoteResponseCurrentVersionParameters() {
+}
+
+// Represents a specific merchant lock based on their ID or descriptor. Each
+// merchant object allows transaction rules to work at a granular level and
+// requires at least one of merchant_id or descriptor.
+type AuthRuleV2PromoteResponseCurrentVersionParametersMerchantLockParametersMerchant struct {
+	// A comment or explanation about the merchant, used internally for rule management
+	// purposes.
+	Comment string `json:"comment"`
+	// Short description of the merchant, often used to provide more human-readable
+	// context about the transaction merchant. This is typically the name or label
+	// shown on transaction summaries.
+	Descriptor string `json:"descriptor"`
+	// Unique alphanumeric identifier for the payment card acceptor (merchant). This
+	// attribute specifies the merchant entity that will be locked or referenced for
+	// authorization rules.
+	MerchantID string                                                                              `json:"merchant_id"`
+	JSON       authRuleV2PromoteResponseCurrentVersionParametersMerchantLockParametersMerchantJSON `json:"-"`
+}
+
+// authRuleV2PromoteResponseCurrentVersionParametersMerchantLockParametersMerchantJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2PromoteResponseCurrentVersionParametersMerchantLockParametersMerchant]
+type authRuleV2PromoteResponseCurrentVersionParametersMerchantLockParametersMerchantJSON struct {
+	Comment     apijson.Field
+	Descriptor  apijson.Field
+	MerchantID  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2PromoteResponseCurrentVersionParametersMerchantLockParametersMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2PromoteResponseCurrentVersionParametersMerchantLockParametersMerchantJSON) RawJSON() string {
+	return r.raw
 }
 
 type AuthRuleV2PromoteResponseCurrentVersionParametersScope string
@@ -2842,6 +3810,9 @@ type AuthRuleV2PromoteResponseDraftVersionParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount int64 `json:"limit_count,nullable"`
+	// This field can have the runtime type of
+	// [[]AuthRuleV2PromoteResponseDraftVersionParametersMerchantLockParametersMerchant].
+	Merchants interface{} `json:"merchants"`
 	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
 	Period interface{}                                          `json:"period"`
 	Scope  AuthRuleV2PromoteResponseDraftVersionParametersScope `json:"scope"`
@@ -2856,6 +3827,7 @@ type authRuleV2PromoteResponseDraftVersionParametersJSON struct {
 	Filters     apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
+	Merchants   apijson.Field
 	Period      apijson.Field
 	Scope       apijson.Field
 	raw         string
@@ -2879,14 +3851,16 @@ func (r *AuthRuleV2PromoteResponseDraftVersionParameters) UnmarshalJSON(data []b
 // interface which you can cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams].
+// [VelocityLimitParams],
+// [AuthRuleV2PromoteResponseDraftVersionParametersMerchantLockParameters].
 func (r AuthRuleV2PromoteResponseDraftVersionParameters) AsUnion() AuthRuleV2PromoteResponseDraftVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters] or [VelocityLimitParams].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
+// [AuthRuleV2PromoteResponseDraftVersionParametersMerchantLockParameters].
 type AuthRuleV2PromoteResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2PromoteResponseDraftVersionParameters()
 }
@@ -2903,7 +3877,75 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParams{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2PromoteResponseDraftVersionParametersMerchantLockParameters{}),
+		},
 	)
+}
+
+type AuthRuleV2PromoteResponseDraftVersionParametersMerchantLockParameters struct {
+	// A list of merchant locks defining specific merchants or groups of merchants
+	// (based on descriptors or IDs) that the lock applies to.
+	Merchants []AuthRuleV2PromoteResponseDraftVersionParametersMerchantLockParametersMerchant `json:"merchants,required"`
+	JSON      authRuleV2PromoteResponseDraftVersionParametersMerchantLockParametersJSON       `json:"-"`
+}
+
+// authRuleV2PromoteResponseDraftVersionParametersMerchantLockParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2PromoteResponseDraftVersionParametersMerchantLockParameters]
+type authRuleV2PromoteResponseDraftVersionParametersMerchantLockParametersJSON struct {
+	Merchants   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2PromoteResponseDraftVersionParametersMerchantLockParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2PromoteResponseDraftVersionParametersMerchantLockParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2PromoteResponseDraftVersionParametersMerchantLockParameters) implementsAuthRuleV2PromoteResponseDraftVersionParameters() {
+}
+
+// Represents a specific merchant lock based on their ID or descriptor. Each
+// merchant object allows transaction rules to work at a granular level and
+// requires at least one of merchant_id or descriptor.
+type AuthRuleV2PromoteResponseDraftVersionParametersMerchantLockParametersMerchant struct {
+	// A comment or explanation about the merchant, used internally for rule management
+	// purposes.
+	Comment string `json:"comment"`
+	// Short description of the merchant, often used to provide more human-readable
+	// context about the transaction merchant. This is typically the name or label
+	// shown on transaction summaries.
+	Descriptor string `json:"descriptor"`
+	// Unique alphanumeric identifier for the payment card acceptor (merchant). This
+	// attribute specifies the merchant entity that will be locked or referenced for
+	// authorization rules.
+	MerchantID string                                                                            `json:"merchant_id"`
+	JSON       authRuleV2PromoteResponseDraftVersionParametersMerchantLockParametersMerchantJSON `json:"-"`
+}
+
+// authRuleV2PromoteResponseDraftVersionParametersMerchantLockParametersMerchantJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2PromoteResponseDraftVersionParametersMerchantLockParametersMerchant]
+type authRuleV2PromoteResponseDraftVersionParametersMerchantLockParametersMerchantJSON struct {
+	Comment     apijson.Field
+	Descriptor  apijson.Field
+	MerchantID  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2PromoteResponseDraftVersionParametersMerchantLockParametersMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2PromoteResponseDraftVersionParametersMerchantLockParametersMerchantJSON) RawJSON() string {
+	return r.raw
 }
 
 type AuthRuleV2PromoteResponseDraftVersionParametersScope string
@@ -2943,11 +3985,12 @@ type AuthRuleV2PromoteResponseType string
 const (
 	AuthRuleV2PromoteResponseTypeConditionalBlock AuthRuleV2PromoteResponseType = "CONDITIONAL_BLOCK"
 	AuthRuleV2PromoteResponseTypeVelocityLimit    AuthRuleV2PromoteResponseType = "VELOCITY_LIMIT"
+	AuthRuleV2PromoteResponseTypeMerchantLock     AuthRuleV2PromoteResponseType = "MERCHANT_LOCK"
 )
 
 func (r AuthRuleV2PromoteResponseType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2PromoteResponseTypeConditionalBlock, AuthRuleV2PromoteResponseTypeVelocityLimit:
+	case AuthRuleV2PromoteResponseTypeConditionalBlock, AuthRuleV2PromoteResponseTypeVelocityLimit, AuthRuleV2PromoteResponseTypeMerchantLock:
 		return true
 	}
 	return false
@@ -3041,6 +4084,7 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters struct 
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount param.Field[int64]                                                                    `json:"limit_count"`
+	Merchants  param.Field[interface{}]                                                              `json:"merchants"`
 	Period     param.Field[interface{}]                                                              `json:"period"`
 	Scope      param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersScope] `json:"scope"`
 }
@@ -3055,9 +4099,44 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters) imp
 // Parameters for the Auth Rule
 //
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersMerchantLockParameters],
 // [AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters].
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersUnion interface {
 	implementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersUnion()
+}
+
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersMerchantLockParameters struct {
+	// A list of merchant locks defining specific merchants or groups of merchants
+	// (based on descriptors or IDs) that the lock applies to.
+	Merchants param.Field[[]AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersMerchantLockParametersMerchant] `json:"merchants,required"`
+}
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersMerchantLockParameters) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersMerchantLockParameters) implementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersUnion() {
+}
+
+// Represents a specific merchant lock based on their ID or descriptor. Each
+// merchant object allows transaction rules to work at a granular level and
+// requires at least one of merchant_id or descriptor.
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersMerchantLockParametersMerchant struct {
+	// A comment or explanation about the merchant, used internally for rule management
+	// purposes.
+	Comment param.Field[string] `json:"comment"`
+	// Short description of the merchant, often used to provide more human-readable
+	// context about the transaction merchant. This is typically the name or label
+	// shown on transaction summaries.
+	Descriptor param.Field[string] `json:"descriptor"`
+	// Unique alphanumeric identifier for the payment card acceptor (merchant). This
+	// attribute specifies the merchant entity that will be locked or referenced for
+	// authorization rules.
+	MerchantID param.Field[string] `json:"merchant_id"`
+}
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersMerchantLockParametersMerchant) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }
 
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersScope string
@@ -3081,11 +4160,12 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensType string
 const (
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeConditionalBlock AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensType = "CONDITIONAL_BLOCK"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeVelocityLimit    AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensType = "VELOCITY_LIMIT"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeMerchantLock     AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensType = "MERCHANT_LOCK"
 )
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeConditionalBlock, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeVelocityLimit:
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeConditionalBlock, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeVelocityLimit, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeMerchantLock:
 		return true
 	}
 	return false
@@ -3123,6 +4203,7 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount param.Field[int64]                                                                 `json:"limit_count"`
+	Merchants  param.Field[interface{}]                                                           `json:"merchants"`
 	Period     param.Field[interface{}]                                                           `json:"period"`
 	Scope      param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersScope] `json:"scope"`
 }
@@ -3137,9 +4218,44 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters) implem
 // Parameters for the Auth Rule
 //
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersMerchantLockParameters],
 // [AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters].
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersUnion interface {
 	implementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersUnion()
+}
+
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersMerchantLockParameters struct {
+	// A list of merchant locks defining specific merchants or groups of merchants
+	// (based on descriptors or IDs) that the lock applies to.
+	Merchants param.Field[[]AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersMerchantLockParametersMerchant] `json:"merchants,required"`
+}
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersMerchantLockParameters) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersMerchantLockParameters) implementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersUnion() {
+}
+
+// Represents a specific merchant lock based on their ID or descriptor. Each
+// merchant object allows transaction rules to work at a granular level and
+// requires at least one of merchant_id or descriptor.
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersMerchantLockParametersMerchant struct {
+	// A comment or explanation about the merchant, used internally for rule management
+	// purposes.
+	Comment param.Field[string] `json:"comment"`
+	// Short description of the merchant, often used to provide more human-readable
+	// context about the transaction merchant. This is typically the name or label
+	// shown on transaction summaries.
+	Descriptor param.Field[string] `json:"descriptor"`
+	// Unique alphanumeric identifier for the payment card acceptor (merchant). This
+	// attribute specifies the merchant entity that will be locked or referenced for
+	// authorization rules.
+	MerchantID param.Field[string] `json:"merchant_id"`
+}
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersMerchantLockParametersMerchant) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }
 
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersScope string
@@ -3163,11 +4279,12 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensType string
 const (
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeConditionalBlock AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensType = "CONDITIONAL_BLOCK"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeVelocityLimit    AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensType = "VELOCITY_LIMIT"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeMerchantLock     AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensType = "MERCHANT_LOCK"
 )
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeConditionalBlock, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeVelocityLimit:
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeConditionalBlock, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeVelocityLimit, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeMerchantLock:
 		return true
 	}
 	return false
@@ -3207,6 +4324,7 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount param.Field[int64]                                                                   `json:"limit_count"`
+	Merchants  param.Field[interface{}]                                                             `json:"merchants"`
 	Period     param.Field[interface{}]                                                             `json:"period"`
 	Scope      param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersScope] `json:"scope"`
 }
@@ -3221,9 +4339,44 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters) impl
 // Parameters for the Auth Rule
 //
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersMerchantLockParameters],
 // [AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters].
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersUnion interface {
 	implementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersUnion()
+}
+
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersMerchantLockParameters struct {
+	// A list of merchant locks defining specific merchants or groups of merchants
+	// (based on descriptors or IDs) that the lock applies to.
+	Merchants param.Field[[]AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersMerchantLockParametersMerchant] `json:"merchants,required"`
+}
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersMerchantLockParameters) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersMerchantLockParameters) implementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersUnion() {
+}
+
+// Represents a specific merchant lock based on their ID or descriptor. Each
+// merchant object allows transaction rules to work at a granular level and
+// requires at least one of merchant_id or descriptor.
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersMerchantLockParametersMerchant struct {
+	// A comment or explanation about the merchant, used internally for rule management
+	// purposes.
+	Comment param.Field[string] `json:"comment"`
+	// Short description of the merchant, often used to provide more human-readable
+	// context about the transaction merchant. This is typically the name or label
+	// shown on transaction summaries.
+	Descriptor param.Field[string] `json:"descriptor"`
+	// Unique alphanumeric identifier for the payment card acceptor (merchant). This
+	// attribute specifies the merchant entity that will be locked or referenced for
+	// authorization rules.
+	MerchantID param.Field[string] `json:"merchant_id"`
+}
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersMerchantLockParametersMerchant) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }
 
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersScope string
@@ -3247,11 +4400,12 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelType string
 const (
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeConditionalBlock AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelType = "CONDITIONAL_BLOCK"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeVelocityLimit    AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelType = "VELOCITY_LIMIT"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeMerchantLock     AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelType = "MERCHANT_LOCK"
 )
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeConditionalBlock, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeVelocityLimit:
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeConditionalBlock, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeVelocityLimit, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeMerchantLock:
 		return true
 	}
 	return false
@@ -3263,11 +4417,12 @@ type AuthRuleV2NewParamsBodyType string
 const (
 	AuthRuleV2NewParamsBodyTypeConditionalBlock AuthRuleV2NewParamsBodyType = "CONDITIONAL_BLOCK"
 	AuthRuleV2NewParamsBodyTypeVelocityLimit    AuthRuleV2NewParamsBodyType = "VELOCITY_LIMIT"
+	AuthRuleV2NewParamsBodyTypeMerchantLock     AuthRuleV2NewParamsBodyType = "MERCHANT_LOCK"
 )
 
 func (r AuthRuleV2NewParamsBodyType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyTypeConditionalBlock, AuthRuleV2NewParamsBodyTypeVelocityLimit:
+	case AuthRuleV2NewParamsBodyTypeConditionalBlock, AuthRuleV2NewParamsBodyTypeVelocityLimit, AuthRuleV2NewParamsBodyTypeMerchantLock:
 		return true
 	}
 	return false
@@ -3455,6 +4610,8 @@ type AuthRuleV2ListParams struct {
 	EndingBefore param.Field[string] `query:"ending_before"`
 	// Page size (for pagination).
 	PageSize param.Field[int64] `query:"page_size"`
+	// Only return Authorization Rules that are bound to the provided scope;
+	Scope param.Field[AuthRuleV2ListParamsScope] `query:"scope"`
 	// A cursor representing an item's token after which a page of results should
 	// begin. Used to retrieve the next page of results after this item.
 	StartingAfter param.Field[string] `query:"starting_after"`
@@ -3466,6 +4623,23 @@ func (r AuthRuleV2ListParams) URLQuery() (v url.Values) {
 		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
+}
+
+// Only return Authorization Rules that are bound to the provided scope;
+type AuthRuleV2ListParamsScope string
+
+const (
+	AuthRuleV2ListParamsScopeProgram AuthRuleV2ListParamsScope = "PROGRAM"
+	AuthRuleV2ListParamsScopeAccount AuthRuleV2ListParamsScope = "ACCOUNT"
+	AuthRuleV2ListParamsScopeCard    AuthRuleV2ListParamsScope = "CARD"
+)
+
+func (r AuthRuleV2ListParamsScope) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListParamsScopeProgram, AuthRuleV2ListParamsScopeAccount, AuthRuleV2ListParamsScopeCard:
+		return true
+	}
+	return false
 }
 
 type AuthRuleV2ApplyParams struct {
@@ -3559,6 +4733,7 @@ type AuthRuleV2DraftParamsParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount param.Field[int64]                                `json:"limit_count"`
+	Merchants  param.Field[interface{}]                          `json:"merchants"`
 	Period     param.Field[interface{}]                          `json:"period"`
 	Scope      param.Field[AuthRuleV2DraftParamsParametersScope] `json:"scope"`
 }
@@ -3572,9 +4747,44 @@ func (r AuthRuleV2DraftParamsParameters) implementsAuthRuleV2DraftParamsParamete
 // Parameters for the Auth Rule
 //
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [AuthRuleV2DraftParamsParametersMerchantLockParameters],
 // [AuthRuleV2DraftParamsParameters].
 type AuthRuleV2DraftParamsParametersUnion interface {
 	implementsAuthRuleV2DraftParamsParametersUnion()
+}
+
+type AuthRuleV2DraftParamsParametersMerchantLockParameters struct {
+	// A list of merchant locks defining specific merchants or groups of merchants
+	// (based on descriptors or IDs) that the lock applies to.
+	Merchants param.Field[[]AuthRuleV2DraftParamsParametersMerchantLockParametersMerchant] `json:"merchants,required"`
+}
+
+func (r AuthRuleV2DraftParamsParametersMerchantLockParameters) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleV2DraftParamsParametersMerchantLockParameters) implementsAuthRuleV2DraftParamsParametersUnion() {
+}
+
+// Represents a specific merchant lock based on their ID or descriptor. Each
+// merchant object allows transaction rules to work at a granular level and
+// requires at least one of merchant_id or descriptor.
+type AuthRuleV2DraftParamsParametersMerchantLockParametersMerchant struct {
+	// A comment or explanation about the merchant, used internally for rule management
+	// purposes.
+	Comment param.Field[string] `json:"comment"`
+	// Short description of the merchant, often used to provide more human-readable
+	// context about the transaction merchant. This is typically the name or label
+	// shown on transaction summaries.
+	Descriptor param.Field[string] `json:"descriptor"`
+	// Unique alphanumeric identifier for the payment card acceptor (merchant). This
+	// attribute specifies the merchant entity that will be locked or referenced for
+	// authorization rules.
+	MerchantID param.Field[string] `json:"merchant_id"`
+}
+
+func (r AuthRuleV2DraftParamsParametersMerchantLockParametersMerchant) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }
 
 type AuthRuleV2DraftParamsParametersScope string
