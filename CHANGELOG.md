@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.76.0 (2025-04-29)
+
+Full Changelog: [v0.75.0...v0.76.0](https://github.com/lithic-com/lithic-go/compare/v0.75.0...v0.76.0)
+
+### Features
+
+* **api:** adds new merchant lock Auth Rule ([fb8e53b](https://github.com/lithic-com/lithic-go/commit/fb8e53b7766aa11b965ef388d59980b74cb6f741))
+
+
+### Chores
+
+* **ci:** add timeout thresholds for CI jobs ([bf2acdb](https://github.com/lithic-com/lithic-go/commit/bf2acdb6c465016d3c92ef61b3ea847cdbfc83a5))
+* **ci:** only use depot for staging repos ([9e57f70](https://github.com/lithic-com/lithic-go/commit/9e57f70ef505d9480441c559d1eadba8a5fe0bab))
+* **ci:** run on more branches and use depot runners ([66dc16f](https://github.com/lithic-com/lithic-go/commit/66dc16f3d8d3db69d147faffd64d244114a58282))
+
 ## 0.75.0 (2025-04-21)
 
 Full Changelog: [v0.74.0...v0.75.0](https://github.com/lithic-com/lithic-go/compare/v0.74.0...v0.75.0)
