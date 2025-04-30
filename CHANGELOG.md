@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.76.2 (2025-04-30)
+
+Full Changelog: [v0.76.1...v0.76.2](https://github.com/lithic-com/lithic-go/compare/v0.76.1...v0.76.2)
+
+### Bug Fixes
+
+* **pagination:** handle errors when applying options ([97ab73f](https://github.com/lithic-com/lithic-go/commit/97ab73f6fecc937227f8b7dd2928f2bd2a3391e1))
+
 ## 0.76.1 (2025-04-29)
 
 Full Changelog: [v0.76.0...v0.76.1](https://github.com/lithic-com/lithic-go/compare/v0.76.0...v0.76.1)
