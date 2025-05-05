@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.76.3 (2025-05-05)
+
+Full Changelog: [v0.76.2...v0.76.3](https://github.com/lithic-com/lithic-go/compare/v0.76.2...v0.76.3)
+
+### Bug Fixes
+
+* **internals:** fix servers entry for /v2/auth_rules.get ([c4becf6](https://github.com/lithic-com/lithic-go/commit/c4becf61caff760a0072fc867281eca7d9fb08e2))
+
 ## 0.76.2 (2025-04-30)
 
 Full Changelog: [v0.76.1...v0.76.2](https://github.com/lithic-com/lithic-go/compare/v0.76.1...v0.76.2)
