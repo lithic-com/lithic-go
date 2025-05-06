@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.76.5 (2025-05-06)
+
+Full Changelog: [v0.76.4...v0.76.5](https://github.com/lithic-com/lithic-go/compare/v0.76.4...v0.76.5)
+
+### Bug Fixes
+
+* **client:** clean up reader resources ([82aaec8](https://github.com/lithic-com/lithic-go/commit/82aaec8bd1852f7c18fa2c019bead7d8e994dea2))
+
 ## 0.76.4 (2025-05-06)
 
 Full Changelog: [v0.76.3...v0.76.4](https://github.com/lithic-com/lithic-go/compare/v0.76.3...v0.76.4)
