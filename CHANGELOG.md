@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.76.4 (2025-05-06)
+
+Full Changelog: [v0.76.3...v0.76.4](https://github.com/lithic-com/lithic-go/compare/v0.76.3...v0.76.4)
+
+### Bug Fixes
+
+* **client:** correctly update body in WithJSONSet ([0751972](https://github.com/lithic-com/lithic-go/commit/07519720cff659cd7c9a561b38c5a7fc5c89f013))
+
 ## 0.76.3 (2025-05-05)
 
 Full Changelog: [v0.76.2...v0.76.3](https://github.com/lithic-com/lithic-go/compare/v0.76.2...v0.76.3)
