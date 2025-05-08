@@ -201,7 +201,7 @@ To handle errors, we recommend that you use the `errors.As` pattern:
 
 ```go
 _, err := client.Cards.New(context.TODO(), lithic.CardNewParams{
-	Type: lithic.F(lithic.CardNewParamsType("an_incorrect_type")),
+	Type: lithic.F(lithic.CardNewParamsTypeMerchantLocked),
 })
 if err != nil {
 	var apierr *lithic.Error
