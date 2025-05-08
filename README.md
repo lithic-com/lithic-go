@@ -22,7 +22,7 @@ Or to pin the version:
 <!-- x-release-please-start-version -->
 
 ```sh
-go get -u 'github.com/lithic-com/lithic-go@v0.76.5'
+go get -u 'github.com/lithic-com/lithic-go@v0.76.6'
 ```
 
 <!-- x-release-please-end -->
@@ -201,7 +201,7 @@ To handle errors, we recommend that you use the `errors.As` pattern:
 
 ```go
 _, err := client.Cards.New(context.TODO(), lithic.CardNewParams{
-	Type: lithic.F(lithic.CardNewParamsType("an_incorrect_type")),
+	Type: lithic.F(lithic.CardNewParamsTypeMerchantLocked),
 })
 if err != nil {
 	var apierr *lithic.Error

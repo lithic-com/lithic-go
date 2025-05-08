@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.76.6 (2025-05-08)
+
+Full Changelog: [v0.76.5...v0.76.6](https://github.com/lithic-com/lithic-go/compare/v0.76.5...v0.76.6)
+
+### Documentation
+
+* remove or fix invalid readme examples ([df5fc3e](https://github.com/lithic-com/lithic-go/commit/df5fc3e6f3be03bc1ff8d52321ced910c4765930))
+
 ## 0.76.5 (2025-05-06)
 
 Full Changelog: [v0.76.4...v0.76.5](https://github.com/lithic-com/lithic-go/compare/v0.76.4...v0.76.5)
