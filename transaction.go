@@ -219,9 +219,8 @@ type Transaction struct {
 	//
 	// Deprecated: deprecated
 	MerchantCurrency string `json:"merchant_currency,required"`
-	// Card network of the authorization. Can be `INTERLINK`, `MAESTRO`, `MASTERCARD`,
-	// `VISA`, or `UNKNOWN`. Value is `UNKNOWN` when Lithic cannot determine the
-	// network code from the upstream provider.
+	// Card network of the authorization. Value is `UNKNOWN` when Lithic cannot
+	// determine the network code from the upstream provider.
 	Network TransactionNetwork `json:"network,required,nullable"`
 	// Network-provided score assessing risk level associated with a given
 	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
@@ -472,7 +471,9 @@ type TransactionCardholderAuthentication struct {
 	// Indicates whether a transaction is considered 3DS authenticated. (deprecated,
 	// use `authentication_result`)
 	VerificationResult TransactionCardholderAuthenticationVerificationResult `json:"verification_result,required"`
-	JSON               transactionCardholderAuthenticationJSON               `json:"-"`
+	// Indicates the method used to authenticate the cardholder.
+	AuthenticationMethod TransactionCardholderAuthenticationAuthenticationMethod `json:"authentication_method"`
+	JSON                 transactionCardholderAuthenticationJSON                 `json:"-"`
 }
 
 // transactionCardholderAuthenticationJSON contains the JSON metadata for the
@@ -486,6 +487,7 @@ type transactionCardholderAuthenticationJSON struct {
 	ThreeDSAuthenticationToken apijson.Field
 	VerificationAttempted      apijson.Field
 	VerificationResult         apijson.Field
+	AuthenticationMethod       apijson.Field
 	raw                        string
 	ExtraFields                map[string]apijson.Field
 }
@@ -624,6 +626,23 @@ func (r TransactionCardholderAuthenticationVerificationResult) IsKnown() bool {
 	return false
 }
 
+// Indicates the method used to authenticate the cardholder.
+type TransactionCardholderAuthenticationAuthenticationMethod string
+
+const (
+	TransactionCardholderAuthenticationAuthenticationMethodFrictionless TransactionCardholderAuthenticationAuthenticationMethod = "FRICTIONLESS"
+	TransactionCardholderAuthenticationAuthenticationMethodChallenge    TransactionCardholderAuthenticationAuthenticationMethod = "CHALLENGE"
+	TransactionCardholderAuthenticationAuthenticationMethodNone         TransactionCardholderAuthenticationAuthenticationMethod = "NONE"
+)
+
+func (r TransactionCardholderAuthenticationAuthenticationMethod) IsKnown() bool {
+	switch r {
+	case TransactionCardholderAuthenticationAuthenticationMethodFrictionless, TransactionCardholderAuthenticationAuthenticationMethodChallenge, TransactionCardholderAuthenticationAuthenticationMethodNone:
+		return true
+	}
+	return false
+}
+
 type TransactionMerchant struct {
 	// Unique alphanumeric identifier for the payment card acceptor (merchant).
 	AcceptorID string `json:"acceptor_id,required"`
@@ -667,12 +686,12 @@ func (r transactionMerchantJSON) RawJSON() string {
 	return r.raw
 }
 
-// Card network of the authorization. Can be `INTERLINK`, `MAESTRO`, `MASTERCARD`,
-// `VISA`, or `UNKNOWN`. Value is `UNKNOWN` when Lithic cannot determine the
-// network code from the upstream provider.
+// Card network of the authorization. Value is `UNKNOWN` when Lithic cannot
+// determine the network code from the upstream provider.
 type TransactionNetwork string
 
 const (
+	TransactionNetworkAmex       TransactionNetwork = "AMEX"
 	TransactionNetworkInterlink  TransactionNetwork = "INTERLINK"
 	TransactionNetworkMaestro    TransactionNetwork = "MAESTRO"
 	TransactionNetworkMastercard TransactionNetwork = "MASTERCARD"
@@ -682,7 +701,7 @@ const (
 
 func (r TransactionNetwork) IsKnown() bool {
 	switch r {
-	case TransactionNetworkInterlink, TransactionNetworkMaestro, TransactionNetworkMastercard, TransactionNetworkUnknown, TransactionNetworkVisa:
+	case TransactionNetworkAmex, TransactionNetworkInterlink, TransactionNetworkMaestro, TransactionNetworkMastercard, TransactionNetworkUnknown, TransactionNetworkVisa:
 		return true
 	}
 	return false
@@ -1294,6 +1313,7 @@ func (r TransactionEventsEffectivePolarity) IsKnown() bool {
 // for more details about these fields and how to use them.
 type TransactionEventsNetworkInfo struct {
 	Acquirer   TransactionEventsNetworkInfoAcquirer   `json:"acquirer,required,nullable"`
+	Amex       TransactionEventsNetworkInfoAmex       `json:"amex,required,nullable"`
 	Mastercard TransactionEventsNetworkInfoMastercard `json:"mastercard,required,nullable"`
 	Visa       TransactionEventsNetworkInfoVisa       `json:"visa,required,nullable"`
 	JSON       transactionEventsNetworkInfoJSON       `json:"-"`
@@ -1303,6 +1323,7 @@ type TransactionEventsNetworkInfo struct {
 // [TransactionEventsNetworkInfo]
 type transactionEventsNetworkInfoJSON struct {
 	Acquirer    apijson.Field
+	Amex        apijson.Field
 	Mastercard  apijson.Field
 	Visa        apijson.Field
 	raw         string
@@ -1343,6 +1364,36 @@ func (r *TransactionEventsNetworkInfoAcquirer) UnmarshalJSON(data []byte) (err e
 }
 
 func (r transactionEventsNetworkInfoAcquirerJSON) RawJSON() string {
+	return r.raw
+}
+
+type TransactionEventsNetworkInfoAmex struct {
+	// Identifier assigned by American Express. Matches the `transaction_id` of a prior
+	// related event. May be populated in incremental authorizations (authorization
+	// requests that augment a previously authorized amount), authorization advices,
+	// financial authorizations, and clearings.
+	OriginalTransactionID string `json:"original_transaction_id,required,nullable"`
+	// Identifier assigned by American Express to link original messages to subsequent
+	// messages. Guaranteed by American Express to be unique for each original
+	// authorization and financial authorization.
+	TransactionID string                               `json:"transaction_id,required,nullable"`
+	JSON          transactionEventsNetworkInfoAmexJSON `json:"-"`
+}
+
+// transactionEventsNetworkInfoAmexJSON contains the JSON metadata for the struct
+// [TransactionEventsNetworkInfoAmex]
+type transactionEventsNetworkInfoAmexJSON struct {
+	OriginalTransactionID apijson.Field
+	TransactionID         apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
+}
+
+func (r *TransactionEventsNetworkInfoAmex) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionEventsNetworkInfoAmexJSON) RawJSON() string {
 	return r.raw
 }
 
