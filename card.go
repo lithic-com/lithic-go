@@ -1110,6 +1110,8 @@ type CardListParams struct {
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string] `query:"ending_before"`
+	// Returns cards containing the specified partial or full memo text.
+	Memo param.Field[string] `query:"memo"`
 	// Page size (for pagination).
 	PageSize param.Field[int64] `query:"page_size"`
 	// A cursor representing an item's token after which a page of results should
