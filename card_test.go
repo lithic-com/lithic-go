@@ -142,6 +142,7 @@ func TestCardListWithOptionalParams(t *testing.T) {
 		Begin:         lithic.F(time.Now()),
 		End:           lithic.F(time.Now()),
 		EndingBefore:  lithic.F("ending_before"),
+		Memo:          lithic.F("memo"),
 		PageSize:      lithic.F(int64(1)),
 		StartingAfter: lithic.F("starting_after"),
 		State:         lithic.F(lithic.CardListParamsStateClosed),

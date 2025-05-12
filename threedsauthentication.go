@@ -868,6 +868,9 @@ type ThreeDSAuthenticationGetResponseTransaction struct {
 	// Amount of the purchase in minor units of currency with all punctuation removed.
 	// Maps to EMV 3DS field purchaseAmount.
 	Amount float64 `json:"amount,required"`
+	// Approximate amount of the purchase in minor units of cardholder currency.
+	// Derived from `amount` using a daily conversion rate.
+	CardholderAmount float64 `json:"cardholder_amount,required,nullable"`
 	// Currency of the purchase. Maps to EMV 3DS field purchaseCurrency.
 	Currency string `json:"currency,required"`
 	// Minor units of currency, as specified in ISO 4217 currency exponent. Maps to EMV
@@ -886,6 +889,7 @@ type ThreeDSAuthenticationGetResponseTransaction struct {
 // the struct [ThreeDSAuthenticationGetResponseTransaction]
 type threeDSAuthenticationGetResponseTransactionJSON struct {
 	Amount           apijson.Field
+	CardholderAmount apijson.Field
 	Currency         apijson.Field
 	CurrencyExponent apijson.Field
 	DateTime         apijson.Field
