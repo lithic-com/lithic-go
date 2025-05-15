@@ -42,6 +42,7 @@ type Client struct {
 	CreditProducts          *CreditProductService
 	ExternalPayments        *ExternalPaymentService
 	ManagementOperations    *ManagementOperationService
+	FundingEvents           *FundingEventService
 }
 
 // DefaultClientOptions read from the environment (LITHIC_API_KEY,
@@ -96,6 +97,7 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.CreditProducts = NewCreditProductService(opts...)
 	r.ExternalPayments = NewExternalPaymentService(opts...)
 	r.ManagementOperations = NewManagementOperationService(opts...)
+	r.FundingEvents = NewFundingEventService(opts...)
 
 	return
 }
