@@ -320,6 +320,23 @@ func (r *CardService) SearchByPan(ctx context.Context, body CardSearchByPanParam
 	return
 }
 
+// Allow your cardholders to directly add payment cards to the device's digital
+// wallet from a browser on the web. Currently only suported for Apple Pay.
+//
+// This requires some additional setup and configuration. Please
+// [Contact Us](https://lithic.com/contact) or your Customer Success representative
+// for more information.
+func (r *CardService) WebProvision(ctx context.Context, cardToken string, body CardWebProvisionParams, opts ...option.RequestOption) (res *CardWebProvisionResponse, err error) {
+	opts = append(r.Options[:], opts...)
+	if cardToken == "" {
+		err = errors.New("missing required card_token parameter")
+		return
+	}
+	path := fmt.Sprintf("v1/cards/%s/web_provision", cardToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+	return
+}
+
 // Card details with potentially PCI sensitive information for Enterprise customers
 type Card struct {
 	// Three digit cvv printed on the back of the card.
@@ -811,6 +828,89 @@ func (r *CardProvisionResponse) UnmarshalJSON(data []byte) (err error) {
 }
 
 func (r cardProvisionResponseJSON) RawJSON() string {
+	return r.raw
+}
+
+type CardWebProvisionResponse struct {
+	// JWS object required for handoff to Apple's script.
+	Jws CardWebProvisionResponseJws `json:"jws"`
+	// A unique identifier for the JWS object.
+	State string                       `json:"state"`
+	JSON  cardWebProvisionResponseJSON `json:"-"`
+}
+
+// cardWebProvisionResponseJSON contains the JSON metadata for the struct
+// [CardWebProvisionResponse]
+type cardWebProvisionResponseJSON struct {
+	Jws         apijson.Field
+	State       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CardWebProvisionResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardWebProvisionResponseJSON) RawJSON() string {
+	return r.raw
+}
+
+// JWS object required for handoff to Apple's script.
+type CardWebProvisionResponseJws struct {
+	// JWS unprotected headers containing header parameters that aren't
+	// integrity-protected by the JWS signature.
+	Header CardWebProvisionResponseJwsHeader `json:"header"`
+	// Base64url encoded JSON object containing the provisioning payload.
+	Payload string `json:"payload"`
+	// Base64url encoded JWS protected headers containing the header parameters that
+	// are integrity-protected by the JWS signature.
+	Protected string `json:"protected"`
+	// Base64url encoded signature of the JWS object.
+	Signature string                          `json:"signature"`
+	JSON      cardWebProvisionResponseJwsJSON `json:"-"`
+}
+
+// cardWebProvisionResponseJwsJSON contains the JSON metadata for the struct
+// [CardWebProvisionResponseJws]
+type cardWebProvisionResponseJwsJSON struct {
+	Header      apijson.Field
+	Payload     apijson.Field
+	Protected   apijson.Field
+	Signature   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CardWebProvisionResponseJws) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardWebProvisionResponseJwsJSON) RawJSON() string {
+	return r.raw
+}
+
+// JWS unprotected headers containing header parameters that aren't
+// integrity-protected by the JWS signature.
+type CardWebProvisionResponseJwsHeader struct {
+	// The ID for the JWS Public Key of the key pair used to generate the signature.
+	Kid  string                                `json:"kid"`
+	JSON cardWebProvisionResponseJwsHeaderJSON `json:"-"`
+}
+
+// cardWebProvisionResponseJwsHeaderJSON contains the JSON metadata for the struct
+// [CardWebProvisionResponseJwsHeader]
+type cardWebProvisionResponseJwsHeaderJSON struct {
+	Kid         apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CardWebProvisionResponseJwsHeader) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardWebProvisionResponseJwsHeaderJSON) RawJSON() string {
 	return r.raw
 }
 
@@ -1454,4 +1554,28 @@ type CardSearchByPanParams struct {
 
 func (r CardSearchByPanParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
+}
+
+type CardWebProvisionParams struct {
+	// Name of digital wallet provider.
+	DigitalWallet param.Field[CardWebProvisionParamsDigitalWallet] `json:"digital_wallet"`
+}
+
+func (r CardWebProvisionParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// Name of digital wallet provider.
+type CardWebProvisionParamsDigitalWallet string
+
+const (
+	CardWebProvisionParamsDigitalWalletApplePay CardWebProvisionParamsDigitalWallet = "APPLE_PAY"
+)
+
+func (r CardWebProvisionParamsDigitalWallet) IsKnown() bool {
+	switch r {
+	case CardWebProvisionParamsDigitalWalletApplePay:
+		return true
+	}
+	return false
 }
