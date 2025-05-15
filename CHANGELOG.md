@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.78.0 (2025-05-15)
+
+Full Changelog: [v0.77.0...v0.78.0](https://github.com/lithic-com/lithic-go/compare/v0.77.0...v0.78.0)
+
+### Features
+
+* **api:** new Funding Events and Card Web Provision API's ([d8c8675](https://github.com/lithic-com/lithic-go/commit/d8c867508174aa82dc445951950427d65b79a356))
+* **client:** add support for endpoint-specific base URLs in python ([958dddd](https://github.com/lithic-com/lithic-go/commit/958dddd491fda1ead9aa67844d4053e274aae2c4))
+
 ## 0.77.0 (2025-05-12)
 
 Full Changelog: [v0.76.5...v0.77.0](https://github.com/lithic-com/lithic-go/compare/v0.76.5...v0.77.0)
