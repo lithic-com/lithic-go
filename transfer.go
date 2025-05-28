@@ -34,6 +34,8 @@ func NewTransferService(opts ...option.RequestOption) (r *TransferService) {
 
 // Transfer funds between two financial accounts or between a financial account and
 // card
+//
+// Deprecated: deprecated
 func (r *TransferService) New(ctx context.Context, body TransferNewParams, opts ...option.RequestOption) (res *Transfer, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "v1/transfer"
