@@ -117,6 +117,8 @@ func (r *AuthRuleV2Service) Delete(ctx context.Context, authRuleToken string, op
 // or card(s).
 //
 // Prefer using the `PATCH` method for this operation.
+//
+// Deprecated: deprecated
 func (r *AuthRuleV2Service) Apply(ctx context.Context, authRuleToken string, body AuthRuleV2ApplyParams, opts ...option.RequestOption) (res *AuthRuleV2ApplyResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	if authRuleToken == "" {
