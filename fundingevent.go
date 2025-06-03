@@ -89,16 +89,17 @@ type FundingEventGetResponse struct {
 	Token string `json:"token,required" format:"uuid"`
 	// Collection resource type
 	CollectionResourceType FundingEventGetResponseCollectionResourceType `json:"collection_resource_type,required"`
-	// IDs of collections
+	// IDs of collections, further information can be gathered from the appropriate
+	// collection API based on collection_resource_type
 	CollectionTokens []string `json:"collection_tokens,required" format:"uuid"`
 	// Time of the creation
 	Created time.Time `json:"created,required" format:"date-time"`
 	// Time of the high watermark
 	HighWatermark time.Time `json:"high_watermark,required" format:"date-time"`
+	// Network settlement summary breakdown by network settlement date
+	NetworkSettlementSummary []FundingEventGetResponseNetworkSettlementSummary `json:"network_settlement_summary,required"`
 	// Time of the previous high watermark
 	PreviousHighWatermark time.Time `json:"previous_high_watermark,required" format:"date-time"`
-	// List of settlements
-	SettlementBreakdowns []FundingEventGetResponseSettlementBreakdown `json:"settlement_breakdowns,required"`
 	// Time of the update
 	Updated time.Time                   `json:"updated,required" format:"date-time"`
 	JSON    fundingEventGetResponseJSON `json:"-"`
@@ -107,16 +108,16 @@ type FundingEventGetResponse struct {
 // fundingEventGetResponseJSON contains the JSON metadata for the struct
 // [FundingEventGetResponse]
 type fundingEventGetResponseJSON struct {
-	Token                  apijson.Field
-	CollectionResourceType apijson.Field
-	CollectionTokens       apijson.Field
-	Created                apijson.Field
-	HighWatermark          apijson.Field
-	PreviousHighWatermark  apijson.Field
-	SettlementBreakdowns   apijson.Field
-	Updated                apijson.Field
-	raw                    string
-	ExtraFields            map[string]apijson.Field
+	Token                    apijson.Field
+	CollectionResourceType   apijson.Field
+	CollectionTokens         apijson.Field
+	Created                  apijson.Field
+	HighWatermark            apijson.Field
+	NetworkSettlementSummary apijson.Field
+	PreviousHighWatermark    apijson.Field
+	Updated                  apijson.Field
+	raw                      string
+	ExtraFields              map[string]apijson.Field
 }
 
 func (r *FundingEventGetResponse) UnmarshalJSON(data []byte) (err error) {
@@ -143,26 +144,26 @@ func (r FundingEventGetResponseCollectionResourceType) IsKnown() bool {
 	return false
 }
 
-type FundingEventGetResponseSettlementBreakdown struct {
-	Amount         int64                                          `json:"amount,required"`
-	SettlementDate time.Time                                      `json:"settlement_date,required" format:"date"`
-	JSON           fundingEventGetResponseSettlementBreakdownJSON `json:"-"`
+type FundingEventGetResponseNetworkSettlementSummary struct {
+	NetworkSettlementDate time.Time                                           `json:"network_settlement_date,required" format:"date"`
+	SettledGrossAmount    int64                                               `json:"settled_gross_amount,required"`
+	JSON                  fundingEventGetResponseNetworkSettlementSummaryJSON `json:"-"`
 }
 
-// fundingEventGetResponseSettlementBreakdownJSON contains the JSON metadata for
-// the struct [FundingEventGetResponseSettlementBreakdown]
-type fundingEventGetResponseSettlementBreakdownJSON struct {
-	Amount         apijson.Field
-	SettlementDate apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
+// fundingEventGetResponseNetworkSettlementSummaryJSON contains the JSON metadata
+// for the struct [FundingEventGetResponseNetworkSettlementSummary]
+type fundingEventGetResponseNetworkSettlementSummaryJSON struct {
+	NetworkSettlementDate apijson.Field
+	SettledGrossAmount    apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
 }
 
-func (r *FundingEventGetResponseSettlementBreakdown) UnmarshalJSON(data []byte) (err error) {
+func (r *FundingEventGetResponseNetworkSettlementSummary) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r fundingEventGetResponseSettlementBreakdownJSON) RawJSON() string {
+func (r fundingEventGetResponseNetworkSettlementSummaryJSON) RawJSON() string {
 	return r.raw
 }
 
@@ -171,16 +172,17 @@ type FundingEventListResponse struct {
 	Token string `json:"token,required" format:"uuid"`
 	// Collection resource type
 	CollectionResourceType FundingEventListResponseCollectionResourceType `json:"collection_resource_type,required"`
-	// IDs of collections
+	// IDs of collections, further information can be gathered from the appropriate
+	// collection API based on collection_resource_type
 	CollectionTokens []string `json:"collection_tokens,required" format:"uuid"`
 	// Time of the creation
 	Created time.Time `json:"created,required" format:"date-time"`
 	// Time of the high watermark
 	HighWatermark time.Time `json:"high_watermark,required" format:"date-time"`
+	// Network settlement summary breakdown by network settlement date
+	NetworkSettlementSummary []FundingEventListResponseNetworkSettlementSummary `json:"network_settlement_summary,required"`
 	// Time of the previous high watermark
 	PreviousHighWatermark time.Time `json:"previous_high_watermark,required" format:"date-time"`
-	// List of settlements
-	SettlementBreakdowns []FundingEventListResponseSettlementBreakdown `json:"settlement_breakdowns,required"`
 	// Time of the update
 	Updated time.Time                    `json:"updated,required" format:"date-time"`
 	JSON    fundingEventListResponseJSON `json:"-"`
@@ -189,16 +191,16 @@ type FundingEventListResponse struct {
 // fundingEventListResponseJSON contains the JSON metadata for the struct
 // [FundingEventListResponse]
 type fundingEventListResponseJSON struct {
-	Token                  apijson.Field
-	CollectionResourceType apijson.Field
-	CollectionTokens       apijson.Field
-	Created                apijson.Field
-	HighWatermark          apijson.Field
-	PreviousHighWatermark  apijson.Field
-	SettlementBreakdowns   apijson.Field
-	Updated                apijson.Field
-	raw                    string
-	ExtraFields            map[string]apijson.Field
+	Token                    apijson.Field
+	CollectionResourceType   apijson.Field
+	CollectionTokens         apijson.Field
+	Created                  apijson.Field
+	HighWatermark            apijson.Field
+	NetworkSettlementSummary apijson.Field
+	PreviousHighWatermark    apijson.Field
+	Updated                  apijson.Field
+	raw                      string
+	ExtraFields              map[string]apijson.Field
 }
 
 func (r *FundingEventListResponse) UnmarshalJSON(data []byte) (err error) {
@@ -225,26 +227,26 @@ func (r FundingEventListResponseCollectionResourceType) IsKnown() bool {
 	return false
 }
 
-type FundingEventListResponseSettlementBreakdown struct {
-	Amount         int64                                           `json:"amount,required"`
-	SettlementDate time.Time                                       `json:"settlement_date,required" format:"date"`
-	JSON           fundingEventListResponseSettlementBreakdownJSON `json:"-"`
+type FundingEventListResponseNetworkSettlementSummary struct {
+	NetworkSettlementDate time.Time                                            `json:"network_settlement_date,required" format:"date"`
+	SettledGrossAmount    int64                                                `json:"settled_gross_amount,required"`
+	JSON                  fundingEventListResponseNetworkSettlementSummaryJSON `json:"-"`
 }
 
-// fundingEventListResponseSettlementBreakdownJSON contains the JSON metadata for
-// the struct [FundingEventListResponseSettlementBreakdown]
-type fundingEventListResponseSettlementBreakdownJSON struct {
-	Amount         apijson.Field
-	SettlementDate apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
+// fundingEventListResponseNetworkSettlementSummaryJSON contains the JSON metadata
+// for the struct [FundingEventListResponseNetworkSettlementSummary]
+type fundingEventListResponseNetworkSettlementSummaryJSON struct {
+	NetworkSettlementDate apijson.Field
+	SettledGrossAmount    apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
 }
 
-func (r *FundingEventListResponseSettlementBreakdown) UnmarshalJSON(data []byte) (err error) {
+func (r *FundingEventListResponseNetworkSettlementSummary) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r fundingEventListResponseSettlementBreakdownJSON) RawJSON() string {
+func (r fundingEventListResponseNetworkSettlementSummaryJSON) RawJSON() string {
 	return r.raw
 }
 

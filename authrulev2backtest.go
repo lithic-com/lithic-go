@@ -34,16 +34,15 @@ func NewAuthRuleV2BacktestService(opts ...option.RequestOption) (r *AuthRuleV2Ba
 	return
 }
 
-// Initiates a request to asynchronously generate a backtest for an authorization
-// rule. During backtesting, both the active version (if one exists) and the draft
-// version of the Authorization Rule are evaluated by replaying historical
-// transaction data against the rule's conditions. This process allows customers to
-// simulate and understand the effects of proposed rule changes before deployment.
-// The generated backtest report provides detailed results showing whether the
-// draft version of the Auth Rule would have approved or declined historical
-// transactions which were processed during the backtest period. These reports help
-// evaluate how changes to rule configurations might affect overall transaction
-// approval rates.
+// Initiates a request to asynchronously generate a backtest for an Auth rule.
+// During backtesting, both the active version (if one exists) and the draft
+// version of the Auth Rule are evaluated by replaying historical transaction data
+// against the rule's conditions. This process allows customers to simulate and
+// understand the effects of proposed rule changes before deployment. The generated
+// backtest report provides detailed results showing whether the draft version of
+// the Auth Rule would have approved or declined historical transactions which were
+// processed during the backtest period. These reports help evaluate how changes to
+// rule configurations might affect overall transaction approval rates.
 //
 // The generated backtest report will be delivered asynchronously through a webhook
 // with `event_type` = `auth_rules.backtest_report.created`. See the docs on
@@ -70,7 +69,7 @@ func (r *AuthRuleV2BacktestService) New(ctx context.Context, authRuleToken strin
 	return
 }
 
-// Returns the backtest results of an authorization rule (if available).
+// Returns the backtest results of an Auth rule (if available).
 //
 // Backtesting is an asynchronous process that requires time to complete. If a
 // customer retrieves the backtest results using this endpoint before the report is
@@ -86,8 +85,8 @@ func (r *AuthRuleV2BacktestService) New(ctx context.Context, authRuleToken strin
 // also always represent the configuration of the rule at the time requests are
 // made to this endpoint. For example, the results for `current_version` in the
 // served backtest report will be consistent with which version of the rule is
-// currently activated in the Auth Stream, regardless of which version of the rule
-// was active in the Auth Stream at the time a backtest is requested.
+// currently activated in the respective event stream, regardless of which version
+// of the rule was active in the event stream at the time a backtest is requested.
 func (r *AuthRuleV2BacktestService) Get(ctx context.Context, authRuleToken string, authRuleBacktestToken string, opts ...option.RequestOption) (res *BacktestResults, err error) {
 	opts = append(r.Options[:], opts...)
 	if authRuleToken == "" {
@@ -153,14 +152,19 @@ func (r backtestResultsResultsJSON) RawJSON() string {
 
 type BacktestResultsResultsCurrentVersion struct {
 	// The total number of historical transactions approved by this rule during the
-	// backtest period, or the number of transactions that would have been approved if
+	// relevant period, or the number of transactions that would have been approved if
 	// the rule was evaluated in shadow mode.
 	Approved int64 `json:"approved"`
+	// The total number of historical transactions challenged by this rule during the
+	// relevant period, or the number of transactions that would have been challenged
+	// if the rule was evaluated in shadow mode. Currently applicable only for 3DS Auth
+	// Rules.
+	Challenged int64 `json:"challenged"`
 	// The total number of historical transactions declined by this rule during the
-	// backtest period, or the number of transactions that would have been declined if
+	// relevant period, or the number of transactions that would have been declined if
 	// the rule was evaluated in shadow mode.
 	Declined int64 `json:"declined"`
-	// Example authorization request events that would have been approved or declined.
+	// Example events and their outcomes.
 	Examples []BacktestResultsResultsCurrentVersionExample `json:"examples"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
@@ -172,6 +176,7 @@ type BacktestResultsResultsCurrentVersion struct {
 // struct [BacktestResultsResultsCurrentVersion]
 type backtestResultsResultsCurrentVersionJSON struct {
 	Approved    apijson.Field
+	Challenged  apijson.Field
 	Declined    apijson.Field
 	Examples    apijson.Field
 	Version     apijson.Field
@@ -188,11 +193,13 @@ func (r backtestResultsResultsCurrentVersionJSON) RawJSON() string {
 }
 
 type BacktestResultsResultsCurrentVersionExample struct {
-	// Whether the rule would have approved the authorization request.
+	// Whether the rule would have approved the request.
 	Approved bool `json:"approved"`
-	// The authorization request event token.
+	// The decision made by the rule for this event.
+	Decision BacktestResultsResultsCurrentVersionExamplesDecision `json:"decision"`
+	// The event token.
 	EventToken string `json:"event_token" format:"uuid"`
-	// The timestamp of the authorization request event.
+	// The timestamp of the event.
 	Timestamp time.Time                                       `json:"timestamp" format:"date-time"`
 	JSON      backtestResultsResultsCurrentVersionExampleJSON `json:"-"`
 }
@@ -201,6 +208,7 @@ type BacktestResultsResultsCurrentVersionExample struct {
 // the struct [BacktestResultsResultsCurrentVersionExample]
 type backtestResultsResultsCurrentVersionExampleJSON struct {
 	Approved    apijson.Field
+	Decision    apijson.Field
 	EventToken  apijson.Field
 	Timestamp   apijson.Field
 	raw         string
@@ -215,16 +223,38 @@ func (r backtestResultsResultsCurrentVersionExampleJSON) RawJSON() string {
 	return r.raw
 }
 
+// The decision made by the rule for this event.
+type BacktestResultsResultsCurrentVersionExamplesDecision string
+
+const (
+	BacktestResultsResultsCurrentVersionExamplesDecisionApproved   BacktestResultsResultsCurrentVersionExamplesDecision = "APPROVED"
+	BacktestResultsResultsCurrentVersionExamplesDecisionDeclined   BacktestResultsResultsCurrentVersionExamplesDecision = "DECLINED"
+	BacktestResultsResultsCurrentVersionExamplesDecisionChallenged BacktestResultsResultsCurrentVersionExamplesDecision = "CHALLENGED"
+)
+
+func (r BacktestResultsResultsCurrentVersionExamplesDecision) IsKnown() bool {
+	switch r {
+	case BacktestResultsResultsCurrentVersionExamplesDecisionApproved, BacktestResultsResultsCurrentVersionExamplesDecisionDeclined, BacktestResultsResultsCurrentVersionExamplesDecisionChallenged:
+		return true
+	}
+	return false
+}
+
 type BacktestResultsResultsDraftVersion struct {
 	// The total number of historical transactions approved by this rule during the
-	// backtest period, or the number of transactions that would have been approved if
+	// relevant period, or the number of transactions that would have been approved if
 	// the rule was evaluated in shadow mode.
 	Approved int64 `json:"approved"`
+	// The total number of historical transactions challenged by this rule during the
+	// relevant period, or the number of transactions that would have been challenged
+	// if the rule was evaluated in shadow mode. Currently applicable only for 3DS Auth
+	// Rules.
+	Challenged int64 `json:"challenged"`
 	// The total number of historical transactions declined by this rule during the
-	// backtest period, or the number of transactions that would have been declined if
+	// relevant period, or the number of transactions that would have been declined if
 	// the rule was evaluated in shadow mode.
 	Declined int64 `json:"declined"`
-	// Example authorization request events that would have been approved or declined.
+	// Example events and their outcomes.
 	Examples []BacktestResultsResultsDraftVersionExample `json:"examples"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
@@ -236,6 +266,7 @@ type BacktestResultsResultsDraftVersion struct {
 // [BacktestResultsResultsDraftVersion]
 type backtestResultsResultsDraftVersionJSON struct {
 	Approved    apijson.Field
+	Challenged  apijson.Field
 	Declined    apijson.Field
 	Examples    apijson.Field
 	Version     apijson.Field
@@ -252,11 +283,13 @@ func (r backtestResultsResultsDraftVersionJSON) RawJSON() string {
 }
 
 type BacktestResultsResultsDraftVersionExample struct {
-	// Whether the rule would have approved the authorization request.
+	// Whether the rule would have approved the request.
 	Approved bool `json:"approved"`
-	// The authorization request event token.
+	// The decision made by the rule for this event.
+	Decision BacktestResultsResultsDraftVersionExamplesDecision `json:"decision"`
+	// The event token.
 	EventToken string `json:"event_token" format:"uuid"`
-	// The timestamp of the authorization request event.
+	// The timestamp of the event.
 	Timestamp time.Time                                     `json:"timestamp" format:"date-time"`
 	JSON      backtestResultsResultsDraftVersionExampleJSON `json:"-"`
 }
@@ -265,6 +298,7 @@ type BacktestResultsResultsDraftVersionExample struct {
 // struct [BacktestResultsResultsDraftVersionExample]
 type backtestResultsResultsDraftVersionExampleJSON struct {
 	Approved    apijson.Field
+	Decision    apijson.Field
 	EventToken  apijson.Field
 	Timestamp   apijson.Field
 	raw         string
@@ -277,6 +311,23 @@ func (r *BacktestResultsResultsDraftVersionExample) UnmarshalJSON(data []byte) (
 
 func (r backtestResultsResultsDraftVersionExampleJSON) RawJSON() string {
 	return r.raw
+}
+
+// The decision made by the rule for this event.
+type BacktestResultsResultsDraftVersionExamplesDecision string
+
+const (
+	BacktestResultsResultsDraftVersionExamplesDecisionApproved   BacktestResultsResultsDraftVersionExamplesDecision = "APPROVED"
+	BacktestResultsResultsDraftVersionExamplesDecisionDeclined   BacktestResultsResultsDraftVersionExamplesDecision = "DECLINED"
+	BacktestResultsResultsDraftVersionExamplesDecisionChallenged BacktestResultsResultsDraftVersionExamplesDecision = "CHALLENGED"
+)
+
+func (r BacktestResultsResultsDraftVersionExamplesDecision) IsKnown() bool {
+	switch r {
+	case BacktestResultsResultsDraftVersionExamplesDecisionApproved, BacktestResultsResultsDraftVersionExamplesDecisionDeclined, BacktestResultsResultsDraftVersionExamplesDecisionChallenged:
+		return true
+	}
+	return false
 }
 
 type BacktestResultsSimulationParameters struct {
