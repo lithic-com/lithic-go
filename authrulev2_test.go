@@ -83,6 +83,7 @@ func TestAuthRuleV2ListWithOptionalParams(t *testing.T) {
 		AccountToken:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		CardToken:     lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		EndingBefore:  lithic.F("ending_before"),
+		EventStream:   lithic.F(lithic.AuthRuleV2ListParamsEventStreamAuthorization),
 		PageSize:      lithic.F(int64(1)),
 		Scope:         lithic.F(lithic.AuthRuleV2ListParamsScopeProgram),
 		StartingAfter: lithic.F("starting_after"),

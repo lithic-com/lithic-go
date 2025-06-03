@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.79.0 (2025-06-03)
+
+Full Changelog: [v0.78.0...v0.79.0](https://github.com/lithic-com/lithic-go/compare/v0.78.0...v0.79.0)
+
+### Features
+
+* **client:** adds support for 3DS to Auth Rules ([37afe17](https://github.com/lithic-com/lithic-go/commit/37afe17532a7b6710855eda29875a8fbd2d9d63d))
+
+
+### Chores
+
+* **api:** mark some methods as deprecated ([9d06e4a](https://github.com/lithic-com/lithic-go/commit/9d06e4a5a43feccd874d2951172672bfc242b61e))
+* **docs:** grammar improvements ([e215a47](https://github.com/lithic-com/lithic-go/commit/e215a475ffe5414ee77cf1d7b647d8aebbd67d6f))
+* improve devcontainer setup ([1edb00d](https://github.com/lithic-com/lithic-go/commit/1edb00df3ef8f2f2a8d4c6dfd793da5b84f8c568))
+* make go mod tidy continue on error ([20d4676](https://github.com/lithic-com/lithic-go/commit/20d4676b3c0d62574fce37d1485038c43fcaef5e))
+
 ## 0.78.0 (2025-05-15)
 
 Full Changelog: [v0.77.0...v0.78.0](https://github.com/lithic-com/lithic-go/compare/v0.77.0...v0.78.0)
