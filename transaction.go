@@ -181,7 +181,8 @@ type Transaction struct {
 	// as a negative value to indicate credited fees.
 	AcquirerFee int64 `json:"acquirer_fee,required,nullable"`
 	// Unique identifier assigned to a transaction by the acquirer that can be used in
-	// dispute and chargeback filing.
+	// dispute and chargeback filing. This field has been deprecated in favor of the
+	// `acquirer_reference_number` that resides in the event-level `network_info`.
 	//
 	// Deprecated: deprecated
 	AcquirerReferenceNumber string `json:"acquirer_reference_number,required,nullable"`
