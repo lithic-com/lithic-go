@@ -41,7 +41,7 @@ func NewAuthRuleV2Service(opts ...option.RequestOption) (r *AuthRuleV2Service) {
 	return
 }
 
-// Creates a new V2 authorization rule in draft mode
+// Creates a new V2 Auth rule in draft mode
 func (r *AuthRuleV2Service) New(ctx context.Context, body AuthRuleV2NewParams, opts ...option.RequestOption) (res *AuthRuleV2NewResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "v2/auth_rules"
@@ -49,7 +49,7 @@ func (r *AuthRuleV2Service) New(ctx context.Context, body AuthRuleV2NewParams, o
 	return
 }
 
-// Fetches a V2 authorization rule by its token
+// Fetches a V2 Auth rule by its token
 func (r *AuthRuleV2Service) Get(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (res *AuthRuleV2GetResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	if authRuleToken == "" {
@@ -61,7 +61,7 @@ func (r *AuthRuleV2Service) Get(ctx context.Context, authRuleToken string, opts 
 	return
 }
 
-// Updates a V2 authorization rule's properties
+// Updates a V2 Auth rule's properties
 //
 // If `account_tokens`, `card_tokens`, `program_level`, or `excluded_card_tokens`
 // is provided, this will replace existing associations with the provided list of
@@ -77,7 +77,7 @@ func (r *AuthRuleV2Service) Update(ctx context.Context, authRuleToken string, bo
 	return
 }
 
-// Lists V2 authorization rules
+// Lists V2 Auth rules
 func (r *AuthRuleV2Service) List(ctx context.Context, query AuthRuleV2ListParams, opts ...option.RequestOption) (res *pagination.CursorPage[AuthRuleV2ListResponse], err error) {
 	var raw *http.Response
 	opts = append(r.Options[:], opts...)
@@ -95,12 +95,12 @@ func (r *AuthRuleV2Service) List(ctx context.Context, query AuthRuleV2ListParams
 	return res, nil
 }
 
-// Lists V2 authorization rules
+// Lists V2 Auth rules
 func (r *AuthRuleV2Service) ListAutoPaging(ctx context.Context, query AuthRuleV2ListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[AuthRuleV2ListResponse] {
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
-// Deletes a V2 authorization rule
+// Deletes a V2 Auth rule
 func (r *AuthRuleV2Service) Delete(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
@@ -113,8 +113,8 @@ func (r *AuthRuleV2Service) Delete(ctx context.Context, authRuleToken string, op
 	return
 }
 
-// Associates a V2 authorization rule with a card program, the provided account(s)
-// or card(s).
+// Associates a V2 Auth rule with a card program, the provided account(s) or
+// card(s).
 //
 // Prefer using the `PATCH` method for this operation.
 //
@@ -145,8 +145,8 @@ func (r *AuthRuleV2Service) Draft(ctx context.Context, authRuleToken string, bod
 	return
 }
 
-// Promotes the draft version of an authorization rule to the currently active
-// version such that it is enforced in the authorization stream.
+// Promotes the draft version of an Auth rule to the currently active version such
+// that it is enforced in the respective stream.
 func (r *AuthRuleV2Service) Promote(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (res *AuthRuleV2PromoteResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	if authRuleToken == "" {
@@ -158,26 +158,25 @@ func (r *AuthRuleV2Service) Promote(ctx context.Context, authRuleToken string, o
 	return
 }
 
-// Requests a performance report of an authorization rule to be asynchronously
-// generated. Reports can only be run on rules in draft or active mode and will
-// included approved and declined statistics as well as examples. The generated
-// report will be delivered asynchronously through a webhook with `event_type` =
+// Requests a performance report of an Auth rule to be asynchronously generated.
+// Reports can only be run on rules in draft or active mode and will included
+// approved and declined statistics as well as examples. The generated report will
+// be delivered asynchronously through a webhook with `event_type` =
 // `auth_rules.performance_report.created`. See the docs on setting up
 // [webhook subscriptions](https://docs.lithic.com/docs/events-api).
 //
-// Reports are generated based on data collected by Lithic's authorization
-// processing system in the trailing week. The performance of the auth rule will be
-// assessed on the configuration of the auth rule at the time the report is
-// requested. This implies that if a performance report is requested, right after
-// updating an auth rule, depending on the number of authorizations processed for a
-// card program, it may be the case that no data is available for the report.
-// Therefore Lithic recommends to decouple making updates to an Auth Rule, and
-// requesting performance reports.
+// Reports are generated based on data collected by Lithic's processing system in
+// the trailing week. The performance of the auth rule will be assessed on the
+// configuration of the auth rule at the time the report is requested. This implies
+// that if a performance report is requested, right after updating an auth rule,
+// depending on the number of events processed for a card program, it may be the
+// case that no data is available for the report. Therefore Lithic recommends to
+// decouple making updates to an Auth Rule, and requesting performance reports.
 //
 // To make this concrete, consider the following example:
 //
-//  1. At time `t`, a new Auth Rule is created, and applies to all authorizations on
-//     a card program. The Auth Rule has not yet been promoted, causing the draft
+//  1. At time `t`, a new Auth Rule is created, and applies to all auth events on a
+//     card program. The Auth Rule has not yet been promoted, causing the draft
 //     version of the rule to be applied in shadow mode.
 //  2. At time `t + 1 hour` a performance report is requested for the Auth Rule.
 //     This performance report will _only_ contain data for the Auth Rule being
@@ -192,17 +191,17 @@ func (r *AuthRuleV2Service) Promote(ctx context.Context, authRuleToken string, o
 //     `t + 2 hours`.
 //  4. At time `t + 3 hours` a new version of the rule is drafted by calling the
 //     `/v2/auth_rules/{auth_rule_token}/draft` endpoint. If a performance report is
-//     requested right at this moment, it will only contain data for authorizations
-//     to which both the active version and the draft version is applied. Lithic
-//     does this to ensure that performance reports represent a fair comparison
-//     between rules. Because there may be no authorizations in this window, and
-//     because there may be some lag before data is available in a performance
-//     report, the requested performance report could contain no to little data.
+//     requested right at this moment, it will only contain data for events to which
+//     both the active version and the draft version is applied. Lithic does this to
+//     ensure that performance reports represent a fair comparison between rules.
+//     Because there may be no events in this window, and because there may be some
+//     lag before data is available in a performance report, the requested
+//     performance report could contain no to little data.
 //  5. At time `t + 4 hours` another performance report is requested: this time the
 //     performance report will contain data from the window between `t + 3 hours`
-//     and `t + 4 hours`, for any authorizations to which both the current version
-//     of the authorization rule (in enforcing mode) and the draft version of the
-//     authorization rule (in shadow mode) applied.
+//     and `t + 4 hours`, for any events to which both the current version of the
+//     Auth rule (in enforcing mode) and the draft version of the Auth rule (in
+//     shadow mode) applied.
 //
 // Note that generating a report may take up to 15 minutes and that delivery is not
 // guaranteed. Customers are required to have created an event subscription to
@@ -717,13 +716,21 @@ type AuthRuleV2NewResponse struct {
 	CardTokens     []string                            `json:"card_tokens,required" format:"uuid"`
 	CurrentVersion AuthRuleV2NewResponseCurrentVersion `json:"current_version,required,nullable"`
 	DraftVersion   AuthRuleV2NewResponseDraftVersion   `json:"draft_version,required,nullable"`
+	// The type of event stream the Auth rule applies to.
+	EventStream AuthRuleV2NewResponseEventStream `json:"event_stream,required"`
 	// Auth Rule Name
 	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel bool `json:"program_level,required"`
 	// The state of the Auth Rule
 	State AuthRuleV2NewResponseState `json:"state,required"`
-	// The type of Auth Rule
+	// The type of Auth Rule. Effectively determines the event stream during which it
+	// will be evaluated.
+	//
+	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 	Type AuthRuleV2NewResponseType `json:"type,required"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens []string                  `json:"excluded_card_tokens" format:"uuid"`
@@ -738,6 +745,7 @@ type authRuleV2NewResponseJSON struct {
 	CardTokens         apijson.Field
 	CurrentVersion     apijson.Field
 	DraftVersion       apijson.Field
+	EventStream        apijson.Field
 	Name               apijson.Field
 	ProgramLevel       apijson.Field
 	State              apijson.Field
@@ -783,7 +791,10 @@ func (r authRuleV2NewResponseCurrentVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2NewResponseCurrentVersionParameters struct {
-	// This field can have the runtime type of [[]AuthRuleCondition].
+	// The action to take if the conditions are met.
+	Action AuthRuleV2NewResponseCurrentVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [[]AuthRuleCondition],
+	// [[]AuthRuleV2NewResponseCurrentVersionParametersConditional3DsActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -810,6 +821,7 @@ type AuthRuleV2NewResponseCurrentVersionParameters struct {
 // authRuleV2NewResponseCurrentVersionParametersJSON contains the JSON metadata for
 // the struct [AuthRuleV2NewResponseCurrentVersionParameters]
 type authRuleV2NewResponseCurrentVersionParametersJSON struct {
+	Action      apijson.Field
 	Conditions  apijson.Field
 	Filters     apijson.Field
 	LimitAmount apijson.Field
@@ -839,15 +851,17 @@ func (r *AuthRuleV2NewResponseCurrentVersionParameters) UnmarshalJSON(data []byt
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams],
-// [AuthRuleV2NewResponseCurrentVersionParametersMerchantLockParameters].
+// [AuthRuleV2NewResponseCurrentVersionParametersMerchantLockParameters],
+// [AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParameters].
 func (r AuthRuleV2NewResponseCurrentVersionParameters) AsUnion() AuthRuleV2NewResponseCurrentVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
-// [AuthRuleV2NewResponseCurrentVersionParametersMerchantLockParameters].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [AuthRuleV2NewResponseCurrentVersionParametersMerchantLockParameters] or
+// [AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParameters].
 type AuthRuleV2NewResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2NewResponseCurrentVersionParameters()
 }
@@ -867,6 +881,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(AuthRuleV2NewResponseCurrentVersionParametersMerchantLockParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParameters{}),
 		},
 	)
 }
@@ -935,6 +953,215 @@ func (r authRuleV2NewResponseCurrentVersionParametersMerchantLockParametersMerch
 	return r.raw
 }
 
+type AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersAction      `json:"action,required"`
+	Conditions []AuthRuleV2NewResponseCurrentVersionParametersConditional3DsActionParametersCondition `json:"conditions,required"`
+	JSON       authRuleV2NewResponseCurrentVersionParametersConditional3DsActionParametersJSON        `json:"-"`
+}
+
+// authRuleV2NewResponseCurrentVersionParametersConditional3DsActionParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParameters]
+type authRuleV2NewResponseCurrentVersionParametersConditional3DsActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2NewResponseCurrentVersionParametersConditional3DsActionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParameters) implementsAuthRuleV2NewResponseCurrentVersionParameters() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersAction string
+
+const (
+	AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersActionDecline   AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersAction = "DECLINE"
+	AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersActionChallenge AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersActionDecline, AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2NewResponseCurrentVersionParametersConditional3DsActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authentication. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	Attribute AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute `json:"attribute"`
+	// The operation to apply to the attribute
+	Operation AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation `json:"operation"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion `json:"value"`
+	JSON  authRuleV2NewResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON        `json:"-"`
+}
+
+// authRuleV2NewResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2NewResponseCurrentVersionParametersConditional3DsActionParametersCondition]
+type authRuleV2NewResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON struct {
+	Attribute   apijson.Field
+	Operation   apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2NewResponseCurrentVersionParametersConditional3DsActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2NewResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authentication. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+type AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute string
+
+const (
+	AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMcc               AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MCC"
+	AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCountry           AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCurrency          AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID        AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor        AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore         AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory   AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+)
+
+func (r AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMcc, AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCountry, AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCurrency, AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID, AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor, AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore, AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory:
+		return true
+	}
+	return false
+}
+
+// The operation to apply to the attribute
+type AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation string
+
+const (
+	AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf       AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf    AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationMatches       AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "MATCHES"
+	AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch  AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan    AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+)
+
+func (r AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf, AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf, AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationMatches, AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch, AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan, AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
+// [AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings].
+type AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion interface {
+	ImplementsAuthRuleV2NewResponseCurrentVersionParametersConditional3DsActionParametersConditionsValueUnion()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(shared.UnionString("")),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings{}),
+		},
+	)
+}
+
+type AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings []string
+
+func (r AuthRuleV2NewResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2NewResponseCurrentVersionParametersConditional3DsActionParametersConditionsValueUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2NewResponseCurrentVersionParametersAction string
+
+const (
+	AuthRuleV2NewResponseCurrentVersionParametersActionDecline   AuthRuleV2NewResponseCurrentVersionParametersAction = "DECLINE"
+	AuthRuleV2NewResponseCurrentVersionParametersActionChallenge AuthRuleV2NewResponseCurrentVersionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2NewResponseCurrentVersionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewResponseCurrentVersionParametersActionDecline, AuthRuleV2NewResponseCurrentVersionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
 type AuthRuleV2NewResponseCurrentVersionParametersScope string
 
 const (
@@ -978,7 +1205,10 @@ func (r authRuleV2NewResponseDraftVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2NewResponseDraftVersionParameters struct {
-	// This field can have the runtime type of [[]AuthRuleCondition].
+	// The action to take if the conditions are met.
+	Action AuthRuleV2NewResponseDraftVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [[]AuthRuleCondition],
+	// [[]AuthRuleV2NewResponseDraftVersionParametersConditional3DsActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -1005,6 +1235,7 @@ type AuthRuleV2NewResponseDraftVersionParameters struct {
 // authRuleV2NewResponseDraftVersionParametersJSON contains the JSON metadata for
 // the struct [AuthRuleV2NewResponseDraftVersionParameters]
 type authRuleV2NewResponseDraftVersionParametersJSON struct {
+	Action      apijson.Field
 	Conditions  apijson.Field
 	Filters     apijson.Field
 	LimitAmount apijson.Field
@@ -1034,15 +1265,17 @@ func (r *AuthRuleV2NewResponseDraftVersionParameters) UnmarshalJSON(data []byte)
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams],
-// [AuthRuleV2NewResponseDraftVersionParametersMerchantLockParameters].
+// [AuthRuleV2NewResponseDraftVersionParametersMerchantLockParameters],
+// [AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParameters].
 func (r AuthRuleV2NewResponseDraftVersionParameters) AsUnion() AuthRuleV2NewResponseDraftVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
-// [AuthRuleV2NewResponseDraftVersionParametersMerchantLockParameters].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [AuthRuleV2NewResponseDraftVersionParametersMerchantLockParameters] or
+// [AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParameters].
 type AuthRuleV2NewResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2NewResponseDraftVersionParameters()
 }
@@ -1062,6 +1295,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(AuthRuleV2NewResponseDraftVersionParametersMerchantLockParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParameters{}),
 		},
 	)
 }
@@ -1130,6 +1367,215 @@ func (r authRuleV2NewResponseDraftVersionParametersMerchantLockParametersMerchan
 	return r.raw
 }
 
+type AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersAction      `json:"action,required"`
+	Conditions []AuthRuleV2NewResponseDraftVersionParametersConditional3DsActionParametersCondition `json:"conditions,required"`
+	JSON       authRuleV2NewResponseDraftVersionParametersConditional3DsActionParametersJSON        `json:"-"`
+}
+
+// authRuleV2NewResponseDraftVersionParametersConditional3DsActionParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParameters]
+type authRuleV2NewResponseDraftVersionParametersConditional3DsActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2NewResponseDraftVersionParametersConditional3DsActionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParameters) implementsAuthRuleV2NewResponseDraftVersionParameters() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersAction string
+
+const (
+	AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersActionDecline   AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersAction = "DECLINE"
+	AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersActionChallenge AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersActionDecline, AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2NewResponseDraftVersionParametersConditional3DsActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authentication. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	Attribute AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute `json:"attribute"`
+	// The operation to apply to the attribute
+	Operation AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation `json:"operation"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion `json:"value"`
+	JSON  authRuleV2NewResponseDraftVersionParametersConditional3DsActionParametersConditionJSON        `json:"-"`
+}
+
+// authRuleV2NewResponseDraftVersionParametersConditional3DsActionParametersConditionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2NewResponseDraftVersionParametersConditional3DsActionParametersCondition]
+type authRuleV2NewResponseDraftVersionParametersConditional3DsActionParametersConditionJSON struct {
+	Attribute   apijson.Field
+	Operation   apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2NewResponseDraftVersionParametersConditional3DsActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2NewResponseDraftVersionParametersConditional3DsActionParametersConditionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authentication. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+type AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute string
+
+const (
+	AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMcc               AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MCC"
+	AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCountry           AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCurrency          AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID        AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor        AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore         AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory   AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+)
+
+func (r AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMcc, AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCountry, AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCurrency, AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID, AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor, AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore, AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory:
+		return true
+	}
+	return false
+}
+
+// The operation to apply to the attribute
+type AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation string
+
+const (
+	AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf       AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf    AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationMatches       AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "MATCHES"
+	AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch  AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan    AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+)
+
+func (r AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf, AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf, AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationMatches, AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch, AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan, AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
+// [AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings].
+type AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion interface {
+	ImplementsAuthRuleV2NewResponseDraftVersionParametersConditional3DsActionParametersConditionsValueUnion()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(shared.UnionString("")),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings{}),
+		},
+	)
+}
+
+type AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings []string
+
+func (r AuthRuleV2NewResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2NewResponseDraftVersionParametersConditional3DsActionParametersConditionsValueUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2NewResponseDraftVersionParametersAction string
+
+const (
+	AuthRuleV2NewResponseDraftVersionParametersActionDecline   AuthRuleV2NewResponseDraftVersionParametersAction = "DECLINE"
+	AuthRuleV2NewResponseDraftVersionParametersActionChallenge AuthRuleV2NewResponseDraftVersionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2NewResponseDraftVersionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewResponseDraftVersionParametersActionDecline, AuthRuleV2NewResponseDraftVersionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
 type AuthRuleV2NewResponseDraftVersionParametersScope string
 
 const (
@@ -1140,6 +1586,22 @@ const (
 func (r AuthRuleV2NewResponseDraftVersionParametersScope) IsKnown() bool {
 	switch r {
 	case AuthRuleV2NewResponseDraftVersionParametersScopeCard, AuthRuleV2NewResponseDraftVersionParametersScopeAccount:
+		return true
+	}
+	return false
+}
+
+// The type of event stream the Auth rule applies to.
+type AuthRuleV2NewResponseEventStream string
+
+const (
+	AuthRuleV2NewResponseEventStreamAuthorization         AuthRuleV2NewResponseEventStream = "AUTHORIZATION"
+	AuthRuleV2NewResponseEventStreamThreeDSAuthentication AuthRuleV2NewResponseEventStream = "THREE_DS_AUTHENTICATION"
+)
+
+func (r AuthRuleV2NewResponseEventStream) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewResponseEventStreamAuthorization, AuthRuleV2NewResponseEventStreamThreeDSAuthentication:
 		return true
 	}
 	return false
@@ -1161,18 +1623,25 @@ func (r AuthRuleV2NewResponseState) IsKnown() bool {
 	return false
 }
 
-// The type of Auth Rule
+// The type of Auth Rule. Effectively determines the event stream during which it
+// will be evaluated.
+//
+// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 type AuthRuleV2NewResponseType string
 
 const (
-	AuthRuleV2NewResponseTypeConditionalBlock AuthRuleV2NewResponseType = "CONDITIONAL_BLOCK"
-	AuthRuleV2NewResponseTypeVelocityLimit    AuthRuleV2NewResponseType = "VELOCITY_LIMIT"
-	AuthRuleV2NewResponseTypeMerchantLock     AuthRuleV2NewResponseType = "MERCHANT_LOCK"
+	AuthRuleV2NewResponseTypeConditionalBlock     AuthRuleV2NewResponseType = "CONDITIONAL_BLOCK"
+	AuthRuleV2NewResponseTypeVelocityLimit        AuthRuleV2NewResponseType = "VELOCITY_LIMIT"
+	AuthRuleV2NewResponseTypeMerchantLock         AuthRuleV2NewResponseType = "MERCHANT_LOCK"
+	AuthRuleV2NewResponseTypeConditional3DSAction AuthRuleV2NewResponseType = "CONDITIONAL_3DS_ACTION"
 )
 
 func (r AuthRuleV2NewResponseType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewResponseTypeConditionalBlock, AuthRuleV2NewResponseTypeVelocityLimit, AuthRuleV2NewResponseTypeMerchantLock:
+	case AuthRuleV2NewResponseTypeConditionalBlock, AuthRuleV2NewResponseTypeVelocityLimit, AuthRuleV2NewResponseTypeMerchantLock, AuthRuleV2NewResponseTypeConditional3DSAction:
 		return true
 	}
 	return false
@@ -1187,13 +1656,21 @@ type AuthRuleV2GetResponse struct {
 	CardTokens     []string                            `json:"card_tokens,required" format:"uuid"`
 	CurrentVersion AuthRuleV2GetResponseCurrentVersion `json:"current_version,required,nullable"`
 	DraftVersion   AuthRuleV2GetResponseDraftVersion   `json:"draft_version,required,nullable"`
+	// The type of event stream the Auth rule applies to.
+	EventStream AuthRuleV2GetResponseEventStream `json:"event_stream,required"`
 	// Auth Rule Name
 	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel bool `json:"program_level,required"`
 	// The state of the Auth Rule
 	State AuthRuleV2GetResponseState `json:"state,required"`
-	// The type of Auth Rule
+	// The type of Auth Rule. Effectively determines the event stream during which it
+	// will be evaluated.
+	//
+	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 	Type AuthRuleV2GetResponseType `json:"type,required"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens []string                  `json:"excluded_card_tokens" format:"uuid"`
@@ -1208,6 +1685,7 @@ type authRuleV2GetResponseJSON struct {
 	CardTokens         apijson.Field
 	CurrentVersion     apijson.Field
 	DraftVersion       apijson.Field
+	EventStream        apijson.Field
 	Name               apijson.Field
 	ProgramLevel       apijson.Field
 	State              apijson.Field
@@ -1253,7 +1731,10 @@ func (r authRuleV2GetResponseCurrentVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2GetResponseCurrentVersionParameters struct {
-	// This field can have the runtime type of [[]AuthRuleCondition].
+	// The action to take if the conditions are met.
+	Action AuthRuleV2GetResponseCurrentVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [[]AuthRuleCondition],
+	// [[]AuthRuleV2GetResponseCurrentVersionParametersConditional3DsActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -1280,6 +1761,7 @@ type AuthRuleV2GetResponseCurrentVersionParameters struct {
 // authRuleV2GetResponseCurrentVersionParametersJSON contains the JSON metadata for
 // the struct [AuthRuleV2GetResponseCurrentVersionParameters]
 type authRuleV2GetResponseCurrentVersionParametersJSON struct {
+	Action      apijson.Field
 	Conditions  apijson.Field
 	Filters     apijson.Field
 	LimitAmount apijson.Field
@@ -1309,15 +1791,17 @@ func (r *AuthRuleV2GetResponseCurrentVersionParameters) UnmarshalJSON(data []byt
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams],
-// [AuthRuleV2GetResponseCurrentVersionParametersMerchantLockParameters].
+// [AuthRuleV2GetResponseCurrentVersionParametersMerchantLockParameters],
+// [AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParameters].
 func (r AuthRuleV2GetResponseCurrentVersionParameters) AsUnion() AuthRuleV2GetResponseCurrentVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
-// [AuthRuleV2GetResponseCurrentVersionParametersMerchantLockParameters].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [AuthRuleV2GetResponseCurrentVersionParametersMerchantLockParameters] or
+// [AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParameters].
 type AuthRuleV2GetResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2GetResponseCurrentVersionParameters()
 }
@@ -1337,6 +1821,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(AuthRuleV2GetResponseCurrentVersionParametersMerchantLockParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParameters{}),
 		},
 	)
 }
@@ -1405,6 +1893,215 @@ func (r authRuleV2GetResponseCurrentVersionParametersMerchantLockParametersMerch
 	return r.raw
 }
 
+type AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersAction      `json:"action,required"`
+	Conditions []AuthRuleV2GetResponseCurrentVersionParametersConditional3DsActionParametersCondition `json:"conditions,required"`
+	JSON       authRuleV2GetResponseCurrentVersionParametersConditional3DsActionParametersJSON        `json:"-"`
+}
+
+// authRuleV2GetResponseCurrentVersionParametersConditional3DsActionParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParameters]
+type authRuleV2GetResponseCurrentVersionParametersConditional3DsActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetResponseCurrentVersionParametersConditional3DsActionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParameters) implementsAuthRuleV2GetResponseCurrentVersionParameters() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersAction string
+
+const (
+	AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersActionDecline   AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersAction = "DECLINE"
+	AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersActionChallenge AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersActionDecline, AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2GetResponseCurrentVersionParametersConditional3DsActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authentication. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	Attribute AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute `json:"attribute"`
+	// The operation to apply to the attribute
+	Operation AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation `json:"operation"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion `json:"value"`
+	JSON  authRuleV2GetResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON        `json:"-"`
+}
+
+// authRuleV2GetResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2GetResponseCurrentVersionParametersConditional3DsActionParametersCondition]
+type authRuleV2GetResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON struct {
+	Attribute   apijson.Field
+	Operation   apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetResponseCurrentVersionParametersConditional3DsActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authentication. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+type AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute string
+
+const (
+	AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMcc               AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MCC"
+	AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCountry           AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCurrency          AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID        AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor        AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore         AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory   AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+)
+
+func (r AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMcc, AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCountry, AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCurrency, AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID, AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor, AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount, AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore, AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory:
+		return true
+	}
+	return false
+}
+
+// The operation to apply to the attribute
+type AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation string
+
+const (
+	AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf       AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf    AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationMatches       AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "MATCHES"
+	AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch  AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan    AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+)
+
+func (r AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf, AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf, AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationMatches, AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch, AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan, AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
+// [AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings].
+type AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion interface {
+	ImplementsAuthRuleV2GetResponseCurrentVersionParametersConditional3DsActionParametersConditionsValueUnion()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(shared.UnionString("")),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings{}),
+		},
+	)
+}
+
+type AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings []string
+
+func (r AuthRuleV2GetResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2GetResponseCurrentVersionParametersConditional3DsActionParametersConditionsValueUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2GetResponseCurrentVersionParametersAction string
+
+const (
+	AuthRuleV2GetResponseCurrentVersionParametersActionDecline   AuthRuleV2GetResponseCurrentVersionParametersAction = "DECLINE"
+	AuthRuleV2GetResponseCurrentVersionParametersActionChallenge AuthRuleV2GetResponseCurrentVersionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2GetResponseCurrentVersionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetResponseCurrentVersionParametersActionDecline, AuthRuleV2GetResponseCurrentVersionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
 type AuthRuleV2GetResponseCurrentVersionParametersScope string
 
 const (
@@ -1448,7 +2145,10 @@ func (r authRuleV2GetResponseDraftVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2GetResponseDraftVersionParameters struct {
-	// This field can have the runtime type of [[]AuthRuleCondition].
+	// The action to take if the conditions are met.
+	Action AuthRuleV2GetResponseDraftVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [[]AuthRuleCondition],
+	// [[]AuthRuleV2GetResponseDraftVersionParametersConditional3DsActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -1475,6 +2175,7 @@ type AuthRuleV2GetResponseDraftVersionParameters struct {
 // authRuleV2GetResponseDraftVersionParametersJSON contains the JSON metadata for
 // the struct [AuthRuleV2GetResponseDraftVersionParameters]
 type authRuleV2GetResponseDraftVersionParametersJSON struct {
+	Action      apijson.Field
 	Conditions  apijson.Field
 	Filters     apijson.Field
 	LimitAmount apijson.Field
@@ -1504,15 +2205,17 @@ func (r *AuthRuleV2GetResponseDraftVersionParameters) UnmarshalJSON(data []byte)
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams],
-// [AuthRuleV2GetResponseDraftVersionParametersMerchantLockParameters].
+// [AuthRuleV2GetResponseDraftVersionParametersMerchantLockParameters],
+// [AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParameters].
 func (r AuthRuleV2GetResponseDraftVersionParameters) AsUnion() AuthRuleV2GetResponseDraftVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
-// [AuthRuleV2GetResponseDraftVersionParametersMerchantLockParameters].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [AuthRuleV2GetResponseDraftVersionParametersMerchantLockParameters] or
+// [AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParameters].
 type AuthRuleV2GetResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2GetResponseDraftVersionParameters()
 }
@@ -1532,6 +2235,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(AuthRuleV2GetResponseDraftVersionParametersMerchantLockParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParameters{}),
 		},
 	)
 }
@@ -1600,6 +2307,215 @@ func (r authRuleV2GetResponseDraftVersionParametersMerchantLockParametersMerchan
 	return r.raw
 }
 
+type AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersAction      `json:"action,required"`
+	Conditions []AuthRuleV2GetResponseDraftVersionParametersConditional3DsActionParametersCondition `json:"conditions,required"`
+	JSON       authRuleV2GetResponseDraftVersionParametersConditional3DsActionParametersJSON        `json:"-"`
+}
+
+// authRuleV2GetResponseDraftVersionParametersConditional3DsActionParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParameters]
+type authRuleV2GetResponseDraftVersionParametersConditional3DsActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetResponseDraftVersionParametersConditional3DsActionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParameters) implementsAuthRuleV2GetResponseDraftVersionParameters() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersAction string
+
+const (
+	AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersActionDecline   AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersAction = "DECLINE"
+	AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersActionChallenge AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersActionDecline, AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2GetResponseDraftVersionParametersConditional3DsActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authentication. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	Attribute AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute `json:"attribute"`
+	// The operation to apply to the attribute
+	Operation AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation `json:"operation"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion `json:"value"`
+	JSON  authRuleV2GetResponseDraftVersionParametersConditional3DsActionParametersConditionJSON        `json:"-"`
+}
+
+// authRuleV2GetResponseDraftVersionParametersConditional3DsActionParametersConditionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2GetResponseDraftVersionParametersConditional3DsActionParametersCondition]
+type authRuleV2GetResponseDraftVersionParametersConditional3DsActionParametersConditionJSON struct {
+	Attribute   apijson.Field
+	Operation   apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetResponseDraftVersionParametersConditional3DsActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetResponseDraftVersionParametersConditional3DsActionParametersConditionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authentication. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+type AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute string
+
+const (
+	AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMcc               AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MCC"
+	AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCountry           AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCurrency          AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID        AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor        AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore         AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory   AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+)
+
+func (r AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMcc, AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCountry, AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCurrency, AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID, AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor, AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount, AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore, AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory:
+		return true
+	}
+	return false
+}
+
+// The operation to apply to the attribute
+type AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation string
+
+const (
+	AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf       AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf    AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationMatches       AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "MATCHES"
+	AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch  AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan    AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+)
+
+func (r AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf, AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf, AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationMatches, AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch, AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan, AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
+// [AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings].
+type AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion interface {
+	ImplementsAuthRuleV2GetResponseDraftVersionParametersConditional3DsActionParametersConditionsValueUnion()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(shared.UnionString("")),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings{}),
+		},
+	)
+}
+
+type AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings []string
+
+func (r AuthRuleV2GetResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2GetResponseDraftVersionParametersConditional3DsActionParametersConditionsValueUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2GetResponseDraftVersionParametersAction string
+
+const (
+	AuthRuleV2GetResponseDraftVersionParametersActionDecline   AuthRuleV2GetResponseDraftVersionParametersAction = "DECLINE"
+	AuthRuleV2GetResponseDraftVersionParametersActionChallenge AuthRuleV2GetResponseDraftVersionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2GetResponseDraftVersionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetResponseDraftVersionParametersActionDecline, AuthRuleV2GetResponseDraftVersionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
 type AuthRuleV2GetResponseDraftVersionParametersScope string
 
 const (
@@ -1610,6 +2526,22 @@ const (
 func (r AuthRuleV2GetResponseDraftVersionParametersScope) IsKnown() bool {
 	switch r {
 	case AuthRuleV2GetResponseDraftVersionParametersScopeCard, AuthRuleV2GetResponseDraftVersionParametersScopeAccount:
+		return true
+	}
+	return false
+}
+
+// The type of event stream the Auth rule applies to.
+type AuthRuleV2GetResponseEventStream string
+
+const (
+	AuthRuleV2GetResponseEventStreamAuthorization         AuthRuleV2GetResponseEventStream = "AUTHORIZATION"
+	AuthRuleV2GetResponseEventStreamThreeDSAuthentication AuthRuleV2GetResponseEventStream = "THREE_DS_AUTHENTICATION"
+)
+
+func (r AuthRuleV2GetResponseEventStream) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetResponseEventStreamAuthorization, AuthRuleV2GetResponseEventStreamThreeDSAuthentication:
 		return true
 	}
 	return false
@@ -1631,18 +2563,25 @@ func (r AuthRuleV2GetResponseState) IsKnown() bool {
 	return false
 }
 
-// The type of Auth Rule
+// The type of Auth Rule. Effectively determines the event stream during which it
+// will be evaluated.
+//
+// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 type AuthRuleV2GetResponseType string
 
 const (
-	AuthRuleV2GetResponseTypeConditionalBlock AuthRuleV2GetResponseType = "CONDITIONAL_BLOCK"
-	AuthRuleV2GetResponseTypeVelocityLimit    AuthRuleV2GetResponseType = "VELOCITY_LIMIT"
-	AuthRuleV2GetResponseTypeMerchantLock     AuthRuleV2GetResponseType = "MERCHANT_LOCK"
+	AuthRuleV2GetResponseTypeConditionalBlock     AuthRuleV2GetResponseType = "CONDITIONAL_BLOCK"
+	AuthRuleV2GetResponseTypeVelocityLimit        AuthRuleV2GetResponseType = "VELOCITY_LIMIT"
+	AuthRuleV2GetResponseTypeMerchantLock         AuthRuleV2GetResponseType = "MERCHANT_LOCK"
+	AuthRuleV2GetResponseTypeConditional3DSAction AuthRuleV2GetResponseType = "CONDITIONAL_3DS_ACTION"
 )
 
 func (r AuthRuleV2GetResponseType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2GetResponseTypeConditionalBlock, AuthRuleV2GetResponseTypeVelocityLimit, AuthRuleV2GetResponseTypeMerchantLock:
+	case AuthRuleV2GetResponseTypeConditionalBlock, AuthRuleV2GetResponseTypeVelocityLimit, AuthRuleV2GetResponseTypeMerchantLock, AuthRuleV2GetResponseTypeConditional3DSAction:
 		return true
 	}
 	return false
@@ -1657,13 +2596,21 @@ type AuthRuleV2UpdateResponse struct {
 	CardTokens     []string                               `json:"card_tokens,required" format:"uuid"`
 	CurrentVersion AuthRuleV2UpdateResponseCurrentVersion `json:"current_version,required,nullable"`
 	DraftVersion   AuthRuleV2UpdateResponseDraftVersion   `json:"draft_version,required,nullable"`
+	// The type of event stream the Auth rule applies to.
+	EventStream AuthRuleV2UpdateResponseEventStream `json:"event_stream,required"`
 	// Auth Rule Name
 	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel bool `json:"program_level,required"`
 	// The state of the Auth Rule
 	State AuthRuleV2UpdateResponseState `json:"state,required"`
-	// The type of Auth Rule
+	// The type of Auth Rule. Effectively determines the event stream during which it
+	// will be evaluated.
+	//
+	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 	Type AuthRuleV2UpdateResponseType `json:"type,required"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens []string                     `json:"excluded_card_tokens" format:"uuid"`
@@ -1678,6 +2625,7 @@ type authRuleV2UpdateResponseJSON struct {
 	CardTokens         apijson.Field
 	CurrentVersion     apijson.Field
 	DraftVersion       apijson.Field
+	EventStream        apijson.Field
 	Name               apijson.Field
 	ProgramLevel       apijson.Field
 	State              apijson.Field
@@ -1723,7 +2671,10 @@ func (r authRuleV2UpdateResponseCurrentVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2UpdateResponseCurrentVersionParameters struct {
-	// This field can have the runtime type of [[]AuthRuleCondition].
+	// The action to take if the conditions are met.
+	Action AuthRuleV2UpdateResponseCurrentVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [[]AuthRuleCondition],
+	// [[]AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DsActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -1750,6 +2701,7 @@ type AuthRuleV2UpdateResponseCurrentVersionParameters struct {
 // authRuleV2UpdateResponseCurrentVersionParametersJSON contains the JSON metadata
 // for the struct [AuthRuleV2UpdateResponseCurrentVersionParameters]
 type authRuleV2UpdateResponseCurrentVersionParametersJSON struct {
+	Action      apijson.Field
 	Conditions  apijson.Field
 	Filters     apijson.Field
 	LimitAmount apijson.Field
@@ -1779,15 +2731,17 @@ func (r *AuthRuleV2UpdateResponseCurrentVersionParameters) UnmarshalJSON(data []
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams],
-// [AuthRuleV2UpdateResponseCurrentVersionParametersMerchantLockParameters].
+// [AuthRuleV2UpdateResponseCurrentVersionParametersMerchantLockParameters],
+// [AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParameters].
 func (r AuthRuleV2UpdateResponseCurrentVersionParameters) AsUnion() AuthRuleV2UpdateResponseCurrentVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
-// [AuthRuleV2UpdateResponseCurrentVersionParametersMerchantLockParameters].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [AuthRuleV2UpdateResponseCurrentVersionParametersMerchantLockParameters] or
+// [AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParameters].
 type AuthRuleV2UpdateResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2UpdateResponseCurrentVersionParameters()
 }
@@ -1807,6 +2761,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(AuthRuleV2UpdateResponseCurrentVersionParametersMerchantLockParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParameters{}),
 		},
 	)
 }
@@ -1875,6 +2833,215 @@ func (r authRuleV2UpdateResponseCurrentVersionParametersMerchantLockParametersMe
 	return r.raw
 }
 
+type AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersAction      `json:"action,required"`
+	Conditions []AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DsActionParametersCondition `json:"conditions,required"`
+	JSON       authRuleV2UpdateResponseCurrentVersionParametersConditional3DsActionParametersJSON        `json:"-"`
+}
+
+// authRuleV2UpdateResponseCurrentVersionParametersConditional3DsActionParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParameters]
+type authRuleV2UpdateResponseCurrentVersionParametersConditional3DsActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2UpdateResponseCurrentVersionParametersConditional3DsActionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParameters) implementsAuthRuleV2UpdateResponseCurrentVersionParameters() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersAction string
+
+const (
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersActionDecline   AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersAction = "DECLINE"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersActionChallenge AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersActionDecline, AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DsActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authentication. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	Attribute AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute `json:"attribute"`
+	// The operation to apply to the attribute
+	Operation AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation `json:"operation"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion `json:"value"`
+	JSON  authRuleV2UpdateResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON        `json:"-"`
+}
+
+// authRuleV2UpdateResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DsActionParametersCondition]
+type authRuleV2UpdateResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON struct {
+	Attribute   apijson.Field
+	Operation   apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DsActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2UpdateResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authentication. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+type AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute string
+
+const (
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMcc               AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MCC"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCountry           AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCurrency          AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID        AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor        AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore         AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory   AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+)
+
+func (r AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMcc, AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCountry, AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCurrency, AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID, AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor, AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount, AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore, AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory:
+		return true
+	}
+	return false
+}
+
+// The operation to apply to the attribute
+type AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation string
+
+const (
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf       AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf    AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationMatches       AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "MATCHES"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch  AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan    AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+)
+
+func (r AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation) IsKnown() bool {
+	switch r {
+	case AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf, AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf, AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationMatches, AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch, AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan, AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
+// [AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings].
+type AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion interface {
+	ImplementsAuthRuleV2UpdateResponseCurrentVersionParametersConditional3DsActionParametersConditionsValueUnion()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(shared.UnionString("")),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings{}),
+		},
+	)
+}
+
+type AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings []string
+
+func (r AuthRuleV2UpdateResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2UpdateResponseCurrentVersionParametersConditional3DsActionParametersConditionsValueUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2UpdateResponseCurrentVersionParametersAction string
+
+const (
+	AuthRuleV2UpdateResponseCurrentVersionParametersActionDecline   AuthRuleV2UpdateResponseCurrentVersionParametersAction = "DECLINE"
+	AuthRuleV2UpdateResponseCurrentVersionParametersActionChallenge AuthRuleV2UpdateResponseCurrentVersionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2UpdateResponseCurrentVersionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2UpdateResponseCurrentVersionParametersActionDecline, AuthRuleV2UpdateResponseCurrentVersionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
 type AuthRuleV2UpdateResponseCurrentVersionParametersScope string
 
 const (
@@ -1918,7 +3085,10 @@ func (r authRuleV2UpdateResponseDraftVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2UpdateResponseDraftVersionParameters struct {
-	// This field can have the runtime type of [[]AuthRuleCondition].
+	// The action to take if the conditions are met.
+	Action AuthRuleV2UpdateResponseDraftVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [[]AuthRuleCondition],
+	// [[]AuthRuleV2UpdateResponseDraftVersionParametersConditional3DsActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -1945,6 +3115,7 @@ type AuthRuleV2UpdateResponseDraftVersionParameters struct {
 // authRuleV2UpdateResponseDraftVersionParametersJSON contains the JSON metadata
 // for the struct [AuthRuleV2UpdateResponseDraftVersionParameters]
 type authRuleV2UpdateResponseDraftVersionParametersJSON struct {
+	Action      apijson.Field
 	Conditions  apijson.Field
 	Filters     apijson.Field
 	LimitAmount apijson.Field
@@ -1974,15 +3145,17 @@ func (r *AuthRuleV2UpdateResponseDraftVersionParameters) UnmarshalJSON(data []by
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams],
-// [AuthRuleV2UpdateResponseDraftVersionParametersMerchantLockParameters].
+// [AuthRuleV2UpdateResponseDraftVersionParametersMerchantLockParameters],
+// [AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParameters].
 func (r AuthRuleV2UpdateResponseDraftVersionParameters) AsUnion() AuthRuleV2UpdateResponseDraftVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
-// [AuthRuleV2UpdateResponseDraftVersionParametersMerchantLockParameters].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [AuthRuleV2UpdateResponseDraftVersionParametersMerchantLockParameters] or
+// [AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParameters].
 type AuthRuleV2UpdateResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2UpdateResponseDraftVersionParameters()
 }
@@ -2002,6 +3175,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(AuthRuleV2UpdateResponseDraftVersionParametersMerchantLockParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParameters{}),
 		},
 	)
 }
@@ -2070,6 +3247,215 @@ func (r authRuleV2UpdateResponseDraftVersionParametersMerchantLockParametersMerc
 	return r.raw
 }
 
+type AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersAction      `json:"action,required"`
+	Conditions []AuthRuleV2UpdateResponseDraftVersionParametersConditional3DsActionParametersCondition `json:"conditions,required"`
+	JSON       authRuleV2UpdateResponseDraftVersionParametersConditional3DsActionParametersJSON        `json:"-"`
+}
+
+// authRuleV2UpdateResponseDraftVersionParametersConditional3DsActionParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParameters]
+type authRuleV2UpdateResponseDraftVersionParametersConditional3DsActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2UpdateResponseDraftVersionParametersConditional3DsActionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParameters) implementsAuthRuleV2UpdateResponseDraftVersionParameters() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersAction string
+
+const (
+	AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersActionDecline   AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersAction = "DECLINE"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersActionChallenge AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersActionDecline, AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2UpdateResponseDraftVersionParametersConditional3DsActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authentication. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	Attribute AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute `json:"attribute"`
+	// The operation to apply to the attribute
+	Operation AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation `json:"operation"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion `json:"value"`
+	JSON  authRuleV2UpdateResponseDraftVersionParametersConditional3DsActionParametersConditionJSON        `json:"-"`
+}
+
+// authRuleV2UpdateResponseDraftVersionParametersConditional3DsActionParametersConditionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2UpdateResponseDraftVersionParametersConditional3DsActionParametersCondition]
+type authRuleV2UpdateResponseDraftVersionParametersConditional3DsActionParametersConditionJSON struct {
+	Attribute   apijson.Field
+	Operation   apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2UpdateResponseDraftVersionParametersConditional3DsActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2UpdateResponseDraftVersionParametersConditional3DsActionParametersConditionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authentication. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+type AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute string
+
+const (
+	AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMcc               AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MCC"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCountry           AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCurrency          AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID        AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor        AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore         AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory   AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+)
+
+func (r AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMcc, AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCountry, AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCurrency, AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID, AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor, AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount, AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore, AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory:
+		return true
+	}
+	return false
+}
+
+// The operation to apply to the attribute
+type AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation string
+
+const (
+	AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf       AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf    AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationMatches       AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "MATCHES"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch  AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan    AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+)
+
+func (r AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation) IsKnown() bool {
+	switch r {
+	case AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf, AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf, AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationMatches, AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch, AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan, AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
+// [AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings].
+type AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion interface {
+	ImplementsAuthRuleV2UpdateResponseDraftVersionParametersConditional3DsActionParametersConditionsValueUnion()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(shared.UnionString("")),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings{}),
+		},
+	)
+}
+
+type AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings []string
+
+func (r AuthRuleV2UpdateResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2UpdateResponseDraftVersionParametersConditional3DsActionParametersConditionsValueUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2UpdateResponseDraftVersionParametersAction string
+
+const (
+	AuthRuleV2UpdateResponseDraftVersionParametersActionDecline   AuthRuleV2UpdateResponseDraftVersionParametersAction = "DECLINE"
+	AuthRuleV2UpdateResponseDraftVersionParametersActionChallenge AuthRuleV2UpdateResponseDraftVersionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2UpdateResponseDraftVersionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2UpdateResponseDraftVersionParametersActionDecline, AuthRuleV2UpdateResponseDraftVersionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
 type AuthRuleV2UpdateResponseDraftVersionParametersScope string
 
 const (
@@ -2080,6 +3466,22 @@ const (
 func (r AuthRuleV2UpdateResponseDraftVersionParametersScope) IsKnown() bool {
 	switch r {
 	case AuthRuleV2UpdateResponseDraftVersionParametersScopeCard, AuthRuleV2UpdateResponseDraftVersionParametersScopeAccount:
+		return true
+	}
+	return false
+}
+
+// The type of event stream the Auth rule applies to.
+type AuthRuleV2UpdateResponseEventStream string
+
+const (
+	AuthRuleV2UpdateResponseEventStreamAuthorization         AuthRuleV2UpdateResponseEventStream = "AUTHORIZATION"
+	AuthRuleV2UpdateResponseEventStreamThreeDSAuthentication AuthRuleV2UpdateResponseEventStream = "THREE_DS_AUTHENTICATION"
+)
+
+func (r AuthRuleV2UpdateResponseEventStream) IsKnown() bool {
+	switch r {
+	case AuthRuleV2UpdateResponseEventStreamAuthorization, AuthRuleV2UpdateResponseEventStreamThreeDSAuthentication:
 		return true
 	}
 	return false
@@ -2101,18 +3503,25 @@ func (r AuthRuleV2UpdateResponseState) IsKnown() bool {
 	return false
 }
 
-// The type of Auth Rule
+// The type of Auth Rule. Effectively determines the event stream during which it
+// will be evaluated.
+//
+// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 type AuthRuleV2UpdateResponseType string
 
 const (
-	AuthRuleV2UpdateResponseTypeConditionalBlock AuthRuleV2UpdateResponseType = "CONDITIONAL_BLOCK"
-	AuthRuleV2UpdateResponseTypeVelocityLimit    AuthRuleV2UpdateResponseType = "VELOCITY_LIMIT"
-	AuthRuleV2UpdateResponseTypeMerchantLock     AuthRuleV2UpdateResponseType = "MERCHANT_LOCK"
+	AuthRuleV2UpdateResponseTypeConditionalBlock     AuthRuleV2UpdateResponseType = "CONDITIONAL_BLOCK"
+	AuthRuleV2UpdateResponseTypeVelocityLimit        AuthRuleV2UpdateResponseType = "VELOCITY_LIMIT"
+	AuthRuleV2UpdateResponseTypeMerchantLock         AuthRuleV2UpdateResponseType = "MERCHANT_LOCK"
+	AuthRuleV2UpdateResponseTypeConditional3DSAction AuthRuleV2UpdateResponseType = "CONDITIONAL_3DS_ACTION"
 )
 
 func (r AuthRuleV2UpdateResponseType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2UpdateResponseTypeConditionalBlock, AuthRuleV2UpdateResponseTypeVelocityLimit, AuthRuleV2UpdateResponseTypeMerchantLock:
+	case AuthRuleV2UpdateResponseTypeConditionalBlock, AuthRuleV2UpdateResponseTypeVelocityLimit, AuthRuleV2UpdateResponseTypeMerchantLock, AuthRuleV2UpdateResponseTypeConditional3DSAction:
 		return true
 	}
 	return false
@@ -2127,13 +3536,21 @@ type AuthRuleV2ListResponse struct {
 	CardTokens     []string                             `json:"card_tokens,required" format:"uuid"`
 	CurrentVersion AuthRuleV2ListResponseCurrentVersion `json:"current_version,required,nullable"`
 	DraftVersion   AuthRuleV2ListResponseDraftVersion   `json:"draft_version,required,nullable"`
+	// The type of event stream the Auth rule applies to.
+	EventStream AuthRuleV2ListResponseEventStream `json:"event_stream,required"`
 	// Auth Rule Name
 	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel bool `json:"program_level,required"`
 	// The state of the Auth Rule
 	State AuthRuleV2ListResponseState `json:"state,required"`
-	// The type of Auth Rule
+	// The type of Auth Rule. Effectively determines the event stream during which it
+	// will be evaluated.
+	//
+	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 	Type AuthRuleV2ListResponseType `json:"type,required"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens []string                   `json:"excluded_card_tokens" format:"uuid"`
@@ -2148,6 +3565,7 @@ type authRuleV2ListResponseJSON struct {
 	CardTokens         apijson.Field
 	CurrentVersion     apijson.Field
 	DraftVersion       apijson.Field
+	EventStream        apijson.Field
 	Name               apijson.Field
 	ProgramLevel       apijson.Field
 	State              apijson.Field
@@ -2193,7 +3611,10 @@ func (r authRuleV2ListResponseCurrentVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2ListResponseCurrentVersionParameters struct {
-	// This field can have the runtime type of [[]AuthRuleCondition].
+	// The action to take if the conditions are met.
+	Action AuthRuleV2ListResponseCurrentVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [[]AuthRuleCondition],
+	// [[]AuthRuleV2ListResponseCurrentVersionParametersConditional3DsActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -2220,6 +3641,7 @@ type AuthRuleV2ListResponseCurrentVersionParameters struct {
 // authRuleV2ListResponseCurrentVersionParametersJSON contains the JSON metadata
 // for the struct [AuthRuleV2ListResponseCurrentVersionParameters]
 type authRuleV2ListResponseCurrentVersionParametersJSON struct {
+	Action      apijson.Field
 	Conditions  apijson.Field
 	Filters     apijson.Field
 	LimitAmount apijson.Field
@@ -2249,15 +3671,17 @@ func (r *AuthRuleV2ListResponseCurrentVersionParameters) UnmarshalJSON(data []by
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams],
-// [AuthRuleV2ListResponseCurrentVersionParametersMerchantLockParameters].
+// [AuthRuleV2ListResponseCurrentVersionParametersMerchantLockParameters],
+// [AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParameters].
 func (r AuthRuleV2ListResponseCurrentVersionParameters) AsUnion() AuthRuleV2ListResponseCurrentVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
-// [AuthRuleV2ListResponseCurrentVersionParametersMerchantLockParameters].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [AuthRuleV2ListResponseCurrentVersionParametersMerchantLockParameters] or
+// [AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParameters].
 type AuthRuleV2ListResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2ListResponseCurrentVersionParameters()
 }
@@ -2277,6 +3701,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(AuthRuleV2ListResponseCurrentVersionParametersMerchantLockParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParameters{}),
 		},
 	)
 }
@@ -2345,6 +3773,215 @@ func (r authRuleV2ListResponseCurrentVersionParametersMerchantLockParametersMerc
 	return r.raw
 }
 
+type AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersAction      `json:"action,required"`
+	Conditions []AuthRuleV2ListResponseCurrentVersionParametersConditional3DsActionParametersCondition `json:"conditions,required"`
+	JSON       authRuleV2ListResponseCurrentVersionParametersConditional3DsActionParametersJSON        `json:"-"`
+}
+
+// authRuleV2ListResponseCurrentVersionParametersConditional3DsActionParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParameters]
+type authRuleV2ListResponseCurrentVersionParametersConditional3DsActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResponseCurrentVersionParametersConditional3DsActionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParameters) implementsAuthRuleV2ListResponseCurrentVersionParameters() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersAction string
+
+const (
+	AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersActionDecline   AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersAction = "DECLINE"
+	AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersActionChallenge AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersActionDecline, AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2ListResponseCurrentVersionParametersConditional3DsActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authentication. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	Attribute AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute `json:"attribute"`
+	// The operation to apply to the attribute
+	Operation AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation `json:"operation"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion `json:"value"`
+	JSON  authRuleV2ListResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON        `json:"-"`
+}
+
+// authRuleV2ListResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ListResponseCurrentVersionParametersConditional3DsActionParametersCondition]
+type authRuleV2ListResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON struct {
+	Attribute   apijson.Field
+	Operation   apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResponseCurrentVersionParametersConditional3DsActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authentication. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+type AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute string
+
+const (
+	AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMcc               AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MCC"
+	AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCountry           AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCurrency          AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID        AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor        AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore         AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory   AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+)
+
+func (r AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMcc, AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCountry, AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCurrency, AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID, AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor, AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore, AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory:
+		return true
+	}
+	return false
+}
+
+// The operation to apply to the attribute
+type AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation string
+
+const (
+	AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf       AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf    AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationMatches       AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "MATCHES"
+	AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch  AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan    AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+)
+
+func (r AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf, AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf, AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationMatches, AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch, AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan, AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
+// [AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings].
+type AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion interface {
+	ImplementsAuthRuleV2ListResponseCurrentVersionParametersConditional3DsActionParametersConditionsValueUnion()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(shared.UnionString("")),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings{}),
+		},
+	)
+}
+
+type AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings []string
+
+func (r AuthRuleV2ListResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2ListResponseCurrentVersionParametersConditional3DsActionParametersConditionsValueUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2ListResponseCurrentVersionParametersAction string
+
+const (
+	AuthRuleV2ListResponseCurrentVersionParametersActionDecline   AuthRuleV2ListResponseCurrentVersionParametersAction = "DECLINE"
+	AuthRuleV2ListResponseCurrentVersionParametersActionChallenge AuthRuleV2ListResponseCurrentVersionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2ListResponseCurrentVersionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResponseCurrentVersionParametersActionDecline, AuthRuleV2ListResponseCurrentVersionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
 type AuthRuleV2ListResponseCurrentVersionParametersScope string
 
 const (
@@ -2388,7 +4025,10 @@ func (r authRuleV2ListResponseDraftVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2ListResponseDraftVersionParameters struct {
-	// This field can have the runtime type of [[]AuthRuleCondition].
+	// The action to take if the conditions are met.
+	Action AuthRuleV2ListResponseDraftVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [[]AuthRuleCondition],
+	// [[]AuthRuleV2ListResponseDraftVersionParametersConditional3DsActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -2415,6 +4055,7 @@ type AuthRuleV2ListResponseDraftVersionParameters struct {
 // authRuleV2ListResponseDraftVersionParametersJSON contains the JSON metadata for
 // the struct [AuthRuleV2ListResponseDraftVersionParameters]
 type authRuleV2ListResponseDraftVersionParametersJSON struct {
+	Action      apijson.Field
 	Conditions  apijson.Field
 	Filters     apijson.Field
 	LimitAmount apijson.Field
@@ -2444,15 +4085,17 @@ func (r *AuthRuleV2ListResponseDraftVersionParameters) UnmarshalJSON(data []byte
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams],
-// [AuthRuleV2ListResponseDraftVersionParametersMerchantLockParameters].
+// [AuthRuleV2ListResponseDraftVersionParametersMerchantLockParameters],
+// [AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParameters].
 func (r AuthRuleV2ListResponseDraftVersionParameters) AsUnion() AuthRuleV2ListResponseDraftVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
-// [AuthRuleV2ListResponseDraftVersionParametersMerchantLockParameters].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [AuthRuleV2ListResponseDraftVersionParametersMerchantLockParameters] or
+// [AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParameters].
 type AuthRuleV2ListResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2ListResponseDraftVersionParameters()
 }
@@ -2472,6 +4115,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(AuthRuleV2ListResponseDraftVersionParametersMerchantLockParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParameters{}),
 		},
 	)
 }
@@ -2540,6 +4187,215 @@ func (r authRuleV2ListResponseDraftVersionParametersMerchantLockParametersMercha
 	return r.raw
 }
 
+type AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersAction      `json:"action,required"`
+	Conditions []AuthRuleV2ListResponseDraftVersionParametersConditional3DsActionParametersCondition `json:"conditions,required"`
+	JSON       authRuleV2ListResponseDraftVersionParametersConditional3DsActionParametersJSON        `json:"-"`
+}
+
+// authRuleV2ListResponseDraftVersionParametersConditional3DsActionParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParameters]
+type authRuleV2ListResponseDraftVersionParametersConditional3DsActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResponseDraftVersionParametersConditional3DsActionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParameters) implementsAuthRuleV2ListResponseDraftVersionParameters() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersAction string
+
+const (
+	AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersActionDecline   AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersAction = "DECLINE"
+	AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersActionChallenge AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersActionDecline, AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2ListResponseDraftVersionParametersConditional3DsActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authentication. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	Attribute AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute `json:"attribute"`
+	// The operation to apply to the attribute
+	Operation AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation `json:"operation"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion `json:"value"`
+	JSON  authRuleV2ListResponseDraftVersionParametersConditional3DsActionParametersConditionJSON        `json:"-"`
+}
+
+// authRuleV2ListResponseDraftVersionParametersConditional3DsActionParametersConditionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ListResponseDraftVersionParametersConditional3DsActionParametersCondition]
+type authRuleV2ListResponseDraftVersionParametersConditional3DsActionParametersConditionJSON struct {
+	Attribute   apijson.Field
+	Operation   apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResponseDraftVersionParametersConditional3DsActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResponseDraftVersionParametersConditional3DsActionParametersConditionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authentication. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+type AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute string
+
+const (
+	AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMcc               AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MCC"
+	AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCountry           AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCurrency          AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID        AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor        AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore         AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory   AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+)
+
+func (r AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMcc, AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCountry, AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCurrency, AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID, AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor, AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore, AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory:
+		return true
+	}
+	return false
+}
+
+// The operation to apply to the attribute
+type AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation string
+
+const (
+	AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf       AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf    AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationMatches       AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "MATCHES"
+	AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch  AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan    AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+)
+
+func (r AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf, AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf, AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationMatches, AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch, AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan, AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
+// [AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings].
+type AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion interface {
+	ImplementsAuthRuleV2ListResponseDraftVersionParametersConditional3DsActionParametersConditionsValueUnion()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(shared.UnionString("")),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings{}),
+		},
+	)
+}
+
+type AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings []string
+
+func (r AuthRuleV2ListResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2ListResponseDraftVersionParametersConditional3DsActionParametersConditionsValueUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2ListResponseDraftVersionParametersAction string
+
+const (
+	AuthRuleV2ListResponseDraftVersionParametersActionDecline   AuthRuleV2ListResponseDraftVersionParametersAction = "DECLINE"
+	AuthRuleV2ListResponseDraftVersionParametersActionChallenge AuthRuleV2ListResponseDraftVersionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2ListResponseDraftVersionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResponseDraftVersionParametersActionDecline, AuthRuleV2ListResponseDraftVersionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
 type AuthRuleV2ListResponseDraftVersionParametersScope string
 
 const (
@@ -2550,6 +4406,22 @@ const (
 func (r AuthRuleV2ListResponseDraftVersionParametersScope) IsKnown() bool {
 	switch r {
 	case AuthRuleV2ListResponseDraftVersionParametersScopeCard, AuthRuleV2ListResponseDraftVersionParametersScopeAccount:
+		return true
+	}
+	return false
+}
+
+// The type of event stream the Auth rule applies to.
+type AuthRuleV2ListResponseEventStream string
+
+const (
+	AuthRuleV2ListResponseEventStreamAuthorization         AuthRuleV2ListResponseEventStream = "AUTHORIZATION"
+	AuthRuleV2ListResponseEventStreamThreeDSAuthentication AuthRuleV2ListResponseEventStream = "THREE_DS_AUTHENTICATION"
+)
+
+func (r AuthRuleV2ListResponseEventStream) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResponseEventStreamAuthorization, AuthRuleV2ListResponseEventStreamThreeDSAuthentication:
 		return true
 	}
 	return false
@@ -2571,18 +4443,25 @@ func (r AuthRuleV2ListResponseState) IsKnown() bool {
 	return false
 }
 
-// The type of Auth Rule
+// The type of Auth Rule. Effectively determines the event stream during which it
+// will be evaluated.
+//
+// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 type AuthRuleV2ListResponseType string
 
 const (
-	AuthRuleV2ListResponseTypeConditionalBlock AuthRuleV2ListResponseType = "CONDITIONAL_BLOCK"
-	AuthRuleV2ListResponseTypeVelocityLimit    AuthRuleV2ListResponseType = "VELOCITY_LIMIT"
-	AuthRuleV2ListResponseTypeMerchantLock     AuthRuleV2ListResponseType = "MERCHANT_LOCK"
+	AuthRuleV2ListResponseTypeConditionalBlock     AuthRuleV2ListResponseType = "CONDITIONAL_BLOCK"
+	AuthRuleV2ListResponseTypeVelocityLimit        AuthRuleV2ListResponseType = "VELOCITY_LIMIT"
+	AuthRuleV2ListResponseTypeMerchantLock         AuthRuleV2ListResponseType = "MERCHANT_LOCK"
+	AuthRuleV2ListResponseTypeConditional3DSAction AuthRuleV2ListResponseType = "CONDITIONAL_3DS_ACTION"
 )
 
 func (r AuthRuleV2ListResponseType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResponseTypeConditionalBlock, AuthRuleV2ListResponseTypeVelocityLimit, AuthRuleV2ListResponseTypeMerchantLock:
+	case AuthRuleV2ListResponseTypeConditionalBlock, AuthRuleV2ListResponseTypeVelocityLimit, AuthRuleV2ListResponseTypeMerchantLock, AuthRuleV2ListResponseTypeConditional3DSAction:
 		return true
 	}
 	return false
@@ -2597,13 +4476,21 @@ type AuthRuleV2ApplyResponse struct {
 	CardTokens     []string                              `json:"card_tokens,required" format:"uuid"`
 	CurrentVersion AuthRuleV2ApplyResponseCurrentVersion `json:"current_version,required,nullable"`
 	DraftVersion   AuthRuleV2ApplyResponseDraftVersion   `json:"draft_version,required,nullable"`
+	// The type of event stream the Auth rule applies to.
+	EventStream AuthRuleV2ApplyResponseEventStream `json:"event_stream,required"`
 	// Auth Rule Name
 	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel bool `json:"program_level,required"`
 	// The state of the Auth Rule
 	State AuthRuleV2ApplyResponseState `json:"state,required"`
-	// The type of Auth Rule
+	// The type of Auth Rule. Effectively determines the event stream during which it
+	// will be evaluated.
+	//
+	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 	Type AuthRuleV2ApplyResponseType `json:"type,required"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens []string                    `json:"excluded_card_tokens" format:"uuid"`
@@ -2618,6 +4505,7 @@ type authRuleV2ApplyResponseJSON struct {
 	CardTokens         apijson.Field
 	CurrentVersion     apijson.Field
 	DraftVersion       apijson.Field
+	EventStream        apijson.Field
 	Name               apijson.Field
 	ProgramLevel       apijson.Field
 	State              apijson.Field
@@ -2663,7 +4551,10 @@ func (r authRuleV2ApplyResponseCurrentVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2ApplyResponseCurrentVersionParameters struct {
-	// This field can have the runtime type of [[]AuthRuleCondition].
+	// The action to take if the conditions are met.
+	Action AuthRuleV2ApplyResponseCurrentVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [[]AuthRuleCondition],
+	// [[]AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DsActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -2690,6 +4581,7 @@ type AuthRuleV2ApplyResponseCurrentVersionParameters struct {
 // authRuleV2ApplyResponseCurrentVersionParametersJSON contains the JSON metadata
 // for the struct [AuthRuleV2ApplyResponseCurrentVersionParameters]
 type authRuleV2ApplyResponseCurrentVersionParametersJSON struct {
+	Action      apijson.Field
 	Conditions  apijson.Field
 	Filters     apijson.Field
 	LimitAmount apijson.Field
@@ -2719,15 +4611,17 @@ func (r *AuthRuleV2ApplyResponseCurrentVersionParameters) UnmarshalJSON(data []b
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams],
-// [AuthRuleV2ApplyResponseCurrentVersionParametersMerchantLockParameters].
+// [AuthRuleV2ApplyResponseCurrentVersionParametersMerchantLockParameters],
+// [AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParameters].
 func (r AuthRuleV2ApplyResponseCurrentVersionParameters) AsUnion() AuthRuleV2ApplyResponseCurrentVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
-// [AuthRuleV2ApplyResponseCurrentVersionParametersMerchantLockParameters].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [AuthRuleV2ApplyResponseCurrentVersionParametersMerchantLockParameters] or
+// [AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParameters].
 type AuthRuleV2ApplyResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2ApplyResponseCurrentVersionParameters()
 }
@@ -2747,6 +4641,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(AuthRuleV2ApplyResponseCurrentVersionParametersMerchantLockParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParameters{}),
 		},
 	)
 }
@@ -2815,6 +4713,215 @@ func (r authRuleV2ApplyResponseCurrentVersionParametersMerchantLockParametersMer
 	return r.raw
 }
 
+type AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersAction      `json:"action,required"`
+	Conditions []AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DsActionParametersCondition `json:"conditions,required"`
+	JSON       authRuleV2ApplyResponseCurrentVersionParametersConditional3DsActionParametersJSON        `json:"-"`
+}
+
+// authRuleV2ApplyResponseCurrentVersionParametersConditional3DsActionParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParameters]
+type authRuleV2ApplyResponseCurrentVersionParametersConditional3DsActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ApplyResponseCurrentVersionParametersConditional3DsActionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParameters) implementsAuthRuleV2ApplyResponseCurrentVersionParameters() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersAction string
+
+const (
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersActionDecline   AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersAction = "DECLINE"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersActionChallenge AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersActionDecline, AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DsActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authentication. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	Attribute AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute `json:"attribute"`
+	// The operation to apply to the attribute
+	Operation AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation `json:"operation"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion `json:"value"`
+	JSON  authRuleV2ApplyResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON        `json:"-"`
+}
+
+// authRuleV2ApplyResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DsActionParametersCondition]
+type authRuleV2ApplyResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON struct {
+	Attribute   apijson.Field
+	Operation   apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DsActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ApplyResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authentication. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+type AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute string
+
+const (
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMcc               AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MCC"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCountry           AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCurrency          AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID        AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor        AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore         AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory   AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+)
+
+func (r AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMcc, AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCountry, AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCurrency, AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID, AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor, AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore, AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory:
+		return true
+	}
+	return false
+}
+
+// The operation to apply to the attribute
+type AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation string
+
+const (
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf       AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf    AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationMatches       AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "MATCHES"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch  AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan    AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+)
+
+func (r AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf, AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf, AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationMatches, AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch, AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan, AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
+// [AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings].
+type AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion interface {
+	ImplementsAuthRuleV2ApplyResponseCurrentVersionParametersConditional3DsActionParametersConditionsValueUnion()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(shared.UnionString("")),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings{}),
+		},
+	)
+}
+
+type AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings []string
+
+func (r AuthRuleV2ApplyResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2ApplyResponseCurrentVersionParametersConditional3DsActionParametersConditionsValueUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2ApplyResponseCurrentVersionParametersAction string
+
+const (
+	AuthRuleV2ApplyResponseCurrentVersionParametersActionDecline   AuthRuleV2ApplyResponseCurrentVersionParametersAction = "DECLINE"
+	AuthRuleV2ApplyResponseCurrentVersionParametersActionChallenge AuthRuleV2ApplyResponseCurrentVersionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2ApplyResponseCurrentVersionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ApplyResponseCurrentVersionParametersActionDecline, AuthRuleV2ApplyResponseCurrentVersionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
 type AuthRuleV2ApplyResponseCurrentVersionParametersScope string
 
 const (
@@ -2858,7 +4965,10 @@ func (r authRuleV2ApplyResponseDraftVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2ApplyResponseDraftVersionParameters struct {
-	// This field can have the runtime type of [[]AuthRuleCondition].
+	// The action to take if the conditions are met.
+	Action AuthRuleV2ApplyResponseDraftVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [[]AuthRuleCondition],
+	// [[]AuthRuleV2ApplyResponseDraftVersionParametersConditional3DsActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -2885,6 +4995,7 @@ type AuthRuleV2ApplyResponseDraftVersionParameters struct {
 // authRuleV2ApplyResponseDraftVersionParametersJSON contains the JSON metadata for
 // the struct [AuthRuleV2ApplyResponseDraftVersionParameters]
 type authRuleV2ApplyResponseDraftVersionParametersJSON struct {
+	Action      apijson.Field
 	Conditions  apijson.Field
 	Filters     apijson.Field
 	LimitAmount apijson.Field
@@ -2914,15 +5025,17 @@ func (r *AuthRuleV2ApplyResponseDraftVersionParameters) UnmarshalJSON(data []byt
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams],
-// [AuthRuleV2ApplyResponseDraftVersionParametersMerchantLockParameters].
+// [AuthRuleV2ApplyResponseDraftVersionParametersMerchantLockParameters],
+// [AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParameters].
 func (r AuthRuleV2ApplyResponseDraftVersionParameters) AsUnion() AuthRuleV2ApplyResponseDraftVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
-// [AuthRuleV2ApplyResponseDraftVersionParametersMerchantLockParameters].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [AuthRuleV2ApplyResponseDraftVersionParametersMerchantLockParameters] or
+// [AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParameters].
 type AuthRuleV2ApplyResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2ApplyResponseDraftVersionParameters()
 }
@@ -2942,6 +5055,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(AuthRuleV2ApplyResponseDraftVersionParametersMerchantLockParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParameters{}),
 		},
 	)
 }
@@ -3010,6 +5127,215 @@ func (r authRuleV2ApplyResponseDraftVersionParametersMerchantLockParametersMerch
 	return r.raw
 }
 
+type AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersAction      `json:"action,required"`
+	Conditions []AuthRuleV2ApplyResponseDraftVersionParametersConditional3DsActionParametersCondition `json:"conditions,required"`
+	JSON       authRuleV2ApplyResponseDraftVersionParametersConditional3DsActionParametersJSON        `json:"-"`
+}
+
+// authRuleV2ApplyResponseDraftVersionParametersConditional3DsActionParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParameters]
+type authRuleV2ApplyResponseDraftVersionParametersConditional3DsActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ApplyResponseDraftVersionParametersConditional3DsActionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParameters) implementsAuthRuleV2ApplyResponseDraftVersionParameters() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersAction string
+
+const (
+	AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersActionDecline   AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersAction = "DECLINE"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersActionChallenge AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersActionDecline, AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2ApplyResponseDraftVersionParametersConditional3DsActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authentication. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	Attribute AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute `json:"attribute"`
+	// The operation to apply to the attribute
+	Operation AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation `json:"operation"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion `json:"value"`
+	JSON  authRuleV2ApplyResponseDraftVersionParametersConditional3DsActionParametersConditionJSON        `json:"-"`
+}
+
+// authRuleV2ApplyResponseDraftVersionParametersConditional3DsActionParametersConditionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ApplyResponseDraftVersionParametersConditional3DsActionParametersCondition]
+type authRuleV2ApplyResponseDraftVersionParametersConditional3DsActionParametersConditionJSON struct {
+	Attribute   apijson.Field
+	Operation   apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ApplyResponseDraftVersionParametersConditional3DsActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ApplyResponseDraftVersionParametersConditional3DsActionParametersConditionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authentication. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+type AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute string
+
+const (
+	AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMcc               AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MCC"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCountry           AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCurrency          AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID        AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor        AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore         AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory   AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+)
+
+func (r AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMcc, AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCountry, AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCurrency, AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID, AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor, AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore, AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory:
+		return true
+	}
+	return false
+}
+
+// The operation to apply to the attribute
+type AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation string
+
+const (
+	AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf       AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf    AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationMatches       AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "MATCHES"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch  AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan    AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+)
+
+func (r AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf, AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf, AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationMatches, AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch, AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan, AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
+// [AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings].
+type AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion interface {
+	ImplementsAuthRuleV2ApplyResponseDraftVersionParametersConditional3DsActionParametersConditionsValueUnion()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(shared.UnionString("")),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings{}),
+		},
+	)
+}
+
+type AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings []string
+
+func (r AuthRuleV2ApplyResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2ApplyResponseDraftVersionParametersConditional3DsActionParametersConditionsValueUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2ApplyResponseDraftVersionParametersAction string
+
+const (
+	AuthRuleV2ApplyResponseDraftVersionParametersActionDecline   AuthRuleV2ApplyResponseDraftVersionParametersAction = "DECLINE"
+	AuthRuleV2ApplyResponseDraftVersionParametersActionChallenge AuthRuleV2ApplyResponseDraftVersionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2ApplyResponseDraftVersionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ApplyResponseDraftVersionParametersActionDecline, AuthRuleV2ApplyResponseDraftVersionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
 type AuthRuleV2ApplyResponseDraftVersionParametersScope string
 
 const (
@@ -3020,6 +5346,22 @@ const (
 func (r AuthRuleV2ApplyResponseDraftVersionParametersScope) IsKnown() bool {
 	switch r {
 	case AuthRuleV2ApplyResponseDraftVersionParametersScopeCard, AuthRuleV2ApplyResponseDraftVersionParametersScopeAccount:
+		return true
+	}
+	return false
+}
+
+// The type of event stream the Auth rule applies to.
+type AuthRuleV2ApplyResponseEventStream string
+
+const (
+	AuthRuleV2ApplyResponseEventStreamAuthorization         AuthRuleV2ApplyResponseEventStream = "AUTHORIZATION"
+	AuthRuleV2ApplyResponseEventStreamThreeDSAuthentication AuthRuleV2ApplyResponseEventStream = "THREE_DS_AUTHENTICATION"
+)
+
+func (r AuthRuleV2ApplyResponseEventStream) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ApplyResponseEventStreamAuthorization, AuthRuleV2ApplyResponseEventStreamThreeDSAuthentication:
 		return true
 	}
 	return false
@@ -3041,18 +5383,25 @@ func (r AuthRuleV2ApplyResponseState) IsKnown() bool {
 	return false
 }
 
-// The type of Auth Rule
+// The type of Auth Rule. Effectively determines the event stream during which it
+// will be evaluated.
+//
+// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 type AuthRuleV2ApplyResponseType string
 
 const (
-	AuthRuleV2ApplyResponseTypeConditionalBlock AuthRuleV2ApplyResponseType = "CONDITIONAL_BLOCK"
-	AuthRuleV2ApplyResponseTypeVelocityLimit    AuthRuleV2ApplyResponseType = "VELOCITY_LIMIT"
-	AuthRuleV2ApplyResponseTypeMerchantLock     AuthRuleV2ApplyResponseType = "MERCHANT_LOCK"
+	AuthRuleV2ApplyResponseTypeConditionalBlock     AuthRuleV2ApplyResponseType = "CONDITIONAL_BLOCK"
+	AuthRuleV2ApplyResponseTypeVelocityLimit        AuthRuleV2ApplyResponseType = "VELOCITY_LIMIT"
+	AuthRuleV2ApplyResponseTypeMerchantLock         AuthRuleV2ApplyResponseType = "MERCHANT_LOCK"
+	AuthRuleV2ApplyResponseTypeConditional3DSAction AuthRuleV2ApplyResponseType = "CONDITIONAL_3DS_ACTION"
 )
 
 func (r AuthRuleV2ApplyResponseType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ApplyResponseTypeConditionalBlock, AuthRuleV2ApplyResponseTypeVelocityLimit, AuthRuleV2ApplyResponseTypeMerchantLock:
+	case AuthRuleV2ApplyResponseTypeConditionalBlock, AuthRuleV2ApplyResponseTypeVelocityLimit, AuthRuleV2ApplyResponseTypeMerchantLock, AuthRuleV2ApplyResponseTypeConditional3DSAction:
 		return true
 	}
 	return false
@@ -3067,13 +5416,21 @@ type AuthRuleV2DraftResponse struct {
 	CardTokens     []string                              `json:"card_tokens,required" format:"uuid"`
 	CurrentVersion AuthRuleV2DraftResponseCurrentVersion `json:"current_version,required,nullable"`
 	DraftVersion   AuthRuleV2DraftResponseDraftVersion   `json:"draft_version,required,nullable"`
+	// The type of event stream the Auth rule applies to.
+	EventStream AuthRuleV2DraftResponseEventStream `json:"event_stream,required"`
 	// Auth Rule Name
 	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel bool `json:"program_level,required"`
 	// The state of the Auth Rule
 	State AuthRuleV2DraftResponseState `json:"state,required"`
-	// The type of Auth Rule
+	// The type of Auth Rule. Effectively determines the event stream during which it
+	// will be evaluated.
+	//
+	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 	Type AuthRuleV2DraftResponseType `json:"type,required"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens []string                    `json:"excluded_card_tokens" format:"uuid"`
@@ -3088,6 +5445,7 @@ type authRuleV2DraftResponseJSON struct {
 	CardTokens         apijson.Field
 	CurrentVersion     apijson.Field
 	DraftVersion       apijson.Field
+	EventStream        apijson.Field
 	Name               apijson.Field
 	ProgramLevel       apijson.Field
 	State              apijson.Field
@@ -3133,7 +5491,10 @@ func (r authRuleV2DraftResponseCurrentVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2DraftResponseCurrentVersionParameters struct {
-	// This field can have the runtime type of [[]AuthRuleCondition].
+	// The action to take if the conditions are met.
+	Action AuthRuleV2DraftResponseCurrentVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [[]AuthRuleCondition],
+	// [[]AuthRuleV2DraftResponseCurrentVersionParametersConditional3DsActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -3160,6 +5521,7 @@ type AuthRuleV2DraftResponseCurrentVersionParameters struct {
 // authRuleV2DraftResponseCurrentVersionParametersJSON contains the JSON metadata
 // for the struct [AuthRuleV2DraftResponseCurrentVersionParameters]
 type authRuleV2DraftResponseCurrentVersionParametersJSON struct {
+	Action      apijson.Field
 	Conditions  apijson.Field
 	Filters     apijson.Field
 	LimitAmount apijson.Field
@@ -3189,15 +5551,17 @@ func (r *AuthRuleV2DraftResponseCurrentVersionParameters) UnmarshalJSON(data []b
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams],
-// [AuthRuleV2DraftResponseCurrentVersionParametersMerchantLockParameters].
+// [AuthRuleV2DraftResponseCurrentVersionParametersMerchantLockParameters],
+// [AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParameters].
 func (r AuthRuleV2DraftResponseCurrentVersionParameters) AsUnion() AuthRuleV2DraftResponseCurrentVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
-// [AuthRuleV2DraftResponseCurrentVersionParametersMerchantLockParameters].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [AuthRuleV2DraftResponseCurrentVersionParametersMerchantLockParameters] or
+// [AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParameters].
 type AuthRuleV2DraftResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2DraftResponseCurrentVersionParameters()
 }
@@ -3217,6 +5581,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(AuthRuleV2DraftResponseCurrentVersionParametersMerchantLockParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParameters{}),
 		},
 	)
 }
@@ -3285,6 +5653,215 @@ func (r authRuleV2DraftResponseCurrentVersionParametersMerchantLockParametersMer
 	return r.raw
 }
 
+type AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersAction      `json:"action,required"`
+	Conditions []AuthRuleV2DraftResponseCurrentVersionParametersConditional3DsActionParametersCondition `json:"conditions,required"`
+	JSON       authRuleV2DraftResponseCurrentVersionParametersConditional3DsActionParametersJSON        `json:"-"`
+}
+
+// authRuleV2DraftResponseCurrentVersionParametersConditional3DsActionParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParameters]
+type authRuleV2DraftResponseCurrentVersionParametersConditional3DsActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2DraftResponseCurrentVersionParametersConditional3DsActionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParameters) implementsAuthRuleV2DraftResponseCurrentVersionParameters() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersAction string
+
+const (
+	AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersActionDecline   AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersAction = "DECLINE"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersActionChallenge AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersActionDecline, AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2DraftResponseCurrentVersionParametersConditional3DsActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authentication. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	Attribute AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute `json:"attribute"`
+	// The operation to apply to the attribute
+	Operation AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation `json:"operation"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion `json:"value"`
+	JSON  authRuleV2DraftResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON        `json:"-"`
+}
+
+// authRuleV2DraftResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2DraftResponseCurrentVersionParametersConditional3DsActionParametersCondition]
+type authRuleV2DraftResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON struct {
+	Attribute   apijson.Field
+	Operation   apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2DraftResponseCurrentVersionParametersConditional3DsActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2DraftResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authentication. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+type AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute string
+
+const (
+	AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMcc               AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MCC"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCountry           AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCurrency          AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID        AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor        AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore         AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory   AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+)
+
+func (r AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMcc, AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCountry, AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCurrency, AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID, AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor, AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore, AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory:
+		return true
+	}
+	return false
+}
+
+// The operation to apply to the attribute
+type AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation string
+
+const (
+	AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf       AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf    AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationMatches       AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "MATCHES"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch  AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan    AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+)
+
+func (r AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation) IsKnown() bool {
+	switch r {
+	case AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf, AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf, AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationMatches, AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch, AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan, AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
+// [AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings].
+type AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion interface {
+	ImplementsAuthRuleV2DraftResponseCurrentVersionParametersConditional3DsActionParametersConditionsValueUnion()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(shared.UnionString("")),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings{}),
+		},
+	)
+}
+
+type AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings []string
+
+func (r AuthRuleV2DraftResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2DraftResponseCurrentVersionParametersConditional3DsActionParametersConditionsValueUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2DraftResponseCurrentVersionParametersAction string
+
+const (
+	AuthRuleV2DraftResponseCurrentVersionParametersActionDecline   AuthRuleV2DraftResponseCurrentVersionParametersAction = "DECLINE"
+	AuthRuleV2DraftResponseCurrentVersionParametersActionChallenge AuthRuleV2DraftResponseCurrentVersionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2DraftResponseCurrentVersionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2DraftResponseCurrentVersionParametersActionDecline, AuthRuleV2DraftResponseCurrentVersionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
 type AuthRuleV2DraftResponseCurrentVersionParametersScope string
 
 const (
@@ -3328,7 +5905,10 @@ func (r authRuleV2DraftResponseDraftVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2DraftResponseDraftVersionParameters struct {
-	// This field can have the runtime type of [[]AuthRuleCondition].
+	// The action to take if the conditions are met.
+	Action AuthRuleV2DraftResponseDraftVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [[]AuthRuleCondition],
+	// [[]AuthRuleV2DraftResponseDraftVersionParametersConditional3DsActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -3355,6 +5935,7 @@ type AuthRuleV2DraftResponseDraftVersionParameters struct {
 // authRuleV2DraftResponseDraftVersionParametersJSON contains the JSON metadata for
 // the struct [AuthRuleV2DraftResponseDraftVersionParameters]
 type authRuleV2DraftResponseDraftVersionParametersJSON struct {
+	Action      apijson.Field
 	Conditions  apijson.Field
 	Filters     apijson.Field
 	LimitAmount apijson.Field
@@ -3384,15 +5965,17 @@ func (r *AuthRuleV2DraftResponseDraftVersionParameters) UnmarshalJSON(data []byt
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams],
-// [AuthRuleV2DraftResponseDraftVersionParametersMerchantLockParameters].
+// [AuthRuleV2DraftResponseDraftVersionParametersMerchantLockParameters],
+// [AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParameters].
 func (r AuthRuleV2DraftResponseDraftVersionParameters) AsUnion() AuthRuleV2DraftResponseDraftVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
-// [AuthRuleV2DraftResponseDraftVersionParametersMerchantLockParameters].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [AuthRuleV2DraftResponseDraftVersionParametersMerchantLockParameters] or
+// [AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParameters].
 type AuthRuleV2DraftResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2DraftResponseDraftVersionParameters()
 }
@@ -3412,6 +5995,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(AuthRuleV2DraftResponseDraftVersionParametersMerchantLockParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParameters{}),
 		},
 	)
 }
@@ -3480,6 +6067,215 @@ func (r authRuleV2DraftResponseDraftVersionParametersMerchantLockParametersMerch
 	return r.raw
 }
 
+type AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersAction      `json:"action,required"`
+	Conditions []AuthRuleV2DraftResponseDraftVersionParametersConditional3DsActionParametersCondition `json:"conditions,required"`
+	JSON       authRuleV2DraftResponseDraftVersionParametersConditional3DsActionParametersJSON        `json:"-"`
+}
+
+// authRuleV2DraftResponseDraftVersionParametersConditional3DsActionParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParameters]
+type authRuleV2DraftResponseDraftVersionParametersConditional3DsActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2DraftResponseDraftVersionParametersConditional3DsActionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParameters) implementsAuthRuleV2DraftResponseDraftVersionParameters() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersAction string
+
+const (
+	AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersActionDecline   AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersAction = "DECLINE"
+	AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersActionChallenge AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersActionDecline, AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2DraftResponseDraftVersionParametersConditional3DsActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authentication. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	Attribute AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute `json:"attribute"`
+	// The operation to apply to the attribute
+	Operation AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation `json:"operation"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion `json:"value"`
+	JSON  authRuleV2DraftResponseDraftVersionParametersConditional3DsActionParametersConditionJSON        `json:"-"`
+}
+
+// authRuleV2DraftResponseDraftVersionParametersConditional3DsActionParametersConditionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2DraftResponseDraftVersionParametersConditional3DsActionParametersCondition]
+type authRuleV2DraftResponseDraftVersionParametersConditional3DsActionParametersConditionJSON struct {
+	Attribute   apijson.Field
+	Operation   apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2DraftResponseDraftVersionParametersConditional3DsActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2DraftResponseDraftVersionParametersConditional3DsActionParametersConditionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authentication. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+type AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute string
+
+const (
+	AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMcc               AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MCC"
+	AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCountry           AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCurrency          AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID        AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor        AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore         AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory   AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+)
+
+func (r AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMcc, AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCountry, AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCurrency, AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID, AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor, AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore, AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory:
+		return true
+	}
+	return false
+}
+
+// The operation to apply to the attribute
+type AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation string
+
+const (
+	AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf       AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf    AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationMatches       AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "MATCHES"
+	AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch  AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan    AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+)
+
+func (r AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation) IsKnown() bool {
+	switch r {
+	case AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf, AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf, AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationMatches, AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch, AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan, AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
+// [AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings].
+type AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion interface {
+	ImplementsAuthRuleV2DraftResponseDraftVersionParametersConditional3DsActionParametersConditionsValueUnion()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(shared.UnionString("")),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings{}),
+		},
+	)
+}
+
+type AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings []string
+
+func (r AuthRuleV2DraftResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2DraftResponseDraftVersionParametersConditional3DsActionParametersConditionsValueUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2DraftResponseDraftVersionParametersAction string
+
+const (
+	AuthRuleV2DraftResponseDraftVersionParametersActionDecline   AuthRuleV2DraftResponseDraftVersionParametersAction = "DECLINE"
+	AuthRuleV2DraftResponseDraftVersionParametersActionChallenge AuthRuleV2DraftResponseDraftVersionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2DraftResponseDraftVersionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2DraftResponseDraftVersionParametersActionDecline, AuthRuleV2DraftResponseDraftVersionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
 type AuthRuleV2DraftResponseDraftVersionParametersScope string
 
 const (
@@ -3490,6 +6286,22 @@ const (
 func (r AuthRuleV2DraftResponseDraftVersionParametersScope) IsKnown() bool {
 	switch r {
 	case AuthRuleV2DraftResponseDraftVersionParametersScopeCard, AuthRuleV2DraftResponseDraftVersionParametersScopeAccount:
+		return true
+	}
+	return false
+}
+
+// The type of event stream the Auth rule applies to.
+type AuthRuleV2DraftResponseEventStream string
+
+const (
+	AuthRuleV2DraftResponseEventStreamAuthorization         AuthRuleV2DraftResponseEventStream = "AUTHORIZATION"
+	AuthRuleV2DraftResponseEventStreamThreeDSAuthentication AuthRuleV2DraftResponseEventStream = "THREE_DS_AUTHENTICATION"
+)
+
+func (r AuthRuleV2DraftResponseEventStream) IsKnown() bool {
+	switch r {
+	case AuthRuleV2DraftResponseEventStreamAuthorization, AuthRuleV2DraftResponseEventStreamThreeDSAuthentication:
 		return true
 	}
 	return false
@@ -3511,18 +6323,25 @@ func (r AuthRuleV2DraftResponseState) IsKnown() bool {
 	return false
 }
 
-// The type of Auth Rule
+// The type of Auth Rule. Effectively determines the event stream during which it
+// will be evaluated.
+//
+// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 type AuthRuleV2DraftResponseType string
 
 const (
-	AuthRuleV2DraftResponseTypeConditionalBlock AuthRuleV2DraftResponseType = "CONDITIONAL_BLOCK"
-	AuthRuleV2DraftResponseTypeVelocityLimit    AuthRuleV2DraftResponseType = "VELOCITY_LIMIT"
-	AuthRuleV2DraftResponseTypeMerchantLock     AuthRuleV2DraftResponseType = "MERCHANT_LOCK"
+	AuthRuleV2DraftResponseTypeConditionalBlock     AuthRuleV2DraftResponseType = "CONDITIONAL_BLOCK"
+	AuthRuleV2DraftResponseTypeVelocityLimit        AuthRuleV2DraftResponseType = "VELOCITY_LIMIT"
+	AuthRuleV2DraftResponseTypeMerchantLock         AuthRuleV2DraftResponseType = "MERCHANT_LOCK"
+	AuthRuleV2DraftResponseTypeConditional3DSAction AuthRuleV2DraftResponseType = "CONDITIONAL_3DS_ACTION"
 )
 
 func (r AuthRuleV2DraftResponseType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2DraftResponseTypeConditionalBlock, AuthRuleV2DraftResponseTypeVelocityLimit, AuthRuleV2DraftResponseTypeMerchantLock:
+	case AuthRuleV2DraftResponseTypeConditionalBlock, AuthRuleV2DraftResponseTypeVelocityLimit, AuthRuleV2DraftResponseTypeMerchantLock, AuthRuleV2DraftResponseTypeConditional3DSAction:
 		return true
 	}
 	return false
@@ -3537,13 +6356,21 @@ type AuthRuleV2PromoteResponse struct {
 	CardTokens     []string                                `json:"card_tokens,required" format:"uuid"`
 	CurrentVersion AuthRuleV2PromoteResponseCurrentVersion `json:"current_version,required,nullable"`
 	DraftVersion   AuthRuleV2PromoteResponseDraftVersion   `json:"draft_version,required,nullable"`
+	// The type of event stream the Auth rule applies to.
+	EventStream AuthRuleV2PromoteResponseEventStream `json:"event_stream,required"`
 	// Auth Rule Name
 	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel bool `json:"program_level,required"`
 	// The state of the Auth Rule
 	State AuthRuleV2PromoteResponseState `json:"state,required"`
-	// The type of Auth Rule
+	// The type of Auth Rule. Effectively determines the event stream during which it
+	// will be evaluated.
+	//
+	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 	Type AuthRuleV2PromoteResponseType `json:"type,required"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens []string                      `json:"excluded_card_tokens" format:"uuid"`
@@ -3558,6 +6385,7 @@ type authRuleV2PromoteResponseJSON struct {
 	CardTokens         apijson.Field
 	CurrentVersion     apijson.Field
 	DraftVersion       apijson.Field
+	EventStream        apijson.Field
 	Name               apijson.Field
 	ProgramLevel       apijson.Field
 	State              apijson.Field
@@ -3603,7 +6431,10 @@ func (r authRuleV2PromoteResponseCurrentVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2PromoteResponseCurrentVersionParameters struct {
-	// This field can have the runtime type of [[]AuthRuleCondition].
+	// The action to take if the conditions are met.
+	Action AuthRuleV2PromoteResponseCurrentVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [[]AuthRuleCondition],
+	// [[]AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DsActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -3630,6 +6461,7 @@ type AuthRuleV2PromoteResponseCurrentVersionParameters struct {
 // authRuleV2PromoteResponseCurrentVersionParametersJSON contains the JSON metadata
 // for the struct [AuthRuleV2PromoteResponseCurrentVersionParameters]
 type authRuleV2PromoteResponseCurrentVersionParametersJSON struct {
+	Action      apijson.Field
 	Conditions  apijson.Field
 	Filters     apijson.Field
 	LimitAmount apijson.Field
@@ -3659,15 +6491,17 @@ func (r *AuthRuleV2PromoteResponseCurrentVersionParameters) UnmarshalJSON(data [
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams],
-// [AuthRuleV2PromoteResponseCurrentVersionParametersMerchantLockParameters].
+// [AuthRuleV2PromoteResponseCurrentVersionParametersMerchantLockParameters],
+// [AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParameters].
 func (r AuthRuleV2PromoteResponseCurrentVersionParameters) AsUnion() AuthRuleV2PromoteResponseCurrentVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
-// [AuthRuleV2PromoteResponseCurrentVersionParametersMerchantLockParameters].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [AuthRuleV2PromoteResponseCurrentVersionParametersMerchantLockParameters] or
+// [AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParameters].
 type AuthRuleV2PromoteResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2PromoteResponseCurrentVersionParameters()
 }
@@ -3687,6 +6521,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(AuthRuleV2PromoteResponseCurrentVersionParametersMerchantLockParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParameters{}),
 		},
 	)
 }
@@ -3755,6 +6593,215 @@ func (r authRuleV2PromoteResponseCurrentVersionParametersMerchantLockParametersM
 	return r.raw
 }
 
+type AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersAction      `json:"action,required"`
+	Conditions []AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DsActionParametersCondition `json:"conditions,required"`
+	JSON       authRuleV2PromoteResponseCurrentVersionParametersConditional3DsActionParametersJSON        `json:"-"`
+}
+
+// authRuleV2PromoteResponseCurrentVersionParametersConditional3DsActionParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParameters]
+type authRuleV2PromoteResponseCurrentVersionParametersConditional3DsActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2PromoteResponseCurrentVersionParametersConditional3DsActionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParameters) implementsAuthRuleV2PromoteResponseCurrentVersionParameters() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersAction string
+
+const (
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersActionDecline   AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersAction = "DECLINE"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersActionChallenge AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersActionDecline, AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DsActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authentication. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	Attribute AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute `json:"attribute"`
+	// The operation to apply to the attribute
+	Operation AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation `json:"operation"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion `json:"value"`
+	JSON  authRuleV2PromoteResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON        `json:"-"`
+}
+
+// authRuleV2PromoteResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DsActionParametersCondition]
+type authRuleV2PromoteResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON struct {
+	Attribute   apijson.Field
+	Operation   apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DsActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2PromoteResponseCurrentVersionParametersConditional3DsActionParametersConditionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authentication. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+type AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute string
+
+const (
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMcc               AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MCC"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCountry           AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCurrency          AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID        AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor        AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore         AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory   AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+)
+
+func (r AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMcc, AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCountry, AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeCurrency, AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID, AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor, AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount, AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore, AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory:
+		return true
+	}
+	return false
+}
+
+// The operation to apply to the attribute
+type AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation string
+
+const (
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf       AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf    AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationMatches       AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "MATCHES"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch  AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan    AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+)
+
+func (r AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperation) IsKnown() bool {
+	switch r {
+	case AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf, AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf, AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationMatches, AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch, AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan, AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
+// [AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings].
+type AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion interface {
+	ImplementsAuthRuleV2PromoteResponseCurrentVersionParametersConditional3DsActionParametersConditionsValueUnion()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(shared.UnionString("")),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings{}),
+		},
+	)
+}
+
+type AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings []string
+
+func (r AuthRuleV2PromoteResponseCurrentVersionParametersConditional3DSActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2PromoteResponseCurrentVersionParametersConditional3DsActionParametersConditionsValueUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2PromoteResponseCurrentVersionParametersAction string
+
+const (
+	AuthRuleV2PromoteResponseCurrentVersionParametersActionDecline   AuthRuleV2PromoteResponseCurrentVersionParametersAction = "DECLINE"
+	AuthRuleV2PromoteResponseCurrentVersionParametersActionChallenge AuthRuleV2PromoteResponseCurrentVersionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2PromoteResponseCurrentVersionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2PromoteResponseCurrentVersionParametersActionDecline, AuthRuleV2PromoteResponseCurrentVersionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
 type AuthRuleV2PromoteResponseCurrentVersionParametersScope string
 
 const (
@@ -3798,7 +6845,10 @@ func (r authRuleV2PromoteResponseDraftVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2PromoteResponseDraftVersionParameters struct {
-	// This field can have the runtime type of [[]AuthRuleCondition].
+	// The action to take if the conditions are met.
+	Action AuthRuleV2PromoteResponseDraftVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [[]AuthRuleCondition],
+	// [[]AuthRuleV2PromoteResponseDraftVersionParametersConditional3DsActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -3825,6 +6875,7 @@ type AuthRuleV2PromoteResponseDraftVersionParameters struct {
 // authRuleV2PromoteResponseDraftVersionParametersJSON contains the JSON metadata
 // for the struct [AuthRuleV2PromoteResponseDraftVersionParameters]
 type authRuleV2PromoteResponseDraftVersionParametersJSON struct {
+	Action      apijson.Field
 	Conditions  apijson.Field
 	Filters     apijson.Field
 	LimitAmount apijson.Field
@@ -3854,15 +6905,17 @@ func (r *AuthRuleV2PromoteResponseDraftVersionParameters) UnmarshalJSON(data []b
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams],
-// [AuthRuleV2PromoteResponseDraftVersionParametersMerchantLockParameters].
+// [AuthRuleV2PromoteResponseDraftVersionParametersMerchantLockParameters],
+// [AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParameters].
 func (r AuthRuleV2PromoteResponseDraftVersionParameters) AsUnion() AuthRuleV2PromoteResponseDraftVersionParametersUnion {
 	return r.union
 }
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams] or
-// [AuthRuleV2PromoteResponseDraftVersionParametersMerchantLockParameters].
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [AuthRuleV2PromoteResponseDraftVersionParametersMerchantLockParameters] or
+// [AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParameters].
 type AuthRuleV2PromoteResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2PromoteResponseDraftVersionParameters()
 }
@@ -3882,6 +6935,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(AuthRuleV2PromoteResponseDraftVersionParametersMerchantLockParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParameters{}),
 		},
 	)
 }
@@ -3950,6 +7007,215 @@ func (r authRuleV2PromoteResponseDraftVersionParametersMerchantLockParametersMer
 	return r.raw
 }
 
+type AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersAction      `json:"action,required"`
+	Conditions []AuthRuleV2PromoteResponseDraftVersionParametersConditional3DsActionParametersCondition `json:"conditions,required"`
+	JSON       authRuleV2PromoteResponseDraftVersionParametersConditional3DsActionParametersJSON        `json:"-"`
+}
+
+// authRuleV2PromoteResponseDraftVersionParametersConditional3DsActionParametersJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParameters]
+type authRuleV2PromoteResponseDraftVersionParametersConditional3DsActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2PromoteResponseDraftVersionParametersConditional3DsActionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParameters) implementsAuthRuleV2PromoteResponseDraftVersionParameters() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersAction string
+
+const (
+	AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersActionDecline   AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersAction = "DECLINE"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersActionChallenge AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersActionDecline, AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2PromoteResponseDraftVersionParametersConditional3DsActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authentication. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	Attribute AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute `json:"attribute"`
+	// The operation to apply to the attribute
+	Operation AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation `json:"operation"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion `json:"value"`
+	JSON  authRuleV2PromoteResponseDraftVersionParametersConditional3DsActionParametersConditionJSON        `json:"-"`
+}
+
+// authRuleV2PromoteResponseDraftVersionParametersConditional3DsActionParametersConditionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2PromoteResponseDraftVersionParametersConditional3DsActionParametersCondition]
+type authRuleV2PromoteResponseDraftVersionParametersConditional3DsActionParametersConditionJSON struct {
+	Attribute   apijson.Field
+	Operation   apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2PromoteResponseDraftVersionParametersConditional3DsActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2PromoteResponseDraftVersionParametersConditional3DsActionParametersConditionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authentication. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+type AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute string
+
+const (
+	AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMcc               AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MCC"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCountry           AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCurrency          AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID        AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor        AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore         AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory   AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+)
+
+func (r AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMcc, AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCountry, AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeCurrency, AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMerchantID, AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeDescriptor, AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeTransactionAmount, AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeRiskScore, AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsAttributeMessageCategory:
+		return true
+	}
+	return false
+}
+
+// The operation to apply to the attribute
+type AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation string
+
+const (
+	AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf       AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf    AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationMatches       AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "MATCHES"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch  AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan    AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+)
+
+func (r AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperation) IsKnown() bool {
+	switch r {
+	case AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsOneOf, AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsNotOneOf, AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationMatches, AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationDoesNotMatch, AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsGreaterThan, AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsOperationIsLessThan:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
+// [AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings].
+type AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion interface {
+	ImplementsAuthRuleV2PromoteResponseDraftVersionParametersConditional3DsActionParametersConditionsValueUnion()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsValueUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(shared.UnionString("")),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings{}),
+		},
+	)
+}
+
+type AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings []string
+
+func (r AuthRuleV2PromoteResponseDraftVersionParametersConditional3DSActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2PromoteResponseDraftVersionParametersConditional3DsActionParametersConditionsValueUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2PromoteResponseDraftVersionParametersAction string
+
+const (
+	AuthRuleV2PromoteResponseDraftVersionParametersActionDecline   AuthRuleV2PromoteResponseDraftVersionParametersAction = "DECLINE"
+	AuthRuleV2PromoteResponseDraftVersionParametersActionChallenge AuthRuleV2PromoteResponseDraftVersionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2PromoteResponseDraftVersionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2PromoteResponseDraftVersionParametersActionDecline, AuthRuleV2PromoteResponseDraftVersionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
 type AuthRuleV2PromoteResponseDraftVersionParametersScope string
 
 const (
@@ -3960,6 +7226,22 @@ const (
 func (r AuthRuleV2PromoteResponseDraftVersionParametersScope) IsKnown() bool {
 	switch r {
 	case AuthRuleV2PromoteResponseDraftVersionParametersScopeCard, AuthRuleV2PromoteResponseDraftVersionParametersScopeAccount:
+		return true
+	}
+	return false
+}
+
+// The type of event stream the Auth rule applies to.
+type AuthRuleV2PromoteResponseEventStream string
+
+const (
+	AuthRuleV2PromoteResponseEventStreamAuthorization         AuthRuleV2PromoteResponseEventStream = "AUTHORIZATION"
+	AuthRuleV2PromoteResponseEventStreamThreeDSAuthentication AuthRuleV2PromoteResponseEventStream = "THREE_DS_AUTHENTICATION"
+)
+
+func (r AuthRuleV2PromoteResponseEventStream) IsKnown() bool {
+	switch r {
+	case AuthRuleV2PromoteResponseEventStreamAuthorization, AuthRuleV2PromoteResponseEventStreamThreeDSAuthentication:
 		return true
 	}
 	return false
@@ -3981,18 +7263,25 @@ func (r AuthRuleV2PromoteResponseState) IsKnown() bool {
 	return false
 }
 
-// The type of Auth Rule
+// The type of Auth Rule. Effectively determines the event stream during which it
+// will be evaluated.
+//
+// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 type AuthRuleV2PromoteResponseType string
 
 const (
-	AuthRuleV2PromoteResponseTypeConditionalBlock AuthRuleV2PromoteResponseType = "CONDITIONAL_BLOCK"
-	AuthRuleV2PromoteResponseTypeVelocityLimit    AuthRuleV2PromoteResponseType = "VELOCITY_LIMIT"
-	AuthRuleV2PromoteResponseTypeMerchantLock     AuthRuleV2PromoteResponseType = "MERCHANT_LOCK"
+	AuthRuleV2PromoteResponseTypeConditionalBlock     AuthRuleV2PromoteResponseType = "CONDITIONAL_BLOCK"
+	AuthRuleV2PromoteResponseTypeVelocityLimit        AuthRuleV2PromoteResponseType = "VELOCITY_LIMIT"
+	AuthRuleV2PromoteResponseTypeMerchantLock         AuthRuleV2PromoteResponseType = "MERCHANT_LOCK"
+	AuthRuleV2PromoteResponseTypeConditional3DSAction AuthRuleV2PromoteResponseType = "CONDITIONAL_3DS_ACTION"
 )
 
 func (r AuthRuleV2PromoteResponseType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2PromoteResponseTypeConditionalBlock, AuthRuleV2PromoteResponseTypeVelocityLimit, AuthRuleV2PromoteResponseTypeMerchantLock:
+	case AuthRuleV2PromoteResponseTypeConditionalBlock, AuthRuleV2PromoteResponseTypeVelocityLimit, AuthRuleV2PromoteResponseTypeMerchantLock, AuthRuleV2PromoteResponseTypeConditional3DSAction:
 		return true
 	}
 	return false
@@ -4036,7 +7325,13 @@ type AuthRuleV2NewParamsBody struct {
 	Parameters param.Field[interface{}] `json:"parameters"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
 	ProgramLevel param.Field[bool] `json:"program_level"`
-	// The type of Auth Rule
+	// The type of Auth Rule. Effectively determines the event stream during which it
+	// will be evaluated.
+	//
+	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 	Type param.Field[AuthRuleV2NewParamsBodyType] `json:"type"`
 }
 
@@ -4061,7 +7356,13 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokens struct {
 	Name param.Field[string] `json:"name"`
 	// Parameters for the Auth Rule
 	Parameters param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersUnion] `json:"parameters"`
-	// The type of Auth Rule
+	// The type of Auth Rule. Effectively determines the event stream during which it
+	// will be evaluated.
+	//
+	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 	Type param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensType] `json:"type"`
 }
 
@@ -4074,8 +7375,10 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokens) implementsAut
 
 // Parameters for the Auth Rule
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters struct {
-	Conditions param.Field[interface{}] `json:"conditions"`
-	Filters    param.Field[interface{}] `json:"filters"`
+	// The action to take if the conditions are met.
+	Action     param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersAction] `json:"action"`
+	Conditions param.Field[interface{}]                                                               `json:"conditions"`
+	Filters    param.Field[interface{}]                                                               `json:"filters"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -4102,6 +7405,7 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters) imp
 //
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersMerchantLockParameters],
+// [AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParameters],
 // [AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters].
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersUnion interface {
 	implementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersUnion()
@@ -4141,6 +7445,165 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersMerch
 	return apijson.MarshalRoot(r)
 }
 
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersAction]      `json:"action,required"`
+	Conditions param.Field[[]AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DsActionParametersCondition] `json:"conditions,required"`
+}
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParameters) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParameters) implementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersAction string
+
+const (
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersActionDecline   AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersAction = "DECLINE"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersActionChallenge AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersActionDecline, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DsActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authentication. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	Attribute param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttribute] `json:"attribute"`
+	// The operation to apply to the attribute
+	Operation param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperation] `json:"operation"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsValueUnion] `json:"value"`
+}
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DsActionParametersCondition) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authentication. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttribute string
+
+const (
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttributeMcc               AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttribute = "MCC"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttributeCountry           AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttributeCurrency          AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttributeMerchantID        AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttributeDescriptor        AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttributeTransactionAmount AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttributeRiskScore         AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttributeMessageCategory   AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+)
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttributeRiskScore, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsAttributeMessageCategory:
+		return true
+	}
+	return false
+}
+
+// The operation to apply to the attribute
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperation string
+
+const (
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperationIsOneOf       AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperationIsNotOneOf    AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperationMatches       AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperation = "MATCHES"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperationDoesNotMatch  AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperationIsGreaterThan AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperationIsLessThan    AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+)
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperation) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperationIsOneOf, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperationIsNotOneOf, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperationMatches, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperationDoesNotMatch, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperationIsGreaterThan, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsOperationIsLessThan:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Satisfied by [shared.UnionString], [shared.UnionInt],
+// [AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsValueListOfStrings].
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsValueUnion interface {
+	ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DsActionParametersConditionsValueUnion()
+}
+
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsValueListOfStrings []string
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DSActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditional3DsActionParametersConditionsValueUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersAction string
+
+const (
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersActionDecline   AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersAction = "DECLINE"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersActionChallenge AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersActionDecline, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersScope string
 
 const (
@@ -4156,18 +7619,25 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersScope
 	return false
 }
 
-// The type of Auth Rule
+// The type of Auth Rule. Effectively determines the event stream during which it
+// will be evaluated.
+//
+// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensType string
 
 const (
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeConditionalBlock AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensType = "CONDITIONAL_BLOCK"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeVelocityLimit    AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensType = "VELOCITY_LIMIT"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeMerchantLock     AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensType = "MERCHANT_LOCK"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeConditionalBlock     AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensType = "CONDITIONAL_BLOCK"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeVelocityLimit        AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensType = "VELOCITY_LIMIT"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeMerchantLock         AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensType = "MERCHANT_LOCK"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeConditional3DSAction AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensType = "CONDITIONAL_3DS_ACTION"
 )
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeConditionalBlock, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeVelocityLimit, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeMerchantLock:
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeConditionalBlock, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeVelocityLimit, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeMerchantLock, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensTypeConditional3DSAction:
 		return true
 	}
 	return false
@@ -4180,7 +7650,13 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokens struct {
 	Name param.Field[string] `json:"name"`
 	// Parameters for the Auth Rule
 	Parameters param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersUnion] `json:"parameters"`
-	// The type of Auth Rule
+	// The type of Auth Rule. Effectively determines the event stream during which it
+	// will be evaluated.
+	//
+	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 	Type param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensType] `json:"type"`
 }
 
@@ -4193,8 +7669,10 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokens) implementsAuthRu
 
 // Parameters for the Auth Rule
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters struct {
-	Conditions param.Field[interface{}] `json:"conditions"`
-	Filters    param.Field[interface{}] `json:"filters"`
+	// The action to take if the conditions are met.
+	Action     param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersAction] `json:"action"`
+	Conditions param.Field[interface{}]                                                            `json:"conditions"`
+	Filters    param.Field[interface{}]                                                            `json:"filters"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -4221,6 +7699,7 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters) implem
 //
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersMerchantLockParameters],
+// [AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParameters],
 // [AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters].
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersUnion interface {
 	implementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersUnion()
@@ -4260,6 +7739,165 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersMerchant
 	return apijson.MarshalRoot(r)
 }
 
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersAction]      `json:"action,required"`
+	Conditions param.Field[[]AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DsActionParametersCondition] `json:"conditions,required"`
+}
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParameters) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParameters) implementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersAction string
+
+const (
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersActionDecline   AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersAction = "DECLINE"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersActionChallenge AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersActionDecline, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DsActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authentication. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	Attribute param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttribute] `json:"attribute"`
+	// The operation to apply to the attribute
+	Operation param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperation] `json:"operation"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsValueUnion] `json:"value"`
+}
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DsActionParametersCondition) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authentication. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttribute string
+
+const (
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttributeMcc               AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttribute = "MCC"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttributeCountry           AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttributeCurrency          AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttributeMerchantID        AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttributeDescriptor        AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttributeTransactionAmount AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttributeRiskScore         AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttributeMessageCategory   AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+)
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttributeRiskScore, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsAttributeMessageCategory:
+		return true
+	}
+	return false
+}
+
+// The operation to apply to the attribute
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperation string
+
+const (
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperationIsOneOf       AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperationIsNotOneOf    AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperationMatches       AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperation = "MATCHES"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperationDoesNotMatch  AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperationIsGreaterThan AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperationIsLessThan    AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+)
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperation) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperationIsOneOf, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperationIsNotOneOf, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperationMatches, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperationDoesNotMatch, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperationIsGreaterThan, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsOperationIsLessThan:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Satisfied by [shared.UnionString], [shared.UnionInt],
+// [AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsValueListOfStrings].
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsValueUnion interface {
+	ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DsActionParametersConditionsValueUnion()
+}
+
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsValueListOfStrings []string
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DSActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional3DsActionParametersConditionsValueUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersAction string
+
+const (
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersActionDecline   AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersAction = "DECLINE"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersActionChallenge AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersActionDecline, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersScope string
 
 const (
@@ -4275,18 +7913,25 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersScope) I
 	return false
 }
 
-// The type of Auth Rule
+// The type of Auth Rule. Effectively determines the event stream during which it
+// will be evaluated.
+//
+// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensType string
 
 const (
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeConditionalBlock AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensType = "CONDITIONAL_BLOCK"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeVelocityLimit    AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensType = "VELOCITY_LIMIT"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeMerchantLock     AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensType = "MERCHANT_LOCK"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeConditionalBlock     AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensType = "CONDITIONAL_BLOCK"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeVelocityLimit        AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensType = "VELOCITY_LIMIT"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeMerchantLock         AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensType = "MERCHANT_LOCK"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeConditional3DSAction AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensType = "CONDITIONAL_3DS_ACTION"
 )
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeConditionalBlock, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeVelocityLimit, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeMerchantLock:
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeConditionalBlock, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeVelocityLimit, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeMerchantLock, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensTypeConditional3DSAction:
 		return true
 	}
 	return false
@@ -4301,7 +7946,13 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevel struct {
 	Name param.Field[string] `json:"name"`
 	// Parameters for the Auth Rule
 	Parameters param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersUnion] `json:"parameters"`
-	// The type of Auth Rule
+	// The type of Auth Rule. Effectively determines the event stream during which it
+	// will be evaluated.
+	//
+	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 	Type param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelType] `json:"type"`
 }
 
@@ -4314,8 +7965,10 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevel) implementsAuth
 
 // Parameters for the Auth Rule
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters struct {
-	Conditions param.Field[interface{}] `json:"conditions"`
-	Filters    param.Field[interface{}] `json:"filters"`
+	// The action to take if the conditions are met.
+	Action     param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersAction] `json:"action"`
+	Conditions param.Field[interface{}]                                                              `json:"conditions"`
+	Filters    param.Field[interface{}]                                                              `json:"filters"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -4342,6 +7995,7 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters) impl
 //
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersMerchantLockParameters],
+// [AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParameters],
 // [AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters].
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersUnion interface {
 	implementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersUnion()
@@ -4381,6 +8035,165 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersMercha
 	return apijson.MarshalRoot(r)
 }
 
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersAction]      `json:"action,required"`
+	Conditions param.Field[[]AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DsActionParametersCondition] `json:"conditions,required"`
+}
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParameters) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParameters) implementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersAction string
+
+const (
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersActionDecline   AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersAction = "DECLINE"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersActionChallenge AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersActionDecline, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DsActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authentication. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	Attribute param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttribute] `json:"attribute"`
+	// The operation to apply to the attribute
+	Operation param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperation] `json:"operation"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsValueUnion] `json:"value"`
+}
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DsActionParametersCondition) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authentication. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttribute string
+
+const (
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttributeMcc               AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttribute = "MCC"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttributeCountry           AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttributeCurrency          AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttributeMerchantID        AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttributeDescriptor        AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttributeTransactionAmount AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttributeRiskScore         AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttributeMessageCategory   AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+)
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttributeRiskScore, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsAttributeMessageCategory:
+		return true
+	}
+	return false
+}
+
+// The operation to apply to the attribute
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperation string
+
+const (
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperationIsOneOf       AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperationIsNotOneOf    AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperationMatches       AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperation = "MATCHES"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperationDoesNotMatch  AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperationIsGreaterThan AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperationIsLessThan    AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+)
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperation) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperationIsOneOf, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperationIsNotOneOf, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperationMatches, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperationDoesNotMatch, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperationIsGreaterThan, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsOperationIsLessThan:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Satisfied by [shared.UnionString], [shared.UnionInt],
+// [AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsValueListOfStrings].
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsValueUnion interface {
+	ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DsActionParametersConditionsValueUnion()
+}
+
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsValueListOfStrings []string
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DSActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditional3DsActionParametersConditionsValueUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersAction string
+
+const (
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersActionDecline   AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersAction = "DECLINE"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersActionChallenge AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersActionDecline, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersScope string
 
 const (
@@ -4396,35 +8209,49 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersScope)
 	return false
 }
 
-// The type of Auth Rule
+// The type of Auth Rule. Effectively determines the event stream during which it
+// will be evaluated.
+//
+// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelType string
 
 const (
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeConditionalBlock AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelType = "CONDITIONAL_BLOCK"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeVelocityLimit    AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelType = "VELOCITY_LIMIT"
-	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeMerchantLock     AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelType = "MERCHANT_LOCK"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeConditionalBlock     AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelType = "CONDITIONAL_BLOCK"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeVelocityLimit        AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelType = "VELOCITY_LIMIT"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeMerchantLock         AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelType = "MERCHANT_LOCK"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeConditional3DSAction AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelType = "CONDITIONAL_3DS_ACTION"
 )
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeConditionalBlock, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeVelocityLimit, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeMerchantLock:
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeConditionalBlock, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeVelocityLimit, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeMerchantLock, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelTypeConditional3DSAction:
 		return true
 	}
 	return false
 }
 
-// The type of Auth Rule
+// The type of Auth Rule. Effectively determines the event stream during which it
+// will be evaluated.
+//
+// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+// - `CONDITIONAL_3DS_ACTION`: THREE_DS_AUTHENTICATION event stream.
 type AuthRuleV2NewParamsBodyType string
 
 const (
-	AuthRuleV2NewParamsBodyTypeConditionalBlock AuthRuleV2NewParamsBodyType = "CONDITIONAL_BLOCK"
-	AuthRuleV2NewParamsBodyTypeVelocityLimit    AuthRuleV2NewParamsBodyType = "VELOCITY_LIMIT"
-	AuthRuleV2NewParamsBodyTypeMerchantLock     AuthRuleV2NewParamsBodyType = "MERCHANT_LOCK"
+	AuthRuleV2NewParamsBodyTypeConditionalBlock     AuthRuleV2NewParamsBodyType = "CONDITIONAL_BLOCK"
+	AuthRuleV2NewParamsBodyTypeVelocityLimit        AuthRuleV2NewParamsBodyType = "VELOCITY_LIMIT"
+	AuthRuleV2NewParamsBodyTypeMerchantLock         AuthRuleV2NewParamsBodyType = "MERCHANT_LOCK"
+	AuthRuleV2NewParamsBodyTypeConditional3DSAction AuthRuleV2NewParamsBodyType = "CONDITIONAL_3DS_ACTION"
 )
 
 func (r AuthRuleV2NewParamsBodyType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyTypeConditionalBlock, AuthRuleV2NewParamsBodyTypeVelocityLimit, AuthRuleV2NewParamsBodyTypeMerchantLock:
+	case AuthRuleV2NewParamsBodyTypeConditionalBlock, AuthRuleV2NewParamsBodyTypeVelocityLimit, AuthRuleV2NewParamsBodyTypeMerchantLock, AuthRuleV2NewParamsBodyTypeConditional3DSAction:
 		return true
 	}
 	return false
@@ -4603,16 +8430,18 @@ func (r AuthRuleV2UpdateParamsBodyState) IsKnown() bool {
 }
 
 type AuthRuleV2ListParams struct {
-	// Only return Authorization Rules that are bound to the provided account token.
+	// Only return Auth Rules that are bound to the provided account token.
 	AccountToken param.Field[string] `query:"account_token" format:"uuid"`
-	// Only return Authorization Rules that are bound to the provided card token.
+	// Only return Auth Rules that are bound to the provided card token.
 	CardToken param.Field[string] `query:"card_token" format:"uuid"`
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string] `query:"ending_before"`
+	// Only return Auth rules that are executed during the provided event stream.
+	EventStream param.Field[AuthRuleV2ListParamsEventStream] `query:"event_stream"`
 	// Page size (for pagination).
 	PageSize param.Field[int64] `query:"page_size"`
-	// Only return Authorization Rules that are bound to the provided scope;
+	// Only return Auth Rules that are bound to the provided scope.
 	Scope param.Field[AuthRuleV2ListParamsScope] `query:"scope"`
 	// A cursor representing an item's token after which a page of results should
 	// begin. Used to retrieve the next page of results after this item.
@@ -4627,7 +8456,23 @@ func (r AuthRuleV2ListParams) URLQuery() (v url.Values) {
 	})
 }
 
-// Only return Authorization Rules that are bound to the provided scope;
+// Only return Auth rules that are executed during the provided event stream.
+type AuthRuleV2ListParamsEventStream string
+
+const (
+	AuthRuleV2ListParamsEventStreamAuthorization         AuthRuleV2ListParamsEventStream = "AUTHORIZATION"
+	AuthRuleV2ListParamsEventStreamThreeDSAuthentication AuthRuleV2ListParamsEventStream = "THREE_DS_AUTHENTICATION"
+)
+
+func (r AuthRuleV2ListParamsEventStream) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListParamsEventStreamAuthorization, AuthRuleV2ListParamsEventStreamThreeDSAuthentication:
+		return true
+	}
+	return false
+}
+
+// Only return Auth Rules that are bound to the provided scope.
 type AuthRuleV2ListParamsScope string
 
 const (
@@ -4723,8 +8568,10 @@ func (r AuthRuleV2DraftParams) MarshalJSON() (data []byte, err error) {
 
 // Parameters for the Auth Rule
 type AuthRuleV2DraftParamsParameters struct {
-	Conditions param.Field[interface{}] `json:"conditions"`
-	Filters    param.Field[interface{}] `json:"filters"`
+	// The action to take if the conditions are met.
+	Action     param.Field[AuthRuleV2DraftParamsParametersAction] `json:"action"`
+	Conditions param.Field[interface{}]                           `json:"conditions"`
+	Filters    param.Field[interface{}]                           `json:"filters"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -4750,6 +8597,7 @@ func (r AuthRuleV2DraftParamsParameters) implementsAuthRuleV2DraftParamsParamete
 //
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [AuthRuleV2DraftParamsParametersMerchantLockParameters],
+// [AuthRuleV2DraftParamsParametersConditional3DSActionParameters],
 // [AuthRuleV2DraftParamsParameters].
 type AuthRuleV2DraftParamsParametersUnion interface {
 	implementsAuthRuleV2DraftParamsParametersUnion()
@@ -4787,6 +8635,165 @@ type AuthRuleV2DraftParamsParametersMerchantLockParametersMerchant struct {
 
 func (r AuthRuleV2DraftParamsParametersMerchantLockParametersMerchant) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
+}
+
+type AuthRuleV2DraftParamsParametersConditional3DSActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     param.Field[AuthRuleV2DraftParamsParametersConditional3DSActionParametersAction]      `json:"action,required"`
+	Conditions param.Field[[]AuthRuleV2DraftParamsParametersConditional3DsActionParametersCondition] `json:"conditions,required"`
+}
+
+func (r AuthRuleV2DraftParamsParametersConditional3DSActionParameters) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleV2DraftParamsParametersConditional3DSActionParameters) implementsAuthRuleV2DraftParamsParametersUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2DraftParamsParametersConditional3DSActionParametersAction string
+
+const (
+	AuthRuleV2DraftParamsParametersConditional3DSActionParametersActionDecline   AuthRuleV2DraftParamsParametersConditional3DSActionParametersAction = "DECLINE"
+	AuthRuleV2DraftParamsParametersConditional3DSActionParametersActionChallenge AuthRuleV2DraftParamsParametersConditional3DSActionParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2DraftParamsParametersConditional3DSActionParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2DraftParamsParametersConditional3DSActionParametersActionDecline, AuthRuleV2DraftParamsParametersConditional3DSActionParametersActionChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2DraftParamsParametersConditional3DsActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authentication. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	Attribute param.Field[AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttribute] `json:"attribute"`
+	// The operation to apply to the attribute
+	Operation param.Field[AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperation] `json:"operation"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value param.Field[AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsValueUnion] `json:"value"`
+}
+
+func (r AuthRuleV2DraftParamsParametersConditional3DsActionParametersCondition) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authentication. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+type AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttribute string
+
+const (
+	AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttributeMcc               AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttribute = "MCC"
+	AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttributeCountry           AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttribute = "COUNTRY"
+	AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttributeCurrency          AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttribute = "CURRENCY"
+	AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttributeMerchantID        AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttribute = "MERCHANT_ID"
+	AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttributeDescriptor        AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttribute = "DESCRIPTOR"
+	AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttributeTransactionAmount AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttributeRiskScore         AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
+	AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttributeMessageCategory   AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+)
+
+func (r AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttributeMcc, AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttributeCountry, AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttributeCurrency, AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttributeMerchantID, AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttributeDescriptor, AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttributeRiskScore, AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsAttributeMessageCategory:
+		return true
+	}
+	return false
+}
+
+// The operation to apply to the attribute
+type AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperation string
+
+const (
+	AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperationIsOneOf       AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperationIsNotOneOf    AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperationMatches       AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperation = "MATCHES"
+	AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperationDoesNotMatch  AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperationIsGreaterThan AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperationIsLessThan    AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+)
+
+func (r AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperation) IsKnown() bool {
+	switch r {
+	case AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperationIsOneOf, AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperationIsNotOneOf, AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperationMatches, AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperationDoesNotMatch, AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperationIsGreaterThan, AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsOperationIsLessThan:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Satisfied by [shared.UnionString], [shared.UnionInt],
+// [AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsValueListOfStrings].
+type AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsValueUnion interface {
+	ImplementsAuthRuleV2DraftParamsParametersConditional3DsActionParametersConditionsValueUnion()
+}
+
+type AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsValueListOfStrings []string
+
+func (r AuthRuleV2DraftParamsParametersConditional3DSActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2DraftParamsParametersConditional3DsActionParametersConditionsValueUnion() {
+}
+
+// The action to take if the conditions are met.
+type AuthRuleV2DraftParamsParametersAction string
+
+const (
+	AuthRuleV2DraftParamsParametersActionDecline   AuthRuleV2DraftParamsParametersAction = "DECLINE"
+	AuthRuleV2DraftParamsParametersActionChallenge AuthRuleV2DraftParamsParametersAction = "CHALLENGE"
+)
+
+func (r AuthRuleV2DraftParamsParametersAction) IsKnown() bool {
+	switch r {
+	case AuthRuleV2DraftParamsParametersActionDecline, AuthRuleV2DraftParamsParametersActionChallenge:
+		return true
+	}
+	return false
 }
 
 type AuthRuleV2DraftParamsParametersScope string
