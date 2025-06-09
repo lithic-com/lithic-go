@@ -1139,7 +1139,7 @@ func (r KYCExemptWorkflow) IsKnown() bool {
 type RequiredDocument struct {
 	// Globally unique identifier for an entity.
 	EntityToken string `json:"entity_token,required" format:"uuid"`
-	// rovides the status reasons that will be satisfied by providing one of the valid
+	// Provides the status reasons that will be satisfied by providing one of the valid
 	// documents.
 	StatusReasons []string `json:"status_reasons,required"`
 	// A list of valid documents that will satisfy the KYC requirements for the
