@@ -689,17 +689,20 @@ func (r VelocityLimitParamsScope) IsKnown() bool {
 //     Eastern Time.
 //   - `MONTH`: Velocity over the current month since 00:00 / 12 AM on the first of
 //     the month in Eastern Time.
+//   - `YEAR`: Velocity over the current year since 00:00 / 12 AM on January 1st in
+//     Eastern Time.
 type VelocityLimitParamsPeriodWindow string
 
 const (
 	VelocityLimitParamsPeriodWindowDay   VelocityLimitParamsPeriodWindow = "DAY"
 	VelocityLimitParamsPeriodWindowWeek  VelocityLimitParamsPeriodWindow = "WEEK"
 	VelocityLimitParamsPeriodWindowMonth VelocityLimitParamsPeriodWindow = "MONTH"
+	VelocityLimitParamsPeriodWindowYear  VelocityLimitParamsPeriodWindow = "YEAR"
 )
 
 func (r VelocityLimitParamsPeriodWindow) IsKnown() bool {
 	switch r {
-	case VelocityLimitParamsPeriodWindowDay, VelocityLimitParamsPeriodWindowWeek, VelocityLimitParamsPeriodWindowMonth:
+	case VelocityLimitParamsPeriodWindowDay, VelocityLimitParamsPeriodWindowWeek, VelocityLimitParamsPeriodWindowMonth, VelocityLimitParamsPeriodWindowYear:
 		return true
 	}
 	return false

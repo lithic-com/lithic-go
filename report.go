@@ -65,7 +65,9 @@ type SettlementDetail struct {
 	OtherFeesGrossAmount int64 `json:"other_fees_gross_amount,required"`
 	// Date of when the report was first generated.
 	ReportDate string `json:"report_date,required"`
-	// Date of when money movement is triggered for the transaction.
+	// Date of when money movement is triggered for the transaction. One exception
+	// applies - for Mastercard dual message settlement, this is the settlement
+	// advisement date, which is distinct from the date of money movement.
 	SettlementDate string `json:"settlement_date,required"`
 	// Globally unique identifier denoting the associated Transaction object.
 	TransactionToken string `json:"transaction_token,required" format:"uuid"`

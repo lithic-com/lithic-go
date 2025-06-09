@@ -107,6 +107,19 @@ func (r *FinancialAccountService) ListAutoPaging(ctx context.Context, query Fina
 	return pagination.NewSinglePageAutoPager(r.List(ctx, query, opts...))
 }
 
+// Register account number
+func (r *FinancialAccountService) RegisterAccountNumber(ctx context.Context, financialAccountToken string, body FinancialAccountRegisterAccountNumberParams, opts ...option.RequestOption) (err error) {
+	opts = append(r.Options[:], opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	if financialAccountToken == "" {
+		err = errors.New("missing required financial_account_token parameter")
+		return
+	}
+	path := fmt.Sprintf("v1/financial_accounts/%s/register_account_number", financialAccountToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
+	return
+}
+
 // Update financial account status
 func (r *FinancialAccountService) UpdateStatus(ctx context.Context, financialAccountToken string, body FinancialAccountUpdateStatusParams, opts ...option.RequestOption) (res *FinancialAccount, err error) {
 	opts = append(r.Options[:], opts...)
@@ -266,11 +279,12 @@ const (
 	FinancialAccountTypeChargedOffPrincipal FinancialAccountType = "CHARGED_OFF_PRINCIPAL"
 	FinancialAccountTypeSecurity            FinancialAccountType = "SECURITY"
 	FinancialAccountTypeProgramReceivables  FinancialAccountType = "PROGRAM_RECEIVABLES"
+	FinancialAccountTypeCollection          FinancialAccountType = "COLLECTION"
 )
 
 func (r FinancialAccountType) IsKnown() bool {
 	switch r {
-	case FinancialAccountTypeIssuing, FinancialAccountTypeReserve, FinancialAccountTypeOperating, FinancialAccountTypeChargedOffFees, FinancialAccountTypeChargedOffInterest, FinancialAccountTypeChargedOffPrincipal, FinancialAccountTypeSecurity, FinancialAccountTypeProgramReceivables:
+	case FinancialAccountTypeIssuing, FinancialAccountTypeReserve, FinancialAccountTypeOperating, FinancialAccountTypeChargedOffFees, FinancialAccountTypeChargedOffInterest, FinancialAccountTypeChargedOffPrincipal, FinancialAccountTypeSecurity, FinancialAccountTypeProgramReceivables, FinancialAccountTypeCollection:
 		return true
 	}
 	return false
@@ -635,6 +649,14 @@ func (r FinancialAccountListParamsType) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+type FinancialAccountRegisterAccountNumberParams struct {
+	AccountNumber param.Field[string] `json:"account_number,required"`
+}
+
+func (r FinancialAccountRegisterAccountNumberParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }
 
 type FinancialAccountUpdateStatusParams struct {
