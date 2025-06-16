@@ -185,11 +185,12 @@ const (
 	VerificationMethodPlaid              VerificationMethod = "PLAID"
 	VerificationMethodPrenote            VerificationMethod = "PRENOTE"
 	VerificationMethodExternallyVerified VerificationMethod = "EXTERNALLY_VERIFIED"
+	VerificationMethodUnverified         VerificationMethod = "UNVERIFIED"
 )
 
 func (r VerificationMethod) IsKnown() bool {
 	switch r {
-	case VerificationMethodManual, VerificationMethodMicroDeposit, VerificationMethodPlaid, VerificationMethodPrenote, VerificationMethodExternallyVerified:
+	case VerificationMethodManual, VerificationMethodMicroDeposit, VerificationMethodPlaid, VerificationMethodPrenote, VerificationMethodExternallyVerified, VerificationMethodUnverified:
 		return true
 	}
 	return false
