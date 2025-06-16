@@ -121,11 +121,11 @@ type Account struct {
 	//   - `PAUSED` - Account will not be able to transact or create new cards. It can be
 	//     set back to `ACTIVE`.
 	//   - `CLOSED` - Account will not be able to transact or create new cards. `CLOSED`
-	//     accounts are also unable to be transitioned to `ACTIVE` or `PAUSED` states.
-	//     `CLOSED` accounts result from failing to pass KYB/KYC or Lithic closing for
-	//     risk/compliance reasons. Please contact
-	//     [support@lithic.com](mailto:support@lithic.com) if you believe this was in
-	//     error.
+	//     accounts are unable to be transitioned to `ACTIVE` or `PAUSED` states.
+	//     Accounts can be manually set to `CLOSED`, or this can be done by Lithic due to
+	//     failure to pass KYB/KYC or for risk/compliance reasons. Please contact
+	//     [support@lithic.com](mailto:support@lithic.com) if you believe this was done
+	//     by mistake.
 	State         AccountState         `json:"state,required"`
 	AccountHolder AccountAccountHolder `json:"account_holder"`
 	// List of identifiers for the Auth Rule(s) that are applied on the account. This
@@ -203,11 +203,11 @@ func (r accountSpendLimitJSON) RawJSON() string {
 //   - `PAUSED` - Account will not be able to transact or create new cards. It can be
 //     set back to `ACTIVE`.
 //   - `CLOSED` - Account will not be able to transact or create new cards. `CLOSED`
-//     accounts are also unable to be transitioned to `ACTIVE` or `PAUSED` states.
-//     `CLOSED` accounts result from failing to pass KYB/KYC or Lithic closing for
-//     risk/compliance reasons. Please contact
-//     [support@lithic.com](mailto:support@lithic.com) if you believe this was in
-//     error.
+//     accounts are unable to be transitioned to `ACTIVE` or `PAUSED` states.
+//     Accounts can be manually set to `CLOSED`, or this can be done by Lithic due to
+//     failure to pass KYB/KYC or for risk/compliance reasons. Please contact
+//     [support@lithic.com](mailto:support@lithic.com) if you believe this was done
+//     by mistake.
 type AccountState string
 
 const (
@@ -447,11 +447,12 @@ type AccountUpdateParamsState string
 const (
 	AccountUpdateParamsStateActive AccountUpdateParamsState = "ACTIVE"
 	AccountUpdateParamsStatePaused AccountUpdateParamsState = "PAUSED"
+	AccountUpdateParamsStateClosed AccountUpdateParamsState = "CLOSED"
 )
 
 func (r AccountUpdateParamsState) IsKnown() bool {
 	switch r {
-	case AccountUpdateParamsStateActive, AccountUpdateParamsStatePaused:
+	case AccountUpdateParamsStateActive, AccountUpdateParamsStatePaused, AccountUpdateParamsStateClosed:
 		return true
 	}
 	return false
