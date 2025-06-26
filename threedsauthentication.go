@@ -60,9 +60,9 @@ func (r *ThreeDSAuthenticationService) Simulate(ctx context.Context, body ThreeD
 }
 
 // Endpoint for simulating entering OTP into 3DS Challenge UI. A call to
-// /v1/three_ds_authentication/simulate that resulted in triggered SMS-OTP
-// challenge must precede. Only a single attempt is supported; upon entering OTP,
-// the challenge is either approved or declined.
+// [/v1/three_ds_authentication/simulate](https://docs.lithic.com/reference/postsimulateauthentication)
+// that resulted in triggered SMS-OTP challenge must precede. Only a single attempt
+// is supported; upon entering OTP, the challenge is either approved or declined.
 func (r *ThreeDSAuthenticationService) SimulateOtpEntry(ctx context.Context, body ThreeDSAuthenticationSimulateOtpEntryParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
@@ -71,8 +71,10 @@ func (r *ThreeDSAuthenticationService) SimulateOtpEntry(ctx context.Context, bod
 	return
 }
 
+// Represents a 3DS authentication
 type ThreeDSAuthenticationGetResponse struct {
-	// Globally unique identifier for the 3DS authentication.
+	// Globally unique identifier for the 3DS authentication. Permitted values:
+	// 36-digit version 4 UUID (including hyphens).
 	Token string `json:"token,required" format:"uuid"`
 	// Type of account/card that is being used for the transaction. Maps to EMV 3DS
 	// field `acctType`.
@@ -83,13 +85,15 @@ type ThreeDSAuthenticationGetResponse struct {
 	// matches Lithic's record of the card's expiration date.
 	CardExpiryCheck ThreeDSAuthenticationGetResponseCardExpiryCheck `json:"card_expiry_check,required"`
 	// Globally unique identifier for the card on which the 3DS authentication has
-	// occurred.
+	// occurred. Permitted values: 36-digit version 4 UUID (including hyphens).
 	CardToken string `json:"card_token,required" format:"uuid"`
 	// Object containing data about the cardholder provided during the transaction.
 	Cardholder ThreeDSAuthenticationGetResponseCardholder `json:"cardholder,required"`
-	// Channel in which the authentication occurs. Maps to EMV 3DS field deviceChannel.
+	// Channel in which the authentication occurs. Maps to EMV 3DS field
+	// `deviceChannel`.
 	Channel ThreeDSAuthenticationGetResponseChannel `json:"channel,required"`
-	// Date and time when the authentication was created in Lithic's system.
+	// Date and time when the authentication was created in Lithic's system. Permitted
+	// values: Date string in the ISO 8601 format yyyy-MM-dd'T'hh:mm:ssZ.
 	Created time.Time `json:"created,required" format:"date-time"`
 	// Object containing data about the merchant involved in the e-commerce
 	// transaction.
@@ -115,25 +119,30 @@ type ThreeDSAuthenticationGetResponse struct {
 	AdditionalData ThreeDSAuthenticationGetResponseAdditionalData `json:"additional_data,nullable"`
 	// Object containing data about the app used in the e-commerce transaction. Present
 	// if the channel is 'APP_BASED'.
-	App ThreeDSAuthenticationGetResponseApp `json:"app"`
+	App ThreeDSAuthenticationGetResponseApp `json:"app,nullable"`
 	// Type of authentication request - i.e., the type of transaction or interaction is
 	// causing the merchant to request an authentication. Maps to EMV 3DS field
-	// threeDSRequestorAuthenticationInd.
+	// `threeDSRequestorAuthenticationInd`.
 	AuthenticationRequestType ThreeDSAuthenticationGetResponseAuthenticationRequestType `json:"authentication_request_type,nullable"`
 	// Object containing data about the browser used in the e-commerce transaction.
 	// Present if the channel is 'BROWSER'.
-	Browser ThreeDSAuthenticationGetResponseBrowser `json:"browser"`
-	// Metadata about the challenge method and delivery.
+	Browser ThreeDSAuthenticationGetResponseBrowser `json:"browser,nullable"`
+	// Metadata about the challenge method and delivery. Only present when a challenge
+	// is triggered.
 	ChallengeMetadata ThreeDSAuthenticationGetResponseChallengeMetadata `json:"challenge_metadata,nullable"`
-	// Entity that orchestrates the challenge.
+	// Entity that orchestrates the challenge. This won't be set for authentications
+	// for which a decision has not yet been made (e.g. in-flight customer decisioning
+	// request).
 	ChallengeOrchestratedBy ThreeDSAuthenticationGetResponseChallengeOrchestratedBy `json:"challenge_orchestrated_by,nullable"`
-	// Entity that made the authentication decision.
+	// Entity that made the authentication decision. This won't be set for
+	// authentications for which a decision has not yet been made (e.g. in-flight
+	// customer decisioning request).
 	DecisionMadeBy ThreeDSAuthenticationGetResponseDecisionMadeBy `json:"decision_made_by,nullable"`
-	// Type of 3DS Requestor Initiated (3RI) request i.e., a 3DS authentication that
+	// Type of 3DS Requestor Initiated (3RI) request — i.e., a 3DS authentication that
 	// takes place at the initiation of the merchant rather than the cardholder. The
 	// most common example of this is where a merchant is authenticating before billing
 	// for a recurring transaction such as a pay TV subscription or a utility bill.
-	// Maps to EMV 3DS field threeRIInd.
+	// Maps to EMV 3DS field `threeRIInd`.
 	ThreeRiRequestType ThreeDSAuthenticationGetResponseThreeRiRequestType `json:"three_ri_request_type,nullable"`
 	// Object containing data about the e-commerce transaction for which the merchant
 	// is requesting authentication.
@@ -235,23 +244,23 @@ type ThreeDSAuthenticationGetResponseCardholder struct {
 	// Indicates whether the shipping address and billing address provided by the
 	// cardholder are the same. This value - and assessment of whether the addresses
 	// match - is provided directly in the 3DS request and is not determined by Lithic.
-	// Maps to EMV 3DS field addrMatch.
+	// Maps to EMV 3DS field `addrMatch`.
 	AddressMatch bool `json:"address_match,nullable"`
 	// Object containing data on the billing address provided during the transaction.
 	BillingAddress ThreeDSAuthenticationGetResponseCardholderBillingAddress `json:"billing_address"`
 	// Email address that is either provided by the cardholder or is on file with the
-	// merchant in a 3RI request. Maps to EMV 3DS field email.
+	// merchant in a 3RI request. Maps to EMV 3DS field `email`.
 	Email string `json:"email,nullable"`
-	// Name of the cardholder. Maps to EMV 3DS field cardholderName.
+	// Name of the cardholder. Maps to EMV 3DS field `cardholderName`.
 	Name string `json:"name,nullable"`
 	// Home phone number provided by the cardholder. Maps to EMV 3DS fields
-	// homePhone.cc and homePhone.subscriber.
+	// `homePhone.cc` and `homePhone.subscriber`.
 	PhoneNumberHome string `json:"phone_number_home,nullable"`
 	// Mobile/cell phone number provided by the cardholder. Maps to EMV 3DS fields
-	// mobilePhone.cc and mobilePhone.subscriber.
+	// `mobilePhone.cc` and `mobilePhone.subscriber`.
 	PhoneNumberMobile string `json:"phone_number_mobile,nullable"`
 	// Work phone number provided by the cardholder. Maps to EMV 3DS fields
-	// workPhone.cc and workPhone.subscriber.
+	// `workPhone.cc` and `workPhone.subscriber`.
 	PhoneNumberWork string `json:"phone_number_work,nullable"`
 	// Object containing data on the shipping address provided during the transaction.
 	ShippingAddress ThreeDSAuthenticationGetResponseCardholderShippingAddress `json:"shipping_address"`
@@ -361,7 +370,8 @@ func (r threeDSAuthenticationGetResponseCardholderShippingAddressJSON) RawJSON()
 	return r.raw
 }
 
-// Channel in which the authentication occurs. Maps to EMV 3DS field deviceChannel.
+// Channel in which the authentication occurs. Maps to EMV 3DS field
+// `deviceChannel`.
 type ThreeDSAuthenticationGetResponseChannel string
 
 const (
@@ -382,15 +392,16 @@ func (r ThreeDSAuthenticationGetResponseChannel) IsKnown() bool {
 // transaction.
 type ThreeDSAuthenticationGetResponseMerchant struct {
 	// Merchant identifier as assigned by the acquirer. Maps to EMV 3DS field
-	// acquirerMerchantId.
+	// `acquirerMerchantId`.
 	ID string `json:"id,required"`
 	// Country code of the merchant requesting 3DS authentication. Maps to EMV 3DS
-	// field merchantCountryCode.
+	// field `merchantCountryCode`. Permitted values: ISO 3166-1 alpha-3 country code
+	// (e.g., USA).
 	Country string `json:"country,required"`
 	// Merchant category code assigned to the merchant that describes its business
-	// activity type. Maps to EMV 3DS field mcc.
+	// activity type. Maps to EMV 3DS field `mcc`.
 	Mcc string `json:"mcc,required"`
-	// Name of the merchant. Maps to EMV 3DS field merchantName.
+	// Name of the merchant. Maps to EMV 3DS field `merchantName`.
 	Name string `json:"name,required"`
 	// Object containing additional data indicating additional risk factors related to
 	// the e-commerce transaction.
@@ -422,34 +433,36 @@ func (r threeDSAuthenticationGetResponseMerchantJSON) RawJSON() string {
 // the e-commerce transaction.
 type ThreeDSAuthenticationGetResponseMerchantRiskIndicator struct {
 	// In transactions with electronic delivery, email address to which merchandise is
-	// delivered. Maps to EMV 3DS field deliveryEmailAddress.
+	// delivered. Maps to EMV 3DS field `deliveryEmailAddress`.
 	DeliveryEmailAddress string `json:"delivery_email_address,nullable"`
 	// The delivery time frame for the merchandise. Maps to EMV 3DS field
-	// deliveryTimeframe.
+	// `deliveryTimeframe`.
 	DeliveryTimeFrame ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrame `json:"delivery_time_frame,nullable"`
 	// In prepaid or gift card purchase transactions, purchase amount total in major
 	// units (e.g., a purchase of USD $205.10 would be 205). Maps to EMV 3DS field
-	// giftCardAmount.
+	// `giftCardAmount`.
 	GiftCardAmount int64 `json:"gift_card_amount,nullable"`
 	// In prepaid or gift card purchase transactions, count of individual prepaid or
-	// gift cards/codes purchased. Maps to EMV 3DS field giftCardCount.
+	// gift cards/codes purchased. Maps to EMV 3DS field `giftCardCount`.
 	GiftCardCount int64 `json:"gift_card_count,nullable"`
 	// In prepaid or gift card purchase transactions, currency code of the gift card.
-	// Maps to EMV 3DS field giftCardCurr.
+	// Maps to EMV 3DS field `giftCardCurr`. Permitted values: ISO 4217 three-character
+	// currency code (e.g., USD).
 	GiftCardCurrency string `json:"gift_card_currency,nullable"`
 	// Indicates whether the purchase is for merchandise that is available now or at a
-	// future date. Maps to EMV 3DS field preOrderPurchaseInd.
+	// future date. Maps to EMV 3DS field `preOrderPurchaseInd`.
 	OrderAvailability ThreeDSAuthenticationGetResponseMerchantRiskIndicatorOrderAvailability `json:"order_availability,nullable"`
 	// In pre-order purchase transactions, the expected date that the merchandise will
-	// be available. Maps to EMV 3DS field preOrderDate.
+	// be available. Maps to EMV 3DS field `preOrderDate`. Permitted values: Date
+	// string in the ISO 8601 format yyyy-MM-dd'T'hh:mm:ssZ
 	PreOrderAvailableDate time.Time `json:"pre_order_available_date,nullable" format:"date-time"`
 	// Indicates whether the cardholder is reordering previously purchased merchandise.
-	// Maps to EMV 3DS field reorderItemsInd.
+	// Maps to EMV 3DS field `reorderItemsInd`.
 	ReorderItems ThreeDSAuthenticationGetResponseMerchantRiskIndicatorReorderItems `json:"reorder_items,nullable"`
 	// Shipping method that the cardholder chose for the transaction. If purchase
 	// includes one or more item, this indicator is used for the physical goods; if the
 	// purchase only includes digital goods, this indicator is used to describe the
-	// most expensive item purchased. Maps to EMV 3DS field shipIndicator.
+	// most expensive item purchased. Maps to EMV 3DS field `shipIndicator`.
 	ShippingMethod ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod `json:"shipping_method,nullable"`
 	JSON           threeDSAuthenticationGetResponseMerchantRiskIndicatorJSON           `json:"-"`
 }
@@ -479,7 +492,7 @@ func (r threeDSAuthenticationGetResponseMerchantRiskIndicatorJSON) RawJSON() str
 }
 
 // The delivery time frame for the merchandise. Maps to EMV 3DS field
-// deliveryTimeframe.
+// `deliveryTimeframe`.
 type ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrame string
 
 const (
@@ -498,7 +511,7 @@ func (r ThreeDSAuthenticationGetResponseMerchantRiskIndicatorDeliveryTimeFrame) 
 }
 
 // Indicates whether the purchase is for merchandise that is available now or at a
-// future date. Maps to EMV 3DS field preOrderPurchaseInd.
+// future date. Maps to EMV 3DS field `preOrderPurchaseInd`.
 type ThreeDSAuthenticationGetResponseMerchantRiskIndicatorOrderAvailability string
 
 const (
@@ -515,7 +528,7 @@ func (r ThreeDSAuthenticationGetResponseMerchantRiskIndicatorOrderAvailability) 
 }
 
 // Indicates whether the cardholder is reordering previously purchased merchandise.
-// Maps to EMV 3DS field reorderItemsInd.
+// Maps to EMV 3DS field `reorderItemsInd`.
 type ThreeDSAuthenticationGetResponseMerchantRiskIndicatorReorderItems string
 
 const (
@@ -534,7 +547,7 @@ func (r ThreeDSAuthenticationGetResponseMerchantRiskIndicatorReorderItems) IsKno
 // Shipping method that the cardholder chose for the transaction. If purchase
 // includes one or more item, this indicator is used for the physical goods; if the
 // purchase only includes digital goods, this indicator is used to describe the
-// most expensive item purchased. Maps to EMV 3DS field shipIndicator.
+// most expensive item purchased. Maps to EMV 3DS field `shipIndicator`.
 type ThreeDSAuthenticationGetResponseMerchantRiskIndicatorShippingMethod string
 
 const (
@@ -613,7 +626,8 @@ type ThreeDSAuthenticationGetResponseAdditionalData struct {
 	// authentication request to be low risk or not.
 	NetworkDecision ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecision `json:"network_decision,nullable"`
 	// Mastercard only: Assessment by the network of the authentication risk level,
-	// with a higher value indicating a higher amount of risk.
+	// with a higher value indicating a higher amount of risk. Permitted values:
+	// Integer between 0-950, in increments of 50.
 	NetworkRiskScore int64                                              `json:"network_risk_score,nullable"`
 	JSON             threeDSAuthenticationGetResponseAdditionalDataJSON `json:"-"`
 }
@@ -656,10 +670,10 @@ func (r ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecision) IsKnown()
 // if the channel is 'APP_BASED'.
 type ThreeDSAuthenticationGetResponseApp struct {
 	// Device information gathered from the cardholder's device - JSON name/value pairs
-	// that is Base64url encoded. Maps to EMV 3DS field deviceInfo.
+	// that is Base64url encoded. Maps to EMV 3DS field `deviceInfo`.
 	DeviceInfo string `json:"device_info,nullable"`
 	// External IP address used by the app generating the 3DS authentication request.
-	// Maps to EMV 3DS field appIp.
+	// Maps to EMV 3DS field `appIp`.
 	Ip   string                                  `json:"ip"`
 	JSON threeDSAuthenticationGetResponseAppJSON `json:"-"`
 }
@@ -683,7 +697,7 @@ func (r threeDSAuthenticationGetResponseAppJSON) RawJSON() string {
 
 // Type of authentication request - i.e., the type of transaction or interaction is
 // causing the merchant to request an authentication. Maps to EMV 3DS field
-// threeDSRequestorAuthenticationInd.
+// `threeDSRequestorAuthenticationInd`.
 type ThreeDSAuthenticationGetResponseAuthenticationRequestType string
 
 const (
@@ -710,23 +724,26 @@ func (r ThreeDSAuthenticationGetResponseAuthenticationRequestType) IsKnown() boo
 // Object containing data about the browser used in the e-commerce transaction.
 // Present if the channel is 'BROWSER'.
 type ThreeDSAuthenticationGetResponseBrowser struct {
+	// Content of the HTTP accept headers as sent from the cardholder's browser to the
+	// 3DS requestor (e.g., merchant or digital wallet).
+	AcceptHeader string `json:"accept_header,nullable"`
 	// IP address of the browser as returned by the HTTP headers to the 3DS requestor
-	// (e.g., merchant or digital wallet). Maps to EMV 3DS field browserIP.
+	// (e.g., merchant or digital wallet). Maps to EMV 3DS field `browserIP`.
 	Ip string `json:"ip,nullable"`
 	// Indicates whether the cardholder's browser has the ability to execute Java. Maps
-	// to EMV 3DS field browserJavaEnabled.
+	// to EMV 3DS field `browserJavaEnabled`.
 	JavaEnabled bool `json:"java_enabled,nullable"`
 	// Indicates whether the cardholder's browser has the ability to execute
-	// JavaScript. Maps to EMV 3DS field browserJavascriptEnabled.
+	// JavaScript. Maps to EMV 3DS field `browserJavascriptEnabled`.
 	JavascriptEnabled bool `json:"javascript_enabled,nullable"`
 	// Language of the cardholder's browser as defined in IETF BCP47. Maps to EMV 3DS
-	// field browserLanguage.
+	// field `browserLanguage`.
 	Language string `json:"language,nullable"`
 	// Time zone of the cardholder's browser offset in minutes between UTC and the
 	// cardholder browser's local time. The offset is positive if the local time is
-	// behind UTC and negative if it is ahead. Maps to EMV 3DS field browserTz.
+	// behind UTC and negative if it is ahead. Maps to EMV 3DS field `browserTz`.
 	TimeZone string `json:"time_zone,nullable"`
-	// Content of the HTTP user-agent header. Maps to EMV 3DS field browserUserAgent.
+	// Content of the HTTP user-agent header. Maps to EMV 3DS field `browserUserAgent`.
 	UserAgent string                                      `json:"user_agent,nullable"`
 	JSON      threeDSAuthenticationGetResponseBrowserJSON `json:"-"`
 }
@@ -734,6 +751,7 @@ type ThreeDSAuthenticationGetResponseBrowser struct {
 // threeDSAuthenticationGetResponseBrowserJSON contains the JSON metadata for the
 // struct [ThreeDSAuthenticationGetResponseBrowser]
 type threeDSAuthenticationGetResponseBrowserJSON struct {
+	AcceptHeader      apijson.Field
 	Ip                apijson.Field
 	JavaEnabled       apijson.Field
 	JavascriptEnabled apijson.Field
@@ -752,7 +770,8 @@ func (r threeDSAuthenticationGetResponseBrowserJSON) RawJSON() string {
 	return r.raw
 }
 
-// Metadata about the challenge method and delivery.
+// Metadata about the challenge method and delivery. Only present when a challenge
+// is triggered.
 type ThreeDSAuthenticationGetResponseChallengeMetadata struct {
 	// The type of challenge method used for authentication.
 	MethodType ThreeDSAuthenticationGetResponseChallengeMetadataMethodType `json:"method_type,required"`
@@ -794,7 +813,9 @@ func (r ThreeDSAuthenticationGetResponseChallengeMetadataMethodType) IsKnown() b
 	return false
 }
 
-// Entity that orchestrates the challenge.
+// Entity that orchestrates the challenge. This won't be set for authentications
+// for which a decision has not yet been made (e.g. in-flight customer decisioning
+// request).
 type ThreeDSAuthenticationGetResponseChallengeOrchestratedBy string
 
 const (
@@ -811,30 +832,33 @@ func (r ThreeDSAuthenticationGetResponseChallengeOrchestratedBy) IsKnown() bool 
 	return false
 }
 
-// Entity that made the authentication decision.
+// Entity that made the authentication decision. This won't be set for
+// authentications for which a decision has not yet been made (e.g. in-flight
+// customer decisioning request).
 type ThreeDSAuthenticationGetResponseDecisionMadeBy string
 
 const (
-	ThreeDSAuthenticationGetResponseDecisionMadeByCustomerEndpoint ThreeDSAuthenticationGetResponseDecisionMadeBy = "CUSTOMER_ENDPOINT"
-	ThreeDSAuthenticationGetResponseDecisionMadeByLithicDefault    ThreeDSAuthenticationGetResponseDecisionMadeBy = "LITHIC_DEFAULT"
 	ThreeDSAuthenticationGetResponseDecisionMadeByLithicRules      ThreeDSAuthenticationGetResponseDecisionMadeBy = "LITHIC_RULES"
+	ThreeDSAuthenticationGetResponseDecisionMadeByLithicDefault    ThreeDSAuthenticationGetResponseDecisionMadeBy = "LITHIC_DEFAULT"
+	ThreeDSAuthenticationGetResponseDecisionMadeByCustomerRules    ThreeDSAuthenticationGetResponseDecisionMadeBy = "CUSTOMER_RULES"
+	ThreeDSAuthenticationGetResponseDecisionMadeByCustomerEndpoint ThreeDSAuthenticationGetResponseDecisionMadeBy = "CUSTOMER_ENDPOINT"
 	ThreeDSAuthenticationGetResponseDecisionMadeByNetwork          ThreeDSAuthenticationGetResponseDecisionMadeBy = "NETWORK"
 	ThreeDSAuthenticationGetResponseDecisionMadeByUnknown          ThreeDSAuthenticationGetResponseDecisionMadeBy = "UNKNOWN"
 )
 
 func (r ThreeDSAuthenticationGetResponseDecisionMadeBy) IsKnown() bool {
 	switch r {
-	case ThreeDSAuthenticationGetResponseDecisionMadeByCustomerEndpoint, ThreeDSAuthenticationGetResponseDecisionMadeByLithicDefault, ThreeDSAuthenticationGetResponseDecisionMadeByLithicRules, ThreeDSAuthenticationGetResponseDecisionMadeByNetwork, ThreeDSAuthenticationGetResponseDecisionMadeByUnknown:
+	case ThreeDSAuthenticationGetResponseDecisionMadeByLithicRules, ThreeDSAuthenticationGetResponseDecisionMadeByLithicDefault, ThreeDSAuthenticationGetResponseDecisionMadeByCustomerRules, ThreeDSAuthenticationGetResponseDecisionMadeByCustomerEndpoint, ThreeDSAuthenticationGetResponseDecisionMadeByNetwork, ThreeDSAuthenticationGetResponseDecisionMadeByUnknown:
 		return true
 	}
 	return false
 }
 
-// Type of 3DS Requestor Initiated (3RI) request i.e., a 3DS authentication that
+// Type of 3DS Requestor Initiated (3RI) request — i.e., a 3DS authentication that
 // takes place at the initiation of the merchant rather than the cardholder. The
 // most common example of this is where a merchant is authenticating before billing
 // for a recurring transaction such as a pay TV subscription or a utility bill.
-// Maps to EMV 3DS field threeRIInd.
+// Maps to EMV 3DS field `threeRIInd`.
 type ThreeDSAuthenticationGetResponseThreeRiRequestType string
 
 const (
@@ -868,21 +892,23 @@ func (r ThreeDSAuthenticationGetResponseThreeRiRequestType) IsKnown() bool {
 // is requesting authentication.
 type ThreeDSAuthenticationGetResponseTransaction struct {
 	// Amount of the purchase in minor units of currency with all punctuation removed.
-	// Maps to EMV 3DS field purchaseAmount.
+	// Maps to EMV 3DS field `purchaseAmount`.
 	Amount float64 `json:"amount,required"`
 	// Approximate amount of the purchase in minor units of cardholder currency.
 	// Derived from `amount` using a daily conversion rate.
 	CardholderAmount float64 `json:"cardholder_amount,required,nullable"`
-	// Currency of the purchase. Maps to EMV 3DS field purchaseCurrency.
+	// Currency of the purchase. Maps to EMV 3DS field `purchaseCurrency`. Permitted
+	// values: ISO 4217 three-character currency code (e.g., USD).
 	Currency string `json:"currency,required"`
 	// Minor units of currency, as specified in ISO 4217 currency exponent. Maps to EMV
-	// 3DS field purchaseExponent.
+	// 3DS field `purchaseExponent`.
 	CurrencyExponent float64 `json:"currency_exponent,required"`
 	// Date and time when the authentication was generated by the merchant/acquirer's
-	// 3DS server. Maps to EMV 3DS field purchaseDate.
+	// 3DS server. Maps to EMV 3DS field `purchaseDate`. Permitted values: Date string
+	// in the ISO 8601 format yyyy-MM-dd'T'hh:mm:ssZ.
 	DateTime time.Time `json:"date_time,required" format:"date-time"`
 	// Type of the transaction for which a 3DS authentication request is occurring.
-	// Maps to EMV 3DS field transType.
+	// Maps to EMV 3DS field `transType`.
 	Type ThreeDSAuthenticationGetResponseTransactionType `json:"type,required,nullable"`
 	JSON threeDSAuthenticationGetResponseTransactionJSON `json:"-"`
 }
@@ -909,7 +935,7 @@ func (r threeDSAuthenticationGetResponseTransactionJSON) RawJSON() string {
 }
 
 // Type of the transaction for which a 3DS authentication request is occurring.
-// Maps to EMV 3DS field transType.
+// Maps to EMV 3DS field `transType`.
 type ThreeDSAuthenticationGetResponseTransactionType string
 
 const (
@@ -929,8 +955,7 @@ func (r ThreeDSAuthenticationGetResponseTransactionType) IsKnown() bool {
 }
 
 type ThreeDSAuthenticationSimulateResponse struct {
-	// A unique token to reference this transaction with later calls to void or clear
-	// the authorization.
+	// Globally unique identifier for the 3DS authentication.
 	Token string                                    `json:"token" format:"uuid"`
 	JSON  threeDSAuthenticationSimulateResponseJSON `json:"-"`
 }
@@ -952,9 +977,11 @@ func (r threeDSAuthenticationSimulateResponseJSON) RawJSON() string {
 }
 
 type ThreeDSAuthenticationSimulateParams struct {
+	// Merchant information for the simulated transaction
 	Merchant param.Field[ThreeDSAuthenticationSimulateParamsMerchant] `json:"merchant,required"`
 	// Sixteen digit card number.
-	Pan         param.Field[string]                                         `json:"pan,required"`
+	Pan param.Field[string] `json:"pan,required"`
+	// Transaction details for the simulation
 	Transaction param.Field[ThreeDSAuthenticationSimulateParamsTransaction] `json:"transaction,required"`
 	// When set will use the following values as part of the Simulated Authentication.
 	// When not set defaults to MATCH
@@ -965,6 +992,7 @@ func (r ThreeDSAuthenticationSimulateParams) MarshalJSON() (data []byte, err err
 	return apijson.MarshalRoot(r)
 }
 
+// Merchant information for the simulated transaction
 type ThreeDSAuthenticationSimulateParamsMerchant struct {
 	// Unique identifier to identify the payment card acceptor. Corresponds to
 	// `merchant_acceptor_id` in authorization.
@@ -985,6 +1013,7 @@ func (r ThreeDSAuthenticationSimulateParamsMerchant) MarshalJSON() (data []byte,
 	return apijson.MarshalRoot(r)
 }
 
+// Transaction details for the simulation
 type ThreeDSAuthenticationSimulateParamsTransaction struct {
 	// Amount (in cents) to authenticate.
 	Amount param.Field[int64] `json:"amount,required"`

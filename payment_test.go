@@ -33,6 +33,7 @@ func TestPaymentNewWithOptionalParams(t *testing.T) {
 		Method:                   lithic.F(lithic.PaymentNewParamsMethodACHNextDay),
 		MethodAttributes: lithic.F(lithic.PaymentNewParamsMethodAttributes{
 			SecCode: lithic.F(lithic.PaymentNewParamsMethodAttributesSecCodeCcd),
+			Addenda: lithic.F("addenda"),
 		}),
 		Type:          lithic.F(lithic.PaymentNewParamsTypeCollection),
 		Token:         lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
