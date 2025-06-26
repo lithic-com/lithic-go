@@ -1307,6 +1307,7 @@ func (r ExternalBankAccountNewParamsBody) implementsExternalBankAccountNewParams
 // [ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest],
 // [ExternalBankAccountNewParamsBodyPlaidCreateBankAccountAPIRequest],
 // [ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequest],
+// [ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequest],
 // [ExternalBankAccountNewParamsBody].
 type ExternalBankAccountNewParamsBodyUnion interface {
 	implementsExternalBankAccountNewParamsBodyUnion()
@@ -1475,6 +1476,81 @@ const (
 func (r ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestVerificationMethod) IsKnown() bool {
 	switch r {
 	case ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestVerificationMethodExternallyVerified:
+		return true
+	}
+	return false
+}
+
+type ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequest struct {
+	// Account Number
+	AccountNumber param.Field[string] `json:"account_number,required"`
+	// The country that the bank account is located in using ISO 3166-1. We will only
+	// accept USA bank accounts e.g., USA
+	Country param.Field[string] `json:"country,required"`
+	// currency of the external account 3-character alphabetic ISO 4217 code
+	Currency param.Field[string] `json:"currency,required"`
+	// Legal Name of the business or individual who owns the external account. This
+	// will appear in statements
+	Owner param.Field[string] `json:"owner,required"`
+	// Owner Type
+	OwnerType param.Field[OwnerType] `json:"owner_type,required"`
+	// Routing Number
+	RoutingNumber param.Field[string] `json:"routing_number,required"`
+	// Account Type
+	Type param.Field[ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestType] `json:"type,required"`
+	// Verification Method
+	VerificationMethod param.Field[ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestVerificationMethod] `json:"verification_method,required"`
+	// Indicates which Lithic account the external account is associated with. For
+	// external accounts that are associated with the program, account_token field
+	// returned will be null
+	AccountToken param.Field[string] `json:"account_token" format:"uuid"`
+	// Address
+	Address param.Field[ExternalBankAccountAddressParam] `json:"address"`
+	// Optional field that helps identify bank accounts in receipts
+	CompanyID param.Field[string] `json:"company_id"`
+	// Date of Birth of the Individual that owns the external bank account
+	Dob param.Field[time.Time] `json:"dob" format:"date"`
+	// Doing Business As
+	DoingBusinessAs param.Field[string] `json:"doing_business_as"`
+	// The nickname for this External Bank Account
+	Name param.Field[string] `json:"name"`
+	// User Defined ID
+	UserDefinedID param.Field[string] `json:"user_defined_id"`
+}
+
+func (r ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequest) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequest) implementsExternalBankAccountNewParamsBodyUnion() {
+}
+
+// Account Type
+type ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestType string
+
+const (
+	ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestTypeChecking ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestType = "CHECKING"
+	ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestTypeSavings  ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestType = "SAVINGS"
+)
+
+func (r ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestType) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestTypeChecking, ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestTypeSavings:
+		return true
+	}
+	return false
+}
+
+// Verification Method
+type ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestVerificationMethod string
+
+const (
+	ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestVerificationMethodUnverified ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestVerificationMethod = "UNVERIFIED"
+)
+
+func (r ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestVerificationMethod) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestVerificationMethodUnverified:
 		return true
 	}
 	return false

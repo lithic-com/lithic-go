@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"reflect"
+	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
@@ -158,10 +159,11 @@ func (r *AuthRuleV2Service) Promote(ctx context.Context, authRuleToken string, o
 	return
 }
 
-// Requests a performance report of an Auth rule to be asynchronously generated.
-// Reports can only be run on rules in draft or active mode and will included
-// approved and declined statistics as well as examples. The generated report will
-// be delivered asynchronously through a webhook with `event_type` =
+// This endpoint is deprecated and will be removed in the future. Requests a
+// performance report of an Auth rule to be asynchronously generated. Reports can
+// only be run on rules in draft or active mode and will included approved and
+// declined statistics as well as examples. The generated report will be delivered
+// asynchronously through a webhook with `event_type` =
 // `auth_rules.performance_report.created`. See the docs on setting up
 // [webhook subscriptions](https://docs.lithic.com/docs/events-api).
 //
@@ -208,6 +210,8 @@ func (r *AuthRuleV2Service) Promote(ctx context.Context, authRuleToken string, o
 // receive the webhook. Additionally, there is a delay of approximately 15 minutes
 // between when Lithic's transaction processing systems have processed the
 // transaction, and when a transaction will be included in the report.
+//
+// Deprecated: deprecated
 func (r *AuthRuleV2Service) Report(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (res *AuthRuleV2ReportResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	if authRuleToken == "" {
@@ -216,6 +220,30 @@ func (r *AuthRuleV2Service) Report(ctx context.Context, authRuleToken string, op
 	}
 	path := fmt.Sprintf("v2/auth_rules/%s/report", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
+	return
+}
+
+// Retrieves a performance report for an Auth rule containing daily statistics and
+// evaluation outcomes.
+//
+// **Time Range Limitations:**
+//
+//   - Reports are supported for the past 3 months only
+//   - Maximum interval length is 1 month
+//   - Report data is available only through the previous day in UTC (current day
+//     data is not available)
+//
+// The report provides daily statistics for both current and draft versions of the
+// Auth rule, including approval, decline, and challenge counts along with sample
+// events.
+func (r *AuthRuleV2Service) GetReport(ctx context.Context, authRuleToken string, query AuthRuleV2GetReportParams, opts ...option.RequestOption) (res *AuthRuleV2GetReportResponse, err error) {
+	opts = append(r.Options[:], opts...)
+	if authRuleToken == "" {
+		err = errors.New("missing required auth_rule_token parameter")
+		return
+	}
+	path := fmt.Sprintf("v2/auth_rules/%s/report", authRuleToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
 	return
 }
 
@@ -539,6 +567,95 @@ func (r ConditionalBlockParameters) implementsAuthRuleV2DraftResponseDraftVersio
 func (r ConditionalBlockParameters) implementsAuthRuleV2PromoteResponseCurrentVersionParameters() {}
 
 func (r ConditionalBlockParameters) implementsAuthRuleV2PromoteResponseDraftVersionParameters() {}
+
+type RuleStats struct {
+	// The total number of historical transactions approved by this rule during the
+	// relevant period, or the number of transactions that would have been approved if
+	// the rule was evaluated in shadow mode.
+	Approved int64 `json:"approved"`
+	// The total number of historical transactions challenged by this rule during the
+	// relevant period, or the number of transactions that would have been challenged
+	// if the rule was evaluated in shadow mode. Currently applicable only for 3DS Auth
+	// Rules.
+	Challenged int64 `json:"challenged"`
+	// The total number of historical transactions declined by this rule during the
+	// relevant period, or the number of transactions that would have been declined if
+	// the rule was evaluated in shadow mode.
+	Declined int64 `json:"declined"`
+	// Example events and their outcomes.
+	Examples []RuleStatsExample `json:"examples"`
+	// The version of the rule, this is incremented whenever the rule's parameters
+	// change.
+	Version int64         `json:"version"`
+	JSON    ruleStatsJSON `json:"-"`
+}
+
+// ruleStatsJSON contains the JSON metadata for the struct [RuleStats]
+type ruleStatsJSON struct {
+	Approved    apijson.Field
+	Challenged  apijson.Field
+	Declined    apijson.Field
+	Examples    apijson.Field
+	Version     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *RuleStats) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r ruleStatsJSON) RawJSON() string {
+	return r.raw
+}
+
+type RuleStatsExample struct {
+	// Whether the rule would have approved the request.
+	Approved bool `json:"approved"`
+	// The decision made by the rule for this event.
+	Decision RuleStatsExamplesDecision `json:"decision"`
+	// The event token.
+	EventToken string `json:"event_token" format:"uuid"`
+	// The timestamp of the event.
+	Timestamp time.Time            `json:"timestamp" format:"date-time"`
+	JSON      ruleStatsExampleJSON `json:"-"`
+}
+
+// ruleStatsExampleJSON contains the JSON metadata for the struct
+// [RuleStatsExample]
+type ruleStatsExampleJSON struct {
+	Approved    apijson.Field
+	Decision    apijson.Field
+	EventToken  apijson.Field
+	Timestamp   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *RuleStatsExample) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r ruleStatsExampleJSON) RawJSON() string {
+	return r.raw
+}
+
+// The decision made by the rule for this event.
+type RuleStatsExamplesDecision string
+
+const (
+	RuleStatsExamplesDecisionApproved   RuleStatsExamplesDecision = "APPROVED"
+	RuleStatsExamplesDecisionDeclined   RuleStatsExamplesDecision = "DECLINED"
+	RuleStatsExamplesDecisionChallenged RuleStatsExamplesDecision = "CHALLENGED"
+)
+
+func (r RuleStatsExamplesDecision) IsKnown() bool {
+	switch r {
+	case RuleStatsExamplesDecisionApproved, RuleStatsExamplesDecisionDeclined, RuleStatsExamplesDecisionChallenged:
+		return true
+	}
+	return false
+}
 
 type VelocityLimitParams struct {
 	Filters VelocityLimitParamsFilters `json:"filters,required"`
@@ -7311,6 +7428,65 @@ func (r authRuleV2ReportResponseJSON) RawJSON() string {
 	return r.raw
 }
 
+type AuthRuleV2GetReportResponse struct {
+	// Auth Rule Token
+	AuthRuleToken string `json:"auth_rule_token,required" format:"uuid"`
+	// The start date (UTC) of the report.
+	Begin time.Time `json:"begin,required" format:"date"`
+	// Daily evaluation statistics for the Auth Rule.
+	DailyStatistics []AuthRuleV2GetReportResponseDailyStatistic `json:"daily_statistics,required"`
+	// The end date (UTC) of the report.
+	End  time.Time                       `json:"end,required" format:"date"`
+	JSON authRuleV2GetReportResponseJSON `json:"-"`
+}
+
+// authRuleV2GetReportResponseJSON contains the JSON metadata for the struct
+// [AuthRuleV2GetReportResponse]
+type authRuleV2GetReportResponseJSON struct {
+	AuthRuleToken   apijson.Field
+	Begin           apijson.Field
+	DailyStatistics apijson.Field
+	End             apijson.Field
+	raw             string
+	ExtraFields     map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetReportResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetReportResponseJSON) RawJSON() string {
+	return r.raw
+}
+
+type AuthRuleV2GetReportResponseDailyStatistic struct {
+	// Detailed statistics for the current version of the rule.
+	CurrentVersionStatistics RuleStats `json:"current_version_statistics,required,nullable"`
+	// The date (UTC) for which the statistics are reported.
+	Date time.Time `json:"date,required" format:"date"`
+	// Detailed statistics for the draft version of the rule.
+	DraftVersionStatistics RuleStats                                     `json:"draft_version_statistics,required,nullable"`
+	JSON                   authRuleV2GetReportResponseDailyStatisticJSON `json:"-"`
+}
+
+// authRuleV2GetReportResponseDailyStatisticJSON contains the JSON metadata for the
+// struct [AuthRuleV2GetReportResponseDailyStatistic]
+type authRuleV2GetReportResponseDailyStatisticJSON struct {
+	CurrentVersionStatistics apijson.Field
+	Date                     apijson.Field
+	DraftVersionStatistics   apijson.Field
+	raw                      string
+	ExtraFields              map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetReportResponseDailyStatistic) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetReportResponseDailyStatisticJSON) RawJSON() string {
+	return r.raw
+}
+
 type AuthRuleV2NewParams struct {
 	Body AuthRuleV2NewParamsBodyUnion `json:"body,required"`
 }
@@ -8812,4 +8988,20 @@ func (r AuthRuleV2DraftParamsParametersScope) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+type AuthRuleV2GetReportParams struct {
+	// Start date for the report
+	Begin param.Field[time.Time] `query:"begin,required" format:"date"`
+	// End date for the report
+	End param.Field[time.Time] `query:"end,required" format:"date"`
+}
+
+// URLQuery serializes [AuthRuleV2GetReportParams]'s query parameters as
+// `url.Values`.
+func (r AuthRuleV2GetReportParams) URLQuery() (v url.Values) {
+	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
+		ArrayFormat:  apiquery.ArrayQueryFormatComma,
+		NestedFormat: apiquery.NestedQueryFormatBrackets,
+	})
 }

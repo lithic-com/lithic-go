@@ -56,8 +56,8 @@ func TestThreeDSAuthenticationSimulateWithOptionalParams(t *testing.T) {
 		}),
 		Pan: lithic.F("4111111289144142"),
 		Transaction: lithic.F(lithic.ThreeDSAuthenticationSimulateParamsTransaction{
-			Amount:   lithic.F(int64(100)),
-			Currency: lithic.F("USD"),
+			Amount:   lithic.F(int64(0)),
+			Currency: lithic.F("GBP"),
 		}),
 		CardExpiryCheck: lithic.F(lithic.ThreeDSAuthenticationSimulateParamsCardExpiryCheckMatch),
 	})

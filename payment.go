@@ -395,6 +395,7 @@ type PaymentMethodAttributes struct {
 	ReturnReasonCode     string                         `json:"return_reason_code,required,nullable"`
 	SecCode              PaymentMethodAttributesSecCode `json:"sec_code,required"`
 	TraceNumbers         []string                       `json:"trace_numbers,required"`
+	Addenda              string                         `json:"addenda,nullable"`
 	JSON                 paymentMethodAttributesJSON    `json:"-"`
 }
 
@@ -407,6 +408,7 @@ type paymentMethodAttributesJSON struct {
 	ReturnReasonCode     apijson.Field
 	SecCode              apijson.Field
 	TraceNumbers         apijson.Field
+	Addenda              apijson.Field
 	raw                  string
 	ExtraFields          map[string]apijson.Field
 }
@@ -748,6 +750,7 @@ func (r PaymentNewParamsMethod) IsKnown() bool {
 
 type PaymentNewParamsMethodAttributes struct {
 	SecCode param.Field[PaymentNewParamsMethodAttributesSecCode] `json:"sec_code,required"`
+	Addenda param.Field[string]                                  `json:"addenda"`
 }
 
 func (r PaymentNewParamsMethodAttributes) MarshalJSON() (data []byte, err error) {

@@ -51,13 +51,14 @@ func NewAuthRuleV2BacktestService(opts ...option.RequestOption) (r *AuthRuleV2Ba
 // `/v2/auth_rules/{auth_rule_token}/backtests/{auth_rule_backtest_token}`
 // endpoint.
 //
-// Lithic currently supports backtesting for `CONDITIONAL_BLOCK` rules. Backtesting
-// for `VELOCITY_LIMIT` rules is generally not supported. In specific cases (i.e.
-// where Lithic has pre-calculated the requested velocity metrics for historical
-// transactions), a backtest may be feasible. However, such cases are uncommon and
-// customers should not anticipate support for velocity backtests under most
-// configurations. If a historical transaction does not feature the required inputs
-// to evaluate the rule, then it will not be included in the final backtest report.
+// Lithic currently supports backtesting for `CONDITIONAL_BLOCK` /
+// `CONDITIONAL_3DS_ACTION` rules. Backtesting for `VELOCITY_LIMIT` rules is
+// generally not supported. In specific cases (i.e. where Lithic has pre-calculated
+// the requested velocity metrics for historical transactions), a backtest may be
+// feasible. However, such cases are uncommon and customers should not anticipate
+// support for velocity backtests under most configurations. If a historical
+// transaction does not feature the required inputs to evaluate the rule, then it
+// will not be included in the final backtest report.
 func (r *AuthRuleV2BacktestService) New(ctx context.Context, authRuleToken string, body AuthRuleV2BacktestNewParams, opts ...option.RequestOption) (res *AuthRuleV2BacktestNewResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	if authRuleToken == "" {
@@ -128,9 +129,9 @@ func (r backtestResultsJSON) RawJSON() string {
 }
 
 type BacktestResultsResults struct {
-	CurrentVersion BacktestResultsResultsCurrentVersion `json:"current_version,nullable"`
-	DraftVersion   BacktestResultsResultsDraftVersion   `json:"draft_version,nullable"`
-	JSON           backtestResultsResultsJSON           `json:"-"`
+	CurrentVersion RuleStats                  `json:"current_version,nullable"`
+	DraftVersion   RuleStats                  `json:"draft_version,nullable"`
+	JSON           backtestResultsResultsJSON `json:"-"`
 }
 
 // backtestResultsResultsJSON contains the JSON metadata for the struct
@@ -148,186 +149,6 @@ func (r *BacktestResultsResults) UnmarshalJSON(data []byte) (err error) {
 
 func (r backtestResultsResultsJSON) RawJSON() string {
 	return r.raw
-}
-
-type BacktestResultsResultsCurrentVersion struct {
-	// The total number of historical transactions approved by this rule during the
-	// relevant period, or the number of transactions that would have been approved if
-	// the rule was evaluated in shadow mode.
-	Approved int64 `json:"approved"`
-	// The total number of historical transactions challenged by this rule during the
-	// relevant period, or the number of transactions that would have been challenged
-	// if the rule was evaluated in shadow mode. Currently applicable only for 3DS Auth
-	// Rules.
-	Challenged int64 `json:"challenged"`
-	// The total number of historical transactions declined by this rule during the
-	// relevant period, or the number of transactions that would have been declined if
-	// the rule was evaluated in shadow mode.
-	Declined int64 `json:"declined"`
-	// Example events and their outcomes.
-	Examples []BacktestResultsResultsCurrentVersionExample `json:"examples"`
-	// The version of the rule, this is incremented whenever the rule's parameters
-	// change.
-	Version int64                                    `json:"version"`
-	JSON    backtestResultsResultsCurrentVersionJSON `json:"-"`
-}
-
-// backtestResultsResultsCurrentVersionJSON contains the JSON metadata for the
-// struct [BacktestResultsResultsCurrentVersion]
-type backtestResultsResultsCurrentVersionJSON struct {
-	Approved    apijson.Field
-	Challenged  apijson.Field
-	Declined    apijson.Field
-	Examples    apijson.Field
-	Version     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *BacktestResultsResultsCurrentVersion) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r backtestResultsResultsCurrentVersionJSON) RawJSON() string {
-	return r.raw
-}
-
-type BacktestResultsResultsCurrentVersionExample struct {
-	// Whether the rule would have approved the request.
-	Approved bool `json:"approved"`
-	// The decision made by the rule for this event.
-	Decision BacktestResultsResultsCurrentVersionExamplesDecision `json:"decision"`
-	// The event token.
-	EventToken string `json:"event_token" format:"uuid"`
-	// The timestamp of the event.
-	Timestamp time.Time                                       `json:"timestamp" format:"date-time"`
-	JSON      backtestResultsResultsCurrentVersionExampleJSON `json:"-"`
-}
-
-// backtestResultsResultsCurrentVersionExampleJSON contains the JSON metadata for
-// the struct [BacktestResultsResultsCurrentVersionExample]
-type backtestResultsResultsCurrentVersionExampleJSON struct {
-	Approved    apijson.Field
-	Decision    apijson.Field
-	EventToken  apijson.Field
-	Timestamp   apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *BacktestResultsResultsCurrentVersionExample) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r backtestResultsResultsCurrentVersionExampleJSON) RawJSON() string {
-	return r.raw
-}
-
-// The decision made by the rule for this event.
-type BacktestResultsResultsCurrentVersionExamplesDecision string
-
-const (
-	BacktestResultsResultsCurrentVersionExamplesDecisionApproved   BacktestResultsResultsCurrentVersionExamplesDecision = "APPROVED"
-	BacktestResultsResultsCurrentVersionExamplesDecisionDeclined   BacktestResultsResultsCurrentVersionExamplesDecision = "DECLINED"
-	BacktestResultsResultsCurrentVersionExamplesDecisionChallenged BacktestResultsResultsCurrentVersionExamplesDecision = "CHALLENGED"
-)
-
-func (r BacktestResultsResultsCurrentVersionExamplesDecision) IsKnown() bool {
-	switch r {
-	case BacktestResultsResultsCurrentVersionExamplesDecisionApproved, BacktestResultsResultsCurrentVersionExamplesDecisionDeclined, BacktestResultsResultsCurrentVersionExamplesDecisionChallenged:
-		return true
-	}
-	return false
-}
-
-type BacktestResultsResultsDraftVersion struct {
-	// The total number of historical transactions approved by this rule during the
-	// relevant period, or the number of transactions that would have been approved if
-	// the rule was evaluated in shadow mode.
-	Approved int64 `json:"approved"`
-	// The total number of historical transactions challenged by this rule during the
-	// relevant period, or the number of transactions that would have been challenged
-	// if the rule was evaluated in shadow mode. Currently applicable only for 3DS Auth
-	// Rules.
-	Challenged int64 `json:"challenged"`
-	// The total number of historical transactions declined by this rule during the
-	// relevant period, or the number of transactions that would have been declined if
-	// the rule was evaluated in shadow mode.
-	Declined int64 `json:"declined"`
-	// Example events and their outcomes.
-	Examples []BacktestResultsResultsDraftVersionExample `json:"examples"`
-	// The version of the rule, this is incremented whenever the rule's parameters
-	// change.
-	Version int64                                  `json:"version"`
-	JSON    backtestResultsResultsDraftVersionJSON `json:"-"`
-}
-
-// backtestResultsResultsDraftVersionJSON contains the JSON metadata for the struct
-// [BacktestResultsResultsDraftVersion]
-type backtestResultsResultsDraftVersionJSON struct {
-	Approved    apijson.Field
-	Challenged  apijson.Field
-	Declined    apijson.Field
-	Examples    apijson.Field
-	Version     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *BacktestResultsResultsDraftVersion) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r backtestResultsResultsDraftVersionJSON) RawJSON() string {
-	return r.raw
-}
-
-type BacktestResultsResultsDraftVersionExample struct {
-	// Whether the rule would have approved the request.
-	Approved bool `json:"approved"`
-	// The decision made by the rule for this event.
-	Decision BacktestResultsResultsDraftVersionExamplesDecision `json:"decision"`
-	// The event token.
-	EventToken string `json:"event_token" format:"uuid"`
-	// The timestamp of the event.
-	Timestamp time.Time                                     `json:"timestamp" format:"date-time"`
-	JSON      backtestResultsResultsDraftVersionExampleJSON `json:"-"`
-}
-
-// backtestResultsResultsDraftVersionExampleJSON contains the JSON metadata for the
-// struct [BacktestResultsResultsDraftVersionExample]
-type backtestResultsResultsDraftVersionExampleJSON struct {
-	Approved    apijson.Field
-	Decision    apijson.Field
-	EventToken  apijson.Field
-	Timestamp   apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *BacktestResultsResultsDraftVersionExample) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r backtestResultsResultsDraftVersionExampleJSON) RawJSON() string {
-	return r.raw
-}
-
-// The decision made by the rule for this event.
-type BacktestResultsResultsDraftVersionExamplesDecision string
-
-const (
-	BacktestResultsResultsDraftVersionExamplesDecisionApproved   BacktestResultsResultsDraftVersionExamplesDecision = "APPROVED"
-	BacktestResultsResultsDraftVersionExamplesDecisionDeclined   BacktestResultsResultsDraftVersionExamplesDecision = "DECLINED"
-	BacktestResultsResultsDraftVersionExamplesDecisionChallenged BacktestResultsResultsDraftVersionExamplesDecision = "CHALLENGED"
-)
-
-func (r BacktestResultsResultsDraftVersionExamplesDecision) IsKnown() bool {
-	switch r {
-	case BacktestResultsResultsDraftVersionExamplesDecisionApproved, BacktestResultsResultsDraftVersionExamplesDecisionDeclined, BacktestResultsResultsDraftVersionExamplesDecisionChallenged:
-		return true
-	}
-	return false
 }
 
 type BacktestResultsSimulationParameters struct {

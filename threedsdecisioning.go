@@ -31,7 +31,12 @@ func NewThreeDSDecisioningService(opts ...option.RequestOption) (r *ThreeDSDecis
 	return
 }
 
-// Card program's response to a 3DS Challenge Request (CReq)
+// Card program's response to a 3DS Challenge Request. Challenge Request is emitted
+// as a webhook
+// [three_ds_authentication.challenge](https://docs.lithic.com/reference/post_three-ds-authentication-challenge)
+// and your Card Program needs to be configured with Out of Band (OOB) Challenges
+// in order to receive it (see https://docs.lithic.com/docs/3ds-challenge-flow for
+// more information).
 func (r *ThreeDSDecisioningService) ChallengeResponse(ctx context.Context, body ThreeDSDecisioningChallengeResponseParams, opts ...option.RequestOption) (err error) {
 	opts = append(r.Options[:], opts...)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
@@ -65,13 +70,12 @@ func (r *ThreeDSDecisioningService) RotateSecret(ctx context.Context, opts ...op
 	return
 }
 
+// Response from Card Program to a 3DS Authentication challenge
 type ChallengeResponseParam struct {
-	// Globally unique identifier for the 3DS authentication. This token is sent as
-	// part of the initial 3DS Decisioning Request and as part of the 3DS Challenge
-	// Event in the [ThreeDSAuthentication](#/components/schemas/ThreeDSAuthentication)
-	// object
+	// Globally unique identifier for 3DS Authentication that resulted in
+	// PENDING_CHALLENGE authentication result.
 	Token param.Field[string] `json:"token,required" format:"uuid"`
-	// Whether the Cardholder has Approved or Declined the issued Challenge
+	// Whether the Cardholder has approved or declined the issued Challenge
 	ChallengeResponse param.Field[ChallengeResult] `json:"challenge_response,required"`
 }
 
@@ -79,7 +83,7 @@ func (r ChallengeResponseParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-// Whether the Cardholder has Approved or Declined the issued Challenge
+// Whether the Cardholder has approved or declined the issued Challenge
 type ChallengeResult string
 
 const (
@@ -118,6 +122,7 @@ func (r threeDSDecisioningGetSecretResponseJSON) RawJSON() string {
 }
 
 type ThreeDSDecisioningChallengeResponseParams struct {
+	// Response from Card Program to a 3DS Authentication challenge
 	ChallengeResponse ChallengeResponseParam `json:"challenge_response,required"`
 }
 
