@@ -907,10 +907,12 @@ type CardNewParams struct {
 	//   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
 	//     with tracking
 	//   - `PRIORITY` - USPS Priority, 1-3 day shipping, with tracking
-	//   - `EXPRESS` - FedEx Express, 3-day shipping, with tracking
-	//   - `2_DAY` - FedEx 2-day shipping, with tracking
-	//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
+	//   - `EXPRESS` - FedEx or UPS depending on card manufacturer, Express, 3-day
+	//     shipping, with tracking
+	//   - `2_DAY` - FedEx or UPS depending on card manufacturer, 2-day shipping, with
 	//     tracking
+	//   - `EXPEDITED` - FedEx or UPS depending on card manufacturer, Standard Overnight
+	//     or similar international option, with tracking
 	ShippingMethod param.Field[CardNewParamsShippingMethod] `json:"shipping_method"`
 	// Amount (in cents) to limit approved authorizations (e.g. 100000 would be a
 	// $1,000 limit). Transaction requests above the spend limit will be declined. Note
@@ -987,10 +989,12 @@ func (r CardNewParamsType) IsKnown() bool {
 //   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
 //     with tracking
 //   - `PRIORITY` - USPS Priority, 1-3 day shipping, with tracking
-//   - `EXPRESS` - FedEx Express, 3-day shipping, with tracking
-//   - `2_DAY` - FedEx 2-day shipping, with tracking
-//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
+//   - `EXPRESS` - FedEx or UPS depending on card manufacturer, Express, 3-day
+//     shipping, with tracking
+//   - `2_DAY` - FedEx or UPS depending on card manufacturer, 2-day shipping, with
 //     tracking
+//   - `EXPEDITED` - FedEx or UPS depending on card manufacturer, Standard Overnight
+//     or similar international option, with tracking
 type CardNewParamsShippingMethod string
 
 const (
@@ -1187,10 +1191,12 @@ type CardConvertPhysicalParams struct {
 	//   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
 	//     with tracking
 	//   - `PRIORITY` - USPS Priority, 1-3 day shipping, with tracking
-	//   - `EXPRESS` - FedEx Express, 3-day shipping, with tracking
-	//   - `2_DAY` - FedEx 2-day shipping, with tracking
-	//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
+	//   - `EXPRESS` - FedEx or UPS depending on card manufacturer, Express, 3-day
+	//     shipping, with tracking
+	//   - `2_DAY` - FedEx or UPS depending on card manufacturer, 2-day shipping, with
 	//     tracking
+	//   - `EXPEDITED` - FedEx or UPS depending on card manufacturer, Standard Overnight
+	//     or similar international option, with tracking
 	ShippingMethod param.Field[CardConvertPhysicalParamsShippingMethod] `json:"shipping_method"`
 }
 
@@ -1206,10 +1212,12 @@ func (r CardConvertPhysicalParams) MarshalJSON() (data []byte, err error) {
 //   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
 //     with tracking
 //   - `PRIORITY` - USPS Priority, 1-3 day shipping, with tracking
-//   - `EXPRESS` - FedEx Express, 3-day shipping, with tracking
-//   - `2_DAY` - FedEx 2-day shipping, with tracking
-//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
+//   - `EXPRESS` - FedEx or UPS depending on card manufacturer, Express, 3-day
+//     shipping, with tracking
+//   - `2_DAY` - FedEx or UPS depending on card manufacturer, 2-day shipping, with
 //     tracking
+//   - `EXPEDITED` - FedEx or UPS depending on card manufacturer, Standard Overnight
+//     or similar international option, with tracking
 type CardConvertPhysicalParamsShippingMethod string
 
 const (
@@ -1308,10 +1316,12 @@ type CardReissueParams struct {
 	//   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
 	//     with tracking
 	//   - `PRIORITY` - USPS Priority, 1-3 day shipping, with tracking
-	//   - `EXPRESS` - FedEx Express, 3-day shipping, with tracking
-	//   - `2_DAY` - FedEx 2-day shipping, with tracking
-	//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
+	//   - `EXPRESS` - FedEx or UPS depending on card manufacturer, Express, 3-day
+	//     shipping, with tracking
+	//   - `2_DAY` - FedEx or UPS depending on card manufacturer, 2-day shipping, with
 	//     tracking
+	//   - `EXPEDITED` - FedEx or UPS depending on card manufacturer, Standard Overnight
+	//     or similar international option, with tracking
 	ShippingMethod param.Field[CardReissueParamsShippingMethod] `json:"shipping_method"`
 }
 
@@ -1327,10 +1337,12 @@ func (r CardReissueParams) MarshalJSON() (data []byte, err error) {
 //   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
 //     with tracking
 //   - `PRIORITY` - USPS Priority, 1-3 day shipping, with tracking
-//   - `EXPRESS` - FedEx Express, 3-day shipping, with tracking
-//   - `2_DAY` - FedEx 2-day shipping, with tracking
-//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
+//   - `EXPRESS` - FedEx or UPS depending on card manufacturer, Express, 3-day
+//     shipping, with tracking
+//   - `2_DAY` - FedEx or UPS depending on card manufacturer, 2-day shipping, with
 //     tracking
+//   - `EXPEDITED` - FedEx or UPS depending on card manufacturer, Standard Overnight
+//     or similar international option, with tracking
 type CardReissueParamsShippingMethod string
 
 const (
@@ -1373,10 +1385,12 @@ type CardRenewParams struct {
 	//   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
 	//     with tracking
 	//   - `PRIORITY` - USPS Priority, 1-3 day shipping, with tracking
-	//   - `EXPRESS` - FedEx Express, 3-day shipping, with tracking
-	//   - `2_DAY` - FedEx 2-day shipping, with tracking
-	//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
+	//   - `EXPRESS` - FedEx or UPS depending on card manufacturer, Express, 3-day
+	//     shipping, with tracking
+	//   - `2_DAY` - FedEx or UPS depending on card manufacturer, 2-day shipping, with
 	//     tracking
+	//   - `EXPEDITED` - FedEx or UPS depending on card manufacturer, Standard Overnight
+	//     or similar international option, with tracking
 	ShippingMethod param.Field[CardRenewParamsShippingMethod] `json:"shipping_method"`
 }
 
@@ -1392,10 +1406,12 @@ func (r CardRenewParams) MarshalJSON() (data []byte, err error) {
 //   - `STANDARD_WITH_TRACKING` - USPS regular mail or similar international option,
 //     with tracking
 //   - `PRIORITY` - USPS Priority, 1-3 day shipping, with tracking
-//   - `EXPRESS` - FedEx Express, 3-day shipping, with tracking
-//   - `2_DAY` - FedEx 2-day shipping, with tracking
-//   - `EXPEDITED` - FedEx Standard Overnight or similar international option, with
+//   - `EXPRESS` - FedEx or UPS depending on card manufacturer, Express, 3-day
+//     shipping, with tracking
+//   - `2_DAY` - FedEx or UPS depending on card manufacturer, 2-day shipping, with
 //     tracking
+//   - `EXPEDITED` - FedEx or UPS depending on card manufacturer, Standard Overnight
+//     or similar international option, with tracking
 type CardRenewParamsShippingMethod string
 
 const (
