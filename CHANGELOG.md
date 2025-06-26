@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.80.0 (2025-06-26)
+
+Full Changelog: [v0.79.0...v0.80.0](https://github.com/lithic-com/lithic-go/compare/v0.79.0...v0.80.0)
+
+### Features
+
+* **client:** adds support for on-demand Auth Rule Performance Reports ([2dc23fa](https://github.com/lithic-com/lithic-go/commit/2dc23fae2e661ca0362c1e1d4341b9bd7919c1b6))
+
 ## 0.79.0 (2025-06-20)
 
 Full Changelog: [v0.78.0...v0.79.0](https://github.com/lithic-com/lithic-go/compare/v0.78.0...v0.79.0)
