@@ -499,8 +499,19 @@ type NonPCICard struct {
 	// Amount (in cents) to limit approved authorizations (e.g. 100000 would be a
 	// $1,000 limit). Transaction requests above the spend limit will be declined.
 	SpendLimit int64 `json:"spend_limit,required"`
-	// Spend limit duration
-	SpendLimitDuration NonPCICardSpendLimitDuration `json:"spend_limit_duration,required"`
+	// Spend limit duration values:
+	//
+	//   - `ANNUALLY` - Card will authorize transactions up to spend limit for the
+	//     trailing year.
+	//   - `FOREVER` - Card will authorize only up to spend limit for the entire lifetime
+	//     of the card.
+	//   - `MONTHLY` - Card will authorize transactions up to spend limit for the
+	//     trailing month. To support recurring monthly payments, which can occur on
+	//     different day every month, the time window we consider for monthly velocity
+	//     starts 6 days after the current calendar date one month prior.
+	//   - `TRANSACTION` - Card will authorize multiple transactions if each individual
+	//     transaction is under the spend limit.
+	SpendLimitDuration SpendLimitDuration `json:"spend_limit_duration,required"`
 	// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
 	// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
 	// they match card and account parameters). _ `PAUSED` - Card will decline
@@ -695,25 +706,6 @@ const (
 func (r NonPCICardPinStatus) IsKnown() bool {
 	switch r {
 	case NonPCICardPinStatusOk, NonPCICardPinStatusBlocked, NonPCICardPinStatusNotSet:
-		return true
-	}
-	return false
-}
-
-// Spend limit duration
-type NonPCICardSpendLimitDuration string
-
-const (
-	NonPCICardSpendLimitDurationAnnually    NonPCICardSpendLimitDuration = "ANNUALLY"
-	NonPCICardSpendLimitDurationForever     NonPCICardSpendLimitDuration = "FOREVER"
-	NonPCICardSpendLimitDurationMonthly     NonPCICardSpendLimitDuration = "MONTHLY"
-	NonPCICardSpendLimitDurationTransaction NonPCICardSpendLimitDuration = "TRANSACTION"
-	NonPCICardSpendLimitDurationDaily       NonPCICardSpendLimitDuration = "DAILY"
-)
-
-func (r NonPCICardSpendLimitDuration) IsKnown() bool {
-	switch r {
-	case NonPCICardSpendLimitDurationAnnually, NonPCICardSpendLimitDurationForever, NonPCICardSpendLimitDurationMonthly, NonPCICardSpendLimitDurationTransaction, NonPCICardSpendLimitDurationDaily:
 		return true
 	}
 	return false
