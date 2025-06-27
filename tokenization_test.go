@@ -230,7 +230,7 @@ func TestTokenizationUpdateDigitalCardArtWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.TokenizationUpdateDigitalCardArtParams{
-			DigitalCardArtToken: lithic.F("00000000-0000-0000-1000-000000000000"),
+			DigitalCardArtToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		},
 	)
 	if err != nil {
