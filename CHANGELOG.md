@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.81.0 (2025-06-27)
+
+Full Changelog: [v0.80.1...v0.81.0](https://github.com/lithic-com/lithic-go/compare/v0.80.1...v0.81.0)
+
+### Features
+
+* **api:** introduce dedicated model for SpendLimitDuration ([7b3838e](https://github.com/lithic-com/lithic-go/commit/7b3838e4ca589b9c3857f038e9a293d7b0536c00))
+
+
+### Bug Fixes
+
+* don't try to deserialize as json when ResponseBodyInto is []byte ([ef36797](https://github.com/lithic-com/lithic-go/commit/ef3679747269f83a32013ad86004d90265650730))
+
+
+### Chores
+
+* **internal:** manual updates ([f10c8dc](https://github.com/lithic-com/lithic-go/commit/f10c8dc233cb4f407753e5aa22c3b20416fdc5d7))
+
 ## 0.80.1 (2025-06-27)
 
 Full Changelog: [v0.80.0...v0.80.1](https://github.com/lithic-com/lithic-go/compare/v0.80.0...v0.80.1)
