@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.80.1 (2025-06-27)
+
+Full Changelog: [v0.80.0...v0.80.1](https://github.com/lithic-com/lithic-go/compare/v0.80.0...v0.80.1)
+
+### Bug Fixes
+
+* **pagination:** check if page data is empty in GetNextPage ([8a2b637](https://github.com/lithic-com/lithic-go/commit/8a2b637516190ad244ec0fa1c33cee3955c5b52f))
+
 ## 0.80.0 (2025-06-26)
 
 Full Changelog: [v0.79.0...v0.80.0](https://github.com/lithic-com/lithic-go/compare/v0.79.0...v0.80.0)
