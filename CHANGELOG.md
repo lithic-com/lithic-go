@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.81.1 (2025-06-27)
+
+Full Changelog: [v0.81.0...v0.81.1](https://github.com/lithic-com/lithic-go/compare/v0.81.0...v0.81.1)
+
+### Chores
+
+* **ci:** only run for pushes and fork pull requests ([8c5c5c5](https://github.com/lithic-com/lithic-go/commit/8c5c5c511ce61f4bc95c574fc65a3f50321dd8ce))
+
 ## 0.81.0 (2025-06-27)
 
 Full Changelog: [v0.80.1...v0.81.0](https://github.com/lithic-com/lithic-go/compare/v0.80.1...v0.81.0)
