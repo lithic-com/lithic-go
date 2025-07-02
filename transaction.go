@@ -1085,6 +1085,7 @@ type TransactionEvent struct {
 	RuleResults []TransactionEventsRuleResult `json:"rule_results,required"`
 	// Type of transaction event
 	Type                TransactionEventsType                `json:"type,required"`
+	AccountType         TransactionEventsAccountType         `json:"account_type"`
 	NetworkSpecificData TransactionEventsNetworkSpecificData `json:"network_specific_data"`
 	JSON                transactionEventJSON                 `json:"-"`
 }
@@ -1102,6 +1103,7 @@ type transactionEventJSON struct {
 	Result              apijson.Field
 	RuleResults         apijson.Field
 	Type                apijson.Field
+	AccountType         apijson.Field
 	NetworkSpecificData apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
@@ -1633,6 +1635,21 @@ const (
 func (r TransactionEventsType) IsKnown() bool {
 	switch r {
 	case TransactionEventsTypeAuthorization, TransactionEventsTypeAuthorizationAdvice, TransactionEventsTypeAuthorizationExpiry, TransactionEventsTypeAuthorizationReversal, TransactionEventsTypeBalanceInquiry, TransactionEventsTypeClearing, TransactionEventsTypeCorrectionCredit, TransactionEventsTypeCorrectionDebit, TransactionEventsTypeCreditAuthorization, TransactionEventsTypeCreditAuthorizationAdvice, TransactionEventsTypeFinancialAuthorization, TransactionEventsTypeFinancialCreditAuthorization, TransactionEventsTypeReturn, TransactionEventsTypeReturnReversal:
+		return true
+	}
+	return false
+}
+
+type TransactionEventsAccountType string
+
+const (
+	TransactionEventsAccountTypeChecking TransactionEventsAccountType = "CHECKING"
+	TransactionEventsAccountTypeSavings  TransactionEventsAccountType = "SAVINGS"
+)
+
+func (r TransactionEventsAccountType) IsKnown() bool {
+	switch r {
+	case TransactionEventsAccountTypeChecking, TransactionEventsAccountTypeSavings:
 		return true
 	}
 	return false
