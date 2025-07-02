@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.82.0 (2025-07-02)
+
+Full Changelog: [v0.81.0...v0.82.0](https://github.com/lithic-com/lithic-go/compare/v0.81.0...v0.82.0)
+
+### Features
+
+* **api:** add models for merchant_lock_parameters and conditional_3ds_action_parameters ([4af0ff2](https://github.com/lithic-com/lithic-go/commit/4af0ff261e0e216e921289789a8241c2ac7c152c))
+* **api:** api update ([d7fd3b6](https://github.com/lithic-com/lithic-go/commit/d7fd3b6e1ae20c912ebe2d7da17027caed351b8e))
+
+
+### Chores
+
+* **ci:** only run for pushes and fork pull requests ([8c5c5c5](https://github.com/lithic-com/lithic-go/commit/8c5c5c511ce61f4bc95c574fc65a3f50321dd8ce))
+
 ## 0.81.0 (2025-06-27)
 
 Full Changelog: [v0.80.1...v0.81.0](https://github.com/lithic-com/lithic-go/compare/v0.80.1...v0.81.0)
