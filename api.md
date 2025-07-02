@@ -72,16 +72,20 @@ Methods:
 Params Types:
 
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleConditionParam">AuthRuleConditionParam</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#Conditional3DSActionParameters">Conditional3DSActionParameters</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ConditionalAttribute">ConditionalAttribute</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ConditionalBlockParameters">ConditionalBlockParameters</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#MerchantLockParameters">MerchantLockParameters</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#VelocityLimitParams">VelocityLimitParams</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#VelocityLimitParamsPeriodWindow">VelocityLimitParamsPeriodWindow</a>
 
 Response Types:
 
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleCondition">AuthRuleCondition</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#Conditional3DSActionParameters">Conditional3DSActionParameters</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ConditionalAttribute">ConditionalAttribute</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ConditionalBlockParameters">ConditionalBlockParameters</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#MerchantLockParameters">MerchantLockParameters</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#RuleStats">RuleStats</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#VelocityLimitParams">VelocityLimitParams</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#VelocityLimitParamsPeriodWindow">VelocityLimitParamsPeriodWindow</a>
