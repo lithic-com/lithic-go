@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.83.0 (2025-07-03)
+
+Full Changelog: [v0.82.0...v0.83.0](https://github.com/lithic-com/lithic-go/compare/v0.82.0...v0.83.0)
+
+### Features
+
+* **api:** api update ([d626260](https://github.com/lithic-com/lithic-go/commit/d6262600781baf03b58e55dec6d4d095dea57c80))
+* **api:** api update ([b956295](https://github.com/lithic-com/lithic-go/commit/b9562955d2661a1568b0a0292cbc66728ae78a69))
+
 ## 0.82.0 (2025-07-02)
 
 Full Changelog: [v0.81.0...v0.82.0](https://github.com/lithic-com/lithic-go/compare/v0.81.0...v0.82.0)
