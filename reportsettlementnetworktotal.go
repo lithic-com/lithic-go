@@ -84,8 +84,11 @@ type ReportSettlementNetworkTotalGetResponse struct {
 	// Association). For Maestro: institution ID. For Visa: lowest level SRE
 	// (Settlement Reporting Entity).
 	InstitutionID string `json:"institution_id,required"`
-	// Card network where the transaction took place. VISA, MASTERCARD, MAESTRO, or
-	// INTERLINK.
+	// Indicates that all settlement records related to this Network Total are
+	// available in the details endpoint.
+	IsComplete bool `json:"is_complete,required"`
+	// Card network where the transaction took place. AMEX, VISA, MASTERCARD, MAESTRO,
+	// or INTERLINK.
 	Network ReportSettlementNetworkTotalGetResponseNetwork `json:"network,required"`
 	// Date that the network total record applies to. YYYY-MM-DD format.
 	ReportDate time.Time `json:"report_date,required" format:"date"`
@@ -110,6 +113,7 @@ type reportSettlementNetworkTotalGetResponseJSON struct {
 	Created                 apijson.Field
 	Currency                apijson.Field
 	InstitutionID           apijson.Field
+	IsComplete              apijson.Field
 	Network                 apijson.Field
 	ReportDate              apijson.Field
 	SettlementInstitutionID apijson.Field
@@ -160,11 +164,12 @@ func (r reportSettlementNetworkTotalGetResponseAmountsJSON) RawJSON() string {
 	return r.raw
 }
 
-// Card network where the transaction took place. VISA, MASTERCARD, MAESTRO, or
-// INTERLINK.
+// Card network where the transaction took place. AMEX, VISA, MASTERCARD, MAESTRO,
+// or INTERLINK.
 type ReportSettlementNetworkTotalGetResponseNetwork string
 
 const (
+	ReportSettlementNetworkTotalGetResponseNetworkAmex       ReportSettlementNetworkTotalGetResponseNetwork = "AMEX"
 	ReportSettlementNetworkTotalGetResponseNetworkVisa       ReportSettlementNetworkTotalGetResponseNetwork = "VISA"
 	ReportSettlementNetworkTotalGetResponseNetworkMastercard ReportSettlementNetworkTotalGetResponseNetwork = "MASTERCARD"
 	ReportSettlementNetworkTotalGetResponseNetworkMaestro    ReportSettlementNetworkTotalGetResponseNetwork = "MAESTRO"
@@ -173,7 +178,7 @@ const (
 
 func (r ReportSettlementNetworkTotalGetResponseNetwork) IsKnown() bool {
 	switch r {
-	case ReportSettlementNetworkTotalGetResponseNetworkVisa, ReportSettlementNetworkTotalGetResponseNetworkMastercard, ReportSettlementNetworkTotalGetResponseNetworkMaestro, ReportSettlementNetworkTotalGetResponseNetworkInterlink:
+	case ReportSettlementNetworkTotalGetResponseNetworkAmex, ReportSettlementNetworkTotalGetResponseNetworkVisa, ReportSettlementNetworkTotalGetResponseNetworkMastercard, ReportSettlementNetworkTotalGetResponseNetworkMaestro, ReportSettlementNetworkTotalGetResponseNetworkInterlink:
 		return true
 	}
 	return false
@@ -191,8 +196,11 @@ type ReportSettlementNetworkTotalListResponse struct {
 	// Association). For Maestro: institution ID. For Visa: lowest level SRE
 	// (Settlement Reporting Entity).
 	InstitutionID string `json:"institution_id,required"`
-	// Card network where the transaction took place. VISA, MASTERCARD, MAESTRO, or
-	// INTERLINK.
+	// Indicates that all settlement records related to this Network Total are
+	// available in the details endpoint.
+	IsComplete bool `json:"is_complete,required"`
+	// Card network where the transaction took place. AMEX, VISA, MASTERCARD, MAESTRO,
+	// or INTERLINK.
 	Network ReportSettlementNetworkTotalListResponseNetwork `json:"network,required"`
 	// Date that the network total record applies to. YYYY-MM-DD format.
 	ReportDate time.Time `json:"report_date,required" format:"date"`
@@ -217,6 +225,7 @@ type reportSettlementNetworkTotalListResponseJSON struct {
 	Created                 apijson.Field
 	Currency                apijson.Field
 	InstitutionID           apijson.Field
+	IsComplete              apijson.Field
 	Network                 apijson.Field
 	ReportDate              apijson.Field
 	SettlementInstitutionID apijson.Field
@@ -267,11 +276,12 @@ func (r reportSettlementNetworkTotalListResponseAmountsJSON) RawJSON() string {
 	return r.raw
 }
 
-// Card network where the transaction took place. VISA, MASTERCARD, MAESTRO, or
-// INTERLINK.
+// Card network where the transaction took place. AMEX, VISA, MASTERCARD, MAESTRO,
+// or INTERLINK.
 type ReportSettlementNetworkTotalListResponseNetwork string
 
 const (
+	ReportSettlementNetworkTotalListResponseNetworkAmex       ReportSettlementNetworkTotalListResponseNetwork = "AMEX"
 	ReportSettlementNetworkTotalListResponseNetworkVisa       ReportSettlementNetworkTotalListResponseNetwork = "VISA"
 	ReportSettlementNetworkTotalListResponseNetworkMastercard ReportSettlementNetworkTotalListResponseNetwork = "MASTERCARD"
 	ReportSettlementNetworkTotalListResponseNetworkMaestro    ReportSettlementNetworkTotalListResponseNetwork = "MAESTRO"
@@ -280,7 +290,7 @@ const (
 
 func (r ReportSettlementNetworkTotalListResponseNetwork) IsKnown() bool {
 	switch r {
-	case ReportSettlementNetworkTotalListResponseNetworkVisa, ReportSettlementNetworkTotalListResponseNetworkMastercard, ReportSettlementNetworkTotalListResponseNetworkMaestro, ReportSettlementNetworkTotalListResponseNetworkInterlink:
+	case ReportSettlementNetworkTotalListResponseNetworkAmex, ReportSettlementNetworkTotalListResponseNetworkVisa, ReportSettlementNetworkTotalListResponseNetworkMastercard, ReportSettlementNetworkTotalListResponseNetworkMaestro, ReportSettlementNetworkTotalListResponseNetworkInterlink:
 		return true
 	}
 	return false
