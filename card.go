@@ -470,6 +470,8 @@ type NonPCICard struct {
 	AuthRuleTokens []string `json:"auth_rule_tokens"`
 	// 3-character alphabetic ISO 4217 code for the currency of the cardholder.
 	CardholderCurrency string `json:"cardholder_currency"`
+	// Additional context or information related to the card.
+	Comment string `json:"comment"`
 	// Specifies the digital card art to be displayed in the user's digital wallet
 	// after tokenization. This artwork must be approved by Mastercard and configured
 	// by Lithic to use.
@@ -482,6 +484,10 @@ type NonPCICard struct {
 	Hostname string `json:"hostname"`
 	// Friendly name to identify the card.
 	Memo string `json:"memo"`
+	// Globally unique identifier for the card's network program. Null if the card is
+	// not associated with a network program. Currently applicable to Visa cards
+	// participating in Account Level Management only
+	NetworkProgramToken string `json:"network_program_token,nullable"`
 	// Indicates if there are offline PIN changes pending card interaction with an
 	// offline PIN terminal. Possible commands are: CHANGE_PIN, UNBLOCK_PIN. Applicable
 	// only to cards issued in markets supporting offline PINs.
@@ -492,8 +498,29 @@ type NonPCICard struct {
 	ProductID string `json:"product_id"`
 	// If the card is a replacement for another card, the globally unique identifier
 	// for the card that was replaced.
-	ReplacementFor string         `json:"replacement_for,nullable"`
-	JSON           nonPCICardJSON `json:"-"`
+	ReplacementFor string `json:"replacement_for,nullable"`
+	// Card state substatus values: _ `LOST` - The physical card is no longer in the
+	// cardholder's possession due to being lost or never received by the cardholder. _
+	// `COMPROMISED` - Card information has been exposed, potentially leading to
+	// unauthorized access. This may involve physical card theft, cloning, or online
+	// data breaches. _ `DAMAGED` - The physical card is not functioning properly, such
+	// as having chip failures or a demagnetized magnetic stripe. _
+	// `END_USER_REQUEST` - The cardholder requested the closure of the card for
+	// reasons unrelated to fraud or damage, such as switching to a different product
+	// or closing the account. _ `ISSUER_REQUEST` - The issuer closed the card for
+	// reasons unrelated to fraud or damage, such as account inactivity, product or
+	// policy changes, or technology upgrades. _ `NOT_ACTIVE` - The card hasn’t had any
+	// transaction activity for a specified period, applicable to statuses like
+	// `PAUSED` or `CLOSED`. _ `SUSPICIOUS_ACTIVITY` - The card has one or more
+	// suspicious transactions or activities that require review. This can involve
+	// prompting the cardholder to confirm legitimate use or report confirmed fraud. _
+	// `INTERNAL_REVIEW` - The card is temporarily paused pending further internal
+	// review. _ `EXPIRED` - The card has expired and has been closed without being
+	// reissued. _ `UNDELIVERABLE` - The card cannot be delivered to the cardholder and
+	// has been returned. \* `OTHER` - The reason for the status does not fall into any
+	// of the above categories. A comment can be provided to specify the reason.
+	Substatus NonPCICardSubstatus `json:"substatus"`
+	JSON      nonPCICardJSON      `json:"-"`
 }
 
 // nonPCICardJSON contains the JSON metadata for the struct [NonPCICard]
@@ -511,14 +538,17 @@ type nonPCICardJSON struct {
 	Type                apijson.Field
 	AuthRuleTokens      apijson.Field
 	CardholderCurrency  apijson.Field
+	Comment             apijson.Field
 	DigitalCardArtToken apijson.Field
 	ExpMonth            apijson.Field
 	ExpYear             apijson.Field
 	Hostname            apijson.Field
 	Memo                apijson.Field
+	NetworkProgramToken apijson.Field
 	PendingCommands     apijson.Field
 	ProductID           apijson.Field
 	ReplacementFor      apijson.Field
+	Substatus           apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
 }
@@ -690,6 +720,50 @@ const (
 func (r NonPCICardType) IsKnown() bool {
 	switch r {
 	case NonPCICardTypeMerchantLocked, NonPCICardTypePhysical, NonPCICardTypeSingleUse, NonPCICardTypeVirtual, NonPCICardTypeUnlocked, NonPCICardTypeDigitalWallet:
+		return true
+	}
+	return false
+}
+
+// Card state substatus values: _ `LOST` - The physical card is no longer in the
+// cardholder's possession due to being lost or never received by the cardholder. _
+// `COMPROMISED` - Card information has been exposed, potentially leading to
+// unauthorized access. This may involve physical card theft, cloning, or online
+// data breaches. _ `DAMAGED` - The physical card is not functioning properly, such
+// as having chip failures or a demagnetized magnetic stripe. _
+// `END_USER_REQUEST` - The cardholder requested the closure of the card for
+// reasons unrelated to fraud or damage, such as switching to a different product
+// or closing the account. _ `ISSUER_REQUEST` - The issuer closed the card for
+// reasons unrelated to fraud or damage, such as account inactivity, product or
+// policy changes, or technology upgrades. _ `NOT_ACTIVE` - The card hasn’t had any
+// transaction activity for a specified period, applicable to statuses like
+// `PAUSED` or `CLOSED`. _ `SUSPICIOUS_ACTIVITY` - The card has one or more
+// suspicious transactions or activities that require review. This can involve
+// prompting the cardholder to confirm legitimate use or report confirmed fraud. _
+// `INTERNAL_REVIEW` - The card is temporarily paused pending further internal
+// review. _ `EXPIRED` - The card has expired and has been closed without being
+// reissued. _ `UNDELIVERABLE` - The card cannot be delivered to the cardholder and
+// has been returned. \* `OTHER` - The reason for the status does not fall into any
+// of the above categories. A comment can be provided to specify the reason.
+type NonPCICardSubstatus string
+
+const (
+	NonPCICardSubstatusLost               NonPCICardSubstatus = "LOST"
+	NonPCICardSubstatusCompromised        NonPCICardSubstatus = "COMPROMISED"
+	NonPCICardSubstatusDamaged            NonPCICardSubstatus = "DAMAGED"
+	NonPCICardSubstatusEndUserRequest     NonPCICardSubstatus = "END_USER_REQUEST"
+	NonPCICardSubstatusIssuerRequest      NonPCICardSubstatus = "ISSUER_REQUEST"
+	NonPCICardSubstatusNotActive          NonPCICardSubstatus = "NOT_ACTIVE"
+	NonPCICardSubstatusSuspiciousActivity NonPCICardSubstatus = "SUSPICIOUS_ACTIVITY"
+	NonPCICardSubstatusInternalReview     NonPCICardSubstatus = "INTERNAL_REVIEW"
+	NonPCICardSubstatusExpired            NonPCICardSubstatus = "EXPIRED"
+	NonPCICardSubstatusUndeliverable      NonPCICardSubstatus = "UNDELIVERABLE"
+	NonPCICardSubstatusOther              NonPCICardSubstatus = "OTHER"
+)
+
+func (r NonPCICardSubstatus) IsKnown() bool {
+	switch r {
+	case NonPCICardSubstatusLost, NonPCICardSubstatusCompromised, NonPCICardSubstatusDamaged, NonPCICardSubstatusEndUserRequest, NonPCICardSubstatusIssuerRequest, NonPCICardSubstatusNotActive, NonPCICardSubstatusSuspiciousActivity, NonPCICardSubstatusInternalReview, NonPCICardSubstatusExpired, NonPCICardSubstatusUndeliverable, NonPCICardSubstatusOther:
 		return true
 	}
 	return false
@@ -886,11 +960,42 @@ type CardNewParams struct {
 	// If `replacement_for` is specified and this field is omitted, the replacement
 	// card's account will be inferred from the card being replaced.
 	ReplacementAccountToken param.Field[string] `json:"replacement_account_token" format:"uuid"`
+	// Additional context or information related to the card that this card will
+	// replace.
+	ReplacementComment param.Field[string] `json:"replacement_comment"`
 	// Globally unique identifier for the card that this card will replace. If the card
 	// type is `PHYSICAL` it will be replaced by a `PHYSICAL` card. If the card type is
 	// `VIRTUAL` it will be replaced by a `VIRTUAL` card.
-	ReplacementFor  param.Field[string]                      `json:"replacement_for" format:"uuid"`
-	ShippingAddress param.Field[shared.ShippingAddressParam] `json:"shipping_address"`
+	ReplacementFor param.Field[string] `json:"replacement_for" format:"uuid"`
+	// Card state substatus values for the card that this card will replace:
+	//
+	//   - `LOST` - The physical card is no longer in the cardholder's possession due to
+	//     being lost or never received by the cardholder.
+	//   - `COMPROMISED` - Card information has been exposed, potentially leading to
+	//     unauthorized access. This may involve physical card theft, cloning, or online
+	//     data breaches.
+	//   - `DAMAGED` - The physical card is not functioning properly, such as having chip
+	//     failures or a demagnetized magnetic stripe.
+	//   - `END_USER_REQUEST` - The cardholder requested the closure of the card for
+	//     reasons unrelated to fraud or damage, such as switching to a different product
+	//     or closing the account.
+	//   - `ISSUER_REQUEST` - The issuer closed the card for reasons unrelated to fraud
+	//     or damage, such as account inactivity, product or policy changes, or
+	//     technology upgrades.
+	//   - `NOT_ACTIVE` - The card hasn’t had any transaction activity for a specified
+	//     period, applicable to statuses like `PAUSED` or `CLOSED`.
+	//   - `SUSPICIOUS_ACTIVITY` - The card has one or more suspicious transactions or
+	//     activities that require review. This can involve prompting the cardholder to
+	//     confirm legitimate use or report confirmed fraud.
+	//   - `INTERNAL_REVIEW` - The card is temporarily paused pending further internal
+	//     review.
+	//   - `EXPIRED` - The card has expired and has been closed without being reissued.
+	//   - `UNDELIVERABLE` - The card cannot be delivered to the cardholder and has been
+	//     returned.
+	//   - `OTHER` - The reason for the status does not fall into any of the above
+	//     categories. A comment should be provided to specify the reason.
+	ReplacementSubstatus param.Field[CardNewParamsReplacementSubstatus] `json:"replacement_substatus"`
+	ShippingAddress      param.Field[shared.ShippingAddressParam]       `json:"shipping_address"`
 	// Shipping method for the card. Only applies to cards of type PHYSICAL. Use of
 	// options besides `STANDARD` require additional permissions.
 	//
@@ -973,6 +1078,57 @@ func (r CardNewParamsType) IsKnown() bool {
 	return false
 }
 
+// Card state substatus values for the card that this card will replace:
+//
+//   - `LOST` - The physical card is no longer in the cardholder's possession due to
+//     being lost or never received by the cardholder.
+//   - `COMPROMISED` - Card information has been exposed, potentially leading to
+//     unauthorized access. This may involve physical card theft, cloning, or online
+//     data breaches.
+//   - `DAMAGED` - The physical card is not functioning properly, such as having chip
+//     failures or a demagnetized magnetic stripe.
+//   - `END_USER_REQUEST` - The cardholder requested the closure of the card for
+//     reasons unrelated to fraud or damage, such as switching to a different product
+//     or closing the account.
+//   - `ISSUER_REQUEST` - The issuer closed the card for reasons unrelated to fraud
+//     or damage, such as account inactivity, product or policy changes, or
+//     technology upgrades.
+//   - `NOT_ACTIVE` - The card hasn’t had any transaction activity for a specified
+//     period, applicable to statuses like `PAUSED` or `CLOSED`.
+//   - `SUSPICIOUS_ACTIVITY` - The card has one or more suspicious transactions or
+//     activities that require review. This can involve prompting the cardholder to
+//     confirm legitimate use or report confirmed fraud.
+//   - `INTERNAL_REVIEW` - The card is temporarily paused pending further internal
+//     review.
+//   - `EXPIRED` - The card has expired and has been closed without being reissued.
+//   - `UNDELIVERABLE` - The card cannot be delivered to the cardholder and has been
+//     returned.
+//   - `OTHER` - The reason for the status does not fall into any of the above
+//     categories. A comment should be provided to specify the reason.
+type CardNewParamsReplacementSubstatus string
+
+const (
+	CardNewParamsReplacementSubstatusLost               CardNewParamsReplacementSubstatus = "LOST"
+	CardNewParamsReplacementSubstatusCompromised        CardNewParamsReplacementSubstatus = "COMPROMISED"
+	CardNewParamsReplacementSubstatusDamaged            CardNewParamsReplacementSubstatus = "DAMAGED"
+	CardNewParamsReplacementSubstatusEndUserRequest     CardNewParamsReplacementSubstatus = "END_USER_REQUEST"
+	CardNewParamsReplacementSubstatusIssuerRequest      CardNewParamsReplacementSubstatus = "ISSUER_REQUEST"
+	CardNewParamsReplacementSubstatusNotActive          CardNewParamsReplacementSubstatus = "NOT_ACTIVE"
+	CardNewParamsReplacementSubstatusSuspiciousActivity CardNewParamsReplacementSubstatus = "SUSPICIOUS_ACTIVITY"
+	CardNewParamsReplacementSubstatusInternalReview     CardNewParamsReplacementSubstatus = "INTERNAL_REVIEW"
+	CardNewParamsReplacementSubstatusExpired            CardNewParamsReplacementSubstatus = "EXPIRED"
+	CardNewParamsReplacementSubstatusUndeliverable      CardNewParamsReplacementSubstatus = "UNDELIVERABLE"
+	CardNewParamsReplacementSubstatusOther              CardNewParamsReplacementSubstatus = "OTHER"
+)
+
+func (r CardNewParamsReplacementSubstatus) IsKnown() bool {
+	switch r {
+	case CardNewParamsReplacementSubstatusLost, CardNewParamsReplacementSubstatusCompromised, CardNewParamsReplacementSubstatusDamaged, CardNewParamsReplacementSubstatusEndUserRequest, CardNewParamsReplacementSubstatusIssuerRequest, CardNewParamsReplacementSubstatusNotActive, CardNewParamsReplacementSubstatusSuspiciousActivity, CardNewParamsReplacementSubstatusInternalReview, CardNewParamsReplacementSubstatusExpired, CardNewParamsReplacementSubstatusUndeliverable, CardNewParamsReplacementSubstatusOther:
+		return true
+	}
+	return false
+}
+
 // Shipping method for the card. Only applies to cards of type PHYSICAL. Use of
 // options besides `STANDARD` require additional permissions.
 //
@@ -1028,6 +1184,8 @@ func (r CardNewParamsState) IsKnown() bool {
 }
 
 type CardUpdateParams struct {
+	// Additional context or information related to the card.
+	Comment param.Field[string] `json:"comment"`
 	// Specifies the digital card art to be displayed in the user’s digital wallet
 	// after tokenization. This artwork must be approved by Mastercard and configured
 	// by Lithic to use. See
@@ -1035,6 +1193,9 @@ type CardUpdateParams struct {
 	DigitalCardArtToken param.Field[string] `json:"digital_card_art_token" format:"uuid"`
 	// Friendly name to identify the card.
 	Memo param.Field[string] `json:"memo"`
+	// Globally unique identifier for the card's network program. Currently applicable
+	// to Visa cards participating in Account Level Management only.
+	NetworkProgramToken param.Field[string] `json:"network_program_token" format:"uuid"`
 	// Encrypted PIN block (in base64). Only applies to cards of type `PHYSICAL` and
 	// `VIRTUAL`. Changing PIN also resets PIN status to `OK`. See
 	// [Encrypted PIN Block](https://docs.lithic.com/docs/cards#encrypted-pin-block).
@@ -1070,6 +1231,34 @@ type CardUpdateParams struct {
 	//   - `PAUSED` - Card will decline authorizations, but can be resumed at a later
 	//     time.
 	State param.Field[CardUpdateParamsState] `json:"state"`
+	// Card state substatus values:
+	//
+	//   - `LOST` - The physical card is no longer in the cardholder's possession due to
+	//     being lost or never received by the cardholder.
+	//   - `COMPROMISED` - Card information has been exposed, potentially leading to
+	//     unauthorized access. This may involve physical card theft, cloning, or online
+	//     data breaches.
+	//   - `DAMAGED` - The physical card is not functioning properly, such as having chip
+	//     failures or a demagnetized magnetic stripe.
+	//   - `END_USER_REQUEST` - The cardholder requested the closure of the card for
+	//     reasons unrelated to fraud or damage, such as switching to a different product
+	//     or closing the account.
+	//   - `ISSUER_REQUEST` - The issuer closed the card for reasons unrelated to fraud
+	//     or damage, such as account inactivity, product or policy changes, or
+	//     technology upgrades.
+	//   - `NOT_ACTIVE` - The card hasn’t had any transaction activity for a specified
+	//     period, applicable to statuses like `PAUSED` or `CLOSED`.
+	//   - `SUSPICIOUS_ACTIVITY` - The card has one or more suspicious transactions or
+	//     activities that require review. This can involve prompting the cardholder to
+	//     confirm legitimate use or report confirmed fraud.
+	//   - `INTERNAL_REVIEW` - The card is temporarily paused pending further internal
+	//     review.
+	//   - `EXPIRED` - The card has expired and has been closed without being reissued.
+	//   - `UNDELIVERABLE` - The card cannot be delivered to the cardholder and has been
+	//     returned.
+	//   - `OTHER` - The reason for the status does not fall into any of the above
+	//     categories. A comment should be provided to specify the reason.
+	Substatus param.Field[CardUpdateParamsSubstatus] `json:"substatus"`
 }
 
 func (r CardUpdateParams) MarshalJSON() (data []byte, err error) {
@@ -1111,6 +1300,57 @@ const (
 func (r CardUpdateParamsState) IsKnown() bool {
 	switch r {
 	case CardUpdateParamsStateClosed, CardUpdateParamsStateOpen, CardUpdateParamsStatePaused:
+		return true
+	}
+	return false
+}
+
+// Card state substatus values:
+//
+//   - `LOST` - The physical card is no longer in the cardholder's possession due to
+//     being lost or never received by the cardholder.
+//   - `COMPROMISED` - Card information has been exposed, potentially leading to
+//     unauthorized access. This may involve physical card theft, cloning, or online
+//     data breaches.
+//   - `DAMAGED` - The physical card is not functioning properly, such as having chip
+//     failures or a demagnetized magnetic stripe.
+//   - `END_USER_REQUEST` - The cardholder requested the closure of the card for
+//     reasons unrelated to fraud or damage, such as switching to a different product
+//     or closing the account.
+//   - `ISSUER_REQUEST` - The issuer closed the card for reasons unrelated to fraud
+//     or damage, such as account inactivity, product or policy changes, or
+//     technology upgrades.
+//   - `NOT_ACTIVE` - The card hasn’t had any transaction activity for a specified
+//     period, applicable to statuses like `PAUSED` or `CLOSED`.
+//   - `SUSPICIOUS_ACTIVITY` - The card has one or more suspicious transactions or
+//     activities that require review. This can involve prompting the cardholder to
+//     confirm legitimate use or report confirmed fraud.
+//   - `INTERNAL_REVIEW` - The card is temporarily paused pending further internal
+//     review.
+//   - `EXPIRED` - The card has expired and has been closed without being reissued.
+//   - `UNDELIVERABLE` - The card cannot be delivered to the cardholder and has been
+//     returned.
+//   - `OTHER` - The reason for the status does not fall into any of the above
+//     categories. A comment should be provided to specify the reason.
+type CardUpdateParamsSubstatus string
+
+const (
+	CardUpdateParamsSubstatusLost               CardUpdateParamsSubstatus = "LOST"
+	CardUpdateParamsSubstatusCompromised        CardUpdateParamsSubstatus = "COMPROMISED"
+	CardUpdateParamsSubstatusDamaged            CardUpdateParamsSubstatus = "DAMAGED"
+	CardUpdateParamsSubstatusEndUserRequest     CardUpdateParamsSubstatus = "END_USER_REQUEST"
+	CardUpdateParamsSubstatusIssuerRequest      CardUpdateParamsSubstatus = "ISSUER_REQUEST"
+	CardUpdateParamsSubstatusNotActive          CardUpdateParamsSubstatus = "NOT_ACTIVE"
+	CardUpdateParamsSubstatusSuspiciousActivity CardUpdateParamsSubstatus = "SUSPICIOUS_ACTIVITY"
+	CardUpdateParamsSubstatusInternalReview     CardUpdateParamsSubstatus = "INTERNAL_REVIEW"
+	CardUpdateParamsSubstatusExpired            CardUpdateParamsSubstatus = "EXPIRED"
+	CardUpdateParamsSubstatusUndeliverable      CardUpdateParamsSubstatus = "UNDELIVERABLE"
+	CardUpdateParamsSubstatusOther              CardUpdateParamsSubstatus = "OTHER"
+)
+
+func (r CardUpdateParamsSubstatus) IsKnown() bool {
+	switch r {
+	case CardUpdateParamsSubstatusLost, CardUpdateParamsSubstatusCompromised, CardUpdateParamsSubstatusDamaged, CardUpdateParamsSubstatusEndUserRequest, CardUpdateParamsSubstatusIssuerRequest, CardUpdateParamsSubstatusNotActive, CardUpdateParamsSubstatusSuspiciousActivity, CardUpdateParamsSubstatusInternalReview, CardUpdateParamsSubstatusExpired, CardUpdateParamsSubstatusUndeliverable, CardUpdateParamsSubstatusOther:
 		return true
 	}
 	return false

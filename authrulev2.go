@@ -532,11 +532,8 @@ type Conditional3DsActionParametersCondition struct {
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
-	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
-	//     given authentication. Scores are on a range of 0-999, with 0 representing the
-	//     lowest risk and 999 representing the highest risk. For Visa transactions,
-	//     where the raw score has a range of 0-99, Lithic will normalize the score by
-	//     multiplying the raw score by 10x.
+	//   - `RISK_SCORE`: Mastercard only: Assessment by the network of the authentication
+	//     risk level, with a higher value indicating a higher amount of risk.
 	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
 	Attribute Conditional3DSActionParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
@@ -582,11 +579,8 @@ func (r conditional3DsActionParametersConditionJSON) RawJSON() string {
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
-//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
-//     given authentication. Scores are on a range of 0-999, with 0 representing the
-//     lowest risk and 999 representing the highest risk. For Visa transactions,
-//     where the raw score has a range of 0-99, Lithic will normalize the score by
-//     multiplying the raw score by 10x.
+//   - `RISK_SCORE`: Mastercard only: Assessment by the network of the authentication
+//     risk level, with a higher value indicating a higher amount of risk.
 //   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
 type Conditional3DSActionParametersConditionsAttribute string
 
@@ -966,8 +960,8 @@ type VelocityLimitParams struct {
 	Filters VelocityLimitParamsFilters `json:"filters,required"`
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodUnion `json:"period,required"`
-	Scope  VelocityLimitParamsScope       `json:"scope,required"`
+	Period VelocityLimitParamsPeriodWindowUnion `json:"period,required"`
+	Scope  VelocityLimitParamsScope             `json:"scope,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -1066,29 +1060,6 @@ func (r velocityLimitParamsFiltersJSON) RawJSON() string {
 	return r.raw
 }
 
-// The size of the trailing window to calculate Spend Velocity over in seconds. The
-// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-//
-// Union satisfied by [shared.UnionInt] or [VelocityLimitParamsPeriodWindow].
-type VelocityLimitParamsPeriodUnion interface {
-	ImplementsVelocityLimitParamsPeriodUnion()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*VelocityLimitParamsPeriodUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionInt(0)),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.String,
-			Type:       reflect.TypeOf(VelocityLimitParamsPeriodWindow("")),
-		},
-	)
-}
-
 type VelocityLimitParamsScope string
 
 const (
@@ -1104,6 +1075,55 @@ func (r VelocityLimitParamsScope) IsKnown() bool {
 	return false
 }
 
+// The size of the trailing window to calculate Spend Velocity over in seconds. The
+// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+//
+// Union satisfied by [shared.UnionInt],
+// [VelocityLimitParamsPeriodWindowFixedWindow],
+// [VelocityLimitParamsPeriodWindowTrailingWindowObject],
+// [VelocityLimitParamsPeriodWindowFixedWindowDay],
+// [VelocityLimitParamsPeriodWindowFixedWindowWeek],
+// [VelocityLimitParamsPeriodWindowFixedWindowMonth] or
+// [VelocityLimitParamsPeriodWindowFixedWindowYear].
+type VelocityLimitParamsPeriodWindowUnion interface {
+	ImplementsVelocityLimitParamsPeriodWindowUnion()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*VelocityLimitParamsPeriodWindowUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(VelocityLimitParamsPeriodWindowFixedWindow("")),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(VelocityLimitParamsPeriodWindowTrailingWindowObject{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(VelocityLimitParamsPeriodWindowFixedWindowDay{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(VelocityLimitParamsPeriodWindowFixedWindowWeek{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(VelocityLimitParamsPeriodWindowFixedWindowMonth{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(VelocityLimitParamsPeriodWindowFixedWindowYear{}),
+		},
+	)
+}
+
 // The window of time to calculate Spend Velocity over.
 //
 //   - `DAY`: Velocity over the current day since midnight Eastern Time.
@@ -1113,24 +1133,67 @@ func (r VelocityLimitParamsScope) IsKnown() bool {
 //     the month in Eastern Time.
 //   - `YEAR`: Velocity over the current year since 00:00 / 12 AM on January 1st in
 //     Eastern Time.
-type VelocityLimitParamsPeriodWindow string
+type VelocityLimitParamsPeriodWindowFixedWindow string
 
 const (
-	VelocityLimitParamsPeriodWindowDay   VelocityLimitParamsPeriodWindow = "DAY"
-	VelocityLimitParamsPeriodWindowWeek  VelocityLimitParamsPeriodWindow = "WEEK"
-	VelocityLimitParamsPeriodWindowMonth VelocityLimitParamsPeriodWindow = "MONTH"
-	VelocityLimitParamsPeriodWindowYear  VelocityLimitParamsPeriodWindow = "YEAR"
+	VelocityLimitParamsPeriodWindowFixedWindowDay   VelocityLimitParamsPeriodWindowFixedWindow = "DAY"
+	VelocityLimitParamsPeriodWindowFixedWindowWeek  VelocityLimitParamsPeriodWindowFixedWindow = "WEEK"
+	VelocityLimitParamsPeriodWindowFixedWindowMonth VelocityLimitParamsPeriodWindowFixedWindow = "MONTH"
+	VelocityLimitParamsPeriodWindowFixedWindowYear  VelocityLimitParamsPeriodWindowFixedWindow = "YEAR"
 )
 
-func (r VelocityLimitParamsPeriodWindow) IsKnown() bool {
+func (r VelocityLimitParamsPeriodWindowFixedWindow) IsKnown() bool {
 	switch r {
-	case VelocityLimitParamsPeriodWindowDay, VelocityLimitParamsPeriodWindowWeek, VelocityLimitParamsPeriodWindowMonth, VelocityLimitParamsPeriodWindowYear:
+	case VelocityLimitParamsPeriodWindowFixedWindowDay, VelocityLimitParamsPeriodWindowFixedWindowWeek, VelocityLimitParamsPeriodWindowFixedWindowMonth, VelocityLimitParamsPeriodWindowFixedWindowYear:
 		return true
 	}
 	return false
 }
 
-func (r VelocityLimitParamsPeriodWindow) ImplementsVelocityLimitParamsPeriodUnion() {}
+func (r VelocityLimitParamsPeriodWindowFixedWindow) ImplementsVelocityLimitParamsPeriodWindowUnion() {
+}
+
+type VelocityLimitParamsPeriodWindowTrailingWindowObject struct {
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Duration int64                                                   `json:"duration"`
+	Type     VelocityLimitParamsPeriodWindowTrailingWindowObjectType `json:"type"`
+	JSON     velocityLimitParamsPeriodWindowTrailingWindowObjectJSON `json:"-"`
+}
+
+// velocityLimitParamsPeriodWindowTrailingWindowObjectJSON contains the JSON
+// metadata for the struct [VelocityLimitParamsPeriodWindowTrailingWindowObject]
+type velocityLimitParamsPeriodWindowTrailingWindowObjectJSON struct {
+	Duration    apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *VelocityLimitParamsPeriodWindowTrailingWindowObject) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r velocityLimitParamsPeriodWindowTrailingWindowObjectJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r VelocityLimitParamsPeriodWindowTrailingWindowObject) ImplementsVelocityLimitParamsPeriodWindowUnion() {
+}
+
+type VelocityLimitParamsPeriodWindowTrailingWindowObjectType string
+
+const (
+	VelocityLimitParamsPeriodWindowTrailingWindowObjectTypeCustom VelocityLimitParamsPeriodWindowTrailingWindowObjectType = "CUSTOM"
+)
+
+func (r VelocityLimitParamsPeriodWindowTrailingWindowObjectType) IsKnown() bool {
+	switch r {
+	case VelocityLimitParamsPeriodWindowTrailingWindowObjectTypeCustom:
+		return true
+	}
+	return false
+}
 
 type AuthRuleV2NewResponse struct {
 	// Auth Rule Token
@@ -1235,8 +1298,9 @@ type AuthRuleV2NewResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
-	Period interface{}                                        `json:"period"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period VelocityLimitParamsPeriodWindowUnion               `json:"period"`
 	Scope  AuthRuleV2NewResponseCurrentVersionParametersScope `json:"scope"`
 	JSON   authRuleV2NewResponseCurrentVersionParametersJSON  `json:"-"`
 	union  AuthRuleV2NewResponseCurrentVersionParametersUnion
@@ -1389,8 +1453,9 @@ type AuthRuleV2NewResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
-	Period interface{}                                      `json:"period"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period VelocityLimitParamsPeriodWindowUnion             `json:"period"`
 	Scope  AuthRuleV2NewResponseDraftVersionParametersScope `json:"scope"`
 	JSON   authRuleV2NewResponseDraftVersionParametersJSON  `json:"-"`
 	union  AuthRuleV2NewResponseDraftVersionParametersUnion
@@ -1655,8 +1720,9 @@ type AuthRuleV2GetResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
-	Period interface{}                                        `json:"period"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period VelocityLimitParamsPeriodWindowUnion               `json:"period"`
 	Scope  AuthRuleV2GetResponseCurrentVersionParametersScope `json:"scope"`
 	JSON   authRuleV2GetResponseCurrentVersionParametersJSON  `json:"-"`
 	union  AuthRuleV2GetResponseCurrentVersionParametersUnion
@@ -1809,8 +1875,9 @@ type AuthRuleV2GetResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
-	Period interface{}                                      `json:"period"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period VelocityLimitParamsPeriodWindowUnion             `json:"period"`
 	Scope  AuthRuleV2GetResponseDraftVersionParametersScope `json:"scope"`
 	JSON   authRuleV2GetResponseDraftVersionParametersJSON  `json:"-"`
 	union  AuthRuleV2GetResponseDraftVersionParametersUnion
@@ -2075,8 +2142,9 @@ type AuthRuleV2UpdateResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
-	Period interface{}                                           `json:"period"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period VelocityLimitParamsPeriodWindowUnion                  `json:"period"`
 	Scope  AuthRuleV2UpdateResponseCurrentVersionParametersScope `json:"scope"`
 	JSON   authRuleV2UpdateResponseCurrentVersionParametersJSON  `json:"-"`
 	union  AuthRuleV2UpdateResponseCurrentVersionParametersUnion
@@ -2229,8 +2297,9 @@ type AuthRuleV2UpdateResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
-	Period interface{}                                         `json:"period"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period VelocityLimitParamsPeriodWindowUnion                `json:"period"`
 	Scope  AuthRuleV2UpdateResponseDraftVersionParametersScope `json:"scope"`
 	JSON   authRuleV2UpdateResponseDraftVersionParametersJSON  `json:"-"`
 	union  AuthRuleV2UpdateResponseDraftVersionParametersUnion
@@ -2495,8 +2564,9 @@ type AuthRuleV2ListResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
-	Period interface{}                                         `json:"period"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period VelocityLimitParamsPeriodWindowUnion                `json:"period"`
 	Scope  AuthRuleV2ListResponseCurrentVersionParametersScope `json:"scope"`
 	JSON   authRuleV2ListResponseCurrentVersionParametersJSON  `json:"-"`
 	union  AuthRuleV2ListResponseCurrentVersionParametersUnion
@@ -2649,8 +2719,9 @@ type AuthRuleV2ListResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
-	Period interface{}                                       `json:"period"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period VelocityLimitParamsPeriodWindowUnion              `json:"period"`
 	Scope  AuthRuleV2ListResponseDraftVersionParametersScope `json:"scope"`
 	JSON   authRuleV2ListResponseDraftVersionParametersJSON  `json:"-"`
 	union  AuthRuleV2ListResponseDraftVersionParametersUnion
@@ -2915,8 +2986,9 @@ type AuthRuleV2ApplyResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
-	Period interface{}                                          `json:"period"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period VelocityLimitParamsPeriodWindowUnion                 `json:"period"`
 	Scope  AuthRuleV2ApplyResponseCurrentVersionParametersScope `json:"scope"`
 	JSON   authRuleV2ApplyResponseCurrentVersionParametersJSON  `json:"-"`
 	union  AuthRuleV2ApplyResponseCurrentVersionParametersUnion
@@ -3069,8 +3141,9 @@ type AuthRuleV2ApplyResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
-	Period interface{}                                        `json:"period"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period VelocityLimitParamsPeriodWindowUnion               `json:"period"`
 	Scope  AuthRuleV2ApplyResponseDraftVersionParametersScope `json:"scope"`
 	JSON   authRuleV2ApplyResponseDraftVersionParametersJSON  `json:"-"`
 	union  AuthRuleV2ApplyResponseDraftVersionParametersUnion
@@ -3335,8 +3408,9 @@ type AuthRuleV2DraftResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
-	Period interface{}                                          `json:"period"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period VelocityLimitParamsPeriodWindowUnion                 `json:"period"`
 	Scope  AuthRuleV2DraftResponseCurrentVersionParametersScope `json:"scope"`
 	JSON   authRuleV2DraftResponseCurrentVersionParametersJSON  `json:"-"`
 	union  AuthRuleV2DraftResponseCurrentVersionParametersUnion
@@ -3489,8 +3563,9 @@ type AuthRuleV2DraftResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
-	Period interface{}                                        `json:"period"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period VelocityLimitParamsPeriodWindowUnion               `json:"period"`
 	Scope  AuthRuleV2DraftResponseDraftVersionParametersScope `json:"scope"`
 	JSON   authRuleV2DraftResponseDraftVersionParametersJSON  `json:"-"`
 	union  AuthRuleV2DraftResponseDraftVersionParametersUnion
@@ -3755,8 +3830,9 @@ type AuthRuleV2PromoteResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
-	Period interface{}                                            `json:"period"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period VelocityLimitParamsPeriodWindowUnion                   `json:"period"`
 	Scope  AuthRuleV2PromoteResponseCurrentVersionParametersScope `json:"scope"`
 	JSON   authRuleV2PromoteResponseCurrentVersionParametersJSON  `json:"-"`
 	union  AuthRuleV2PromoteResponseCurrentVersionParametersUnion
@@ -3909,8 +3985,9 @@ type AuthRuleV2PromoteResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// This field can have the runtime type of [VelocityLimitParamsPeriodUnion].
-	Period interface{}                                          `json:"period"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period VelocityLimitParamsPeriodWindowUnion                 `json:"period"`
 	Scope  AuthRuleV2PromoteResponseDraftVersionParametersScope `json:"scope"`
 	JSON   authRuleV2PromoteResponseDraftVersionParametersJSON  `json:"-"`
 	union  AuthRuleV2PromoteResponseDraftVersionParametersUnion
@@ -4232,10 +4309,12 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters struct 
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount param.Field[int64]                                                                    `json:"limit_count"`
-	Merchants  param.Field[interface{}]                                                              `json:"merchants"`
-	Period     param.Field[interface{}]                                                              `json:"period"`
-	Scope      param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersScope] `json:"scope"`
+	LimitCount param.Field[int64]       `json:"limit_count"`
+	Merchants  param.Field[interface{}] `json:"merchants"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period param.Field[VelocityLimitParamsPeriodWindowUnion]                                     `json:"period"`
+	Scope  param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersScope] `json:"scope"`
 }
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters) MarshalJSON() (data []byte, err error) {
@@ -4348,10 +4427,12 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount param.Field[int64]                                                                 `json:"limit_count"`
-	Merchants  param.Field[interface{}]                                                           `json:"merchants"`
-	Period     param.Field[interface{}]                                                           `json:"period"`
-	Scope      param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersScope] `json:"scope"`
+	LimitCount param.Field[int64]       `json:"limit_count"`
+	Merchants  param.Field[interface{}] `json:"merchants"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period param.Field[VelocityLimitParamsPeriodWindowUnion]                                  `json:"period"`
+	Scope  param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersScope] `json:"scope"`
 }
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters) MarshalJSON() (data []byte, err error) {
@@ -4466,10 +4547,12 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount param.Field[int64]                                                                   `json:"limit_count"`
-	Merchants  param.Field[interface{}]                                                             `json:"merchants"`
-	Period     param.Field[interface{}]                                                             `json:"period"`
-	Scope      param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersScope] `json:"scope"`
+	LimitCount param.Field[int64]       `json:"limit_count"`
+	Merchants  param.Field[interface{}] `json:"merchants"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period param.Field[VelocityLimitParamsPeriodWindowUnion]                                    `json:"period"`
+	Scope  param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersScope] `json:"scope"`
 }
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters) MarshalJSON() (data []byte, err error) {
@@ -4891,10 +4974,12 @@ type AuthRuleV2DraftParamsParameters struct {
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount param.Field[int64]                                `json:"limit_count"`
-	Merchants  param.Field[interface{}]                          `json:"merchants"`
-	Period     param.Field[interface{}]                          `json:"period"`
-	Scope      param.Field[AuthRuleV2DraftParamsParametersScope] `json:"scope"`
+	LimitCount param.Field[int64]       `json:"limit_count"`
+	Merchants  param.Field[interface{}] `json:"merchants"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period param.Field[VelocityLimitParamsPeriodWindowUnion] `json:"period"`
+	Scope  param.Field[AuthRuleV2DraftParamsParametersScope] `json:"scope"`
 }
 
 func (r AuthRuleV2DraftParamsParameters) MarshalJSON() (data []byte, err error) {

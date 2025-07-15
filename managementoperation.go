@@ -92,6 +92,53 @@ func (r *ManagementOperationService) Reverse(ctx context.Context, managementOper
 	return
 }
 
+// External resource associated with the management operation
+type ExternalResource struct {
+	// Token identifying the external resource
+	ExternalResourceToken string `json:"external_resource_token,required"`
+	// Type of external resource associated with the management operation
+	ExternalResourceType ExternalResourceType `json:"external_resource_type,required"`
+	// Token identifying the external resource sub-resource
+	ExternalResourceSubToken string               `json:"external_resource_sub_token"`
+	JSON                     externalResourceJSON `json:"-"`
+}
+
+// externalResourceJSON contains the JSON metadata for the struct
+// [ExternalResource]
+type externalResourceJSON struct {
+	ExternalResourceToken    apijson.Field
+	ExternalResourceType     apijson.Field
+	ExternalResourceSubToken apijson.Field
+	raw                      string
+	ExtraFields              map[string]apijson.Field
+}
+
+func (r *ExternalResource) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r externalResourceJSON) RawJSON() string {
+	return r.raw
+}
+
+// Type of external resource associated with the management operation
+type ExternalResourceType string
+
+const (
+	ExternalResourceTypeStatement  ExternalResourceType = "STATEMENT"
+	ExternalResourceTypeCollection ExternalResourceType = "COLLECTION"
+	ExternalResourceTypeDispute    ExternalResourceType = "DISPUTE"
+	ExternalResourceTypeUnknown    ExternalResourceType = "UNKNOWN"
+)
+
+func (r ExternalResourceType) IsKnown() bool {
+	switch r {
+	case ExternalResourceTypeStatement, ExternalResourceTypeCollection, ExternalResourceTypeDispute, ExternalResourceTypeUnknown:
+		return true
+	}
+	return false
+}
+
 type ManagementOperationTransaction struct {
 	Token                 string                                          `json:"token,required" format:"uuid"`
 	Category              ManagementOperationTransactionCategory          `json:"category,required"`
@@ -106,8 +153,10 @@ type ManagementOperationTransaction struct {
 	Status                ManagementOperationTransactionStatus            `json:"status,required"`
 	TransactionSeries     ManagementOperationTransactionTransactionSeries `json:"transaction_series,required,nullable"`
 	Updated               time.Time                                       `json:"updated,required" format:"date-time"`
-	UserDefinedID         string                                          `json:"user_defined_id"`
-	JSON                  managementOperationTransactionJSON              `json:"-"`
+	// External resource associated with the management operation
+	ExternalResource ExternalResource                   `json:"external_resource,nullable"`
+	UserDefinedID    string                             `json:"user_defined_id"`
+	JSON             managementOperationTransactionJSON `json:"-"`
 }
 
 // managementOperationTransactionJSON contains the JSON metadata for the struct
@@ -126,6 +175,7 @@ type managementOperationTransactionJSON struct {
 	Status                apijson.Field
 	TransactionSeries     apijson.Field
 	Updated               apijson.Field
+	ExternalResource      apijson.Field
 	UserDefinedID         apijson.Field
 	raw                   string
 	ExtraFields           map[string]apijson.Field
@@ -337,8 +387,10 @@ type ManagementOperationNewParams struct {
 	FinancialAccountToken param.Field[string]                                `json:"financial_account_token,required" format:"uuid"`
 	Token                 param.Field[string]                                `json:"token" format:"uuid"`
 	Memo                  param.Field[string]                                `json:"memo"`
-	Subtype               param.Field[string]                                `json:"subtype"`
-	UserDefinedID         param.Field[string]                                `json:"user_defined_id"`
+	// What to do if the financial account is closed when posting an operation
+	OnClosedAccount param.Field[ManagementOperationNewParamsOnClosedAccount] `json:"on_closed_account"`
+	Subtype         param.Field[string]                                      `json:"subtype"`
+	UserDefinedID   param.Field[string]                                      `json:"user_defined_id"`
 }
 
 func (r ManagementOperationNewParams) MarshalJSON() (data []byte, err error) {
@@ -405,6 +457,22 @@ const (
 func (r ManagementOperationNewParamsEventType) IsKnown() bool {
 	switch r {
 	case ManagementOperationNewParamsEventTypeLossWriteOff, ManagementOperationNewParamsEventTypeCashBack, ManagementOperationNewParamsEventTypeCashBackReversal, ManagementOperationNewParamsEventTypeCurrencyConversion, ManagementOperationNewParamsEventTypeCurrencyConversionReversal, ManagementOperationNewParamsEventTypeInterest, ManagementOperationNewParamsEventTypeInterestReversal, ManagementOperationNewParamsEventTypeLatePayment, ManagementOperationNewParamsEventTypeLatePaymentReversal, ManagementOperationNewParamsEventTypeBillingError, ManagementOperationNewParamsEventTypeBillingErrorReversal, ManagementOperationNewParamsEventTypeProvisionalCredit, ManagementOperationNewParamsEventTypeProvisionalCreditReversal, ManagementOperationNewParamsEventTypeReturnedPayment, ManagementOperationNewParamsEventTypeReturnedPaymentReversal, ManagementOperationNewParamsEventTypeDisputeWon, ManagementOperationNewParamsEventTypeDisputeWonReversal, ManagementOperationNewParamsEventTypeDisburse, ManagementOperationNewParamsEventTypeDisburseReversal:
+		return true
+	}
+	return false
+}
+
+// What to do if the financial account is closed when posting an operation
+type ManagementOperationNewParamsOnClosedAccount string
+
+const (
+	ManagementOperationNewParamsOnClosedAccountFail        ManagementOperationNewParamsOnClosedAccount = "FAIL"
+	ManagementOperationNewParamsOnClosedAccountUseSuspense ManagementOperationNewParamsOnClosedAccount = "USE_SUSPENSE"
+)
+
+func (r ManagementOperationNewParamsOnClosedAccount) IsKnown() bool {
+	switch r {
+	case ManagementOperationNewParamsOnClosedAccountFail, ManagementOperationNewParamsOnClosedAccountUseSuspense:
 		return true
 	}
 	return false
