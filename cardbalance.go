@@ -125,11 +125,12 @@ const (
 	CardBalanceListResponseTypeIssuing   CardBalanceListResponseType = "ISSUING"
 	CardBalanceListResponseTypeOperating CardBalanceListResponseType = "OPERATING"
 	CardBalanceListResponseTypeReserve   CardBalanceListResponseType = "RESERVE"
+	CardBalanceListResponseTypeSecurity  CardBalanceListResponseType = "SECURITY"
 )
 
 func (r CardBalanceListResponseType) IsKnown() bool {
 	switch r {
-	case CardBalanceListResponseTypeIssuing, CardBalanceListResponseTypeOperating, CardBalanceListResponseTypeReserve:
+	case CardBalanceListResponseTypeIssuing, CardBalanceListResponseTypeOperating, CardBalanceListResponseTypeReserve, CardBalanceListResponseTypeSecurity:
 		return true
 	}
 	return false

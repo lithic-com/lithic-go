@@ -642,11 +642,12 @@ const (
 	FinancialAccountListParamsTypeIssuing   FinancialAccountListParamsType = "ISSUING"
 	FinancialAccountListParamsTypeOperating FinancialAccountListParamsType = "OPERATING"
 	FinancialAccountListParamsTypeReserve   FinancialAccountListParamsType = "RESERVE"
+	FinancialAccountListParamsTypeSecurity  FinancialAccountListParamsType = "SECURITY"
 )
 
 func (r FinancialAccountListParamsType) IsKnown() bool {
 	switch r {
-	case FinancialAccountListParamsTypeIssuing, FinancialAccountListParamsTypeOperating, FinancialAccountListParamsTypeReserve:
+	case FinancialAccountListParamsTypeIssuing, FinancialAccountListParamsTypeOperating, FinancialAccountListParamsTypeReserve, FinancialAccountListParamsTypeSecurity:
 		return true
 	}
 	return false

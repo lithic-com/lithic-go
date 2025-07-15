@@ -35,6 +35,7 @@ func TestManagementOperationNewWithOptionalParams(t *testing.T) {
 		FinancialAccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Token:                 lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Memo:                  lithic.F("memo"),
+		OnClosedAccount:       lithic.F(lithic.ManagementOperationNewParamsOnClosedAccountFail),
 		Subtype:               lithic.F("subtype"),
 		UserDefinedID:         lithic.F("user_defined_id"),
 	})

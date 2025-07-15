@@ -118,11 +118,12 @@ const (
 	BalanceFinancialAccountTypeIssuing   BalanceFinancialAccountType = "ISSUING"
 	BalanceFinancialAccountTypeOperating BalanceFinancialAccountType = "OPERATING"
 	BalanceFinancialAccountTypeReserve   BalanceFinancialAccountType = "RESERVE"
+	BalanceFinancialAccountTypeSecurity  BalanceFinancialAccountType = "SECURITY"
 )
 
 func (r BalanceFinancialAccountType) IsKnown() bool {
 	switch r {
-	case BalanceFinancialAccountTypeIssuing, BalanceFinancialAccountTypeOperating, BalanceFinancialAccountTypeReserve:
+	case BalanceFinancialAccountTypeIssuing, BalanceFinancialAccountTypeOperating, BalanceFinancialAccountTypeReserve, BalanceFinancialAccountTypeSecurity:
 		return true
 	}
 	return false
@@ -155,11 +156,12 @@ const (
 	BalanceListParamsFinancialAccountTypeIssuing   BalanceListParamsFinancialAccountType = "ISSUING"
 	BalanceListParamsFinancialAccountTypeOperating BalanceListParamsFinancialAccountType = "OPERATING"
 	BalanceListParamsFinancialAccountTypeReserve   BalanceListParamsFinancialAccountType = "RESERVE"
+	BalanceListParamsFinancialAccountTypeSecurity  BalanceListParamsFinancialAccountType = "SECURITY"
 )
 
 func (r BalanceListParamsFinancialAccountType) IsKnown() bool {
 	switch r {
-	case BalanceListParamsFinancialAccountTypeIssuing, BalanceListParamsFinancialAccountTypeOperating, BalanceListParamsFinancialAccountTypeReserve:
+	case BalanceListParamsFinancialAccountTypeIssuing, BalanceListParamsFinancialAccountTypeOperating, BalanceListParamsFinancialAccountTypeReserve, BalanceListParamsFinancialAccountTypeSecurity:
 		return true
 	}
 	return false

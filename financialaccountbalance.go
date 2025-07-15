@@ -125,11 +125,12 @@ const (
 	FinancialAccountBalanceListResponseTypeIssuing   FinancialAccountBalanceListResponseType = "ISSUING"
 	FinancialAccountBalanceListResponseTypeOperating FinancialAccountBalanceListResponseType = "OPERATING"
 	FinancialAccountBalanceListResponseTypeReserve   FinancialAccountBalanceListResponseType = "RESERVE"
+	FinancialAccountBalanceListResponseTypeSecurity  FinancialAccountBalanceListResponseType = "SECURITY"
 )
 
 func (r FinancialAccountBalanceListResponseType) IsKnown() bool {
 	switch r {
-	case FinancialAccountBalanceListResponseTypeIssuing, FinancialAccountBalanceListResponseTypeOperating, FinancialAccountBalanceListResponseTypeReserve:
+	case FinancialAccountBalanceListResponseTypeIssuing, FinancialAccountBalanceListResponseTypeOperating, FinancialAccountBalanceListResponseTypeReserve, FinancialAccountBalanceListResponseTypeSecurity:
 		return true
 	}
 	return false
