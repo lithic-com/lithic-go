@@ -137,6 +137,36 @@ type Account struct {
 	AuthRuleTokens []string `json:"auth_rule_tokens"`
 	// 3-character alphabetic ISO 4217 code for the currency of the cardholder.
 	CardholderCurrency string `json:"cardholder_currency"`
+	// Additional context or information related to the account.
+	Comment string `json:"comment"`
+	// Account state substatus values:
+	//
+	//   - `FRAUD_IDENTIFIED` - The account has been recognized as being created or used
+	//     with stolen or fabricated identity information, encompassing both true
+	//     identity theft and synthetic identities.
+	//   - `SUSPICIOUS_ACTIVITY` - The account has exhibited suspicious behavior, such as
+	//     unauthorized access or fraudulent transactions, necessitating further
+	//     investigation.
+	//   - `RISK_VIOLATION` - The account has been involved in deliberate misuse by the
+	//     legitimate account holder. Examples include disputing valid transactions
+	//     without cause, falsely claiming non-receipt of goods, or engaging in
+	//     intentional bust-out schemes to exploit account services.
+	//   - `END_USER_REQUEST` - The account holder has voluntarily requested the closure
+	//     of the account for personal reasons. This encompasses situations such as
+	//     bankruptcy, other financial considerations, or the account holder's death.
+	//   - `ISSUER_REQUEST` - The issuer has initiated the closure of the account due to
+	//     business strategy, risk management, inactivity, product changes, regulatory
+	//     concerns, or violations of terms and conditions.
+	//   - `NOT_ACTIVE` - The account has not had any transactions or payment activity
+	//     within a specified period. This status applies to accounts that are paused or
+	//     closed due to inactivity.
+	//   - `INTERNAL_REVIEW` - The account is temporarily paused pending further internal
+	//     review. In future implementations, this status may prevent clients from
+	//     activating the account via APIs until the review is completed.
+	//   - `OTHER` - The reason for the account's current status does not fall into any
+	//     of the above categories. A comment should be provided to specify the
+	//     particular reason.
+	Substatus AccountSubstatus `json:"substatus"`
 	// Deprecated: deprecated
 	VerificationAddress AccountVerificationAddress `json:"verification_address"`
 	JSON                accountJSON                `json:"-"`
@@ -151,6 +181,8 @@ type accountJSON struct {
 	AccountHolder       apijson.Field
 	AuthRuleTokens      apijson.Field
 	CardholderCurrency  apijson.Field
+	Comment             apijson.Field
+	Substatus           apijson.Field
 	VerificationAddress apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
@@ -255,6 +287,54 @@ func (r *AccountAccountHolder) UnmarshalJSON(data []byte) (err error) {
 
 func (r accountAccountHolderJSON) RawJSON() string {
 	return r.raw
+}
+
+// Account state substatus values:
+//
+//   - `FRAUD_IDENTIFIED` - The account has been recognized as being created or used
+//     with stolen or fabricated identity information, encompassing both true
+//     identity theft and synthetic identities.
+//   - `SUSPICIOUS_ACTIVITY` - The account has exhibited suspicious behavior, such as
+//     unauthorized access or fraudulent transactions, necessitating further
+//     investigation.
+//   - `RISK_VIOLATION` - The account has been involved in deliberate misuse by the
+//     legitimate account holder. Examples include disputing valid transactions
+//     without cause, falsely claiming non-receipt of goods, or engaging in
+//     intentional bust-out schemes to exploit account services.
+//   - `END_USER_REQUEST` - The account holder has voluntarily requested the closure
+//     of the account for personal reasons. This encompasses situations such as
+//     bankruptcy, other financial considerations, or the account holder's death.
+//   - `ISSUER_REQUEST` - The issuer has initiated the closure of the account due to
+//     business strategy, risk management, inactivity, product changes, regulatory
+//     concerns, or violations of terms and conditions.
+//   - `NOT_ACTIVE` - The account has not had any transactions or payment activity
+//     within a specified period. This status applies to accounts that are paused or
+//     closed due to inactivity.
+//   - `INTERNAL_REVIEW` - The account is temporarily paused pending further internal
+//     review. In future implementations, this status may prevent clients from
+//     activating the account via APIs until the review is completed.
+//   - `OTHER` - The reason for the account's current status does not fall into any
+//     of the above categories. A comment should be provided to specify the
+//     particular reason.
+type AccountSubstatus string
+
+const (
+	AccountSubstatusFraudIdentified    AccountSubstatus = "FRAUD_IDENTIFIED"
+	AccountSubstatusSuspiciousActivity AccountSubstatus = "SUSPICIOUS_ACTIVITY"
+	AccountSubstatusRiskViolation      AccountSubstatus = "RISK_VIOLATION"
+	AccountSubstatusEndUserRequest     AccountSubstatus = "END_USER_REQUEST"
+	AccountSubstatusIssuerRequest      AccountSubstatus = "ISSUER_REQUEST"
+	AccountSubstatusNotActive          AccountSubstatus = "NOT_ACTIVE"
+	AccountSubstatusInternalReview     AccountSubstatus = "INTERNAL_REVIEW"
+	AccountSubstatusOther              AccountSubstatus = "OTHER"
+)
+
+func (r AccountSubstatus) IsKnown() bool {
+	switch r {
+	case AccountSubstatusFraudIdentified, AccountSubstatusSuspiciousActivity, AccountSubstatusRiskViolation, AccountSubstatusEndUserRequest, AccountSubstatusIssuerRequest, AccountSubstatusNotActive, AccountSubstatusInternalReview, AccountSubstatusOther:
+		return true
+	}
+	return false
 }
 
 // Deprecated: deprecated
@@ -414,6 +494,8 @@ func (r accountSpendLimitsSpendVelocityJSON) RawJSON() string {
 }
 
 type AccountUpdateParams struct {
+	// Additional context or information related to the account.
+	Comment param.Field[string] `json:"comment"`
 	// Amount (in cents) for the account's daily spend limit (e.g. 100000 would be a
 	// $1,000 limit). By default the daily spend limit is set to $1,250.
 	DailySpendLimit param.Field[int64] `json:"daily_spend_limit"`
@@ -430,6 +512,34 @@ type AccountUpdateParams struct {
 	MonthlySpendLimit param.Field[int64] `json:"monthly_spend_limit"`
 	// Account states.
 	State param.Field[AccountUpdateParamsState] `json:"state"`
+	// Account state substatus values:
+	//
+	//   - `FRAUD_IDENTIFIED` - The account has been recognized as being created or used
+	//     with stolen or fabricated identity information, encompassing both true
+	//     identity theft and synthetic identities.
+	//   - `SUSPICIOUS_ACTIVITY` - The account has exhibited suspicious behavior, such as
+	//     unauthorized access or fraudulent transactions, necessitating further
+	//     investigation.
+	//   - `RISK_VIOLATION` - The account has been involved in deliberate misuse by the
+	//     legitimate account holder. Examples include disputing valid transactions
+	//     without cause, falsely claiming non-receipt of goods, or engaging in
+	//     intentional bust-out schemes to exploit account services.
+	//   - `END_USER_REQUEST` - The account holder has voluntarily requested the closure
+	//     of the account for personal reasons. This encompasses situations such as
+	//     bankruptcy, other financial considerations, or the account holder's death.
+	//   - `ISSUER_REQUEST` - The issuer has initiated the closure of the account due to
+	//     business strategy, risk management, inactivity, product changes, regulatory
+	//     concerns, or violations of terms and conditions.
+	//   - `NOT_ACTIVE` - The account has not had any transactions or payment activity
+	//     within a specified period. This status applies to accounts that are paused or
+	//     closed due to inactivity.
+	//   - `INTERNAL_REVIEW` - The account is temporarily paused pending further internal
+	//     review. In future implementations, this status may prevent clients from
+	//     activating the account via APIs until the review is completed.
+	//   - `OTHER` - The reason for the account's current status does not fall into any
+	//     of the above categories. A comment should be provided to specify the
+	//     particular reason.
+	Substatus param.Field[AccountUpdateParamsSubstatus] `json:"substatus"`
 	// Address used during Address Verification Service (AVS) checks during
 	// transactions if enabled via Auth Rules. This field is deprecated as AVS checks
 	// are no longer supported by Auth Rules. The field will be removed from the schema
@@ -453,6 +563,54 @@ const (
 func (r AccountUpdateParamsState) IsKnown() bool {
 	switch r {
 	case AccountUpdateParamsStateActive, AccountUpdateParamsStatePaused, AccountUpdateParamsStateClosed:
+		return true
+	}
+	return false
+}
+
+// Account state substatus values:
+//
+//   - `FRAUD_IDENTIFIED` - The account has been recognized as being created or used
+//     with stolen or fabricated identity information, encompassing both true
+//     identity theft and synthetic identities.
+//   - `SUSPICIOUS_ACTIVITY` - The account has exhibited suspicious behavior, such as
+//     unauthorized access or fraudulent transactions, necessitating further
+//     investigation.
+//   - `RISK_VIOLATION` - The account has been involved in deliberate misuse by the
+//     legitimate account holder. Examples include disputing valid transactions
+//     without cause, falsely claiming non-receipt of goods, or engaging in
+//     intentional bust-out schemes to exploit account services.
+//   - `END_USER_REQUEST` - The account holder has voluntarily requested the closure
+//     of the account for personal reasons. This encompasses situations such as
+//     bankruptcy, other financial considerations, or the account holder's death.
+//   - `ISSUER_REQUEST` - The issuer has initiated the closure of the account due to
+//     business strategy, risk management, inactivity, product changes, regulatory
+//     concerns, or violations of terms and conditions.
+//   - `NOT_ACTIVE` - The account has not had any transactions or payment activity
+//     within a specified period. This status applies to accounts that are paused or
+//     closed due to inactivity.
+//   - `INTERNAL_REVIEW` - The account is temporarily paused pending further internal
+//     review. In future implementations, this status may prevent clients from
+//     activating the account via APIs until the review is completed.
+//   - `OTHER` - The reason for the account's current status does not fall into any
+//     of the above categories. A comment should be provided to specify the
+//     particular reason.
+type AccountUpdateParamsSubstatus string
+
+const (
+	AccountUpdateParamsSubstatusFraudIdentified    AccountUpdateParamsSubstatus = "FRAUD_IDENTIFIED"
+	AccountUpdateParamsSubstatusSuspiciousActivity AccountUpdateParamsSubstatus = "SUSPICIOUS_ACTIVITY"
+	AccountUpdateParamsSubstatusRiskViolation      AccountUpdateParamsSubstatus = "RISK_VIOLATION"
+	AccountUpdateParamsSubstatusEndUserRequest     AccountUpdateParamsSubstatus = "END_USER_REQUEST"
+	AccountUpdateParamsSubstatusIssuerRequest      AccountUpdateParamsSubstatus = "ISSUER_REQUEST"
+	AccountUpdateParamsSubstatusNotActive          AccountUpdateParamsSubstatus = "NOT_ACTIVE"
+	AccountUpdateParamsSubstatusInternalReview     AccountUpdateParamsSubstatus = "INTERNAL_REVIEW"
+	AccountUpdateParamsSubstatusOther              AccountUpdateParamsSubstatus = "OTHER"
+)
+
+func (r AccountUpdateParamsSubstatus) IsKnown() bool {
+	switch r {
+	case AccountUpdateParamsSubstatusFraudIdentified, AccountUpdateParamsSubstatusSuspiciousActivity, AccountUpdateParamsSubstatusRiskViolation, AccountUpdateParamsSubstatusEndUserRequest, AccountUpdateParamsSubstatusIssuerRequest, AccountUpdateParamsSubstatusNotActive, AccountUpdateParamsSubstatusInternalReview, AccountUpdateParamsSubstatusOther:
 		return true
 	}
 	return false

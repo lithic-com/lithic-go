@@ -13,4 +13,4 @@ type UnionInt int64
 func (UnionInt) ImplementsAuthRuleConditionValueUnionParam()                   {}
 func (UnionInt) ImplementsAuthRuleConditionValueUnion()                        {}
 func (UnionInt) ImplementsConditional3DsActionParametersConditionsValueUnion() {}
-func (UnionInt) ImplementsVelocityLimitParamsPeriodUnion()                     {}
+func (UnionInt) ImplementsVelocityLimitParamsPeriodWindowUnion()               {}

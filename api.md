@@ -77,7 +77,7 @@ Params Types:
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ConditionalBlockParameters">ConditionalBlockParameters</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#MerchantLockParameters">MerchantLockParameters</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#VelocityLimitParams">VelocityLimitParams</a>
-- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#VelocityLimitParamsPeriodWindow">VelocityLimitParamsPeriodWindow</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#VelocityLimitParamsPeriodWindowUnion">VelocityLimitParamsPeriodWindowUnion</a>
 
 Response Types:
 
@@ -88,7 +88,7 @@ Response Types:
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#MerchantLockParameters">MerchantLockParameters</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#RuleStats">RuleStats</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#VelocityLimitParams">VelocityLimitParams</a>
-- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#VelocityLimitParamsPeriodWindow">VelocityLimitParamsPeriodWindow</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#VelocityLimitParamsPeriodWindowUnion">VelocityLimitParamsPeriodWindowUnion</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleV2NewResponse">AuthRuleV2NewResponse</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleV2GetResponse">AuthRuleV2GetResponse</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRuleV2UpdateResponse">AuthRuleV2UpdateResponse</a>
@@ -660,6 +660,8 @@ Methods:
 
 Response Types:
 
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalResource">ExternalResource</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalResourceType">ExternalResourceType</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ManagementOperationTransaction">ManagementOperationTransaction</a>
 
 Methods:
@@ -696,3 +698,14 @@ Methods:
 
 - <code title="get /v1/fraud/transactions/{transaction_token}">client.Fraud.Transactions.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#FraudTransactionService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, transactionToken <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#FraudTransactionGetResponse">FraudTransactionGetResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 - <code title="post /v1/fraud/transactions/{transaction_token}">client.Fraud.Transactions.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#FraudTransactionService.Report">Report</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, transactionToken <a href="https://pkg.go.dev/builtin#string">string</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#FraudTransactionReportParams">FraudTransactionReportParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#FraudTransactionReportResponse">FraudTransactionReportResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
+# NetworkPrograms
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#NetworkProgram">NetworkProgram</a>
+
+Methods:
+
+- <code title="get /v1/network_programs/{network_program_token}">client.NetworkPrograms.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#NetworkProgramService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, networkProgramToken <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#NetworkProgram">NetworkProgram</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="get /v1/network_programs">client.NetworkPrograms.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#NetworkProgramService.List">List</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, query <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#NetworkProgramListParams">NetworkProgramListParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/packages/pagination">pagination</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/packages/pagination#SinglePage">SinglePage</a>[<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#NetworkProgram">NetworkProgram</a>], <a href="https://pkg.go.dev/builtin#error">error</a>)</code>

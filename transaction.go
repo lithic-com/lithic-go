@@ -441,22 +441,25 @@ func (r transactionAvsJSON) RawJSON() string {
 
 type TransactionCardholderAuthentication struct {
 	// The 3DS version used for the authentication
+	//
+	// Deprecated: deprecated
 	ThreeDSVersion string `json:"3ds_version,required,nullable"`
-	// Whether an acquirer exemption applied to the transaction.
+	// Whether an acquirer exemption applied to the transaction. Not currently
+	// populated and will be removed in the future.
+	//
+	// Deprecated: deprecated
 	AcquirerExemption TransactionCardholderAuthenticationAcquirerExemption `json:"acquirer_exemption,required"`
-	// Indicates what the outcome of the 3DS authentication process is.
+	// Indicates the outcome of the 3DS authentication process.
 	AuthenticationResult TransactionCardholderAuthenticationAuthenticationResult `json:"authentication_result,required"`
 	// Indicates which party made the 3DS authentication decision.
 	DecisionMadeBy TransactionCardholderAuthenticationDecisionMadeBy `json:"decision_made_by,required"`
 	// Indicates whether chargeback liability shift applies to the transaction.
 	// Possible enum values:
 	//
-	//   - `3DS_AUTHENTICATED`: The transaction was fully authenticated through a 3-D Secure flow, chargeback liability shift applies.
-	//
-	//   - `ACQUIRER_EXEMPTION`: The acquirer utilised an exemption to bypass Strong Customer Authentication (`transStatus = N`, or `transStatus = I`). Liability remains with the acquirer and in this case the `acquirer_exemption` field is expected to be not `NONE`.
-	//
-	//   - `NONE`: Chargeback liability shift has not shifted to the issuer, i.e. the merchant is liable.
-	//
+	//   - `3DS_AUTHENTICATED`: The transaction was fully authenticated through a 3-D
+	//     Secure flow, chargeback liability shift applies.
+	//   - `NONE`: Chargeback liability shift has not shifted to the issuer, i.e. the
+	//     merchant is liable.
 	//   - `TOKEN_AUTHENTICATED`: The transaction was a tokenized payment with validated
 	//     cryptography, possibly recurring. Chargeback liability shift to the issuer
 	//     applies.
@@ -468,9 +471,13 @@ type TransactionCardholderAuthentication struct {
 	ThreeDSAuthenticationToken string `json:"three_ds_authentication_token,required,nullable" format:"uuid"`
 	// Indicates whether a 3DS challenge flow was used, and if so, what the
 	// verification method was. (deprecated, use `authentication_result`)
+	//
+	// Deprecated: deprecated
 	VerificationAttempted TransactionCardholderAuthenticationVerificationAttempted `json:"verification_attempted,required"`
 	// Indicates whether a transaction is considered 3DS authenticated. (deprecated,
 	// use `authentication_result`)
+	//
+	// Deprecated: deprecated
 	VerificationResult TransactionCardholderAuthenticationVerificationResult `json:"verification_result,required"`
 	// Indicates the method used to authenticate the cardholder.
 	AuthenticationMethod TransactionCardholderAuthenticationAuthenticationMethod `json:"authentication_method"`
@@ -501,7 +508,8 @@ func (r transactionCardholderAuthenticationJSON) RawJSON() string {
 	return r.raw
 }
 
-// Whether an acquirer exemption applied to the transaction.
+// Whether an acquirer exemption applied to the transaction. Not currently
+// populated and will be removed in the future.
 type TransactionCardholderAuthenticationAcquirerExemption string
 
 const (
@@ -523,7 +531,7 @@ func (r TransactionCardholderAuthenticationAcquirerExemption) IsKnown() bool {
 	return false
 }
 
-// Indicates what the outcome of the 3DS authentication process is.
+// Indicates the outcome of the 3DS authentication process.
 type TransactionCardholderAuthenticationAuthenticationResult string
 
 const (
@@ -564,12 +572,10 @@ func (r TransactionCardholderAuthenticationDecisionMadeBy) IsKnown() bool {
 // Indicates whether chargeback liability shift applies to the transaction.
 // Possible enum values:
 //
-//   - `3DS_AUTHENTICATED`: The transaction was fully authenticated through a 3-D Secure flow, chargeback liability shift applies.
-//
-//   - `ACQUIRER_EXEMPTION`: The acquirer utilised an exemption to bypass Strong Customer Authentication (`transStatus = N`, or `transStatus = I`). Liability remains with the acquirer and in this case the `acquirer_exemption` field is expected to be not `NONE`.
-//
-//   - `NONE`: Chargeback liability shift has not shifted to the issuer, i.e. the merchant is liable.
-//
+//   - `3DS_AUTHENTICATED`: The transaction was fully authenticated through a 3-D
+//     Secure flow, chargeback liability shift applies.
+//   - `NONE`: Chargeback liability shift has not shifted to the issuer, i.e. the
+//     merchant is liable.
 //   - `TOKEN_AUTHENTICATED`: The transaction was a tokenized payment with validated
 //     cryptography, possibly recurring. Chargeback liability shift to the issuer
 //     applies.
@@ -577,14 +583,13 @@ type TransactionCardholderAuthenticationLiabilityShift string
 
 const (
 	TransactionCardholderAuthenticationLiabilityShift3DSAuthenticated   TransactionCardholderAuthenticationLiabilityShift = "3DS_AUTHENTICATED"
-	TransactionCardholderAuthenticationLiabilityShiftAcquirerExemption  TransactionCardholderAuthenticationLiabilityShift = "ACQUIRER_EXEMPTION"
-	TransactionCardholderAuthenticationLiabilityShiftNone               TransactionCardholderAuthenticationLiabilityShift = "NONE"
 	TransactionCardholderAuthenticationLiabilityShiftTokenAuthenticated TransactionCardholderAuthenticationLiabilityShift = "TOKEN_AUTHENTICATED"
+	TransactionCardholderAuthenticationLiabilityShiftNone               TransactionCardholderAuthenticationLiabilityShift = "NONE"
 )
 
 func (r TransactionCardholderAuthenticationLiabilityShift) IsKnown() bool {
 	switch r {
-	case TransactionCardholderAuthenticationLiabilityShift3DSAuthenticated, TransactionCardholderAuthenticationLiabilityShiftAcquirerExemption, TransactionCardholderAuthenticationLiabilityShiftNone, TransactionCardholderAuthenticationLiabilityShiftTokenAuthenticated:
+	case TransactionCardholderAuthenticationLiabilityShift3DSAuthenticated, TransactionCardholderAuthenticationLiabilityShiftTokenAuthenticated, TransactionCardholderAuthenticationLiabilityShiftNone:
 		return true
 	}
 	return false

@@ -121,11 +121,12 @@ const (
 	AggregateBalanceFinancialAccountTypeIssuing   AggregateBalanceFinancialAccountType = "ISSUING"
 	AggregateBalanceFinancialAccountTypeOperating AggregateBalanceFinancialAccountType = "OPERATING"
 	AggregateBalanceFinancialAccountTypeReserve   AggregateBalanceFinancialAccountType = "RESERVE"
+	AggregateBalanceFinancialAccountTypeSecurity  AggregateBalanceFinancialAccountType = "SECURITY"
 )
 
 func (r AggregateBalanceFinancialAccountType) IsKnown() bool {
 	switch r {
-	case AggregateBalanceFinancialAccountTypeIssuing, AggregateBalanceFinancialAccountTypeOperating, AggregateBalanceFinancialAccountTypeReserve:
+	case AggregateBalanceFinancialAccountTypeIssuing, AggregateBalanceFinancialAccountTypeOperating, AggregateBalanceFinancialAccountTypeReserve, AggregateBalanceFinancialAccountTypeSecurity:
 		return true
 	}
 	return false
@@ -152,11 +153,12 @@ const (
 	AggregateBalanceListParamsFinancialAccountTypeIssuing   AggregateBalanceListParamsFinancialAccountType = "ISSUING"
 	AggregateBalanceListParamsFinancialAccountTypeOperating AggregateBalanceListParamsFinancialAccountType = "OPERATING"
 	AggregateBalanceListParamsFinancialAccountTypeReserve   AggregateBalanceListParamsFinancialAccountType = "RESERVE"
+	AggregateBalanceListParamsFinancialAccountTypeSecurity  AggregateBalanceListParamsFinancialAccountType = "SECURITY"
 )
 
 func (r AggregateBalanceListParamsFinancialAccountType) IsKnown() bool {
 	switch r {
-	case AggregateBalanceListParamsFinancialAccountTypeIssuing, AggregateBalanceListParamsFinancialAccountTypeOperating, AggregateBalanceListParamsFinancialAccountTypeReserve:
+	case AggregateBalanceListParamsFinancialAccountTypeIssuing, AggregateBalanceListParamsFinancialAccountTypeOperating, AggregateBalanceListParamsFinancialAccountTypeReserve, AggregateBalanceListParamsFinancialAccountTypeSecurity:
 		return true
 	}
 	return false

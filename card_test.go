@@ -41,7 +41,9 @@ func TestCardNewWithOptionalParams(t *testing.T) {
 		Pin:                     lithic.F("pin"),
 		ProductID:               lithic.F("1"),
 		ReplacementAccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		ReplacementComment:      lithic.F("replacement_comment"),
 		ReplacementFor:          lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		ReplacementSubstatus:    lithic.F(lithic.CardNewParamsReplacementSubstatusLost),
 		ShippingAddress: lithic.F(shared.ShippingAddressParam{
 			Address1:    lithic.F("5 Broad Street"),
 			City:        lithic.F("NEW YORK"),
@@ -107,13 +109,16 @@ func TestCardUpdateWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.CardUpdateParams{
+			Comment:             lithic.F("comment"),
 			DigitalCardArtToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 			Memo:                lithic.F("Updated Name"),
+			NetworkProgramToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 			Pin:                 lithic.F("pin"),
 			PinStatus:           lithic.F(lithic.CardUpdateParamsPinStatusOk),
 			SpendLimit:          lithic.F(int64(100)),
 			SpendLimitDuration:  lithic.F(lithic.SpendLimitDurationForever),
 			State:               lithic.F(lithic.CardUpdateParamsStateOpen),
+			Substatus:           lithic.F(lithic.CardUpdateParamsSubstatusLost),
 		},
 	)
 	if err != nil {
