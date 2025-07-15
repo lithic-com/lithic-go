@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.84.0 (2025-07-15)
+
+Full Changelog: [v0.83.0...v0.84.0](https://github.com/lithic-com/lithic-go/compare/v0.83.0...v0.84.0)
+
+### Features
+
+* **api:** adds Network Programs and Account/Card Sub-statuses ([e64b3c3](https://github.com/lithic-com/lithic-go/commit/e64b3c3fc65f96363a9a9b7d2d95fb8e8f11fc13))
+
+
+### Chores
+
+* **internal:** fix lint script for tests ([44efcfe](https://github.com/lithic-com/lithic-go/commit/44efcfe371369e5f11af243f59b4905ee0b1cb37))
+* lint tests ([d08e1ec](https://github.com/lithic-com/lithic-go/commit/d08e1ec06ced51838de8ae4c0518e25b88f108d2))
+* lint tests in subpackages ([9c70704](https://github.com/lithic-com/lithic-go/commit/9c707043dba73e7912b82287d82f4eda843df1ac))
+
 ## 0.83.0 (2025-07-03)
 
 Full Changelog: [v0.82.0...v0.83.0](https://github.com/lithic-com/lithic-go/compare/v0.82.0...v0.83.0)
