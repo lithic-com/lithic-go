@@ -1105,22 +1105,6 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParamsPeriodWindowTrailingWindowObject{}),
 		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(VelocityLimitParamsPeriodWindowFixedWindowDay{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(VelocityLimitParamsPeriodWindowFixedWindowWeek{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(VelocityLimitParamsPeriodWindowFixedWindowMonth{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(VelocityLimitParamsPeriodWindowFixedWindowYear{}),
-		},
 	)
 }
 
