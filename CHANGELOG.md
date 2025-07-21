@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.84.1 (2025-07-21)
+
+Full Changelog: [v0.84.0...v0.84.1](https://github.com/lithic-com/lithic-go/compare/v0.84.0...v0.84.1)
+
+### Bug Fixes
+
+* **client:** process custom base url ahead of time ([9e4e46f](https://github.com/lithic-com/lithic-go/commit/9e4e46f8e187b0b95bf4ca3c27d590db2e98d97e))
+
+
+### Chores
+
+* **docs:** update Account Holder deprecation formatting ([f041186](https://github.com/lithic-com/lithic-go/commit/f041186ca233cbf7cb0ce3f6d070ebd0b35b0eb3))
+
 ## 0.84.0 (2025-07-18)
 
 Full Changelog: [v0.83.0...v0.84.0](https://github.com/lithic-com/lithic-go/compare/v0.83.0...v0.84.0)
