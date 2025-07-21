@@ -249,10 +249,9 @@ type AccountHolder struct {
 	// someone who will have program-wide access to the cards that Lithic will provide.
 	// In some cases, this individual could also be a beneficial owner listed above.
 	ControlPerson AccountHolderControlPerson `json:"control_person"`
-	// < Deprecated. Use control_person.email when user_type == "BUSINESS". Use
-	// individual.phone_number when user_type == "INDIVIDUAL".
-	//
-	// > Primary email of Account Holder.
+	// (Deprecated. Use control_person.email when user_type == "BUSINESS". Use
+	// individual.phone_number when user_type == "INDIVIDUAL".) Primary email of
+	// Account Holder.
 	Email string `json:"email"`
 	// The type of KYC exemption for a KYC-Exempt Account Holder.
 	ExemptionType AccountHolderExemptionType `json:"exemption_type"`
@@ -265,15 +264,14 @@ type AccountHolder struct {
 	// Only present when user_type == "BUSINESS". User-submitted description of the
 	// business.
 	NatureOfBusiness string `json:"nature_of_business" format:"string"`
-	// < Deprecated. Use control_person.phone_number when user_type == "BUSINESS". Use
-	// individual.phone_number when user_type == "INDIVIDUAL".
-	//
-	// > Primary phone of Account Holder, entered in E.164 format.
+	// (Deprecated. Use control_person.phone_number when user_type == "BUSINESS". Use
+	// individual.phone_number when user_type == "INDIVIDUAL".) Primary phone of
+	// Account Holder, entered in E.164 format.
 	PhoneNumber string `json:"phone_number"`
 	// Only present for "KYB_BASIC" workflow. A list of documents required for the
 	// account holder to be approved.
 	RequiredDocuments []RequiredDocument `json:"required_documents"`
-	// <Deprecated. Use verification_application.status instead>
+	// (Deprecated. Use verification_application.status instead)
 	//
 	// KYC and KYB evaluation states.
 	//
@@ -281,8 +279,9 @@ type AccountHolder struct {
 	//
 	// - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
 	Status AccountHolderStatus `json:"status"`
-	// <Deprecated. Use verification_application.status_reasons> Reason for the
-	// evaluation status.
+	// (Deprecated. Use verification_application.status_reasons)
+	//
+	// Reason for the evaluation status.
 	StatusReasons []AccountHolderStatusReason `json:"status_reasons"`
 	// The type of Account Holder. If the type is "INDIVIDUAL", the "individual"
 	// attribute will be present. If the type is "BUSINESS" then the "business_entity",
@@ -569,7 +568,7 @@ func (r accountHolderIndividualJSON) RawJSON() string {
 	return r.raw
 }
 
-// <Deprecated. Use verification_application.status instead>
+// (Deprecated. Use verification_application.status instead)
 //
 // KYC and KYB evaluation states.
 //
@@ -1298,10 +1297,9 @@ type AccountHolderUpdateResponse struct {
 	ControlPerson interface{} `json:"control_person"`
 	// Timestamp of when the account holder was created.
 	Created time.Time `json:"created" format:"date-time"`
-	// < Deprecated. Use control_person.email when user_type == "BUSINESS". Use
-	// individual.phone_number when user_type == "INDIVIDUAL".
-	//
-	// > Primary email of Account Holder.
+	// (Deprecated. Use control_person.email when user_type == "BUSINESS". Use
+	// individual.phone_number when user_type == "INDIVIDUAL".) Primary email of
+	// Account Holder.
 	Email string `json:"email"`
 	// The type of KYC exemption for a KYC-Exempt Account Holder. "None" if the account
 	// holder is not KYC-Exempt.
@@ -1321,16 +1319,14 @@ type AccountHolderUpdateResponse struct {
 	// Only present when user_type == "BUSINESS". User-submitted description of the
 	// business.
 	NatureOfBusiness string `json:"nature_of_business" format:"string"`
-	// < Deprecated. Use control_person.phone_number when user_type == "BUSINESS". Use
-	// individual.phone_number when user_type == "INDIVIDUAL".
-	//
-	// > Primary phone of Account Holder, entered in E.164 format.
+	// (Deprecated. Use control_person.phone_number when user_type == "BUSINESS". Use
+	// individual.phone_number when user_type == "INDIVIDUAL".) Primary phone of
+	// Account Holder, entered in E.164 format.
 	PhoneNumber string `json:"phone_number"`
 	// This field can have the runtime type of [[]RequiredDocument].
 	RequiredDocuments interface{} `json:"required_documents"`
-	// <Deprecated. Use verification_application.status instead>
-	//
-	// KYC and KYB evaluation states.
+	// (Deprecated. Use verification_application.status instead) KYC and KYB evaluation
+	// states.
 	//
 	// Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
 	// `ADVANCED` workflow.
@@ -1464,10 +1460,9 @@ type AccountHolderUpdateResponseKYBKYCPatchResponse struct {
 	ControlPerson AccountHolderUpdateResponseKYBKYCPatchResponseControlPerson `json:"control_person"`
 	// Timestamp of when the account holder was created.
 	Created time.Time `json:"created" format:"date-time"`
-	// < Deprecated. Use control_person.email when user_type == "BUSINESS". Use
-	// individual.phone_number when user_type == "INDIVIDUAL".
-	//
-	// > Primary email of Account Holder.
+	// (Deprecated. Use control_person.email when user_type == "BUSINESS". Use
+	// individual.phone_number when user_type == "INDIVIDUAL".) Primary email of
+	// Account Holder.
 	Email string `json:"email"`
 	// The type of KYC exemption for a KYC-Exempt Account Holder. "None" if the account
 	// holder is not KYC-Exempt.
@@ -1481,22 +1476,20 @@ type AccountHolderUpdateResponseKYBKYCPatchResponse struct {
 	// Only present when user_type == "BUSINESS". User-submitted description of the
 	// business.
 	NatureOfBusiness string `json:"nature_of_business" format:"string"`
-	// < Deprecated. Use control_person.phone_number when user_type == "BUSINESS". Use
-	// individual.phone_number when user_type == "INDIVIDUAL".
-	//
-	// > Primary phone of Account Holder, entered in E.164 format.
+	// (Deprecated. Use control_person.phone_number when user_type == "BUSINESS". Use
+	// individual.phone_number when user_type == "INDIVIDUAL".) Primary phone of
+	// Account Holder, entered in E.164 format.
 	PhoneNumber string `json:"phone_number"`
 	// Only present for "KYB_BASIC" and "KYC_ADVANCED" workflows. A list of documents
 	// required for the account holder to be approved.
 	RequiredDocuments []RequiredDocument `json:"required_documents"`
-	// <Deprecated. Use verification_application.status instead>
-	//
-	// KYC and KYB evaluation states.
+	// (Deprecated. Use verification_application.status instead) KYC and KYB evaluation
+	// states.
 	//
 	// Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
 	// `ADVANCED` workflow.
 	Status AccountHolderUpdateResponseKYBKYCPatchResponseStatus `json:"status"`
-	// <Deprecated. Use verification_application.status_reasons> Reason for the
+	// (Deprecated. Use verification_application.status_reasons) Reason for the
 	// evaluation status.
 	StatusReasons []AccountHolderUpdateResponseKybkycPatchResponseStatusReason `json:"status_reasons"`
 	// The type of Account Holder. If the type is "INDIVIDUAL", the "individual"
@@ -1829,9 +1822,8 @@ func (r accountHolderUpdateResponseKybkycPatchResponseIndividualAddressJSON) Raw
 	return r.raw
 }
 
-// <Deprecated. Use verification_application.status instead>
-//
-// KYC and KYB evaluation states.
+// (Deprecated. Use verification_application.status instead) KYC and KYB evaluation
+// states.
 //
 // Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
 // `ADVANCED` workflow.
@@ -2109,9 +2101,8 @@ func (r AccountHolderUpdateResponseExemptionType) IsKnown() bool {
 	return false
 }
 
-// <Deprecated. Use verification_application.status instead>
-//
-// KYC and KYB evaluation states.
+// (Deprecated. Use verification_application.status instead) KYC and KYB evaluation
+// states.
 //
 // Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
 // `ADVANCED` workflow.
@@ -2209,10 +2200,9 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 	ControlPerson AccountHolderSimulateEnrollmentReviewResponseControlPerson `json:"control_person"`
 	// Timestamp of when the account holder was created.
 	Created time.Time `json:"created" format:"date-time"`
-	// < Deprecated. Use control_person.email when user_type == "BUSINESS". Use
-	// individual.phone_number when user_type == "INDIVIDUAL".
-	//
-	// > Primary email of Account Holder.
+	// (Deprecated. Use control_person.email when user_type == "BUSINESS". Use
+	// individual.phone_number when user_type == "INDIVIDUAL".) Primary email of
+	// Account Holder.
 	Email string `json:"email"`
 	// The type of KYC exemption for a KYC-Exempt Account Holder. "None" if the account
 	// holder is not KYC-Exempt.
@@ -2226,22 +2216,20 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 	// Only present when user_type == "BUSINESS". User-submitted description of the
 	// business.
 	NatureOfBusiness string `json:"nature_of_business" format:"string"`
-	// < Deprecated. Use control_person.phone_number when user_type == "BUSINESS". Use
-	// individual.phone_number when user_type == "INDIVIDUAL".
-	//
-	// > Primary phone of Account Holder, entered in E.164 format.
+	// (Deprecated. Use control_person.phone_number when user_type == "BUSINESS". Use
+	// individual.phone_number when user_type == "INDIVIDUAL".) Primary phone of
+	// Account Holder, entered in E.164 format.
 	PhoneNumber string `json:"phone_number"`
 	// Only present for "KYB_BASIC" and "KYC_ADVANCED" workflows. A list of documents
 	// required for the account holder to be approved.
 	RequiredDocuments []RequiredDocument `json:"required_documents"`
-	// <Deprecated. Use verification_application.status instead>
-	//
-	// KYC and KYB evaluation states.
+	// (Deprecated. Use verification_application.status instead) KYC and KYB evaluation
+	// states.
 	//
 	// Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
 	// `ADVANCED` workflow.
 	Status AccountHolderSimulateEnrollmentReviewResponseStatus `json:"status"`
-	// <Deprecated. Use verification_application.status_reasons> Reason for the
+	// (Deprecated. Use verification_application.status_reasons) Reason for the
 	// evaluation status.
 	StatusReasons []AccountHolderSimulateEnrollmentReviewResponseStatusReason `json:"status_reasons"`
 	// The type of Account Holder. If the type is "INDIVIDUAL", the "individual"
@@ -2572,9 +2560,8 @@ func (r accountHolderSimulateEnrollmentReviewResponseIndividualAddressJSON) RawJ
 	return r.raw
 }
 
-// <Deprecated. Use verification_application.status instead>
-//
-// KYC and KYB evaluation states.
+// (Deprecated. Use verification_application.status instead) KYC and KYB evaluation
+// states.
 //
 // Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
 // `ADVANCED` workflow.
