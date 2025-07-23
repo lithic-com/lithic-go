@@ -4856,11 +4856,12 @@ const (
 	AuthRuleV2ListParamsScopeProgram AuthRuleV2ListParamsScope = "PROGRAM"
 	AuthRuleV2ListParamsScopeAccount AuthRuleV2ListParamsScope = "ACCOUNT"
 	AuthRuleV2ListParamsScopeCard    AuthRuleV2ListParamsScope = "CARD"
+	AuthRuleV2ListParamsScopeAny     AuthRuleV2ListParamsScope = "ANY"
 )
 
 func (r AuthRuleV2ListParamsScope) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListParamsScopeProgram, AuthRuleV2ListParamsScopeAccount, AuthRuleV2ListParamsScopeCard:
+	case AuthRuleV2ListParamsScopeProgram, AuthRuleV2ListParamsScopeAccount, AuthRuleV2ListParamsScopeCard, AuthRuleV2ListParamsScopeAny:
 		return true
 	}
 	return false
