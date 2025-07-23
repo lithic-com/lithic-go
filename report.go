@@ -168,6 +168,7 @@ const (
 	SettlementDetailTypeArbitration    SettlementDetailType = "ARBITRATION"
 	SettlementDetailTypeChargeback     SettlementDetailType = "CHARGEBACK"
 	SettlementDetailTypeClearing       SettlementDetailType = "CLEARING"
+	SettlementDetailTypeCollaboration  SettlementDetailType = "COLLABORATION"
 	SettlementDetailTypeFee            SettlementDetailType = "FEE"
 	SettlementDetailTypeFinancial      SettlementDetailType = "FINANCIAL"
 	SettlementDetailTypeNonFinancial   SettlementDetailType = "NON-FINANCIAL"
@@ -177,7 +178,7 @@ const (
 
 func (r SettlementDetailType) IsKnown() bool {
 	switch r {
-	case SettlementDetailTypeAdjustment, SettlementDetailTypeArbitration, SettlementDetailTypeChargeback, SettlementDetailTypeClearing, SettlementDetailTypeFee, SettlementDetailTypeFinancial, SettlementDetailTypeNonFinancial, SettlementDetailTypePrearbitration, SettlementDetailTypeRepresentment:
+	case SettlementDetailTypeAdjustment, SettlementDetailTypeArbitration, SettlementDetailTypeChargeback, SettlementDetailTypeClearing, SettlementDetailTypeCollaboration, SettlementDetailTypeFee, SettlementDetailTypeFinancial, SettlementDetailTypeNonFinancial, SettlementDetailTypePrearbitration, SettlementDetailTypeRepresentment:
 		return true
 	}
 	return false
