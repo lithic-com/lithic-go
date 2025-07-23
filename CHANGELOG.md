@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.85.0 (2025-07-23)
+
+Full Changelog: [v0.84.1...v0.85.0](https://github.com/lithic-com/lithic-go/compare/v0.84.1...v0.85.0)
+
+### Features
+
+* **api:** adds new Auth Rules Scope and Settlement Details type ([ec60225](https://github.com/lithic-com/lithic-go/commit/ec60225d2337da3e87807e71e1d2e151c647f24b))
+
 ## 0.84.1 (2025-07-21)
 
 Full Changelog: [v0.84.0...v0.84.1](https://github.com/lithic-com/lithic-go/compare/v0.84.0...v0.84.1)
