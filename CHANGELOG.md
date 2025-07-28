@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.86.0 (2025-07-28)
+
+Full Changelog: [v0.85.0...v0.86.0](https://github.com/lithic-com/lithic-go/compare/v0.85.0...v0.86.0)
+
+### Features
+
+* **api:** updates Transaction retrieve response to match API ([890f46b](https://github.com/lithic-com/lithic-go/commit/890f46bf7df7b24940186d3dc59b85e45ae5fc0c))
+
 ## 0.85.0 (2025-07-23)
 
 Full Changelog: [v0.84.1...v0.85.0](https://github.com/lithic-com/lithic-go/compare/v0.84.1...v0.85.0)
