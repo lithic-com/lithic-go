@@ -129,18 +129,23 @@ func (r *ExternalPaymentService) Settle(ctx context.Context, externalPaymentToke
 }
 
 type ExternalPayment struct {
-	Token                 string                     `json:"token,required" format:"uuid"`
-	Category              ExternalPaymentCategory    `json:"category,required"`
-	Created               time.Time                  `json:"created,required" format:"date-time"`
-	Currency              string                     `json:"currency,required"`
-	Events                []ExternalPaymentEvent     `json:"events,required"`
-	FinancialAccountToken string                     `json:"financial_account_token,required" format:"uuid"`
-	PaymentType           ExternalPaymentPaymentType `json:"payment_type,required"`
-	PendingAmount         int64                      `json:"pending_amount,required"`
-	Result                ExternalPaymentResult      `json:"result,required"`
-	SettledAmount         int64                      `json:"settled_amount,required"`
-	Status                ExternalPaymentStatus      `json:"status,required"`
+	// Unique identifier for the transaction
+	Token string `json:"token,required" format:"uuid"`
+	// ISO 8601 timestamp of when the transaction was created
+	Created time.Time             `json:"created,required" format:"date-time"`
+	Family  ExternalPaymentFamily `json:"family,required"`
+	// The status of the transaction
+	Status ExternalPaymentStatus `json:"status,required"`
+	// ISO 8601 timestamp of when the transaction was last updated
 	Updated               time.Time                  `json:"updated,required" format:"date-time"`
+	Category              ExternalPaymentCategory    `json:"category"`
+	Currency              string                     `json:"currency"`
+	Events                []ExternalPaymentEvent     `json:"events"`
+	FinancialAccountToken string                     `json:"financial_account_token" format:"uuid"`
+	PaymentType           ExternalPaymentPaymentType `json:"payment_type"`
+	PendingAmount         int64                      `json:"pending_amount"`
+	Result                ExternalPaymentResult      `json:"result"`
+	SettledAmount         int64                      `json:"settled_amount"`
 	UserDefinedID         string                     `json:"user_defined_id"`
 	JSON                  externalPaymentJSON        `json:"-"`
 }
@@ -148,8 +153,11 @@ type ExternalPayment struct {
 // externalPaymentJSON contains the JSON metadata for the struct [ExternalPayment]
 type externalPaymentJSON struct {
 	Token                 apijson.Field
-	Category              apijson.Field
 	Created               apijson.Field
+	Family                apijson.Field
+	Status                apijson.Field
+	Updated               apijson.Field
+	Category              apijson.Field
 	Currency              apijson.Field
 	Events                apijson.Field
 	FinancialAccountToken apijson.Field
@@ -157,8 +165,6 @@ type externalPaymentJSON struct {
 	PendingAmount         apijson.Field
 	Result                apijson.Field
 	SettledAmount         apijson.Field
-	Status                apijson.Field
-	Updated               apijson.Field
 	UserDefinedID         apijson.Field
 	raw                   string
 	ExtraFields           map[string]apijson.Field
@@ -170,6 +176,44 @@ func (r *ExternalPayment) UnmarshalJSON(data []byte) (err error) {
 
 func (r externalPaymentJSON) RawJSON() string {
 	return r.raw
+}
+
+type ExternalPaymentFamily string
+
+const (
+	ExternalPaymentFamilyCard                ExternalPaymentFamily = "CARD"
+	ExternalPaymentFamilyPayment             ExternalPaymentFamily = "PAYMENT"
+	ExternalPaymentFamilyTransfer            ExternalPaymentFamily = "TRANSFER"
+	ExternalPaymentFamilyInternal            ExternalPaymentFamily = "INTERNAL"
+	ExternalPaymentFamilyExternalPayment     ExternalPaymentFamily = "EXTERNAL_PAYMENT"
+	ExternalPaymentFamilyManagementOperation ExternalPaymentFamily = "MANAGEMENT_OPERATION"
+)
+
+func (r ExternalPaymentFamily) IsKnown() bool {
+	switch r {
+	case ExternalPaymentFamilyCard, ExternalPaymentFamilyPayment, ExternalPaymentFamilyTransfer, ExternalPaymentFamilyInternal, ExternalPaymentFamilyExternalPayment, ExternalPaymentFamilyManagementOperation:
+		return true
+	}
+	return false
+}
+
+// The status of the transaction
+type ExternalPaymentStatus string
+
+const (
+	ExternalPaymentStatusPending  ExternalPaymentStatus = "PENDING"
+	ExternalPaymentStatusSettled  ExternalPaymentStatus = "SETTLED"
+	ExternalPaymentStatusDeclined ExternalPaymentStatus = "DECLINED"
+	ExternalPaymentStatusReversed ExternalPaymentStatus = "REVERSED"
+	ExternalPaymentStatusCanceled ExternalPaymentStatus = "CANCELED"
+)
+
+func (r ExternalPaymentStatus) IsKnown() bool {
+	switch r {
+	case ExternalPaymentStatusPending, ExternalPaymentStatusSettled, ExternalPaymentStatusDeclined, ExternalPaymentStatusReversed, ExternalPaymentStatusCanceled:
+		return true
+	}
+	return false
 }
 
 type ExternalPaymentCategory string
@@ -311,24 +355,6 @@ const (
 func (r ExternalPaymentResult) IsKnown() bool {
 	switch r {
 	case ExternalPaymentResultApproved, ExternalPaymentResultDeclined:
-		return true
-	}
-	return false
-}
-
-type ExternalPaymentStatus string
-
-const (
-	ExternalPaymentStatusPending  ExternalPaymentStatus = "PENDING"
-	ExternalPaymentStatusSettled  ExternalPaymentStatus = "SETTLED"
-	ExternalPaymentStatusDeclined ExternalPaymentStatus = "DECLINED"
-	ExternalPaymentStatusReversed ExternalPaymentStatus = "REVERSED"
-	ExternalPaymentStatusCanceled ExternalPaymentStatus = "CANCELED"
-)
-
-func (r ExternalPaymentStatus) IsKnown() bool {
-	switch r {
-	case ExternalPaymentStatusPending, ExternalPaymentStatusSettled, ExternalPaymentStatusDeclined, ExternalPaymentStatusReversed, ExternalPaymentStatusCanceled:
 		return true
 	}
 	return false
