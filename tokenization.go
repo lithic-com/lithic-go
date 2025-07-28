@@ -38,7 +38,7 @@ func NewTokenizationService(opts ...option.RequestOption) (r *TokenizationServic
 }
 
 // Get tokenization
-func (r *TokenizationService) Get(ctx context.Context, tokenizationToken string, opts ...option.RequestOption) (res *TokenizationGetResponse, err error) {
+func (r *TokenizationService) Get(ctx context.Context, tokenizationToken string, opts ...option.RequestOption) (res *Tokenization, err error) {
 	opts = append(r.Options[:], opts...)
 	if tokenizationToken == "" {
 		err = errors.New("missing required tokenization_token parameter")
@@ -399,27 +399,6 @@ func (r TokenizationEventsType) IsKnown() bool {
 		return true
 	}
 	return false
-}
-
-type TokenizationGetResponse struct {
-	Data Tokenization                `json:"data"`
-	JSON tokenizationGetResponseJSON `json:"-"`
-}
-
-// tokenizationGetResponseJSON contains the JSON metadata for the struct
-// [TokenizationGetResponse]
-type tokenizationGetResponseJSON struct {
-	Data        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *TokenizationGetResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r tokenizationGetResponseJSON) RawJSON() string {
-	return r.raw
 }
 
 type TokenizationSimulateResponse struct {

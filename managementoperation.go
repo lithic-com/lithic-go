@@ -140,42 +140,48 @@ func (r ExternalResourceType) IsKnown() bool {
 }
 
 type ManagementOperationTransaction struct {
-	Token                 string                                          `json:"token,required" format:"uuid"`
-	Category              ManagementOperationTransactionCategory          `json:"category,required"`
-	Created               time.Time                                       `json:"created,required" format:"date-time"`
-	Currency              string                                          `json:"currency,required"`
-	Direction             ManagementOperationTransactionDirection         `json:"direction,required"`
-	Events                []ManagementOperationTransactionEvent           `json:"events,required"`
-	FinancialAccountToken string                                          `json:"financial_account_token,required" format:"uuid"`
-	PendingAmount         int64                                           `json:"pending_amount,required"`
-	Result                ManagementOperationTransactionResult            `json:"result,required"`
-	SettledAmount         int64                                           `json:"settled_amount,required"`
-	Status                ManagementOperationTransactionStatus            `json:"status,required"`
-	TransactionSeries     ManagementOperationTransactionTransactionSeries `json:"transaction_series,required,nullable"`
-	Updated               time.Time                                       `json:"updated,required" format:"date-time"`
+	// Unique identifier for the transaction
+	Token string `json:"token,required" format:"uuid"`
+	// ISO 8601 timestamp of when the transaction was created
+	Created time.Time                            `json:"created,required" format:"date-time"`
+	Family  ManagementOperationTransactionFamily `json:"family,required"`
+	// The status of the transaction
+	Status ManagementOperationTransactionStatus `json:"status,required"`
+	// ISO 8601 timestamp of when the transaction was last updated
+	Updated   time.Time                               `json:"updated,required" format:"date-time"`
+	Category  ManagementOperationTransactionCategory  `json:"category"`
+	Currency  string                                  `json:"currency"`
+	Direction ManagementOperationTransactionDirection `json:"direction"`
+	Events    []ManagementOperationTransactionEvent   `json:"events"`
 	// External resource associated with the management operation
-	ExternalResource ExternalResource                   `json:"external_resource,nullable"`
-	UserDefinedID    string                             `json:"user_defined_id"`
-	JSON             managementOperationTransactionJSON `json:"-"`
+	ExternalResource      ExternalResource                                `json:"external_resource,nullable"`
+	FinancialAccountToken string                                          `json:"financial_account_token" format:"uuid"`
+	PendingAmount         int64                                           `json:"pending_amount"`
+	Result                ManagementOperationTransactionResult            `json:"result"`
+	SettledAmount         int64                                           `json:"settled_amount"`
+	TransactionSeries     ManagementOperationTransactionTransactionSeries `json:"transaction_series,nullable"`
+	UserDefinedID         string                                          `json:"user_defined_id"`
+	JSON                  managementOperationTransactionJSON              `json:"-"`
 }
 
 // managementOperationTransactionJSON contains the JSON metadata for the struct
 // [ManagementOperationTransaction]
 type managementOperationTransactionJSON struct {
 	Token                 apijson.Field
-	Category              apijson.Field
 	Created               apijson.Field
+	Family                apijson.Field
+	Status                apijson.Field
+	Updated               apijson.Field
+	Category              apijson.Field
 	Currency              apijson.Field
 	Direction             apijson.Field
 	Events                apijson.Field
+	ExternalResource      apijson.Field
 	FinancialAccountToken apijson.Field
 	PendingAmount         apijson.Field
 	Result                apijson.Field
 	SettledAmount         apijson.Field
-	Status                apijson.Field
 	TransactionSeries     apijson.Field
-	Updated               apijson.Field
-	ExternalResource      apijson.Field
 	UserDefinedID         apijson.Field
 	raw                   string
 	ExtraFields           map[string]apijson.Field
@@ -187,6 +193,44 @@ func (r *ManagementOperationTransaction) UnmarshalJSON(data []byte) (err error) 
 
 func (r managementOperationTransactionJSON) RawJSON() string {
 	return r.raw
+}
+
+type ManagementOperationTransactionFamily string
+
+const (
+	ManagementOperationTransactionFamilyCard                ManagementOperationTransactionFamily = "CARD"
+	ManagementOperationTransactionFamilyPayment             ManagementOperationTransactionFamily = "PAYMENT"
+	ManagementOperationTransactionFamilyTransfer            ManagementOperationTransactionFamily = "TRANSFER"
+	ManagementOperationTransactionFamilyInternal            ManagementOperationTransactionFamily = "INTERNAL"
+	ManagementOperationTransactionFamilyExternalPayment     ManagementOperationTransactionFamily = "EXTERNAL_PAYMENT"
+	ManagementOperationTransactionFamilyManagementOperation ManagementOperationTransactionFamily = "MANAGEMENT_OPERATION"
+)
+
+func (r ManagementOperationTransactionFamily) IsKnown() bool {
+	switch r {
+	case ManagementOperationTransactionFamilyCard, ManagementOperationTransactionFamilyPayment, ManagementOperationTransactionFamilyTransfer, ManagementOperationTransactionFamilyInternal, ManagementOperationTransactionFamilyExternalPayment, ManagementOperationTransactionFamilyManagementOperation:
+		return true
+	}
+	return false
+}
+
+// The status of the transaction
+type ManagementOperationTransactionStatus string
+
+const (
+	ManagementOperationTransactionStatusPending  ManagementOperationTransactionStatus = "PENDING"
+	ManagementOperationTransactionStatusSettled  ManagementOperationTransactionStatus = "SETTLED"
+	ManagementOperationTransactionStatusDeclined ManagementOperationTransactionStatus = "DECLINED"
+	ManagementOperationTransactionStatusReversed ManagementOperationTransactionStatus = "REVERSED"
+	ManagementOperationTransactionStatusCanceled ManagementOperationTransactionStatus = "CANCELED"
+)
+
+func (r ManagementOperationTransactionStatus) IsKnown() bool {
+	switch r {
+	case ManagementOperationTransactionStatusPending, ManagementOperationTransactionStatusSettled, ManagementOperationTransactionStatusDeclined, ManagementOperationTransactionStatusReversed, ManagementOperationTransactionStatusCanceled:
+		return true
+	}
+	return false
 }
 
 type ManagementOperationTransactionCategory string
@@ -330,24 +374,6 @@ const (
 func (r ManagementOperationTransactionResult) IsKnown() bool {
 	switch r {
 	case ManagementOperationTransactionResultApproved, ManagementOperationTransactionResultDeclined:
-		return true
-	}
-	return false
-}
-
-type ManagementOperationTransactionStatus string
-
-const (
-	ManagementOperationTransactionStatusPending  ManagementOperationTransactionStatus = "PENDING"
-	ManagementOperationTransactionStatusSettled  ManagementOperationTransactionStatus = "SETTLED"
-	ManagementOperationTransactionStatusDeclined ManagementOperationTransactionStatus = "DECLINED"
-	ManagementOperationTransactionStatusReversed ManagementOperationTransactionStatus = "REVERSED"
-	ManagementOperationTransactionStatusCanceled ManagementOperationTransactionStatus = "CANCELED"
-)
-
-func (r ManagementOperationTransactionStatus) IsKnown() bool {
-	switch r {
-	case ManagementOperationTransactionStatusPending, ManagementOperationTransactionStatusSettled, ManagementOperationTransactionStatusDeclined, ManagementOperationTransactionStatusReversed, ManagementOperationTransactionStatusCanceled:
 		return true
 	}
 	return false

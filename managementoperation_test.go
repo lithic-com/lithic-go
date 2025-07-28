@@ -27,7 +27,7 @@ func TestManagementOperationNewWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.ManagementOperations.New(context.TODO(), lithic.ManagementOperationNewParams{
-		Amount:                lithic.F(int64(0)),
+		Amount:                lithic.F(int64(1)),
 		Category:              lithic.F(lithic.ManagementOperationNewParamsCategoryManagementFee),
 		Direction:             lithic.F(lithic.ManagementOperationNewParamsDirectionCredit),
 		EffectiveDate:         lithic.F(time.Now()),
