@@ -150,6 +150,8 @@ type Payment struct {
 	// Pending amount of the payment in the currency's smallest unit (e.g., cents). The
 	// value of this field will go to zero over time once the payment is settled.
 	PendingAmount int64 `json:"pending_amount,required"`
+	// Account tokens related to a payment transaction
+	RelatedAccountTokens PaymentRelatedAccountTokens `json:"related_account_tokens,required"`
 	// APPROVED payments were successful while DECLINED payments were declined by
 	// Lithic or returned.
 	Result PaymentResult `json:"result,required"`
@@ -187,6 +189,7 @@ type paymentJSON struct {
 	Method                   apijson.Field
 	MethodAttributes         apijson.Field
 	PendingAmount            apijson.Field
+	RelatedAccountTokens     apijson.Field
 	Result                   apijson.Field
 	SettledAmount            apijson.Field
 	Source                   apijson.Field
@@ -435,6 +438,32 @@ func (r PaymentMethodAttributesSecCode) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+// Account tokens related to a payment transaction
+type PaymentRelatedAccountTokens struct {
+	// Globally unique identifier for the account
+	AccountToken string `json:"account_token,required,nullable" format:"uuid"`
+	// Globally unique identifier for the business account
+	BusinessAccountToken string                          `json:"business_account_token,required,nullable" format:"uuid"`
+	JSON                 paymentRelatedAccountTokensJSON `json:"-"`
+}
+
+// paymentRelatedAccountTokensJSON contains the JSON metadata for the struct
+// [PaymentRelatedAccountTokens]
+type paymentRelatedAccountTokensJSON struct {
+	AccountToken         apijson.Field
+	BusinessAccountToken apijson.Field
+	raw                  string
+	ExtraFields          map[string]apijson.Field
+}
+
+func (r *PaymentRelatedAccountTokens) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r paymentRelatedAccountTokensJSON) RawJSON() string {
+	return r.raw
 }
 
 // APPROVED payments were successful while DECLINED payments were declined by

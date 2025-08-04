@@ -178,6 +178,10 @@ func (r externalPaymentJSON) RawJSON() string {
 	return r.raw
 }
 
+func (r ExternalPayment) implementsAccountActivityListResponse() {}
+
+func (r ExternalPayment) implementsAccountActivityGetTransactionResponse() {}
+
 type ExternalPaymentFamily string
 
 const (
@@ -271,12 +275,13 @@ func (r externalPaymentEventJSON) RawJSON() string {
 type ExternalPaymentEventsDetailedResult string
 
 const (
-	ExternalPaymentEventsDetailedResultApproved ExternalPaymentEventsDetailedResult = "APPROVED"
+	ExternalPaymentEventsDetailedResultApproved          ExternalPaymentEventsDetailedResult = "APPROVED"
+	ExternalPaymentEventsDetailedResultInsufficientFunds ExternalPaymentEventsDetailedResult = "INSUFFICIENT_FUNDS"
 )
 
 func (r ExternalPaymentEventsDetailedResult) IsKnown() bool {
 	switch r {
-	case ExternalPaymentEventsDetailedResultApproved:
+	case ExternalPaymentEventsDetailedResultApproved, ExternalPaymentEventsDetailedResultInsufficientFunds:
 		return true
 	}
 	return false
