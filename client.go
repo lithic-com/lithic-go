@@ -45,6 +45,7 @@ type Client struct {
 	FundingEvents           *FundingEventService
 	Fraud                   *FraudService
 	NetworkPrograms         *NetworkProgramService
+	AccountActivity         *AccountActivityService
 }
 
 // DefaultClientOptions read from the environment (LITHIC_API_KEY,
@@ -102,6 +103,7 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.FundingEvents = NewFundingEventService(opts...)
 	r.Fraud = NewFraudService(opts...)
 	r.NetworkPrograms = NewNetworkProgramService(opts...)
+	r.AccountActivity = NewAccountActivityService(opts...)
 
 	return
 }
