@@ -106,6 +106,8 @@ type BookTransferResponse struct {
 	Currency string `json:"currency,required"`
 	// A list of all financial events that have modified this transfer.
 	Events []BookTransferResponseEvent `json:"events,required"`
+	// External resource associated with the management operation
+	ExternalResource ExternalResource `json:"external_resource,required,nullable"`
 	// Globally unique identifier for the financial account or card that will send the
 	// funds. Accepted type dependent on the program's use case.
 	FromFinancialAccountToken string `json:"from_financial_account_token,required" format:"uuid"`
@@ -125,6 +127,8 @@ type BookTransferResponse struct {
 	// Globally unique identifier for the financial account or card that will receive
 	// the funds. Accepted type dependent on the program's use case.
 	ToFinancialAccountToken interface{} `json:"to_financial_account_token,required"`
+	// A series of transactions that are grouped together.
+	TransactionSeries BookTransferResponseTransactionSeries `json:"transaction_series,required,nullable"`
 	// Date and time when the financial transaction was last updated. UTC time zone.
 	Updated time.Time                `json:"updated,required" format:"date-time"`
 	JSON    bookTransferResponseJSON `json:"-"`
@@ -138,12 +142,14 @@ type bookTransferResponseJSON struct {
 	Created                   apijson.Field
 	Currency                  apijson.Field
 	Events                    apijson.Field
+	ExternalResource          apijson.Field
 	FromFinancialAccountToken apijson.Field
 	PendingAmount             apijson.Field
 	Result                    apijson.Field
 	SettledAmount             apijson.Field
 	Status                    apijson.Field
 	ToFinancialAccountToken   apijson.Field
+	TransactionSeries         apijson.Field
 	Updated                   apijson.Field
 	raw                       string
 	ExtraFields               map[string]apijson.Field
@@ -288,6 +294,32 @@ func (r BookTransferResponseStatus) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+// A series of transactions that are grouped together.
+type BookTransferResponseTransactionSeries struct {
+	RelatedTransactionEventToken string                                    `json:"related_transaction_event_token,required,nullable" format:"uuid"`
+	RelatedTransactionToken      string                                    `json:"related_transaction_token,required,nullable" format:"uuid"`
+	Type                         string                                    `json:"type,required"`
+	JSON                         bookTransferResponseTransactionSeriesJSON `json:"-"`
+}
+
+// bookTransferResponseTransactionSeriesJSON contains the JSON metadata for the
+// struct [BookTransferResponseTransactionSeries]
+type bookTransferResponseTransactionSeriesJSON struct {
+	RelatedTransactionEventToken apijson.Field
+	RelatedTransactionToken      apijson.Field
+	Type                         apijson.Field
+	raw                          string
+	ExtraFields                  map[string]apijson.Field
+}
+
+func (r *BookTransferResponseTransactionSeries) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r bookTransferResponseTransactionSeriesJSON) RawJSON() string {
+	return r.raw
 }
 
 type BookTransferNewParams struct {

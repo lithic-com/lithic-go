@@ -195,6 +195,10 @@ func (r managementOperationTransactionJSON) RawJSON() string {
 	return r.raw
 }
 
+func (r ManagementOperationTransaction) implementsAccountActivityListResponse() {}
+
+func (r ManagementOperationTransaction) implementsAccountActivityGetTransactionResponse() {}
+
 type ManagementOperationTransactionFamily string
 
 const (
@@ -306,12 +310,13 @@ func (r managementOperationTransactionEventJSON) RawJSON() string {
 type ManagementOperationTransactionEventsDetailedResult string
 
 const (
-	ManagementOperationTransactionEventsDetailedResultApproved ManagementOperationTransactionEventsDetailedResult = "APPROVED"
+	ManagementOperationTransactionEventsDetailedResultApproved          ManagementOperationTransactionEventsDetailedResult = "APPROVED"
+	ManagementOperationTransactionEventsDetailedResultInsufficientFunds ManagementOperationTransactionEventsDetailedResult = "INSUFFICIENT_FUNDS"
 )
 
 func (r ManagementOperationTransactionEventsDetailedResult) IsKnown() bool {
 	switch r {
-	case ManagementOperationTransactionEventsDetailedResultApproved:
+	case ManagementOperationTransactionEventsDetailedResultApproved, ManagementOperationTransactionEventsDetailedResultInsufficientFunds:
 		return true
 	}
 	return false
