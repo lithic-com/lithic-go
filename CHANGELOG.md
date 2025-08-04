@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.87.0 (2025-08-04)
+
+Full Changelog: [v0.86.0...v0.87.0](https://github.com/lithic-com/lithic-go/compare/v0.86.0...v0.87.0)
+
+### Features
+
+* **api:** adds new Account Activity API ([9e3f757](https://github.com/lithic-com/lithic-go/commit/9e3f757cd46626e20dd0f2b855d2dbe903537aa2))
+
 ## 0.86.0 (2025-07-28)
 
 Full Changelog: [v0.85.0...v0.86.0](https://github.com/lithic-com/lithic-go/compare/v0.85.0...v0.86.0)
