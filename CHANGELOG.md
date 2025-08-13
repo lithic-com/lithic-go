@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.88.0 (2025-08-13)
+
+Full Changelog: [v0.87.0...v0.88.0](https://github.com/lithic-com/lithic-go/compare/v0.87.0...v0.88.0)
+
+### Features
+
+* **api:** adds detailed 3DS challenge statuses ([166f077](https://github.com/lithic-com/lithic-go/commit/166f077c27f74b0c637e3b16c52e4314fed53ec3))
+* **client:** support optional json html escaping ([20b2acc](https://github.com/lithic-com/lithic-go/commit/20b2acc917201a08331026c6014c6d63ebce37a7))
+
+
+### Chores
+
+* **internal:** update comment in script ([aa4c921](https://github.com/lithic-com/lithic-go/commit/aa4c92111f75c45e2e2375c01584d49ff0993520))
+* update @stainless-api/prism-cli to v5.15.0 ([48914fb](https://github.com/lithic-com/lithic-go/commit/48914fb71e2156c1c2e4fadb91da37e6fbdc082d))
+
 ## 0.87.0 (2025-08-04)
 
 Full Changelog: [v0.86.0...v0.87.0](https://github.com/lithic-com/lithic-go/compare/v0.86.0...v0.87.0)
