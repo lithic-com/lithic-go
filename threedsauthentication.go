@@ -775,6 +775,23 @@ func (r threeDSAuthenticationGetResponseBrowserJSON) RawJSON() string {
 type ThreeDSAuthenticationGetResponseChallengeMetadata struct {
 	// The type of challenge method used for authentication.
 	MethodType ThreeDSAuthenticationGetResponseChallengeMetadataMethodType `json:"method_type,required"`
+	// Indicates the status of the challenge
+	//
+	//   - SUCCESS - Cardholder completed the challenge successfully
+	//   - PENDING - Challenge was issued to the cardholder and was not completed yet
+	//   - SMS_DELIVERY_FAILED - Lithic confirmed undeliverability of the SMS to the
+	//     provided phone number. Relevant only for SMS_OTP method
+	//   - CARDHOLDER_TIMEOUT - Cardholder failed to complete the challenge within the
+	//     given challenge TTL
+	//   - CANCELED_VIA_CHALLENGE_UI - Cardholder canceled the challenge by selecting
+	//     "cancel" on the challenge UI
+	//   - CANCELED_OOB - Cardholder canceled the challenge out of band
+	//   - ATTEMPTS_EXCEEDED - Cardholder failed the challenge by either entering an
+	//     incorrect OTP more than the allowed number of times or requesting a new OTP
+	//     more than the allowed number of times
+	//   - ABORTED - Merchant aborted authentication after a challenge was requested
+	//   - ERROR - The challenge failed for a reason different than those documented
+	Status ThreeDSAuthenticationGetResponseChallengeMetadataStatus `json:"status,required"`
 	// The phone number used for delivering the OTP. Relevant only for SMS_OTP method.
 	PhoneNumber string                                                `json:"phone_number,nullable"`
 	JSON        threeDSAuthenticationGetResponseChallengeMetadataJSON `json:"-"`
@@ -784,6 +801,7 @@ type ThreeDSAuthenticationGetResponseChallengeMetadata struct {
 // for the struct [ThreeDSAuthenticationGetResponseChallengeMetadata]
 type threeDSAuthenticationGetResponseChallengeMetadataJSON struct {
 	MethodType  apijson.Field
+	Status      apijson.Field
 	PhoneNumber apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
@@ -808,6 +826,44 @@ const (
 func (r ThreeDSAuthenticationGetResponseChallengeMetadataMethodType) IsKnown() bool {
 	switch r {
 	case ThreeDSAuthenticationGetResponseChallengeMetadataMethodTypeSMSOtp, ThreeDSAuthenticationGetResponseChallengeMetadataMethodTypeOutOfBand:
+		return true
+	}
+	return false
+}
+
+// Indicates the status of the challenge
+//
+//   - SUCCESS - Cardholder completed the challenge successfully
+//   - PENDING - Challenge was issued to the cardholder and was not completed yet
+//   - SMS_DELIVERY_FAILED - Lithic confirmed undeliverability of the SMS to the
+//     provided phone number. Relevant only for SMS_OTP method
+//   - CARDHOLDER_TIMEOUT - Cardholder failed to complete the challenge within the
+//     given challenge TTL
+//   - CANCELED_VIA_CHALLENGE_UI - Cardholder canceled the challenge by selecting
+//     "cancel" on the challenge UI
+//   - CANCELED_OOB - Cardholder canceled the challenge out of band
+//   - ATTEMPTS_EXCEEDED - Cardholder failed the challenge by either entering an
+//     incorrect OTP more than the allowed number of times or requesting a new OTP
+//     more than the allowed number of times
+//   - ABORTED - Merchant aborted authentication after a challenge was requested
+//   - ERROR - The challenge failed for a reason different than those documented
+type ThreeDSAuthenticationGetResponseChallengeMetadataStatus string
+
+const (
+	ThreeDSAuthenticationGetResponseChallengeMetadataStatusSuccess                ThreeDSAuthenticationGetResponseChallengeMetadataStatus = "SUCCESS"
+	ThreeDSAuthenticationGetResponseChallengeMetadataStatusPending                ThreeDSAuthenticationGetResponseChallengeMetadataStatus = "PENDING"
+	ThreeDSAuthenticationGetResponseChallengeMetadataStatusSMSDeliveryFailed      ThreeDSAuthenticationGetResponseChallengeMetadataStatus = "SMS_DELIVERY_FAILED"
+	ThreeDSAuthenticationGetResponseChallengeMetadataStatusCardholderTimeout      ThreeDSAuthenticationGetResponseChallengeMetadataStatus = "CARDHOLDER_TIMEOUT"
+	ThreeDSAuthenticationGetResponseChallengeMetadataStatusCanceledViaChallengeUi ThreeDSAuthenticationGetResponseChallengeMetadataStatus = "CANCELED_VIA_CHALLENGE_UI"
+	ThreeDSAuthenticationGetResponseChallengeMetadataStatusCanceledOob            ThreeDSAuthenticationGetResponseChallengeMetadataStatus = "CANCELED_OOB"
+	ThreeDSAuthenticationGetResponseChallengeMetadataStatusAttemptsExceeded       ThreeDSAuthenticationGetResponseChallengeMetadataStatus = "ATTEMPTS_EXCEEDED"
+	ThreeDSAuthenticationGetResponseChallengeMetadataStatusAborted                ThreeDSAuthenticationGetResponseChallengeMetadataStatus = "ABORTED"
+	ThreeDSAuthenticationGetResponseChallengeMetadataStatusError                  ThreeDSAuthenticationGetResponseChallengeMetadataStatus = "ERROR"
+)
+
+func (r ThreeDSAuthenticationGetResponseChallengeMetadataStatus) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseChallengeMetadataStatusSuccess, ThreeDSAuthenticationGetResponseChallengeMetadataStatusPending, ThreeDSAuthenticationGetResponseChallengeMetadataStatusSMSDeliveryFailed, ThreeDSAuthenticationGetResponseChallengeMetadataStatusCardholderTimeout, ThreeDSAuthenticationGetResponseChallengeMetadataStatusCanceledViaChallengeUi, ThreeDSAuthenticationGetResponseChallengeMetadataStatusCanceledOob, ThreeDSAuthenticationGetResponseChallengeMetadataStatusAttemptsExceeded, ThreeDSAuthenticationGetResponseChallengeMetadataStatusAborted, ThreeDSAuthenticationGetResponseChallengeMetadataStatusError:
 		return true
 	}
 	return false

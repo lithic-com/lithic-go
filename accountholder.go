@@ -777,7 +777,7 @@ type KYBParam struct {
 	// A user provided id that can be used to link an account holder with an external
 	// system
 	ExternalID param.Field[string] `json:"external_id"`
-	// An RFC 3339 timestamp indicating when precomputed KYC was completed on the
+	// An RFC 3339 timestamp indicating when precomputed KYB was completed on the
 	// business with a pass result.
 	//
 	// This field is required only if workflow type is `KYB_BYO`.
@@ -1915,8 +1915,11 @@ type AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplication struc
 	// Reason for the evaluation status.
 	StatusReasons []AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason `json:"status_reasons,required"`
 	// Timestamp of when the application was last updated.
-	Updated time.Time                                                                 `json:"updated,required" format:"date-time"`
-	JSON    accountHolderUpdateResponseKybkycPatchResponseVerificationApplicationJSON `json:"-"`
+	Updated time.Time `json:"updated,required" format:"date-time"`
+	// Timestamp of when the application passed the verification process. Only present
+	// if `status` is `ACCEPTED`
+	KyPassedAt time.Time                                                                 `json:"ky_passed_at" format:"date-time"`
+	JSON       accountHolderUpdateResponseKybkycPatchResponseVerificationApplicationJSON `json:"-"`
 }
 
 // accountHolderUpdateResponseKybkycPatchResponseVerificationApplicationJSON
@@ -1927,6 +1930,7 @@ type accountHolderUpdateResponseKybkycPatchResponseVerificationApplicationJSON s
 	Status        apijson.Field
 	StatusReasons apijson.Field
 	Updated       apijson.Field
+	KyPassedAt    apijson.Field
 	raw           string
 	ExtraFields   map[string]apijson.Field
 }
@@ -2653,8 +2657,11 @@ type AccountHolderSimulateEnrollmentReviewResponseVerificationApplication struct
 	// Reason for the evaluation status.
 	StatusReasons []AccountHolderSimulateEnrollmentReviewResponseVerificationApplicationStatusReason `json:"status_reasons,required"`
 	// Timestamp of when the application was last updated.
-	Updated time.Time                                                                `json:"updated,required" format:"date-time"`
-	JSON    accountHolderSimulateEnrollmentReviewResponseVerificationApplicationJSON `json:"-"`
+	Updated time.Time `json:"updated,required" format:"date-time"`
+	// Timestamp of when the application passed the verification process. Only present
+	// if `status` is `ACCEPTED`
+	KyPassedAt time.Time                                                                `json:"ky_passed_at" format:"date-time"`
+	JSON       accountHolderSimulateEnrollmentReviewResponseVerificationApplicationJSON `json:"-"`
 }
 
 // accountHolderSimulateEnrollmentReviewResponseVerificationApplicationJSON
@@ -2665,6 +2672,7 @@ type accountHolderSimulateEnrollmentReviewResponseVerificationApplicationJSON st
 	Status        apijson.Field
 	StatusReasons apijson.Field
 	Updated       apijson.Field
+	KyPassedAt    apijson.Field
 	raw           string
 	ExtraFields   map[string]apijson.Field
 }
@@ -2766,7 +2774,7 @@ type AccountHolderNewParamsBody struct {
 	// The KYC Exempt user's first name
 	FirstName  param.Field[string]      `json:"first_name"`
 	Individual param.Field[interface{}] `json:"individual"`
-	// An RFC 3339 timestamp indicating when precomputed KYC was completed on the
+	// An RFC 3339 timestamp indicating when precomputed KYB was completed on the
 	// business with a pass result.
 	//
 	// This field is required only if workflow type is `KYB_BYO`.
