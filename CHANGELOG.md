@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.89.0 (2025-08-18)
+
+Full Changelog: [v0.88.0...v0.89.0](https://github.com/lithic-com/lithic-go/compare/v0.88.0...v0.89.0)
+
+### Features
+
+* **api:** adds Event types for additional API resources ([96dfa46](https://github.com/lithic-com/lithic-go/commit/96dfa4634c2750ac466454bcf4bd40d8c9aa7d3c))
+
 ## 0.88.0 (2025-08-13)
 
 Full Changelog: [v0.87.0...v0.88.0](https://github.com/lithic-com/lithic-go/compare/v0.87.0...v0.88.0)
