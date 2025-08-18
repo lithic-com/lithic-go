@@ -171,8 +171,10 @@ type Payment struct {
 	Updated       time.Time `json:"updated,required" format:"date-time"`
 	UserDefinedID string    `json:"user_defined_id,required,nullable"`
 	// Date when the financial transaction expected to be released after settlement
-	ExpectedReleaseDate time.Time   `json:"expected_release_date" format:"date"`
-	JSON                paymentJSON `json:"-"`
+	ExpectedReleaseDate time.Time `json:"expected_release_date" format:"date"`
+	// Payment type indicating the specific ACH message or Fedwire transfer type
+	Type PaymentType `json:"type"`
+	JSON paymentJSON `json:"-"`
 }
 
 // paymentJSON contains the JSON metadata for the struct [Payment]
@@ -197,6 +199,7 @@ type paymentJSON struct {
 	Updated                  apijson.Field
 	UserDefinedID            apijson.Field
 	ExpectedReleaseDate      apijson.Field
+	Type                     apijson.Field
 	raw                      string
 	ExtraFields              map[string]apijson.Field
 }
@@ -239,6 +242,7 @@ func (r PaymentDirection) IsKnown() bool {
 	return false
 }
 
+// Payment Event
 type PaymentEvent struct {
 	// Globally unique identifier.
 	Token string `json:"token,required" format:"uuid"`
@@ -517,6 +521,30 @@ const (
 func (r PaymentStatus) IsKnown() bool {
 	switch r {
 	case PaymentStatusDeclined, PaymentStatusPending, PaymentStatusReturned, PaymentStatusSettled:
+		return true
+	}
+	return false
+}
+
+// Payment type indicating the specific ACH message or Fedwire transfer type
+type PaymentType string
+
+const (
+	PaymentTypeOriginationCredit PaymentType = "ORIGINATION_CREDIT"
+	PaymentTypeOriginationDebit  PaymentType = "ORIGINATION_DEBIT"
+	PaymentTypeReceiptCredit     PaymentType = "RECEIPT_CREDIT"
+	PaymentTypeReceiptDebit      PaymentType = "RECEIPT_DEBIT"
+	PaymentTypeCustomerTransfer  PaymentType = "CUSTOMER_TRANSFER"
+	PaymentTypeDrawdownPayment   PaymentType = "DRAWDOWN_PAYMENT"
+	PaymentTypeReversalPayment   PaymentType = "REVERSAL_PAYMENT"
+	PaymentTypeDrawdownRequest   PaymentType = "DRAWDOWN_REQUEST"
+	PaymentTypeReversalRequest   PaymentType = "REVERSAL_REQUEST"
+	PaymentTypeDrawdownRefusal   PaymentType = "DRAWDOWN_REFUSAL"
+)
+
+func (r PaymentType) IsKnown() bool {
+	switch r {
+	case PaymentTypeOriginationCredit, PaymentTypeOriginationDebit, PaymentTypeReceiptCredit, PaymentTypeReceiptDebit, PaymentTypeCustomerTransfer, PaymentTypeDrawdownPayment, PaymentTypeReversalPayment, PaymentTypeDrawdownRequest, PaymentTypeReversalRequest, PaymentTypeDrawdownRefusal:
 		return true
 	}
 	return false

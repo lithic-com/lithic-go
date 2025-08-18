@@ -280,11 +280,12 @@ const (
 	FinancialAccountTypeSecurity            FinancialAccountType = "SECURITY"
 	FinancialAccountTypeProgramReceivables  FinancialAccountType = "PROGRAM_RECEIVABLES"
 	FinancialAccountTypeCollection          FinancialAccountType = "COLLECTION"
+	FinancialAccountTypeBankAccountsPayable FinancialAccountType = "BANK_ACCOUNTS_PAYABLE"
 )
 
 func (r FinancialAccountType) IsKnown() bool {
 	switch r {
-	case FinancialAccountTypeIssuing, FinancialAccountTypeReserve, FinancialAccountTypeOperating, FinancialAccountTypeChargedOffFees, FinancialAccountTypeChargedOffInterest, FinancialAccountTypeChargedOffPrincipal, FinancialAccountTypeSecurity, FinancialAccountTypeProgramReceivables, FinancialAccountTypeCollection:
+	case FinancialAccountTypeIssuing, FinancialAccountTypeReserve, FinancialAccountTypeOperating, FinancialAccountTypeChargedOffFees, FinancialAccountTypeChargedOffInterest, FinancialAccountTypeChargedOffPrincipal, FinancialAccountTypeSecurity, FinancialAccountTypeProgramReceivables, FinancialAccountTypeCollection, FinancialAccountTypeBankAccountsPayable:
 		return true
 	}
 	return false
@@ -405,6 +406,7 @@ func (r FinancialTransactionCategory) IsKnown() bool {
 	return false
 }
 
+// Financial Event
 type FinancialTransactionEvent struct {
 	// Globally unique identifier.
 	Token string `json:"token" format:"uuid"`

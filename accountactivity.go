@@ -126,7 +126,10 @@ type AccountActivityListResponse struct {
 	Descriptor string `json:"descriptor"`
 	// Transfer direction
 	Direction AccountActivityListResponseDirection `json:"direction"`
-	// This field can have the runtime type of [[]interface{}], [[]TransactionEvent],
+	// This field can have the runtime type of
+	// [[]AccountActivityListResponseFinancialTransactionEvent],
+	// [[]AccountActivityListResponseBookTransferTransactionEvent],
+	// [[]TransactionEvent], [[]AccountActivityListResponsePaymentTransactionEvent],
 	// [[]ExternalPaymentEvent], [[]ManagementOperationTransactionEvent].
 	Events interface{} `json:"events"`
 	// Expected release date for the transaction
@@ -331,8 +334,8 @@ type AccountActivityListResponseFinancialTransaction struct {
 	// Transaction descriptor
 	Descriptor string `json:"descriptor,required"`
 	// List of transaction events
-	Events []interface{}                                         `json:"events,required"`
-	Family AccountActivityListResponseFinancialTransactionFamily `json:"family,required"`
+	Events []AccountActivityListResponseFinancialTransactionEvent `json:"events,required"`
+	Family AccountActivityListResponseFinancialTransactionFamily  `json:"family,required"`
 	// Financial account token associated with the transaction
 	FinancialAccountToken string `json:"financial_account_token,required" format:"uuid"`
 	// Pending amount in cents
@@ -405,6 +408,140 @@ func (r AccountActivityListResponseFinancialTransactionCategory) IsKnown() bool 
 	return false
 }
 
+// Financial Event
+type AccountActivityListResponseFinancialTransactionEvent struct {
+	// Globally unique identifier.
+	Token string `json:"token" format:"uuid"`
+	// Amount of the financial event that has been settled in the currency's smallest
+	// unit (e.g., cents).
+	Amount int64 `json:"amount"`
+	// Date and time when the financial event occurred. UTC time zone.
+	Created time.Time `json:"created" format:"date-time"`
+	// APPROVED financial events were successful while DECLINED financial events were
+	// declined by user, Lithic, or the network.
+	Result AccountActivityListResponseFinancialTransactionEventsResult `json:"result"`
+	Type   AccountActivityListResponseFinancialTransactionEventsType   `json:"type"`
+	JSON   accountActivityListResponseFinancialTransactionEventJSON    `json:"-"`
+}
+
+// accountActivityListResponseFinancialTransactionEventJSON contains the JSON
+// metadata for the struct [AccountActivityListResponseFinancialTransactionEvent]
+type accountActivityListResponseFinancialTransactionEventJSON struct {
+	Token       apijson.Field
+	Amount      apijson.Field
+	Created     apijson.Field
+	Result      apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AccountActivityListResponseFinancialTransactionEvent) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountActivityListResponseFinancialTransactionEventJSON) RawJSON() string {
+	return r.raw
+}
+
+// APPROVED financial events were successful while DECLINED financial events were
+// declined by user, Lithic, or the network.
+type AccountActivityListResponseFinancialTransactionEventsResult string
+
+const (
+	AccountActivityListResponseFinancialTransactionEventsResultApproved AccountActivityListResponseFinancialTransactionEventsResult = "APPROVED"
+	AccountActivityListResponseFinancialTransactionEventsResultDeclined AccountActivityListResponseFinancialTransactionEventsResult = "DECLINED"
+)
+
+func (r AccountActivityListResponseFinancialTransactionEventsResult) IsKnown() bool {
+	switch r {
+	case AccountActivityListResponseFinancialTransactionEventsResultApproved, AccountActivityListResponseFinancialTransactionEventsResultDeclined:
+		return true
+	}
+	return false
+}
+
+type AccountActivityListResponseFinancialTransactionEventsType string
+
+const (
+	AccountActivityListResponseFinancialTransactionEventsTypeACHOriginationCancelled      AccountActivityListResponseFinancialTransactionEventsType = "ACH_ORIGINATION_CANCELLED"
+	AccountActivityListResponseFinancialTransactionEventsTypeACHOriginationInitiated      AccountActivityListResponseFinancialTransactionEventsType = "ACH_ORIGINATION_INITIATED"
+	AccountActivityListResponseFinancialTransactionEventsTypeACHOriginationProcessed      AccountActivityListResponseFinancialTransactionEventsType = "ACH_ORIGINATION_PROCESSED"
+	AccountActivityListResponseFinancialTransactionEventsTypeACHOriginationReleased       AccountActivityListResponseFinancialTransactionEventsType = "ACH_ORIGINATION_RELEASED"
+	AccountActivityListResponseFinancialTransactionEventsTypeACHOriginationReviewed       AccountActivityListResponseFinancialTransactionEventsType = "ACH_ORIGINATION_REVIEWED"
+	AccountActivityListResponseFinancialTransactionEventsTypeACHOriginationSettled        AccountActivityListResponseFinancialTransactionEventsType = "ACH_ORIGINATION_SETTLED"
+	AccountActivityListResponseFinancialTransactionEventsTypeACHReceiptProcessed          AccountActivityListResponseFinancialTransactionEventsType = "ACH_RECEIPT_PROCESSED"
+	AccountActivityListResponseFinancialTransactionEventsTypeACHReceiptSettled            AccountActivityListResponseFinancialTransactionEventsType = "ACH_RECEIPT_SETTLED"
+	AccountActivityListResponseFinancialTransactionEventsTypeACHReturnInitiated           AccountActivityListResponseFinancialTransactionEventsType = "ACH_RETURN_INITIATED"
+	AccountActivityListResponseFinancialTransactionEventsTypeACHReturnProcessed           AccountActivityListResponseFinancialTransactionEventsType = "ACH_RETURN_PROCESSED"
+	AccountActivityListResponseFinancialTransactionEventsTypeACHReturnSettled             AccountActivityListResponseFinancialTransactionEventsType = "ACH_RETURN_SETTLED"
+	AccountActivityListResponseFinancialTransactionEventsTypeAuthorization                AccountActivityListResponseFinancialTransactionEventsType = "AUTHORIZATION"
+	AccountActivityListResponseFinancialTransactionEventsTypeAuthorizationAdvice          AccountActivityListResponseFinancialTransactionEventsType = "AUTHORIZATION_ADVICE"
+	AccountActivityListResponseFinancialTransactionEventsTypeAuthorizationExpiry          AccountActivityListResponseFinancialTransactionEventsType = "AUTHORIZATION_EXPIRY"
+	AccountActivityListResponseFinancialTransactionEventsTypeAuthorizationReversal        AccountActivityListResponseFinancialTransactionEventsType = "AUTHORIZATION_REVERSAL"
+	AccountActivityListResponseFinancialTransactionEventsTypeBalanceInquiry               AccountActivityListResponseFinancialTransactionEventsType = "BALANCE_INQUIRY"
+	AccountActivityListResponseFinancialTransactionEventsTypeBillingError                 AccountActivityListResponseFinancialTransactionEventsType = "BILLING_ERROR"
+	AccountActivityListResponseFinancialTransactionEventsTypeBillingErrorReversal         AccountActivityListResponseFinancialTransactionEventsType = "BILLING_ERROR_REVERSAL"
+	AccountActivityListResponseFinancialTransactionEventsTypeCardToCard                   AccountActivityListResponseFinancialTransactionEventsType = "CARD_TO_CARD"
+	AccountActivityListResponseFinancialTransactionEventsTypeCashBack                     AccountActivityListResponseFinancialTransactionEventsType = "CASH_BACK"
+	AccountActivityListResponseFinancialTransactionEventsTypeCashBackReversal             AccountActivityListResponseFinancialTransactionEventsType = "CASH_BACK_REVERSAL"
+	AccountActivityListResponseFinancialTransactionEventsTypeClearing                     AccountActivityListResponseFinancialTransactionEventsType = "CLEARING"
+	AccountActivityListResponseFinancialTransactionEventsTypeCollection                   AccountActivityListResponseFinancialTransactionEventsType = "COLLECTION"
+	AccountActivityListResponseFinancialTransactionEventsTypeCorrectionCredit             AccountActivityListResponseFinancialTransactionEventsType = "CORRECTION_CREDIT"
+	AccountActivityListResponseFinancialTransactionEventsTypeCorrectionDebit              AccountActivityListResponseFinancialTransactionEventsType = "CORRECTION_DEBIT"
+	AccountActivityListResponseFinancialTransactionEventsTypeCreditAuthorization          AccountActivityListResponseFinancialTransactionEventsType = "CREDIT_AUTHORIZATION"
+	AccountActivityListResponseFinancialTransactionEventsTypeCreditAuthorizationAdvice    AccountActivityListResponseFinancialTransactionEventsType = "CREDIT_AUTHORIZATION_ADVICE"
+	AccountActivityListResponseFinancialTransactionEventsTypeCurrencyConversion           AccountActivityListResponseFinancialTransactionEventsType = "CURRENCY_CONVERSION"
+	AccountActivityListResponseFinancialTransactionEventsTypeCurrencyConversionReversal   AccountActivityListResponseFinancialTransactionEventsType = "CURRENCY_CONVERSION_REVERSAL"
+	AccountActivityListResponseFinancialTransactionEventsTypeDisputeWon                   AccountActivityListResponseFinancialTransactionEventsType = "DISPUTE_WON"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalACHCanceled          AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_ACH_CANCELED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalACHInitiated         AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_ACH_INITIATED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalACHReleased          AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_ACH_RELEASED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalACHReversed          AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_ACH_REVERSED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalACHSettled           AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_ACH_SETTLED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalCheckCanceled        AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_CHECK_CANCELED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalCheckInitiated       AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_CHECK_INITIATED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalCheckReleased        AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_CHECK_RELEASED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalCheckReversed        AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_CHECK_REVERSED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalCheckSettled         AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_CHECK_SETTLED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalTransferCanceled     AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_TRANSFER_CANCELED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalTransferInitiated    AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_TRANSFER_INITIATED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalTransferReleased     AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_TRANSFER_RELEASED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalTransferReversed     AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_TRANSFER_REVERSED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalTransferSettled      AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_TRANSFER_SETTLED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalWireCanceled         AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_WIRE_CANCELED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalWireInitiated        AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_WIRE_INITIATED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalWireReleased         AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_WIRE_RELEASED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalWireReversed         AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_WIRE_REVERSED"
+	AccountActivityListResponseFinancialTransactionEventsTypeExternalWireSettled          AccountActivityListResponseFinancialTransactionEventsType = "EXTERNAL_WIRE_SETTLED"
+	AccountActivityListResponseFinancialTransactionEventsTypeFinancialAuthorization       AccountActivityListResponseFinancialTransactionEventsType = "FINANCIAL_AUTHORIZATION"
+	AccountActivityListResponseFinancialTransactionEventsTypeFinancialCreditAuthorization AccountActivityListResponseFinancialTransactionEventsType = "FINANCIAL_CREDIT_AUTHORIZATION"
+	AccountActivityListResponseFinancialTransactionEventsTypeInterest                     AccountActivityListResponseFinancialTransactionEventsType = "INTEREST"
+	AccountActivityListResponseFinancialTransactionEventsTypeInterestReversal             AccountActivityListResponseFinancialTransactionEventsType = "INTEREST_REVERSAL"
+	AccountActivityListResponseFinancialTransactionEventsTypeInternalAdjustment           AccountActivityListResponseFinancialTransactionEventsType = "INTERNAL_ADJUSTMENT"
+	AccountActivityListResponseFinancialTransactionEventsTypeLatePayment                  AccountActivityListResponseFinancialTransactionEventsType = "LATE_PAYMENT"
+	AccountActivityListResponseFinancialTransactionEventsTypeLatePaymentReversal          AccountActivityListResponseFinancialTransactionEventsType = "LATE_PAYMENT_REVERSAL"
+	AccountActivityListResponseFinancialTransactionEventsTypeLossWriteOff                 AccountActivityListResponseFinancialTransactionEventsType = "LOSS_WRITE_OFF"
+	AccountActivityListResponseFinancialTransactionEventsTypeProvisionalCredit            AccountActivityListResponseFinancialTransactionEventsType = "PROVISIONAL_CREDIT"
+	AccountActivityListResponseFinancialTransactionEventsTypeProvisionalCreditReversal    AccountActivityListResponseFinancialTransactionEventsType = "PROVISIONAL_CREDIT_REVERSAL"
+	AccountActivityListResponseFinancialTransactionEventsTypeService                      AccountActivityListResponseFinancialTransactionEventsType = "SERVICE"
+	AccountActivityListResponseFinancialTransactionEventsTypeReturn                       AccountActivityListResponseFinancialTransactionEventsType = "RETURN"
+	AccountActivityListResponseFinancialTransactionEventsTypeReturnReversal               AccountActivityListResponseFinancialTransactionEventsType = "RETURN_REVERSAL"
+	AccountActivityListResponseFinancialTransactionEventsTypeTransfer                     AccountActivityListResponseFinancialTransactionEventsType = "TRANSFER"
+	AccountActivityListResponseFinancialTransactionEventsTypeTransferInsufficientFunds    AccountActivityListResponseFinancialTransactionEventsType = "TRANSFER_INSUFFICIENT_FUNDS"
+	AccountActivityListResponseFinancialTransactionEventsTypeReturnedPayment              AccountActivityListResponseFinancialTransactionEventsType = "RETURNED_PAYMENT"
+	AccountActivityListResponseFinancialTransactionEventsTypeReturnedPaymentReversal      AccountActivityListResponseFinancialTransactionEventsType = "RETURNED_PAYMENT_REVERSAL"
+	AccountActivityListResponseFinancialTransactionEventsTypeLithicNetworkPayment         AccountActivityListResponseFinancialTransactionEventsType = "LITHIC_NETWORK_PAYMENT"
+)
+
+func (r AccountActivityListResponseFinancialTransactionEventsType) IsKnown() bool {
+	switch r {
+	case AccountActivityListResponseFinancialTransactionEventsTypeACHOriginationCancelled, AccountActivityListResponseFinancialTransactionEventsTypeACHOriginationInitiated, AccountActivityListResponseFinancialTransactionEventsTypeACHOriginationProcessed, AccountActivityListResponseFinancialTransactionEventsTypeACHOriginationReleased, AccountActivityListResponseFinancialTransactionEventsTypeACHOriginationReviewed, AccountActivityListResponseFinancialTransactionEventsTypeACHOriginationSettled, AccountActivityListResponseFinancialTransactionEventsTypeACHReceiptProcessed, AccountActivityListResponseFinancialTransactionEventsTypeACHReceiptSettled, AccountActivityListResponseFinancialTransactionEventsTypeACHReturnInitiated, AccountActivityListResponseFinancialTransactionEventsTypeACHReturnProcessed, AccountActivityListResponseFinancialTransactionEventsTypeACHReturnSettled, AccountActivityListResponseFinancialTransactionEventsTypeAuthorization, AccountActivityListResponseFinancialTransactionEventsTypeAuthorizationAdvice, AccountActivityListResponseFinancialTransactionEventsTypeAuthorizationExpiry, AccountActivityListResponseFinancialTransactionEventsTypeAuthorizationReversal, AccountActivityListResponseFinancialTransactionEventsTypeBalanceInquiry, AccountActivityListResponseFinancialTransactionEventsTypeBillingError, AccountActivityListResponseFinancialTransactionEventsTypeBillingErrorReversal, AccountActivityListResponseFinancialTransactionEventsTypeCardToCard, AccountActivityListResponseFinancialTransactionEventsTypeCashBack, AccountActivityListResponseFinancialTransactionEventsTypeCashBackReversal, AccountActivityListResponseFinancialTransactionEventsTypeClearing, AccountActivityListResponseFinancialTransactionEventsTypeCollection, AccountActivityListResponseFinancialTransactionEventsTypeCorrectionCredit, AccountActivityListResponseFinancialTransactionEventsTypeCorrectionDebit, AccountActivityListResponseFinancialTransactionEventsTypeCreditAuthorization, AccountActivityListResponseFinancialTransactionEventsTypeCreditAuthorizationAdvice, AccountActivityListResponseFinancialTransactionEventsTypeCurrencyConversion, AccountActivityListResponseFinancialTransactionEventsTypeCurrencyConversionReversal, AccountActivityListResponseFinancialTransactionEventsTypeDisputeWon, AccountActivityListResponseFinancialTransactionEventsTypeExternalACHCanceled, AccountActivityListResponseFinancialTransactionEventsTypeExternalACHInitiated, AccountActivityListResponseFinancialTransactionEventsTypeExternalACHReleased, AccountActivityListResponseFinancialTransactionEventsTypeExternalACHReversed, AccountActivityListResponseFinancialTransactionEventsTypeExternalACHSettled, AccountActivityListResponseFinancialTransactionEventsTypeExternalCheckCanceled, AccountActivityListResponseFinancialTransactionEventsTypeExternalCheckInitiated, AccountActivityListResponseFinancialTransactionEventsTypeExternalCheckReleased, AccountActivityListResponseFinancialTransactionEventsTypeExternalCheckReversed, AccountActivityListResponseFinancialTransactionEventsTypeExternalCheckSettled, AccountActivityListResponseFinancialTransactionEventsTypeExternalTransferCanceled, AccountActivityListResponseFinancialTransactionEventsTypeExternalTransferInitiated, AccountActivityListResponseFinancialTransactionEventsTypeExternalTransferReleased, AccountActivityListResponseFinancialTransactionEventsTypeExternalTransferReversed, AccountActivityListResponseFinancialTransactionEventsTypeExternalTransferSettled, AccountActivityListResponseFinancialTransactionEventsTypeExternalWireCanceled, AccountActivityListResponseFinancialTransactionEventsTypeExternalWireInitiated, AccountActivityListResponseFinancialTransactionEventsTypeExternalWireReleased, AccountActivityListResponseFinancialTransactionEventsTypeExternalWireReversed, AccountActivityListResponseFinancialTransactionEventsTypeExternalWireSettled, AccountActivityListResponseFinancialTransactionEventsTypeFinancialAuthorization, AccountActivityListResponseFinancialTransactionEventsTypeFinancialCreditAuthorization, AccountActivityListResponseFinancialTransactionEventsTypeInterest, AccountActivityListResponseFinancialTransactionEventsTypeInterestReversal, AccountActivityListResponseFinancialTransactionEventsTypeInternalAdjustment, AccountActivityListResponseFinancialTransactionEventsTypeLatePayment, AccountActivityListResponseFinancialTransactionEventsTypeLatePaymentReversal, AccountActivityListResponseFinancialTransactionEventsTypeLossWriteOff, AccountActivityListResponseFinancialTransactionEventsTypeProvisionalCredit, AccountActivityListResponseFinancialTransactionEventsTypeProvisionalCreditReversal, AccountActivityListResponseFinancialTransactionEventsTypeService, AccountActivityListResponseFinancialTransactionEventsTypeReturn, AccountActivityListResponseFinancialTransactionEventsTypeReturnReversal, AccountActivityListResponseFinancialTransactionEventsTypeTransfer, AccountActivityListResponseFinancialTransactionEventsTypeTransferInsufficientFunds, AccountActivityListResponseFinancialTransactionEventsTypeReturnedPayment, AccountActivityListResponseFinancialTransactionEventsTypeReturnedPaymentReversal, AccountActivityListResponseFinancialTransactionEventsTypeLithicNetworkPayment:
+		return true
+	}
+	return false
+}
+
 type AccountActivityListResponseFinancialTransactionFamily string
 
 const (
@@ -469,8 +606,8 @@ type AccountActivityListResponseBookTransferTransaction struct {
 	// Currency of the transaction in ISO 4217 format
 	Currency string `json:"currency,required"`
 	// List of events associated with this book transfer
-	Events []interface{}                                            `json:"events,required"`
-	Family AccountActivityListResponseBookTransferTransactionFamily `json:"family,required"`
+	Events []AccountActivityListResponseBookTransferTransactionEvent `json:"events,required"`
+	Family AccountActivityListResponseBookTransferTransactionFamily  `json:"family,required"`
 	// Source account token
 	FromFinancialAccountToken string `json:"from_financial_account_token,required" format:"uuid"`
 	// The pending amount of the transaction in cents
@@ -546,6 +683,131 @@ const (
 func (r AccountActivityListResponseBookTransferTransactionCategory) IsKnown() bool {
 	switch r {
 	case AccountActivityListResponseBookTransferTransactionCategoryACH, AccountActivityListResponseBookTransferTransactionCategoryBalanceOrFunding, AccountActivityListResponseBookTransferTransactionCategoryCard, AccountActivityListResponseBookTransferTransactionCategoryExternalACH, AccountActivityListResponseBookTransferTransactionCategoryExternalCheck, AccountActivityListResponseBookTransferTransactionCategoryExternalTransfer, AccountActivityListResponseBookTransferTransactionCategoryExternalWire, AccountActivityListResponseBookTransferTransactionCategoryManagementAdjustment, AccountActivityListResponseBookTransferTransactionCategoryManagementDispute, AccountActivityListResponseBookTransferTransactionCategoryManagementFee, AccountActivityListResponseBookTransferTransactionCategoryManagementReward, AccountActivityListResponseBookTransferTransactionCategoryManagementDisbursement, AccountActivityListResponseBookTransferTransactionCategoryProgramFunding:
+		return true
+	}
+	return false
+}
+
+// Book transfer Event
+type AccountActivityListResponseBookTransferTransactionEvent struct {
+	// Globally unique identifier.
+	Token string `json:"token,required" format:"uuid"`
+	// Amount of the financial event that has been settled in the currency's smallest
+	// unit (e.g., cents).
+	Amount int64 `json:"amount,required"`
+	// Date and time when the financial event occurred. UTC time zone.
+	Created         time.Time                                                               `json:"created,required" format:"date-time"`
+	DetailedResults AccountActivityListResponseBookTransferTransactionEventsDetailedResults `json:"detailed_results,required"`
+	// Memo for the transfer.
+	Memo string `json:"memo,required"`
+	// APPROVED financial events were successful while DECLINED financial events were
+	// declined by user, Lithic, or the network.
+	Result AccountActivityListResponseBookTransferTransactionEventsResult `json:"result,required"`
+	// The program specific subtype code for the specified category/type.
+	Subtype string `json:"subtype,required"`
+	// Type of the book transfer
+	Type AccountActivityListResponseBookTransferTransactionEventsType `json:"type,required"`
+	JSON accountActivityListResponseBookTransferTransactionEventJSON  `json:"-"`
+}
+
+// accountActivityListResponseBookTransferTransactionEventJSON contains the JSON
+// metadata for the struct
+// [AccountActivityListResponseBookTransferTransactionEvent]
+type accountActivityListResponseBookTransferTransactionEventJSON struct {
+	Token           apijson.Field
+	Amount          apijson.Field
+	Created         apijson.Field
+	DetailedResults apijson.Field
+	Memo            apijson.Field
+	Result          apijson.Field
+	Subtype         apijson.Field
+	Type            apijson.Field
+	raw             string
+	ExtraFields     map[string]apijson.Field
+}
+
+func (r *AccountActivityListResponseBookTransferTransactionEvent) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountActivityListResponseBookTransferTransactionEventJSON) RawJSON() string {
+	return r.raw
+}
+
+type AccountActivityListResponseBookTransferTransactionEventsDetailedResults string
+
+const (
+	AccountActivityListResponseBookTransferTransactionEventsDetailedResultsApproved          AccountActivityListResponseBookTransferTransactionEventsDetailedResults = "APPROVED"
+	AccountActivityListResponseBookTransferTransactionEventsDetailedResultsFundsInsufficient AccountActivityListResponseBookTransferTransactionEventsDetailedResults = "FUNDS_INSUFFICIENT"
+)
+
+func (r AccountActivityListResponseBookTransferTransactionEventsDetailedResults) IsKnown() bool {
+	switch r {
+	case AccountActivityListResponseBookTransferTransactionEventsDetailedResultsApproved, AccountActivityListResponseBookTransferTransactionEventsDetailedResultsFundsInsufficient:
+		return true
+	}
+	return false
+}
+
+// APPROVED financial events were successful while DECLINED financial events were
+// declined by user, Lithic, or the network.
+type AccountActivityListResponseBookTransferTransactionEventsResult string
+
+const (
+	AccountActivityListResponseBookTransferTransactionEventsResultApproved AccountActivityListResponseBookTransferTransactionEventsResult = "APPROVED"
+	AccountActivityListResponseBookTransferTransactionEventsResultDeclined AccountActivityListResponseBookTransferTransactionEventsResult = "DECLINED"
+)
+
+func (r AccountActivityListResponseBookTransferTransactionEventsResult) IsKnown() bool {
+	switch r {
+	case AccountActivityListResponseBookTransferTransactionEventsResultApproved, AccountActivityListResponseBookTransferTransactionEventsResultDeclined:
+		return true
+	}
+	return false
+}
+
+// Type of the book transfer
+type AccountActivityListResponseBookTransferTransactionEventsType string
+
+const (
+	AccountActivityListResponseBookTransferTransactionEventsTypeAtmWithdrawal              AccountActivityListResponseBookTransferTransactionEventsType = "ATM_WITHDRAWAL"
+	AccountActivityListResponseBookTransferTransactionEventsTypeAtmDecline                 AccountActivityListResponseBookTransferTransactionEventsType = "ATM_DECLINE"
+	AccountActivityListResponseBookTransferTransactionEventsTypeInternationalAtmWithdrawal AccountActivityListResponseBookTransferTransactionEventsType = "INTERNATIONAL_ATM_WITHDRAWAL"
+	AccountActivityListResponseBookTransferTransactionEventsTypeInactivity                 AccountActivityListResponseBookTransferTransactionEventsType = "INACTIVITY"
+	AccountActivityListResponseBookTransferTransactionEventsTypeStatement                  AccountActivityListResponseBookTransferTransactionEventsType = "STATEMENT"
+	AccountActivityListResponseBookTransferTransactionEventsTypeMonthly                    AccountActivityListResponseBookTransferTransactionEventsType = "MONTHLY"
+	AccountActivityListResponseBookTransferTransactionEventsTypeQuarterly                  AccountActivityListResponseBookTransferTransactionEventsType = "QUARTERLY"
+	AccountActivityListResponseBookTransferTransactionEventsTypeAnnual                     AccountActivityListResponseBookTransferTransactionEventsType = "ANNUAL"
+	AccountActivityListResponseBookTransferTransactionEventsTypeCustomerService            AccountActivityListResponseBookTransferTransactionEventsType = "CUSTOMER_SERVICE"
+	AccountActivityListResponseBookTransferTransactionEventsTypeAccountMaintenance         AccountActivityListResponseBookTransferTransactionEventsType = "ACCOUNT_MAINTENANCE"
+	AccountActivityListResponseBookTransferTransactionEventsTypeAccountActivation          AccountActivityListResponseBookTransferTransactionEventsType = "ACCOUNT_ACTIVATION"
+	AccountActivityListResponseBookTransferTransactionEventsTypeAccountClosure             AccountActivityListResponseBookTransferTransactionEventsType = "ACCOUNT_CLOSURE"
+	AccountActivityListResponseBookTransferTransactionEventsTypeCardReplacement            AccountActivityListResponseBookTransferTransactionEventsType = "CARD_REPLACEMENT"
+	AccountActivityListResponseBookTransferTransactionEventsTypeCardDelivery               AccountActivityListResponseBookTransferTransactionEventsType = "CARD_DELIVERY"
+	AccountActivityListResponseBookTransferTransactionEventsTypeCardCreate                 AccountActivityListResponseBookTransferTransactionEventsType = "CARD_CREATE"
+	AccountActivityListResponseBookTransferTransactionEventsTypeCurrencyConversion         AccountActivityListResponseBookTransferTransactionEventsType = "CURRENCY_CONVERSION"
+	AccountActivityListResponseBookTransferTransactionEventsTypeInterest                   AccountActivityListResponseBookTransferTransactionEventsType = "INTEREST"
+	AccountActivityListResponseBookTransferTransactionEventsTypeLatePayment                AccountActivityListResponseBookTransferTransactionEventsType = "LATE_PAYMENT"
+	AccountActivityListResponseBookTransferTransactionEventsTypeBillPayment                AccountActivityListResponseBookTransferTransactionEventsType = "BILL_PAYMENT"
+	AccountActivityListResponseBookTransferTransactionEventsTypeCashBack                   AccountActivityListResponseBookTransferTransactionEventsType = "CASH_BACK"
+	AccountActivityListResponseBookTransferTransactionEventsTypeAccountToAccount           AccountActivityListResponseBookTransferTransactionEventsType = "ACCOUNT_TO_ACCOUNT"
+	AccountActivityListResponseBookTransferTransactionEventsTypeCardToCard                 AccountActivityListResponseBookTransferTransactionEventsType = "CARD_TO_CARD"
+	AccountActivityListResponseBookTransferTransactionEventsTypeDisburse                   AccountActivityListResponseBookTransferTransactionEventsType = "DISBURSE"
+	AccountActivityListResponseBookTransferTransactionEventsTypeBillingError               AccountActivityListResponseBookTransferTransactionEventsType = "BILLING_ERROR"
+	AccountActivityListResponseBookTransferTransactionEventsTypeLossWriteOff               AccountActivityListResponseBookTransferTransactionEventsType = "LOSS_WRITE_OFF"
+	AccountActivityListResponseBookTransferTransactionEventsTypeExpiredCard                AccountActivityListResponseBookTransferTransactionEventsType = "EXPIRED_CARD"
+	AccountActivityListResponseBookTransferTransactionEventsTypeEarlyDerecognition         AccountActivityListResponseBookTransferTransactionEventsType = "EARLY_DERECOGNITION"
+	AccountActivityListResponseBookTransferTransactionEventsTypeEscheatment                AccountActivityListResponseBookTransferTransactionEventsType = "ESCHEATMENT"
+	AccountActivityListResponseBookTransferTransactionEventsTypeInactivityFeeDown          AccountActivityListResponseBookTransferTransactionEventsType = "INACTIVITY_FEE_DOWN"
+	AccountActivityListResponseBookTransferTransactionEventsTypeProvisionalCredit          AccountActivityListResponseBookTransferTransactionEventsType = "PROVISIONAL_CREDIT"
+	AccountActivityListResponseBookTransferTransactionEventsTypeDisputeWon                 AccountActivityListResponseBookTransferTransactionEventsType = "DISPUTE_WON"
+	AccountActivityListResponseBookTransferTransactionEventsTypeService                    AccountActivityListResponseBookTransferTransactionEventsType = "SERVICE"
+	AccountActivityListResponseBookTransferTransactionEventsTypeTransfer                   AccountActivityListResponseBookTransferTransactionEventsType = "TRANSFER"
+)
+
+func (r AccountActivityListResponseBookTransferTransactionEventsType) IsKnown() bool {
+	switch r {
+	case AccountActivityListResponseBookTransferTransactionEventsTypeAtmWithdrawal, AccountActivityListResponseBookTransferTransactionEventsTypeAtmDecline, AccountActivityListResponseBookTransferTransactionEventsTypeInternationalAtmWithdrawal, AccountActivityListResponseBookTransferTransactionEventsTypeInactivity, AccountActivityListResponseBookTransferTransactionEventsTypeStatement, AccountActivityListResponseBookTransferTransactionEventsTypeMonthly, AccountActivityListResponseBookTransferTransactionEventsTypeQuarterly, AccountActivityListResponseBookTransferTransactionEventsTypeAnnual, AccountActivityListResponseBookTransferTransactionEventsTypeCustomerService, AccountActivityListResponseBookTransferTransactionEventsTypeAccountMaintenance, AccountActivityListResponseBookTransferTransactionEventsTypeAccountActivation, AccountActivityListResponseBookTransferTransactionEventsTypeAccountClosure, AccountActivityListResponseBookTransferTransactionEventsTypeCardReplacement, AccountActivityListResponseBookTransferTransactionEventsTypeCardDelivery, AccountActivityListResponseBookTransferTransactionEventsTypeCardCreate, AccountActivityListResponseBookTransferTransactionEventsTypeCurrencyConversion, AccountActivityListResponseBookTransferTransactionEventsTypeInterest, AccountActivityListResponseBookTransferTransactionEventsTypeLatePayment, AccountActivityListResponseBookTransferTransactionEventsTypeBillPayment, AccountActivityListResponseBookTransferTransactionEventsTypeCashBack, AccountActivityListResponseBookTransferTransactionEventsTypeAccountToAccount, AccountActivityListResponseBookTransferTransactionEventsTypeCardToCard, AccountActivityListResponseBookTransferTransactionEventsTypeDisburse, AccountActivityListResponseBookTransferTransactionEventsTypeBillingError, AccountActivityListResponseBookTransferTransactionEventsTypeLossWriteOff, AccountActivityListResponseBookTransferTransactionEventsTypeExpiredCard, AccountActivityListResponseBookTransferTransactionEventsTypeEarlyDerecognition, AccountActivityListResponseBookTransferTransactionEventsTypeEscheatment, AccountActivityListResponseBookTransferTransactionEventsTypeInactivityFeeDown, AccountActivityListResponseBookTransferTransactionEventsTypeProvisionalCredit, AccountActivityListResponseBookTransferTransactionEventsTypeDisputeWon, AccountActivityListResponseBookTransferTransactionEventsTypeService, AccountActivityListResponseBookTransferTransactionEventsTypeTransfer:
 		return true
 	}
 	return false
@@ -718,8 +980,8 @@ type AccountActivityListResponsePaymentTransaction struct {
 	// Transfer direction
 	Direction AccountActivityListResponsePaymentTransactionDirection `json:"direction,required"`
 	// List of transaction events
-	Events []interface{}                                       `json:"events,required"`
-	Family AccountActivityListResponsePaymentTransactionFamily `json:"family,required"`
+	Events []AccountActivityListResponsePaymentTransactionEvent `json:"events,required"`
+	Family AccountActivityListResponsePaymentTransactionFamily  `json:"family,required"`
 	// Financial account token
 	FinancialAccountToken string `json:"financial_account_token,required" format:"uuid"`
 	// Transfer method
@@ -832,6 +1094,145 @@ func (r AccountActivityListResponsePaymentTransactionDirection) IsKnown() bool {
 	return false
 }
 
+// Payment Event
+type AccountActivityListResponsePaymentTransactionEvent struct {
+	// Globally unique identifier.
+	Token string `json:"token,required" format:"uuid"`
+	// Amount of the financial event that has been settled in the currency's smallest
+	// unit (e.g., cents).
+	Amount int64 `json:"amount,required"`
+	// Date and time when the financial event occurred. UTC time zone.
+	Created time.Time `json:"created,required" format:"date-time"`
+	// APPROVED financial events were successful while DECLINED financial events were
+	// declined by user, Lithic, or the network.
+	Result AccountActivityListResponsePaymentTransactionEventsResult `json:"result,required"`
+	// Event types:
+	//
+	//   - `ACH_ORIGINATION_INITIATED` - ACH origination received and pending
+	//     approval/release from an ACH hold.
+	//   - `ACH_ORIGINATION_REVIEWED` - ACH origination has completed the review process.
+	//   - `ACH_ORIGINATION_CANCELLED` - ACH origination has been cancelled.
+	//   - `ACH_ORIGINATION_PROCESSED` - ACH origination has been processed and sent to
+	//     the Federal Reserve.
+	//   - `ACH_ORIGINATION_SETTLED` - ACH origination has settled.
+	//   - `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to
+	//     available balance.
+	//   - `ACH_RETURN_PROCESSED` - ACH origination returned by the Receiving Depository
+	//     Financial Institution.
+	//   - `ACH_RECEIPT_PROCESSED` - ACH receipt pending release from an ACH holder.
+	//   - `ACH_RETURN_INITIATED` - ACH initiated return for a ACH receipt.
+	//   - `ACH_RECEIPT_SETTLED` - ACH receipt funds have settled.
+	//   - `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to available
+	//     balance.
+	//   - `ACH_RETURN_SETTLED` - ACH receipt return settled by the Receiving Depository
+	//     Financial Institution.
+	Type AccountActivityListResponsePaymentTransactionEventsType `json:"type,required"`
+	// More detailed reasons for the event
+	DetailedResults []AccountActivityListResponsePaymentTransactionEventsDetailedResult `json:"detailed_results"`
+	JSON            accountActivityListResponsePaymentTransactionEventJSON              `json:"-"`
+}
+
+// accountActivityListResponsePaymentTransactionEventJSON contains the JSON
+// metadata for the struct [AccountActivityListResponsePaymentTransactionEvent]
+type accountActivityListResponsePaymentTransactionEventJSON struct {
+	Token           apijson.Field
+	Amount          apijson.Field
+	Created         apijson.Field
+	Result          apijson.Field
+	Type            apijson.Field
+	DetailedResults apijson.Field
+	raw             string
+	ExtraFields     map[string]apijson.Field
+}
+
+func (r *AccountActivityListResponsePaymentTransactionEvent) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountActivityListResponsePaymentTransactionEventJSON) RawJSON() string {
+	return r.raw
+}
+
+// APPROVED financial events were successful while DECLINED financial events were
+// declined by user, Lithic, or the network.
+type AccountActivityListResponsePaymentTransactionEventsResult string
+
+const (
+	AccountActivityListResponsePaymentTransactionEventsResultApproved AccountActivityListResponsePaymentTransactionEventsResult = "APPROVED"
+	AccountActivityListResponsePaymentTransactionEventsResultDeclined AccountActivityListResponsePaymentTransactionEventsResult = "DECLINED"
+)
+
+func (r AccountActivityListResponsePaymentTransactionEventsResult) IsKnown() bool {
+	switch r {
+	case AccountActivityListResponsePaymentTransactionEventsResultApproved, AccountActivityListResponsePaymentTransactionEventsResultDeclined:
+		return true
+	}
+	return false
+}
+
+// Event types:
+//
+//   - `ACH_ORIGINATION_INITIATED` - ACH origination received and pending
+//     approval/release from an ACH hold.
+//   - `ACH_ORIGINATION_REVIEWED` - ACH origination has completed the review process.
+//   - `ACH_ORIGINATION_CANCELLED` - ACH origination has been cancelled.
+//   - `ACH_ORIGINATION_PROCESSED` - ACH origination has been processed and sent to
+//     the Federal Reserve.
+//   - `ACH_ORIGINATION_SETTLED` - ACH origination has settled.
+//   - `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to
+//     available balance.
+//   - `ACH_RETURN_PROCESSED` - ACH origination returned by the Receiving Depository
+//     Financial Institution.
+//   - `ACH_RECEIPT_PROCESSED` - ACH receipt pending release from an ACH holder.
+//   - `ACH_RETURN_INITIATED` - ACH initiated return for a ACH receipt.
+//   - `ACH_RECEIPT_SETTLED` - ACH receipt funds have settled.
+//   - `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to available
+//     balance.
+//   - `ACH_RETURN_SETTLED` - ACH receipt return settled by the Receiving Depository
+//     Financial Institution.
+type AccountActivityListResponsePaymentTransactionEventsType string
+
+const (
+	AccountActivityListResponsePaymentTransactionEventsTypeACHOriginationCancelled AccountActivityListResponsePaymentTransactionEventsType = "ACH_ORIGINATION_CANCELLED"
+	AccountActivityListResponsePaymentTransactionEventsTypeACHOriginationInitiated AccountActivityListResponsePaymentTransactionEventsType = "ACH_ORIGINATION_INITIATED"
+	AccountActivityListResponsePaymentTransactionEventsTypeACHOriginationProcessed AccountActivityListResponsePaymentTransactionEventsType = "ACH_ORIGINATION_PROCESSED"
+	AccountActivityListResponsePaymentTransactionEventsTypeACHOriginationSettled   AccountActivityListResponsePaymentTransactionEventsType = "ACH_ORIGINATION_SETTLED"
+	AccountActivityListResponsePaymentTransactionEventsTypeACHOriginationReleased  AccountActivityListResponsePaymentTransactionEventsType = "ACH_ORIGINATION_RELEASED"
+	AccountActivityListResponsePaymentTransactionEventsTypeACHOriginationReviewed  AccountActivityListResponsePaymentTransactionEventsType = "ACH_ORIGINATION_REVIEWED"
+	AccountActivityListResponsePaymentTransactionEventsTypeACHReceiptProcessed     AccountActivityListResponsePaymentTransactionEventsType = "ACH_RECEIPT_PROCESSED"
+	AccountActivityListResponsePaymentTransactionEventsTypeACHReceiptSettled       AccountActivityListResponsePaymentTransactionEventsType = "ACH_RECEIPT_SETTLED"
+	AccountActivityListResponsePaymentTransactionEventsTypeACHReturnInitiated      AccountActivityListResponsePaymentTransactionEventsType = "ACH_RETURN_INITIATED"
+	AccountActivityListResponsePaymentTransactionEventsTypeACHReturnProcessed      AccountActivityListResponsePaymentTransactionEventsType = "ACH_RETURN_PROCESSED"
+	AccountActivityListResponsePaymentTransactionEventsTypeACHReturnSettled        AccountActivityListResponsePaymentTransactionEventsType = "ACH_RETURN_SETTLED"
+)
+
+func (r AccountActivityListResponsePaymentTransactionEventsType) IsKnown() bool {
+	switch r {
+	case AccountActivityListResponsePaymentTransactionEventsTypeACHOriginationCancelled, AccountActivityListResponsePaymentTransactionEventsTypeACHOriginationInitiated, AccountActivityListResponsePaymentTransactionEventsTypeACHOriginationProcessed, AccountActivityListResponsePaymentTransactionEventsTypeACHOriginationSettled, AccountActivityListResponsePaymentTransactionEventsTypeACHOriginationReleased, AccountActivityListResponsePaymentTransactionEventsTypeACHOriginationReviewed, AccountActivityListResponsePaymentTransactionEventsTypeACHReceiptProcessed, AccountActivityListResponsePaymentTransactionEventsTypeACHReceiptSettled, AccountActivityListResponsePaymentTransactionEventsTypeACHReturnInitiated, AccountActivityListResponsePaymentTransactionEventsTypeACHReturnProcessed, AccountActivityListResponsePaymentTransactionEventsTypeACHReturnSettled:
+		return true
+	}
+	return false
+}
+
+type AccountActivityListResponsePaymentTransactionEventsDetailedResult string
+
+const (
+	AccountActivityListResponsePaymentTransactionEventsDetailedResultApproved                        AccountActivityListResponsePaymentTransactionEventsDetailedResult = "APPROVED"
+	AccountActivityListResponsePaymentTransactionEventsDetailedResultFundsInsufficient               AccountActivityListResponsePaymentTransactionEventsDetailedResult = "FUNDS_INSUFFICIENT"
+	AccountActivityListResponsePaymentTransactionEventsDetailedResultAccountInvalid                  AccountActivityListResponsePaymentTransactionEventsDetailedResult = "ACCOUNT_INVALID"
+	AccountActivityListResponsePaymentTransactionEventsDetailedResultProgramTransactionLimitExceeded AccountActivityListResponsePaymentTransactionEventsDetailedResult = "PROGRAM_TRANSACTION_LIMIT_EXCEEDED"
+	AccountActivityListResponsePaymentTransactionEventsDetailedResultProgramDailyLimitExceeded       AccountActivityListResponsePaymentTransactionEventsDetailedResult = "PROGRAM_DAILY_LIMIT_EXCEEDED"
+	AccountActivityListResponsePaymentTransactionEventsDetailedResultProgramMonthlyLimitExceeded     AccountActivityListResponsePaymentTransactionEventsDetailedResult = "PROGRAM_MONTHLY_LIMIT_EXCEEDED"
+)
+
+func (r AccountActivityListResponsePaymentTransactionEventsDetailedResult) IsKnown() bool {
+	switch r {
+	case AccountActivityListResponsePaymentTransactionEventsDetailedResultApproved, AccountActivityListResponsePaymentTransactionEventsDetailedResultFundsInsufficient, AccountActivityListResponsePaymentTransactionEventsDetailedResultAccountInvalid, AccountActivityListResponsePaymentTransactionEventsDetailedResultProgramTransactionLimitExceeded, AccountActivityListResponsePaymentTransactionEventsDetailedResultProgramDailyLimitExceeded, AccountActivityListResponsePaymentTransactionEventsDetailedResultProgramMonthlyLimitExceeded:
+		return true
+	}
+	return false
+}
+
 type AccountActivityListResponsePaymentTransactionFamily string
 
 const (
@@ -880,12 +1281,16 @@ type AccountActivityListResponsePaymentTransactionMethodAttributes struct {
 	ExternalBankRoutingNumber string `json:"external_bank_routing_number,nullable"`
 	// External individual name
 	ExternalIndividualName string `json:"external_individual_name,nullable"`
+	// IMAD
+	Imad string `json:"imad,nullable"`
 	// Lithic bank name
 	LithicBankName string `json:"lithic_bank_name,nullable"`
 	// Lithic bank routing number
 	LithicBankRoutingNumber string `json:"lithic_bank_routing_number,nullable"`
 	// Lithic individual name
 	LithicIndividualName string `json:"lithic_individual_name,nullable"`
+	// OMAD
+	Omad string `json:"omad,nullable"`
 	// UUID of previous transfer if this is a retry
 	PreviousTransfer string `json:"previous_transfer,nullable" format:"uuid"`
 	// Receipt routing number
@@ -898,6 +1303,8 @@ type AccountActivityListResponsePaymentTransactionMethodAttributes struct {
 	SecCode AccountActivityListResponsePaymentTransactionMethodAttributesSecCode `json:"sec_code"`
 	// This field can have the runtime type of [[]string].
 	TraceNumbers interface{} `json:"trace_numbers"`
+	// Wire token
+	WireToken string `json:"wire_token,nullable" format:"uuid"`
 	// Type of wire transfer
 	WireTransferType AccountActivityListResponsePaymentTransactionMethodAttributesWireTransferType `json:"wire_transfer_type"`
 	JSON             accountActivityListResponsePaymentTransactionMethodAttributesJSON             `json:"-"`
@@ -913,15 +1320,18 @@ type accountActivityListResponsePaymentTransactionMethodAttributesJSON struct {
 	ExternalBankName          apijson.Field
 	ExternalBankRoutingNumber apijson.Field
 	ExternalIndividualName    apijson.Field
+	Imad                      apijson.Field
 	LithicBankName            apijson.Field
 	LithicBankRoutingNumber   apijson.Field
 	LithicIndividualName      apijson.Field
+	Omad                      apijson.Field
 	PreviousTransfer          apijson.Field
 	ReceiptRoutingNumber      apijson.Field
 	Retries                   apijson.Field
 	ReturnReasonCode          apijson.Field
 	SecCode                   apijson.Field
 	TraceNumbers              apijson.Field
+	WireToken                 apijson.Field
 	WireTransferType          apijson.Field
 	raw                       string
 	ExtraFields               map[string]apijson.Field
@@ -1049,15 +1459,21 @@ type AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttr
 	ExternalBankRoutingNumber string `json:"external_bank_routing_number,nullable"`
 	// External individual name
 	ExternalIndividualName string `json:"external_individual_name,nullable"`
+	// IMAD
+	Imad string `json:"imad,nullable"`
 	// Lithic bank name
 	LithicBankName string `json:"lithic_bank_name,nullable"`
 	// Lithic bank routing number
 	LithicBankRoutingNumber string `json:"lithic_bank_routing_number,nullable"`
 	// Lithic individual name
 	LithicIndividualName string `json:"lithic_individual_name,nullable"`
+	// OMAD
+	Omad string `json:"omad,nullable"`
 	// UUID of previous transfer if this is a retry
-	PreviousTransfer string                                                                                `json:"previous_transfer,nullable" format:"uuid"`
-	JSON             accountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesJSON `json:"-"`
+	PreviousTransfer string `json:"previous_transfer,nullable" format:"uuid"`
+	// Wire token
+	WireToken string                                                                                `json:"wire_token,nullable" format:"uuid"`
+	JSON      accountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesJSON `json:"-"`
 }
 
 // accountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesJSON
@@ -1068,10 +1484,13 @@ type accountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttr
 	ExternalBankName          apijson.Field
 	ExternalBankRoutingNumber apijson.Field
 	ExternalIndividualName    apijson.Field
+	Imad                      apijson.Field
 	LithicBankName            apijson.Field
 	LithicBankRoutingNumber   apijson.Field
 	LithicIndividualName      apijson.Field
+	Omad                      apijson.Field
 	PreviousTransfer          apijson.Field
+	WireToken                 apijson.Field
 	raw                       string
 	ExtraFields               map[string]apijson.Field
 }
@@ -1460,7 +1879,11 @@ type AccountActivityGetTransactionResponse struct {
 	Descriptor string `json:"descriptor"`
 	// Transfer direction
 	Direction AccountActivityGetTransactionResponseDirection `json:"direction"`
-	// This field can have the runtime type of [[]interface{}], [[]TransactionEvent],
+	// This field can have the runtime type of
+	// [[]AccountActivityGetTransactionResponseFinancialTransactionEvent],
+	// [[]AccountActivityGetTransactionResponseBookTransferTransactionEvent],
+	// [[]TransactionEvent],
+	// [[]AccountActivityGetTransactionResponsePaymentTransactionEvent],
 	// [[]ExternalPaymentEvent], [[]ManagementOperationTransactionEvent].
 	Events interface{} `json:"events"`
 	// Expected release date for the transaction
@@ -1665,8 +2088,8 @@ type AccountActivityGetTransactionResponseFinancialTransaction struct {
 	// Transaction descriptor
 	Descriptor string `json:"descriptor,required"`
 	// List of transaction events
-	Events []interface{}                                                   `json:"events,required"`
-	Family AccountActivityGetTransactionResponseFinancialTransactionFamily `json:"family,required"`
+	Events []AccountActivityGetTransactionResponseFinancialTransactionEvent `json:"events,required"`
+	Family AccountActivityGetTransactionResponseFinancialTransactionFamily  `json:"family,required"`
 	// Financial account token associated with the transaction
 	FinancialAccountToken string `json:"financial_account_token,required" format:"uuid"`
 	// Pending amount in cents
@@ -1741,6 +2164,141 @@ func (r AccountActivityGetTransactionResponseFinancialTransactionCategory) IsKno
 	return false
 }
 
+// Financial Event
+type AccountActivityGetTransactionResponseFinancialTransactionEvent struct {
+	// Globally unique identifier.
+	Token string `json:"token" format:"uuid"`
+	// Amount of the financial event that has been settled in the currency's smallest
+	// unit (e.g., cents).
+	Amount int64 `json:"amount"`
+	// Date and time when the financial event occurred. UTC time zone.
+	Created time.Time `json:"created" format:"date-time"`
+	// APPROVED financial events were successful while DECLINED financial events were
+	// declined by user, Lithic, or the network.
+	Result AccountActivityGetTransactionResponseFinancialTransactionEventsResult `json:"result"`
+	Type   AccountActivityGetTransactionResponseFinancialTransactionEventsType   `json:"type"`
+	JSON   accountActivityGetTransactionResponseFinancialTransactionEventJSON    `json:"-"`
+}
+
+// accountActivityGetTransactionResponseFinancialTransactionEventJSON contains the
+// JSON metadata for the struct
+// [AccountActivityGetTransactionResponseFinancialTransactionEvent]
+type accountActivityGetTransactionResponseFinancialTransactionEventJSON struct {
+	Token       apijson.Field
+	Amount      apijson.Field
+	Created     apijson.Field
+	Result      apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AccountActivityGetTransactionResponseFinancialTransactionEvent) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountActivityGetTransactionResponseFinancialTransactionEventJSON) RawJSON() string {
+	return r.raw
+}
+
+// APPROVED financial events were successful while DECLINED financial events were
+// declined by user, Lithic, or the network.
+type AccountActivityGetTransactionResponseFinancialTransactionEventsResult string
+
+const (
+	AccountActivityGetTransactionResponseFinancialTransactionEventsResultApproved AccountActivityGetTransactionResponseFinancialTransactionEventsResult = "APPROVED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsResultDeclined AccountActivityGetTransactionResponseFinancialTransactionEventsResult = "DECLINED"
+)
+
+func (r AccountActivityGetTransactionResponseFinancialTransactionEventsResult) IsKnown() bool {
+	switch r {
+	case AccountActivityGetTransactionResponseFinancialTransactionEventsResultApproved, AccountActivityGetTransactionResponseFinancialTransactionEventsResultDeclined:
+		return true
+	}
+	return false
+}
+
+type AccountActivityGetTransactionResponseFinancialTransactionEventsType string
+
+const (
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHOriginationCancelled      AccountActivityGetTransactionResponseFinancialTransactionEventsType = "ACH_ORIGINATION_CANCELLED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHOriginationInitiated      AccountActivityGetTransactionResponseFinancialTransactionEventsType = "ACH_ORIGINATION_INITIATED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHOriginationProcessed      AccountActivityGetTransactionResponseFinancialTransactionEventsType = "ACH_ORIGINATION_PROCESSED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHOriginationReleased       AccountActivityGetTransactionResponseFinancialTransactionEventsType = "ACH_ORIGINATION_RELEASED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHOriginationReviewed       AccountActivityGetTransactionResponseFinancialTransactionEventsType = "ACH_ORIGINATION_REVIEWED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHOriginationSettled        AccountActivityGetTransactionResponseFinancialTransactionEventsType = "ACH_ORIGINATION_SETTLED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHReceiptProcessed          AccountActivityGetTransactionResponseFinancialTransactionEventsType = "ACH_RECEIPT_PROCESSED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHReceiptSettled            AccountActivityGetTransactionResponseFinancialTransactionEventsType = "ACH_RECEIPT_SETTLED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHReturnInitiated           AccountActivityGetTransactionResponseFinancialTransactionEventsType = "ACH_RETURN_INITIATED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHReturnProcessed           AccountActivityGetTransactionResponseFinancialTransactionEventsType = "ACH_RETURN_PROCESSED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHReturnSettled             AccountActivityGetTransactionResponseFinancialTransactionEventsType = "ACH_RETURN_SETTLED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeAuthorization                AccountActivityGetTransactionResponseFinancialTransactionEventsType = "AUTHORIZATION"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeAuthorizationAdvice          AccountActivityGetTransactionResponseFinancialTransactionEventsType = "AUTHORIZATION_ADVICE"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeAuthorizationExpiry          AccountActivityGetTransactionResponseFinancialTransactionEventsType = "AUTHORIZATION_EXPIRY"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeAuthorizationReversal        AccountActivityGetTransactionResponseFinancialTransactionEventsType = "AUTHORIZATION_REVERSAL"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeBalanceInquiry               AccountActivityGetTransactionResponseFinancialTransactionEventsType = "BALANCE_INQUIRY"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeBillingError                 AccountActivityGetTransactionResponseFinancialTransactionEventsType = "BILLING_ERROR"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeBillingErrorReversal         AccountActivityGetTransactionResponseFinancialTransactionEventsType = "BILLING_ERROR_REVERSAL"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCardToCard                   AccountActivityGetTransactionResponseFinancialTransactionEventsType = "CARD_TO_CARD"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCashBack                     AccountActivityGetTransactionResponseFinancialTransactionEventsType = "CASH_BACK"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCashBackReversal             AccountActivityGetTransactionResponseFinancialTransactionEventsType = "CASH_BACK_REVERSAL"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeClearing                     AccountActivityGetTransactionResponseFinancialTransactionEventsType = "CLEARING"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCollection                   AccountActivityGetTransactionResponseFinancialTransactionEventsType = "COLLECTION"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCorrectionCredit             AccountActivityGetTransactionResponseFinancialTransactionEventsType = "CORRECTION_CREDIT"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCorrectionDebit              AccountActivityGetTransactionResponseFinancialTransactionEventsType = "CORRECTION_DEBIT"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCreditAuthorization          AccountActivityGetTransactionResponseFinancialTransactionEventsType = "CREDIT_AUTHORIZATION"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCreditAuthorizationAdvice    AccountActivityGetTransactionResponseFinancialTransactionEventsType = "CREDIT_AUTHORIZATION_ADVICE"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCurrencyConversion           AccountActivityGetTransactionResponseFinancialTransactionEventsType = "CURRENCY_CONVERSION"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCurrencyConversionReversal   AccountActivityGetTransactionResponseFinancialTransactionEventsType = "CURRENCY_CONVERSION_REVERSAL"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeDisputeWon                   AccountActivityGetTransactionResponseFinancialTransactionEventsType = "DISPUTE_WON"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalACHCanceled          AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_ACH_CANCELED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalACHInitiated         AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_ACH_INITIATED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalACHReleased          AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_ACH_RELEASED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalACHReversed          AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_ACH_REVERSED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalACHSettled           AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_ACH_SETTLED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalCheckCanceled        AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_CHECK_CANCELED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalCheckInitiated       AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_CHECK_INITIATED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalCheckReleased        AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_CHECK_RELEASED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalCheckReversed        AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_CHECK_REVERSED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalCheckSettled         AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_CHECK_SETTLED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalTransferCanceled     AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_TRANSFER_CANCELED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalTransferInitiated    AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_TRANSFER_INITIATED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalTransferReleased     AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_TRANSFER_RELEASED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalTransferReversed     AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_TRANSFER_REVERSED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalTransferSettled      AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_TRANSFER_SETTLED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalWireCanceled         AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_WIRE_CANCELED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalWireInitiated        AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_WIRE_INITIATED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalWireReleased         AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_WIRE_RELEASED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalWireReversed         AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_WIRE_REVERSED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalWireSettled          AccountActivityGetTransactionResponseFinancialTransactionEventsType = "EXTERNAL_WIRE_SETTLED"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeFinancialAuthorization       AccountActivityGetTransactionResponseFinancialTransactionEventsType = "FINANCIAL_AUTHORIZATION"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeFinancialCreditAuthorization AccountActivityGetTransactionResponseFinancialTransactionEventsType = "FINANCIAL_CREDIT_AUTHORIZATION"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeInterest                     AccountActivityGetTransactionResponseFinancialTransactionEventsType = "INTEREST"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeInterestReversal             AccountActivityGetTransactionResponseFinancialTransactionEventsType = "INTEREST_REVERSAL"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeInternalAdjustment           AccountActivityGetTransactionResponseFinancialTransactionEventsType = "INTERNAL_ADJUSTMENT"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeLatePayment                  AccountActivityGetTransactionResponseFinancialTransactionEventsType = "LATE_PAYMENT"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeLatePaymentReversal          AccountActivityGetTransactionResponseFinancialTransactionEventsType = "LATE_PAYMENT_REVERSAL"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeLossWriteOff                 AccountActivityGetTransactionResponseFinancialTransactionEventsType = "LOSS_WRITE_OFF"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeProvisionalCredit            AccountActivityGetTransactionResponseFinancialTransactionEventsType = "PROVISIONAL_CREDIT"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeProvisionalCreditReversal    AccountActivityGetTransactionResponseFinancialTransactionEventsType = "PROVISIONAL_CREDIT_REVERSAL"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeService                      AccountActivityGetTransactionResponseFinancialTransactionEventsType = "SERVICE"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeReturn                       AccountActivityGetTransactionResponseFinancialTransactionEventsType = "RETURN"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeReturnReversal               AccountActivityGetTransactionResponseFinancialTransactionEventsType = "RETURN_REVERSAL"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeTransfer                     AccountActivityGetTransactionResponseFinancialTransactionEventsType = "TRANSFER"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeTransferInsufficientFunds    AccountActivityGetTransactionResponseFinancialTransactionEventsType = "TRANSFER_INSUFFICIENT_FUNDS"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeReturnedPayment              AccountActivityGetTransactionResponseFinancialTransactionEventsType = "RETURNED_PAYMENT"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeReturnedPaymentReversal      AccountActivityGetTransactionResponseFinancialTransactionEventsType = "RETURNED_PAYMENT_REVERSAL"
+	AccountActivityGetTransactionResponseFinancialTransactionEventsTypeLithicNetworkPayment         AccountActivityGetTransactionResponseFinancialTransactionEventsType = "LITHIC_NETWORK_PAYMENT"
+)
+
+func (r AccountActivityGetTransactionResponseFinancialTransactionEventsType) IsKnown() bool {
+	switch r {
+	case AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHOriginationCancelled, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHOriginationInitiated, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHOriginationProcessed, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHOriginationReleased, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHOriginationReviewed, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHOriginationSettled, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHReceiptProcessed, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHReceiptSettled, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHReturnInitiated, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHReturnProcessed, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeACHReturnSettled, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeAuthorization, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeAuthorizationAdvice, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeAuthorizationExpiry, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeAuthorizationReversal, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeBalanceInquiry, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeBillingError, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeBillingErrorReversal, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCardToCard, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCashBack, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCashBackReversal, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeClearing, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCollection, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCorrectionCredit, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCorrectionDebit, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCreditAuthorization, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCreditAuthorizationAdvice, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCurrencyConversion, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeCurrencyConversionReversal, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeDisputeWon, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalACHCanceled, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalACHInitiated, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalACHReleased, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalACHReversed, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalACHSettled, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalCheckCanceled, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalCheckInitiated, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalCheckReleased, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalCheckReversed, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalCheckSettled, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalTransferCanceled, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalTransferInitiated, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalTransferReleased, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalTransferReversed, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalTransferSettled, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalWireCanceled, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalWireInitiated, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalWireReleased, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalWireReversed, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeExternalWireSettled, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeFinancialAuthorization, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeFinancialCreditAuthorization, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeInterest, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeInterestReversal, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeInternalAdjustment, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeLatePayment, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeLatePaymentReversal, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeLossWriteOff, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeProvisionalCredit, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeProvisionalCreditReversal, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeService, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeReturn, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeReturnReversal, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeTransfer, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeTransferInsufficientFunds, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeReturnedPayment, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeReturnedPaymentReversal, AccountActivityGetTransactionResponseFinancialTransactionEventsTypeLithicNetworkPayment:
+		return true
+	}
+	return false
+}
+
 type AccountActivityGetTransactionResponseFinancialTransactionFamily string
 
 const (
@@ -1805,8 +2363,8 @@ type AccountActivityGetTransactionResponseBookTransferTransaction struct {
 	// Currency of the transaction in ISO 4217 format
 	Currency string `json:"currency,required"`
 	// List of events associated with this book transfer
-	Events []interface{}                                                      `json:"events,required"`
-	Family AccountActivityGetTransactionResponseBookTransferTransactionFamily `json:"family,required"`
+	Events []AccountActivityGetTransactionResponseBookTransferTransactionEvent `json:"events,required"`
+	Family AccountActivityGetTransactionResponseBookTransferTransactionFamily  `json:"family,required"`
 	// Source account token
 	FromFinancialAccountToken string `json:"from_financial_account_token,required" format:"uuid"`
 	// The pending amount of the transaction in cents
@@ -1884,6 +2442,131 @@ const (
 func (r AccountActivityGetTransactionResponseBookTransferTransactionCategory) IsKnown() bool {
 	switch r {
 	case AccountActivityGetTransactionResponseBookTransferTransactionCategoryACH, AccountActivityGetTransactionResponseBookTransferTransactionCategoryBalanceOrFunding, AccountActivityGetTransactionResponseBookTransferTransactionCategoryCard, AccountActivityGetTransactionResponseBookTransferTransactionCategoryExternalACH, AccountActivityGetTransactionResponseBookTransferTransactionCategoryExternalCheck, AccountActivityGetTransactionResponseBookTransferTransactionCategoryExternalTransfer, AccountActivityGetTransactionResponseBookTransferTransactionCategoryExternalWire, AccountActivityGetTransactionResponseBookTransferTransactionCategoryManagementAdjustment, AccountActivityGetTransactionResponseBookTransferTransactionCategoryManagementDispute, AccountActivityGetTransactionResponseBookTransferTransactionCategoryManagementFee, AccountActivityGetTransactionResponseBookTransferTransactionCategoryManagementReward, AccountActivityGetTransactionResponseBookTransferTransactionCategoryManagementDisbursement, AccountActivityGetTransactionResponseBookTransferTransactionCategoryProgramFunding:
+		return true
+	}
+	return false
+}
+
+// Book transfer Event
+type AccountActivityGetTransactionResponseBookTransferTransactionEvent struct {
+	// Globally unique identifier.
+	Token string `json:"token,required" format:"uuid"`
+	// Amount of the financial event that has been settled in the currency's smallest
+	// unit (e.g., cents).
+	Amount int64 `json:"amount,required"`
+	// Date and time when the financial event occurred. UTC time zone.
+	Created         time.Time                                                                         `json:"created,required" format:"date-time"`
+	DetailedResults AccountActivityGetTransactionResponseBookTransferTransactionEventsDetailedResults `json:"detailed_results,required"`
+	// Memo for the transfer.
+	Memo string `json:"memo,required"`
+	// APPROVED financial events were successful while DECLINED financial events were
+	// declined by user, Lithic, or the network.
+	Result AccountActivityGetTransactionResponseBookTransferTransactionEventsResult `json:"result,required"`
+	// The program specific subtype code for the specified category/type.
+	Subtype string `json:"subtype,required"`
+	// Type of the book transfer
+	Type AccountActivityGetTransactionResponseBookTransferTransactionEventsType `json:"type,required"`
+	JSON accountActivityGetTransactionResponseBookTransferTransactionEventJSON  `json:"-"`
+}
+
+// accountActivityGetTransactionResponseBookTransferTransactionEventJSON contains
+// the JSON metadata for the struct
+// [AccountActivityGetTransactionResponseBookTransferTransactionEvent]
+type accountActivityGetTransactionResponseBookTransferTransactionEventJSON struct {
+	Token           apijson.Field
+	Amount          apijson.Field
+	Created         apijson.Field
+	DetailedResults apijson.Field
+	Memo            apijson.Field
+	Result          apijson.Field
+	Subtype         apijson.Field
+	Type            apijson.Field
+	raw             string
+	ExtraFields     map[string]apijson.Field
+}
+
+func (r *AccountActivityGetTransactionResponseBookTransferTransactionEvent) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountActivityGetTransactionResponseBookTransferTransactionEventJSON) RawJSON() string {
+	return r.raw
+}
+
+type AccountActivityGetTransactionResponseBookTransferTransactionEventsDetailedResults string
+
+const (
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsDetailedResultsApproved          AccountActivityGetTransactionResponseBookTransferTransactionEventsDetailedResults = "APPROVED"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsDetailedResultsFundsInsufficient AccountActivityGetTransactionResponseBookTransferTransactionEventsDetailedResults = "FUNDS_INSUFFICIENT"
+)
+
+func (r AccountActivityGetTransactionResponseBookTransferTransactionEventsDetailedResults) IsKnown() bool {
+	switch r {
+	case AccountActivityGetTransactionResponseBookTransferTransactionEventsDetailedResultsApproved, AccountActivityGetTransactionResponseBookTransferTransactionEventsDetailedResultsFundsInsufficient:
+		return true
+	}
+	return false
+}
+
+// APPROVED financial events were successful while DECLINED financial events were
+// declined by user, Lithic, or the network.
+type AccountActivityGetTransactionResponseBookTransferTransactionEventsResult string
+
+const (
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsResultApproved AccountActivityGetTransactionResponseBookTransferTransactionEventsResult = "APPROVED"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsResultDeclined AccountActivityGetTransactionResponseBookTransferTransactionEventsResult = "DECLINED"
+)
+
+func (r AccountActivityGetTransactionResponseBookTransferTransactionEventsResult) IsKnown() bool {
+	switch r {
+	case AccountActivityGetTransactionResponseBookTransferTransactionEventsResultApproved, AccountActivityGetTransactionResponseBookTransferTransactionEventsResultDeclined:
+		return true
+	}
+	return false
+}
+
+// Type of the book transfer
+type AccountActivityGetTransactionResponseBookTransferTransactionEventsType string
+
+const (
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAtmWithdrawal              AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "ATM_WITHDRAWAL"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAtmDecline                 AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "ATM_DECLINE"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeInternationalAtmWithdrawal AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "INTERNATIONAL_ATM_WITHDRAWAL"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeInactivity                 AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "INACTIVITY"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeStatement                  AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "STATEMENT"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeMonthly                    AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "MONTHLY"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeQuarterly                  AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "QUARTERLY"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAnnual                     AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "ANNUAL"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCustomerService            AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "CUSTOMER_SERVICE"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAccountMaintenance         AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "ACCOUNT_MAINTENANCE"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAccountActivation          AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "ACCOUNT_ACTIVATION"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAccountClosure             AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "ACCOUNT_CLOSURE"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCardReplacement            AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "CARD_REPLACEMENT"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCardDelivery               AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "CARD_DELIVERY"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCardCreate                 AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "CARD_CREATE"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCurrencyConversion         AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "CURRENCY_CONVERSION"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeInterest                   AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "INTEREST"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeLatePayment                AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "LATE_PAYMENT"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeBillPayment                AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "BILL_PAYMENT"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCashBack                   AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "CASH_BACK"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAccountToAccount           AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "ACCOUNT_TO_ACCOUNT"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCardToCard                 AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "CARD_TO_CARD"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeDisburse                   AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "DISBURSE"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeBillingError               AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "BILLING_ERROR"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeLossWriteOff               AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "LOSS_WRITE_OFF"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeExpiredCard                AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "EXPIRED_CARD"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeEarlyDerecognition         AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "EARLY_DERECOGNITION"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeEscheatment                AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "ESCHEATMENT"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeInactivityFeeDown          AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "INACTIVITY_FEE_DOWN"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeProvisionalCredit          AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "PROVISIONAL_CREDIT"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeDisputeWon                 AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "DISPUTE_WON"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeService                    AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "SERVICE"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeTransfer                   AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "TRANSFER"
+)
+
+func (r AccountActivityGetTransactionResponseBookTransferTransactionEventsType) IsKnown() bool {
+	switch r {
+	case AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAtmWithdrawal, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAtmDecline, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeInternationalAtmWithdrawal, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeInactivity, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeStatement, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeMonthly, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeQuarterly, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAnnual, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCustomerService, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAccountMaintenance, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAccountActivation, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAccountClosure, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCardReplacement, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCardDelivery, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCardCreate, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCurrencyConversion, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeInterest, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeLatePayment, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeBillPayment, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCashBack, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAccountToAccount, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCardToCard, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeDisburse, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeBillingError, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeLossWriteOff, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeExpiredCard, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeEarlyDerecognition, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeEscheatment, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeInactivityFeeDown, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeProvisionalCredit, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeDisputeWon, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeService, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeTransfer:
 		return true
 	}
 	return false
@@ -2057,8 +2740,8 @@ type AccountActivityGetTransactionResponsePaymentTransaction struct {
 	// Transfer direction
 	Direction AccountActivityGetTransactionResponsePaymentTransactionDirection `json:"direction,required"`
 	// List of transaction events
-	Events []interface{}                                                 `json:"events,required"`
-	Family AccountActivityGetTransactionResponsePaymentTransactionFamily `json:"family,required"`
+	Events []AccountActivityGetTransactionResponsePaymentTransactionEvent `json:"events,required"`
+	Family AccountActivityGetTransactionResponsePaymentTransactionFamily  `json:"family,required"`
 	// Financial account token
 	FinancialAccountToken string `json:"financial_account_token,required" format:"uuid"`
 	// Transfer method
@@ -2173,6 +2856,146 @@ func (r AccountActivityGetTransactionResponsePaymentTransactionDirection) IsKnow
 	return false
 }
 
+// Payment Event
+type AccountActivityGetTransactionResponsePaymentTransactionEvent struct {
+	// Globally unique identifier.
+	Token string `json:"token,required" format:"uuid"`
+	// Amount of the financial event that has been settled in the currency's smallest
+	// unit (e.g., cents).
+	Amount int64 `json:"amount,required"`
+	// Date and time when the financial event occurred. UTC time zone.
+	Created time.Time `json:"created,required" format:"date-time"`
+	// APPROVED financial events were successful while DECLINED financial events were
+	// declined by user, Lithic, or the network.
+	Result AccountActivityGetTransactionResponsePaymentTransactionEventsResult `json:"result,required"`
+	// Event types:
+	//
+	//   - `ACH_ORIGINATION_INITIATED` - ACH origination received and pending
+	//     approval/release from an ACH hold.
+	//   - `ACH_ORIGINATION_REVIEWED` - ACH origination has completed the review process.
+	//   - `ACH_ORIGINATION_CANCELLED` - ACH origination has been cancelled.
+	//   - `ACH_ORIGINATION_PROCESSED` - ACH origination has been processed and sent to
+	//     the Federal Reserve.
+	//   - `ACH_ORIGINATION_SETTLED` - ACH origination has settled.
+	//   - `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to
+	//     available balance.
+	//   - `ACH_RETURN_PROCESSED` - ACH origination returned by the Receiving Depository
+	//     Financial Institution.
+	//   - `ACH_RECEIPT_PROCESSED` - ACH receipt pending release from an ACH holder.
+	//   - `ACH_RETURN_INITIATED` - ACH initiated return for a ACH receipt.
+	//   - `ACH_RECEIPT_SETTLED` - ACH receipt funds have settled.
+	//   - `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to available
+	//     balance.
+	//   - `ACH_RETURN_SETTLED` - ACH receipt return settled by the Receiving Depository
+	//     Financial Institution.
+	Type AccountActivityGetTransactionResponsePaymentTransactionEventsType `json:"type,required"`
+	// More detailed reasons for the event
+	DetailedResults []AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResult `json:"detailed_results"`
+	JSON            accountActivityGetTransactionResponsePaymentTransactionEventJSON              `json:"-"`
+}
+
+// accountActivityGetTransactionResponsePaymentTransactionEventJSON contains the
+// JSON metadata for the struct
+// [AccountActivityGetTransactionResponsePaymentTransactionEvent]
+type accountActivityGetTransactionResponsePaymentTransactionEventJSON struct {
+	Token           apijson.Field
+	Amount          apijson.Field
+	Created         apijson.Field
+	Result          apijson.Field
+	Type            apijson.Field
+	DetailedResults apijson.Field
+	raw             string
+	ExtraFields     map[string]apijson.Field
+}
+
+func (r *AccountActivityGetTransactionResponsePaymentTransactionEvent) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r accountActivityGetTransactionResponsePaymentTransactionEventJSON) RawJSON() string {
+	return r.raw
+}
+
+// APPROVED financial events were successful while DECLINED financial events were
+// declined by user, Lithic, or the network.
+type AccountActivityGetTransactionResponsePaymentTransactionEventsResult string
+
+const (
+	AccountActivityGetTransactionResponsePaymentTransactionEventsResultApproved AccountActivityGetTransactionResponsePaymentTransactionEventsResult = "APPROVED"
+	AccountActivityGetTransactionResponsePaymentTransactionEventsResultDeclined AccountActivityGetTransactionResponsePaymentTransactionEventsResult = "DECLINED"
+)
+
+func (r AccountActivityGetTransactionResponsePaymentTransactionEventsResult) IsKnown() bool {
+	switch r {
+	case AccountActivityGetTransactionResponsePaymentTransactionEventsResultApproved, AccountActivityGetTransactionResponsePaymentTransactionEventsResultDeclined:
+		return true
+	}
+	return false
+}
+
+// Event types:
+//
+//   - `ACH_ORIGINATION_INITIATED` - ACH origination received and pending
+//     approval/release from an ACH hold.
+//   - `ACH_ORIGINATION_REVIEWED` - ACH origination has completed the review process.
+//   - `ACH_ORIGINATION_CANCELLED` - ACH origination has been cancelled.
+//   - `ACH_ORIGINATION_PROCESSED` - ACH origination has been processed and sent to
+//     the Federal Reserve.
+//   - `ACH_ORIGINATION_SETTLED` - ACH origination has settled.
+//   - `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to
+//     available balance.
+//   - `ACH_RETURN_PROCESSED` - ACH origination returned by the Receiving Depository
+//     Financial Institution.
+//   - `ACH_RECEIPT_PROCESSED` - ACH receipt pending release from an ACH holder.
+//   - `ACH_RETURN_INITIATED` - ACH initiated return for a ACH receipt.
+//   - `ACH_RECEIPT_SETTLED` - ACH receipt funds have settled.
+//   - `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to available
+//     balance.
+//   - `ACH_RETURN_SETTLED` - ACH receipt return settled by the Receiving Depository
+//     Financial Institution.
+type AccountActivityGetTransactionResponsePaymentTransactionEventsType string
+
+const (
+	AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHOriginationCancelled AccountActivityGetTransactionResponsePaymentTransactionEventsType = "ACH_ORIGINATION_CANCELLED"
+	AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHOriginationInitiated AccountActivityGetTransactionResponsePaymentTransactionEventsType = "ACH_ORIGINATION_INITIATED"
+	AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHOriginationProcessed AccountActivityGetTransactionResponsePaymentTransactionEventsType = "ACH_ORIGINATION_PROCESSED"
+	AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHOriginationSettled   AccountActivityGetTransactionResponsePaymentTransactionEventsType = "ACH_ORIGINATION_SETTLED"
+	AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHOriginationReleased  AccountActivityGetTransactionResponsePaymentTransactionEventsType = "ACH_ORIGINATION_RELEASED"
+	AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHOriginationReviewed  AccountActivityGetTransactionResponsePaymentTransactionEventsType = "ACH_ORIGINATION_REVIEWED"
+	AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHReceiptProcessed     AccountActivityGetTransactionResponsePaymentTransactionEventsType = "ACH_RECEIPT_PROCESSED"
+	AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHReceiptSettled       AccountActivityGetTransactionResponsePaymentTransactionEventsType = "ACH_RECEIPT_SETTLED"
+	AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHReturnInitiated      AccountActivityGetTransactionResponsePaymentTransactionEventsType = "ACH_RETURN_INITIATED"
+	AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHReturnProcessed      AccountActivityGetTransactionResponsePaymentTransactionEventsType = "ACH_RETURN_PROCESSED"
+	AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHReturnSettled        AccountActivityGetTransactionResponsePaymentTransactionEventsType = "ACH_RETURN_SETTLED"
+)
+
+func (r AccountActivityGetTransactionResponsePaymentTransactionEventsType) IsKnown() bool {
+	switch r {
+	case AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHOriginationCancelled, AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHOriginationInitiated, AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHOriginationProcessed, AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHOriginationSettled, AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHOriginationReleased, AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHOriginationReviewed, AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHReceiptProcessed, AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHReceiptSettled, AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHReturnInitiated, AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHReturnProcessed, AccountActivityGetTransactionResponsePaymentTransactionEventsTypeACHReturnSettled:
+		return true
+	}
+	return false
+}
+
+type AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResult string
+
+const (
+	AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResultApproved                        AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResult = "APPROVED"
+	AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResultFundsInsufficient               AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResult = "FUNDS_INSUFFICIENT"
+	AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResultAccountInvalid                  AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResult = "ACCOUNT_INVALID"
+	AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResultProgramTransactionLimitExceeded AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResult = "PROGRAM_TRANSACTION_LIMIT_EXCEEDED"
+	AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResultProgramDailyLimitExceeded       AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResult = "PROGRAM_DAILY_LIMIT_EXCEEDED"
+	AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResultProgramMonthlyLimitExceeded     AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResult = "PROGRAM_MONTHLY_LIMIT_EXCEEDED"
+)
+
+func (r AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResult) IsKnown() bool {
+	switch r {
+	case AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResultApproved, AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResultFundsInsufficient, AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResultAccountInvalid, AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResultProgramTransactionLimitExceeded, AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResultProgramDailyLimitExceeded, AccountActivityGetTransactionResponsePaymentTransactionEventsDetailedResultProgramMonthlyLimitExceeded:
+		return true
+	}
+	return false
+}
+
 type AccountActivityGetTransactionResponsePaymentTransactionFamily string
 
 const (
@@ -2221,12 +3044,16 @@ type AccountActivityGetTransactionResponsePaymentTransactionMethodAttributes str
 	ExternalBankRoutingNumber string `json:"external_bank_routing_number,nullable"`
 	// External individual name
 	ExternalIndividualName string `json:"external_individual_name,nullable"`
+	// IMAD
+	Imad string `json:"imad,nullable"`
 	// Lithic bank name
 	LithicBankName string `json:"lithic_bank_name,nullable"`
 	// Lithic bank routing number
 	LithicBankRoutingNumber string `json:"lithic_bank_routing_number,nullable"`
 	// Lithic individual name
 	LithicIndividualName string `json:"lithic_individual_name,nullable"`
+	// OMAD
+	Omad string `json:"omad,nullable"`
 	// UUID of previous transfer if this is a retry
 	PreviousTransfer string `json:"previous_transfer,nullable" format:"uuid"`
 	// Receipt routing number
@@ -2239,6 +3066,8 @@ type AccountActivityGetTransactionResponsePaymentTransactionMethodAttributes str
 	SecCode AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesSecCode `json:"sec_code"`
 	// This field can have the runtime type of [[]string].
 	TraceNumbers interface{} `json:"trace_numbers"`
+	// Wire token
+	WireToken string `json:"wire_token,nullable" format:"uuid"`
 	// Type of wire transfer
 	WireTransferType AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireTransferType `json:"wire_transfer_type"`
 	JSON             accountActivityGetTransactionResponsePaymentTransactionMethodAttributesJSON             `json:"-"`
@@ -2254,15 +3083,18 @@ type accountActivityGetTransactionResponsePaymentTransactionMethodAttributesJSON
 	ExternalBankName          apijson.Field
 	ExternalBankRoutingNumber apijson.Field
 	ExternalIndividualName    apijson.Field
+	Imad                      apijson.Field
 	LithicBankName            apijson.Field
 	LithicBankRoutingNumber   apijson.Field
 	LithicIndividualName      apijson.Field
+	Omad                      apijson.Field
 	PreviousTransfer          apijson.Field
 	ReceiptRoutingNumber      apijson.Field
 	Retries                   apijson.Field
 	ReturnReasonCode          apijson.Field
 	SecCode                   apijson.Field
 	TraceNumbers              apijson.Field
+	WireToken                 apijson.Field
 	WireTransferType          apijson.Field
 	raw                       string
 	ExtraFields               map[string]apijson.Field
@@ -2390,15 +3222,21 @@ type AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWire
 	ExternalBankRoutingNumber string `json:"external_bank_routing_number,nullable"`
 	// External individual name
 	ExternalIndividualName string `json:"external_individual_name,nullable"`
+	// IMAD
+	Imad string `json:"imad,nullable"`
 	// Lithic bank name
 	LithicBankName string `json:"lithic_bank_name,nullable"`
 	// Lithic bank routing number
 	LithicBankRoutingNumber string `json:"lithic_bank_routing_number,nullable"`
 	// Lithic individual name
 	LithicIndividualName string `json:"lithic_individual_name,nullable"`
+	// OMAD
+	Omad string `json:"omad,nullable"`
 	// UUID of previous transfer if this is a retry
-	PreviousTransfer string                                                                                          `json:"previous_transfer,nullable" format:"uuid"`
-	JSON             accountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesJSON `json:"-"`
+	PreviousTransfer string `json:"previous_transfer,nullable" format:"uuid"`
+	// Wire token
+	WireToken string                                                                                          `json:"wire_token,nullable" format:"uuid"`
+	JSON      accountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesJSON `json:"-"`
 }
 
 // accountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesJSON
@@ -2409,10 +3247,13 @@ type accountActivityGetTransactionResponsePaymentTransactionMethodAttributesWire
 	ExternalBankName          apijson.Field
 	ExternalBankRoutingNumber apijson.Field
 	ExternalIndividualName    apijson.Field
+	Imad                      apijson.Field
 	LithicBankName            apijson.Field
 	LithicBankRoutingNumber   apijson.Field
 	LithicIndividualName      apijson.Field
+	Omad                      apijson.Field
 	PreviousTransfer          apijson.Field
+	WireToken                 apijson.Field
 	raw                       string
 	ExtraFields               map[string]apijson.Field
 }
@@ -2750,6 +3591,8 @@ func (r AccountActivityGetTransactionResponseSource) IsKnown() bool {
 }
 
 type AccountActivityListParams struct {
+	// Filter by account token
+	AccountToken param.Field[string] `query:"account_token" format:"uuid"`
 	// Date string in RFC 3339 format. Only entries created after the specified time
 	// will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
