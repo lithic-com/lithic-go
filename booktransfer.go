@@ -106,27 +106,32 @@ type BookTransferResponse struct {
 	Currency string `json:"currency,required"`
 	// A list of all financial events that have modified this transfer.
 	Events []BookTransferResponseEvent `json:"events,required"`
+	// External ID defined by the customer
+	ExternalID string `json:"external_id,required,nullable"`
 	// External resource associated with the management operation
 	ExternalResource ExternalResource `json:"external_resource,required,nullable"`
 	// Globally unique identifier for the financial account or card that will send the
 	// funds. Accepted type dependent on the program's use case.
 	FromFinancialAccountToken string `json:"from_financial_account_token,required" format:"uuid"`
 	// Pending amount of the transaction in the currency's smallest unit (e.g., cents),
-	// including any acquirer fees. The value of this field will go to zero over time
-	// once the financial transaction is settled.
-	PendingAmount int64 `json:"pending_amount,required"`
-	// APPROVED transactions were successful while DECLINED transactions were declined
-	// by user, Lithic, or the network.
-	Result BookTransferResponseResult `json:"result,required"`
+	// including any acquirer fees.
+	//
+	// The value of this field will go to zero over time once the financial transaction
+	// is settled.
+	PendingAmount int64                      `json:"pending_amount,required"`
+	Result        BookTransferResponseResult `json:"result,required"`
 	// Amount of the transaction that has been settled in the currency's smallest unit
 	// (e.g., cents).
 	SettledAmount int64 `json:"settled_amount,required"`
-	// Status types: _ `DECLINED` - The transfer was declined. _ `REVERSED` - The
-	// transfer was reversed \* `SETTLED` - The transfer is completed.
+	// Status types:
+	//
+	// - `DECLINED` - The transfer was declined.
+	// - `REVERSED` - The transfer was reversed
+	// - `SETTLED` - The transfer is completed.
 	Status BookTransferResponseStatus `json:"status,required"`
 	// Globally unique identifier for the financial account or card that will receive
 	// the funds. Accepted type dependent on the program's use case.
-	ToFinancialAccountToken interface{} `json:"to_financial_account_token,required"`
+	ToFinancialAccountToken string `json:"to_financial_account_token,required" format:"uuid"`
 	// A series of transactions that are grouped together.
 	TransactionSeries BookTransferResponseTransactionSeries `json:"transaction_series,required,nullable"`
 	// Date and time when the financial transaction was last updated. UTC time zone.
@@ -142,6 +147,7 @@ type bookTransferResponseJSON struct {
 	Created                   apijson.Field
 	Currency                  apijson.Field
 	Events                    apijson.Field
+	ExternalID                apijson.Field
 	ExternalResource          apijson.Field
 	FromFinancialAccountToken apijson.Field
 	PendingAmount             apijson.Field
@@ -184,6 +190,7 @@ func (r BookTransferResponseCategory) IsKnown() bool {
 	return false
 }
 
+// Book transfer Event
 type BookTransferResponseEvent struct {
 	// Globally unique identifier.
 	Token string `json:"token,required" format:"uuid"`
@@ -191,9 +198,8 @@ type BookTransferResponseEvent struct {
 	// unit (e.g., cents).
 	Amount int64 `json:"amount,required"`
 	// Date and time when the financial event occurred. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// Detailed Results
-	DetailedResults []BookTransferResponseEventsDetailedResult `json:"detailed_results,required"`
+	Created         time.Time                                 `json:"created,required" format:"date-time"`
+	DetailedResults BookTransferResponseEventsDetailedResults `json:"detailed_results,required"`
 	// Memo for the transfer.
 	Memo string `json:"memo,required"`
 	// APPROVED financial events were successful while DECLINED financial events were
@@ -202,8 +208,8 @@ type BookTransferResponseEvent struct {
 	// The program specific subtype code for the specified category/type.
 	Subtype string `json:"subtype,required"`
 	// Type of the book transfer
-	Type string                        `json:"type,required"`
-	JSON bookTransferResponseEventJSON `json:"-"`
+	Type BookTransferResponseEventsType `json:"type,required"`
+	JSON bookTransferResponseEventJSON  `json:"-"`
 }
 
 // bookTransferResponseEventJSON contains the JSON metadata for the struct
@@ -229,16 +235,16 @@ func (r bookTransferResponseEventJSON) RawJSON() string {
 	return r.raw
 }
 
-type BookTransferResponseEventsDetailedResult string
+type BookTransferResponseEventsDetailedResults string
 
 const (
-	BookTransferResponseEventsDetailedResultApproved          BookTransferResponseEventsDetailedResult = "APPROVED"
-	BookTransferResponseEventsDetailedResultFundsInsufficient BookTransferResponseEventsDetailedResult = "FUNDS_INSUFFICIENT"
+	BookTransferResponseEventsDetailedResultsApproved          BookTransferResponseEventsDetailedResults = "APPROVED"
+	BookTransferResponseEventsDetailedResultsFundsInsufficient BookTransferResponseEventsDetailedResults = "FUNDS_INSUFFICIENT"
 )
 
-func (r BookTransferResponseEventsDetailedResult) IsKnown() bool {
+func (r BookTransferResponseEventsDetailedResults) IsKnown() bool {
 	switch r {
-	case BookTransferResponseEventsDetailedResultApproved, BookTransferResponseEventsDetailedResultFundsInsufficient:
+	case BookTransferResponseEventsDetailedResultsApproved, BookTransferResponseEventsDetailedResultsFundsInsufficient:
 		return true
 	}
 	return false
@@ -261,8 +267,53 @@ func (r BookTransferResponseEventsResult) IsKnown() bool {
 	return false
 }
 
-// APPROVED transactions were successful while DECLINED transactions were declined
-// by user, Lithic, or the network.
+// Type of the book transfer
+type BookTransferResponseEventsType string
+
+const (
+	BookTransferResponseEventsTypeAtmWithdrawal              BookTransferResponseEventsType = "ATM_WITHDRAWAL"
+	BookTransferResponseEventsTypeAtmDecline                 BookTransferResponseEventsType = "ATM_DECLINE"
+	BookTransferResponseEventsTypeInternationalAtmWithdrawal BookTransferResponseEventsType = "INTERNATIONAL_ATM_WITHDRAWAL"
+	BookTransferResponseEventsTypeInactivity                 BookTransferResponseEventsType = "INACTIVITY"
+	BookTransferResponseEventsTypeStatement                  BookTransferResponseEventsType = "STATEMENT"
+	BookTransferResponseEventsTypeMonthly                    BookTransferResponseEventsType = "MONTHLY"
+	BookTransferResponseEventsTypeQuarterly                  BookTransferResponseEventsType = "QUARTERLY"
+	BookTransferResponseEventsTypeAnnual                     BookTransferResponseEventsType = "ANNUAL"
+	BookTransferResponseEventsTypeCustomerService            BookTransferResponseEventsType = "CUSTOMER_SERVICE"
+	BookTransferResponseEventsTypeAccountMaintenance         BookTransferResponseEventsType = "ACCOUNT_MAINTENANCE"
+	BookTransferResponseEventsTypeAccountActivation          BookTransferResponseEventsType = "ACCOUNT_ACTIVATION"
+	BookTransferResponseEventsTypeAccountClosure             BookTransferResponseEventsType = "ACCOUNT_CLOSURE"
+	BookTransferResponseEventsTypeCardReplacement            BookTransferResponseEventsType = "CARD_REPLACEMENT"
+	BookTransferResponseEventsTypeCardDelivery               BookTransferResponseEventsType = "CARD_DELIVERY"
+	BookTransferResponseEventsTypeCardCreate                 BookTransferResponseEventsType = "CARD_CREATE"
+	BookTransferResponseEventsTypeCurrencyConversion         BookTransferResponseEventsType = "CURRENCY_CONVERSION"
+	BookTransferResponseEventsTypeInterest                   BookTransferResponseEventsType = "INTEREST"
+	BookTransferResponseEventsTypeLatePayment                BookTransferResponseEventsType = "LATE_PAYMENT"
+	BookTransferResponseEventsTypeBillPayment                BookTransferResponseEventsType = "BILL_PAYMENT"
+	BookTransferResponseEventsTypeCashBack                   BookTransferResponseEventsType = "CASH_BACK"
+	BookTransferResponseEventsTypeAccountToAccount           BookTransferResponseEventsType = "ACCOUNT_TO_ACCOUNT"
+	BookTransferResponseEventsTypeCardToCard                 BookTransferResponseEventsType = "CARD_TO_CARD"
+	BookTransferResponseEventsTypeDisburse                   BookTransferResponseEventsType = "DISBURSE"
+	BookTransferResponseEventsTypeBillingError               BookTransferResponseEventsType = "BILLING_ERROR"
+	BookTransferResponseEventsTypeLossWriteOff               BookTransferResponseEventsType = "LOSS_WRITE_OFF"
+	BookTransferResponseEventsTypeExpiredCard                BookTransferResponseEventsType = "EXPIRED_CARD"
+	BookTransferResponseEventsTypeEarlyDerecognition         BookTransferResponseEventsType = "EARLY_DERECOGNITION"
+	BookTransferResponseEventsTypeEscheatment                BookTransferResponseEventsType = "ESCHEATMENT"
+	BookTransferResponseEventsTypeInactivityFeeDown          BookTransferResponseEventsType = "INACTIVITY_FEE_DOWN"
+	BookTransferResponseEventsTypeProvisionalCredit          BookTransferResponseEventsType = "PROVISIONAL_CREDIT"
+	BookTransferResponseEventsTypeDisputeWon                 BookTransferResponseEventsType = "DISPUTE_WON"
+	BookTransferResponseEventsTypeService                    BookTransferResponseEventsType = "SERVICE"
+	BookTransferResponseEventsTypeTransfer                   BookTransferResponseEventsType = "TRANSFER"
+)
+
+func (r BookTransferResponseEventsType) IsKnown() bool {
+	switch r {
+	case BookTransferResponseEventsTypeAtmWithdrawal, BookTransferResponseEventsTypeAtmDecline, BookTransferResponseEventsTypeInternationalAtmWithdrawal, BookTransferResponseEventsTypeInactivity, BookTransferResponseEventsTypeStatement, BookTransferResponseEventsTypeMonthly, BookTransferResponseEventsTypeQuarterly, BookTransferResponseEventsTypeAnnual, BookTransferResponseEventsTypeCustomerService, BookTransferResponseEventsTypeAccountMaintenance, BookTransferResponseEventsTypeAccountActivation, BookTransferResponseEventsTypeAccountClosure, BookTransferResponseEventsTypeCardReplacement, BookTransferResponseEventsTypeCardDelivery, BookTransferResponseEventsTypeCardCreate, BookTransferResponseEventsTypeCurrencyConversion, BookTransferResponseEventsTypeInterest, BookTransferResponseEventsTypeLatePayment, BookTransferResponseEventsTypeBillPayment, BookTransferResponseEventsTypeCashBack, BookTransferResponseEventsTypeAccountToAccount, BookTransferResponseEventsTypeCardToCard, BookTransferResponseEventsTypeDisburse, BookTransferResponseEventsTypeBillingError, BookTransferResponseEventsTypeLossWriteOff, BookTransferResponseEventsTypeExpiredCard, BookTransferResponseEventsTypeEarlyDerecognition, BookTransferResponseEventsTypeEscheatment, BookTransferResponseEventsTypeInactivityFeeDown, BookTransferResponseEventsTypeProvisionalCredit, BookTransferResponseEventsTypeDisputeWon, BookTransferResponseEventsTypeService, BookTransferResponseEventsTypeTransfer:
+		return true
+	}
+	return false
+}
+
 type BookTransferResponseResult string
 
 const (
@@ -278,8 +329,11 @@ func (r BookTransferResponseResult) IsKnown() bool {
 	return false
 }
 
-// Status types: _ `DECLINED` - The transfer was declined. _ `REVERSED` - The
-// transfer was reversed \* `SETTLED` - The transfer is completed.
+// Status types:
+//
+// - `DECLINED` - The transfer was declined.
+// - `REVERSED` - The transfer was reversed
+// - `SETTLED` - The transfer is completed.
 type BookTransferResponseStatus string
 
 const (
@@ -323,7 +377,7 @@ func (r bookTransferResponseTransactionSeriesJSON) RawJSON() string {
 }
 
 type BookTransferNewParams struct {
-	// Amount to be transferred in the currency’s smallest unit (e.g., cents for USD).
+	// Amount to be transferred in the currency's smallest unit (e.g., cents for USD).
 	// This should always be a positive value.
 	Amount param.Field[int64] `json:"amount,required"`
 	// Category of the book transfer
@@ -336,13 +390,17 @@ type BookTransferNewParams struct {
 	// Globally unique identifier for the financial account or card that will receive
 	// the funds. Accepted type dependent on the program's use case.
 	ToFinancialAccountToken param.Field[string] `json:"to_financial_account_token,required" format:"uuid"`
-	// Type of book_transfer
+	// Type of the book transfer
 	Type param.Field[BookTransferNewParamsType] `json:"type,required"`
 	// Customer-provided token that will serve as an idempotency token. This token will
 	// become the transaction token.
 	Token param.Field[string] `json:"token" format:"uuid"`
+	// External ID defined by the customer
+	ExternalID param.Field[string] `json:"external_id"`
 	// Optional descriptor for the transfer.
 	Memo param.Field[string] `json:"memo"`
+	// What to do if the financial account is closed when posting an operation
+	OnClosedAccount param.Field[BookTransferNewParamsOnClosedAccount] `json:"on_closed_account"`
 }
 
 func (r BookTransferNewParams) MarshalJSON() (data []byte, err error) {
@@ -370,7 +428,7 @@ func (r BookTransferNewParamsCategory) IsKnown() bool {
 	return false
 }
 
-// Type of book_transfer
+// Type of the book transfer
 type BookTransferNewParamsType string
 
 const (
@@ -412,6 +470,22 @@ const (
 func (r BookTransferNewParamsType) IsKnown() bool {
 	switch r {
 	case BookTransferNewParamsTypeAtmWithdrawal, BookTransferNewParamsTypeAtmDecline, BookTransferNewParamsTypeInternationalAtmWithdrawal, BookTransferNewParamsTypeInactivity, BookTransferNewParamsTypeStatement, BookTransferNewParamsTypeMonthly, BookTransferNewParamsTypeQuarterly, BookTransferNewParamsTypeAnnual, BookTransferNewParamsTypeCustomerService, BookTransferNewParamsTypeAccountMaintenance, BookTransferNewParamsTypeAccountActivation, BookTransferNewParamsTypeAccountClosure, BookTransferNewParamsTypeCardReplacement, BookTransferNewParamsTypeCardDelivery, BookTransferNewParamsTypeCardCreate, BookTransferNewParamsTypeCurrencyConversion, BookTransferNewParamsTypeInterest, BookTransferNewParamsTypeLatePayment, BookTransferNewParamsTypeBillPayment, BookTransferNewParamsTypeCashBack, BookTransferNewParamsTypeAccountToAccount, BookTransferNewParamsTypeCardToCard, BookTransferNewParamsTypeDisburse, BookTransferNewParamsTypeBillingError, BookTransferNewParamsTypeLossWriteOff, BookTransferNewParamsTypeExpiredCard, BookTransferNewParamsTypeEarlyDerecognition, BookTransferNewParamsTypeEscheatment, BookTransferNewParamsTypeInactivityFeeDown, BookTransferNewParamsTypeProvisionalCredit, BookTransferNewParamsTypeDisputeWon, BookTransferNewParamsTypeService, BookTransferNewParamsTypeTransfer:
+		return true
+	}
+	return false
+}
+
+// What to do if the financial account is closed when posting an operation
+type BookTransferNewParamsOnClosedAccount string
+
+const (
+	BookTransferNewParamsOnClosedAccountFail        BookTransferNewParamsOnClosedAccount = "FAIL"
+	BookTransferNewParamsOnClosedAccountUseSuspense BookTransferNewParamsOnClosedAccount = "USE_SUSPENSE"
+)
+
+func (r BookTransferNewParamsOnClosedAccount) IsKnown() bool {
+	switch r {
+	case BookTransferNewParamsOnClosedAccountFail, BookTransferNewParamsOnClosedAccountUseSuspense:
 		return true
 	}
 	return false

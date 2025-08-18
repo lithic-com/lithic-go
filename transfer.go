@@ -133,6 +133,7 @@ func (r TransferCategory) IsKnown() bool {
 	return false
 }
 
+// Financial Event
 type TransferEvent struct {
 	// Globally unique identifier.
 	Token string `json:"token" format:"uuid"`

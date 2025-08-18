@@ -34,7 +34,9 @@ func TestBookTransferNewWithOptionalParams(t *testing.T) {
 		ToFinancialAccountToken:   lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Type:                      lithic.F(lithic.BookTransferNewParamsTypeAtmWithdrawal),
 		Token:                     lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		ExternalID:                lithic.F("external_id"),
 		Memo:                      lithic.F("memo"),
+		OnClosedAccount:           lithic.F(lithic.BookTransferNewParamsOnClosedAccountFail),
 	})
 	if err != nil {
 		var apierr *lithic.Error
