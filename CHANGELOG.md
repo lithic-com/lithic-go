@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.89.1 (2025-08-28)
+
+Full Changelog: [v0.89.0...v0.89.1](https://github.com/lithic-com/lithic-go/compare/v0.89.0...v0.89.1)
+
+### Bug Fixes
+
+* close body before retrying ([a6d73ff](https://github.com/lithic-com/lithic-go/commit/a6d73ff17502d4ba126cf24752feb40a6423827d))
+
 ## 0.89.0 (2025-08-18)
 
 Full Changelog: [v0.88.0...v0.89.0](https://github.com/lithic-com/lithic-go/compare/v0.88.0...v0.89.0)
