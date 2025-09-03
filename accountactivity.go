@@ -74,6 +74,37 @@ func (r *AccountActivityService) GetTransaction(ctx context.Context, transaction
 	return
 }
 
+type WirePartyDetails struct {
+	// Account number
+	AccountNumber string `json:"account_number,nullable"`
+	// Routing number or BIC of the financial institution
+	AgentID string `json:"agent_id,nullable"`
+	// Name of the financial institution
+	AgentName string `json:"agent_name,nullable"`
+	// Name of the person or company
+	Name string               `json:"name,nullable"`
+	JSON wirePartyDetailsJSON `json:"-"`
+}
+
+// wirePartyDetailsJSON contains the JSON metadata for the struct
+// [WirePartyDetails]
+type wirePartyDetailsJSON struct {
+	AccountNumber apijson.Field
+	AgentID       apijson.Field
+	AgentName     apijson.Field
+	Name          apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
+}
+
+func (r *WirePartyDetails) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r wirePartyDetailsJSON) RawJSON() string {
+	return r.raw
+}
+
 // Response containing multiple transaction types
 type AccountActivityListResponse struct {
 	// Unique identifier for the transaction
@@ -194,7 +225,8 @@ type AccountActivityListResponse struct {
 	// This field can have the runtime type of
 	// [AccountActivityListResponseBookTransferTransactionTransactionSeries],
 	// [ManagementOperationTransactionTransactionSeries].
-	TransactionSeries interface{} `json:"transaction_series"`
+	TransactionSeries interface{}                     `json:"transaction_series"`
+	Type              AccountActivityListResponseType `json:"type"`
 	// User-defined identifier
 	UserDefinedID string                          `json:"user_defined_id,nullable"`
 	JSON          accountActivityListResponseJSON `json:"-"`
@@ -248,6 +280,7 @@ type accountActivityListResponseJSON struct {
 	ToFinancialAccountToken     apijson.Field
 	TokenInfo                   apijson.Field
 	TransactionSeries           apijson.Field
+	Type                        apijson.Field
 	UserDefinedID               apijson.Field
 	raw                         string
 	ExtraFields                 map[string]apijson.Field
@@ -803,11 +836,12 @@ const (
 	AccountActivityListResponseBookTransferTransactionEventsTypeDisputeWon                 AccountActivityListResponseBookTransferTransactionEventsType = "DISPUTE_WON"
 	AccountActivityListResponseBookTransferTransactionEventsTypeService                    AccountActivityListResponseBookTransferTransactionEventsType = "SERVICE"
 	AccountActivityListResponseBookTransferTransactionEventsTypeTransfer                   AccountActivityListResponseBookTransferTransactionEventsType = "TRANSFER"
+	AccountActivityListResponseBookTransferTransactionEventsTypeCollection                 AccountActivityListResponseBookTransferTransactionEventsType = "COLLECTION"
 )
 
 func (r AccountActivityListResponseBookTransferTransactionEventsType) IsKnown() bool {
 	switch r {
-	case AccountActivityListResponseBookTransferTransactionEventsTypeAtmWithdrawal, AccountActivityListResponseBookTransferTransactionEventsTypeAtmDecline, AccountActivityListResponseBookTransferTransactionEventsTypeInternationalAtmWithdrawal, AccountActivityListResponseBookTransferTransactionEventsTypeInactivity, AccountActivityListResponseBookTransferTransactionEventsTypeStatement, AccountActivityListResponseBookTransferTransactionEventsTypeMonthly, AccountActivityListResponseBookTransferTransactionEventsTypeQuarterly, AccountActivityListResponseBookTransferTransactionEventsTypeAnnual, AccountActivityListResponseBookTransferTransactionEventsTypeCustomerService, AccountActivityListResponseBookTransferTransactionEventsTypeAccountMaintenance, AccountActivityListResponseBookTransferTransactionEventsTypeAccountActivation, AccountActivityListResponseBookTransferTransactionEventsTypeAccountClosure, AccountActivityListResponseBookTransferTransactionEventsTypeCardReplacement, AccountActivityListResponseBookTransferTransactionEventsTypeCardDelivery, AccountActivityListResponseBookTransferTransactionEventsTypeCardCreate, AccountActivityListResponseBookTransferTransactionEventsTypeCurrencyConversion, AccountActivityListResponseBookTransferTransactionEventsTypeInterest, AccountActivityListResponseBookTransferTransactionEventsTypeLatePayment, AccountActivityListResponseBookTransferTransactionEventsTypeBillPayment, AccountActivityListResponseBookTransferTransactionEventsTypeCashBack, AccountActivityListResponseBookTransferTransactionEventsTypeAccountToAccount, AccountActivityListResponseBookTransferTransactionEventsTypeCardToCard, AccountActivityListResponseBookTransferTransactionEventsTypeDisburse, AccountActivityListResponseBookTransferTransactionEventsTypeBillingError, AccountActivityListResponseBookTransferTransactionEventsTypeLossWriteOff, AccountActivityListResponseBookTransferTransactionEventsTypeExpiredCard, AccountActivityListResponseBookTransferTransactionEventsTypeEarlyDerecognition, AccountActivityListResponseBookTransferTransactionEventsTypeEscheatment, AccountActivityListResponseBookTransferTransactionEventsTypeInactivityFeeDown, AccountActivityListResponseBookTransferTransactionEventsTypeProvisionalCredit, AccountActivityListResponseBookTransferTransactionEventsTypeDisputeWon, AccountActivityListResponseBookTransferTransactionEventsTypeService, AccountActivityListResponseBookTransferTransactionEventsTypeTransfer:
+	case AccountActivityListResponseBookTransferTransactionEventsTypeAtmWithdrawal, AccountActivityListResponseBookTransferTransactionEventsTypeAtmDecline, AccountActivityListResponseBookTransferTransactionEventsTypeInternationalAtmWithdrawal, AccountActivityListResponseBookTransferTransactionEventsTypeInactivity, AccountActivityListResponseBookTransferTransactionEventsTypeStatement, AccountActivityListResponseBookTransferTransactionEventsTypeMonthly, AccountActivityListResponseBookTransferTransactionEventsTypeQuarterly, AccountActivityListResponseBookTransferTransactionEventsTypeAnnual, AccountActivityListResponseBookTransferTransactionEventsTypeCustomerService, AccountActivityListResponseBookTransferTransactionEventsTypeAccountMaintenance, AccountActivityListResponseBookTransferTransactionEventsTypeAccountActivation, AccountActivityListResponseBookTransferTransactionEventsTypeAccountClosure, AccountActivityListResponseBookTransferTransactionEventsTypeCardReplacement, AccountActivityListResponseBookTransferTransactionEventsTypeCardDelivery, AccountActivityListResponseBookTransferTransactionEventsTypeCardCreate, AccountActivityListResponseBookTransferTransactionEventsTypeCurrencyConversion, AccountActivityListResponseBookTransferTransactionEventsTypeInterest, AccountActivityListResponseBookTransferTransactionEventsTypeLatePayment, AccountActivityListResponseBookTransferTransactionEventsTypeBillPayment, AccountActivityListResponseBookTransferTransactionEventsTypeCashBack, AccountActivityListResponseBookTransferTransactionEventsTypeAccountToAccount, AccountActivityListResponseBookTransferTransactionEventsTypeCardToCard, AccountActivityListResponseBookTransferTransactionEventsTypeDisburse, AccountActivityListResponseBookTransferTransactionEventsTypeBillingError, AccountActivityListResponseBookTransferTransactionEventsTypeLossWriteOff, AccountActivityListResponseBookTransferTransactionEventsTypeExpiredCard, AccountActivityListResponseBookTransferTransactionEventsTypeEarlyDerecognition, AccountActivityListResponseBookTransferTransactionEventsTypeEscheatment, AccountActivityListResponseBookTransferTransactionEventsTypeInactivityFeeDown, AccountActivityListResponseBookTransferTransactionEventsTypeProvisionalCredit, AccountActivityListResponseBookTransferTransactionEventsTypeDisputeWon, AccountActivityListResponseBookTransferTransactionEventsTypeService, AccountActivityListResponseBookTransferTransactionEventsTypeTransfer, AccountActivityListResponseBookTransferTransactionEventsTypeCollection:
 		return true
 	}
 	return false
@@ -1007,7 +1041,8 @@ type AccountActivityListResponsePaymentTransaction struct {
 	// Expected release date for the transaction
 	ExpectedReleaseDate time.Time `json:"expected_release_date,nullable" format:"date"`
 	// External bank account token
-	ExternalBankAccountToken string `json:"external_bank_account_token,nullable" format:"uuid"`
+	ExternalBankAccountToken string                                            `json:"external_bank_account_token,nullable" format:"uuid"`
+	Type                     AccountActivityListResponsePaymentTransactionType `json:"type"`
 	// User-defined identifier
 	UserDefinedID string                                            `json:"user_defined_id,nullable"`
 	JSON          accountActivityListResponsePaymentTransactionJSON `json:"-"`
@@ -1036,6 +1071,7 @@ type accountActivityListResponsePaymentTransactionJSON struct {
 	Currency                 apijson.Field
 	ExpectedReleaseDate      apijson.Field
 	ExternalBankAccountToken apijson.Field
+	Type                     apijson.Field
 	UserDefinedID            apijson.Field
 	raw                      string
 	ExtraFields              map[string]apijson.Field
@@ -1274,27 +1310,16 @@ type AccountActivityListResponsePaymentTransactionMethodAttributes struct {
 	// Addenda information
 	Addenda string `json:"addenda,nullable"`
 	// Company ID for the ACH transaction
-	CompanyID string `json:"company_id,nullable"`
-	// External bank name
-	ExternalBankName string `json:"external_bank_name,nullable"`
-	// External bank routing number
-	ExternalBankRoutingNumber string `json:"external_bank_routing_number,nullable"`
-	// External individual name
-	ExternalIndividualName string `json:"external_individual_name,nullable"`
-	// IMAD
-	Imad string `json:"imad,nullable"`
-	// Lithic bank name
-	LithicBankName string `json:"lithic_bank_name,nullable"`
-	// Lithic bank routing number
-	LithicBankRoutingNumber string `json:"lithic_bank_routing_number,nullable"`
-	// Lithic individual name
-	LithicIndividualName string `json:"lithic_individual_name,nullable"`
-	// OMAD
-	Omad string `json:"omad,nullable"`
-	// UUID of previous transfer if this is a retry
-	PreviousTransfer string `json:"previous_transfer,nullable" format:"uuid"`
+	CompanyID string           `json:"company_id,nullable"`
+	Creditor  WirePartyDetails `json:"creditor"`
+	Debtor    WirePartyDetails `json:"debtor"`
+	// Point to point reference identifier, as assigned by the instructing party, used
+	// for tracking the message through the Fedwire system
+	MessageID string `json:"message_id,nullable"`
 	// Receipt routing number
 	ReceiptRoutingNumber string `json:"receipt_routing_number,nullable"`
+	// Payment details or invoice reference
+	RemittanceInformation string `json:"remittance_information,nullable"`
 	// Number of retries attempted
 	Retries int64 `json:"retries,nullable"`
 	// Return reason code if the transaction was returned
@@ -1303,38 +1328,33 @@ type AccountActivityListResponsePaymentTransactionMethodAttributes struct {
 	SecCode AccountActivityListResponsePaymentTransactionMethodAttributesSecCode `json:"sec_code"`
 	// This field can have the runtime type of [[]string].
 	TraceNumbers interface{} `json:"trace_numbers"`
-	// Wire token
-	WireToken string `json:"wire_token,nullable" format:"uuid"`
+	// Type of wire message
+	WireMessageType string `json:"wire_message_type"`
 	// Type of wire transfer
-	WireTransferType AccountActivityListResponsePaymentTransactionMethodAttributesWireTransferType `json:"wire_transfer_type"`
-	JSON             accountActivityListResponsePaymentTransactionMethodAttributesJSON             `json:"-"`
-	union            AccountActivityListResponsePaymentTransactionMethodAttributesUnion
+	WireNetwork AccountActivityListResponsePaymentTransactionMethodAttributesWireNetwork `json:"wire_network"`
+	JSON        accountActivityListResponsePaymentTransactionMethodAttributesJSON        `json:"-"`
+	union       AccountActivityListResponsePaymentTransactionMethodAttributesUnion
 }
 
 // accountActivityListResponsePaymentTransactionMethodAttributesJSON contains the
 // JSON metadata for the struct
 // [AccountActivityListResponsePaymentTransactionMethodAttributes]
 type accountActivityListResponsePaymentTransactionMethodAttributesJSON struct {
-	Addenda                   apijson.Field
-	CompanyID                 apijson.Field
-	ExternalBankName          apijson.Field
-	ExternalBankRoutingNumber apijson.Field
-	ExternalIndividualName    apijson.Field
-	Imad                      apijson.Field
-	LithicBankName            apijson.Field
-	LithicBankRoutingNumber   apijson.Field
-	LithicIndividualName      apijson.Field
-	Omad                      apijson.Field
-	PreviousTransfer          apijson.Field
-	ReceiptRoutingNumber      apijson.Field
-	Retries                   apijson.Field
-	ReturnReasonCode          apijson.Field
-	SecCode                   apijson.Field
-	TraceNumbers              apijson.Field
-	WireToken                 apijson.Field
-	WireTransferType          apijson.Field
-	raw                       string
-	ExtraFields               map[string]apijson.Field
+	Addenda               apijson.Field
+	CompanyID             apijson.Field
+	Creditor              apijson.Field
+	Debtor                apijson.Field
+	MessageID             apijson.Field
+	ReceiptRoutingNumber  apijson.Field
+	RemittanceInformation apijson.Field
+	Retries               apijson.Field
+	ReturnReasonCode      apijson.Field
+	SecCode               apijson.Field
+	TraceNumbers          apijson.Field
+	WireMessageType       apijson.Field
+	WireNetwork           apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
 }
 
 func (r accountActivityListResponsePaymentTransactionMethodAttributesJSON) RawJSON() string {
@@ -1452,47 +1472,31 @@ func (r AccountActivityListResponsePaymentTransactionMethodAttributesACHMethodAt
 
 type AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributes struct {
 	// Type of wire transfer
-	WireTransferType AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesWireTransferType `json:"wire_transfer_type,required"`
-	// External bank name
-	ExternalBankName string `json:"external_bank_name,nullable"`
-	// External bank routing number
-	ExternalBankRoutingNumber string `json:"external_bank_routing_number,nullable"`
-	// External individual name
-	ExternalIndividualName string `json:"external_individual_name,nullable"`
-	// IMAD
-	Imad string `json:"imad,nullable"`
-	// Lithic bank name
-	LithicBankName string `json:"lithic_bank_name,nullable"`
-	// Lithic bank routing number
-	LithicBankRoutingNumber string `json:"lithic_bank_routing_number,nullable"`
-	// Lithic individual name
-	LithicIndividualName string `json:"lithic_individual_name,nullable"`
-	// OMAD
-	Omad string `json:"omad,nullable"`
-	// UUID of previous transfer if this is a retry
-	PreviousTransfer string `json:"previous_transfer,nullable" format:"uuid"`
-	// Wire token
-	WireToken string                                                                                `json:"wire_token,nullable" format:"uuid"`
-	JSON      accountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesJSON `json:"-"`
+	WireNetwork AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesWireNetwork `json:"wire_network,required"`
+	Creditor    WirePartyDetails                                                                             `json:"creditor"`
+	Debtor      WirePartyDetails                                                                             `json:"debtor"`
+	// Point to point reference identifier, as assigned by the instructing party, used
+	// for tracking the message through the Fedwire system
+	MessageID string `json:"message_id,nullable"`
+	// Payment details or invoice reference
+	RemittanceInformation string `json:"remittance_information,nullable"`
+	// Type of wire message
+	WireMessageType string                                                                                `json:"wire_message_type"`
+	JSON            accountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesJSON `json:"-"`
 }
 
 // accountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesJSON
 // contains the JSON metadata for the struct
 // [AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributes]
 type accountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesJSON struct {
-	WireTransferType          apijson.Field
-	ExternalBankName          apijson.Field
-	ExternalBankRoutingNumber apijson.Field
-	ExternalIndividualName    apijson.Field
-	Imad                      apijson.Field
-	LithicBankName            apijson.Field
-	LithicBankRoutingNumber   apijson.Field
-	LithicIndividualName      apijson.Field
-	Omad                      apijson.Field
-	PreviousTransfer          apijson.Field
-	WireToken                 apijson.Field
-	raw                       string
-	ExtraFields               map[string]apijson.Field
+	WireNetwork           apijson.Field
+	Creditor              apijson.Field
+	Debtor                apijson.Field
+	MessageID             apijson.Field
+	RemittanceInformation apijson.Field
+	WireMessageType       apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
 }
 
 func (r *AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributes) UnmarshalJSON(data []byte) (err error) {
@@ -1507,16 +1511,16 @@ func (r AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodA
 }
 
 // Type of wire transfer
-type AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesWireTransferType string
+type AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesWireNetwork string
 
 const (
-	AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesWireTransferTypeFedwire AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesWireTransferType = "FEDWIRE"
-	AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesWireTransferTypeSwift   AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesWireTransferType = "SWIFT"
+	AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesWireNetworkFedwire AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesWireNetwork = "FEDWIRE"
+	AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesWireNetworkSwift   AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesWireNetwork = "SWIFT"
 )
 
-func (r AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesWireTransferType) IsKnown() bool {
+func (r AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesWireNetwork) IsKnown() bool {
 	switch r {
-	case AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesWireTransferTypeFedwire, AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesWireTransferTypeSwift:
+	case AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesWireNetworkFedwire, AccountActivityListResponsePaymentTransactionMethodAttributesWireMethodAttributesWireNetworkSwift:
 		return true
 	}
 	return false
@@ -1543,16 +1547,16 @@ func (r AccountActivityListResponsePaymentTransactionMethodAttributesSecCode) Is
 }
 
 // Type of wire transfer
-type AccountActivityListResponsePaymentTransactionMethodAttributesWireTransferType string
+type AccountActivityListResponsePaymentTransactionMethodAttributesWireNetwork string
 
 const (
-	AccountActivityListResponsePaymentTransactionMethodAttributesWireTransferTypeFedwire AccountActivityListResponsePaymentTransactionMethodAttributesWireTransferType = "FEDWIRE"
-	AccountActivityListResponsePaymentTransactionMethodAttributesWireTransferTypeSwift   AccountActivityListResponsePaymentTransactionMethodAttributesWireTransferType = "SWIFT"
+	AccountActivityListResponsePaymentTransactionMethodAttributesWireNetworkFedwire AccountActivityListResponsePaymentTransactionMethodAttributesWireNetwork = "FEDWIRE"
+	AccountActivityListResponsePaymentTransactionMethodAttributesWireNetworkSwift   AccountActivityListResponsePaymentTransactionMethodAttributesWireNetwork = "SWIFT"
 )
 
-func (r AccountActivityListResponsePaymentTransactionMethodAttributesWireTransferType) IsKnown() bool {
+func (r AccountActivityListResponsePaymentTransactionMethodAttributesWireNetwork) IsKnown() bool {
 	switch r {
-	case AccountActivityListResponsePaymentTransactionMethodAttributesWireTransferTypeFedwire, AccountActivityListResponsePaymentTransactionMethodAttributesWireTransferTypeSwift:
+	case AccountActivityListResponsePaymentTransactionMethodAttributesWireNetworkFedwire, AccountActivityListResponsePaymentTransactionMethodAttributesWireNetworkSwift:
 		return true
 	}
 	return false
@@ -1632,6 +1636,27 @@ const (
 func (r AccountActivityListResponsePaymentTransactionStatus) IsKnown() bool {
 	switch r {
 	case AccountActivityListResponsePaymentTransactionStatusPending, AccountActivityListResponsePaymentTransactionStatusSettled, AccountActivityListResponsePaymentTransactionStatusDeclined, AccountActivityListResponsePaymentTransactionStatusReversed, AccountActivityListResponsePaymentTransactionStatusCanceled:
+		return true
+	}
+	return false
+}
+
+type AccountActivityListResponsePaymentTransactionType string
+
+const (
+	AccountActivityListResponsePaymentTransactionTypeOriginationCredit   AccountActivityListResponsePaymentTransactionType = "ORIGINATION_CREDIT"
+	AccountActivityListResponsePaymentTransactionTypeOriginationDebit    AccountActivityListResponsePaymentTransactionType = "ORIGINATION_DEBIT"
+	AccountActivityListResponsePaymentTransactionTypeReceiptCredit       AccountActivityListResponsePaymentTransactionType = "RECEIPT_CREDIT"
+	AccountActivityListResponsePaymentTransactionTypeReceiptDebit        AccountActivityListResponsePaymentTransactionType = "RECEIPT_DEBIT"
+	AccountActivityListResponsePaymentTransactionTypeWireInboundPayment  AccountActivityListResponsePaymentTransactionType = "WIRE_INBOUND_PAYMENT"
+	AccountActivityListResponsePaymentTransactionTypeWireInboundAdmin    AccountActivityListResponsePaymentTransactionType = "WIRE_INBOUND_ADMIN"
+	AccountActivityListResponsePaymentTransactionTypeWireOutboundPayment AccountActivityListResponsePaymentTransactionType = "WIRE_OUTBOUND_PAYMENT"
+	AccountActivityListResponsePaymentTransactionTypeWireOutboundAdmin   AccountActivityListResponsePaymentTransactionType = "WIRE_OUTBOUND_ADMIN"
+)
+
+func (r AccountActivityListResponsePaymentTransactionType) IsKnown() bool {
+	switch r {
+	case AccountActivityListResponsePaymentTransactionTypeOriginationCredit, AccountActivityListResponsePaymentTransactionTypeOriginationDebit, AccountActivityListResponsePaymentTransactionTypeReceiptCredit, AccountActivityListResponsePaymentTransactionTypeReceiptDebit, AccountActivityListResponsePaymentTransactionTypeWireInboundPayment, AccountActivityListResponsePaymentTransactionTypeWireInboundAdmin, AccountActivityListResponsePaymentTransactionTypeWireOutboundPayment, AccountActivityListResponsePaymentTransactionTypeWireOutboundAdmin:
 		return true
 	}
 	return false
@@ -1827,6 +1852,27 @@ func (r AccountActivityListResponseSource) IsKnown() bool {
 	return false
 }
 
+type AccountActivityListResponseType string
+
+const (
+	AccountActivityListResponseTypeOriginationCredit   AccountActivityListResponseType = "ORIGINATION_CREDIT"
+	AccountActivityListResponseTypeOriginationDebit    AccountActivityListResponseType = "ORIGINATION_DEBIT"
+	AccountActivityListResponseTypeReceiptCredit       AccountActivityListResponseType = "RECEIPT_CREDIT"
+	AccountActivityListResponseTypeReceiptDebit        AccountActivityListResponseType = "RECEIPT_DEBIT"
+	AccountActivityListResponseTypeWireInboundPayment  AccountActivityListResponseType = "WIRE_INBOUND_PAYMENT"
+	AccountActivityListResponseTypeWireInboundAdmin    AccountActivityListResponseType = "WIRE_INBOUND_ADMIN"
+	AccountActivityListResponseTypeWireOutboundPayment AccountActivityListResponseType = "WIRE_OUTBOUND_PAYMENT"
+	AccountActivityListResponseTypeWireOutboundAdmin   AccountActivityListResponseType = "WIRE_OUTBOUND_ADMIN"
+)
+
+func (r AccountActivityListResponseType) IsKnown() bool {
+	switch r {
+	case AccountActivityListResponseTypeOriginationCredit, AccountActivityListResponseTypeOriginationDebit, AccountActivityListResponseTypeReceiptCredit, AccountActivityListResponseTypeReceiptDebit, AccountActivityListResponseTypeWireInboundPayment, AccountActivityListResponseTypeWireInboundAdmin, AccountActivityListResponseTypeWireOutboundPayment, AccountActivityListResponseTypeWireOutboundAdmin:
+		return true
+	}
+	return false
+}
+
 // Response containing multiple transaction types
 type AccountActivityGetTransactionResponse struct {
 	// Unique identifier for the transaction
@@ -1948,7 +1994,8 @@ type AccountActivityGetTransactionResponse struct {
 	// This field can have the runtime type of
 	// [AccountActivityGetTransactionResponseBookTransferTransactionTransactionSeries],
 	// [ManagementOperationTransactionTransactionSeries].
-	TransactionSeries interface{} `json:"transaction_series"`
+	TransactionSeries interface{}                               `json:"transaction_series"`
+	Type              AccountActivityGetTransactionResponseType `json:"type"`
 	// User-defined identifier
 	UserDefinedID string                                    `json:"user_defined_id,nullable"`
 	JSON          accountActivityGetTransactionResponseJSON `json:"-"`
@@ -2002,6 +2049,7 @@ type accountActivityGetTransactionResponseJSON struct {
 	ToFinancialAccountToken     apijson.Field
 	TokenInfo                   apijson.Field
 	TransactionSeries           apijson.Field
+	Type                        apijson.Field
 	UserDefinedID               apijson.Field
 	raw                         string
 	ExtraFields                 map[string]apijson.Field
@@ -2562,11 +2610,12 @@ const (
 	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeDisputeWon                 AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "DISPUTE_WON"
 	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeService                    AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "SERVICE"
 	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeTransfer                   AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "TRANSFER"
+	AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCollection                 AccountActivityGetTransactionResponseBookTransferTransactionEventsType = "COLLECTION"
 )
 
 func (r AccountActivityGetTransactionResponseBookTransferTransactionEventsType) IsKnown() bool {
 	switch r {
-	case AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAtmWithdrawal, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAtmDecline, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeInternationalAtmWithdrawal, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeInactivity, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeStatement, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeMonthly, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeQuarterly, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAnnual, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCustomerService, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAccountMaintenance, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAccountActivation, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAccountClosure, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCardReplacement, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCardDelivery, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCardCreate, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCurrencyConversion, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeInterest, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeLatePayment, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeBillPayment, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCashBack, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAccountToAccount, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCardToCard, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeDisburse, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeBillingError, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeLossWriteOff, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeExpiredCard, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeEarlyDerecognition, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeEscheatment, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeInactivityFeeDown, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeProvisionalCredit, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeDisputeWon, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeService, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeTransfer:
+	case AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAtmWithdrawal, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAtmDecline, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeInternationalAtmWithdrawal, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeInactivity, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeStatement, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeMonthly, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeQuarterly, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAnnual, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCustomerService, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAccountMaintenance, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAccountActivation, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAccountClosure, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCardReplacement, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCardDelivery, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCardCreate, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCurrencyConversion, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeInterest, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeLatePayment, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeBillPayment, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCashBack, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeAccountToAccount, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCardToCard, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeDisburse, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeBillingError, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeLossWriteOff, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeExpiredCard, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeEarlyDerecognition, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeEscheatment, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeInactivityFeeDown, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeProvisionalCredit, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeDisputeWon, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeService, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeTransfer, AccountActivityGetTransactionResponseBookTransferTransactionEventsTypeCollection:
 		return true
 	}
 	return false
@@ -2767,7 +2816,8 @@ type AccountActivityGetTransactionResponsePaymentTransaction struct {
 	// Expected release date for the transaction
 	ExpectedReleaseDate time.Time `json:"expected_release_date,nullable" format:"date"`
 	// External bank account token
-	ExternalBankAccountToken string `json:"external_bank_account_token,nullable" format:"uuid"`
+	ExternalBankAccountToken string                                                      `json:"external_bank_account_token,nullable" format:"uuid"`
+	Type                     AccountActivityGetTransactionResponsePaymentTransactionType `json:"type"`
 	// User-defined identifier
 	UserDefinedID string                                                      `json:"user_defined_id,nullable"`
 	JSON          accountActivityGetTransactionResponsePaymentTransactionJSON `json:"-"`
@@ -2797,6 +2847,7 @@ type accountActivityGetTransactionResponsePaymentTransactionJSON struct {
 	Currency                 apijson.Field
 	ExpectedReleaseDate      apijson.Field
 	ExternalBankAccountToken apijson.Field
+	Type                     apijson.Field
 	UserDefinedID            apijson.Field
 	raw                      string
 	ExtraFields              map[string]apijson.Field
@@ -3037,27 +3088,16 @@ type AccountActivityGetTransactionResponsePaymentTransactionMethodAttributes str
 	// Addenda information
 	Addenda string `json:"addenda,nullable"`
 	// Company ID for the ACH transaction
-	CompanyID string `json:"company_id,nullable"`
-	// External bank name
-	ExternalBankName string `json:"external_bank_name,nullable"`
-	// External bank routing number
-	ExternalBankRoutingNumber string `json:"external_bank_routing_number,nullable"`
-	// External individual name
-	ExternalIndividualName string `json:"external_individual_name,nullable"`
-	// IMAD
-	Imad string `json:"imad,nullable"`
-	// Lithic bank name
-	LithicBankName string `json:"lithic_bank_name,nullable"`
-	// Lithic bank routing number
-	LithicBankRoutingNumber string `json:"lithic_bank_routing_number,nullable"`
-	// Lithic individual name
-	LithicIndividualName string `json:"lithic_individual_name,nullable"`
-	// OMAD
-	Omad string `json:"omad,nullable"`
-	// UUID of previous transfer if this is a retry
-	PreviousTransfer string `json:"previous_transfer,nullable" format:"uuid"`
+	CompanyID string           `json:"company_id,nullable"`
+	Creditor  WirePartyDetails `json:"creditor"`
+	Debtor    WirePartyDetails `json:"debtor"`
+	// Point to point reference identifier, as assigned by the instructing party, used
+	// for tracking the message through the Fedwire system
+	MessageID string `json:"message_id,nullable"`
 	// Receipt routing number
 	ReceiptRoutingNumber string `json:"receipt_routing_number,nullable"`
+	// Payment details or invoice reference
+	RemittanceInformation string `json:"remittance_information,nullable"`
 	// Number of retries attempted
 	Retries int64 `json:"retries,nullable"`
 	// Return reason code if the transaction was returned
@@ -3066,38 +3106,33 @@ type AccountActivityGetTransactionResponsePaymentTransactionMethodAttributes str
 	SecCode AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesSecCode `json:"sec_code"`
 	// This field can have the runtime type of [[]string].
 	TraceNumbers interface{} `json:"trace_numbers"`
-	// Wire token
-	WireToken string `json:"wire_token,nullable" format:"uuid"`
+	// Type of wire message
+	WireMessageType string `json:"wire_message_type"`
 	// Type of wire transfer
-	WireTransferType AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireTransferType `json:"wire_transfer_type"`
-	JSON             accountActivityGetTransactionResponsePaymentTransactionMethodAttributesJSON             `json:"-"`
-	union            AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesUnion
+	WireNetwork AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireNetwork `json:"wire_network"`
+	JSON        accountActivityGetTransactionResponsePaymentTransactionMethodAttributesJSON        `json:"-"`
+	union       AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesUnion
 }
 
 // accountActivityGetTransactionResponsePaymentTransactionMethodAttributesJSON
 // contains the JSON metadata for the struct
 // [AccountActivityGetTransactionResponsePaymentTransactionMethodAttributes]
 type accountActivityGetTransactionResponsePaymentTransactionMethodAttributesJSON struct {
-	Addenda                   apijson.Field
-	CompanyID                 apijson.Field
-	ExternalBankName          apijson.Field
-	ExternalBankRoutingNumber apijson.Field
-	ExternalIndividualName    apijson.Field
-	Imad                      apijson.Field
-	LithicBankName            apijson.Field
-	LithicBankRoutingNumber   apijson.Field
-	LithicIndividualName      apijson.Field
-	Omad                      apijson.Field
-	PreviousTransfer          apijson.Field
-	ReceiptRoutingNumber      apijson.Field
-	Retries                   apijson.Field
-	ReturnReasonCode          apijson.Field
-	SecCode                   apijson.Field
-	TraceNumbers              apijson.Field
-	WireToken                 apijson.Field
-	WireTransferType          apijson.Field
-	raw                       string
-	ExtraFields               map[string]apijson.Field
+	Addenda               apijson.Field
+	CompanyID             apijson.Field
+	Creditor              apijson.Field
+	Debtor                apijson.Field
+	MessageID             apijson.Field
+	ReceiptRoutingNumber  apijson.Field
+	RemittanceInformation apijson.Field
+	Retries               apijson.Field
+	ReturnReasonCode      apijson.Field
+	SecCode               apijson.Field
+	TraceNumbers          apijson.Field
+	WireMessageType       apijson.Field
+	WireNetwork           apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
 }
 
 func (r accountActivityGetTransactionResponsePaymentTransactionMethodAttributesJSON) RawJSON() string {
@@ -3215,47 +3250,31 @@ func (r AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesA
 
 type AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributes struct {
 	// Type of wire transfer
-	WireTransferType AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesWireTransferType `json:"wire_transfer_type,required"`
-	// External bank name
-	ExternalBankName string `json:"external_bank_name,nullable"`
-	// External bank routing number
-	ExternalBankRoutingNumber string `json:"external_bank_routing_number,nullable"`
-	// External individual name
-	ExternalIndividualName string `json:"external_individual_name,nullable"`
-	// IMAD
-	Imad string `json:"imad,nullable"`
-	// Lithic bank name
-	LithicBankName string `json:"lithic_bank_name,nullable"`
-	// Lithic bank routing number
-	LithicBankRoutingNumber string `json:"lithic_bank_routing_number,nullable"`
-	// Lithic individual name
-	LithicIndividualName string `json:"lithic_individual_name,nullable"`
-	// OMAD
-	Omad string `json:"omad,nullable"`
-	// UUID of previous transfer if this is a retry
-	PreviousTransfer string `json:"previous_transfer,nullable" format:"uuid"`
-	// Wire token
-	WireToken string                                                                                          `json:"wire_token,nullable" format:"uuid"`
-	JSON      accountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesJSON `json:"-"`
+	WireNetwork AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesWireNetwork `json:"wire_network,required"`
+	Creditor    WirePartyDetails                                                                                       `json:"creditor"`
+	Debtor      WirePartyDetails                                                                                       `json:"debtor"`
+	// Point to point reference identifier, as assigned by the instructing party, used
+	// for tracking the message through the Fedwire system
+	MessageID string `json:"message_id,nullable"`
+	// Payment details or invoice reference
+	RemittanceInformation string `json:"remittance_information,nullable"`
+	// Type of wire message
+	WireMessageType string                                                                                          `json:"wire_message_type"`
+	JSON            accountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesJSON `json:"-"`
 }
 
 // accountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesJSON
 // contains the JSON metadata for the struct
 // [AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributes]
 type accountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesJSON struct {
-	WireTransferType          apijson.Field
-	ExternalBankName          apijson.Field
-	ExternalBankRoutingNumber apijson.Field
-	ExternalIndividualName    apijson.Field
-	Imad                      apijson.Field
-	LithicBankName            apijson.Field
-	LithicBankRoutingNumber   apijson.Field
-	LithicIndividualName      apijson.Field
-	Omad                      apijson.Field
-	PreviousTransfer          apijson.Field
-	WireToken                 apijson.Field
-	raw                       string
-	ExtraFields               map[string]apijson.Field
+	WireNetwork           apijson.Field
+	Creditor              apijson.Field
+	Debtor                apijson.Field
+	MessageID             apijson.Field
+	RemittanceInformation apijson.Field
+	WireMessageType       apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
 }
 
 func (r *AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributes) UnmarshalJSON(data []byte) (err error) {
@@ -3270,16 +3289,16 @@ func (r AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesW
 }
 
 // Type of wire transfer
-type AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesWireTransferType string
+type AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesWireNetwork string
 
 const (
-	AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesWireTransferTypeFedwire AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesWireTransferType = "FEDWIRE"
-	AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesWireTransferTypeSwift   AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesWireTransferType = "SWIFT"
+	AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesWireNetworkFedwire AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesWireNetwork = "FEDWIRE"
+	AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesWireNetworkSwift   AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesWireNetwork = "SWIFT"
 )
 
-func (r AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesWireTransferType) IsKnown() bool {
+func (r AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesWireNetwork) IsKnown() bool {
 	switch r {
-	case AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesWireTransferTypeFedwire, AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesWireTransferTypeSwift:
+	case AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesWireNetworkFedwire, AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireMethodAttributesWireNetworkSwift:
 		return true
 	}
 	return false
@@ -3306,16 +3325,16 @@ func (r AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesS
 }
 
 // Type of wire transfer
-type AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireTransferType string
+type AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireNetwork string
 
 const (
-	AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireTransferTypeFedwire AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireTransferType = "FEDWIRE"
-	AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireTransferTypeSwift   AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireTransferType = "SWIFT"
+	AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireNetworkFedwire AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireNetwork = "FEDWIRE"
+	AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireNetworkSwift   AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireNetwork = "SWIFT"
 )
 
-func (r AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireTransferType) IsKnown() bool {
+func (r AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireNetwork) IsKnown() bool {
 	switch r {
-	case AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireTransferTypeFedwire, AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireTransferTypeSwift:
+	case AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireNetworkFedwire, AccountActivityGetTransactionResponsePaymentTransactionMethodAttributesWireNetworkSwift:
 		return true
 	}
 	return false
@@ -3395,6 +3414,27 @@ const (
 func (r AccountActivityGetTransactionResponsePaymentTransactionStatus) IsKnown() bool {
 	switch r {
 	case AccountActivityGetTransactionResponsePaymentTransactionStatusPending, AccountActivityGetTransactionResponsePaymentTransactionStatusSettled, AccountActivityGetTransactionResponsePaymentTransactionStatusDeclined, AccountActivityGetTransactionResponsePaymentTransactionStatusReversed, AccountActivityGetTransactionResponsePaymentTransactionStatusCanceled:
+		return true
+	}
+	return false
+}
+
+type AccountActivityGetTransactionResponsePaymentTransactionType string
+
+const (
+	AccountActivityGetTransactionResponsePaymentTransactionTypeOriginationCredit   AccountActivityGetTransactionResponsePaymentTransactionType = "ORIGINATION_CREDIT"
+	AccountActivityGetTransactionResponsePaymentTransactionTypeOriginationDebit    AccountActivityGetTransactionResponsePaymentTransactionType = "ORIGINATION_DEBIT"
+	AccountActivityGetTransactionResponsePaymentTransactionTypeReceiptCredit       AccountActivityGetTransactionResponsePaymentTransactionType = "RECEIPT_CREDIT"
+	AccountActivityGetTransactionResponsePaymentTransactionTypeReceiptDebit        AccountActivityGetTransactionResponsePaymentTransactionType = "RECEIPT_DEBIT"
+	AccountActivityGetTransactionResponsePaymentTransactionTypeWireInboundPayment  AccountActivityGetTransactionResponsePaymentTransactionType = "WIRE_INBOUND_PAYMENT"
+	AccountActivityGetTransactionResponsePaymentTransactionTypeWireInboundAdmin    AccountActivityGetTransactionResponsePaymentTransactionType = "WIRE_INBOUND_ADMIN"
+	AccountActivityGetTransactionResponsePaymentTransactionTypeWireOutboundPayment AccountActivityGetTransactionResponsePaymentTransactionType = "WIRE_OUTBOUND_PAYMENT"
+	AccountActivityGetTransactionResponsePaymentTransactionTypeWireOutboundAdmin   AccountActivityGetTransactionResponsePaymentTransactionType = "WIRE_OUTBOUND_ADMIN"
+)
+
+func (r AccountActivityGetTransactionResponsePaymentTransactionType) IsKnown() bool {
+	switch r {
+	case AccountActivityGetTransactionResponsePaymentTransactionTypeOriginationCredit, AccountActivityGetTransactionResponsePaymentTransactionTypeOriginationDebit, AccountActivityGetTransactionResponsePaymentTransactionTypeReceiptCredit, AccountActivityGetTransactionResponsePaymentTransactionTypeReceiptDebit, AccountActivityGetTransactionResponsePaymentTransactionTypeWireInboundPayment, AccountActivityGetTransactionResponsePaymentTransactionTypeWireInboundAdmin, AccountActivityGetTransactionResponsePaymentTransactionTypeWireOutboundPayment, AccountActivityGetTransactionResponsePaymentTransactionTypeWireOutboundAdmin:
 		return true
 	}
 	return false
@@ -3585,6 +3625,27 @@ const (
 func (r AccountActivityGetTransactionResponseSource) IsKnown() bool {
 	switch r {
 	case AccountActivityGetTransactionResponseSourceLithic, AccountActivityGetTransactionResponseSourceExternal, AccountActivityGetTransactionResponseSourceCustomer:
+		return true
+	}
+	return false
+}
+
+type AccountActivityGetTransactionResponseType string
+
+const (
+	AccountActivityGetTransactionResponseTypeOriginationCredit   AccountActivityGetTransactionResponseType = "ORIGINATION_CREDIT"
+	AccountActivityGetTransactionResponseTypeOriginationDebit    AccountActivityGetTransactionResponseType = "ORIGINATION_DEBIT"
+	AccountActivityGetTransactionResponseTypeReceiptCredit       AccountActivityGetTransactionResponseType = "RECEIPT_CREDIT"
+	AccountActivityGetTransactionResponseTypeReceiptDebit        AccountActivityGetTransactionResponseType = "RECEIPT_DEBIT"
+	AccountActivityGetTransactionResponseTypeWireInboundPayment  AccountActivityGetTransactionResponseType = "WIRE_INBOUND_PAYMENT"
+	AccountActivityGetTransactionResponseTypeWireInboundAdmin    AccountActivityGetTransactionResponseType = "WIRE_INBOUND_ADMIN"
+	AccountActivityGetTransactionResponseTypeWireOutboundPayment AccountActivityGetTransactionResponseType = "WIRE_OUTBOUND_PAYMENT"
+	AccountActivityGetTransactionResponseTypeWireOutboundAdmin   AccountActivityGetTransactionResponseType = "WIRE_OUTBOUND_ADMIN"
+)
+
+func (r AccountActivityGetTransactionResponseType) IsKnown() bool {
+	switch r {
+	case AccountActivityGetTransactionResponseTypeOriginationCredit, AccountActivityGetTransactionResponseTypeOriginationDebit, AccountActivityGetTransactionResponseTypeReceiptCredit, AccountActivityGetTransactionResponseTypeReceiptDebit, AccountActivityGetTransactionResponseTypeWireInboundPayment, AccountActivityGetTransactionResponseTypeWireInboundAdmin, AccountActivityGetTransactionResponseTypeWireOutboundPayment, AccountActivityGetTransactionResponseTypeWireOutboundAdmin:
 		return true
 	}
 	return false

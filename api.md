@@ -713,6 +713,7 @@ Methods:
 
 Response Types:
 
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#WirePartyDetails">WirePartyDetails</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountActivityListResponse">AccountActivityListResponse</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountActivityGetTransactionResponse">AccountActivityGetTransactionResponse</a>
 
