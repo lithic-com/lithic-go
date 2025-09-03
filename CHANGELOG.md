@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.89.2 (2025-09-03)
+
+Full Changelog: [v0.89.1...v0.89.2](https://github.com/lithic-com/lithic-go/compare/v0.89.1...v0.89.2)
+
+### Bug Fixes
+
+* remove null from release please manifest ([f358d4c](https://github.com/lithic-com/lithic-go/commit/f358d4c7b879a0031987b1e317567fdf3312f67b))
+* use release please annotations on more places ([d918998](https://github.com/lithic-com/lithic-go/commit/d918998ab927613d18db59e53f472725d64d3cf0))
+
 ## 0.89.1 (2025-08-28)
 
 Full Changelog: [v0.89.0...v0.89.1](https://github.com/lithic-com/lithic-go/compare/v0.89.0...v0.89.1)
