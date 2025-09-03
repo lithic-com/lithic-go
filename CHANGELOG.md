@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.90.0 (2025-09-03)
+
+Full Changelog: [v0.89.2...v0.90.0](https://github.com/lithic-com/lithic-go/compare/v0.89.2...v0.90.0)
+
+### Features
+
+* **api:** adds support for delegated KYB onboarding and more device details in 3DS Authentications ([70a2e68](https://github.com/lithic-com/lithic-go/commit/70a2e680b52c8bc366a5f628ca7d2caed5982a8b))
+
 ## 0.89.2 (2025-09-03)
 
 Full Changelog: [v0.89.1...v0.89.2](https://github.com/lithic-com/lithic-go/compare/v0.89.1...v0.89.2)
