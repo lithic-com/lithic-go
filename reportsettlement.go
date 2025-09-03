@@ -72,7 +72,7 @@ type ReportSettlementListDetailsParams struct {
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string] `query:"ending_before"`
-	// Page size (for pagination).
+	// Number of records per page.
 	PageSize param.Field[int64] `query:"page_size"`
 	// A cursor representing an item's token after which a page of results should
 	// begin. Used to retrieve the next page of results after this item.

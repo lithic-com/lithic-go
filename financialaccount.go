@@ -271,21 +271,21 @@ func (r FinancialAccountStatus) IsKnown() bool {
 type FinancialAccountType string
 
 const (
-	FinancialAccountTypeIssuing             FinancialAccountType = "ISSUING"
-	FinancialAccountTypeReserve             FinancialAccountType = "RESERVE"
-	FinancialAccountTypeOperating           FinancialAccountType = "OPERATING"
-	FinancialAccountTypeChargedOffFees      FinancialAccountType = "CHARGED_OFF_FEES"
-	FinancialAccountTypeChargedOffInterest  FinancialAccountType = "CHARGED_OFF_INTEREST"
-	FinancialAccountTypeChargedOffPrincipal FinancialAccountType = "CHARGED_OFF_PRINCIPAL"
-	FinancialAccountTypeSecurity            FinancialAccountType = "SECURITY"
-	FinancialAccountTypeProgramReceivables  FinancialAccountType = "PROGRAM_RECEIVABLES"
-	FinancialAccountTypeCollection          FinancialAccountType = "COLLECTION"
-	FinancialAccountTypeBankAccountsPayable FinancialAccountType = "BANK_ACCOUNTS_PAYABLE"
+	FinancialAccountTypeIssuing                    FinancialAccountType = "ISSUING"
+	FinancialAccountTypeReserve                    FinancialAccountType = "RESERVE"
+	FinancialAccountTypeOperating                  FinancialAccountType = "OPERATING"
+	FinancialAccountTypeChargedOffFees             FinancialAccountType = "CHARGED_OFF_FEES"
+	FinancialAccountTypeChargedOffInterest         FinancialAccountType = "CHARGED_OFF_INTEREST"
+	FinancialAccountTypeChargedOffPrincipal        FinancialAccountType = "CHARGED_OFF_PRINCIPAL"
+	FinancialAccountTypeSecurity                   FinancialAccountType = "SECURITY"
+	FinancialAccountTypeProgramReceivables         FinancialAccountType = "PROGRAM_RECEIVABLES"
+	FinancialAccountTypeCollection                 FinancialAccountType = "COLLECTION"
+	FinancialAccountTypeProgramBankAccountsPayable FinancialAccountType = "PROGRAM_BANK_ACCOUNTS_PAYABLE"
 )
 
 func (r FinancialAccountType) IsKnown() bool {
 	switch r {
-	case FinancialAccountTypeIssuing, FinancialAccountTypeReserve, FinancialAccountTypeOperating, FinancialAccountTypeChargedOffFees, FinancialAccountTypeChargedOffInterest, FinancialAccountTypeChargedOffPrincipal, FinancialAccountTypeSecurity, FinancialAccountTypeProgramReceivables, FinancialAccountTypeCollection, FinancialAccountTypeBankAccountsPayable:
+	case FinancialAccountTypeIssuing, FinancialAccountTypeReserve, FinancialAccountTypeOperating, FinancialAccountTypeChargedOffFees, FinancialAccountTypeChargedOffInterest, FinancialAccountTypeChargedOffPrincipal, FinancialAccountTypeSecurity, FinancialAccountTypeProgramReceivables, FinancialAccountTypeCollection, FinancialAccountTypeProgramBankAccountsPayable:
 		return true
 	}
 	return false

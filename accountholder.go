@@ -2753,8 +2753,6 @@ func (r AccountHolderNewParams) MarshalJSON() (data []byte, err error) {
 }
 
 type AccountHolderNewParamsBody struct {
-	// Specifies the type of KYB workflow to run.
-	Workflow param.Field[AccountHolderNewParamsBodyWorkflow] `json:"workflow,required"`
 	// KYC Exempt user's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
 	Address                    param.Field[shared.AddressParam] `json:"address"`
@@ -2799,6 +2797,8 @@ type AccountHolderNewParamsBody struct {
 	TosTimestamp param.Field[string] `json:"tos_timestamp"`
 	// Company website URL.
 	WebsiteURL param.Field[string] `json:"website_url"`
+	// Specifies the type of KYB workflow to run.
+	Workflow param.Field[AccountHolderNewParamsBodyWorkflow] `json:"workflow"`
 }
 
 func (r AccountHolderNewParamsBody) MarshalJSON() (data []byte, err error) {
@@ -2807,26 +2807,149 @@ func (r AccountHolderNewParamsBody) MarshalJSON() (data []byte, err error) {
 
 func (r AccountHolderNewParamsBody) implementsAccountHolderNewParamsBodyUnion() {}
 
-// Satisfied by [KYBParam], [KYCParam], [KYCExemptParam],
-// [AccountHolderNewParamsBody].
+// Satisfied by [KYBParam], [AccountHolderNewParamsBodyKYBDelegated], [KYCParam],
+// [KYCExemptParam], [AccountHolderNewParamsBody].
 type AccountHolderNewParamsBodyUnion interface {
 	implementsAccountHolderNewParamsBodyUnion()
 }
 
+type AccountHolderNewParamsBodyKYBDelegated struct {
+	// Information for business for which the account is being opened.
+	BusinessEntity param.Field[AccountHolderNewParamsBodyKYBDelegatedBusinessEntity] `json:"business_entity,required"`
+	// You can submit a list of all direct and indirect individuals with 25% or more
+	// ownership in the company. A maximum of 4 beneficial owners can be submitted. If
+	// no individual owns 25% of the company you do not need to send beneficial owner
+	// information. See
+	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
+	// (Section I) for more background on individuals that should be included.
+	BeneficialOwnerIndividuals param.Field[[]AccountHolderNewParamsBodyKYBDelegatedBeneficialOwnerIndividual] `json:"beneficial_owner_individuals"`
+	// An individual with significant responsibility for managing the legal entity
+	// (e.g., a Chief Executive Officer, Chief Financial Officer, Chief Operating
+	// Officer, Managing Member, General Partner, President, Vice President, or
+	// Treasurer). This can be an executive, or someone who will have program-wide
+	// access to the cards that Lithic will provide. In some cases, this individual
+	// could also be a beneficial owner listed above. See
+	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
+	// (Section II) for more background.
+	ControlPerson param.Field[AccountHolderNewParamsBodyKYBDelegatedControlPerson] `json:"control_person"`
+	// A user provided id that can be used to link an account holder with an external
+	// system
+	ExternalID param.Field[string] `json:"external_id"`
+	// Short description of the company's line of business (i.e., what does the company
+	// do?).
+	NatureOfBusiness param.Field[string] `json:"nature_of_business"`
+	// An RFC 3339 timestamp indicating when the account holder accepted the applicable
+	// legal agreements (e.g., cardholder terms) as agreed upon during API customer's
+	// implementation with Lithic.
+	TosTimestamp param.Field[string] `json:"tos_timestamp"`
+	// Company website URL.
+	WebsiteURL param.Field[string] `json:"website_url"`
+	// Specifies the type of KYB workflow to run.
+	Workflow param.Field[AccountHolderNewParamsBodyKYBDelegatedWorkflow] `json:"workflow"`
+}
+
+func (r AccountHolderNewParamsBodyKYBDelegated) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AccountHolderNewParamsBodyKYBDelegated) implementsAccountHolderNewParamsBodyUnion() {}
+
+// Information for business for which the account is being opened.
+type AccountHolderNewParamsBodyKYBDelegatedBusinessEntity struct {
+	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable.
+	Address param.Field[shared.AddressParam] `json:"address,required"`
+	// Legal (formal) business name.
+	LegalBusinessName param.Field[string] `json:"legal_business_name,required"`
+	// Any name that the business operates under that is not its legal business name
+	// (if applicable).
+	DbaBusinessName param.Field[string] `json:"dba_business_name"`
+	// Government-issued identification number. US Federal Employer Identification
+	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
+	// without hyphens.
+	GovernmentID param.Field[string] `json:"government_id"`
+	// Parent company name (if applicable).
+	ParentCompany param.Field[string] `json:"parent_company"`
+	// One or more of the business's phone number(s), entered as a list in E.164
+	// format.
+	PhoneNumbers param.Field[[]string] `json:"phone_numbers"`
+}
+
+func (r AccountHolderNewParamsBodyKYBDelegatedBusinessEntity) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// Individuals associated with a KYB application. Phone number is optional.
+type AccountHolderNewParamsBodyKYBDelegatedBeneficialOwnerIndividual struct {
+	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
+	Address param.Field[shared.AddressParam] `json:"address,required"`
+	// Individual's date of birth, as an RFC 3339 date.
+	Dob param.Field[string] `json:"dob,required"`
+	// Individual's email address. If utilizing Lithic for chargeback processing, this
+	// customer email address may be used to communicate dispute status and resolution.
+	Email param.Field[string] `json:"email,required"`
+	// Individual's first name, as it appears on government-issued identity documents.
+	FirstName param.Field[string] `json:"first_name,required"`
+	// Government-issued identification number (required for identity verification and
+	// compliance with banking regulations). Social Security Numbers (SSN) and
+	// Individual Taxpayer Identification Numbers (ITIN) are currently supported,
+	// entered as full nine-digits, with or without hyphens
+	GovernmentID param.Field[string] `json:"government_id,required"`
+	// Individual's last name, as it appears on government-issued identity documents.
+	LastName param.Field[string] `json:"last_name,required"`
+	// Individual's phone number, entered in E.164 format.
+	PhoneNumber param.Field[string] `json:"phone_number"`
+}
+
+func (r AccountHolderNewParamsBodyKYBDelegatedBeneficialOwnerIndividual) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// An individual with significant responsibility for managing the legal entity
+// (e.g., a Chief Executive Officer, Chief Financial Officer, Chief Operating
+// Officer, Managing Member, General Partner, President, Vice President, or
+// Treasurer). This can be an executive, or someone who will have program-wide
+// access to the cards that Lithic will provide. In some cases, this individual
+// could also be a beneficial owner listed above. See
+// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
+// (Section II) for more background.
+type AccountHolderNewParamsBodyKYBDelegatedControlPerson struct {
+	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
+	Address param.Field[shared.AddressParam] `json:"address,required"`
+	// Individual's date of birth, as an RFC 3339 date.
+	Dob param.Field[string] `json:"dob,required"`
+	// Individual's email address. If utilizing Lithic for chargeback processing, this
+	// customer email address may be used to communicate dispute status and resolution.
+	Email param.Field[string] `json:"email,required"`
+	// Individual's first name, as it appears on government-issued identity documents.
+	FirstName param.Field[string] `json:"first_name,required"`
+	// Government-issued identification number (required for identity verification and
+	// compliance with banking regulations). Social Security Numbers (SSN) and
+	// Individual Taxpayer Identification Numbers (ITIN) are currently supported,
+	// entered as full nine-digits, with or without hyphens
+	GovernmentID param.Field[string] `json:"government_id,required"`
+	// Individual's last name, as it appears on government-issued identity documents.
+	LastName param.Field[string] `json:"last_name,required"`
+	// Individual's phone number, entered in E.164 format.
+	PhoneNumber param.Field[string] `json:"phone_number"`
+}
+
+func (r AccountHolderNewParamsBodyKYBDelegatedControlPerson) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
 // Specifies the type of KYB workflow to run.
-type AccountHolderNewParamsBodyWorkflow string
+type AccountHolderNewParamsBodyKYBDelegatedWorkflow string
 
 const (
-	AccountHolderNewParamsBodyWorkflowKYBBasic  AccountHolderNewParamsBodyWorkflow = "KYB_BASIC"
-	AccountHolderNewParamsBodyWorkflowKYBByo    AccountHolderNewParamsBodyWorkflow = "KYB_BYO"
-	AccountHolderNewParamsBodyWorkflowKYCBasic  AccountHolderNewParamsBodyWorkflow = "KYC_BASIC"
-	AccountHolderNewParamsBodyWorkflowKYCByo    AccountHolderNewParamsBodyWorkflow = "KYC_BYO"
-	AccountHolderNewParamsBodyWorkflowKYCExempt AccountHolderNewParamsBodyWorkflow = "KYC_EXEMPT"
+	AccountHolderNewParamsBodyKYBDelegatedWorkflowKYBDelegated AccountHolderNewParamsBodyKYBDelegatedWorkflow = "KYB_DELEGATED"
 )
 
-func (r AccountHolderNewParamsBodyWorkflow) IsKnown() bool {
+func (r AccountHolderNewParamsBodyKYBDelegatedWorkflow) IsKnown() bool {
 	switch r {
-	case AccountHolderNewParamsBodyWorkflowKYBBasic, AccountHolderNewParamsBodyWorkflowKYBByo, AccountHolderNewParamsBodyWorkflowKYCBasic, AccountHolderNewParamsBodyWorkflowKYCByo, AccountHolderNewParamsBodyWorkflowKYCExempt:
+	case AccountHolderNewParamsBodyKYBDelegatedWorkflowKYBDelegated:
 		return true
 	}
 	return false
@@ -2843,6 +2966,26 @@ const (
 func (r AccountHolderNewParamsBodyKYCExemptionType) IsKnown() bool {
 	switch r {
 	case AccountHolderNewParamsBodyKYCExemptionTypeAuthorizedUser, AccountHolderNewParamsBodyKYCExemptionTypePrepaidCardUser:
+		return true
+	}
+	return false
+}
+
+// Specifies the type of KYB workflow to run.
+type AccountHolderNewParamsBodyWorkflow string
+
+const (
+	AccountHolderNewParamsBodyWorkflowKYBBasic     AccountHolderNewParamsBodyWorkflow = "KYB_BASIC"
+	AccountHolderNewParamsBodyWorkflowKYBByo       AccountHolderNewParamsBodyWorkflow = "KYB_BYO"
+	AccountHolderNewParamsBodyWorkflowKYBDelegated AccountHolderNewParamsBodyWorkflow = "KYB_DELEGATED"
+	AccountHolderNewParamsBodyWorkflowKYCBasic     AccountHolderNewParamsBodyWorkflow = "KYC_BASIC"
+	AccountHolderNewParamsBodyWorkflowKYCByo       AccountHolderNewParamsBodyWorkflow = "KYC_BYO"
+	AccountHolderNewParamsBodyWorkflowKYCExempt    AccountHolderNewParamsBodyWorkflow = "KYC_EXEMPT"
+)
+
+func (r AccountHolderNewParamsBodyWorkflow) IsKnown() bool {
+	switch r {
+	case AccountHolderNewParamsBodyWorkflowKYBBasic, AccountHolderNewParamsBodyWorkflowKYBByo, AccountHolderNewParamsBodyWorkflowKYBDelegated, AccountHolderNewParamsBodyWorkflowKYCBasic, AccountHolderNewParamsBodyWorkflowKYCByo, AccountHolderNewParamsBodyWorkflowKYCExempt:
 		return true
 	}
 	return false
