@@ -325,17 +325,21 @@ func (r authRuleConditionJSON) RawJSON() string {
 type AuthRuleConditionOperation string
 
 const (
-	AuthRuleConditionOperationIsOneOf       AuthRuleConditionOperation = "IS_ONE_OF"
-	AuthRuleConditionOperationIsNotOneOf    AuthRuleConditionOperation = "IS_NOT_ONE_OF"
-	AuthRuleConditionOperationMatches       AuthRuleConditionOperation = "MATCHES"
-	AuthRuleConditionOperationDoesNotMatch  AuthRuleConditionOperation = "DOES_NOT_MATCH"
-	AuthRuleConditionOperationIsGreaterThan AuthRuleConditionOperation = "IS_GREATER_THAN"
-	AuthRuleConditionOperationIsLessThan    AuthRuleConditionOperation = "IS_LESS_THAN"
+	AuthRuleConditionOperationIsOneOf                AuthRuleConditionOperation = "IS_ONE_OF"
+	AuthRuleConditionOperationIsNotOneOf             AuthRuleConditionOperation = "IS_NOT_ONE_OF"
+	AuthRuleConditionOperationMatches                AuthRuleConditionOperation = "MATCHES"
+	AuthRuleConditionOperationDoesNotMatch           AuthRuleConditionOperation = "DOES_NOT_MATCH"
+	AuthRuleConditionOperationIsEqualTo              AuthRuleConditionOperation = "IS_EQUAL_TO"
+	AuthRuleConditionOperationIsNotEqualTo           AuthRuleConditionOperation = "IS_NOT_EQUAL_TO"
+	AuthRuleConditionOperationIsGreaterThan          AuthRuleConditionOperation = "IS_GREATER_THAN"
+	AuthRuleConditionOperationIsGreaterThanOrEqualTo AuthRuleConditionOperation = "IS_GREATER_THAN_OR_EQUAL_TO"
+	AuthRuleConditionOperationIsLessThan             AuthRuleConditionOperation = "IS_LESS_THAN"
+	AuthRuleConditionOperationIsLessThanOrEqualTo    AuthRuleConditionOperation = "IS_LESS_THAN_OR_EQUAL_TO"
 )
 
 func (r AuthRuleConditionOperation) IsKnown() bool {
 	switch r {
-	case AuthRuleConditionOperationIsOneOf, AuthRuleConditionOperationIsNotOneOf, AuthRuleConditionOperationMatches, AuthRuleConditionOperationDoesNotMatch, AuthRuleConditionOperationIsGreaterThan, AuthRuleConditionOperationIsLessThan:
+	case AuthRuleConditionOperationIsOneOf, AuthRuleConditionOperationIsNotOneOf, AuthRuleConditionOperationMatches, AuthRuleConditionOperationDoesNotMatch, AuthRuleConditionOperationIsEqualTo, AuthRuleConditionOperationIsNotEqualTo, AuthRuleConditionOperationIsGreaterThan, AuthRuleConditionOperationIsGreaterThanOrEqualTo, AuthRuleConditionOperationIsLessThan, AuthRuleConditionOperationIsLessThanOrEqualTo:
 		return true
 	}
 	return false
@@ -607,17 +611,21 @@ func (r Conditional3DSActionParametersConditionsAttribute) IsKnown() bool {
 type Conditional3DSActionParametersConditionsOperation string
 
 const (
-	Conditional3DSActionParametersConditionsOperationIsOneOf       Conditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
-	Conditional3DSActionParametersConditionsOperationIsNotOneOf    Conditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
-	Conditional3DSActionParametersConditionsOperationMatches       Conditional3DSActionParametersConditionsOperation = "MATCHES"
-	Conditional3DSActionParametersConditionsOperationDoesNotMatch  Conditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
-	Conditional3DSActionParametersConditionsOperationIsGreaterThan Conditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
-	Conditional3DSActionParametersConditionsOperationIsLessThan    Conditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+	Conditional3DSActionParametersConditionsOperationIsOneOf                Conditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
+	Conditional3DSActionParametersConditionsOperationIsNotOneOf             Conditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
+	Conditional3DSActionParametersConditionsOperationMatches                Conditional3DSActionParametersConditionsOperation = "MATCHES"
+	Conditional3DSActionParametersConditionsOperationDoesNotMatch           Conditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
+	Conditional3DSActionParametersConditionsOperationIsEqualTo              Conditional3DSActionParametersConditionsOperation = "IS_EQUAL_TO"
+	Conditional3DSActionParametersConditionsOperationIsNotEqualTo           Conditional3DSActionParametersConditionsOperation = "IS_NOT_EQUAL_TO"
+	Conditional3DSActionParametersConditionsOperationIsGreaterThan          Conditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
+	Conditional3DSActionParametersConditionsOperationIsGreaterThanOrEqualTo Conditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN_OR_EQUAL_TO"
+	Conditional3DSActionParametersConditionsOperationIsLessThan             Conditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
+	Conditional3DSActionParametersConditionsOperationIsLessThanOrEqualTo    Conditional3DSActionParametersConditionsOperation = "IS_LESS_THAN_OR_EQUAL_TO"
 )
 
 func (r Conditional3DSActionParametersConditionsOperation) IsKnown() bool {
 	switch r {
-	case Conditional3DSActionParametersConditionsOperationIsOneOf, Conditional3DSActionParametersConditionsOperationIsNotOneOf, Conditional3DSActionParametersConditionsOperationMatches, Conditional3DSActionParametersConditionsOperationDoesNotMatch, Conditional3DSActionParametersConditionsOperationIsGreaterThan, Conditional3DSActionParametersConditionsOperationIsLessThan:
+	case Conditional3DSActionParametersConditionsOperationIsOneOf, Conditional3DSActionParametersConditionsOperationIsNotOneOf, Conditional3DSActionParametersConditionsOperationMatches, Conditional3DSActionParametersConditionsOperationDoesNotMatch, Conditional3DSActionParametersConditionsOperationIsEqualTo, Conditional3DSActionParametersConditionsOperationIsNotEqualTo, Conditional3DSActionParametersConditionsOperationIsGreaterThan, Conditional3DSActionParametersConditionsOperationIsGreaterThanOrEqualTo, Conditional3DSActionParametersConditionsOperationIsLessThan, Conditional3DSActionParametersConditionsOperationIsLessThanOrEqualTo:
 		return true
 	}
 	return false

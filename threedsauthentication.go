@@ -669,22 +669,48 @@ func (r ThreeDSAuthenticationGetResponseAdditionalDataNetworkDecision) IsKnown()
 // Object containing data about the app used in the e-commerce transaction. Present
 // if the channel is 'APP_BASED'.
 type ThreeDSAuthenticationGetResponseApp struct {
-	// Device information gathered from the cardholder's device - JSON name/value pairs
-	// that is Base64url encoded. Maps to EMV 3DS field `deviceInfo`.
+	// Device model: e.g. "Apple iPhone 16".
+	Device string `json:"device,nullable"`
+	// Raw device information - base64-encoded JSON object. Maps to EMV 3DS field
+	// `deviceInfo`.
 	DeviceInfo string `json:"device_info,nullable"`
-	// External IP address used by the app generating the 3DS authentication request.
-	// Maps to EMV 3DS field `appIp`.
-	Ip   string                                  `json:"ip"`
-	JSON threeDSAuthenticationGetResponseAppJSON `json:"-"`
+	// IP address of the device.
+	Ip string `json:"ip"`
+	// Latitude coordinate of current device location.
+	Latitude float64 `json:"latitude,nullable"`
+	// Device locale: e.g. "en-US".
+	Locale string `json:"locale,nullable"`
+	// Longitude coordinate of current device location.
+	Longitude float64 `json:"longitude,nullable"`
+	// Operating System: e.g. "Android 12", "iOS 17.1".
+	Os string `json:"os,nullable"`
+	// Device platform: Android, iOS, Windows, etc.
+	Platform string `json:"platform,nullable"`
+	// Screen height in pixels.
+	ScreenHeight int64 `json:"screen_height,nullable"`
+	// Screen width in pixels.
+	ScreenWidth int64 `json:"screen_width,nullable"`
+	// Time zone offset in minutes between UTC and device local time.
+	TimeZone string                                  `json:"time_zone,nullable"`
+	JSON     threeDSAuthenticationGetResponseAppJSON `json:"-"`
 }
 
 // threeDSAuthenticationGetResponseAppJSON contains the JSON metadata for the
 // struct [ThreeDSAuthenticationGetResponseApp]
 type threeDSAuthenticationGetResponseAppJSON struct {
-	DeviceInfo  apijson.Field
-	Ip          apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+	Device       apijson.Field
+	DeviceInfo   apijson.Field
+	Ip           apijson.Field
+	Latitude     apijson.Field
+	Locale       apijson.Field
+	Longitude    apijson.Field
+	Os           apijson.Field
+	Platform     apijson.Field
+	ScreenHeight apijson.Field
+	ScreenWidth  apijson.Field
+	TimeZone     apijson.Field
+	raw          string
+	ExtraFields  map[string]apijson.Field
 }
 
 func (r *ThreeDSAuthenticationGetResponseApp) UnmarshalJSON(data []byte) (err error) {
@@ -739,9 +765,8 @@ type ThreeDSAuthenticationGetResponseBrowser struct {
 	// Language of the cardholder's browser as defined in IETF BCP47. Maps to EMV 3DS
 	// field `browserLanguage`.
 	Language string `json:"language,nullable"`
-	// Time zone of the cardholder's browser offset in minutes between UTC and the
-	// cardholder browser's local time. The offset is positive if the local time is
-	// behind UTC and negative if it is ahead. Maps to EMV 3DS field `browserTz`.
+	// Time zone offset in minutes between UTC and browser local time. Maps to EMV 3DS
+	// field `browserTz`.
 	TimeZone string `json:"time_zone,nullable"`
 	// Content of the HTTP user-agent header. Maps to EMV 3DS field `browserUserAgent`.
 	UserAgent string                                      `json:"user_agent,nullable"`
