@@ -391,32 +391,34 @@ func (r ThreeDSAuthenticationGetResponseChannel) IsKnown() bool {
 // Object containing data about the merchant involved in the e-commerce
 // transaction.
 type ThreeDSAuthenticationGetResponseMerchant struct {
-	// Merchant identifier as assigned by the acquirer. Maps to EMV 3DS field
-	// `acquirerMerchantId`.
-	ID string `json:"id,required"`
-	// Country code of the merchant requesting 3DS authentication. Maps to EMV 3DS
-	// field `merchantCountryCode`. Permitted values: ISO 3166-1 alpha-3 country code
-	// (e.g., USA).
-	Country string `json:"country,required"`
-	// Merchant category code assigned to the merchant that describes its business
-	// activity type. Maps to EMV 3DS field `mcc`.
-	Mcc string `json:"mcc,required"`
-	// Name of the merchant. Maps to EMV 3DS field `merchantName`.
-	Name string `json:"name,required"`
 	// Object containing additional data indicating additional risk factors related to
 	// the e-commerce transaction.
 	RiskIndicator ThreeDSAuthenticationGetResponseMerchantRiskIndicator `json:"risk_indicator,required"`
-	JSON          threeDSAuthenticationGetResponseMerchantJSON          `json:"-"`
+	// Merchant identifier as assigned by the acquirer. Maps to EMV 3DS field
+	// `acquirerMerchantId`. May not be present for non-payment authentications.
+	ID string `json:"id,nullable"`
+	// Country code of the merchant requesting 3DS authentication. Maps to EMV 3DS
+	// field `merchantCountryCode`. Permitted values: ISO 3166-1 alpha-3 country code
+	// (e.g., USA). May not be present for non-payment authentications.
+	Country string `json:"country,nullable"`
+	// Merchant category code assigned to the merchant that describes its business
+	// activity type. Maps to EMV 3DS field `mcc`. May not be present for non-payment
+	// authentications.
+	Mcc string `json:"mcc,nullable"`
+	// Name of the merchant. Maps to EMV 3DS field `merchantName`. May not be present
+	// for non-payment authentications.
+	Name string                                       `json:"name,nullable"`
+	JSON threeDSAuthenticationGetResponseMerchantJSON `json:"-"`
 }
 
 // threeDSAuthenticationGetResponseMerchantJSON contains the JSON metadata for the
 // struct [ThreeDSAuthenticationGetResponseMerchant]
 type threeDSAuthenticationGetResponseMerchantJSON struct {
+	RiskIndicator apijson.Field
 	ID            apijson.Field
 	Country       apijson.Field
 	Mcc           apijson.Field
 	Name          apijson.Field
-	RiskIndicator apijson.Field
 	raw           string
 	ExtraFields   map[string]apijson.Field
 }

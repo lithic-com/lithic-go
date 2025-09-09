@@ -1804,6 +1804,7 @@ type AccountActivityListResponseResult string
 const (
 	AccountActivityListResponseResultApproved                    AccountActivityListResponseResult = "APPROVED"
 	AccountActivityListResponseResultDeclined                    AccountActivityListResponseResult = "DECLINED"
+	AccountActivityListResponseResultAccountPaused               AccountActivityListResponseResult = "ACCOUNT_PAUSED"
 	AccountActivityListResponseResultAccountStateTransactionFail AccountActivityListResponseResult = "ACCOUNT_STATE_TRANSACTION_FAIL"
 	AccountActivityListResponseResultBankConnectionError         AccountActivityListResponseResult = "BANK_CONNECTION_ERROR"
 	AccountActivityListResponseResultBankNotVerified             AccountActivityListResponseResult = "BANK_NOT_VERIFIED"
@@ -1829,7 +1830,7 @@ const (
 
 func (r AccountActivityListResponseResult) IsKnown() bool {
 	switch r {
-	case AccountActivityListResponseResultApproved, AccountActivityListResponseResultDeclined, AccountActivityListResponseResultAccountStateTransactionFail, AccountActivityListResponseResultBankConnectionError, AccountActivityListResponseResultBankNotVerified, AccountActivityListResponseResultCardClosed, AccountActivityListResponseResultCardPaused, AccountActivityListResponseResultFraudAdvice, AccountActivityListResponseResultIgnoredTtlExpiry, AccountActivityListResponseResultInactiveAccount, AccountActivityListResponseResultIncorrectPin, AccountActivityListResponseResultInvalidCardDetails, AccountActivityListResponseResultInsufficientFunds, AccountActivityListResponseResultInsufficientFundsPreload, AccountActivityListResponseResultInvalidTransaction, AccountActivityListResponseResultMerchantBlacklist, AccountActivityListResponseResultOriginalNotFound, AccountActivityListResponseResultPreviouslyCompleted, AccountActivityListResponseResultSingleUseRecharged, AccountActivityListResponseResultSwitchInoperativeAdvice, AccountActivityListResponseResultUnauthorizedMerchant, AccountActivityListResponseResultUnknownHostTimeout, AccountActivityListResponseResultUserTransactionLimit:
+	case AccountActivityListResponseResultApproved, AccountActivityListResponseResultDeclined, AccountActivityListResponseResultAccountPaused, AccountActivityListResponseResultAccountStateTransactionFail, AccountActivityListResponseResultBankConnectionError, AccountActivityListResponseResultBankNotVerified, AccountActivityListResponseResultCardClosed, AccountActivityListResponseResultCardPaused, AccountActivityListResponseResultFraudAdvice, AccountActivityListResponseResultIgnoredTtlExpiry, AccountActivityListResponseResultInactiveAccount, AccountActivityListResponseResultIncorrectPin, AccountActivityListResponseResultInvalidCardDetails, AccountActivityListResponseResultInsufficientFunds, AccountActivityListResponseResultInsufficientFundsPreload, AccountActivityListResponseResultInvalidTransaction, AccountActivityListResponseResultMerchantBlacklist, AccountActivityListResponseResultOriginalNotFound, AccountActivityListResponseResultPreviouslyCompleted, AccountActivityListResponseResultSingleUseRecharged, AccountActivityListResponseResultSwitchInoperativeAdvice, AccountActivityListResponseResultUnauthorizedMerchant, AccountActivityListResponseResultUnknownHostTimeout, AccountActivityListResponseResultUserTransactionLimit:
 		return true
 	}
 	return false
@@ -3582,6 +3583,7 @@ type AccountActivityGetTransactionResponseResult string
 const (
 	AccountActivityGetTransactionResponseResultApproved                    AccountActivityGetTransactionResponseResult = "APPROVED"
 	AccountActivityGetTransactionResponseResultDeclined                    AccountActivityGetTransactionResponseResult = "DECLINED"
+	AccountActivityGetTransactionResponseResultAccountPaused               AccountActivityGetTransactionResponseResult = "ACCOUNT_PAUSED"
 	AccountActivityGetTransactionResponseResultAccountStateTransactionFail AccountActivityGetTransactionResponseResult = "ACCOUNT_STATE_TRANSACTION_FAIL"
 	AccountActivityGetTransactionResponseResultBankConnectionError         AccountActivityGetTransactionResponseResult = "BANK_CONNECTION_ERROR"
 	AccountActivityGetTransactionResponseResultBankNotVerified             AccountActivityGetTransactionResponseResult = "BANK_NOT_VERIFIED"
@@ -3607,7 +3609,7 @@ const (
 
 func (r AccountActivityGetTransactionResponseResult) IsKnown() bool {
 	switch r {
-	case AccountActivityGetTransactionResponseResultApproved, AccountActivityGetTransactionResponseResultDeclined, AccountActivityGetTransactionResponseResultAccountStateTransactionFail, AccountActivityGetTransactionResponseResultBankConnectionError, AccountActivityGetTransactionResponseResultBankNotVerified, AccountActivityGetTransactionResponseResultCardClosed, AccountActivityGetTransactionResponseResultCardPaused, AccountActivityGetTransactionResponseResultFraudAdvice, AccountActivityGetTransactionResponseResultIgnoredTtlExpiry, AccountActivityGetTransactionResponseResultInactiveAccount, AccountActivityGetTransactionResponseResultIncorrectPin, AccountActivityGetTransactionResponseResultInvalidCardDetails, AccountActivityGetTransactionResponseResultInsufficientFunds, AccountActivityGetTransactionResponseResultInsufficientFundsPreload, AccountActivityGetTransactionResponseResultInvalidTransaction, AccountActivityGetTransactionResponseResultMerchantBlacklist, AccountActivityGetTransactionResponseResultOriginalNotFound, AccountActivityGetTransactionResponseResultPreviouslyCompleted, AccountActivityGetTransactionResponseResultSingleUseRecharged, AccountActivityGetTransactionResponseResultSwitchInoperativeAdvice, AccountActivityGetTransactionResponseResultUnauthorizedMerchant, AccountActivityGetTransactionResponseResultUnknownHostTimeout, AccountActivityGetTransactionResponseResultUserTransactionLimit:
+	case AccountActivityGetTransactionResponseResultApproved, AccountActivityGetTransactionResponseResultDeclined, AccountActivityGetTransactionResponseResultAccountPaused, AccountActivityGetTransactionResponseResultAccountStateTransactionFail, AccountActivityGetTransactionResponseResultBankConnectionError, AccountActivityGetTransactionResponseResultBankNotVerified, AccountActivityGetTransactionResponseResultCardClosed, AccountActivityGetTransactionResponseResultCardPaused, AccountActivityGetTransactionResponseResultFraudAdvice, AccountActivityGetTransactionResponseResultIgnoredTtlExpiry, AccountActivityGetTransactionResponseResultInactiveAccount, AccountActivityGetTransactionResponseResultIncorrectPin, AccountActivityGetTransactionResponseResultInvalidCardDetails, AccountActivityGetTransactionResponseResultInsufficientFunds, AccountActivityGetTransactionResponseResultInsufficientFundsPreload, AccountActivityGetTransactionResponseResultInvalidTransaction, AccountActivityGetTransactionResponseResultMerchantBlacklist, AccountActivityGetTransactionResponseResultOriginalNotFound, AccountActivityGetTransactionResponseResultPreviouslyCompleted, AccountActivityGetTransactionResponseResultSingleUseRecharged, AccountActivityGetTransactionResponseResultSwitchInoperativeAdvice, AccountActivityGetTransactionResponseResultUnauthorizedMerchant, AccountActivityGetTransactionResponseResultUnknownHostTimeout, AccountActivityGetTransactionResponseResultUserTransactionLimit:
 		return true
 	}
 	return false
@@ -3672,12 +3674,12 @@ type AccountActivityListParams struct {
 	// Page size (for pagination).
 	PageSize param.Field[int64] `query:"page_size"`
 	// Filter by transaction result
-	Result param.Field[[]AccountActivityListParamsResult] `query:"result"`
+	Result param.Field[AccountActivityListParamsResult] `query:"result"`
 	// A cursor representing an item's token after which a page of results should
 	// begin. Used to retrieve the next page of results after this item.
 	StartingAfter param.Field[string] `query:"starting_after"`
 	// Filter by transaction status
-	Status param.Field[[]AccountActivityListParamsStatus] `query:"status"`
+	Status param.Field[AccountActivityListParamsStatus] `query:"status"`
 }
 
 // URLQuery serializes [AccountActivityListParams]'s query parameters as
@@ -3716,6 +3718,7 @@ func (r AccountActivityListParamsCategory) IsKnown() bool {
 	return false
 }
 
+// Filter by transaction result
 type AccountActivityListParamsResult string
 
 const (
@@ -3731,21 +3734,22 @@ func (r AccountActivityListParamsResult) IsKnown() bool {
 	return false
 }
 
+// Filter by transaction status
 type AccountActivityListParamsStatus string
 
 const (
 	AccountActivityListParamsStatusDeclined AccountActivityListParamsStatus = "DECLINED"
 	AccountActivityListParamsStatusExpired  AccountActivityListParamsStatus = "EXPIRED"
 	AccountActivityListParamsStatusPending  AccountActivityListParamsStatus = "PENDING"
-	AccountActivityListParamsStatusSettled  AccountActivityListParamsStatus = "SETTLED"
-	AccountActivityListParamsStatusVoided   AccountActivityListParamsStatus = "VOIDED"
 	AccountActivityListParamsStatusReturned AccountActivityListParamsStatus = "RETURNED"
 	AccountActivityListParamsStatusReversed AccountActivityListParamsStatus = "REVERSED"
+	AccountActivityListParamsStatusSettled  AccountActivityListParamsStatus = "SETTLED"
+	AccountActivityListParamsStatusVoided   AccountActivityListParamsStatus = "VOIDED"
 )
 
 func (r AccountActivityListParamsStatus) IsKnown() bool {
 	switch r {
-	case AccountActivityListParamsStatusDeclined, AccountActivityListParamsStatusExpired, AccountActivityListParamsStatusPending, AccountActivityListParamsStatusSettled, AccountActivityListParamsStatusVoided, AccountActivityListParamsStatusReturned, AccountActivityListParamsStatusReversed:
+	case AccountActivityListParamsStatusDeclined, AccountActivityListParamsStatusExpired, AccountActivityListParamsStatusPending, AccountActivityListParamsStatusReturned, AccountActivityListParamsStatusReversed, AccountActivityListParamsStatusSettled, AccountActivityListParamsStatusVoided:
 		return true
 	}
 	return false

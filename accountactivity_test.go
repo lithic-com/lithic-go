@@ -35,9 +35,9 @@ func TestAccountActivityListWithOptionalParams(t *testing.T) {
 		EndingBefore:          lithic.F("ending_before"),
 		FinancialAccountToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		PageSize:              lithic.F(int64(1)),
-		Result:                lithic.F([]lithic.AccountActivityListParamsResult{lithic.AccountActivityListParamsResultApproved}),
+		Result:                lithic.F(lithic.AccountActivityListParamsResultApproved),
 		StartingAfter:         lithic.F("starting_after"),
-		Status:                lithic.F([]lithic.AccountActivityListParamsStatus{lithic.AccountActivityListParamsStatusDeclined}),
+		Status:                lithic.F(lithic.AccountActivityListParamsStatusDeclined),
 	})
 	if err != nil {
 		var apierr *lithic.Error
