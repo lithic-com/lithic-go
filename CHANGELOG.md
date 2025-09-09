@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.91.0 (2025-09-09)
+
+Full Changelog: [v0.90.0...v0.91.0](https://github.com/lithic-com/lithic-go/compare/v0.90.0...v0.91.0)
+
+### Features
+
+* **api:** adds support for unpauseing external bank accounts ([fb6e255](https://github.com/lithic-com/lithic-go/commit/fb6e255516bbab9c64f827b220c411c8b6fd88af))
+
 ## 0.90.0 (2025-09-03)
 
 Full Changelog: [v0.89.2...v0.90.0](https://github.com/lithic-com/lithic-go/compare/v0.89.2...v0.90.0)
