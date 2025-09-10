@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.92.0 (2025-09-10)
+
+Full Changelog: [v0.91.0...v0.92.0](https://github.com/lithic-com/lithic-go/compare/v0.91.0...v0.92.0)
+
+### Features
+
+* **api:** rename endpoint ([50d76dd](https://github.com/lithic-com/lithic-go/commit/50d76dda16f596458a5e05f84b2aa718d04899ef))
+
 ## 0.91.0 (2025-09-09)
 
 Full Changelog: [v0.90.0...v0.91.0](https://github.com/lithic-com/lithic-go/compare/v0.90.0...v0.91.0)
