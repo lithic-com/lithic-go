@@ -201,6 +201,34 @@ func TestTransactionSimulateCreditAuthorizationWithOptionalParams(t *testing.T) 
 	}
 }
 
+func TestTransactionSimulateCreditAuthorizationAdviceWithOptionalParams(t *testing.T) {
+	baseURL := "http://localhost:4010"
+	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+		baseURL = envURL
+	}
+	if !testutil.CheckTestServer(t, baseURL) {
+		return
+	}
+	client := lithic.NewClient(
+		option.WithBaseURL(baseURL),
+		option.WithAPIKey("My Lithic API Key"),
+	)
+	_, err := client.Transactions.SimulateCreditAuthorizationAdvice(context.TODO(), lithic.TransactionSimulateCreditAuthorizationAdviceParams{
+		Amount:             lithic.F(int64(3831)),
+		Descriptor:         lithic.F("COFFEE SHOP"),
+		Pan:                lithic.F("4111111289144142"),
+		Mcc:                lithic.F("5812"),
+		MerchantAcceptorID: lithic.F("XRKGDPOWEWQRRWU"),
+	})
+	if err != nil {
+		var apierr *lithic.Error
+		if errors.As(err, &apierr) {
+			t.Log(string(apierr.DumpRequest(true)))
+		}
+		t.Fatalf("err should be nil: %s", err.Error())
+	}
+}
+
 func TestTransactionSimulateReturn(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {

@@ -133,7 +133,18 @@ func (r *TransactionService) SimulateClearing(ctx context.Context, body Transact
 
 // Simulates a credit authorization advice from the card network. This message
 // indicates that the network approved a credit authorization on your behalf.
+//
+// Deprecated: use `SimulateCreditAuthorizationAdvice` instead
 func (r *TransactionService) SimulateCreditAuthorization(ctx context.Context, body TransactionSimulateCreditAuthorizationParams, opts ...option.RequestOption) (res *TransactionSimulateCreditAuthorizationResponse, err error) {
+	opts = append(r.Options[:], opts...)
+	path := "v1/simulate/credit_authorization_advice"
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+	return
+}
+
+// Simulates a credit authorization advice from the card network. This message
+// indicates that the network approved a credit authorization on your behalf.
+func (r *TransactionService) SimulateCreditAuthorizationAdvice(ctx context.Context, body TransactionSimulateCreditAuthorizationAdviceParams, opts ...option.RequestOption) (res *TransactionSimulateCreditAuthorizationAdviceResponse, err error) {
 	opts = append(r.Options[:], opts...)
 	path := "v1/simulate/credit_authorization_advice"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -1867,6 +1878,31 @@ func (r transactionSimulateCreditAuthorizationResponseJSON) RawJSON() string {
 	return r.raw
 }
 
+type TransactionSimulateCreditAuthorizationAdviceResponse struct {
+	// A unique token to reference this transaction.
+	Token string `json:"token" format:"uuid"`
+	// Debugging request ID to share with Lithic Support team.
+	DebuggingRequestID string                                                   `json:"debugging_request_id" format:"uuid"`
+	JSON               transactionSimulateCreditAuthorizationAdviceResponseJSON `json:"-"`
+}
+
+// transactionSimulateCreditAuthorizationAdviceResponseJSON contains the JSON
+// metadata for the struct [TransactionSimulateCreditAuthorizationAdviceResponse]
+type transactionSimulateCreditAuthorizationAdviceResponseJSON struct {
+	Token              apijson.Field
+	DebuggingRequestID apijson.Field
+	raw                string
+	ExtraFields        map[string]apijson.Field
+}
+
+func (r *TransactionSimulateCreditAuthorizationAdviceResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionSimulateCreditAuthorizationAdviceResponseJSON) RawJSON() string {
+	return r.raw
+}
+
 type TransactionSimulateReturnResponse struct {
 	// A unique token to reference this transaction.
 	Token string `json:"token" format:"uuid"`
@@ -2141,6 +2177,27 @@ type TransactionSimulateCreditAuthorizationParams struct {
 }
 
 func (r TransactionSimulateCreditAuthorizationParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+type TransactionSimulateCreditAuthorizationAdviceParams struct {
+	// Amount (in cents). Any value entered will be converted into a negative amount in
+	// the simulated transaction. For example, entering 100 in this field will appear
+	// as a -100 amount in the transaction.
+	Amount param.Field[int64] `json:"amount,required"`
+	// Merchant descriptor.
+	Descriptor param.Field[string] `json:"descriptor,required"`
+	// Sixteen digit card number.
+	Pan param.Field[string] `json:"pan,required"`
+	// Merchant category code for the transaction to be simulated. A four-digit number
+	// listed in ISO 18245. Supported merchant category codes can be found
+	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
+	Mcc param.Field[string] `json:"mcc"`
+	// Unique identifier to identify the payment card acceptor.
+	MerchantAcceptorID param.Field[string] `json:"merchant_acceptor_id"`
+}
+
+func (r TransactionSimulateCreditAuthorizationAdviceParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
