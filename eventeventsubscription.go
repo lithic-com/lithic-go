@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/option"
@@ -33,7 +34,7 @@ func NewEventEventSubscriptionService(opts ...option.RequestOption) (r *EventEve
 
 // Resend an event to an event subscription.
 func (r *EventEventSubscriptionService) Resend(ctx context.Context, eventToken string, eventSubscriptionToken string, opts ...option.RequestOption) (err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	if eventToken == "" {
 		err = errors.New("missing required event_token parameter")

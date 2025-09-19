@@ -11,6 +11,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -42,7 +43,7 @@ func NewDisputeService(opts ...option.RequestOption) (r *DisputeService) {
 
 // Initiate a dispute.
 func (r *DisputeService) New(ctx context.Context, body DisputeNewParams, opts ...option.RequestOption) (res *Dispute, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/disputes"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -50,7 +51,7 @@ func (r *DisputeService) New(ctx context.Context, body DisputeNewParams, opts ..
 
 // Get dispute.
 func (r *DisputeService) Get(ctx context.Context, disputeToken string, opts ...option.RequestOption) (res *Dispute, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if disputeToken == "" {
 		err = errors.New("missing required dispute_token parameter")
 		return
@@ -62,7 +63,7 @@ func (r *DisputeService) Get(ctx context.Context, disputeToken string, opts ...o
 
 // Update dispute. Can only be modified if status is `NEW`.
 func (r *DisputeService) Update(ctx context.Context, disputeToken string, body DisputeUpdateParams, opts ...option.RequestOption) (res *Dispute, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if disputeToken == "" {
 		err = errors.New("missing required dispute_token parameter")
 		return
@@ -75,7 +76,7 @@ func (r *DisputeService) Update(ctx context.Context, disputeToken string, body D
 // List disputes.
 func (r *DisputeService) List(ctx context.Context, query DisputeListParams, opts ...option.RequestOption) (res *pagination.CursorPage[Dispute], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/disputes"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -97,7 +98,7 @@ func (r *DisputeService) ListAutoPaging(ctx context.Context, query DisputeListPa
 
 // Withdraw dispute.
 func (r *DisputeService) Delete(ctx context.Context, disputeToken string, opts ...option.RequestOption) (res *Dispute, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if disputeToken == "" {
 		err = errors.New("missing required dispute_token parameter")
 		return
@@ -110,7 +111,7 @@ func (r *DisputeService) Delete(ctx context.Context, disputeToken string, opts .
 // Soft delete evidence for a dispute. Evidence will not be reviewed or submitted
 // by Lithic after it is withdrawn.
 func (r *DisputeService) DeleteEvidence(ctx context.Context, disputeToken string, evidenceToken string, opts ...option.RequestOption) (res *DisputeEvidence, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if disputeToken == "" {
 		err = errors.New("missing required dispute_token parameter")
 		return
@@ -130,7 +131,7 @@ func (r *DisputeService) DeleteEvidence(ctx context.Context, disputeToken string
 // Uploaded documents must either be a `jpg`, `png` or `pdf` file, and each must be
 // less than 5 GiB.
 func (r *DisputeService) InitiateEvidenceUpload(ctx context.Context, disputeToken string, body DisputeInitiateEvidenceUploadParams, opts ...option.RequestOption) (res *DisputeEvidence, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if disputeToken == "" {
 		err = errors.New("missing required dispute_token parameter")
 		return
@@ -143,7 +144,7 @@ func (r *DisputeService) InitiateEvidenceUpload(ctx context.Context, disputeToke
 // List evidence metadata for a dispute.
 func (r *DisputeService) ListEvidences(ctx context.Context, disputeToken string, query DisputeListEvidencesParams, opts ...option.RequestOption) (res *pagination.CursorPage[DisputeEvidence], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if disputeToken == "" {
 		err = errors.New("missing required dispute_token parameter")
@@ -169,7 +170,7 @@ func (r *DisputeService) ListEvidencesAutoPaging(ctx context.Context, disputeTok
 
 // Get a dispute's evidence metadata.
 func (r *DisputeService) GetEvidence(ctx context.Context, disputeToken string, evidenceToken string, opts ...option.RequestOption) (res *DisputeEvidence, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if disputeToken == "" {
 		err = errors.New("missing required dispute_token parameter")
 		return

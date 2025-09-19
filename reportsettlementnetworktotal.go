@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -39,7 +40,7 @@ func NewReportSettlementNetworkTotalService(opts ...option.RequestOption) (r *Re
 
 // Retrieve a specific network total record by token. Not available in sandbox.
 func (r *ReportSettlementNetworkTotalService) Get(ctx context.Context, token string, opts ...option.RequestOption) (res *ReportSettlementNetworkTotalGetResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if token == "" {
 		err = errors.New("missing required token parameter")
 		return
@@ -52,7 +53,7 @@ func (r *ReportSettlementNetworkTotalService) Get(ctx context.Context, token str
 // List network total records with optional filters. Not available in sandbox.
 func (r *ReportSettlementNetworkTotalService) List(ctx context.Context, query ReportSettlementNetworkTotalListParams, opts ...option.RequestOption) (res *pagination.CursorPage[ReportSettlementNetworkTotalListResponse], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/reports/settlement/network_totals"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)

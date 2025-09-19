@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -39,7 +40,7 @@ func NewCardProgramService(opts ...option.RequestOption) (r *CardProgramService)
 
 // Get card program.
 func (r *CardProgramService) Get(ctx context.Context, cardProgramToken string, opts ...option.RequestOption) (res *CardProgram, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if cardProgramToken == "" {
 		err = errors.New("missing required card_program_token parameter")
 		return
@@ -52,7 +53,7 @@ func (r *CardProgramService) Get(ctx context.Context, cardProgramToken string, o
 // List card programs.
 func (r *CardProgramService) List(ctx context.Context, query CardProgramListParams, opts ...option.RequestOption) (res *pagination.CursorPage[CardProgram], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/card_programs"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)

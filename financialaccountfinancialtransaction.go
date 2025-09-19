@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apiquery"
@@ -39,7 +40,7 @@ func NewFinancialAccountFinancialTransactionService(opts ...option.RequestOption
 
 // Get the financial transaction for the provided token.
 func (r *FinancialAccountFinancialTransactionService) Get(ctx context.Context, financialAccountToken string, financialTransactionToken string, opts ...option.RequestOption) (res *FinancialTransaction, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
 		return
@@ -56,7 +57,7 @@ func (r *FinancialAccountFinancialTransactionService) Get(ctx context.Context, f
 // List the financial transactions for a given financial account.
 func (r *FinancialAccountFinancialTransactionService) List(ctx context.Context, financialAccountToken string, query FinancialTransactionListParams, opts ...option.RequestOption) (res *pagination.SinglePage[FinancialTransaction], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")

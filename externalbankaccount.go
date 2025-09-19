@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -41,7 +42,7 @@ func NewExternalBankAccountService(opts ...option.RequestOption) (r *ExternalBan
 
 // Creates an external bank account within a program or Lithic account.
 func (r *ExternalBankAccountService) New(ctx context.Context, body ExternalBankAccountNewParams, opts ...option.RequestOption) (res *ExternalBankAccountNewResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/external_bank_accounts"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -49,7 +50,7 @@ func (r *ExternalBankAccountService) New(ctx context.Context, body ExternalBankA
 
 // Get the external bank account by token.
 func (r *ExternalBankAccountService) Get(ctx context.Context, externalBankAccountToken string, opts ...option.RequestOption) (res *ExternalBankAccountGetResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if externalBankAccountToken == "" {
 		err = errors.New("missing required external_bank_account_token parameter")
 		return
@@ -61,7 +62,7 @@ func (r *ExternalBankAccountService) Get(ctx context.Context, externalBankAccoun
 
 // Update the external bank account by token.
 func (r *ExternalBankAccountService) Update(ctx context.Context, externalBankAccountToken string, body ExternalBankAccountUpdateParams, opts ...option.RequestOption) (res *ExternalBankAccountUpdateResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if externalBankAccountToken == "" {
 		err = errors.New("missing required external_bank_account_token parameter")
 		return
@@ -74,7 +75,7 @@ func (r *ExternalBankAccountService) Update(ctx context.Context, externalBankAcc
 // List all the external bank accounts for the provided search criteria.
 func (r *ExternalBankAccountService) List(ctx context.Context, query ExternalBankAccountListParams, opts ...option.RequestOption) (res *pagination.CursorPage[ExternalBankAccountListResponse], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/external_bank_accounts"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -96,7 +97,7 @@ func (r *ExternalBankAccountService) ListAutoPaging(ctx context.Context, query E
 
 // Retry external bank account micro deposit verification.
 func (r *ExternalBankAccountService) RetryMicroDeposits(ctx context.Context, externalBankAccountToken string, body ExternalBankAccountRetryMicroDepositsParams, opts ...option.RequestOption) (res *ExternalBankAccountRetryMicroDepositsResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if externalBankAccountToken == "" {
 		err = errors.New("missing required external_bank_account_token parameter")
 		return
@@ -108,7 +109,7 @@ func (r *ExternalBankAccountService) RetryMicroDeposits(ctx context.Context, ext
 
 // Retry external bank account prenote verification.
 func (r *ExternalBankAccountService) RetryPrenote(ctx context.Context, externalBankAccountToken string, body ExternalBankAccountRetryPrenoteParams, opts ...option.RequestOption) (res *ExternalBankAccountRetryPrenoteResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if externalBankAccountToken == "" {
 		err = errors.New("missing required external_bank_account_token parameter")
 		return

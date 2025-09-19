@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -43,7 +44,7 @@ func NewEventService(opts ...option.RequestOption) (r *EventService) {
 
 // Get an event.
 func (r *EventService) Get(ctx context.Context, eventToken string, opts ...option.RequestOption) (res *Event, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if eventToken == "" {
 		err = errors.New("missing required event_token parameter")
 		return
@@ -56,7 +57,7 @@ func (r *EventService) Get(ctx context.Context, eventToken string, opts ...optio
 // List all events.
 func (r *EventService) List(ctx context.Context, query EventListParams, opts ...option.RequestOption) (res *pagination.CursorPage[Event], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/events"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -79,7 +80,7 @@ func (r *EventService) ListAutoPaging(ctx context.Context, query EventListParams
 // List all the message attempts for a given event.
 func (r *EventService) ListAttempts(ctx context.Context, eventToken string, query EventListAttemptsParams, opts ...option.RequestOption) (res *pagination.CursorPage[MessageAttempt], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if eventToken == "" {
 		err = errors.New("missing required event_token parameter")

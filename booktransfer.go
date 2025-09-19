@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -40,7 +41,7 @@ func NewBookTransferService(opts ...option.RequestOption) (r *BookTransferServic
 // Book transfer funds between two financial accounts or between a financial
 // account and card
 func (r *BookTransferService) New(ctx context.Context, body BookTransferNewParams, opts ...option.RequestOption) (res *BookTransferResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/book_transfers"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -48,7 +49,7 @@ func (r *BookTransferService) New(ctx context.Context, body BookTransferNewParam
 
 // Get book transfer by token
 func (r *BookTransferService) Get(ctx context.Context, bookTransferToken string, opts ...option.RequestOption) (res *BookTransferResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if bookTransferToken == "" {
 		err = errors.New("missing required book_transfer_token parameter")
 		return
@@ -61,7 +62,7 @@ func (r *BookTransferService) Get(ctx context.Context, bookTransferToken string,
 // List book transfers
 func (r *BookTransferService) List(ctx context.Context, query BookTransferListParams, opts ...option.RequestOption) (res *pagination.CursorPage[BookTransferResponse], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/book_transfers"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -83,7 +84,7 @@ func (r *BookTransferService) ListAutoPaging(ctx context.Context, query BookTran
 
 // Reverse a book transfer
 func (r *BookTransferService) Reverse(ctx context.Context, bookTransferToken string, body BookTransferReverseParams, opts ...option.RequestOption) (res *BookTransferResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if bookTransferToken == "" {
 		err = errors.New("missing required book_transfer_token parameter")
 		return

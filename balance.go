@@ -6,6 +6,7 @@ import (
 	"context"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -38,7 +39,7 @@ func NewBalanceService(opts ...option.RequestOption) (r *BalanceService) {
 // Get the balances for a program, business, or a given end-user account
 func (r *BalanceService) List(ctx context.Context, query BalanceListParams, opts ...option.RequestOption) (res *pagination.SinglePage[Balance], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/balances"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -60,7 +61,7 @@ func NewAuthRuleV2BacktestService(opts ...option.RequestOption) (r *AuthRuleV2Ba
 // transaction does not feature the required inputs to evaluate the rule, then it
 // will not be included in the final backtest report.
 func (r *AuthRuleV2BacktestService) New(ctx context.Context, authRuleToken string, body AuthRuleV2BacktestNewParams, opts ...option.RequestOption) (res *AuthRuleV2BacktestNewResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
 		return
@@ -89,7 +90,7 @@ func (r *AuthRuleV2BacktestService) New(ctx context.Context, authRuleToken strin
 // currently activated in the respective event stream, regardless of which version
 // of the rule was active in the event stream at the time a backtest is requested.
 func (r *AuthRuleV2BacktestService) Get(ctx context.Context, authRuleToken string, authRuleBacktestToken string, opts ...option.RequestOption) (res *BacktestResults, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
 		return

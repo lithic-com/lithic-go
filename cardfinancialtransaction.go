@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apiquery"
@@ -38,7 +39,7 @@ func NewCardFinancialTransactionService(opts ...option.RequestOption) (r *CardFi
 
 // Get the card financial transaction for the provided token.
 func (r *CardFinancialTransactionService) Get(ctx context.Context, cardToken string, financialTransactionToken string, opts ...option.RequestOption) (res *FinancialTransaction, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
 		return
@@ -55,7 +56,7 @@ func (r *CardFinancialTransactionService) Get(ctx context.Context, cardToken str
 // List the financial transactions for a given card.
 func (r *CardFinancialTransactionService) List(ctx context.Context, cardToken string, query CardFinancialTransactionListParams, opts ...option.RequestOption) (res *pagination.SinglePage[FinancialTransaction], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")

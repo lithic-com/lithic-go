@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -39,7 +40,7 @@ func NewNetworkProgramService(opts ...option.RequestOption) (r *NetworkProgramSe
 
 // Get network program.
 func (r *NetworkProgramService) Get(ctx context.Context, networkProgramToken string, opts ...option.RequestOption) (res *NetworkProgram, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if networkProgramToken == "" {
 		err = errors.New("missing required network_program_token parameter")
 		return
@@ -52,7 +53,7 @@ func (r *NetworkProgramService) Get(ctx context.Context, networkProgramToken str
 // List network programs.
 func (r *NetworkProgramService) List(ctx context.Context, query NetworkProgramListParams, opts ...option.RequestOption) (res *pagination.SinglePage[NetworkProgram], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/network_programs"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)

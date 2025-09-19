@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -40,7 +41,7 @@ func NewCardBalanceService(opts ...option.RequestOption) (r *CardBalanceService)
 // Get the balances for a given card.
 func (r *CardBalanceService) List(ctx context.Context, cardToken string, query CardBalanceListParams, opts ...option.RequestOption) (res *pagination.SinglePage[CardBalanceListResponse], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")

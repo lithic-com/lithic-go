@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"reflect"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -51,7 +52,7 @@ func NewAccountHolderService(opts ...option.RequestOption) (r *AccountHolderServ
 //
 // Note: If you choose to set a timeout for this request, we recommend 5 minutes.
 func (r *AccountHolderService) New(ctx context.Context, body AccountHolderNewParams, opts ...option.RequestOption) (res *AccountHolderNewResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/account_holders"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -60,7 +61,7 @@ func (r *AccountHolderService) New(ctx context.Context, body AccountHolderNewPar
 // Get an Individual or Business Account Holder and/or their KYC or KYB evaluation
 // status.
 func (r *AccountHolderService) Get(ctx context.Context, accountHolderToken string, opts ...option.RequestOption) (res *AccountHolder, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if accountHolderToken == "" {
 		err = errors.New("missing required account_holder_token parameter")
 		return
@@ -81,7 +82,7 @@ func (r *AccountHolderService) Get(ctx context.Context, accountHolderToken strin
 // process. This endpoint can only be used on existing accounts that are part of
 // the program that the calling API key manages.
 func (r *AccountHolderService) Update(ctx context.Context, accountHolderToken string, body AccountHolderUpdateParams, opts ...option.RequestOption) (res *AccountHolderUpdateResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if accountHolderToken == "" {
 		err = errors.New("missing required account_holder_token parameter")
 		return
@@ -95,7 +96,7 @@ func (r *AccountHolderService) Update(ctx context.Context, accountHolderToken st
 // evaluation status.
 func (r *AccountHolderService) List(ctx context.Context, query AccountHolderListParams, opts ...option.RequestOption) (res *pagination.SinglePage[AccountHolder], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/account_holders"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -132,7 +133,7 @@ func (r *AccountHolderService) ListAutoPaging(ctx context.Context, query Account
 // show an additional entry in the `required_document_uploads` list in a `PENDING`
 // state for the corresponding `image_type`.
 func (r *AccountHolderService) ListDocuments(ctx context.Context, accountHolderToken string, opts ...option.RequestOption) (res *AccountHolderListDocumentsResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if accountHolderToken == "" {
 		err = errors.New("missing required account_holder_token parameter")
 		return
@@ -157,7 +158,7 @@ func (r *AccountHolderService) ListDocuments(ctx context.Context, accountHolderT
 // response will show an additional entry in the `required_document_uploads` array
 // in a `PENDING` state for the corresponding `image_type`.
 func (r *AccountHolderService) GetDocument(ctx context.Context, accountHolderToken string, documentToken string, opts ...option.RequestOption) (res *shared.Document, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if accountHolderToken == "" {
 		err = errors.New("missing required account_holder_token parameter")
 		return
@@ -173,7 +174,7 @@ func (r *AccountHolderService) GetDocument(ctx context.Context, accountHolderTok
 
 // Simulates a review for an account holder document upload.
 func (r *AccountHolderService) SimulateEnrollmentDocumentReview(ctx context.Context, body AccountHolderSimulateEnrollmentDocumentReviewParams, opts ...option.RequestOption) (res *shared.Document, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/account_holders/enrollment_document_review"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -182,7 +183,7 @@ func (r *AccountHolderService) SimulateEnrollmentDocumentReview(ctx context.Cont
 // Simulates an enrollment review for an account holder. This endpoint is only
 // applicable for workflows that may required intervention such as `KYB_BASIC`.
 func (r *AccountHolderService) SimulateEnrollmentReview(ctx context.Context, body AccountHolderSimulateEnrollmentReviewParams, opts ...option.RequestOption) (res *AccountHolderSimulateEnrollmentReviewResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/account_holders/enrollment_review"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -207,7 +208,7 @@ func (r *AccountHolderService) SimulateEnrollmentReview(ctx context.Context, bod
 // Currently only one type of account holder document is supported per KYC
 // verification.
 func (r *AccountHolderService) UploadDocument(ctx context.Context, accountHolderToken string, body AccountHolderUploadDocumentParams, opts ...option.RequestOption) (res *shared.Document, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if accountHolderToken == "" {
 		err = errors.New("missing required account_holder_token parameter")
 		return

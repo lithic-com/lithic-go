@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"reflect"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -44,7 +45,7 @@ func NewAuthRuleV2Service(opts ...option.RequestOption) (r *AuthRuleV2Service) {
 
 // Creates a new V2 Auth rule in draft mode
 func (r *AuthRuleV2Service) New(ctx context.Context, body AuthRuleV2NewParams, opts ...option.RequestOption) (res *AuthRuleV2NewResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v2/auth_rules"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -52,7 +53,7 @@ func (r *AuthRuleV2Service) New(ctx context.Context, body AuthRuleV2NewParams, o
 
 // Fetches a V2 Auth rule by its token
 func (r *AuthRuleV2Service) Get(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (res *AuthRuleV2GetResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
 		return
@@ -68,7 +69,7 @@ func (r *AuthRuleV2Service) Get(ctx context.Context, authRuleToken string, opts 
 // is provided, this will replace existing associations with the provided list of
 // entities.
 func (r *AuthRuleV2Service) Update(ctx context.Context, authRuleToken string, body AuthRuleV2UpdateParams, opts ...option.RequestOption) (res *AuthRuleV2UpdateResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
 		return
@@ -81,7 +82,7 @@ func (r *AuthRuleV2Service) Update(ctx context.Context, authRuleToken string, bo
 // Lists V2 Auth rules
 func (r *AuthRuleV2Service) List(ctx context.Context, query AuthRuleV2ListParams, opts ...option.RequestOption) (res *pagination.CursorPage[AuthRuleV2ListResponse], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v2/auth_rules"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -103,7 +104,7 @@ func (r *AuthRuleV2Service) ListAutoPaging(ctx context.Context, query AuthRuleV2
 
 // Deletes a V2 Auth rule
 func (r *AuthRuleV2Service) Delete(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
@@ -121,7 +122,7 @@ func (r *AuthRuleV2Service) Delete(ctx context.Context, authRuleToken string, op
 //
 // Deprecated: deprecated
 func (r *AuthRuleV2Service) Apply(ctx context.Context, authRuleToken string, body AuthRuleV2ApplyParams, opts ...option.RequestOption) (res *AuthRuleV2ApplyResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
 		return
@@ -136,7 +137,7 @@ func (r *AuthRuleV2Service) Apply(ctx context.Context, authRuleToken string, bod
 // This can also be utilized to reset the draft parameters, causing a draft version
 // to no longer be ran in shadow mode.
 func (r *AuthRuleV2Service) Draft(ctx context.Context, authRuleToken string, body AuthRuleV2DraftParams, opts ...option.RequestOption) (res *AuthRuleV2DraftResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
 		return
@@ -149,7 +150,7 @@ func (r *AuthRuleV2Service) Draft(ctx context.Context, authRuleToken string, bod
 // Promotes the draft version of an Auth rule to the currently active version such
 // that it is enforced in the respective stream.
 func (r *AuthRuleV2Service) Promote(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (res *AuthRuleV2PromoteResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
 		return
@@ -213,7 +214,7 @@ func (r *AuthRuleV2Service) Promote(ctx context.Context, authRuleToken string, o
 //
 // Deprecated: deprecated
 func (r *AuthRuleV2Service) Report(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (res *AuthRuleV2ReportResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
 		return
@@ -237,7 +238,7 @@ func (r *AuthRuleV2Service) Report(ctx context.Context, authRuleToken string, op
 // Auth rule, including approval, decline, and challenge counts along with sample
 // events.
 func (r *AuthRuleV2Service) GetReport(ctx context.Context, authRuleToken string, query AuthRuleV2GetReportParams, opts ...option.RequestOption) (res *AuthRuleV2GetReportResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
 		return

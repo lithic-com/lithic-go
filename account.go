@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -39,7 +40,7 @@ func NewAccountService(opts ...option.RequestOption) (r *AccountService) {
 
 // Get account configuration such as spend limits.
 func (r *AccountService) Get(ctx context.Context, accountToken string, opts ...option.RequestOption) (res *Account, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if accountToken == "" {
 		err = errors.New("missing required account_token parameter")
 		return
@@ -53,7 +54,7 @@ func (r *AccountService) Get(ctx context.Context, accountToken string, opts ...o
 // accounts that are part of the program managed by this API key. Accounts that are
 // in the `PAUSED` state will not be able to transact or create new cards.
 func (r *AccountService) Update(ctx context.Context, accountToken string, body AccountUpdateParams, opts ...option.RequestOption) (res *Account, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if accountToken == "" {
 		err = errors.New("missing required account_token parameter")
 		return
@@ -66,7 +67,7 @@ func (r *AccountService) Update(ctx context.Context, accountToken string, body A
 // List account configurations.
 func (r *AccountService) List(ctx context.Context, query AccountListParams, opts ...option.RequestOption) (res *pagination.CursorPage[Account], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/accounts"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -92,7 +93,7 @@ func (r *AccountService) ListAutoPaging(ctx context.Context, query AccountListPa
 // configured, and has spent $600 in the last 24 hours, the available spend limit
 // returned would be $400.
 func (r *AccountService) GetSpendLimits(ctx context.Context, accountToken string, opts ...option.RequestOption) (res *AccountSpendLimits, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if accountToken == "" {
 		err = errors.New("missing required account_token parameter")
 		return

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apiquery"
@@ -40,7 +41,7 @@ func NewReportSettlementService(opts ...option.RequestOption) (r *ReportSettleme
 // List details.
 func (r *ReportSettlementService) ListDetails(ctx context.Context, reportDate time.Time, query ReportSettlementListDetailsParams, opts ...option.RequestOption) (res *pagination.CursorPage[SettlementDetail], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := fmt.Sprintf("v1/reports/settlement/details/%s", reportDate.Format("2006-01-02"))
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -62,7 +63,7 @@ func (r *ReportSettlementService) ListDetailsAutoPaging(ctx context.Context, rep
 
 // Get the settlement report for a specified report date. Not available in sandbox.
 func (r *ReportSettlementService) Summary(ctx context.Context, reportDate time.Time, opts ...option.RequestOption) (res *SettlementReport, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := fmt.Sprintf("v1/reports/settlement/summary/%s", reportDate.Format("2006-01-02"))
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
