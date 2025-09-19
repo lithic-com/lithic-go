@@ -5,6 +5,7 @@ package lithic
 import (
 	"context"
 	"net/http"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -37,7 +38,7 @@ func NewTransferService(opts ...option.RequestOption) (r *TransferService) {
 //
 // Deprecated: deprecated
 func (r *TransferService) New(ctx context.Context, body TransferNewParams, opts ...option.RequestOption) (res *Transfer, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/transfer"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return

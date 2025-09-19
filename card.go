@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -47,7 +48,7 @@ func NewCardService(opts ...option.RequestOption) (r *CardService) {
 // Create a new virtual or physical card. Parameters `shipping_address` and
 // `product_id` only apply to physical cards.
 func (r *CardService) New(ctx context.Context, body CardNewParams, opts ...option.RequestOption) (res *Card, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/cards"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -55,7 +56,7 @@ func (r *CardService) New(ctx context.Context, body CardNewParams, opts ...optio
 
 // Get card configuration such as spend limit and state.
 func (r *CardService) Get(ctx context.Context, cardToken string, opts ...option.RequestOption) (res *Card, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
 		return
@@ -71,7 +72,7 @@ func (r *CardService) Get(ctx context.Context, cardToken string, opts ...option.
 // _Note: setting a card to a `CLOSED` state is a final action that cannot be
 // undone._
 func (r *CardService) Update(ctx context.Context, cardToken string, body CardUpdateParams, opts ...option.RequestOption) (res *Card, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
 		return
@@ -84,7 +85,7 @@ func (r *CardService) Update(ctx context.Context, cardToken string, body CardUpd
 // List cards.
 func (r *CardService) List(ctx context.Context, query CardListParams, opts ...option.RequestOption) (res *pagination.CursorPage[NonPCICard], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/cards"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -115,7 +116,7 @@ func (r *CardService) ListAutoPaging(ctx context.Context, query CardListParams, 
 // `VIRTUAL` (or existing cards with deprecated types of `DIGITAL_WALLET` and
 // `UNLOCKED`).
 func (r *CardService) ConvertPhysical(ctx context.Context, cardToken string, body CardConvertPhysicalParams, opts ...option.RequestOption) (res *Card, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
 		return
@@ -155,7 +156,7 @@ func (r *CardService) ConvertPhysical(ctx context.Context, cardToken string, bod
 // but **do not ever embed your API key into front end code, as doing so introduces
 // a serious security vulnerability**.
 func (r *CardService) Embed(ctx context.Context, query CardEmbedParams, opts ...option.RequestOption) (res *string, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "text/html")}, opts...)
 	path := "v1/embed/card"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
@@ -169,7 +170,7 @@ func (r *CardService) Embed(ctx context.Context, query CardEmbedParams, opts ...
 // [Contact Us](https://lithic.com/contact) or your Customer Success representative
 // for more information.
 func (r *CardService) Provision(ctx context.Context, cardToken string, body CardProvisionParams, opts ...option.RequestOption) (res *CardProvisionResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
 		return
@@ -185,7 +186,7 @@ func (r *CardService) Provision(ctx context.Context, cardToken string, body Card
 // applies to cards of type `PHYSICAL`. A card can be reissued or renewed a total
 // of 8 times.
 func (r *CardService) Reissue(ctx context.Context, cardToken string, body CardReissueParams, opts ...option.RequestOption) (res *Card, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
 		return
@@ -205,7 +206,7 @@ func (r *CardService) Reissue(ctx context.Context, cardToken string, body CardRe
 // and CVC2 code. `product_id`, `shipping_method`, `shipping_address`, `carrier`
 // are only relevant for renewing `PHYSICAL` cards.
 func (r *CardService) Renew(ctx context.Context, cardToken string, body CardRenewParams, opts ...option.RequestOption) (res *Card, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
 		return
@@ -220,7 +221,7 @@ func (r *CardService) Renew(ctx context.Context, cardToken string, body CardRene
 // example, if the Card has a monthly spend limit of $1000 configured, and has
 // spent $600 in the last month, the available spend limit returned would be $400.
 func (r *CardService) GetSpendLimits(ctx context.Context, cardToken string, opts ...option.RequestOption) (res *CardSpendLimits, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
 		return
@@ -236,7 +237,7 @@ func (r *CardService) GetSpendLimits(ctx context.Context, cardToken string, opts
 // `POST` endpoint because it is more secure to send sensitive data in a request
 // body than in a URL._
 func (r *CardService) SearchByPan(ctx context.Context, body CardSearchByPanParams, opts ...option.RequestOption) (res *Card, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/cards/search_by_pan"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -249,7 +250,7 @@ func (r *CardService) SearchByPan(ctx context.Context, body CardSearchByPanParam
 // [Contact Us](https://lithic.com/contact) or your Customer Success representative
 // for more information.
 func (r *CardService) WebProvision(ctx context.Context, cardToken string, body CardWebProvisionParams, opts ...option.RequestOption) (res *CardWebProvisionResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
 		return

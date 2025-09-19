@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -37,7 +38,7 @@ func NewTransactionEventEnhancedCommercialDataService(opts ...option.RequestOpti
 // Get L2/L3 enhanced commercial data associated with a transaction event. Not
 // available in sandbox.
 func (r *TransactionEventEnhancedCommercialDataService) Get(ctx context.Context, eventToken string, opts ...option.RequestOption) (res *EnhancedData, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if eventToken == "" {
 		err = errors.New("missing required event_token parameter")
 		return

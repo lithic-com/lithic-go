@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -38,7 +39,7 @@ func NewCreditProductPrimeRateService(opts ...option.RequestOption) (r *CreditPr
 
 // Post Credit Product Prime Rate
 func (r *CreditProductPrimeRateService) New(ctx context.Context, creditProductToken string, body CreditProductPrimeRateNewParams, opts ...option.RequestOption) (err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	if creditProductToken == "" {
 		err = errors.New("missing required credit_product_token parameter")
@@ -51,7 +52,7 @@ func (r *CreditProductPrimeRateService) New(ctx context.Context, creditProductTo
 
 // Get Credit Product Prime Rates
 func (r *CreditProductPrimeRateService) Get(ctx context.Context, creditProductToken string, query CreditProductPrimeRateGetParams, opts ...option.RequestOption) (res *CreditProductPrimeRateGetResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if creditProductToken == "" {
 		err = errors.New("missing required credit_product_token parameter")
 		return

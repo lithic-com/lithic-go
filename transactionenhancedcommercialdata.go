@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
@@ -35,7 +36,7 @@ func NewTransactionEnhancedCommercialDataService(opts ...option.RequestOption) (
 // Get all L2/L3 enhanced commercial data associated with a transaction. Not
 // available in sandbox.
 func (r *TransactionEnhancedCommercialDataService) Get(ctx context.Context, transactionToken string, opts ...option.RequestOption) (res *TransactionEnhancedCommercialDataGetResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if transactionToken == "" {
 		err = errors.New("missing required transaction_token parameter")
 		return

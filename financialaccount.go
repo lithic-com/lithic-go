@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -52,7 +53,7 @@ func (r *FinancialAccountService) New(ctx context.Context, params FinancialAccou
 	if params.IdempotencyKey.Present {
 		opts = append(opts, option.WithHeader("Idempotency-Key", fmt.Sprintf("%s", params.IdempotencyKey)))
 	}
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/financial_accounts"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, params, &res, opts...)
 	return
@@ -60,7 +61,7 @@ func (r *FinancialAccountService) New(ctx context.Context, params FinancialAccou
 
 // Get a financial account
 func (r *FinancialAccountService) Get(ctx context.Context, financialAccountToken string, opts ...option.RequestOption) (res *FinancialAccount, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
 		return
@@ -72,7 +73,7 @@ func (r *FinancialAccountService) Get(ctx context.Context, financialAccountToken
 
 // Update a financial account
 func (r *FinancialAccountService) Update(ctx context.Context, financialAccountToken string, body FinancialAccountUpdateParams, opts ...option.RequestOption) (res *FinancialAccount, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
 		return
@@ -86,7 +87,7 @@ func (r *FinancialAccountService) Update(ctx context.Context, financialAccountTo
 // number.
 func (r *FinancialAccountService) List(ctx context.Context, query FinancialAccountListParams, opts ...option.RequestOption) (res *pagination.SinglePage[FinancialAccount], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/financial_accounts"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -109,7 +110,7 @@ func (r *FinancialAccountService) ListAutoPaging(ctx context.Context, query Fina
 
 // Register account number
 func (r *FinancialAccountService) RegisterAccountNumber(ctx context.Context, financialAccountToken string, body FinancialAccountRegisterAccountNumberParams, opts ...option.RequestOption) (err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
@@ -122,7 +123,7 @@ func (r *FinancialAccountService) RegisterAccountNumber(ctx context.Context, fin
 
 // Update financial account status
 func (r *FinancialAccountService) UpdateStatus(ctx context.Context, financialAccountToken string, body FinancialAccountUpdateStatusParams, opts ...option.RequestOption) (res *FinancialAccount, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
 		return

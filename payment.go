@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -39,7 +40,7 @@ func NewPaymentService(opts ...option.RequestOption) (r *PaymentService) {
 
 // Initiates a payment between a financial account and an external bank account.
 func (r *PaymentService) New(ctx context.Context, body PaymentNewParams, opts ...option.RequestOption) (res *PaymentNewResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/payments"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -47,7 +48,7 @@ func (r *PaymentService) New(ctx context.Context, body PaymentNewParams, opts ..
 
 // Get the payment by token.
 func (r *PaymentService) Get(ctx context.Context, paymentToken string, opts ...option.RequestOption) (res *Payment, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if paymentToken == "" {
 		err = errors.New("missing required payment_token parameter")
 		return
@@ -60,7 +61,7 @@ func (r *PaymentService) Get(ctx context.Context, paymentToken string, opts ...o
 // List all the payments for the provided search criteria.
 func (r *PaymentService) List(ctx context.Context, query PaymentListParams, opts ...option.RequestOption) (res *pagination.CursorPage[Payment], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/payments"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -82,7 +83,7 @@ func (r *PaymentService) ListAutoPaging(ctx context.Context, query PaymentListPa
 
 // Retry an origination which has been returned.
 func (r *PaymentService) Retry(ctx context.Context, paymentToken string, opts ...option.RequestOption) (res *PaymentRetryResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if paymentToken == "" {
 		err = errors.New("missing required payment_token parameter")
 		return
@@ -94,7 +95,7 @@ func (r *PaymentService) Retry(ctx context.Context, paymentToken string, opts ..
 
 // Simulate payment lifecycle event
 func (r *PaymentService) SimulateAction(ctx context.Context, paymentToken string, body PaymentSimulateActionParams, opts ...option.RequestOption) (res *PaymentSimulateActionResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if paymentToken == "" {
 		err = errors.New("missing required payment_token parameter")
 		return
@@ -106,7 +107,7 @@ func (r *PaymentService) SimulateAction(ctx context.Context, paymentToken string
 
 // Simulates a receipt of a Payment.
 func (r *PaymentService) SimulateReceipt(ctx context.Context, body PaymentSimulateReceiptParams, opts ...option.RequestOption) (res *PaymentSimulateReceiptResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/payments/receipt"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -114,7 +115,7 @@ func (r *PaymentService) SimulateReceipt(ctx context.Context, body PaymentSimula
 
 // Simulates a release of a Payment.
 func (r *PaymentService) SimulateRelease(ctx context.Context, body PaymentSimulateReleaseParams, opts ...option.RequestOption) (res *PaymentSimulateReleaseResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/payments/release"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -122,7 +123,7 @@ func (r *PaymentService) SimulateRelease(ctx context.Context, body PaymentSimula
 
 // Simulates a return of a Payment.
 func (r *PaymentService) SimulateReturn(ctx context.Context, body PaymentSimulateReturnParams, opts ...option.RequestOption) (res *PaymentSimulateReturnResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/payments/return"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -39,7 +40,7 @@ func NewExternalPaymentService(opts ...option.RequestOption) (r *ExternalPayment
 
 // Create external payment
 func (r *ExternalPaymentService) New(ctx context.Context, body ExternalPaymentNewParams, opts ...option.RequestOption) (res *ExternalPayment, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/external_payments"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -47,7 +48,7 @@ func (r *ExternalPaymentService) New(ctx context.Context, body ExternalPaymentNe
 
 // Get external payment
 func (r *ExternalPaymentService) Get(ctx context.Context, externalPaymentToken string, opts ...option.RequestOption) (res *ExternalPayment, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if externalPaymentToken == "" {
 		err = errors.New("missing required external_payment_token parameter")
 		return
@@ -60,7 +61,7 @@ func (r *ExternalPaymentService) Get(ctx context.Context, externalPaymentToken s
 // List external payments
 func (r *ExternalPaymentService) List(ctx context.Context, query ExternalPaymentListParams, opts ...option.RequestOption) (res *pagination.CursorPage[ExternalPayment], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/external_payments"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -82,7 +83,7 @@ func (r *ExternalPaymentService) ListAutoPaging(ctx context.Context, query Exter
 
 // Cancel external payment
 func (r *ExternalPaymentService) Cancel(ctx context.Context, externalPaymentToken string, body ExternalPaymentCancelParams, opts ...option.RequestOption) (res *ExternalPayment, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if externalPaymentToken == "" {
 		err = errors.New("missing required external_payment_token parameter")
 		return
@@ -94,7 +95,7 @@ func (r *ExternalPaymentService) Cancel(ctx context.Context, externalPaymentToke
 
 // Release external payment
 func (r *ExternalPaymentService) Release(ctx context.Context, externalPaymentToken string, body ExternalPaymentReleaseParams, opts ...option.RequestOption) (res *ExternalPayment, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if externalPaymentToken == "" {
 		err = errors.New("missing required external_payment_token parameter")
 		return
@@ -106,7 +107,7 @@ func (r *ExternalPaymentService) Release(ctx context.Context, externalPaymentTok
 
 // Reverse external payment
 func (r *ExternalPaymentService) Reverse(ctx context.Context, externalPaymentToken string, body ExternalPaymentReverseParams, opts ...option.RequestOption) (res *ExternalPayment, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if externalPaymentToken == "" {
 		err = errors.New("missing required external_payment_token parameter")
 		return
@@ -118,7 +119,7 @@ func (r *ExternalPaymentService) Reverse(ctx context.Context, externalPaymentTok
 
 // Settle external payment
 func (r *ExternalPaymentService) Settle(ctx context.Context, externalPaymentToken string, body ExternalPaymentSettleParams, opts ...option.RequestOption) (res *ExternalPayment, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if externalPaymentToken == "" {
 		err = errors.New("missing required external_payment_token parameter")
 		return

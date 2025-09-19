@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -36,7 +37,7 @@ func NewThreeDSAuthenticationService(opts ...option.RequestOption) (r *ThreeDSAu
 
 // Get 3DS Authentication by token
 func (r *ThreeDSAuthenticationService) Get(ctx context.Context, threeDSAuthenticationToken string, opts ...option.RequestOption) (res *ThreeDSAuthenticationGetResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if threeDSAuthenticationToken == "" {
 		err = errors.New("missing required three_ds_authentication_token parameter")
 		return
@@ -53,7 +54,7 @@ func (r *ThreeDSAuthenticationService) Get(ctx context.Context, threeDSAuthentic
 // challenge, ensure that the account holder associated with the card transaction
 // has a valid phone number configured to receive the OTP code via SMS.
 func (r *ThreeDSAuthenticationService) Simulate(ctx context.Context, body ThreeDSAuthenticationSimulateParams, opts ...option.RequestOption) (res *ThreeDSAuthenticationSimulateResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/three_ds_authentication/simulate"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -64,7 +65,7 @@ func (r *ThreeDSAuthenticationService) Simulate(ctx context.Context, body ThreeD
 // that resulted in triggered SMS-OTP challenge must precede. Only a single attempt
 // is supported; upon entering OTP, the challenge is either approved or declined.
 func (r *ThreeDSAuthenticationService) SimulateOtpEntry(ctx context.Context, body ThreeDSAuthenticationSimulateOtpEntryParams, opts ...option.RequestOption) (err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := "v1/three_ds_decisioning/simulate/enter_otp"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)

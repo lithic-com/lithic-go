@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"reflect"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -42,7 +43,7 @@ func NewAccountActivityService(opts ...option.RequestOption) (r *AccountActivity
 // Retrieve a list of transactions across all public accounts.
 func (r *AccountActivityService) List(ctx context.Context, query AccountActivityListParams, opts ...option.RequestOption) (res *pagination.CursorPage[AccountActivityListResponse], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/account_activity"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -64,7 +65,7 @@ func (r *AccountActivityService) ListAutoPaging(ctx context.Context, query Accou
 
 // Retrieve a single transaction
 func (r *AccountActivityService) GetTransaction(ctx context.Context, transactionToken string, opts ...option.RequestOption) (res *AccountActivityGetTransactionResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if transactionToken == "" {
 		err = errors.New("missing required transaction_token parameter")
 		return

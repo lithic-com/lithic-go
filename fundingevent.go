@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -39,7 +40,7 @@ func NewFundingEventService(opts ...option.RequestOption) (r *FundingEventServic
 
 // Get funding event for program by id
 func (r *FundingEventService) Get(ctx context.Context, fundingEventToken string, opts ...option.RequestOption) (res *FundingEventGetResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if fundingEventToken == "" {
 		err = errors.New("missing required funding_event_token parameter")
 		return
@@ -52,7 +53,7 @@ func (r *FundingEventService) Get(ctx context.Context, fundingEventToken string,
 // Get all funding events for program
 func (r *FundingEventService) List(ctx context.Context, query FundingEventListParams, opts ...option.RequestOption) (res *pagination.CursorPage[FundingEventListResponse], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/funding_events"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -74,7 +75,7 @@ func (r *FundingEventService) ListAutoPaging(ctx context.Context, query FundingE
 
 // Get funding event details by id
 func (r *FundingEventService) GetDetails(ctx context.Context, fundingEventToken string, opts ...option.RequestOption) (res *FundingEventGetDetailsResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if fundingEventToken == "" {
 		err = errors.New("missing required funding_event_token parameter")
 		return
