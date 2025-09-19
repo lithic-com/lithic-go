@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.92.1 (2025-09-19)
+
+Full Changelog: [v0.92.0...v0.92.1](https://github.com/lithic-com/lithic-go/compare/v0.92.0...v0.92.1)
+
+### Bug Fixes
+
+* use slices.Concat instead of sometimes modifying r.Options ([ae18989](https://github.com/lithic-com/lithic-go/commit/ae189892f33a295d272a1c17e47da71bf84941f9))
+
+
+### Chores
+
+* bump minimum go version to 1.22 ([0c2412e](https://github.com/lithic-com/lithic-go/commit/0c2412ef8bea7b62d082f77357935e2c103761be))
+* update more docs for 1.22 ([426ebb4](https://github.com/lithic-com/lithic-go/commit/426ebb4a222a1671600d7c4aafbe203d855928d8))
+
 ## 0.92.0 (2025-09-10)
 
 Full Changelog: [v0.91.0...v0.92.0](https://github.com/lithic-com/lithic-go/compare/v0.91.0...v0.92.0)
