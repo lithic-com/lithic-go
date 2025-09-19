@@ -6,6 +6,7 @@ import (
 	"context"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -39,7 +40,7 @@ func NewAggregateBalanceService(opts ...option.RequestOption) (r *AggregateBalan
 // type
 func (r *AggregateBalanceService) List(ctx context.Context, query AggregateBalanceListParams, opts ...option.RequestOption) (res *pagination.SinglePage[AggregateBalance], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/aggregate_balances"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)

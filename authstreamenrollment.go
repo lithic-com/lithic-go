@@ -5,6 +5,7 @@ package lithic
 import (
 	"context"
 	"net/http"
+	"slices"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
@@ -37,7 +38,7 @@ func NewAuthStreamEnrollmentService(opts ...option.RequestOption) (r *AuthStream
 // [this page](https://docs.lithic.com/docs/auth-stream-access-asa#asa-webhook-verification)
 // for more detail about verifying ASA webhooks.
 func (r *AuthStreamEnrollmentService) GetSecret(ctx context.Context, opts ...option.RequestOption) (res *AuthStreamSecret, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/auth_stream/secret"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
@@ -48,7 +49,7 @@ func (r *AuthStreamEnrollmentService) GetSecret(ctx context.Context, opts ...opt
 // [`GET /auth_stream/secret`](https://docs.lithic.com/reference/getauthstreamsecret)
 // request to retrieve the new secret key.
 func (r *AuthStreamEnrollmentService) RotateSecret(ctx context.Context, opts ...option.RequestOption) (err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := "v1/auth_stream/secret/rotate"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)

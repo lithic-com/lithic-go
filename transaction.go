@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -45,7 +46,7 @@ func NewTransactionService(opts ...option.RequestOption) (r *TransactionService)
 // Get a specific card transaction. All amounts are in the smallest unit of their
 // respective currency (e.g., cents for USD).
 func (r *TransactionService) Get(ctx context.Context, transactionToken string, opts ...option.RequestOption) (res *Transaction, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if transactionToken == "" {
 		err = errors.New("missing required transaction_token parameter")
 		return
@@ -59,7 +60,7 @@ func (r *TransactionService) Get(ctx context.Context, transactionToken string, o
 // currency (e.g., cents for USD) and inclusive of any acquirer fees.
 func (r *TransactionService) List(ctx context.Context, query TransactionListParams, opts ...option.RequestOption) (res *pagination.CursorPage[Transaction], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/transactions"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -82,7 +83,7 @@ func (r *TransactionService) ListAutoPaging(ctx context.Context, query Transacti
 
 // Expire authorization
 func (r *TransactionService) ExpireAuthorization(ctx context.Context, transactionToken string, opts ...option.RequestOption) (err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	if transactionToken == "" {
 		err = errors.New("missing required transaction_token parameter")
@@ -102,7 +103,7 @@ func (r *TransactionService) ExpireAuthorization(ctx context.Context, transactio
 // [update account](https://docs.lithic.com/reference/patchaccountbytoken)
 // endpoint.
 func (r *TransactionService) SimulateAuthorization(ctx context.Context, body TransactionSimulateAuthorizationParams, opts ...option.RequestOption) (res *TransactionSimulateAuthorizationResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/authorize"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -112,7 +113,7 @@ func (r *TransactionService) SimulateAuthorization(ctx context.Context, body Tra
 // merchant acquirer. An authorization advice changes the pending amount of the
 // transaction.
 func (r *TransactionService) SimulateAuthorizationAdvice(ctx context.Context, body TransactionSimulateAuthorizationAdviceParams, opts ...option.RequestOption) (res *TransactionSimulateAuthorizationAdviceResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/authorization_advice"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -125,7 +126,7 @@ func (r *TransactionService) SimulateAuthorizationAdvice(ctx context.Context, bo
 // Transactions that have already cleared, either partially or fully, cannot be
 // cleared again using this endpoint.
 func (r *TransactionService) SimulateClearing(ctx context.Context, body TransactionSimulateClearingParams, opts ...option.RequestOption) (res *TransactionSimulateClearingResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/clearing"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -136,7 +137,7 @@ func (r *TransactionService) SimulateClearing(ctx context.Context, body Transact
 //
 // Deprecated: use `SimulateCreditAuthorizationAdvice` instead
 func (r *TransactionService) SimulateCreditAuthorization(ctx context.Context, body TransactionSimulateCreditAuthorizationParams, opts ...option.RequestOption) (res *TransactionSimulateCreditAuthorizationResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/credit_authorization_advice"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -145,7 +146,7 @@ func (r *TransactionService) SimulateCreditAuthorization(ctx context.Context, bo
 // Simulates a credit authorization advice from the card network. This message
 // indicates that the network approved a credit authorization on your behalf.
 func (r *TransactionService) SimulateCreditAuthorizationAdvice(ctx context.Context, body TransactionSimulateCreditAuthorizationAdviceParams, opts ...option.RequestOption) (res *TransactionSimulateCreditAuthorizationAdviceResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/credit_authorization_advice"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -155,7 +156,7 @@ func (r *TransactionService) SimulateCreditAuthorizationAdvice(ctx context.Conte
 // endpoint clear immediately, without prior authorization, and result in a
 // `SETTLED` transaction status.
 func (r *TransactionService) SimulateReturn(ctx context.Context, body TransactionSimulateReturnParams, opts ...option.RequestOption) (res *TransactionSimulateReturnResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/return"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -165,7 +166,7 @@ func (r *TransactionService) SimulateReturn(ctx context.Context, body Transactio
 // can be financial credit authorizations, or credit authorizations that have
 // cleared.
 func (r *TransactionService) SimulateReturnReversal(ctx context.Context, body TransactionSimulateReturnReversalParams, opts ...option.RequestOption) (res *TransactionSimulateReturnReversalResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/return_reversal"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -176,7 +177,7 @@ func (r *TransactionService) SimulateReturnReversal(ctx context.Context, body Tr
 // transactions. _Simulating an authorization expiry on credit authorizations or
 // credit authorization advice is not currently supported but will be added soon._
 func (r *TransactionService) SimulateVoid(ctx context.Context, body TransactionSimulateVoidParams, opts ...option.RequestOption) (res *TransactionSimulateVoidResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/void"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return

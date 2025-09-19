@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -37,7 +38,7 @@ func NewFraudTransactionService(opts ...option.RequestOption) (r *FraudTransacti
 // Retrieve a fraud report for a specific transaction identified by its unique
 // transaction token.
 func (r *FraudTransactionService) Get(ctx context.Context, transactionToken string, opts ...option.RequestOption) (res *FraudTransactionGetResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if transactionToken == "" {
 		err = errors.New("missing required transaction_token parameter")
 		return
@@ -50,7 +51,7 @@ func (r *FraudTransactionService) Get(ctx context.Context, transactionToken stri
 // Report fraud for a specific transaction token by providing details such as fraud
 // type, fraud status, and any additional comments.
 func (r *FraudTransactionService) Report(ctx context.Context, transactionToken string, body FraudTransactionReportParams, opts ...option.RequestOption) (res *FraudTransactionReportResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if transactionToken == "" {
 		err = errors.New("missing required transaction_token parameter")
 		return

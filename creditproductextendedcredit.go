@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
@@ -34,7 +35,7 @@ func NewCreditProductExtendedCreditService(opts ...option.RequestOption) (r *Cre
 
 // Get the extended credit for a given credit product under a program
 func (r *CreditProductExtendedCreditService) Get(ctx context.Context, creditProductToken string, opts ...option.RequestOption) (res *ExtendedCredit, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if creditProductToken == "" {
 		err = errors.New("missing required credit_product_token parameter")
 		return

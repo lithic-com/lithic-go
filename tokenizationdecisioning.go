@@ -5,6 +5,7 @@ package lithic
 import (
 	"context"
 	"net/http"
+	"slices"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
@@ -37,7 +38,7 @@ func NewTokenizationDecisioningService(opts ...option.RequestOption) (r *Tokeniz
 // [this page](https://docs.lithic.com/docs/events-api#verifying-webhooks) for more
 // detail about verifying Tokenization Decisioning requests.
 func (r *TokenizationDecisioningService) GetSecret(ctx context.Context, opts ...option.RequestOption) (res *TokenizationSecret, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/tokenization_decisioning/secret"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
@@ -47,7 +48,7 @@ func (r *TokenizationDecisioningService) GetSecret(ctx context.Context, opts ...
 // Decisioning secret key will be deactivated 24 hours after a successful request
 // to this endpoint.
 func (r *TokenizationDecisioningService) RotateSecret(ctx context.Context, opts ...option.RequestOption) (res *TokenizationDecisioningRotateSecretResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/tokenization_decisioning/secret/rotate"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
 	return

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -39,7 +40,7 @@ func NewDigitalCardArtService(opts ...option.RequestOption) (r *DigitalCardArtSe
 
 // Get digital card art by token.
 func (r *DigitalCardArtService) Get(ctx context.Context, digitalCardArtToken string, opts ...option.RequestOption) (res *DigitalCardArt, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if digitalCardArtToken == "" {
 		err = errors.New("missing required digital_card_art_token parameter")
 		return
@@ -52,7 +53,7 @@ func (r *DigitalCardArtService) Get(ctx context.Context, digitalCardArtToken str
 // List digital card art.
 func (r *DigitalCardArtService) List(ctx context.Context, query DigitalCardArtListParams, opts ...option.RequestOption) (res *pagination.CursorPage[DigitalCardArt], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/digital_card_art"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)

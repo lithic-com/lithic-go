@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/param"
@@ -36,7 +37,7 @@ func NewFinancialAccountCreditConfigurationService(opts ...option.RequestOption)
 
 // Get an Account's credit configuration
 func (r *FinancialAccountCreditConfigurationService) Get(ctx context.Context, financialAccountToken string, opts ...option.RequestOption) (res *FinancialAccountCreditConfig, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
 		return
@@ -48,7 +49,7 @@ func (r *FinancialAccountCreditConfigurationService) Get(ctx context.Context, fi
 
 // Update an account's credit configuration
 func (r *FinancialAccountCreditConfigurationService) Update(ctx context.Context, financialAccountToken string, body FinancialAccountCreditConfigurationUpdateParams, opts ...option.RequestOption) (res *FinancialAccountCreditConfig, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
 		return

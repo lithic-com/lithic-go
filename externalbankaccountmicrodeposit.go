@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -36,7 +37,7 @@ func NewExternalBankAccountMicroDepositService(opts ...option.RequestOption) (r 
 
 // Verify the external bank account by providing the micro deposit amounts.
 func (r *ExternalBankAccountMicroDepositService) New(ctx context.Context, externalBankAccountToken string, body ExternalBankAccountMicroDepositNewParams, opts ...option.RequestOption) (res *ExternalBankAccountMicroDepositNewResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if externalBankAccountToken == "" {
 		err = errors.New("missing required external_bank_account_token parameter")
 		return

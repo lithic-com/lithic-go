@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -39,7 +40,7 @@ func NewManagementOperationService(opts ...option.RequestOption) (r *ManagementO
 
 // Create management operation
 func (r *ManagementOperationService) New(ctx context.Context, body ManagementOperationNewParams, opts ...option.RequestOption) (res *ManagementOperationTransaction, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/management_operations"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return
@@ -47,7 +48,7 @@ func (r *ManagementOperationService) New(ctx context.Context, body ManagementOpe
 
 // Get management operation
 func (r *ManagementOperationService) Get(ctx context.Context, managementOperationToken string, opts ...option.RequestOption) (res *ManagementOperationTransaction, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if managementOperationToken == "" {
 		err = errors.New("missing required management_operation_token parameter")
 		return
@@ -60,7 +61,7 @@ func (r *ManagementOperationService) Get(ctx context.Context, managementOperatio
 // List management operations
 func (r *ManagementOperationService) List(ctx context.Context, query ManagementOperationListParams, opts ...option.RequestOption) (res *pagination.CursorPage[ManagementOperationTransaction], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	path := "v1/management_operations"
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -82,7 +83,7 @@ func (r *ManagementOperationService) ListAutoPaging(ctx context.Context, query M
 
 // Reverse a management operation
 func (r *ManagementOperationService) Reverse(ctx context.Context, managementOperationToken string, body ManagementOperationReverseParams, opts ...option.RequestOption) (res *ManagementOperationTransaction, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if managementOperationToken == "" {
 		err = errors.New("missing required management_operation_token parameter")
 		return

@@ -5,6 +5,7 @@ package lithic
 import (
 	"context"
 	"net/http"
+	"slices"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/param"
@@ -38,7 +39,7 @@ func NewThreeDSDecisioningService(opts ...option.RequestOption) (r *ThreeDSDecis
 // in order to receive it (see https://docs.lithic.com/docs/3ds-challenge-flow for
 // more information).
 func (r *ThreeDSDecisioningService) ChallengeResponse(ctx context.Context, body ThreeDSDecisioningChallengeResponseParams, opts ...option.RequestOption) (err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := "v1/three_ds_decisioning/challenge_response"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
@@ -52,7 +53,7 @@ func (r *ThreeDSDecisioningService) ChallengeResponse(ctx context.Context, body 
 // [this page](https://docs.lithic.com/docs/3ds-decisioning#3ds-decisioning-hmac-secrets)
 // for more detail about verifying 3DS Decisioning requests.
 func (r *ThreeDSDecisioningService) GetSecret(ctx context.Context, opts ...option.RequestOption) (res *ThreeDSDecisioningGetSecretResponse, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	path := "v1/three_ds_decisioning/secret"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return
@@ -63,7 +64,7 @@ func (r *ThreeDSDecisioningService) GetSecret(ctx context.Context, opts ...optio
 // [`GET /three_ds_decisioning/secret`](https://docs.lithic.com/reference/getthreedsdecisioningsecret)
 // request to retrieve the new secret key.
 func (r *ThreeDSDecisioningService) RotateSecret(ctx context.Context, opts ...option.RequestOption) (err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
 	path := "v1/three_ds_decisioning/secret/rotate"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)

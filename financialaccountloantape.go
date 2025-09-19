@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"slices"
 	"time"
 
 	"github.com/lithic-com/lithic-go/internal/apijson"
@@ -39,7 +40,7 @@ func NewFinancialAccountLoanTapeService(opts ...option.RequestOption) (r *Financ
 
 // Get a specific loan tape for a given financial account.
 func (r *FinancialAccountLoanTapeService) Get(ctx context.Context, financialAccountToken string, loanTapeToken string, opts ...option.RequestOption) (res *LoanTape, err error) {
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
 		return
@@ -56,7 +57,7 @@ func (r *FinancialAccountLoanTapeService) Get(ctx context.Context, financialAcco
 // List the loan tapes for a given financial account.
 func (r *FinancialAccountLoanTapeService) List(ctx context.Context, financialAccountToken string, query FinancialAccountLoanTapeListParams, opts ...option.RequestOption) (res *pagination.CursorPage[LoanTape], err error) {
 	var raw *http.Response
-	opts = append(r.Options[:], opts...)
+	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
