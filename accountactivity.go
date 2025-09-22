@@ -327,30 +327,186 @@ type AccountActivityListResponseUnion interface {
 func init() {
 	apijson.RegisterUnion(
 		reflect.TypeOf((*AccountActivityListResponseUnion)(nil)).Elem(),
-		"",
+		"family",
 		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AccountActivityListResponseFinancialTransaction{}),
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponseFinancialTransaction{}),
+			DiscriminatorValue: "CARD",
 		},
 		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AccountActivityListResponseBookTransferTransaction{}),
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponseFinancialTransaction{}),
+			DiscriminatorValue: "PAYMENT",
 		},
 		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AccountActivityListResponseCardTransaction{}),
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponseFinancialTransaction{}),
+			DiscriminatorValue: "TRANSFER",
 		},
 		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AccountActivityListResponsePaymentTransaction{}),
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponseFinancialTransaction{}),
+			DiscriminatorValue: "INTERNAL",
 		},
 		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ExternalPayment{}),
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponseFinancialTransaction{}),
+			DiscriminatorValue: "EXTERNAL_PAYMENT",
 		},
 		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ManagementOperationTransaction{}),
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponseFinancialTransaction{}),
+			DiscriminatorValue: "MANAGEMENT_OPERATION",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponseBookTransferTransaction{}),
+			DiscriminatorValue: "CARD",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponseBookTransferTransaction{}),
+			DiscriminatorValue: "PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponseBookTransferTransaction{}),
+			DiscriminatorValue: "TRANSFER",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponseBookTransferTransaction{}),
+			DiscriminatorValue: "INTERNAL",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponseBookTransferTransaction{}),
+			DiscriminatorValue: "EXTERNAL_PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponseBookTransferTransaction{}),
+			DiscriminatorValue: "MANAGEMENT_OPERATION",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponseCardTransaction{}),
+			DiscriminatorValue: "CARD",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponseCardTransaction{}),
+			DiscriminatorValue: "PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponseCardTransaction{}),
+			DiscriminatorValue: "TRANSFER",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponseCardTransaction{}),
+			DiscriminatorValue: "INTERNAL",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponseCardTransaction{}),
+			DiscriminatorValue: "EXTERNAL_PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponseCardTransaction{}),
+			DiscriminatorValue: "MANAGEMENT_OPERATION",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponsePaymentTransaction{}),
+			DiscriminatorValue: "CARD",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponsePaymentTransaction{}),
+			DiscriminatorValue: "PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponsePaymentTransaction{}),
+			DiscriminatorValue: "TRANSFER",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponsePaymentTransaction{}),
+			DiscriminatorValue: "INTERNAL",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponsePaymentTransaction{}),
+			DiscriminatorValue: "EXTERNAL_PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityListResponsePaymentTransaction{}),
+			DiscriminatorValue: "MANAGEMENT_OPERATION",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ExternalPayment{}),
+			DiscriminatorValue: "CARD",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ExternalPayment{}),
+			DiscriminatorValue: "PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ExternalPayment{}),
+			DiscriminatorValue: "TRANSFER",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ExternalPayment{}),
+			DiscriminatorValue: "INTERNAL",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ExternalPayment{}),
+			DiscriminatorValue: "EXTERNAL_PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ExternalPayment{}),
+			DiscriminatorValue: "MANAGEMENT_OPERATION",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ManagementOperationTransaction{}),
+			DiscriminatorValue: "CARD",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ManagementOperationTransaction{}),
+			DiscriminatorValue: "PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ManagementOperationTransaction{}),
+			DiscriminatorValue: "TRANSFER",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ManagementOperationTransaction{}),
+			DiscriminatorValue: "INTERNAL",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ManagementOperationTransaction{}),
+			DiscriminatorValue: "EXTERNAL_PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ManagementOperationTransaction{}),
+			DiscriminatorValue: "MANAGEMENT_OPERATION",
 		},
 	)
 }
@@ -2097,30 +2253,186 @@ type AccountActivityGetTransactionResponseUnion interface {
 func init() {
 	apijson.RegisterUnion(
 		reflect.TypeOf((*AccountActivityGetTransactionResponseUnion)(nil)).Elem(),
-		"",
+		"family",
 		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AccountActivityGetTransactionResponseFinancialTransaction{}),
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponseFinancialTransaction{}),
+			DiscriminatorValue: "CARD",
 		},
 		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AccountActivityGetTransactionResponseBookTransferTransaction{}),
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponseFinancialTransaction{}),
+			DiscriminatorValue: "PAYMENT",
 		},
 		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AccountActivityGetTransactionResponseCardTransaction{}),
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponseFinancialTransaction{}),
+			DiscriminatorValue: "TRANSFER",
 		},
 		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AccountActivityGetTransactionResponsePaymentTransaction{}),
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponseFinancialTransaction{}),
+			DiscriminatorValue: "INTERNAL",
 		},
 		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ExternalPayment{}),
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponseFinancialTransaction{}),
+			DiscriminatorValue: "EXTERNAL_PAYMENT",
 		},
 		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ManagementOperationTransaction{}),
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponseFinancialTransaction{}),
+			DiscriminatorValue: "MANAGEMENT_OPERATION",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponseBookTransferTransaction{}),
+			DiscriminatorValue: "CARD",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponseBookTransferTransaction{}),
+			DiscriminatorValue: "PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponseBookTransferTransaction{}),
+			DiscriminatorValue: "TRANSFER",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponseBookTransferTransaction{}),
+			DiscriminatorValue: "INTERNAL",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponseBookTransferTransaction{}),
+			DiscriminatorValue: "EXTERNAL_PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponseBookTransferTransaction{}),
+			DiscriminatorValue: "MANAGEMENT_OPERATION",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponseCardTransaction{}),
+			DiscriminatorValue: "CARD",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponseCardTransaction{}),
+			DiscriminatorValue: "PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponseCardTransaction{}),
+			DiscriminatorValue: "TRANSFER",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponseCardTransaction{}),
+			DiscriminatorValue: "INTERNAL",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponseCardTransaction{}),
+			DiscriminatorValue: "EXTERNAL_PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponseCardTransaction{}),
+			DiscriminatorValue: "MANAGEMENT_OPERATION",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponsePaymentTransaction{}),
+			DiscriminatorValue: "CARD",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponsePaymentTransaction{}),
+			DiscriminatorValue: "PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponsePaymentTransaction{}),
+			DiscriminatorValue: "TRANSFER",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponsePaymentTransaction{}),
+			DiscriminatorValue: "INTERNAL",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponsePaymentTransaction{}),
+			DiscriminatorValue: "EXTERNAL_PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AccountActivityGetTransactionResponsePaymentTransaction{}),
+			DiscriminatorValue: "MANAGEMENT_OPERATION",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ExternalPayment{}),
+			DiscriminatorValue: "CARD",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ExternalPayment{}),
+			DiscriminatorValue: "PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ExternalPayment{}),
+			DiscriminatorValue: "TRANSFER",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ExternalPayment{}),
+			DiscriminatorValue: "INTERNAL",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ExternalPayment{}),
+			DiscriminatorValue: "EXTERNAL_PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ExternalPayment{}),
+			DiscriminatorValue: "MANAGEMENT_OPERATION",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ManagementOperationTransaction{}),
+			DiscriminatorValue: "CARD",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ManagementOperationTransaction{}),
+			DiscriminatorValue: "PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ManagementOperationTransaction{}),
+			DiscriminatorValue: "TRANSFER",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ManagementOperationTransaction{}),
+			DiscriminatorValue: "INTERNAL",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ManagementOperationTransaction{}),
+			DiscriminatorValue: "EXTERNAL_PAYMENT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(ManagementOperationTransaction{}),
+			DiscriminatorValue: "MANAGEMENT_OPERATION",
 		},
 	)
 }
