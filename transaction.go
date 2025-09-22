@@ -2228,7 +2228,8 @@ type TransactionSimulateVoidParams struct {
 	// The transaction token returned from the /v1/simulate/authorize response.
 	Token param.Field[string] `json:"token,required" format:"uuid"`
 	// Amount (in cents) to void. Typically this will match the amount in the original
-	// authorization, but can be less.
+	// authorization, but can be less. Applies to authorization reversals only. An
+	// authorization expiry will always apply to the full pending amount.
 	Amount param.Field[int64] `json:"amount"`
 	// Type of event to simulate. Defaults to `AUTHORIZATION_REVERSAL`.
 	//
