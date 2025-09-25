@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.92.2 (2025-09-25)
+
+Full Changelog: [v0.92.1...v0.92.2](https://github.com/lithic-com/lithic-go/compare/v0.92.1...v0.92.2)
+
+### Bug Fixes
+
+* bugfix for setting JSON keys with special characters ([9fb6ed1](https://github.com/lithic-com/lithic-go/commit/9fb6ed1dfec6867ff5f7bf30730cc8448d6d4f09))
+
+
+### Chores
+
+* do not install brew dependencies in ./scripts/bootstrap by default ([ac3b6b2](https://github.com/lithic-com/lithic-go/commit/ac3b6b2ca61321fdb3562d1b98d4f42f022d07ef))
+* **docs:** small updates to doc strings on a few endpoints ([c639449](https://github.com/lithic-com/lithic-go/commit/c639449af799c1077c7e47150f6a5150a696e1f6))
+
 ## 0.92.1 (2025-09-19)
 
 Full Changelog: [v0.92.0...v0.92.1](https://github.com/lithic-com/lithic-go/compare/v0.92.0...v0.92.1)
