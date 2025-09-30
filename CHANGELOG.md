@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.93.0 (2025-09-30)
+
+Full Changelog: [v0.92.2...v0.93.0](https://github.com/lithic-com/lithic-go/compare/v0.92.2...v0.93.0)
+
+### Features
+
+* **api:** adds support for Auth Rule features ([a270e40](https://github.com/lithic-com/lithic-go/commit/a270e40e5da87efd6a2a39be978850b6645f325d))
+
 ## 0.92.2 (2025-09-25)
 
 Full Changelog: [v0.92.1...v0.92.2](https://github.com/lithic-com/lithic-go/compare/v0.92.1...v0.92.2)
