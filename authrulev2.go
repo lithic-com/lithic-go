@@ -224,6 +224,26 @@ func (r *AuthRuleV2Service) Report(ctx context.Context, authRuleToken string, op
 	return
 }
 
+// Fetches the current calculated Feature values for the given Auth Rule
+//
+// This only calculates the features for the active version.
+//
+//   - VelocityLimit Rules calculates the current Velocity Feature data. This
+//     requires a `card_token` or `account_token` matching what the rule is Scoped
+//     to.
+//   - ConditionalBlock Rules calculates the CARD*TRANSACTION_COUNT*\* attributes on
+//     the rule. This requires a `card_token`
+func (r *AuthRuleV2Service) GetFeatures(ctx context.Context, authRuleToken string, query AuthRuleV2GetFeaturesParams, opts ...option.RequestOption) (res *AuthRuleV2GetFeaturesResponse, err error) {
+	opts = slices.Concat(r.Options, opts)
+	if authRuleToken == "" {
+		err = errors.New("missing required auth_rule_token parameter")
+		return
+	}
+	path := fmt.Sprintf("v2/auth_rules/%s/features", authRuleToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
+	return
+}
+
 // Retrieves a performance report for an Auth rule containing daily statistics and
 // evaluation outcomes.
 //
@@ -967,10 +987,13 @@ func (r RuleStatsExamplesDecision) IsKnown() bool {
 
 type VelocityLimitParams struct {
 	Filters VelocityLimitParamsFilters `json:"filters,required"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
 	Period VelocityLimitParamsPeriodWindowUnion `json:"period,required"`
-	Scope  VelocityLimitParamsScope             `json:"scope,required"`
+	// The scope the velocity is calculated for
+	Scope VelocityLimitParamsScope `json:"scope,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -1046,19 +1069,23 @@ type VelocityLimitParamsFilters struct {
 	IncludeCountries []string `json:"include_countries,nullable"`
 	// Merchant Category Codes to include in the velocity calculation. Transactions not
 	// matching this MCC will not be included in the calculated velocity.
-	IncludeMccs []string                       `json:"include_mccs,nullable"`
-	JSON        velocityLimitParamsFiltersJSON `json:"-"`
+	IncludeMccs []string `json:"include_mccs,nullable"`
+	// PAN entry modes to include in the velocity calculation. Transactions not
+	// matching any of the provided will not be included in the calculated velocity.
+	IncludePanEntryModes []VelocityLimitParamsFiltersIncludePanEntryMode `json:"include_pan_entry_modes,nullable"`
+	JSON                 velocityLimitParamsFiltersJSON                  `json:"-"`
 }
 
 // velocityLimitParamsFiltersJSON contains the JSON metadata for the struct
 // [VelocityLimitParamsFilters]
 type velocityLimitParamsFiltersJSON struct {
-	ExcludeCountries apijson.Field
-	ExcludeMccs      apijson.Field
-	IncludeCountries apijson.Field
-	IncludeMccs      apijson.Field
-	raw              string
-	ExtraFields      map[string]apijson.Field
+	ExcludeCountries     apijson.Field
+	ExcludeMccs          apijson.Field
+	IncludeCountries     apijson.Field
+	IncludeMccs          apijson.Field
+	IncludePanEntryModes apijson.Field
+	raw                  string
+	ExtraFields          map[string]apijson.Field
 }
 
 func (r *VelocityLimitParamsFilters) UnmarshalJSON(data []byte) (err error) {
@@ -1069,6 +1096,35 @@ func (r velocityLimitParamsFiltersJSON) RawJSON() string {
 	return r.raw
 }
 
+type VelocityLimitParamsFiltersIncludePanEntryMode string
+
+const (
+	VelocityLimitParamsFiltersIncludePanEntryModeAutoEntry           VelocityLimitParamsFiltersIncludePanEntryMode = "AUTO_ENTRY"
+	VelocityLimitParamsFiltersIncludePanEntryModeBarCode             VelocityLimitParamsFiltersIncludePanEntryMode = "BAR_CODE"
+	VelocityLimitParamsFiltersIncludePanEntryModeContactless         VelocityLimitParamsFiltersIncludePanEntryMode = "CONTACTLESS"
+	VelocityLimitParamsFiltersIncludePanEntryModeCredentialOnFile    VelocityLimitParamsFiltersIncludePanEntryMode = "CREDENTIAL_ON_FILE"
+	VelocityLimitParamsFiltersIncludePanEntryModeEcommerce           VelocityLimitParamsFiltersIncludePanEntryMode = "ECOMMERCE"
+	VelocityLimitParamsFiltersIncludePanEntryModeErrorKeyed          VelocityLimitParamsFiltersIncludePanEntryMode = "ERROR_KEYED"
+	VelocityLimitParamsFiltersIncludePanEntryModeErrorMagneticStripe VelocityLimitParamsFiltersIncludePanEntryMode = "ERROR_MAGNETIC_STRIPE"
+	VelocityLimitParamsFiltersIncludePanEntryModeIcc                 VelocityLimitParamsFiltersIncludePanEntryMode = "ICC"
+	VelocityLimitParamsFiltersIncludePanEntryModeKeyEntered          VelocityLimitParamsFiltersIncludePanEntryMode = "KEY_ENTERED"
+	VelocityLimitParamsFiltersIncludePanEntryModeMagneticStripe      VelocityLimitParamsFiltersIncludePanEntryMode = "MAGNETIC_STRIPE"
+	VelocityLimitParamsFiltersIncludePanEntryModeManual              VelocityLimitParamsFiltersIncludePanEntryMode = "MANUAL"
+	VelocityLimitParamsFiltersIncludePanEntryModeOcr                 VelocityLimitParamsFiltersIncludePanEntryMode = "OCR"
+	VelocityLimitParamsFiltersIncludePanEntryModeSecureCardless      VelocityLimitParamsFiltersIncludePanEntryMode = "SECURE_CARDLESS"
+	VelocityLimitParamsFiltersIncludePanEntryModeUnspecified         VelocityLimitParamsFiltersIncludePanEntryMode = "UNSPECIFIED"
+	VelocityLimitParamsFiltersIncludePanEntryModeUnknown             VelocityLimitParamsFiltersIncludePanEntryMode = "UNKNOWN"
+)
+
+func (r VelocityLimitParamsFiltersIncludePanEntryMode) IsKnown() bool {
+	switch r {
+	case VelocityLimitParamsFiltersIncludePanEntryModeAutoEntry, VelocityLimitParamsFiltersIncludePanEntryModeBarCode, VelocityLimitParamsFiltersIncludePanEntryModeContactless, VelocityLimitParamsFiltersIncludePanEntryModeCredentialOnFile, VelocityLimitParamsFiltersIncludePanEntryModeEcommerce, VelocityLimitParamsFiltersIncludePanEntryModeErrorKeyed, VelocityLimitParamsFiltersIncludePanEntryModeErrorMagneticStripe, VelocityLimitParamsFiltersIncludePanEntryModeIcc, VelocityLimitParamsFiltersIncludePanEntryModeKeyEntered, VelocityLimitParamsFiltersIncludePanEntryModeMagneticStripe, VelocityLimitParamsFiltersIncludePanEntryModeManual, VelocityLimitParamsFiltersIncludePanEntryModeOcr, VelocityLimitParamsFiltersIncludePanEntryModeSecureCardless, VelocityLimitParamsFiltersIncludePanEntryModeUnspecified, VelocityLimitParamsFiltersIncludePanEntryModeUnknown:
+		return true
+	}
+	return false
+}
+
+// The scope the velocity is calculated for
 type VelocityLimitParamsScope string
 
 const (
@@ -1084,6 +1140,8 @@ func (r VelocityLimitParamsScope) IsKnown() bool {
 	return false
 }
 
+// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+//
 // The size of the trailing window to calculate Spend Velocity over in seconds. The
 // minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
 //
@@ -1117,6 +1175,8 @@ func init() {
 	)
 }
 
+// DEPRECATED: This has been deprecated in favor of the other Fixed Window Objects
+//
 // The window of time to calculate Spend Velocity over.
 //
 //   - `DAY`: Velocity over the current day since midnight Eastern Time.
@@ -1201,6 +1261,9 @@ type AuthRuleV2NewResponse struct {
 	DraftVersion   AuthRuleV2NewResponseDraftVersion   `json:"draft_version,required,nullable"`
 	// The event stream during which the rule will be evaluated.
 	EventStream AuthRuleV2NewResponseEventStream `json:"event_stream,required"`
+	// Indicates whether this auth rule is managed by Lithic. If true, the rule cannot
+	// be modified or deleted by the user
+	LithicManaged bool `json:"lithic_managed,required"`
 	// Auth Rule Name
 	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
@@ -1232,6 +1295,7 @@ type authRuleV2NewResponseJSON struct {
 	CurrentVersion        apijson.Field
 	DraftVersion          apijson.Field
 	EventStream           apijson.Field
+	LithicManaged         apijson.Field
 	Name                  apijson.Field
 	ProgramLevel          apijson.Field
 	State                 apijson.Field
@@ -1297,12 +1361,15 @@ type AuthRuleV2NewResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion               `json:"period"`
-	Scope  AuthRuleV2NewResponseCurrentVersionParametersScope `json:"scope"`
-	JSON   authRuleV2NewResponseCurrentVersionParametersJSON  `json:"-"`
-	union  AuthRuleV2NewResponseCurrentVersionParametersUnion
+	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// The scope the velocity is calculated for
+	Scope AuthRuleV2NewResponseCurrentVersionParametersScope `json:"scope"`
+	JSON  authRuleV2NewResponseCurrentVersionParametersJSON  `json:"-"`
+	union AuthRuleV2NewResponseCurrentVersionParametersUnion
 }
 
 // authRuleV2NewResponseCurrentVersionParametersJSON contains the JSON metadata for
@@ -1451,6 +1518,8 @@ type AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationAction
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -1527,6 +1596,8 @@ func (r authRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationAct
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
+//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+//     represents the amount of cash being withdrawn or advanced.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -1561,6 +1632,7 @@ const (
 	AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
 	AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
 	AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
 	AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
@@ -1574,7 +1646,7 @@ const (
 
 func (r AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
 		return true
 	}
 	return false
@@ -1652,6 +1724,7 @@ func (r AuthRuleV2NewResponseCurrentVersionParametersAction) IsKnown() bool {
 	return false
 }
 
+// The scope the velocity is calculated for
 type AuthRuleV2NewResponseCurrentVersionParametersScope string
 
 const (
@@ -1715,12 +1788,15 @@ type AuthRuleV2NewResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion             `json:"period"`
-	Scope  AuthRuleV2NewResponseDraftVersionParametersScope `json:"scope"`
-	JSON   authRuleV2NewResponseDraftVersionParametersJSON  `json:"-"`
-	union  AuthRuleV2NewResponseDraftVersionParametersUnion
+	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// The scope the velocity is calculated for
+	Scope AuthRuleV2NewResponseDraftVersionParametersScope `json:"scope"`
+	JSON  authRuleV2NewResponseDraftVersionParametersJSON  `json:"-"`
+	union AuthRuleV2NewResponseDraftVersionParametersUnion
 }
 
 // authRuleV2NewResponseDraftVersionParametersJSON contains the JSON metadata for
@@ -1869,6 +1945,8 @@ type AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionPa
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -1945,6 +2023,8 @@ func (r authRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActio
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
+//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+//     represents the amount of cash being withdrawn or advanced.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -1979,6 +2059,7 @@ const (
 	AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
 	AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
 	AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
 	AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
@@ -1992,7 +2073,7 @@ const (
 
 func (r AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
 		return true
 	}
 	return false
@@ -2070,6 +2151,7 @@ func (r AuthRuleV2NewResponseDraftVersionParametersAction) IsKnown() bool {
 	return false
 }
 
+// The scope the velocity is calculated for
 type AuthRuleV2NewResponseDraftVersionParametersScope string
 
 const (
@@ -2156,6 +2238,9 @@ type AuthRuleV2GetResponse struct {
 	DraftVersion   AuthRuleV2GetResponseDraftVersion   `json:"draft_version,required,nullable"`
 	// The event stream during which the rule will be evaluated.
 	EventStream AuthRuleV2GetResponseEventStream `json:"event_stream,required"`
+	// Indicates whether this auth rule is managed by Lithic. If true, the rule cannot
+	// be modified or deleted by the user
+	LithicManaged bool `json:"lithic_managed,required"`
 	// Auth Rule Name
 	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
@@ -2187,6 +2272,7 @@ type authRuleV2GetResponseJSON struct {
 	CurrentVersion        apijson.Field
 	DraftVersion          apijson.Field
 	EventStream           apijson.Field
+	LithicManaged         apijson.Field
 	Name                  apijson.Field
 	ProgramLevel          apijson.Field
 	State                 apijson.Field
@@ -2252,12 +2338,15 @@ type AuthRuleV2GetResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion               `json:"period"`
-	Scope  AuthRuleV2GetResponseCurrentVersionParametersScope `json:"scope"`
-	JSON   authRuleV2GetResponseCurrentVersionParametersJSON  `json:"-"`
-	union  AuthRuleV2GetResponseCurrentVersionParametersUnion
+	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// The scope the velocity is calculated for
+	Scope AuthRuleV2GetResponseCurrentVersionParametersScope `json:"scope"`
+	JSON  authRuleV2GetResponseCurrentVersionParametersJSON  `json:"-"`
+	union AuthRuleV2GetResponseCurrentVersionParametersUnion
 }
 
 // authRuleV2GetResponseCurrentVersionParametersJSON contains the JSON metadata for
@@ -2406,6 +2495,8 @@ type AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationAction
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -2482,6 +2573,8 @@ func (r authRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationAct
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
+//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+//     represents the amount of cash being withdrawn or advanced.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -2516,6 +2609,7 @@ const (
 	AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
 	AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
 	AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
 	AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
@@ -2529,7 +2623,7 @@ const (
 
 func (r AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
 		return true
 	}
 	return false
@@ -2607,6 +2701,7 @@ func (r AuthRuleV2GetResponseCurrentVersionParametersAction) IsKnown() bool {
 	return false
 }
 
+// The scope the velocity is calculated for
 type AuthRuleV2GetResponseCurrentVersionParametersScope string
 
 const (
@@ -2670,12 +2765,15 @@ type AuthRuleV2GetResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion             `json:"period"`
-	Scope  AuthRuleV2GetResponseDraftVersionParametersScope `json:"scope"`
-	JSON   authRuleV2GetResponseDraftVersionParametersJSON  `json:"-"`
-	union  AuthRuleV2GetResponseDraftVersionParametersUnion
+	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// The scope the velocity is calculated for
+	Scope AuthRuleV2GetResponseDraftVersionParametersScope `json:"scope"`
+	JSON  authRuleV2GetResponseDraftVersionParametersJSON  `json:"-"`
+	union AuthRuleV2GetResponseDraftVersionParametersUnion
 }
 
 // authRuleV2GetResponseDraftVersionParametersJSON contains the JSON metadata for
@@ -2824,6 +2922,8 @@ type AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionPa
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -2900,6 +3000,8 @@ func (r authRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActio
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
+//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+//     represents the amount of cash being withdrawn or advanced.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -2934,6 +3036,7 @@ const (
 	AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
 	AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
 	AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
 	AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
@@ -2947,7 +3050,7 @@ const (
 
 func (r AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
 		return true
 	}
 	return false
@@ -3025,6 +3128,7 @@ func (r AuthRuleV2GetResponseDraftVersionParametersAction) IsKnown() bool {
 	return false
 }
 
+// The scope the velocity is calculated for
 type AuthRuleV2GetResponseDraftVersionParametersScope string
 
 const (
@@ -3111,6 +3215,9 @@ type AuthRuleV2UpdateResponse struct {
 	DraftVersion   AuthRuleV2UpdateResponseDraftVersion   `json:"draft_version,required,nullable"`
 	// The event stream during which the rule will be evaluated.
 	EventStream AuthRuleV2UpdateResponseEventStream `json:"event_stream,required"`
+	// Indicates whether this auth rule is managed by Lithic. If true, the rule cannot
+	// be modified or deleted by the user
+	LithicManaged bool `json:"lithic_managed,required"`
 	// Auth Rule Name
 	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
@@ -3142,6 +3249,7 @@ type authRuleV2UpdateResponseJSON struct {
 	CurrentVersion        apijson.Field
 	DraftVersion          apijson.Field
 	EventStream           apijson.Field
+	LithicManaged         apijson.Field
 	Name                  apijson.Field
 	ProgramLevel          apijson.Field
 	State                 apijson.Field
@@ -3207,12 +3315,15 @@ type AuthRuleV2UpdateResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion                  `json:"period"`
-	Scope  AuthRuleV2UpdateResponseCurrentVersionParametersScope `json:"scope"`
-	JSON   authRuleV2UpdateResponseCurrentVersionParametersJSON  `json:"-"`
-	union  AuthRuleV2UpdateResponseCurrentVersionParametersUnion
+	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// The scope the velocity is calculated for
+	Scope AuthRuleV2UpdateResponseCurrentVersionParametersScope `json:"scope"`
+	JSON  authRuleV2UpdateResponseCurrentVersionParametersJSON  `json:"-"`
+	union AuthRuleV2UpdateResponseCurrentVersionParametersUnion
 }
 
 // authRuleV2UpdateResponseCurrentVersionParametersJSON contains the JSON metadata
@@ -3361,6 +3472,8 @@ type AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationAct
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -3437,6 +3550,8 @@ func (r authRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorization
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
+//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+//     represents the amount of cash being withdrawn or advanced.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -3471,6 +3586,7 @@ const (
 	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
 	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
 	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
 	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
@@ -3484,7 +3600,7 @@ const (
 
 func (r AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
 		return true
 	}
 	return false
@@ -3562,6 +3678,7 @@ func (r AuthRuleV2UpdateResponseCurrentVersionParametersAction) IsKnown() bool {
 	return false
 }
 
+// The scope the velocity is calculated for
 type AuthRuleV2UpdateResponseCurrentVersionParametersScope string
 
 const (
@@ -3625,12 +3742,15 @@ type AuthRuleV2UpdateResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion                `json:"period"`
-	Scope  AuthRuleV2UpdateResponseDraftVersionParametersScope `json:"scope"`
-	JSON   authRuleV2UpdateResponseDraftVersionParametersJSON  `json:"-"`
-	union  AuthRuleV2UpdateResponseDraftVersionParametersUnion
+	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// The scope the velocity is calculated for
+	Scope AuthRuleV2UpdateResponseDraftVersionParametersScope `json:"scope"`
+	JSON  authRuleV2UpdateResponseDraftVersionParametersJSON  `json:"-"`
+	union AuthRuleV2UpdateResponseDraftVersionParametersUnion
 }
 
 // authRuleV2UpdateResponseDraftVersionParametersJSON contains the JSON metadata
@@ -3779,6 +3899,8 @@ type AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActio
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -3855,6 +3977,8 @@ func (r authRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationAc
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
+//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+//     represents the amount of cash being withdrawn or advanced.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -3889,6 +4013,7 @@ const (
 	AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
 	AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
 	AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
 	AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
@@ -3902,7 +4027,7 @@ const (
 
 func (r AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
 		return true
 	}
 	return false
@@ -3980,6 +4105,7 @@ func (r AuthRuleV2UpdateResponseDraftVersionParametersAction) IsKnown() bool {
 	return false
 }
 
+// The scope the velocity is calculated for
 type AuthRuleV2UpdateResponseDraftVersionParametersScope string
 
 const (
@@ -4066,6 +4192,9 @@ type AuthRuleV2ListResponse struct {
 	DraftVersion   AuthRuleV2ListResponseDraftVersion   `json:"draft_version,required,nullable"`
 	// The event stream during which the rule will be evaluated.
 	EventStream AuthRuleV2ListResponseEventStream `json:"event_stream,required"`
+	// Indicates whether this auth rule is managed by Lithic. If true, the rule cannot
+	// be modified or deleted by the user
+	LithicManaged bool `json:"lithic_managed,required"`
 	// Auth Rule Name
 	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
@@ -4097,6 +4226,7 @@ type authRuleV2ListResponseJSON struct {
 	CurrentVersion        apijson.Field
 	DraftVersion          apijson.Field
 	EventStream           apijson.Field
+	LithicManaged         apijson.Field
 	Name                  apijson.Field
 	ProgramLevel          apijson.Field
 	State                 apijson.Field
@@ -4162,12 +4292,15 @@ type AuthRuleV2ListResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion                `json:"period"`
-	Scope  AuthRuleV2ListResponseCurrentVersionParametersScope `json:"scope"`
-	JSON   authRuleV2ListResponseCurrentVersionParametersJSON  `json:"-"`
-	union  AuthRuleV2ListResponseCurrentVersionParametersUnion
+	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// The scope the velocity is calculated for
+	Scope AuthRuleV2ListResponseCurrentVersionParametersScope `json:"scope"`
+	JSON  authRuleV2ListResponseCurrentVersionParametersJSON  `json:"-"`
+	union AuthRuleV2ListResponseCurrentVersionParametersUnion
 }
 
 // authRuleV2ListResponseCurrentVersionParametersJSON contains the JSON metadata
@@ -4316,6 +4449,8 @@ type AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActio
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -4392,6 +4527,8 @@ func (r authRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationAc
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
+//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+//     represents the amount of cash being withdrawn or advanced.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -4426,6 +4563,7 @@ const (
 	AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
 	AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
 	AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
 	AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
@@ -4439,7 +4577,7 @@ const (
 
 func (r AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
 		return true
 	}
 	return false
@@ -4517,6 +4655,7 @@ func (r AuthRuleV2ListResponseCurrentVersionParametersAction) IsKnown() bool {
 	return false
 }
 
+// The scope the velocity is calculated for
 type AuthRuleV2ListResponseCurrentVersionParametersScope string
 
 const (
@@ -4580,12 +4719,15 @@ type AuthRuleV2ListResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion              `json:"period"`
-	Scope  AuthRuleV2ListResponseDraftVersionParametersScope `json:"scope"`
-	JSON   authRuleV2ListResponseDraftVersionParametersJSON  `json:"-"`
-	union  AuthRuleV2ListResponseDraftVersionParametersUnion
+	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// The scope the velocity is calculated for
+	Scope AuthRuleV2ListResponseDraftVersionParametersScope `json:"scope"`
+	JSON  authRuleV2ListResponseDraftVersionParametersJSON  `json:"-"`
+	union AuthRuleV2ListResponseDraftVersionParametersUnion
 }
 
 // authRuleV2ListResponseDraftVersionParametersJSON contains the JSON metadata for
@@ -4734,6 +4876,8 @@ type AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionP
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -4810,6 +4954,8 @@ func (r authRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActi
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
+//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+//     represents the amount of cash being withdrawn or advanced.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -4844,6 +4990,7 @@ const (
 	AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
 	AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
 	AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
 	AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
@@ -4857,7 +5004,7 @@ const (
 
 func (r AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
 		return true
 	}
 	return false
@@ -4935,6 +5082,7 @@ func (r AuthRuleV2ListResponseDraftVersionParametersAction) IsKnown() bool {
 	return false
 }
 
+// The scope the velocity is calculated for
 type AuthRuleV2ListResponseDraftVersionParametersScope string
 
 const (
@@ -5021,6 +5169,9 @@ type AuthRuleV2ApplyResponse struct {
 	DraftVersion   AuthRuleV2ApplyResponseDraftVersion   `json:"draft_version,required,nullable"`
 	// The event stream during which the rule will be evaluated.
 	EventStream AuthRuleV2ApplyResponseEventStream `json:"event_stream,required"`
+	// Indicates whether this auth rule is managed by Lithic. If true, the rule cannot
+	// be modified or deleted by the user
+	LithicManaged bool `json:"lithic_managed,required"`
 	// Auth Rule Name
 	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
@@ -5052,6 +5203,7 @@ type authRuleV2ApplyResponseJSON struct {
 	CurrentVersion        apijson.Field
 	DraftVersion          apijson.Field
 	EventStream           apijson.Field
+	LithicManaged         apijson.Field
 	Name                  apijson.Field
 	ProgramLevel          apijson.Field
 	State                 apijson.Field
@@ -5117,12 +5269,15 @@ type AuthRuleV2ApplyResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion                 `json:"period"`
-	Scope  AuthRuleV2ApplyResponseCurrentVersionParametersScope `json:"scope"`
-	JSON   authRuleV2ApplyResponseCurrentVersionParametersJSON  `json:"-"`
-	union  AuthRuleV2ApplyResponseCurrentVersionParametersUnion
+	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// The scope the velocity is calculated for
+	Scope AuthRuleV2ApplyResponseCurrentVersionParametersScope `json:"scope"`
+	JSON  authRuleV2ApplyResponseCurrentVersionParametersJSON  `json:"-"`
+	union AuthRuleV2ApplyResponseCurrentVersionParametersUnion
 }
 
 // authRuleV2ApplyResponseCurrentVersionParametersJSON contains the JSON metadata
@@ -5271,6 +5426,8 @@ type AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActi
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -5347,6 +5504,8 @@ func (r authRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationA
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
+//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+//     represents the amount of cash being withdrawn or advanced.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -5381,6 +5540,7 @@ const (
 	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
 	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
 	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
 	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
@@ -5394,7 +5554,7 @@ const (
 
 func (r AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
 		return true
 	}
 	return false
@@ -5472,6 +5632,7 @@ func (r AuthRuleV2ApplyResponseCurrentVersionParametersAction) IsKnown() bool {
 	return false
 }
 
+// The scope the velocity is calculated for
 type AuthRuleV2ApplyResponseCurrentVersionParametersScope string
 
 const (
@@ -5535,12 +5696,15 @@ type AuthRuleV2ApplyResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion               `json:"period"`
-	Scope  AuthRuleV2ApplyResponseDraftVersionParametersScope `json:"scope"`
-	JSON   authRuleV2ApplyResponseDraftVersionParametersJSON  `json:"-"`
-	union  AuthRuleV2ApplyResponseDraftVersionParametersUnion
+	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// The scope the velocity is calculated for
+	Scope AuthRuleV2ApplyResponseDraftVersionParametersScope `json:"scope"`
+	JSON  authRuleV2ApplyResponseDraftVersionParametersJSON  `json:"-"`
+	union AuthRuleV2ApplyResponseDraftVersionParametersUnion
 }
 
 // authRuleV2ApplyResponseDraftVersionParametersJSON contains the JSON metadata for
@@ -5689,6 +5853,8 @@ type AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationAction
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -5765,6 +5931,8 @@ func (r authRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationAct
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
+//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+//     represents the amount of cash being withdrawn or advanced.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -5799,6 +5967,7 @@ const (
 	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
 	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
 	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
 	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
@@ -5812,7 +5981,7 @@ const (
 
 func (r AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
 		return true
 	}
 	return false
@@ -5890,6 +6059,7 @@ func (r AuthRuleV2ApplyResponseDraftVersionParametersAction) IsKnown() bool {
 	return false
 }
 
+// The scope the velocity is calculated for
 type AuthRuleV2ApplyResponseDraftVersionParametersScope string
 
 const (
@@ -5976,6 +6146,9 @@ type AuthRuleV2DraftResponse struct {
 	DraftVersion   AuthRuleV2DraftResponseDraftVersion   `json:"draft_version,required,nullable"`
 	// The event stream during which the rule will be evaluated.
 	EventStream AuthRuleV2DraftResponseEventStream `json:"event_stream,required"`
+	// Indicates whether this auth rule is managed by Lithic. If true, the rule cannot
+	// be modified or deleted by the user
+	LithicManaged bool `json:"lithic_managed,required"`
 	// Auth Rule Name
 	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
@@ -6007,6 +6180,7 @@ type authRuleV2DraftResponseJSON struct {
 	CurrentVersion        apijson.Field
 	DraftVersion          apijson.Field
 	EventStream           apijson.Field
+	LithicManaged         apijson.Field
 	Name                  apijson.Field
 	ProgramLevel          apijson.Field
 	State                 apijson.Field
@@ -6072,12 +6246,15 @@ type AuthRuleV2DraftResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion                 `json:"period"`
-	Scope  AuthRuleV2DraftResponseCurrentVersionParametersScope `json:"scope"`
-	JSON   authRuleV2DraftResponseCurrentVersionParametersJSON  `json:"-"`
-	union  AuthRuleV2DraftResponseCurrentVersionParametersUnion
+	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// The scope the velocity is calculated for
+	Scope AuthRuleV2DraftResponseCurrentVersionParametersScope `json:"scope"`
+	JSON  authRuleV2DraftResponseCurrentVersionParametersJSON  `json:"-"`
+	union AuthRuleV2DraftResponseCurrentVersionParametersUnion
 }
 
 // authRuleV2DraftResponseCurrentVersionParametersJSON contains the JSON metadata
@@ -6226,6 +6403,8 @@ type AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActi
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -6302,6 +6481,8 @@ func (r authRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationA
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
+//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+//     represents the amount of cash being withdrawn or advanced.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -6336,6 +6517,7 @@ const (
 	AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
 	AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
 	AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
 	AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
@@ -6349,7 +6531,7 @@ const (
 
 func (r AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
 		return true
 	}
 	return false
@@ -6427,6 +6609,7 @@ func (r AuthRuleV2DraftResponseCurrentVersionParametersAction) IsKnown() bool {
 	return false
 }
 
+// The scope the velocity is calculated for
 type AuthRuleV2DraftResponseCurrentVersionParametersScope string
 
 const (
@@ -6490,12 +6673,15 @@ type AuthRuleV2DraftResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion               `json:"period"`
-	Scope  AuthRuleV2DraftResponseDraftVersionParametersScope `json:"scope"`
-	JSON   authRuleV2DraftResponseDraftVersionParametersJSON  `json:"-"`
-	union  AuthRuleV2DraftResponseDraftVersionParametersUnion
+	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// The scope the velocity is calculated for
+	Scope AuthRuleV2DraftResponseDraftVersionParametersScope `json:"scope"`
+	JSON  authRuleV2DraftResponseDraftVersionParametersJSON  `json:"-"`
+	union AuthRuleV2DraftResponseDraftVersionParametersUnion
 }
 
 // authRuleV2DraftResponseDraftVersionParametersJSON contains the JSON metadata for
@@ -6644,6 +6830,8 @@ type AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationAction
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -6720,6 +6908,8 @@ func (r authRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationAct
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
+//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+//     represents the amount of cash being withdrawn or advanced.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -6754,6 +6944,7 @@ const (
 	AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
 	AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
 	AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
 	AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
@@ -6767,7 +6958,7 @@ const (
 
 func (r AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
 		return true
 	}
 	return false
@@ -6845,6 +7036,7 @@ func (r AuthRuleV2DraftResponseDraftVersionParametersAction) IsKnown() bool {
 	return false
 }
 
+// The scope the velocity is calculated for
 type AuthRuleV2DraftResponseDraftVersionParametersScope string
 
 const (
@@ -6931,6 +7123,9 @@ type AuthRuleV2PromoteResponse struct {
 	DraftVersion   AuthRuleV2PromoteResponseDraftVersion   `json:"draft_version,required,nullable"`
 	// The event stream during which the rule will be evaluated.
 	EventStream AuthRuleV2PromoteResponseEventStream `json:"event_stream,required"`
+	// Indicates whether this auth rule is managed by Lithic. If true, the rule cannot
+	// be modified or deleted by the user
+	LithicManaged bool `json:"lithic_managed,required"`
 	// Auth Rule Name
 	Name string `json:"name,required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
@@ -6962,6 +7157,7 @@ type authRuleV2PromoteResponseJSON struct {
 	CurrentVersion        apijson.Field
 	DraftVersion          apijson.Field
 	EventStream           apijson.Field
+	LithicManaged         apijson.Field
 	Name                  apijson.Field
 	ProgramLevel          apijson.Field
 	State                 apijson.Field
@@ -7027,12 +7223,15 @@ type AuthRuleV2PromoteResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion                   `json:"period"`
-	Scope  AuthRuleV2PromoteResponseCurrentVersionParametersScope `json:"scope"`
-	JSON   authRuleV2PromoteResponseCurrentVersionParametersJSON  `json:"-"`
-	union  AuthRuleV2PromoteResponseCurrentVersionParametersUnion
+	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// The scope the velocity is calculated for
+	Scope AuthRuleV2PromoteResponseCurrentVersionParametersScope `json:"scope"`
+	JSON  authRuleV2PromoteResponseCurrentVersionParametersJSON  `json:"-"`
+	union AuthRuleV2PromoteResponseCurrentVersionParametersUnion
 }
 
 // authRuleV2PromoteResponseCurrentVersionParametersJSON contains the JSON metadata
@@ -7181,6 +7380,8 @@ type AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationAc
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -7257,6 +7458,8 @@ func (r authRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizatio
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
+//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+//     represents the amount of cash being withdrawn or advanced.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -7291,6 +7494,7 @@ const (
 	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
 	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
 	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
 	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
@@ -7304,7 +7508,7 @@ const (
 
 func (r AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
 		return true
 	}
 	return false
@@ -7382,6 +7586,7 @@ func (r AuthRuleV2PromoteResponseCurrentVersionParametersAction) IsKnown() bool 
 	return false
 }
 
+// The scope the velocity is calculated for
 type AuthRuleV2PromoteResponseCurrentVersionParametersScope string
 
 const (
@@ -7445,12 +7650,15 @@ type AuthRuleV2PromoteResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion                 `json:"period"`
-	Scope  AuthRuleV2PromoteResponseDraftVersionParametersScope `json:"scope"`
-	JSON   authRuleV2PromoteResponseDraftVersionParametersJSON  `json:"-"`
-	union  AuthRuleV2PromoteResponseDraftVersionParametersUnion
+	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// The scope the velocity is calculated for
+	Scope AuthRuleV2PromoteResponseDraftVersionParametersScope `json:"scope"`
+	JSON  authRuleV2PromoteResponseDraftVersionParametersJSON  `json:"-"`
+	union AuthRuleV2PromoteResponseDraftVersionParametersUnion
 }
 
 // authRuleV2PromoteResponseDraftVersionParametersJSON contains the JSON metadata
@@ -7599,6 +7807,8 @@ type AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActi
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -7675,6 +7885,8 @@ func (r authRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationA
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
+//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+//     represents the amount of cash being withdrawn or advanced.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -7709,6 +7921,7 @@ const (
 	AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
 	AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
 	AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
 	AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
@@ -7722,7 +7935,7 @@ const (
 
 func (r AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
 		return true
 	}
 	return false
@@ -7800,6 +8013,7 @@ func (r AuthRuleV2PromoteResponseDraftVersionParametersAction) IsKnown() bool {
 	return false
 }
 
+// The scope the velocity is calculated for
 type AuthRuleV2PromoteResponseDraftVersionParametersScope string
 
 const (
@@ -7891,6 +8105,176 @@ func (r *AuthRuleV2ReportResponse) UnmarshalJSON(data []byte) (err error) {
 }
 
 func (r authRuleV2ReportResponseJSON) RawJSON() string {
+	return r.raw
+}
+
+type AuthRuleV2GetFeaturesResponse struct {
+	// Timestamp at which the Features were evaluated
+	Evaluated time.Time `json:"evaluated,required" format:"date-time"`
+	// Calculated Features used for evaluation of the provided Auth Rule
+	Features []AuthRuleV2GetFeaturesResponseFeature `json:"features,required"`
+	JSON     authRuleV2GetFeaturesResponseJSON      `json:"-"`
+}
+
+// authRuleV2GetFeaturesResponseJSON contains the JSON metadata for the struct
+// [AuthRuleV2GetFeaturesResponse]
+type authRuleV2GetFeaturesResponseJSON struct {
+	Evaluated   apijson.Field
+	Features    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetFeaturesResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetFeaturesResponseJSON) RawJSON() string {
+	return r.raw
+}
+
+type AuthRuleV2GetFeaturesResponseFeature struct {
+	Filters AuthRuleV2GetFeaturesResponseFeaturesFilters `json:"filters,required"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Period VelocityLimitParamsPeriodWindowUnion `json:"period,required"`
+	// The scope the velocity is calculated for
+	Scope AuthRuleV2GetFeaturesResponseFeaturesScope `json:"scope,required"`
+	Value AuthRuleV2GetFeaturesResponseFeaturesValue `json:"value,required"`
+	JSON  authRuleV2GetFeaturesResponseFeatureJSON   `json:"-"`
+}
+
+// authRuleV2GetFeaturesResponseFeatureJSON contains the JSON metadata for the
+// struct [AuthRuleV2GetFeaturesResponseFeature]
+type authRuleV2GetFeaturesResponseFeatureJSON struct {
+	Filters     apijson.Field
+	Period      apijson.Field
+	Scope       apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetFeaturesResponseFeature) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetFeaturesResponseFeatureJSON) RawJSON() string {
+	return r.raw
+}
+
+type AuthRuleV2GetFeaturesResponseFeaturesFilters struct {
+	// ISO-3166-1 alpha-3 Country Codes to exclude from the velocity calculation.
+	// Transactions matching any of the provided will be excluded from the calculated
+	// velocity.
+	ExcludeCountries []string `json:"exclude_countries,nullable"`
+	// Merchant Category Codes to exclude from the velocity calculation. Transactions
+	// matching this MCC will be excluded from the calculated velocity.
+	ExcludeMccs []string `json:"exclude_mccs,nullable"`
+	// ISO-3166-1 alpha-3 Country Codes to include in the velocity calculation.
+	// Transactions not matching any of the provided will not be included in the
+	// calculated velocity.
+	IncludeCountries []string `json:"include_countries,nullable"`
+	// Merchant Category Codes to include in the velocity calculation. Transactions not
+	// matching this MCC will not be included in the calculated velocity.
+	IncludeMccs []string `json:"include_mccs,nullable"`
+	// PAN entry modes to include in the velocity calculation. Transactions not
+	// matching any of the provided will not be included in the calculated velocity.
+	IncludePanEntryModes []AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode `json:"include_pan_entry_modes,nullable"`
+	JSON                 authRuleV2GetFeaturesResponseFeaturesFiltersJSON                  `json:"-"`
+}
+
+// authRuleV2GetFeaturesResponseFeaturesFiltersJSON contains the JSON metadata for
+// the struct [AuthRuleV2GetFeaturesResponseFeaturesFilters]
+type authRuleV2GetFeaturesResponseFeaturesFiltersJSON struct {
+	ExcludeCountries     apijson.Field
+	ExcludeMccs          apijson.Field
+	IncludeCountries     apijson.Field
+	IncludeMccs          apijson.Field
+	IncludePanEntryModes apijson.Field
+	raw                  string
+	ExtraFields          map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetFeaturesResponseFeaturesFilters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetFeaturesResponseFeaturesFiltersJSON) RawJSON() string {
+	return r.raw
+}
+
+type AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode string
+
+const (
+	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeAutoEntry           AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "AUTO_ENTRY"
+	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeBarCode             AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "BAR_CODE"
+	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeContactless         AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "CONTACTLESS"
+	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeCredentialOnFile    AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "CREDENTIAL_ON_FILE"
+	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeEcommerce           AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "ECOMMERCE"
+	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeErrorKeyed          AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "ERROR_KEYED"
+	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeErrorMagneticStripe AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "ERROR_MAGNETIC_STRIPE"
+	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeIcc                 AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "ICC"
+	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeKeyEntered          AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "KEY_ENTERED"
+	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeMagneticStripe      AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "MAGNETIC_STRIPE"
+	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeManual              AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "MANUAL"
+	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeOcr                 AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "OCR"
+	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeSecureCardless      AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "SECURE_CARDLESS"
+	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeUnspecified         AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "UNSPECIFIED"
+	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeUnknown             AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "UNKNOWN"
+)
+
+func (r AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeAutoEntry, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeBarCode, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeContactless, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeCredentialOnFile, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeEcommerce, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeErrorKeyed, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeErrorMagneticStripe, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeIcc, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeKeyEntered, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeMagneticStripe, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeManual, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeOcr, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeSecureCardless, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeUnspecified, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeUnknown:
+		return true
+	}
+	return false
+}
+
+// The scope the velocity is calculated for
+type AuthRuleV2GetFeaturesResponseFeaturesScope string
+
+const (
+	AuthRuleV2GetFeaturesResponseFeaturesScopeCard    AuthRuleV2GetFeaturesResponseFeaturesScope = "CARD"
+	AuthRuleV2GetFeaturesResponseFeaturesScopeAccount AuthRuleV2GetFeaturesResponseFeaturesScope = "ACCOUNT"
+)
+
+func (r AuthRuleV2GetFeaturesResponseFeaturesScope) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetFeaturesResponseFeaturesScopeCard, AuthRuleV2GetFeaturesResponseFeaturesScopeAccount:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2GetFeaturesResponseFeaturesValue struct {
+	// Amount (in cents) for the given Auth Rule that is used as input for calculating
+	// the rule. For Velocity Limit rules this would be the calculated Velocity. For
+	// Conditional Rules using CARD*TRANSACTION_COUNT*\* this will be 0
+	Amount int64 `json:"amount,required"`
+	// Number of velocity impacting transactions matching the given scope, period and
+	// filters
+	Count int64                                          `json:"count,required"`
+	JSON  authRuleV2GetFeaturesResponseFeaturesValueJSON `json:"-"`
+}
+
+// authRuleV2GetFeaturesResponseFeaturesValueJSON contains the JSON metadata for
+// the struct [AuthRuleV2GetFeaturesResponseFeaturesValue]
+type authRuleV2GetFeaturesResponseFeaturesValueJSON struct {
+	Amount      apijson.Field
+	Count       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetFeaturesResponseFeaturesValue) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetFeaturesResponseFeaturesValueJSON) RawJSON() string {
 	return r.raw
 }
 
@@ -8062,10 +8446,13 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters struct 
 	// authorization).
 	LimitCount param.Field[int64]       `json:"limit_count"`
 	Merchants  param.Field[interface{}] `json:"merchants"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period param.Field[VelocityLimitParamsPeriodWindowUnion]                                     `json:"period"`
-	Scope  param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersScope] `json:"scope"`
+	Period param.Field[VelocityLimitParamsPeriodWindowUnion] `json:"period"`
+	// The scope the velocity is calculated for
+	Scope param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersScope] `json:"scope"`
 }
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters) MarshalJSON() (data []byte, err error) {
@@ -8141,6 +8528,8 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditio
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -8201,6 +8590,8 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersCondi
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
+//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+//     represents the amount of cash being withdrawn or advanced.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -8235,6 +8626,7 @@ const (
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
@@ -8248,7 +8640,7 @@ const (
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
 		return true
 	}
 	return false
@@ -8307,6 +8699,7 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersActio
 	return false
 }
 
+// The scope the velocity is calculated for
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersScope string
 
 const (
@@ -8409,10 +8802,13 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters struct {
 	// authorization).
 	LimitCount param.Field[int64]       `json:"limit_count"`
 	Merchants  param.Field[interface{}] `json:"merchants"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period param.Field[VelocityLimitParamsPeriodWindowUnion]                                  `json:"period"`
-	Scope  param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersScope] `json:"scope"`
+	Period param.Field[VelocityLimitParamsPeriodWindowUnion] `json:"period"`
+	// The scope the velocity is calculated for
+	Scope param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersScope] `json:"scope"`
 }
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters) MarshalJSON() (data []byte, err error) {
@@ -8488,6 +8884,8 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -8548,6 +8946,8 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditio
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
+//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+//     represents the amount of cash being withdrawn or advanced.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -8582,6 +8982,7 @@ const (
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
@@ -8595,7 +8996,7 @@ const (
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
 		return true
 	}
 	return false
@@ -8654,6 +9055,7 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersAction) 
 	return false
 }
 
+// The scope the velocity is calculated for
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersScope string
 
 const (
@@ -8758,10 +9160,13 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters struct {
 	// authorization).
 	LimitCount param.Field[int64]       `json:"limit_count"`
 	Merchants  param.Field[interface{}] `json:"merchants"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period param.Field[VelocityLimitParamsPeriodWindowUnion]                                    `json:"period"`
-	Scope  param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersScope] `json:"scope"`
+	Period param.Field[VelocityLimitParamsPeriodWindowUnion] `json:"period"`
+	// The scope the velocity is calculated for
+	Scope param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersScope] `json:"scope"`
 }
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters) MarshalJSON() (data []byte, err error) {
@@ -8837,6 +9242,8 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersCondition
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -8897,6 +9304,8 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersCondit
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
+//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+//     represents the amount of cash being withdrawn or advanced.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -8931,6 +9340,7 @@ const (
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
@@ -8944,7 +9354,7 @@ const (
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
 		return true
 	}
 	return false
@@ -9003,6 +9413,7 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersAction
 	return false
 }
 
+// The scope the velocity is calculated for
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersScope string
 
 const (
@@ -9416,10 +9827,13 @@ type AuthRuleV2DraftParamsParameters struct {
 	// authorization).
 	LimitCount param.Field[int64]       `json:"limit_count"`
 	Merchants  param.Field[interface{}] `json:"merchants"`
+	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+	//
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
 	Period param.Field[VelocityLimitParamsPeriodWindowUnion] `json:"period"`
-	Scope  param.Field[AuthRuleV2DraftParamsParametersScope] `json:"scope"`
+	// The scope the velocity is calculated for
+	Scope param.Field[AuthRuleV2DraftParamsParametersScope] `json:"scope"`
 }
 
 func (r AuthRuleV2DraftParamsParameters) MarshalJSON() (data []byte, err error) {
@@ -9494,6 +9908,8 @@ type AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersCond
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -9554,6 +9970,8 @@ func (r AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersC
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder.
+//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+//     represents the amount of cash being withdrawn or advanced.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
@@ -9588,6 +10006,7 @@ const (
 	AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
 	AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
 	AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
 	AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
 	AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
@@ -9601,7 +10020,7 @@ const (
 
 func (r AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
 		return true
 	}
 	return false
@@ -9660,6 +10079,7 @@ func (r AuthRuleV2DraftParamsParametersAction) IsKnown() bool {
 	return false
 }
 
+// The scope the velocity is calculated for
 type AuthRuleV2DraftParamsParametersScope string
 
 const (
@@ -9673,6 +10093,20 @@ func (r AuthRuleV2DraftParamsParametersScope) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+type AuthRuleV2GetFeaturesParams struct {
+	AccountToken param.Field[string] `query:"account_token" format:"uuid"`
+	CardToken    param.Field[string] `query:"card_token" format:"uuid"`
+}
+
+// URLQuery serializes [AuthRuleV2GetFeaturesParams]'s query parameters as
+// `url.Values`.
+func (r AuthRuleV2GetFeaturesParams) URLQuery() (v url.Values) {
+	return apiquery.MarshalWithSettings(r, apiquery.QuerySettings{
+		ArrayFormat:  apiquery.ArrayQueryFormatComma,
+		NestedFormat: apiquery.NestedQueryFormatBrackets,
+	})
 }
 
 type AuthRuleV2GetReportParams struct {
