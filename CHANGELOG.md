@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.94.0 (2025-10-08)
+
+Full Changelog: [v0.93.0...v0.94.0](https://github.com/lithic-com/lithic-go/compare/v0.93.0...v0.94.0)
+
+### Features
+
+* **api:** adds support for Auto-Collections ([bfe4ee4](https://github.com/lithic-com/lithic-go/commit/bfe4ee4e86904ba76ffbd1e0d4b2cb6a5bfe1479))
+
 ## 0.93.0 (2025-09-30)
 
 Full Changelog: [v0.92.2...v0.93.0](https://github.com/lithic-com/lithic-go/compare/v0.92.2...v0.93.0)
