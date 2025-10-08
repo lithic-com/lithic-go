@@ -52,9 +52,11 @@ func TestAuthRuleV2UpdateWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.AuthRuleV2UpdateParams{
-			Body: lithic.AuthRuleV2UpdateParamsBodyObject{
-				Name:  lithic.F("name"),
-				State: lithic.F(lithic.AuthRuleV2UpdateParamsBodyObjectStateInactive),
+			Body: lithic.AuthRuleV2UpdateParamsBodyAccountLevelRule{
+				AccountTokens:         lithic.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+				BusinessAccountTokens: lithic.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
+				Name:                  lithic.F("name"),
+				State:                 lithic.F(lithic.AuthRuleV2UpdateParamsBodyAccountLevelRuleStateInactive),
 			},
 		},
 	)

@@ -33,13 +33,13 @@ func NewReportService(opts ...option.RequestOption) (r *ReportService) {
 type SettlementDetail struct {
 	// Globally unique identifier denoting the Settlement Detail.
 	Token string `json:"token,required" format:"uuid"`
-	// The most granular ID the network settles with (e.g., ICA for Mastercard, FTSRE
-	// for Visa).
+	// Globally unique identifier denoting the account that the associated transaction
+	// occurred on.
 	AccountToken string `json:"account_token,required" format:"uuid"`
 	// Globally unique identifier denoting the card program that the associated
-	// Transaction occurred on.
+	// transaction occurred on.
 	CardProgramToken string `json:"card_program_token,required" format:"uuid"`
-	// Globally unique identifier denoting the card that the associated Transaction
+	// Globally unique identifier denoting the card that the associated transaction
 	// occurred on.
 	CardToken string `json:"card_token,required" format:"uuid"`
 	// Date and time when the transaction first occurred. UTC time zone.
