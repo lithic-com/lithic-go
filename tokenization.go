@@ -212,6 +212,8 @@ type Tokenization struct {
 	CardToken string `json:"card_token,required" format:"uuid"`
 	// Date and time when the tokenization first occurred. UTC time zone.
 	CreatedAt time.Time `json:"created_at,required" format:"date-time"`
+	// The device identifier associated with the tokenization.
+	DeviceID string `json:"device_id,required,nullable"`
 	// The dynamic pan assigned to the token by the network.
 	Dpan string `json:"dpan,required,nullable"`
 	// The status of the tokenization request
@@ -243,6 +245,7 @@ type tokenizationJSON struct {
 	AccountToken              apijson.Field
 	CardToken                 apijson.Field
 	CreatedAt                 apijson.Field
+	DeviceID                  apijson.Field
 	Dpan                      apijson.Field
 	Status                    apijson.Field
 	TokenRequestorName        apijson.Field

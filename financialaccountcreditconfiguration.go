@@ -61,7 +61,8 @@ func (r *FinancialAccountCreditConfigurationService) Update(ctx context.Context,
 
 type FinancialAccountCreditConfig struct {
 	// Globally unique identifier for the account
-	AccountToken string `json:"account_token,required" format:"uuid"`
+	AccountToken                string                                                  `json:"account_token,required" format:"uuid"`
+	AutoCollectionConfiguration FinancialAccountCreditConfigAutoCollectionConfiguration `json:"auto_collection_configuration,required"`
 	// Reason for the financial account being marked as Charged Off
 	ChargedOffReason FinancialAccountCreditConfigChargedOffReason `json:"charged_off_reason,required,nullable"`
 	CreditLimit      int64                                        `json:"credit_limit,required,nullable"`
@@ -79,16 +80,17 @@ type FinancialAccountCreditConfig struct {
 // financialAccountCreditConfigJSON contains the JSON metadata for the struct
 // [FinancialAccountCreditConfig]
 type financialAccountCreditConfigJSON struct {
-	AccountToken             apijson.Field
-	ChargedOffReason         apijson.Field
-	CreditLimit              apijson.Field
-	CreditProductToken       apijson.Field
-	ExternalBankAccountToken apijson.Field
-	FinancialAccountState    apijson.Field
-	IsSpendBlocked           apijson.Field
-	Tier                     apijson.Field
-	raw                      string
-	ExtraFields              map[string]apijson.Field
+	AccountToken                apijson.Field
+	AutoCollectionConfiguration apijson.Field
+	ChargedOffReason            apijson.Field
+	CreditLimit                 apijson.Field
+	CreditProductToken          apijson.Field
+	ExternalBankAccountToken    apijson.Field
+	FinancialAccountState       apijson.Field
+	IsSpendBlocked              apijson.Field
+	Tier                        apijson.Field
+	raw                         string
+	ExtraFields                 map[string]apijson.Field
 }
 
 func (r *FinancialAccountCreditConfig) UnmarshalJSON(data []byte) (err error) {
@@ -96,6 +98,29 @@ func (r *FinancialAccountCreditConfig) UnmarshalJSON(data []byte) (err error) {
 }
 
 func (r financialAccountCreditConfigJSON) RawJSON() string {
+	return r.raw
+}
+
+type FinancialAccountCreditConfigAutoCollectionConfiguration struct {
+	// If auto collection is enabled for this account
+	AutoCollectionEnabled bool                                                        `json:"auto_collection_enabled,required"`
+	JSON                  financialAccountCreditConfigAutoCollectionConfigurationJSON `json:"-"`
+}
+
+// financialAccountCreditConfigAutoCollectionConfigurationJSON contains the JSON
+// metadata for the struct
+// [FinancialAccountCreditConfigAutoCollectionConfiguration]
+type financialAccountCreditConfigAutoCollectionConfigurationJSON struct {
+	AutoCollectionEnabled apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
+}
+
+func (r *FinancialAccountCreditConfigAutoCollectionConfiguration) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r financialAccountCreditConfigAutoCollectionConfigurationJSON) RawJSON() string {
 	return r.raw
 }
 
@@ -134,7 +159,8 @@ func (r FinancialAccountCreditConfigFinancialAccountState) IsKnown() bool {
 }
 
 type FinancialAccountCreditConfigurationUpdateParams struct {
-	CreditLimit param.Field[int64] `json:"credit_limit"`
+	AutoCollectionConfiguration param.Field[FinancialAccountCreditConfigurationUpdateParamsAutoCollectionConfiguration] `json:"auto_collection_configuration"`
+	CreditLimit                 param.Field[int64]                                                                      `json:"credit_limit"`
 	// Globally unique identifier for the credit product
 	CreditProductToken       param.Field[string] `json:"credit_product_token"`
 	ExternalBankAccountToken param.Field[string] `json:"external_bank_account_token" format:"uuid"`
@@ -143,5 +169,14 @@ type FinancialAccountCreditConfigurationUpdateParams struct {
 }
 
 func (r FinancialAccountCreditConfigurationUpdateParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+type FinancialAccountCreditConfigurationUpdateParamsAutoCollectionConfiguration struct {
+	// If auto collection is enabled for this account
+	AutoCollectionEnabled param.Field[bool] `json:"auto_collection_enabled"`
+}
+
+func (r FinancialAccountCreditConfigurationUpdateParamsAutoCollectionConfiguration) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
