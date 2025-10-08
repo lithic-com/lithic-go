@@ -97,8 +97,7 @@ func (r *BookTransferService) Reverse(ctx context.Context, bookTransferToken str
 type BookTransferResponse struct {
 	// Customer-provided token that will serve as an idempotency token. This token will
 	// become the transaction token.
-	Token string `json:"token,required" format:"uuid"`
-	// Category of the book transfer
+	Token    string                       `json:"token,required" format:"uuid"`
 	Category BookTransferResponseCategory `json:"category,required"`
 	// Date and time when the transfer occurred. UTC time zone.
 	Created time.Time `json:"created,required" format:"date-time"`
@@ -170,7 +169,6 @@ func (r bookTransferResponseJSON) RawJSON() string {
 	return r.raw
 }
 
-// Category of the book transfer
 type BookTransferResponseCategory string
 
 const (
@@ -179,13 +177,15 @@ const (
 	BookTransferResponseCategoryDerecognition    BookTransferResponseCategory = "DERECOGNITION"
 	BookTransferResponseCategoryDispute          BookTransferResponseCategory = "DISPUTE"
 	BookTransferResponseCategoryFee              BookTransferResponseCategory = "FEE"
+	BookTransferResponseCategoryInternal         BookTransferResponseCategory = "INTERNAL"
 	BookTransferResponseCategoryReward           BookTransferResponseCategory = "REWARD"
+	BookTransferResponseCategoryProgramFunding   BookTransferResponseCategory = "PROGRAM_FUNDING"
 	BookTransferResponseCategoryTransfer         BookTransferResponseCategory = "TRANSFER"
 )
 
 func (r BookTransferResponseCategory) IsKnown() bool {
 	switch r {
-	case BookTransferResponseCategoryAdjustment, BookTransferResponseCategoryBalanceOrFunding, BookTransferResponseCategoryDerecognition, BookTransferResponseCategoryDispute, BookTransferResponseCategoryFee, BookTransferResponseCategoryReward, BookTransferResponseCategoryTransfer:
+	case BookTransferResponseCategoryAdjustment, BookTransferResponseCategoryBalanceOrFunding, BookTransferResponseCategoryDerecognition, BookTransferResponseCategoryDispute, BookTransferResponseCategoryFee, BookTransferResponseCategoryInternal, BookTransferResponseCategoryReward, BookTransferResponseCategoryProgramFunding, BookTransferResponseCategoryTransfer:
 		return true
 	}
 	return false
@@ -272,6 +272,7 @@ func (r BookTransferResponseEventsResult) IsKnown() bool {
 type BookTransferResponseEventsType string
 
 const (
+	BookTransferResponseEventsTypeAtmBalanceInquiry          BookTransferResponseEventsType = "ATM_BALANCE_INQUIRY"
 	BookTransferResponseEventsTypeAtmWithdrawal              BookTransferResponseEventsType = "ATM_WITHDRAWAL"
 	BookTransferResponseEventsTypeAtmDecline                 BookTransferResponseEventsType = "ATM_DECLINE"
 	BookTransferResponseEventsTypeInternationalAtmWithdrawal BookTransferResponseEventsType = "INTERNATIONAL_ATM_WITHDRAWAL"
@@ -310,7 +311,7 @@ const (
 
 func (r BookTransferResponseEventsType) IsKnown() bool {
 	switch r {
-	case BookTransferResponseEventsTypeAtmWithdrawal, BookTransferResponseEventsTypeAtmDecline, BookTransferResponseEventsTypeInternationalAtmWithdrawal, BookTransferResponseEventsTypeInactivity, BookTransferResponseEventsTypeStatement, BookTransferResponseEventsTypeMonthly, BookTransferResponseEventsTypeQuarterly, BookTransferResponseEventsTypeAnnual, BookTransferResponseEventsTypeCustomerService, BookTransferResponseEventsTypeAccountMaintenance, BookTransferResponseEventsTypeAccountActivation, BookTransferResponseEventsTypeAccountClosure, BookTransferResponseEventsTypeCardReplacement, BookTransferResponseEventsTypeCardDelivery, BookTransferResponseEventsTypeCardCreate, BookTransferResponseEventsTypeCurrencyConversion, BookTransferResponseEventsTypeInterest, BookTransferResponseEventsTypeLatePayment, BookTransferResponseEventsTypeBillPayment, BookTransferResponseEventsTypeCashBack, BookTransferResponseEventsTypeAccountToAccount, BookTransferResponseEventsTypeCardToCard, BookTransferResponseEventsTypeDisburse, BookTransferResponseEventsTypeBillingError, BookTransferResponseEventsTypeLossWriteOff, BookTransferResponseEventsTypeExpiredCard, BookTransferResponseEventsTypeEarlyDerecognition, BookTransferResponseEventsTypeEscheatment, BookTransferResponseEventsTypeInactivityFeeDown, BookTransferResponseEventsTypeProvisionalCredit, BookTransferResponseEventsTypeDisputeWon, BookTransferResponseEventsTypeService, BookTransferResponseEventsTypeTransfer, BookTransferResponseEventsTypeCollection:
+	case BookTransferResponseEventsTypeAtmBalanceInquiry, BookTransferResponseEventsTypeAtmWithdrawal, BookTransferResponseEventsTypeAtmDecline, BookTransferResponseEventsTypeInternationalAtmWithdrawal, BookTransferResponseEventsTypeInactivity, BookTransferResponseEventsTypeStatement, BookTransferResponseEventsTypeMonthly, BookTransferResponseEventsTypeQuarterly, BookTransferResponseEventsTypeAnnual, BookTransferResponseEventsTypeCustomerService, BookTransferResponseEventsTypeAccountMaintenance, BookTransferResponseEventsTypeAccountActivation, BookTransferResponseEventsTypeAccountClosure, BookTransferResponseEventsTypeCardReplacement, BookTransferResponseEventsTypeCardDelivery, BookTransferResponseEventsTypeCardCreate, BookTransferResponseEventsTypeCurrencyConversion, BookTransferResponseEventsTypeInterest, BookTransferResponseEventsTypeLatePayment, BookTransferResponseEventsTypeBillPayment, BookTransferResponseEventsTypeCashBack, BookTransferResponseEventsTypeAccountToAccount, BookTransferResponseEventsTypeCardToCard, BookTransferResponseEventsTypeDisburse, BookTransferResponseEventsTypeBillingError, BookTransferResponseEventsTypeLossWriteOff, BookTransferResponseEventsTypeExpiredCard, BookTransferResponseEventsTypeEarlyDerecognition, BookTransferResponseEventsTypeEscheatment, BookTransferResponseEventsTypeInactivityFeeDown, BookTransferResponseEventsTypeProvisionalCredit, BookTransferResponseEventsTypeDisputeWon, BookTransferResponseEventsTypeService, BookTransferResponseEventsTypeTransfer, BookTransferResponseEventsTypeCollection:
 		return true
 	}
 	return false
@@ -381,8 +382,7 @@ func (r bookTransferResponseTransactionSeriesJSON) RawJSON() string {
 type BookTransferNewParams struct {
 	// Amount to be transferred in the currency's smallest unit (e.g., cents for USD).
 	// This should always be a positive value.
-	Amount param.Field[int64] `json:"amount,required"`
-	// Category of the book transfer
+	Amount   param.Field[int64]                         `json:"amount,required"`
 	Category param.Field[BookTransferNewParamsCategory] `json:"category,required"`
 	// Globally unique identifier for the financial account or card that will send the
 	// funds. Accepted type dependent on the program's use case.
@@ -409,7 +409,6 @@ func (r BookTransferNewParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-// Category of the book transfer
 type BookTransferNewParamsCategory string
 
 const (
@@ -418,13 +417,15 @@ const (
 	BookTransferNewParamsCategoryDerecognition    BookTransferNewParamsCategory = "DERECOGNITION"
 	BookTransferNewParamsCategoryDispute          BookTransferNewParamsCategory = "DISPUTE"
 	BookTransferNewParamsCategoryFee              BookTransferNewParamsCategory = "FEE"
+	BookTransferNewParamsCategoryInternal         BookTransferNewParamsCategory = "INTERNAL"
 	BookTransferNewParamsCategoryReward           BookTransferNewParamsCategory = "REWARD"
+	BookTransferNewParamsCategoryProgramFunding   BookTransferNewParamsCategory = "PROGRAM_FUNDING"
 	BookTransferNewParamsCategoryTransfer         BookTransferNewParamsCategory = "TRANSFER"
 )
 
 func (r BookTransferNewParamsCategory) IsKnown() bool {
 	switch r {
-	case BookTransferNewParamsCategoryAdjustment, BookTransferNewParamsCategoryBalanceOrFunding, BookTransferNewParamsCategoryDerecognition, BookTransferNewParamsCategoryDispute, BookTransferNewParamsCategoryFee, BookTransferNewParamsCategoryReward, BookTransferNewParamsCategoryTransfer:
+	case BookTransferNewParamsCategoryAdjustment, BookTransferNewParamsCategoryBalanceOrFunding, BookTransferNewParamsCategoryDerecognition, BookTransferNewParamsCategoryDispute, BookTransferNewParamsCategoryFee, BookTransferNewParamsCategoryInternal, BookTransferNewParamsCategoryReward, BookTransferNewParamsCategoryProgramFunding, BookTransferNewParamsCategoryTransfer:
 		return true
 	}
 	return false
@@ -434,6 +435,7 @@ func (r BookTransferNewParamsCategory) IsKnown() bool {
 type BookTransferNewParamsType string
 
 const (
+	BookTransferNewParamsTypeAtmBalanceInquiry          BookTransferNewParamsType = "ATM_BALANCE_INQUIRY"
 	BookTransferNewParamsTypeAtmWithdrawal              BookTransferNewParamsType = "ATM_WITHDRAWAL"
 	BookTransferNewParamsTypeAtmDecline                 BookTransferNewParamsType = "ATM_DECLINE"
 	BookTransferNewParamsTypeInternationalAtmWithdrawal BookTransferNewParamsType = "INTERNATIONAL_ATM_WITHDRAWAL"
@@ -472,7 +474,7 @@ const (
 
 func (r BookTransferNewParamsType) IsKnown() bool {
 	switch r {
-	case BookTransferNewParamsTypeAtmWithdrawal, BookTransferNewParamsTypeAtmDecline, BookTransferNewParamsTypeInternationalAtmWithdrawal, BookTransferNewParamsTypeInactivity, BookTransferNewParamsTypeStatement, BookTransferNewParamsTypeMonthly, BookTransferNewParamsTypeQuarterly, BookTransferNewParamsTypeAnnual, BookTransferNewParamsTypeCustomerService, BookTransferNewParamsTypeAccountMaintenance, BookTransferNewParamsTypeAccountActivation, BookTransferNewParamsTypeAccountClosure, BookTransferNewParamsTypeCardReplacement, BookTransferNewParamsTypeCardDelivery, BookTransferNewParamsTypeCardCreate, BookTransferNewParamsTypeCurrencyConversion, BookTransferNewParamsTypeInterest, BookTransferNewParamsTypeLatePayment, BookTransferNewParamsTypeBillPayment, BookTransferNewParamsTypeCashBack, BookTransferNewParamsTypeAccountToAccount, BookTransferNewParamsTypeCardToCard, BookTransferNewParamsTypeDisburse, BookTransferNewParamsTypeBillingError, BookTransferNewParamsTypeLossWriteOff, BookTransferNewParamsTypeExpiredCard, BookTransferNewParamsTypeEarlyDerecognition, BookTransferNewParamsTypeEscheatment, BookTransferNewParamsTypeInactivityFeeDown, BookTransferNewParamsTypeProvisionalCredit, BookTransferNewParamsTypeDisputeWon, BookTransferNewParamsTypeService, BookTransferNewParamsTypeTransfer, BookTransferNewParamsTypeCollection:
+	case BookTransferNewParamsTypeAtmBalanceInquiry, BookTransferNewParamsTypeAtmWithdrawal, BookTransferNewParamsTypeAtmDecline, BookTransferNewParamsTypeInternationalAtmWithdrawal, BookTransferNewParamsTypeInactivity, BookTransferNewParamsTypeStatement, BookTransferNewParamsTypeMonthly, BookTransferNewParamsTypeQuarterly, BookTransferNewParamsTypeAnnual, BookTransferNewParamsTypeCustomerService, BookTransferNewParamsTypeAccountMaintenance, BookTransferNewParamsTypeAccountActivation, BookTransferNewParamsTypeAccountClosure, BookTransferNewParamsTypeCardReplacement, BookTransferNewParamsTypeCardDelivery, BookTransferNewParamsTypeCardCreate, BookTransferNewParamsTypeCurrencyConversion, BookTransferNewParamsTypeInterest, BookTransferNewParamsTypeLatePayment, BookTransferNewParamsTypeBillPayment, BookTransferNewParamsTypeCashBack, BookTransferNewParamsTypeAccountToAccount, BookTransferNewParamsTypeCardToCard, BookTransferNewParamsTypeDisburse, BookTransferNewParamsTypeBillingError, BookTransferNewParamsTypeLossWriteOff, BookTransferNewParamsTypeExpiredCard, BookTransferNewParamsTypeEarlyDerecognition, BookTransferNewParamsTypeEscheatment, BookTransferNewParamsTypeInactivityFeeDown, BookTransferNewParamsTypeProvisionalCredit, BookTransferNewParamsTypeDisputeWon, BookTransferNewParamsTypeService, BookTransferNewParamsTypeTransfer, BookTransferNewParamsTypeCollection:
 		return true
 	}
 	return false
@@ -534,18 +536,20 @@ func (r BookTransferListParams) URLQuery() (v url.Values) {
 type BookTransferListParamsCategory string
 
 const (
-	BookTransferListParamsCategoryBalanceOrFunding BookTransferListParamsCategory = "BALANCE_OR_FUNDING"
-	BookTransferListParamsCategoryFee              BookTransferListParamsCategory = "FEE"
-	BookTransferListParamsCategoryReward           BookTransferListParamsCategory = "REWARD"
 	BookTransferListParamsCategoryAdjustment       BookTransferListParamsCategory = "ADJUSTMENT"
+	BookTransferListParamsCategoryBalanceOrFunding BookTransferListParamsCategory = "BALANCE_OR_FUNDING"
 	BookTransferListParamsCategoryDerecognition    BookTransferListParamsCategory = "DERECOGNITION"
 	BookTransferListParamsCategoryDispute          BookTransferListParamsCategory = "DISPUTE"
+	BookTransferListParamsCategoryFee              BookTransferListParamsCategory = "FEE"
 	BookTransferListParamsCategoryInternal         BookTransferListParamsCategory = "INTERNAL"
+	BookTransferListParamsCategoryReward           BookTransferListParamsCategory = "REWARD"
+	BookTransferListParamsCategoryProgramFunding   BookTransferListParamsCategory = "PROGRAM_FUNDING"
+	BookTransferListParamsCategoryTransfer         BookTransferListParamsCategory = "TRANSFER"
 )
 
 func (r BookTransferListParamsCategory) IsKnown() bool {
 	switch r {
-	case BookTransferListParamsCategoryBalanceOrFunding, BookTransferListParamsCategoryFee, BookTransferListParamsCategoryReward, BookTransferListParamsCategoryAdjustment, BookTransferListParamsCategoryDerecognition, BookTransferListParamsCategoryDispute, BookTransferListParamsCategoryInternal:
+	case BookTransferListParamsCategoryAdjustment, BookTransferListParamsCategoryBalanceOrFunding, BookTransferListParamsCategoryDerecognition, BookTransferListParamsCategoryDispute, BookTransferListParamsCategoryFee, BookTransferListParamsCategoryInternal, BookTransferListParamsCategoryReward, BookTransferListParamsCategoryProgramFunding, BookTransferListParamsCategoryTransfer:
 		return true
 	}
 	return false

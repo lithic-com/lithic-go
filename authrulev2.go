@@ -9522,8 +9522,10 @@ func (r AuthRuleV2UpdateParams) MarshalJSON() (data []byte, err error) {
 }
 
 type AuthRuleV2UpdateParamsBody struct {
-	CardTokens         param.Field[interface{}] `json:"card_tokens"`
-	ExcludedCardTokens param.Field[interface{}] `json:"excluded_card_tokens"`
+	AccountTokens         param.Field[interface{}] `json:"account_tokens"`
+	BusinessAccountTokens param.Field[interface{}] `json:"business_account_tokens"`
+	CardTokens            param.Field[interface{}] `json:"card_tokens"`
+	ExcludedCardTokens    param.Field[interface{}] `json:"excluded_card_tokens"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
@@ -9542,14 +9544,18 @@ func (r AuthRuleV2UpdateParamsBody) MarshalJSON() (data []byte, err error) {
 
 func (r AuthRuleV2UpdateParamsBody) implementsAuthRuleV2UpdateParamsBodyUnion() {}
 
-// Satisfied by [AuthRuleV2UpdateParamsBodyObject],
-// [AuthRuleV2UpdateParamsBodyObject], [AuthRuleV2UpdateParamsBodyCardLevelRule],
+// Satisfied by [AuthRuleV2UpdateParamsBodyAccountLevelRule],
+// [AuthRuleV2UpdateParamsBodyCardLevelRule],
 // [AuthRuleV2UpdateParamsBodyProgramLevelRule], [AuthRuleV2UpdateParamsBody].
 type AuthRuleV2UpdateParamsBodyUnion interface {
 	implementsAuthRuleV2UpdateParamsBodyUnion()
 }
 
-type AuthRuleV2UpdateParamsBodyObject struct {
+type AuthRuleV2UpdateParamsBodyAccountLevelRule struct {
+	// Account tokens to which the Auth Rule applies.
+	AccountTokens param.Field[[]string] `json:"account_tokens" format:"uuid"`
+	// Business Account tokens to which the Auth Rule applies.
+	BusinessAccountTokens param.Field[[]string] `json:"business_account_tokens" format:"uuid"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
 	// The desired state of the Auth Rule.
@@ -9557,29 +9563,29 @@ type AuthRuleV2UpdateParamsBodyObject struct {
 	// Note that only deactivating an Auth Rule through this endpoint is supported at
 	// this time. If you need to (re-)activate an Auth Rule the /promote endpoint
 	// should be used to promote a draft to the currently active version.
-	State param.Field[AuthRuleV2UpdateParamsBodyObjectState] `json:"state"`
+	State param.Field[AuthRuleV2UpdateParamsBodyAccountLevelRuleState] `json:"state"`
 }
 
-func (r AuthRuleV2UpdateParamsBodyObject) MarshalJSON() (data []byte, err error) {
+func (r AuthRuleV2UpdateParamsBodyAccountLevelRule) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-func (r AuthRuleV2UpdateParamsBodyObject) implementsAuthRuleV2UpdateParamsBodyUnion() {}
+func (r AuthRuleV2UpdateParamsBodyAccountLevelRule) implementsAuthRuleV2UpdateParamsBodyUnion() {}
 
 // The desired state of the Auth Rule.
 //
 // Note that only deactivating an Auth Rule through this endpoint is supported at
 // this time. If you need to (re-)activate an Auth Rule the /promote endpoint
 // should be used to promote a draft to the currently active version.
-type AuthRuleV2UpdateParamsBodyObjectState string
+type AuthRuleV2UpdateParamsBodyAccountLevelRuleState string
 
 const (
-	AuthRuleV2UpdateParamsBodyObjectStateInactive AuthRuleV2UpdateParamsBodyObjectState = "INACTIVE"
+	AuthRuleV2UpdateParamsBodyAccountLevelRuleStateInactive AuthRuleV2UpdateParamsBodyAccountLevelRuleState = "INACTIVE"
 )
 
-func (r AuthRuleV2UpdateParamsBodyObjectState) IsKnown() bool {
+func (r AuthRuleV2UpdateParamsBodyAccountLevelRuleState) IsKnown() bool {
 	switch r {
-	case AuthRuleV2UpdateParamsBodyObjectStateInactive:
+	case AuthRuleV2UpdateParamsBodyAccountLevelRuleStateInactive:
 		return true
 	}
 	return false
