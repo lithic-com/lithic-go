@@ -43,6 +43,7 @@ func (UnionString) ImplementsAuthRuleV2NewParamsBodyCreateAuthRuleRequestProgram
 }
 func (UnionString) ImplementsAuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsValueUnion() {
 }
+func (UnionString) ImplementsCardProvisionResponseProvisioningPayloadUnion() {}
 
 type UnionInt int64
 

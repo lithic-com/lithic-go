@@ -160,70 +160,6 @@ func (r *AuthRuleV2Service) Promote(ctx context.Context, authRuleToken string, o
 	return
 }
 
-// This endpoint is deprecated and will be removed in the future. Requests a
-// performance report of an Auth rule to be asynchronously generated. Reports can
-// only be run on rules in draft or active mode and will included approved and
-// declined statistics as well as examples. The generated report will be delivered
-// asynchronously through a webhook with `event_type` =
-// `auth_rules.performance_report.created`. See the docs on setting up
-// [webhook subscriptions](https://docs.lithic.com/docs/events-api).
-//
-// Reports are generated based on data collected by Lithic's processing system in
-// the trailing week. The performance of the auth rule will be assessed on the
-// configuration of the auth rule at the time the report is requested. This implies
-// that if a performance report is requested, right after updating an auth rule,
-// depending on the number of events processed for a card program, it may be the
-// case that no data is available for the report. Therefore Lithic recommends to
-// decouple making updates to an Auth Rule, and requesting performance reports.
-//
-// To make this concrete, consider the following example:
-//
-//  1. At time `t`, a new Auth Rule is created, and applies to all auth events on a
-//     card program. The Auth Rule has not yet been promoted, causing the draft
-//     version of the rule to be applied in shadow mode.
-//  2. At time `t + 1 hour` a performance report is requested for the Auth Rule.
-//     This performance report will _only_ contain data for the Auth Rule being
-//     executed in the window between `t` and `t + 1 hour`. This is because Lithic's
-//     transaction processing system will only start capturing data for the Auth
-//     Rule at the time it is created.
-//  3. At time `t + 2 hours` the draft version of the Auth Rule is promoted to the
-//     active version of the Auth Rule by calling the
-//     `/v2/auth_rules/{auth_rule_token}/promote` endpoint. If a performance report
-//     is requested at this moment it will still only contain data for this version
-//     of the rule, but the window of available data will now span from `t` to
-//     `t + 2 hours`.
-//  4. At time `t + 3 hours` a new version of the rule is drafted by calling the
-//     `/v2/auth_rules/{auth_rule_token}/draft` endpoint. If a performance report is
-//     requested right at this moment, it will only contain data for events to which
-//     both the active version and the draft version is applied. Lithic does this to
-//     ensure that performance reports represent a fair comparison between rules.
-//     Because there may be no events in this window, and because there may be some
-//     lag before data is available in a performance report, the requested
-//     performance report could contain no to little data.
-//  5. At time `t + 4 hours` another performance report is requested: this time the
-//     performance report will contain data from the window between `t + 3 hours`
-//     and `t + 4 hours`, for any events to which both the current version of the
-//     Auth rule (in enforcing mode) and the draft version of the Auth rule (in
-//     shadow mode) applied.
-//
-// Note that generating a report may take up to 15 minutes and that delivery is not
-// guaranteed. Customers are required to have created an event subscription to
-// receive the webhook. Additionally, there is a delay of approximately 15 minutes
-// between when Lithic's transaction processing systems have processed the
-// transaction, and when a transaction will be included in the report.
-//
-// Deprecated: deprecated
-func (r *AuthRuleV2Service) Report(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (res *AuthRuleV2ReportResponse, err error) {
-	opts = slices.Concat(r.Options, opts)
-	if authRuleToken == "" {
-		err = errors.New("missing required auth_rule_token parameter")
-		return
-	}
-	path := fmt.Sprintf("v2/auth_rules/%s/report", authRuleToken)
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
-	return
-}
-
 // Fetches the current calculated Feature values for the given Auth Rule
 //
 // This only calculates the features for the active version.
@@ -316,6 +252,9 @@ type AuthRuleCondition struct {
 	//   - `WALLET_TYPE`: For transactions using a digital wallet token, indicates the
 	//     source of the token. Valid values are `APPLE_PAY`, `GOOGLE_PAY`,
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute ConditionalAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleConditionOperation `json:"operation"`
@@ -445,6 +384,9 @@ type AuthRuleConditionParam struct {
 	//   - `WALLET_TYPE`: For transactions using a digital wallet token, indicates the
 	//     source of the token. Valid values are `APPLE_PAY`, `GOOGLE_PAY`,
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute param.Field[ConditionalAttribute] `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation param.Field[AuthRuleConditionOperation] `json:"operation"`
@@ -560,6 +502,9 @@ type Conditional3DsActionParametersCondition struct {
 	//   - `RISK_SCORE`: Mastercard only: Assessment by the network of the authentication
 	//     risk level, with a higher value indicating a higher amount of risk.
 	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute Conditional3DSActionParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation Conditional3DSActionParametersConditionsOperation `json:"operation"`
@@ -607,6 +552,9 @@ func (r conditional3DsActionParametersConditionJSON) RawJSON() string {
 //   - `RISK_SCORE`: Mastercard only: Assessment by the network of the authentication
 //     risk level, with a higher value indicating a higher amount of risk.
 //   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type Conditional3DSActionParametersConditionsAttribute string
 
 const (
@@ -618,11 +566,12 @@ const (
 	Conditional3DSActionParametersConditionsAttributeTransactionAmount Conditional3DSActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
 	Conditional3DSActionParametersConditionsAttributeRiskScore         Conditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
 	Conditional3DSActionParametersConditionsAttributeMessageCategory   Conditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
+	Conditional3DSActionParametersConditionsAttributeAddressMatch      Conditional3DSActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r Conditional3DSActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case Conditional3DSActionParametersConditionsAttributeMcc, Conditional3DSActionParametersConditionsAttributeCountry, Conditional3DSActionParametersConditionsAttributeCurrency, Conditional3DSActionParametersConditionsAttributeMerchantID, Conditional3DSActionParametersConditionsAttributeDescriptor, Conditional3DSActionParametersConditionsAttributeTransactionAmount, Conditional3DSActionParametersConditionsAttributeRiskScore, Conditional3DSActionParametersConditionsAttributeMessageCategory:
+	case Conditional3DSActionParametersConditionsAttributeMcc, Conditional3DSActionParametersConditionsAttributeCountry, Conditional3DSActionParametersConditionsAttributeCurrency, Conditional3DSActionParametersConditionsAttributeMerchantID, Conditional3DSActionParametersConditionsAttributeDescriptor, Conditional3DSActionParametersConditionsAttributeTransactionAmount, Conditional3DSActionParametersConditionsAttributeRiskScore, Conditional3DSActionParametersConditionsAttributeMessageCategory, Conditional3DSActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -731,6 +680,9 @@ func (r Conditional3DSActionParametersConditionsValueListOfStrings) ImplementsCo
 //   - `WALLET_TYPE`: For transactions using a digital wallet token, indicates the
 //     source of the token. Valid values are `APPLE_PAY`, `GOOGLE_PAY`,
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type ConditionalAttribute string
 
 const (
@@ -750,11 +702,12 @@ const (
 	ConditionalAttributePinEntered              ConditionalAttribute = "PIN_ENTERED"
 	ConditionalAttributePinStatus               ConditionalAttribute = "PIN_STATUS"
 	ConditionalAttributeWalletType              ConditionalAttribute = "WALLET_TYPE"
+	ConditionalAttributeAddressMatch            ConditionalAttribute = "ADDRESS_MATCH"
 )
 
 func (r ConditionalAttribute) IsKnown() bool {
 	switch r {
-	case ConditionalAttributeMcc, ConditionalAttributeCountry, ConditionalAttributeCurrency, ConditionalAttributeMerchantID, ConditionalAttributeDescriptor, ConditionalAttributeLiabilityShift, ConditionalAttributePanEntryMode, ConditionalAttributeTransactionAmount, ConditionalAttributeRiskScore, ConditionalAttributeCardTransactionCount15M, ConditionalAttributeCardTransactionCount1H, ConditionalAttributeCardTransactionCount24H, ConditionalAttributeCardState, ConditionalAttributePinEntered, ConditionalAttributePinStatus, ConditionalAttributeWalletType:
+	case ConditionalAttributeMcc, ConditionalAttributeCountry, ConditionalAttributeCurrency, ConditionalAttributeMerchantID, ConditionalAttributeDescriptor, ConditionalAttributeLiabilityShift, ConditionalAttributePanEntryMode, ConditionalAttributeTransactionAmount, ConditionalAttributeRiskScore, ConditionalAttributeCardTransactionCount15M, ConditionalAttributeCardTransactionCount1H, ConditionalAttributeCardTransactionCount24H, ConditionalAttributeCardState, ConditionalAttributePinEntered, ConditionalAttributePinStatus, ConditionalAttributeWalletType, ConditionalAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -1559,6 +1512,9 @@ type AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationAction
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation `json:"operation"`
@@ -1637,6 +1593,9 @@ func (r authRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationAct
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 //   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 //     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -1658,11 +1617,12 @@ const (
 	AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
 	AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -1986,6 +1946,9 @@ type AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionPa
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation `json:"operation"`
@@ -2064,6 +2027,9 @@ func (r authRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActio
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 //   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 //     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -2085,11 +2051,12 @@ const (
 	AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
 	AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -2536,6 +2503,9 @@ type AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationAction
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation `json:"operation"`
@@ -2614,6 +2584,9 @@ func (r authRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationAct
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 //   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 //     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -2635,11 +2608,12 @@ const (
 	AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
 	AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2GetResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -2963,6 +2937,9 @@ type AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionPa
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation `json:"operation"`
@@ -3041,6 +3018,9 @@ func (r authRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActio
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 //   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 //     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -3062,11 +3042,12 @@ const (
 	AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
 	AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2GetResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -3513,6 +3494,9 @@ type AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationAct
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation `json:"operation"`
@@ -3591,6 +3575,9 @@ func (r authRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorization
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 //   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 //     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -3612,11 +3599,12 @@ const (
 	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
 	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2UpdateResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -3940,6 +3928,9 @@ type AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActio
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation `json:"operation"`
@@ -4018,6 +4009,9 @@ func (r authRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationAc
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 //   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 //     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -4039,11 +4033,12 @@ const (
 	AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
 	AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2UpdateResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -4490,6 +4485,9 @@ type AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActio
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation `json:"operation"`
@@ -4568,6 +4566,9 @@ func (r authRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationAc
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 //   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 //     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -4589,11 +4590,12 @@ const (
 	AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
 	AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -4917,6 +4919,9 @@ type AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionP
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation `json:"operation"`
@@ -4995,6 +5000,9 @@ func (r authRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActi
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 //   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 //     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -5016,11 +5024,12 @@ const (
 	AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
 	AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -5467,6 +5476,9 @@ type AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActi
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation `json:"operation"`
@@ -5545,6 +5557,9 @@ func (r authRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationA
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 //   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 //     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -5566,11 +5581,12 @@ const (
 	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
 	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -5894,6 +5910,9 @@ type AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationAction
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation `json:"operation"`
@@ -5972,6 +5991,9 @@ func (r authRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationAct
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 //   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 //     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -5993,11 +6015,12 @@ const (
 	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
 	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -6444,6 +6467,9 @@ type AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActi
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation `json:"operation"`
@@ -6522,6 +6548,9 @@ func (r authRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationA
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 //   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 //     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -6543,11 +6572,12 @@ const (
 	AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
 	AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -6871,6 +6901,9 @@ type AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationAction
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation `json:"operation"`
@@ -6949,6 +6982,9 @@ func (r authRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationAct
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 //   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 //     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -6970,11 +7006,12 @@ const (
 	AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
 	AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -7421,6 +7458,9 @@ type AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationAc
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation `json:"operation"`
@@ -7499,6 +7539,9 @@ func (r authRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizatio
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 //   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 //     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -7520,11 +7563,12 @@ const (
 	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
 	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2PromoteResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -7848,6 +7892,9 @@ type AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActi
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation `json:"operation"`
@@ -7926,6 +7973,9 @@ func (r authRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationA
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 //   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 //     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -7947,11 +7997,12 @@ const (
 	AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
 	AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2PromoteResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -8101,27 +8152,6 @@ func (r AuthRuleV2PromoteResponseType) IsKnown() bool {
 		return true
 	}
 	return false
-}
-
-type AuthRuleV2ReportResponse struct {
-	ReportToken string                       `json:"report_token" format:"uuid"`
-	JSON        authRuleV2ReportResponseJSON `json:"-"`
-}
-
-// authRuleV2ReportResponseJSON contains the JSON metadata for the struct
-// [AuthRuleV2ReportResponse]
-type authRuleV2ReportResponseJSON struct {
-	ReportToken apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2ReportResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2ReportResponseJSON) RawJSON() string {
-	return r.raw
 }
 
 type AuthRuleV2GetFeaturesResponse struct {
@@ -8569,6 +8599,9 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditio
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttribute] `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsOperation] `json:"operation"`
@@ -8631,6 +8664,9 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersCondi
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 //   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 //     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -8652,11 +8688,12 @@ const (
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -8925,6 +8962,9 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditional
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttribute] `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsOperation] `json:"operation"`
@@ -8987,6 +9027,9 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditio
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 //   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 //     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -9008,11 +9051,12 @@ const (
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -9283,6 +9327,9 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersCondition
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttribute] `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsOperation] `json:"operation"`
@@ -9345,6 +9392,9 @@ func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersCondit
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 //   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 //     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -9366,11 +9416,12 @@ const (
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false
@@ -9955,6 +10006,9 @@ type AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersCond
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 	Attribute param.Field[AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttribute] `json:"attribute"`
 	// The operation to apply to the attribute
 	Operation param.Field[AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsOperation] `json:"operation"`
@@ -10017,6 +10071,9 @@ func (r AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersC
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
 //   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
 //     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
+//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
+//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
+//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
 type AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -10038,11 +10095,12 @@ const (
 	AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
 	AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
 )
 
 func (r AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator:
+	case AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2DraftParamsParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
 		return true
 	}
 	return false

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"reflect"
 	"slices"
 	"time"
 
@@ -18,6 +19,7 @@ import (
 	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/packages/pagination"
 	"github.com/lithic-com/lithic-go/shared"
+	"github.com/tidwall/gjson"
 )
 
 // CardService contains methods and other services that help with interacting with
@@ -770,6 +772,35 @@ func (r NonPCICardSubstatus) IsKnown() bool {
 	return false
 }
 
+// Object containing the fields required to add a card to Apple Pay. Applies only
+// to Apple Pay wallet.
+type ProvisionResponse struct {
+	ActivationData     string                `json:"activationData"`
+	EncryptedData      string                `json:"encryptedData"`
+	EphemeralPublicKey string                `json:"ephemeralPublicKey"`
+	JSON               provisionResponseJSON `json:"-"`
+}
+
+// provisionResponseJSON contains the JSON metadata for the struct
+// [ProvisionResponse]
+type provisionResponseJSON struct {
+	ActivationData     apijson.Field
+	EncryptedData      apijson.Field
+	EphemeralPublicKey apijson.Field
+	raw                string
+	ExtraFields        map[string]apijson.Field
+}
+
+func (r *ProvisionResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r provisionResponseJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ProvisionResponse) ImplementsCardProvisionResponseProvisioningPayloadUnion() {}
+
 // Spend limit duration values:
 //
 //   - `ANNUALLY` - Card will authorize transactions up to spend limit for the
@@ -800,8 +831,10 @@ func (r SpendLimitDuration) IsKnown() bool {
 }
 
 type CardProvisionResponse struct {
-	ProvisioningPayload string                    `json:"provisioning_payload"`
-	JSON                cardProvisionResponseJSON `json:"-"`
+	// Base64 encoded JSON payload representing a payment card that can be passed to a
+	// device's digital wallet. Applies to Google and Samsung Pay wallets.
+	ProvisioningPayload CardProvisionResponseProvisioningPayloadUnion `json:"provisioning_payload"`
+	JSON                cardProvisionResponseJSON                     `json:"-"`
 }
 
 // cardProvisionResponseJSON contains the JSON metadata for the struct
@@ -818,6 +851,29 @@ func (r *CardProvisionResponse) UnmarshalJSON(data []byte) (err error) {
 
 func (r cardProvisionResponseJSON) RawJSON() string {
 	return r.raw
+}
+
+// Base64 encoded JSON payload representing a payment card that can be passed to a
+// device's digital wallet. Applies to Google and Samsung Pay wallets.
+//
+// Union satisfied by [shared.UnionString] or [ProvisionResponse].
+type CardProvisionResponseProvisioningPayloadUnion interface {
+	ImplementsCardProvisionResponseProvisioningPayloadUnion()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*CardProvisionResponseProvisioningPayloadUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(shared.UnionString("")),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ProvisionResponse{}),
+		},
+	)
 }
 
 type CardWebProvisionResponse struct {

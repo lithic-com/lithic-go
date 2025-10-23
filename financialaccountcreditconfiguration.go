@@ -63,18 +63,23 @@ type FinancialAccountCreditConfig struct {
 	// Globally unique identifier for the account
 	AccountToken                string                                                  `json:"account_token,required" format:"uuid"`
 	AutoCollectionConfiguration FinancialAccountCreditConfigAutoCollectionConfiguration `json:"auto_collection_configuration,required"`
-	// Reason for the financial account being marked as Charged Off
-	ChargedOffReason FinancialAccountCreditConfigChargedOffReason `json:"charged_off_reason,required,nullable"`
-	CreditLimit      int64                                        `json:"credit_limit,required,nullable"`
+	CreditLimit                 int64                                                   `json:"credit_limit,required,nullable"`
 	// Globally unique identifier for the credit product
 	CreditProductToken       string `json:"credit_product_token,required,nullable"`
 	ExternalBankAccountToken string `json:"external_bank_account_token,required,nullable" format:"uuid"`
-	// State of the financial account
-	FinancialAccountState FinancialAccountCreditConfigFinancialAccountState `json:"financial_account_state,required"`
-	IsSpendBlocked        bool                                              `json:"is_spend_blocked,required"`
 	// Tier assigned to the financial account
-	Tier string                           `json:"tier,required,nullable"`
-	JSON financialAccountCreditConfigJSON `json:"-"`
+	Tier string `json:"tier,required,nullable"`
+	// Reason for the financial account being marked as Charged Off
+	//
+	// Deprecated: deprecated
+	ChargedOffReason FinancialAccountCreditConfigChargedOffReason `json:"charged_off_reason,nullable"`
+	// State of the financial account
+	//
+	// Deprecated: deprecated
+	FinancialAccountState FinancialAccountCreditConfigFinancialAccountState `json:"financial_account_state"`
+	// Deprecated: deprecated
+	IsSpendBlocked bool                             `json:"is_spend_blocked"`
+	JSON           financialAccountCreditConfigJSON `json:"-"`
 }
 
 // financialAccountCreditConfigJSON contains the JSON metadata for the struct
@@ -82,13 +87,13 @@ type FinancialAccountCreditConfig struct {
 type financialAccountCreditConfigJSON struct {
 	AccountToken                apijson.Field
 	AutoCollectionConfiguration apijson.Field
-	ChargedOffReason            apijson.Field
 	CreditLimit                 apijson.Field
 	CreditProductToken          apijson.Field
 	ExternalBankAccountToken    apijson.Field
+	Tier                        apijson.Field
+	ChargedOffReason            apijson.Field
 	FinancialAccountState       apijson.Field
 	IsSpendBlocked              apijson.Field
-	Tier                        apijson.Field
 	raw                         string
 	ExtraFields                 map[string]apijson.Field
 }

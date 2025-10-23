@@ -183,7 +183,6 @@ type VerificationMethod string
 const (
 	VerificationMethodManual             VerificationMethod = "MANUAL"
 	VerificationMethodMicroDeposit       VerificationMethod = "MICRO_DEPOSIT"
-	VerificationMethodPlaid              VerificationMethod = "PLAID"
 	VerificationMethodPrenote            VerificationMethod = "PRENOTE"
 	VerificationMethodExternallyVerified VerificationMethod = "EXTERNALLY_VERIFIED"
 	VerificationMethodUnverified         VerificationMethod = "UNVERIFIED"
@@ -191,7 +190,7 @@ const (
 
 func (r VerificationMethod) IsKnown() bool {
 	switch r {
-	case VerificationMethodManual, VerificationMethodMicroDeposit, VerificationMethodPlaid, VerificationMethodPrenote, VerificationMethodExternallyVerified, VerificationMethodUnverified:
+	case VerificationMethodManual, VerificationMethodMicroDeposit, VerificationMethodPrenote, VerificationMethodExternallyVerified, VerificationMethodUnverified:
 		return true
 	}
 	return false
@@ -1258,15 +1257,24 @@ func (r ExternalBankAccountNewParams) MarshalJSON() (data []byte, err error) {
 }
 
 type ExternalBankAccountNewParamsBody struct {
+	// Account Number
+	AccountNumber param.Field[string] `json:"account_number,required"`
+	// The country that the bank account is located in using ISO 3166-1. We will only
+	// accept USA bank accounts e.g., USA
+	Country param.Field[string] `json:"country,required"`
+	// currency of the external account 3-character alphabetic ISO 4217 code
+	Currency param.Field[string] `json:"currency,required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
 	Owner param.Field[string] `json:"owner,required"`
 	// Owner Type
 	OwnerType param.Field[OwnerType] `json:"owner_type,required"`
+	// Routing Number
+	RoutingNumber param.Field[string] `json:"routing_number,required"`
+	// Account Type
+	Type param.Field[ExternalBankAccountNewParamsBodyType] `json:"type,required"`
 	// Verification Method
 	VerificationMethod param.Field[VerificationMethod] `json:"verification_method,required"`
-	// Account Number
-	AccountNumber param.Field[string] `json:"account_number"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
@@ -1275,11 +1283,6 @@ type ExternalBankAccountNewParamsBody struct {
 	Address param.Field[ExternalBankAccountAddressParam] `json:"address"`
 	// Optional field that helps identify bank accounts in receipts
 	CompanyID param.Field[string] `json:"company_id"`
-	// The country that the bank account is located in using ISO 3166-1. We will only
-	// accept USA bank accounts e.g., USA
-	Country param.Field[string] `json:"country"`
-	// currency of the external account 3-character alphabetic ISO 4217 code
-	Currency param.Field[string] `json:"currency"`
 	// Date of Birth of the Individual that owns the external bank account
 	Dob param.Field[time.Time] `json:"dob" format:"date"`
 	// Doing Business As
@@ -1287,12 +1290,7 @@ type ExternalBankAccountNewParamsBody struct {
 	// The financial account token of the operating account to fund the micro deposits
 	FinancialAccountToken param.Field[string] `json:"financial_account_token" format:"uuid"`
 	// The nickname for this External Bank Account
-	Name           param.Field[string] `json:"name"`
-	ProcessorToken param.Field[string] `json:"processor_token"`
-	// Routing Number
-	RoutingNumber param.Field[string] `json:"routing_number"`
-	// Account Type
-	Type param.Field[ExternalBankAccountNewParamsBodyType] `json:"type"`
+	Name param.Field[string] `json:"name"`
 	// User Defined ID
 	UserDefinedID           param.Field[string] `json:"user_defined_id"`
 	VerificationEnforcement param.Field[bool]   `json:"verification_enforcement"`
@@ -1306,7 +1304,6 @@ func (r ExternalBankAccountNewParamsBody) implementsExternalBankAccountNewParams
 
 // Satisfied by
 // [ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest],
-// [ExternalBankAccountNewParamsBodyPlaidCreateBankAccountAPIRequest],
 // [ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequest],
 // [ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequest],
 // [ExternalBankAccountNewParamsBody].
@@ -1375,36 +1372,6 @@ func (r ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestT
 		return true
 	}
 	return false
-}
-
-type ExternalBankAccountNewParamsBodyPlaidCreateBankAccountAPIRequest struct {
-	// Legal Name of the business or individual who owns the external account. This
-	// will appear in statements
-	Owner param.Field[string] `json:"owner,required"`
-	// Owner Type
-	OwnerType      param.Field[OwnerType] `json:"owner_type,required"`
-	ProcessorToken param.Field[string]    `json:"processor_token,required"`
-	// Verification Method
-	VerificationMethod param.Field[VerificationMethod] `json:"verification_method,required"`
-	// Indicates which Lithic account the external account is associated with. For
-	// external accounts that are associated with the program, account_token field
-	// returned will be null
-	AccountToken param.Field[string] `json:"account_token" format:"uuid"`
-	// Optional field that helps identify bank accounts in receipts
-	CompanyID param.Field[string] `json:"company_id"`
-	// Date of Birth of the Individual that owns the external bank account
-	Dob param.Field[time.Time] `json:"dob" format:"date"`
-	// Doing Business As
-	DoingBusinessAs param.Field[string] `json:"doing_business_as"`
-	// User Defined ID
-	UserDefinedID param.Field[string] `json:"user_defined_id"`
-}
-
-func (r ExternalBankAccountNewParamsBodyPlaidCreateBankAccountAPIRequest) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
-}
-
-func (r ExternalBankAccountNewParamsBodyPlaidCreateBankAccountAPIRequest) implementsExternalBankAccountNewParamsBodyUnion() {
 }
 
 type ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequest struct {

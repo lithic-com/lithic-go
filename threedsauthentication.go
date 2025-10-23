@@ -247,6 +247,11 @@ type ThreeDSAuthenticationGetResponseCardholder struct {
 	// match - is provided directly in the 3DS request and is not determined by Lithic.
 	// Maps to EMV 3DS field `addrMatch`.
 	AddressMatch bool `json:"address_match,nullable"`
+	// Lithic's evaluation result comparing the transaction's address data with the
+	// cardholder KYC data if it exists. In the event Lithic does not have any
+	// Cardholder KYC data, or the transaction does not contain any address data,
+	// NOT_PRESENT will be returned
+	AddressOnFileMatch ThreeDSAuthenticationGetResponseCardholderAddressOnFileMatch `json:"address_on_file_match"`
 	// Object containing data on the billing address provided during the transaction.
 	BillingAddress ThreeDSAuthenticationGetResponseCardholderBillingAddress `json:"billing_address"`
 	// Email address that is either provided by the cardholder or is on file with the
@@ -271,16 +276,17 @@ type ThreeDSAuthenticationGetResponseCardholder struct {
 // threeDSAuthenticationGetResponseCardholderJSON contains the JSON metadata for
 // the struct [ThreeDSAuthenticationGetResponseCardholder]
 type threeDSAuthenticationGetResponseCardholderJSON struct {
-	AddressMatch      apijson.Field
-	BillingAddress    apijson.Field
-	Email             apijson.Field
-	Name              apijson.Field
-	PhoneNumberHome   apijson.Field
-	PhoneNumberMobile apijson.Field
-	PhoneNumberWork   apijson.Field
-	ShippingAddress   apijson.Field
-	raw               string
-	ExtraFields       map[string]apijson.Field
+	AddressMatch       apijson.Field
+	AddressOnFileMatch apijson.Field
+	BillingAddress     apijson.Field
+	Email              apijson.Field
+	Name               apijson.Field
+	PhoneNumberHome    apijson.Field
+	PhoneNumberMobile  apijson.Field
+	PhoneNumberWork    apijson.Field
+	ShippingAddress    apijson.Field
+	raw                string
+	ExtraFields        map[string]apijson.Field
 }
 
 func (r *ThreeDSAuthenticationGetResponseCardholder) UnmarshalJSON(data []byte) (err error) {
@@ -289,6 +295,28 @@ func (r *ThreeDSAuthenticationGetResponseCardholder) UnmarshalJSON(data []byte) 
 
 func (r threeDSAuthenticationGetResponseCardholderJSON) RawJSON() string {
 	return r.raw
+}
+
+// Lithic's evaluation result comparing the transaction's address data with the
+// cardholder KYC data if it exists. In the event Lithic does not have any
+// Cardholder KYC data, or the transaction does not contain any address data,
+// NOT_PRESENT will be returned
+type ThreeDSAuthenticationGetResponseCardholderAddressOnFileMatch string
+
+const (
+	ThreeDSAuthenticationGetResponseCardholderAddressOnFileMatchMatch            ThreeDSAuthenticationGetResponseCardholderAddressOnFileMatch = "MATCH"
+	ThreeDSAuthenticationGetResponseCardholderAddressOnFileMatchMatchAddressOnly ThreeDSAuthenticationGetResponseCardholderAddressOnFileMatch = "MATCH_ADDRESS_ONLY"
+	ThreeDSAuthenticationGetResponseCardholderAddressOnFileMatchMatchZipOnly     ThreeDSAuthenticationGetResponseCardholderAddressOnFileMatch = "MATCH_ZIP_ONLY"
+	ThreeDSAuthenticationGetResponseCardholderAddressOnFileMatchMismatch         ThreeDSAuthenticationGetResponseCardholderAddressOnFileMatch = "MISMATCH"
+	ThreeDSAuthenticationGetResponseCardholderAddressOnFileMatchNotPresent       ThreeDSAuthenticationGetResponseCardholderAddressOnFileMatch = "NOT_PRESENT"
+)
+
+func (r ThreeDSAuthenticationGetResponseCardholderAddressOnFileMatch) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationGetResponseCardholderAddressOnFileMatchMatch, ThreeDSAuthenticationGetResponseCardholderAddressOnFileMatchMatchAddressOnly, ThreeDSAuthenticationGetResponseCardholderAddressOnFileMatchMatchZipOnly, ThreeDSAuthenticationGetResponseCardholderAddressOnFileMatchMismatch, ThreeDSAuthenticationGetResponseCardholderAddressOnFileMatchNotPresent:
+		return true
+	}
+	return false
 }
 
 // Object containing data on the billing address provided during the transaction.
