@@ -133,15 +133,16 @@ type ExternalPayment struct {
 	// Unique identifier for the transaction
 	Token string `json:"token,required" format:"uuid"`
 	// ISO 8601 timestamp of when the transaction was created
-	Created time.Time             `json:"created,required" format:"date-time"`
-	Family  ExternalPaymentFamily `json:"family,required"`
+	Created time.Time `json:"created,required" format:"date-time"`
 	// The status of the transaction
 	Status ExternalPaymentStatus `json:"status,required"`
 	// ISO 8601 timestamp of when the transaction was last updated
-	Updated               time.Time                  `json:"updated,required" format:"date-time"`
-	Category              ExternalPaymentCategory    `json:"category"`
-	Currency              string                     `json:"currency"`
-	Events                []ExternalPaymentEvent     `json:"events"`
+	Updated  time.Time               `json:"updated,required" format:"date-time"`
+	Category ExternalPaymentCategory `json:"category"`
+	Currency string                  `json:"currency"`
+	Events   []ExternalPaymentEvent  `json:"events"`
+	// EXTERNAL_PAYMENT - External Payment Response
+	Family                ExternalPaymentFamily      `json:"family"`
 	FinancialAccountToken string                     `json:"financial_account_token" format:"uuid"`
 	PaymentType           ExternalPaymentPaymentType `json:"payment_type"`
 	PendingAmount         int64                      `json:"pending_amount"`
@@ -155,12 +156,12 @@ type ExternalPayment struct {
 type externalPaymentJSON struct {
 	Token                 apijson.Field
 	Created               apijson.Field
-	Family                apijson.Field
 	Status                apijson.Field
 	Updated               apijson.Field
 	Category              apijson.Field
 	Currency              apijson.Field
 	Events                apijson.Field
+	Family                apijson.Field
 	FinancialAccountToken apijson.Field
 	PaymentType           apijson.Field
 	PendingAmount         apijson.Field
@@ -182,25 +183,6 @@ func (r externalPaymentJSON) RawJSON() string {
 func (r ExternalPayment) implementsAccountActivityListResponse() {}
 
 func (r ExternalPayment) implementsAccountActivityGetTransactionResponse() {}
-
-type ExternalPaymentFamily string
-
-const (
-	ExternalPaymentFamilyCard                ExternalPaymentFamily = "CARD"
-	ExternalPaymentFamilyPayment             ExternalPaymentFamily = "PAYMENT"
-	ExternalPaymentFamilyTransfer            ExternalPaymentFamily = "TRANSFER"
-	ExternalPaymentFamilyInternal            ExternalPaymentFamily = "INTERNAL"
-	ExternalPaymentFamilyExternalPayment     ExternalPaymentFamily = "EXTERNAL_PAYMENT"
-	ExternalPaymentFamilyManagementOperation ExternalPaymentFamily = "MANAGEMENT_OPERATION"
-)
-
-func (r ExternalPaymentFamily) IsKnown() bool {
-	switch r {
-	case ExternalPaymentFamilyCard, ExternalPaymentFamilyPayment, ExternalPaymentFamilyTransfer, ExternalPaymentFamilyInternal, ExternalPaymentFamilyExternalPayment, ExternalPaymentFamilyManagementOperation:
-		return true
-	}
-	return false
-}
 
 // The status of the transaction
 type ExternalPaymentStatus string
@@ -331,6 +313,21 @@ const (
 func (r ExternalPaymentEventsType) IsKnown() bool {
 	switch r {
 	case ExternalPaymentEventsTypeExternalWireInitiated, ExternalPaymentEventsTypeExternalWireCanceled, ExternalPaymentEventsTypeExternalWireSettled, ExternalPaymentEventsTypeExternalWireReversed, ExternalPaymentEventsTypeExternalWireReleased, ExternalPaymentEventsTypeExternalACHInitiated, ExternalPaymentEventsTypeExternalACHCanceled, ExternalPaymentEventsTypeExternalACHSettled, ExternalPaymentEventsTypeExternalACHReversed, ExternalPaymentEventsTypeExternalACHReleased, ExternalPaymentEventsTypeExternalTransferInitiated, ExternalPaymentEventsTypeExternalTransferCanceled, ExternalPaymentEventsTypeExternalTransferSettled, ExternalPaymentEventsTypeExternalTransferReversed, ExternalPaymentEventsTypeExternalTransferReleased, ExternalPaymentEventsTypeExternalCheckInitiated, ExternalPaymentEventsTypeExternalCheckCanceled, ExternalPaymentEventsTypeExternalCheckSettled, ExternalPaymentEventsTypeExternalCheckReversed, ExternalPaymentEventsTypeExternalCheckReleased:
+		return true
+	}
+	return false
+}
+
+// EXTERNAL_PAYMENT - External Payment Response
+type ExternalPaymentFamily string
+
+const (
+	ExternalPaymentFamilyExternalPayment ExternalPaymentFamily = "EXTERNAL_PAYMENT"
+)
+
+func (r ExternalPaymentFamily) IsKnown() bool {
+	switch r {
+	case ExternalPaymentFamilyExternalPayment:
 		return true
 	}
 	return false

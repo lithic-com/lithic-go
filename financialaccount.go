@@ -181,32 +181,37 @@ func (r financialAccountJSON) RawJSON() string {
 }
 
 type FinancialAccountCreditConfiguration struct {
-	// Reason for the financial account being marked as Charged Off
-	ChargedOffReason FinancialAccountCreditConfigurationChargedOffReason `json:"charged_off_reason,required,nullable"`
-	CreditLimit      int64                                               `json:"credit_limit,required,nullable"`
+	AutoCollectionConfiguration FinancialAccountCreditConfigurationAutoCollectionConfiguration `json:"auto_collection_configuration,required"`
+	CreditLimit                 int64                                                          `json:"credit_limit,required,nullable"`
 	// Globally unique identifier for the credit product
 	CreditProductToken       string `json:"credit_product_token,required,nullable"`
 	ExternalBankAccountToken string `json:"external_bank_account_token,required,nullable" format:"uuid"`
-	// State of the financial account
-	FinancialAccountState FinancialAccountCreditConfigurationFinancialAccountState `json:"financial_account_state,required,nullable"`
-	IsSpendBlocked        bool                                                     `json:"is_spend_blocked,required"`
 	// Tier assigned to the financial account
-	Tier                        string                                                         `json:"tier,required,nullable"`
-	AutoCollectionConfiguration FinancialAccountCreditConfigurationAutoCollectionConfiguration `json:"auto_collection_configuration"`
-	JSON                        financialAccountCreditConfigurationJSON                        `json:"-"`
+	Tier string `json:"tier,required,nullable"`
+	// Reason for the financial account being marked as Charged Off
+	//
+	// Deprecated: deprecated
+	ChargedOffReason FinancialAccountCreditConfigurationChargedOffReason `json:"charged_off_reason,nullable"`
+	// State of the financial account
+	//
+	// Deprecated: deprecated
+	FinancialAccountState FinancialAccountCreditConfigurationFinancialAccountState `json:"financial_account_state,nullable"`
+	// Deprecated: deprecated
+	IsSpendBlocked bool                                    `json:"is_spend_blocked"`
+	JSON           financialAccountCreditConfigurationJSON `json:"-"`
 }
 
 // financialAccountCreditConfigurationJSON contains the JSON metadata for the
 // struct [FinancialAccountCreditConfiguration]
 type financialAccountCreditConfigurationJSON struct {
-	ChargedOffReason            apijson.Field
+	AutoCollectionConfiguration apijson.Field
 	CreditLimit                 apijson.Field
 	CreditProductToken          apijson.Field
 	ExternalBankAccountToken    apijson.Field
+	Tier                        apijson.Field
+	ChargedOffReason            apijson.Field
 	FinancialAccountState       apijson.Field
 	IsSpendBlocked              apijson.Field
-	Tier                        apijson.Field
-	AutoCollectionConfiguration apijson.Field
 	raw                         string
 	ExtraFields                 map[string]apijson.Field
 }
@@ -216,6 +221,29 @@ func (r *FinancialAccountCreditConfiguration) UnmarshalJSON(data []byte) (err er
 }
 
 func (r financialAccountCreditConfigurationJSON) RawJSON() string {
+	return r.raw
+}
+
+type FinancialAccountCreditConfigurationAutoCollectionConfiguration struct {
+	// If auto collection is enabled for this account
+	AutoCollectionEnabled bool                                                               `json:"auto_collection_enabled,required"`
+	JSON                  financialAccountCreditConfigurationAutoCollectionConfigurationJSON `json:"-"`
+}
+
+// financialAccountCreditConfigurationAutoCollectionConfigurationJSON contains the
+// JSON metadata for the struct
+// [FinancialAccountCreditConfigurationAutoCollectionConfiguration]
+type financialAccountCreditConfigurationAutoCollectionConfigurationJSON struct {
+	AutoCollectionEnabled apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
+}
+
+func (r *FinancialAccountCreditConfigurationAutoCollectionConfiguration) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r financialAccountCreditConfigurationAutoCollectionConfigurationJSON) RawJSON() string {
 	return r.raw
 }
 
@@ -251,29 +279,6 @@ func (r FinancialAccountCreditConfigurationFinancialAccountState) IsKnown() bool
 		return true
 	}
 	return false
-}
-
-type FinancialAccountCreditConfigurationAutoCollectionConfiguration struct {
-	// If auto collection is enabled for this account
-	AutoCollectionEnabled bool                                                               `json:"auto_collection_enabled,required"`
-	JSON                  financialAccountCreditConfigurationAutoCollectionConfigurationJSON `json:"-"`
-}
-
-// financialAccountCreditConfigurationAutoCollectionConfigurationJSON contains the
-// JSON metadata for the struct
-// [FinancialAccountCreditConfigurationAutoCollectionConfiguration]
-type financialAccountCreditConfigurationAutoCollectionConfigurationJSON struct {
-	AutoCollectionEnabled apijson.Field
-	raw                   string
-	ExtraFields           map[string]apijson.Field
-}
-
-func (r *FinancialAccountCreditConfigurationAutoCollectionConfiguration) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r financialAccountCreditConfigurationAutoCollectionConfigurationJSON) RawJSON() string {
-	return r.raw
 }
 
 // Status of the financial account
