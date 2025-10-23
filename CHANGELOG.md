@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.95.0 (2025-10-23)
+
+Full Changelog: [v0.94.0...v0.95.0](https://github.com/lithic-com/lithic-go/compare/v0.94.0...v0.95.0)
+
+### Features
+
+* **api:** updates to Auth Rules and Card provisioning ([f5f27e7](https://github.com/lithic-com/lithic-go/commit/f5f27e79216ff6ae31f3b7cb1137e954d3f672dd))
+
 ## 0.94.0 (2025-10-08)
 
 Full Changelog: [v0.93.0...v0.94.0](https://github.com/lithic-com/lithic-go/compare/v0.93.0...v0.94.0)
