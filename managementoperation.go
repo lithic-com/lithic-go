@@ -144,8 +144,7 @@ type ManagementOperationTransaction struct {
 	// Unique identifier for the transaction
 	Token string `json:"token,required" format:"uuid"`
 	// ISO 8601 timestamp of when the transaction was created
-	Created time.Time                            `json:"created,required" format:"date-time"`
-	Family  ManagementOperationTransactionFamily `json:"family,required"`
+	Created time.Time `json:"created,required" format:"date-time"`
 	// The status of the transaction
 	Status ManagementOperationTransactionStatus `json:"status,required"`
 	// ISO 8601 timestamp of when the transaction was last updated
@@ -155,7 +154,9 @@ type ManagementOperationTransaction struct {
 	Direction ManagementOperationTransactionDirection `json:"direction"`
 	Events    []ManagementOperationTransactionEvent   `json:"events"`
 	// External resource associated with the management operation
-	ExternalResource      ExternalResource                                `json:"external_resource,nullable"`
+	ExternalResource ExternalResource `json:"external_resource,nullable"`
+	// MANAGEMENT_OPERATION - Management Operation Transaction
+	Family                ManagementOperationTransactionFamily            `json:"family"`
 	FinancialAccountToken string                                          `json:"financial_account_token" format:"uuid"`
 	PendingAmount         int64                                           `json:"pending_amount"`
 	Result                ManagementOperationTransactionResult            `json:"result"`
@@ -170,7 +171,6 @@ type ManagementOperationTransaction struct {
 type managementOperationTransactionJSON struct {
 	Token                 apijson.Field
 	Created               apijson.Field
-	Family                apijson.Field
 	Status                apijson.Field
 	Updated               apijson.Field
 	Category              apijson.Field
@@ -178,6 +178,7 @@ type managementOperationTransactionJSON struct {
 	Direction             apijson.Field
 	Events                apijson.Field
 	ExternalResource      apijson.Field
+	Family                apijson.Field
 	FinancialAccountToken apijson.Field
 	PendingAmount         apijson.Field
 	Result                apijson.Field
@@ -199,25 +200,6 @@ func (r managementOperationTransactionJSON) RawJSON() string {
 func (r ManagementOperationTransaction) implementsAccountActivityListResponse() {}
 
 func (r ManagementOperationTransaction) implementsAccountActivityGetTransactionResponse() {}
-
-type ManagementOperationTransactionFamily string
-
-const (
-	ManagementOperationTransactionFamilyCard                ManagementOperationTransactionFamily = "CARD"
-	ManagementOperationTransactionFamilyPayment             ManagementOperationTransactionFamily = "PAYMENT"
-	ManagementOperationTransactionFamilyTransfer            ManagementOperationTransactionFamily = "TRANSFER"
-	ManagementOperationTransactionFamilyInternal            ManagementOperationTransactionFamily = "INTERNAL"
-	ManagementOperationTransactionFamilyExternalPayment     ManagementOperationTransactionFamily = "EXTERNAL_PAYMENT"
-	ManagementOperationTransactionFamilyManagementOperation ManagementOperationTransactionFamily = "MANAGEMENT_OPERATION"
-)
-
-func (r ManagementOperationTransactionFamily) IsKnown() bool {
-	switch r {
-	case ManagementOperationTransactionFamilyCard, ManagementOperationTransactionFamilyPayment, ManagementOperationTransactionFamilyTransfer, ManagementOperationTransactionFamilyInternal, ManagementOperationTransactionFamilyExternalPayment, ManagementOperationTransactionFamilyManagementOperation:
-		return true
-	}
-	return false
-}
 
 // The status of the transaction
 type ManagementOperationTransactionStatus string
@@ -365,6 +347,21 @@ const (
 func (r ManagementOperationTransactionEventsType) IsKnown() bool {
 	switch r {
 	case ManagementOperationTransactionEventsTypeLossWriteOff, ManagementOperationTransactionEventsTypeCashBack, ManagementOperationTransactionEventsTypeCashBackReversal, ManagementOperationTransactionEventsTypeCurrencyConversion, ManagementOperationTransactionEventsTypeCurrencyConversionReversal, ManagementOperationTransactionEventsTypeInterest, ManagementOperationTransactionEventsTypeInterestReversal, ManagementOperationTransactionEventsTypeLatePayment, ManagementOperationTransactionEventsTypeLatePaymentReversal, ManagementOperationTransactionEventsTypeBillingError, ManagementOperationTransactionEventsTypeBillingErrorReversal, ManagementOperationTransactionEventsTypeProvisionalCredit, ManagementOperationTransactionEventsTypeProvisionalCreditReversal, ManagementOperationTransactionEventsTypeReturnedPayment, ManagementOperationTransactionEventsTypeReturnedPaymentReversal, ManagementOperationTransactionEventsTypeDisputeWon, ManagementOperationTransactionEventsTypeDisputeWonReversal, ManagementOperationTransactionEventsTypeDisburse, ManagementOperationTransactionEventsTypeDisburseReversal:
+		return true
+	}
+	return false
+}
+
+// MANAGEMENT_OPERATION - Management Operation Transaction
+type ManagementOperationTransactionFamily string
+
+const (
+	ManagementOperationTransactionFamilyManagementOperation ManagementOperationTransactionFamily = "MANAGEMENT_OPERATION"
+)
+
+func (r ManagementOperationTransactionFamily) IsKnown() bool {
+	switch r {
+	case ManagementOperationTransactionFamilyManagementOperation:
 		return true
 	}
 	return false

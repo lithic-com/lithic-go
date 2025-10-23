@@ -94,24 +94,22 @@ func (r *BookTransferService) Reverse(ctx context.Context, bookTransferToken str
 	return
 }
 
+// Book transfer transaction
 type BookTransferResponse struct {
-	// Customer-provided token that will serve as an idempotency token. This token will
-	// become the transaction token.
+	// Unique identifier for the transaction
 	Token    string                       `json:"token,required" format:"uuid"`
 	Category BookTransferResponseCategory `json:"category,required"`
-	// Date and time when the transfer occurred. UTC time zone.
+	// ISO 8601 timestamp of when the transaction was created
 	Created time.Time `json:"created,required" format:"date-time"`
 	// 3-character alphabetic ISO 4217 code for the settling currency of the
-	// transaction.
+	// transaction
 	Currency string `json:"currency,required"`
-	// A list of all financial events that have modified this transfer.
+	// A list of all financial events that have modified this transfer
 	Events []BookTransferResponseEvent `json:"events,required"`
-	// External ID defined by the customer
-	ExternalID string `json:"external_id,required,nullable"`
-	// External resource associated with the management operation
-	ExternalResource ExternalResource `json:"external_resource,required,nullable"`
+	// TRANSFER - Book Transfer Transaction
+	Family BookTransferResponseFamily `json:"family,required"`
 	// Globally unique identifier for the financial account or card that will send the
-	// funds. Accepted type dependent on the program's use case.
+	// funds. Accepted type dependent on the program's use case
 	FromFinancialAccountToken string `json:"from_financial_account_token,required" format:"uuid"`
 	// Pending amount of the transaction in the currency's smallest unit (e.g., cents),
 	// including any acquirer fees.
@@ -121,22 +119,22 @@ type BookTransferResponse struct {
 	PendingAmount int64                      `json:"pending_amount,required"`
 	Result        BookTransferResponseResult `json:"result,required"`
 	// Amount of the transaction that has been settled in the currency's smallest unit
-	// (e.g., cents).
+	// (e.g., cents)
 	SettledAmount int64 `json:"settled_amount,required"`
-	// Status types:
-	//
-	// - `DECLINED` - The transfer was declined.
-	// - `REVERSED` - The transfer was reversed
-	// - `SETTLED` - The transfer is completed.
+	// The status of the transaction
 	Status BookTransferResponseStatus `json:"status,required"`
 	// Globally unique identifier for the financial account or card that will receive
-	// the funds. Accepted type dependent on the program's use case.
+	// the funds. Accepted type dependent on the program's use case
 	ToFinancialAccountToken string `json:"to_financial_account_token,required" format:"uuid"`
-	// A series of transactions that are grouped together.
-	TransactionSeries BookTransferResponseTransactionSeries `json:"transaction_series,required,nullable"`
-	// Date and time when the financial transaction was last updated. UTC time zone.
-	Updated time.Time                `json:"updated,required" format:"date-time"`
-	JSON    bookTransferResponseJSON `json:"-"`
+	// ISO 8601 timestamp of when the transaction was last updated
+	Updated time.Time `json:"updated,required" format:"date-time"`
+	// External ID defined by the customer
+	ExternalID string `json:"external_id,nullable"`
+	// External resource associated with the management operation
+	ExternalResource ExternalResource `json:"external_resource,nullable"`
+	// A series of transactions that are grouped together
+	TransactionSeries BookTransferResponseTransactionSeries `json:"transaction_series,nullable"`
+	JSON              bookTransferResponseJSON              `json:"-"`
 }
 
 // bookTransferResponseJSON contains the JSON metadata for the struct
@@ -147,16 +145,17 @@ type bookTransferResponseJSON struct {
 	Created                   apijson.Field
 	Currency                  apijson.Field
 	Events                    apijson.Field
-	ExternalID                apijson.Field
-	ExternalResource          apijson.Field
+	Family                    apijson.Field
 	FromFinancialAccountToken apijson.Field
 	PendingAmount             apijson.Field
 	Result                    apijson.Field
 	SettledAmount             apijson.Field
 	Status                    apijson.Field
 	ToFinancialAccountToken   apijson.Field
-	TransactionSeries         apijson.Field
 	Updated                   apijson.Field
+	ExternalID                apijson.Field
+	ExternalResource          apijson.Field
+	TransactionSeries         apijson.Field
 	raw                       string
 	ExtraFields               map[string]apijson.Field
 }
@@ -168,6 +167,10 @@ func (r *BookTransferResponse) UnmarshalJSON(data []byte) (err error) {
 func (r bookTransferResponseJSON) RawJSON() string {
 	return r.raw
 }
+
+func (r BookTransferResponse) implementsAccountActivityListResponse() {}
+
+func (r BookTransferResponse) implementsAccountActivityGetTransactionResponse() {}
 
 type BookTransferResponseCategory string
 
@@ -317,6 +320,21 @@ func (r BookTransferResponseEventsType) IsKnown() bool {
 	return false
 }
 
+// TRANSFER - Book Transfer Transaction
+type BookTransferResponseFamily string
+
+const (
+	BookTransferResponseFamilyTransfer BookTransferResponseFamily = "TRANSFER"
+)
+
+func (r BookTransferResponseFamily) IsKnown() bool {
+	switch r {
+	case BookTransferResponseFamilyTransfer:
+		return true
+	}
+	return false
+}
+
 type BookTransferResponseResult string
 
 const (
@@ -332,28 +350,26 @@ func (r BookTransferResponseResult) IsKnown() bool {
 	return false
 }
 
-// Status types:
-//
-// - `DECLINED` - The transfer was declined.
-// - `REVERSED` - The transfer was reversed
-// - `SETTLED` - The transfer is completed.
+// The status of the transaction
 type BookTransferResponseStatus string
 
 const (
+	BookTransferResponseStatusPending  BookTransferResponseStatus = "PENDING"
+	BookTransferResponseStatusSettled  BookTransferResponseStatus = "SETTLED"
 	BookTransferResponseStatusDeclined BookTransferResponseStatus = "DECLINED"
 	BookTransferResponseStatusReversed BookTransferResponseStatus = "REVERSED"
-	BookTransferResponseStatusSettled  BookTransferResponseStatus = "SETTLED"
+	BookTransferResponseStatusCanceled BookTransferResponseStatus = "CANCELED"
 )
 
 func (r BookTransferResponseStatus) IsKnown() bool {
 	switch r {
-	case BookTransferResponseStatusDeclined, BookTransferResponseStatusReversed, BookTransferResponseStatusSettled:
+	case BookTransferResponseStatusPending, BookTransferResponseStatusSettled, BookTransferResponseStatusDeclined, BookTransferResponseStatusReversed, BookTransferResponseStatusCanceled:
 		return true
 	}
 	return false
 }
 
-// A series of transactions that are grouped together.
+// A series of transactions that are grouped together
 type BookTransferResponseTransactionSeries struct {
 	RelatedTransactionEventToken string                                    `json:"related_transaction_event_token,required,nullable" format:"uuid"`
 	RelatedTransactionToken      string                                    `json:"related_transaction_token,required,nullable" format:"uuid"`

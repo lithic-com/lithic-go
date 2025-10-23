@@ -372,6 +372,7 @@ const (
 	TokenizationEventsResultTokenActivated                  TokenizationEventsResult = "TOKEN_ACTIVATED"
 	TokenizationEventsResultTokenCreated                    TokenizationEventsResult = "TOKEN_CREATED"
 	TokenizationEventsResultTokenDeactivated                TokenizationEventsResult = "TOKEN_DEACTIVATED"
+	TokenizationEventsResultTokenDeletedFromConsumerApp     TokenizationEventsResult = "TOKEN_DELETED_FROM_CONSUMER_APP"
 	TokenizationEventsResultTokenInactive                   TokenizationEventsResult = "TOKEN_INACTIVE"
 	TokenizationEventsResultTokenStateUnknown               TokenizationEventsResult = "TOKEN_STATE_UNKNOWN"
 	TokenizationEventsResultTokenSuspended                  TokenizationEventsResult = "TOKEN_SUSPENDED"
@@ -380,7 +381,7 @@ const (
 
 func (r TokenizationEventsResult) IsKnown() bool {
 	switch r {
-	case TokenizationEventsResultApproved, TokenizationEventsResultDeclined, TokenizationEventsResultNotificationDelivered, TokenizationEventsResultRequireAdditionalAuthentication, TokenizationEventsResultTokenActivated, TokenizationEventsResultTokenCreated, TokenizationEventsResultTokenDeactivated, TokenizationEventsResultTokenInactive, TokenizationEventsResultTokenStateUnknown, TokenizationEventsResultTokenSuspended, TokenizationEventsResultTokenUpdated:
+	case TokenizationEventsResultApproved, TokenizationEventsResultDeclined, TokenizationEventsResultNotificationDelivered, TokenizationEventsResultRequireAdditionalAuthentication, TokenizationEventsResultTokenActivated, TokenizationEventsResultTokenCreated, TokenizationEventsResultTokenDeactivated, TokenizationEventsResultTokenDeletedFromConsumerApp, TokenizationEventsResultTokenInactive, TokenizationEventsResultTokenStateUnknown, TokenizationEventsResultTokenSuspended, TokenizationEventsResultTokenUpdated:
 		return true
 	}
 	return false

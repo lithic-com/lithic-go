@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"reflect"
 	"slices"
 	"time"
 
@@ -17,6 +18,7 @@ import (
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/packages/pagination"
+	"github.com/tidwall/gjson"
 )
 
 // PaymentService contains methods and other services that help with interacting
@@ -129,53 +131,52 @@ func (r *PaymentService) SimulateReturn(ctx context.Context, body PaymentSimulat
 	return
 }
 
+// Payment transaction
 type Payment struct {
-	// Globally unique identifier.
+	// Unique identifier for the transaction
 	Token string `json:"token,required" format:"uuid"`
-	// Payment category
+	// Transaction category
 	Category PaymentCategory `json:"category,required"`
-	// Date and time when the payment first occurred. UTC time zone.
+	// ISO 8601 timestamp of when the transaction was created
 	Created time.Time `json:"created,required" format:"date-time"`
-	// 3-character alphabetic ISO 4217 code for the settling currency of the payment.
-	Currency string `json:"currency,required"`
-	// A string that provides a description of the payment; may be useful to display to
-	// users.
-	Descriptor string           `json:"descriptor,required"`
-	Direction  PaymentDirection `json:"direction,required"`
-	// A list of all payment events that have modified this payment.
-	Events                   []PaymentEvent          `json:"events,required"`
-	ExternalBankAccountToken string                  `json:"external_bank_account_token,required,nullable" format:"uuid"`
-	FinancialAccountToken    string                  `json:"financial_account_token,required" format:"uuid"`
-	Method                   PaymentMethod           `json:"method,required"`
-	MethodAttributes         PaymentMethodAttributes `json:"method_attributes,required"`
-	// Pending amount of the payment in the currency's smallest unit (e.g., cents). The
-	// value of this field will go to zero over time once the payment is settled.
+	// Transaction descriptor
+	Descriptor string `json:"descriptor,required"`
+	// Transfer direction
+	Direction PaymentDirection `json:"direction,required"`
+	// List of transaction events
+	Events []PaymentEvent `json:"events,required"`
+	// PAYMENT - Payment Transaction
+	Family PaymentFamily `json:"family,required"`
+	// Financial account token
+	FinancialAccountToken string `json:"financial_account_token,required" format:"uuid"`
+	// Transfer method
+	Method PaymentMethod `json:"method,required"`
+	// Method-specific attributes
+	MethodAttributes PaymentMethodAttributes `json:"method_attributes,required"`
+	// Pending amount in cents
 	PendingAmount int64 `json:"pending_amount,required"`
-	// Account tokens related to a payment transaction
+	// Related account tokens for the transaction
 	RelatedAccountTokens PaymentRelatedAccountTokens `json:"related_account_tokens,required"`
-	// APPROVED payments were successful while DECLINED payments were declined by
-	// Lithic or returned.
+	// Transaction result
 	Result PaymentResult `json:"result,required"`
-	// Amount of the payment that has been settled in the currency's smallest unit
-	// (e.g., cents).
-	SettledAmount int64         `json:"settled_amount,required"`
-	Source        PaymentSource `json:"source,required"`
-	// Status types:
-	//
-	//   - `DECLINED` - The payment was declined.
-	//   - `PENDING` - The payment is being processed and has yet to settle or release
-	//     (origination debit).
-	//   - `RETURNED` - The payment has been returned.
-	//   - `SETTLED` - The payment is completed.
+	// Settled amount in cents
+	SettledAmount int64 `json:"settled_amount,required"`
+	// Transaction source
+	Source PaymentSource `json:"source,required"`
+	// The status of the transaction
 	Status PaymentStatus `json:"status,required"`
-	// Date and time when the financial transaction was last updated. UTC time zone.
-	Updated       time.Time `json:"updated,required" format:"date-time"`
-	UserDefinedID string    `json:"user_defined_id,required,nullable"`
-	// Date when the financial transaction expected to be released after settlement
-	ExpectedReleaseDate time.Time `json:"expected_release_date" format:"date"`
-	// Payment type indicating the specific ACH message or Fedwire transfer type
-	Type PaymentType `json:"type"`
-	JSON paymentJSON `json:"-"`
+	// ISO 8601 timestamp of when the transaction was last updated
+	Updated time.Time `json:"updated,required" format:"date-time"`
+	// Currency of the transaction in ISO 4217 format
+	Currency string `json:"currency"`
+	// Expected release date for the transaction
+	ExpectedReleaseDate time.Time `json:"expected_release_date,nullable" format:"date"`
+	// External bank account token
+	ExternalBankAccountToken string      `json:"external_bank_account_token,nullable" format:"uuid"`
+	Type                     PaymentType `json:"type"`
+	// User-defined identifier
+	UserDefinedID string      `json:"user_defined_id,nullable"`
+	JSON          paymentJSON `json:"-"`
 }
 
 // paymentJSON contains the JSON metadata for the struct [Payment]
@@ -183,11 +184,10 @@ type paymentJSON struct {
 	Token                    apijson.Field
 	Category                 apijson.Field
 	Created                  apijson.Field
-	Currency                 apijson.Field
 	Descriptor               apijson.Field
 	Direction                apijson.Field
 	Events                   apijson.Field
-	ExternalBankAccountToken apijson.Field
+	Family                   apijson.Field
 	FinancialAccountToken    apijson.Field
 	Method                   apijson.Field
 	MethodAttributes         apijson.Field
@@ -198,9 +198,11 @@ type paymentJSON struct {
 	Source                   apijson.Field
 	Status                   apijson.Field
 	Updated                  apijson.Field
-	UserDefinedID            apijson.Field
+	Currency                 apijson.Field
 	ExpectedReleaseDate      apijson.Field
+	ExternalBankAccountToken apijson.Field
 	Type                     apijson.Field
+	UserDefinedID            apijson.Field
 	raw                      string
 	ExtraFields              map[string]apijson.Field
 }
@@ -213,21 +215,43 @@ func (r paymentJSON) RawJSON() string {
 	return r.raw
 }
 
-// Payment category
+func (r Payment) implementsAccountActivityListResponse() {}
+
+func (r Payment) implementsAccountActivityGetTransactionResponse() {}
+
+// Transaction category
 type PaymentCategory string
 
 const (
-	PaymentCategoryACH PaymentCategory = "ACH"
+	PaymentCategoryACH                    PaymentCategory = "ACH"
+	PaymentCategoryBalanceOrFunding       PaymentCategory = "BALANCE_OR_FUNDING"
+	PaymentCategoryFee                    PaymentCategory = "FEE"
+	PaymentCategoryReward                 PaymentCategory = "REWARD"
+	PaymentCategoryAdjustment             PaymentCategory = "ADJUSTMENT"
+	PaymentCategoryDerecognition          PaymentCategory = "DERECOGNITION"
+	PaymentCategoryDispute                PaymentCategory = "DISPUTE"
+	PaymentCategoryCard                   PaymentCategory = "CARD"
+	PaymentCategoryExternalACH            PaymentCategory = "EXTERNAL_ACH"
+	PaymentCategoryExternalCheck          PaymentCategory = "EXTERNAL_CHECK"
+	PaymentCategoryExternalTransfer       PaymentCategory = "EXTERNAL_TRANSFER"
+	PaymentCategoryExternalWire           PaymentCategory = "EXTERNAL_WIRE"
+	PaymentCategoryManagementAdjustment   PaymentCategory = "MANAGEMENT_ADJUSTMENT"
+	PaymentCategoryManagementDispute      PaymentCategory = "MANAGEMENT_DISPUTE"
+	PaymentCategoryManagementFee          PaymentCategory = "MANAGEMENT_FEE"
+	PaymentCategoryManagementReward       PaymentCategory = "MANAGEMENT_REWARD"
+	PaymentCategoryManagementDisbursement PaymentCategory = "MANAGEMENT_DISBURSEMENT"
+	PaymentCategoryProgramFunding         PaymentCategory = "PROGRAM_FUNDING"
 )
 
 func (r PaymentCategory) IsKnown() bool {
 	switch r {
-	case PaymentCategoryACH:
+	case PaymentCategoryACH, PaymentCategoryBalanceOrFunding, PaymentCategoryFee, PaymentCategoryReward, PaymentCategoryAdjustment, PaymentCategoryDerecognition, PaymentCategoryDispute, PaymentCategoryCard, PaymentCategoryExternalACH, PaymentCategoryExternalCheck, PaymentCategoryExternalTransfer, PaymentCategoryExternalWire, PaymentCategoryManagementAdjustment, PaymentCategoryManagementDispute, PaymentCategoryManagementFee, PaymentCategoryManagementReward, PaymentCategoryManagementDisbursement, PaymentCategoryProgramFunding:
 		return true
 	}
 	return false
 }
 
+// Transfer direction
 type PaymentDirection string
 
 const (
@@ -381,71 +405,288 @@ func (r PaymentEventsDetailedResult) IsKnown() bool {
 	return false
 }
 
-type PaymentMethod string
+// PAYMENT - Payment Transaction
+type PaymentFamily string
 
 const (
-	PaymentMethodACHNextDay PaymentMethod = "ACH_NEXT_DAY"
-	PaymentMethodACHSameDay PaymentMethod = "ACH_SAME_DAY"
+	PaymentFamilyPayment PaymentFamily = "PAYMENT"
 )
 
-func (r PaymentMethod) IsKnown() bool {
+func (r PaymentFamily) IsKnown() bool {
 	switch r {
-	case PaymentMethodACHNextDay, PaymentMethodACHSameDay:
+	case PaymentFamilyPayment:
 		return true
 	}
 	return false
 }
 
+// Transfer method
+type PaymentMethod string
+
+const (
+	PaymentMethodACHNextDay PaymentMethod = "ACH_NEXT_DAY"
+	PaymentMethodACHSameDay PaymentMethod = "ACH_SAME_DAY"
+	PaymentMethodWire       PaymentMethod = "WIRE"
+)
+
+func (r PaymentMethod) IsKnown() bool {
+	switch r {
+	case PaymentMethodACHNextDay, PaymentMethodACHSameDay, PaymentMethodWire:
+		return true
+	}
+	return false
+}
+
+// Method-specific attributes
 type PaymentMethodAttributes struct {
-	CompanyID            string                         `json:"company_id,required,nullable"`
-	ReceiptRoutingNumber string                         `json:"receipt_routing_number,required,nullable"`
-	Retries              int64                          `json:"retries,required,nullable"`
-	ReturnReasonCode     string                         `json:"return_reason_code,required,nullable"`
-	SecCode              PaymentMethodAttributesSecCode `json:"sec_code,required"`
-	TraceNumbers         []string                       `json:"trace_numbers,required"`
-	Addenda              string                         `json:"addenda,nullable"`
-	JSON                 paymentMethodAttributesJSON    `json:"-"`
+	// Addenda information
+	Addenda string `json:"addenda,nullable"`
+	// Company ID for the ACH transaction
+	CompanyID string           `json:"company_id,nullable"`
+	Creditor  WirePartyDetails `json:"creditor"`
+	Debtor    WirePartyDetails `json:"debtor"`
+	// Point to point reference identifier, as assigned by the instructing party, used
+	// for tracking the message through the Fedwire system
+	MessageID string `json:"message_id,nullable"`
+	// Receipt routing number
+	ReceiptRoutingNumber string `json:"receipt_routing_number,nullable"`
+	// Payment details or invoice reference
+	RemittanceInformation string `json:"remittance_information,nullable"`
+	// Number of retries attempted
+	Retries int64 `json:"retries,nullable"`
+	// Return reason code if the transaction was returned
+	ReturnReasonCode string `json:"return_reason_code,nullable"`
+	// SEC code for ACH transaction
+	SecCode PaymentMethodAttributesSecCode `json:"sec_code"`
+	// This field can have the runtime type of [[]string].
+	TraceNumbers interface{} `json:"trace_numbers"`
+	// Type of wire message
+	WireMessageType string `json:"wire_message_type"`
+	// Type of wire transfer
+	WireNetwork PaymentMethodAttributesWireNetwork `json:"wire_network"`
+	JSON        paymentMethodAttributesJSON        `json:"-"`
+	union       PaymentMethodAttributesUnion
 }
 
 // paymentMethodAttributesJSON contains the JSON metadata for the struct
 // [PaymentMethodAttributes]
 type paymentMethodAttributesJSON struct {
-	CompanyID            apijson.Field
-	ReceiptRoutingNumber apijson.Field
-	Retries              apijson.Field
-	ReturnReasonCode     apijson.Field
-	SecCode              apijson.Field
-	TraceNumbers         apijson.Field
-	Addenda              apijson.Field
-	raw                  string
-	ExtraFields          map[string]apijson.Field
-}
-
-func (r *PaymentMethodAttributes) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
+	Addenda               apijson.Field
+	CompanyID             apijson.Field
+	Creditor              apijson.Field
+	Debtor                apijson.Field
+	MessageID             apijson.Field
+	ReceiptRoutingNumber  apijson.Field
+	RemittanceInformation apijson.Field
+	Retries               apijson.Field
+	ReturnReasonCode      apijson.Field
+	SecCode               apijson.Field
+	TraceNumbers          apijson.Field
+	WireMessageType       apijson.Field
+	WireNetwork           apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
 }
 
 func (r paymentMethodAttributesJSON) RawJSON() string {
 	return r.raw
 }
 
+func (r *PaymentMethodAttributes) UnmarshalJSON(data []byte) (err error) {
+	*r = PaymentMethodAttributes{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a [PaymentMethodAttributesUnion] interface which you can cast to
+// the specific types for more type safety.
+//
+// Possible runtime types of the union are
+// [PaymentMethodAttributesACHMethodAttributes],
+// [PaymentMethodAttributesWireMethodAttributes].
+func (r PaymentMethodAttributes) AsUnion() PaymentMethodAttributesUnion {
+	return r.union
+}
+
+// Method-specific attributes
+//
+// Union satisfied by [PaymentMethodAttributesACHMethodAttributes] or
+// [PaymentMethodAttributesWireMethodAttributes].
+type PaymentMethodAttributesUnion interface {
+	implementsPaymentMethodAttributes()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*PaymentMethodAttributesUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(PaymentMethodAttributesACHMethodAttributes{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(PaymentMethodAttributesWireMethodAttributes{}),
+		},
+	)
+}
+
+type PaymentMethodAttributesACHMethodAttributes struct {
+	// SEC code for ACH transaction
+	SecCode PaymentMethodAttributesACHMethodAttributesSecCode `json:"sec_code,required"`
+	// Addenda information
+	Addenda string `json:"addenda,nullable"`
+	// Company ID for the ACH transaction
+	CompanyID string `json:"company_id,nullable"`
+	// Receipt routing number
+	ReceiptRoutingNumber string `json:"receipt_routing_number,nullable"`
+	// Number of retries attempted
+	Retries int64 `json:"retries,nullable"`
+	// Return reason code if the transaction was returned
+	ReturnReasonCode string `json:"return_reason_code,nullable"`
+	// Trace numbers for the ACH transaction
+	TraceNumbers []string                                       `json:"trace_numbers"`
+	JSON         paymentMethodAttributesACHMethodAttributesJSON `json:"-"`
+}
+
+// paymentMethodAttributesACHMethodAttributesJSON contains the JSON metadata for
+// the struct [PaymentMethodAttributesACHMethodAttributes]
+type paymentMethodAttributesACHMethodAttributesJSON struct {
+	SecCode              apijson.Field
+	Addenda              apijson.Field
+	CompanyID            apijson.Field
+	ReceiptRoutingNumber apijson.Field
+	Retries              apijson.Field
+	ReturnReasonCode     apijson.Field
+	TraceNumbers         apijson.Field
+	raw                  string
+	ExtraFields          map[string]apijson.Field
+}
+
+func (r *PaymentMethodAttributesACHMethodAttributes) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r paymentMethodAttributesACHMethodAttributesJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r PaymentMethodAttributesACHMethodAttributes) implementsPaymentMethodAttributes() {}
+
+// SEC code for ACH transaction
+type PaymentMethodAttributesACHMethodAttributesSecCode string
+
+const (
+	PaymentMethodAttributesACHMethodAttributesSecCodeCcd PaymentMethodAttributesACHMethodAttributesSecCode = "CCD"
+	PaymentMethodAttributesACHMethodAttributesSecCodePpd PaymentMethodAttributesACHMethodAttributesSecCode = "PPD"
+	PaymentMethodAttributesACHMethodAttributesSecCodeWeb PaymentMethodAttributesACHMethodAttributesSecCode = "WEB"
+	PaymentMethodAttributesACHMethodAttributesSecCodeTel PaymentMethodAttributesACHMethodAttributesSecCode = "TEL"
+	PaymentMethodAttributesACHMethodAttributesSecCodeCie PaymentMethodAttributesACHMethodAttributesSecCode = "CIE"
+	PaymentMethodAttributesACHMethodAttributesSecCodeCtx PaymentMethodAttributesACHMethodAttributesSecCode = "CTX"
+)
+
+func (r PaymentMethodAttributesACHMethodAttributesSecCode) IsKnown() bool {
+	switch r {
+	case PaymentMethodAttributesACHMethodAttributesSecCodeCcd, PaymentMethodAttributesACHMethodAttributesSecCodePpd, PaymentMethodAttributesACHMethodAttributesSecCodeWeb, PaymentMethodAttributesACHMethodAttributesSecCodeTel, PaymentMethodAttributesACHMethodAttributesSecCodeCie, PaymentMethodAttributesACHMethodAttributesSecCodeCtx:
+		return true
+	}
+	return false
+}
+
+type PaymentMethodAttributesWireMethodAttributes struct {
+	// Type of wire transfer
+	WireNetwork PaymentMethodAttributesWireMethodAttributesWireNetwork `json:"wire_network,required"`
+	Creditor    WirePartyDetails                                       `json:"creditor"`
+	Debtor      WirePartyDetails                                       `json:"debtor"`
+	// Point to point reference identifier, as assigned by the instructing party, used
+	// for tracking the message through the Fedwire system
+	MessageID string `json:"message_id,nullable"`
+	// Payment details or invoice reference
+	RemittanceInformation string `json:"remittance_information,nullable"`
+	// Type of wire message
+	WireMessageType string                                          `json:"wire_message_type"`
+	JSON            paymentMethodAttributesWireMethodAttributesJSON `json:"-"`
+}
+
+// paymentMethodAttributesWireMethodAttributesJSON contains the JSON metadata for
+// the struct [PaymentMethodAttributesWireMethodAttributes]
+type paymentMethodAttributesWireMethodAttributesJSON struct {
+	WireNetwork           apijson.Field
+	Creditor              apijson.Field
+	Debtor                apijson.Field
+	MessageID             apijson.Field
+	RemittanceInformation apijson.Field
+	WireMessageType       apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
+}
+
+func (r *PaymentMethodAttributesWireMethodAttributes) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r paymentMethodAttributesWireMethodAttributesJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r PaymentMethodAttributesWireMethodAttributes) implementsPaymentMethodAttributes() {}
+
+// Type of wire transfer
+type PaymentMethodAttributesWireMethodAttributesWireNetwork string
+
+const (
+	PaymentMethodAttributesWireMethodAttributesWireNetworkFedwire PaymentMethodAttributesWireMethodAttributesWireNetwork = "FEDWIRE"
+	PaymentMethodAttributesWireMethodAttributesWireNetworkSwift   PaymentMethodAttributesWireMethodAttributesWireNetwork = "SWIFT"
+)
+
+func (r PaymentMethodAttributesWireMethodAttributesWireNetwork) IsKnown() bool {
+	switch r {
+	case PaymentMethodAttributesWireMethodAttributesWireNetworkFedwire, PaymentMethodAttributesWireMethodAttributesWireNetworkSwift:
+		return true
+	}
+	return false
+}
+
+// SEC code for ACH transaction
 type PaymentMethodAttributesSecCode string
 
 const (
 	PaymentMethodAttributesSecCodeCcd PaymentMethodAttributesSecCode = "CCD"
 	PaymentMethodAttributesSecCodePpd PaymentMethodAttributesSecCode = "PPD"
 	PaymentMethodAttributesSecCodeWeb PaymentMethodAttributesSecCode = "WEB"
+	PaymentMethodAttributesSecCodeTel PaymentMethodAttributesSecCode = "TEL"
+	PaymentMethodAttributesSecCodeCie PaymentMethodAttributesSecCode = "CIE"
+	PaymentMethodAttributesSecCodeCtx PaymentMethodAttributesSecCode = "CTX"
 )
 
 func (r PaymentMethodAttributesSecCode) IsKnown() bool {
 	switch r {
-	case PaymentMethodAttributesSecCodeCcd, PaymentMethodAttributesSecCodePpd, PaymentMethodAttributesSecCodeWeb:
+	case PaymentMethodAttributesSecCodeCcd, PaymentMethodAttributesSecCodePpd, PaymentMethodAttributesSecCodeWeb, PaymentMethodAttributesSecCodeTel, PaymentMethodAttributesSecCodeCie, PaymentMethodAttributesSecCodeCtx:
 		return true
 	}
 	return false
 }
 
-// Account tokens related to a payment transaction
+// Type of wire transfer
+type PaymentMethodAttributesWireNetwork string
+
+const (
+	PaymentMethodAttributesWireNetworkFedwire PaymentMethodAttributesWireNetwork = "FEDWIRE"
+	PaymentMethodAttributesWireNetworkSwift   PaymentMethodAttributesWireNetwork = "SWIFT"
+)
+
+func (r PaymentMethodAttributesWireNetwork) IsKnown() bool {
+	switch r {
+	case PaymentMethodAttributesWireNetworkFedwire, PaymentMethodAttributesWireNetworkSwift:
+		return true
+	}
+	return false
+}
+
+// Related account tokens for the transaction
 type PaymentRelatedAccountTokens struct {
 	// Globally unique identifier for the account
 	AccountToken string `json:"account_token,required,nullable" format:"uuid"`
@@ -471,8 +712,7 @@ func (r paymentRelatedAccountTokensJSON) RawJSON() string {
 	return r.raw
 }
 
-// APPROVED payments were successful while DECLINED payments were declined by
-// Lithic or returned.
+// Transaction result
 type PaymentResult string
 
 const (
@@ -488,46 +728,42 @@ func (r PaymentResult) IsKnown() bool {
 	return false
 }
 
+// Transaction source
 type PaymentSource string
 
 const (
-	PaymentSourceCustomer PaymentSource = "CUSTOMER"
 	PaymentSourceLithic   PaymentSource = "LITHIC"
+	PaymentSourceExternal PaymentSource = "EXTERNAL"
+	PaymentSourceCustomer PaymentSource = "CUSTOMER"
 )
 
 func (r PaymentSource) IsKnown() bool {
 	switch r {
-	case PaymentSourceCustomer, PaymentSourceLithic:
+	case PaymentSourceLithic, PaymentSourceExternal, PaymentSourceCustomer:
 		return true
 	}
 	return false
 }
 
-// Status types:
-//
-//   - `DECLINED` - The payment was declined.
-//   - `PENDING` - The payment is being processed and has yet to settle or release
-//     (origination debit).
-//   - `RETURNED` - The payment has been returned.
-//   - `SETTLED` - The payment is completed.
+// The status of the transaction
 type PaymentStatus string
 
 const (
-	PaymentStatusDeclined PaymentStatus = "DECLINED"
 	PaymentStatusPending  PaymentStatus = "PENDING"
-	PaymentStatusReturned PaymentStatus = "RETURNED"
 	PaymentStatusSettled  PaymentStatus = "SETTLED"
+	PaymentStatusDeclined PaymentStatus = "DECLINED"
+	PaymentStatusReversed PaymentStatus = "REVERSED"
+	PaymentStatusCanceled PaymentStatus = "CANCELED"
 )
 
 func (r PaymentStatus) IsKnown() bool {
 	switch r {
-	case PaymentStatusDeclined, PaymentStatusPending, PaymentStatusReturned, PaymentStatusSettled:
+	case PaymentStatusPending, PaymentStatusSettled, PaymentStatusDeclined, PaymentStatusReversed, PaymentStatusCanceled:
 		return true
 	}
 	return false
 }
 
-// Payment type indicating the specific ACH message or Fedwire transfer type
 type PaymentType string
 
 const (
@@ -549,6 +785,7 @@ func (r PaymentType) IsKnown() bool {
 	return false
 }
 
+// Payment transaction
 type PaymentNewResponse struct {
 	// Balance
 	Balance Balance                `json:"balance"`
@@ -572,6 +809,7 @@ func (r paymentNewResponseJSON) RawJSON() string {
 	return r.raw
 }
 
+// Payment transaction
 type PaymentRetryResponse struct {
 	// Balance
 	Balance Balance                  `json:"balance"`
