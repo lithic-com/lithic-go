@@ -290,14 +290,18 @@ type PaymentEvent struct {
 	//   - `ACH_ORIGINATION_SETTLED` - ACH origination has settled.
 	//   - `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to
 	//     available balance.
-	//   - `ACH_RETURN_PROCESSED` - ACH origination returned by the Receiving Depository
-	//     Financial Institution.
+	//   - `ACH_ORIGINATION_REJECTED` - ACH origination was rejected and not sent to the
+	//     Federal Reserve.
 	//   - `ACH_RECEIPT_PROCESSED` - ACH receipt pending release from an ACH holder.
-	//   - `ACH_RETURN_INITIATED` - ACH initiated return for a ACH receipt.
 	//   - `ACH_RECEIPT_SETTLED` - ACH receipt funds have settled.
 	//   - `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to available
 	//     balance.
-	//   - `ACH_RETURN_SETTLED` - ACH receipt return settled by the Receiving Depository
+	//   - `ACH_RETURN_INITIATED` - ACH initiated return for an ACH receipt.
+	//   - `ACH_RETURN_PROCESSED` - ACH receipt returned by the Receiving Depository
+	//     Financial Institution.
+	//   - `ACH_RETURN_SETTLED` - ACH return settled by the Receiving Depository
+	//     Financial Institution.
+	//   - `ACH_RETURN_REJECTED` - ACH return was rejected by the Receiving Depository
 	//     Financial Institution.
 	Type PaymentEventsType `json:"type,required"`
 	// More detailed reasons for the event
@@ -353,14 +357,18 @@ func (r PaymentEventsResult) IsKnown() bool {
 //   - `ACH_ORIGINATION_SETTLED` - ACH origination has settled.
 //   - `ACH_ORIGINATION_RELEASED` - ACH origination released from pending to
 //     available balance.
-//   - `ACH_RETURN_PROCESSED` - ACH origination returned by the Receiving Depository
-//     Financial Institution.
+//   - `ACH_ORIGINATION_REJECTED` - ACH origination was rejected and not sent to the
+//     Federal Reserve.
 //   - `ACH_RECEIPT_PROCESSED` - ACH receipt pending release from an ACH holder.
-//   - `ACH_RETURN_INITIATED` - ACH initiated return for a ACH receipt.
 //   - `ACH_RECEIPT_SETTLED` - ACH receipt funds have settled.
 //   - `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to available
 //     balance.
-//   - `ACH_RETURN_SETTLED` - ACH receipt return settled by the Receiving Depository
+//   - `ACH_RETURN_INITIATED` - ACH initiated return for an ACH receipt.
+//   - `ACH_RETURN_PROCESSED` - ACH receipt returned by the Receiving Depository
+//     Financial Institution.
+//   - `ACH_RETURN_SETTLED` - ACH return settled by the Receiving Depository
+//     Financial Institution.
+//   - `ACH_RETURN_REJECTED` - ACH return was rejected by the Receiving Depository
 //     Financial Institution.
 type PaymentEventsType string
 
@@ -368,19 +376,22 @@ const (
 	PaymentEventsTypeACHOriginationCancelled PaymentEventsType = "ACH_ORIGINATION_CANCELLED"
 	PaymentEventsTypeACHOriginationInitiated PaymentEventsType = "ACH_ORIGINATION_INITIATED"
 	PaymentEventsTypeACHOriginationProcessed PaymentEventsType = "ACH_ORIGINATION_PROCESSED"
-	PaymentEventsTypeACHOriginationSettled   PaymentEventsType = "ACH_ORIGINATION_SETTLED"
+	PaymentEventsTypeACHOriginationRejected  PaymentEventsType = "ACH_ORIGINATION_REJECTED"
 	PaymentEventsTypeACHOriginationReleased  PaymentEventsType = "ACH_ORIGINATION_RELEASED"
 	PaymentEventsTypeACHOriginationReviewed  PaymentEventsType = "ACH_ORIGINATION_REVIEWED"
+	PaymentEventsTypeACHOriginationSettled   PaymentEventsType = "ACH_ORIGINATION_SETTLED"
 	PaymentEventsTypeACHReceiptProcessed     PaymentEventsType = "ACH_RECEIPT_PROCESSED"
+	PaymentEventsTypeACHReceiptReleased      PaymentEventsType = "ACH_RECEIPT_RELEASED"
 	PaymentEventsTypeACHReceiptSettled       PaymentEventsType = "ACH_RECEIPT_SETTLED"
 	PaymentEventsTypeACHReturnInitiated      PaymentEventsType = "ACH_RETURN_INITIATED"
 	PaymentEventsTypeACHReturnProcessed      PaymentEventsType = "ACH_RETURN_PROCESSED"
+	PaymentEventsTypeACHReturnRejected       PaymentEventsType = "ACH_RETURN_REJECTED"
 	PaymentEventsTypeACHReturnSettled        PaymentEventsType = "ACH_RETURN_SETTLED"
 )
 
 func (r PaymentEventsType) IsKnown() bool {
 	switch r {
-	case PaymentEventsTypeACHOriginationCancelled, PaymentEventsTypeACHOriginationInitiated, PaymentEventsTypeACHOriginationProcessed, PaymentEventsTypeACHOriginationSettled, PaymentEventsTypeACHOriginationReleased, PaymentEventsTypeACHOriginationReviewed, PaymentEventsTypeACHReceiptProcessed, PaymentEventsTypeACHReceiptSettled, PaymentEventsTypeACHReturnInitiated, PaymentEventsTypeACHReturnProcessed, PaymentEventsTypeACHReturnSettled:
+	case PaymentEventsTypeACHOriginationCancelled, PaymentEventsTypeACHOriginationInitiated, PaymentEventsTypeACHOriginationProcessed, PaymentEventsTypeACHOriginationRejected, PaymentEventsTypeACHOriginationReleased, PaymentEventsTypeACHOriginationReviewed, PaymentEventsTypeACHOriginationSettled, PaymentEventsTypeACHReceiptProcessed, PaymentEventsTypeACHReceiptReleased, PaymentEventsTypeACHReceiptSettled, PaymentEventsTypeACHReturnInitiated, PaymentEventsTypeACHReturnProcessed, PaymentEventsTypeACHReturnRejected, PaymentEventsTypeACHReturnSettled:
 		return true
 	}
 	return false
