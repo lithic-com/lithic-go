@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.95.1 (2025-10-29)
+
+Full Changelog: [v0.95.0...v0.95.1](https://github.com/lithic-com/lithic-go/compare/v0.95.0...v0.95.1)
+
+### Chores
+
+* **api:** adds support for new ACH_RECEIPT_RELEASED event ([32a90ab](https://github.com/lithic-com/lithic-go/commit/32a90ab31f5a632ed4c6926e32e9a4e32a0e9c25))
+
 ## 0.95.0 (2025-10-23)
 
 Full Changelog: [v0.94.0...v0.95.0](https://github.com/lithic-com/lithic-go/compare/v0.94.0...v0.95.0)
