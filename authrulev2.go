@@ -115,23 +115,6 @@ func (r *AuthRuleV2Service) Delete(ctx context.Context, authRuleToken string, op
 	return
 }
 
-// Associates a V2 Auth rule with a card program, the provided account(s) or
-// card(s).
-//
-// Prefer using the `PATCH` method for this operation.
-//
-// Deprecated: deprecated
-func (r *AuthRuleV2Service) Apply(ctx context.Context, authRuleToken string, body AuthRuleV2ApplyParams, opts ...option.RequestOption) (res *AuthRuleV2ApplyResponse, err error) {
-	opts = slices.Concat(r.Options, opts)
-	if authRuleToken == "" {
-		err = errors.New("missing required auth_rule_token parameter")
-		return
-	}
-	path := fmt.Sprintf("v2/auth_rules/%s/apply", authRuleToken)
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
-}
-
 // Creates a new draft version of a rule that will be ran in shadow mode.
 //
 // This can also be utilized to reset the draft parameters, causing a draft version
@@ -451,10 +434,6 @@ func (r Conditional3DSActionParameters) implementsAuthRuleV2ListResponseCurrentV
 
 func (r Conditional3DSActionParameters) implementsAuthRuleV2ListResponseDraftVersionParameters() {}
 
-func (r Conditional3DSActionParameters) implementsAuthRuleV2ApplyResponseCurrentVersionParameters() {}
-
-func (r Conditional3DSActionParameters) implementsAuthRuleV2ApplyResponseDraftVersionParameters() {}
-
 func (r Conditional3DSActionParameters) implementsAuthRuleV2DraftResponseCurrentVersionParameters() {}
 
 func (r Conditional3DSActionParameters) implementsAuthRuleV2DraftResponseDraftVersionParameters() {}
@@ -750,10 +729,6 @@ func (r ConditionalBlockParameters) implementsAuthRuleV2ListResponseCurrentVersi
 
 func (r ConditionalBlockParameters) implementsAuthRuleV2ListResponseDraftVersionParameters() {}
 
-func (r ConditionalBlockParameters) implementsAuthRuleV2ApplyResponseCurrentVersionParameters() {}
-
-func (r ConditionalBlockParameters) implementsAuthRuleV2ApplyResponseDraftVersionParameters() {}
-
 func (r ConditionalBlockParameters) implementsAuthRuleV2DraftResponseCurrentVersionParameters() {}
 
 func (r ConditionalBlockParameters) implementsAuthRuleV2DraftResponseDraftVersionParameters() {}
@@ -800,10 +775,6 @@ func (r MerchantLockParameters) implementsAuthRuleV2UpdateResponseDraftVersionPa
 func (r MerchantLockParameters) implementsAuthRuleV2ListResponseCurrentVersionParameters() {}
 
 func (r MerchantLockParameters) implementsAuthRuleV2ListResponseDraftVersionParameters() {}
-
-func (r MerchantLockParameters) implementsAuthRuleV2ApplyResponseCurrentVersionParameters() {}
-
-func (r MerchantLockParameters) implementsAuthRuleV2ApplyResponseDraftVersionParameters() {}
 
 func (r MerchantLockParameters) implementsAuthRuleV2DraftResponseCurrentVersionParameters() {}
 
@@ -940,11 +911,8 @@ func (r RuleStatsExamplesDecision) IsKnown() bool {
 
 type VelocityLimitParams struct {
 	Filters VelocityLimitParamsFilters `json:"filters,required"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion `json:"period,required"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitParamsPeriodWindow `json:"period,required"`
 	// The scope the velocity is calculated for
 	Scope VelocityLimitParamsScope `json:"scope,required"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
@@ -995,10 +963,6 @@ func (r VelocityLimitParams) implementsAuthRuleV2UpdateResponseDraftVersionParam
 func (r VelocityLimitParams) implementsAuthRuleV2ListResponseCurrentVersionParameters() {}
 
 func (r VelocityLimitParams) implementsAuthRuleV2ListResponseDraftVersionParameters() {}
-
-func (r VelocityLimitParams) implementsAuthRuleV2ApplyResponseCurrentVersionParameters() {}
-
-func (r VelocityLimitParams) implementsAuthRuleV2ApplyResponseDraftVersionParameters() {}
 
 func (r VelocityLimitParams) implementsAuthRuleV2DraftResponseCurrentVersionParameters() {}
 
@@ -1093,34 +1057,79 @@ func (r VelocityLimitParamsScope) IsKnown() bool {
 	return false
 }
 
-// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
+// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+type VelocityLimitParamsPeriodWindow struct {
+	Type VelocityLimitParamsPeriodWindowType `json:"type,required"`
+	// The day of the month to start from. Accepts values from 1 to 31, and will reset
+	// at the end of the month if the day exceeds the number of days in the month.
+	// Defaults to the 1st of the month if not specified.
+	DayOfMonth int64 `json:"day_of_month"`
+	// The day of the week to start the week from. Following ISO-8601, 1 is Monday and
+	// 7 is Sunday. Defaults to Monday if not specified.
+	DayOfWeek int64 `json:"day_of_week"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Duration int64 `json:"duration"`
+	// The month to start from. 1 is January and 12 is December. Defaults to January if
+	// not specified.
+	Month int64                               `json:"month"`
+	JSON  velocityLimitParamsPeriodWindowJSON `json:"-"`
+	union VelocityLimitParamsPeriodWindowUnion
+}
+
+// velocityLimitParamsPeriodWindowJSON contains the JSON metadata for the struct
+// [VelocityLimitParamsPeriodWindow]
+type velocityLimitParamsPeriodWindowJSON struct {
+	Type        apijson.Field
+	DayOfMonth  apijson.Field
+	DayOfWeek   apijson.Field
+	Duration    apijson.Field
+	Month       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r velocityLimitParamsPeriodWindowJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r *VelocityLimitParamsPeriodWindow) UnmarshalJSON(data []byte) (err error) {
+	*r = VelocityLimitParamsPeriodWindow{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a [VelocityLimitParamsPeriodWindowUnion] interface which you can
+// cast to the specific types for more type safety.
 //
-// The size of the trailing window to calculate Spend Velocity over in seconds. The
-// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-//
-// Union satisfied by [shared.UnionInt],
-// [VelocityLimitParamsPeriodWindowFixedWindow],
+// Possible runtime types of the union are
 // [VelocityLimitParamsPeriodWindowTrailingWindowObject],
+// [VelocityLimitParamsPeriodWindowFixedWindowDay],
+// [VelocityLimitParamsPeriodWindowFixedWindowWeek],
+// [VelocityLimitParamsPeriodWindowFixedWindowMonth],
+// [VelocityLimitParamsPeriodWindowFixedWindowYear].
+func (r VelocityLimitParamsPeriodWindow) AsUnion() VelocityLimitParamsPeriodWindowUnion {
+	return r.union
+}
+
+// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+//
+// Union satisfied by [VelocityLimitParamsPeriodWindowTrailingWindowObject],
 // [VelocityLimitParamsPeriodWindowFixedWindowDay],
 // [VelocityLimitParamsPeriodWindowFixedWindowWeek],
 // [VelocityLimitParamsPeriodWindowFixedWindowMonth] or
 // [VelocityLimitParamsPeriodWindowFixedWindowYear].
 type VelocityLimitParamsPeriodWindowUnion interface {
-	ImplementsVelocityLimitParamsPeriodWindowUnion()
+	implementsVelocityLimitParamsPeriodWindow()
 }
 
 func init() {
 	apijson.RegisterUnion(
 		reflect.TypeOf((*VelocityLimitParamsPeriodWindowUnion)(nil)).Elem(),
 		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionInt(0)),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.String,
-			Type:       reflect.TypeOf(VelocityLimitParamsPeriodWindowFixedWindow("")),
-		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParamsPeriodWindowTrailingWindowObject{}),
@@ -1144,42 +1153,11 @@ func init() {
 	)
 }
 
-// DEPRECATED: This has been deprecated in favor of the other Fixed Window Objects
-//
-// The window of time to calculate Spend Velocity over.
-//
-//   - `DAY`: Velocity over the current day since midnight Eastern Time.
-//   - `WEEK`: Velocity over the current week since 00:00 / 12 AM on Monday in
-//     Eastern Time.
-//   - `MONTH`: Velocity over the current month since 00:00 / 12 AM on the first of
-//     the month in Eastern Time.
-//   - `YEAR`: Velocity over the current year since 00:00 / 12 AM on January 1st in
-//     Eastern Time.
-type VelocityLimitParamsPeriodWindowFixedWindow string
-
-const (
-	VelocityLimitParamsPeriodWindowFixedWindowDay   VelocityLimitParamsPeriodWindowFixedWindow = "DAY"
-	VelocityLimitParamsPeriodWindowFixedWindowWeek  VelocityLimitParamsPeriodWindowFixedWindow = "WEEK"
-	VelocityLimitParamsPeriodWindowFixedWindowMonth VelocityLimitParamsPeriodWindowFixedWindow = "MONTH"
-	VelocityLimitParamsPeriodWindowFixedWindowYear  VelocityLimitParamsPeriodWindowFixedWindow = "YEAR"
-)
-
-func (r VelocityLimitParamsPeriodWindowFixedWindow) IsKnown() bool {
-	switch r {
-	case VelocityLimitParamsPeriodWindowFixedWindowDay, VelocityLimitParamsPeriodWindowFixedWindowWeek, VelocityLimitParamsPeriodWindowFixedWindowMonth, VelocityLimitParamsPeriodWindowFixedWindowYear:
-		return true
-	}
-	return false
-}
-
-func (r VelocityLimitParamsPeriodWindowFixedWindow) ImplementsVelocityLimitParamsPeriodWindowUnion() {
-}
-
 type VelocityLimitParamsPeriodWindowTrailingWindowObject struct {
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Duration int64                                                   `json:"duration"`
-	Type     VelocityLimitParamsPeriodWindowTrailingWindowObjectType `json:"type"`
+	Duration int64                                                   `json:"duration,required"`
+	Type     VelocityLimitParamsPeriodWindowTrailingWindowObjectType `json:"type,required"`
 	JSON     velocityLimitParamsPeriodWindowTrailingWindowObjectJSON `json:"-"`
 }
 
@@ -1200,7 +1178,7 @@ func (r velocityLimitParamsPeriodWindowTrailingWindowObjectJSON) RawJSON() strin
 	return r.raw
 }
 
-func (r VelocityLimitParamsPeriodWindowTrailingWindowObject) ImplementsVelocityLimitParamsPeriodWindowUnion() {
+func (r VelocityLimitParamsPeriodWindowTrailingWindowObject) implementsVelocityLimitParamsPeriodWindow() {
 }
 
 type VelocityLimitParamsPeriodWindowTrailingWindowObjectType string
@@ -1215,6 +1193,235 @@ func (r VelocityLimitParamsPeriodWindowTrailingWindowObjectType) IsKnown() bool 
 		return true
 	}
 	return false
+}
+
+// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+type VelocityLimitParamsPeriodWindowFixedWindowDay struct {
+	Type VelocityLimitParamsPeriodWindowFixedWindowDayType `json:"type,required"`
+	JSON velocityLimitParamsPeriodWindowFixedWindowDayJSON `json:"-"`
+}
+
+// velocityLimitParamsPeriodWindowFixedWindowDayJSON contains the JSON metadata for
+// the struct [VelocityLimitParamsPeriodWindowFixedWindowDay]
+type velocityLimitParamsPeriodWindowFixedWindowDayJSON struct {
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *VelocityLimitParamsPeriodWindowFixedWindowDay) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r velocityLimitParamsPeriodWindowFixedWindowDayJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r VelocityLimitParamsPeriodWindowFixedWindowDay) implementsVelocityLimitParamsPeriodWindow() {}
+
+type VelocityLimitParamsPeriodWindowFixedWindowDayType string
+
+const (
+	VelocityLimitParamsPeriodWindowFixedWindowDayTypeDay VelocityLimitParamsPeriodWindowFixedWindowDayType = "DAY"
+)
+
+func (r VelocityLimitParamsPeriodWindowFixedWindowDayType) IsKnown() bool {
+	switch r {
+	case VelocityLimitParamsPeriodWindowFixedWindowDayTypeDay:
+		return true
+	}
+	return false
+}
+
+// Velocity over the current week since 00:00 / 12 AM in Eastern Time on specified
+// `day_of_week`
+type VelocityLimitParamsPeriodWindowFixedWindowWeek struct {
+	Type VelocityLimitParamsPeriodWindowFixedWindowWeekType `json:"type,required"`
+	// The day of the week to start the week from. Following ISO-8601, 1 is Monday and
+	// 7 is Sunday. Defaults to Monday if not specified.
+	DayOfWeek int64                                              `json:"day_of_week"`
+	JSON      velocityLimitParamsPeriodWindowFixedWindowWeekJSON `json:"-"`
+}
+
+// velocityLimitParamsPeriodWindowFixedWindowWeekJSON contains the JSON metadata
+// for the struct [VelocityLimitParamsPeriodWindowFixedWindowWeek]
+type velocityLimitParamsPeriodWindowFixedWindowWeekJSON struct {
+	Type        apijson.Field
+	DayOfWeek   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *VelocityLimitParamsPeriodWindowFixedWindowWeek) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r velocityLimitParamsPeriodWindowFixedWindowWeekJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r VelocityLimitParamsPeriodWindowFixedWindowWeek) implementsVelocityLimitParamsPeriodWindow() {}
+
+type VelocityLimitParamsPeriodWindowFixedWindowWeekType string
+
+const (
+	VelocityLimitParamsPeriodWindowFixedWindowWeekTypeWeek VelocityLimitParamsPeriodWindowFixedWindowWeekType = "WEEK"
+)
+
+func (r VelocityLimitParamsPeriodWindowFixedWindowWeekType) IsKnown() bool {
+	switch r {
+	case VelocityLimitParamsPeriodWindowFixedWindowWeekTypeWeek:
+		return true
+	}
+	return false
+}
+
+// Velocity over the current month since 00:00 / 12 AM in Eastern Time on specified
+// `day_of_month`.
+type VelocityLimitParamsPeriodWindowFixedWindowMonth struct {
+	Type VelocityLimitParamsPeriodWindowFixedWindowMonthType `json:"type,required"`
+	// The day of the month to start from. Accepts values from 1 to 31, and will reset
+	// at the end of the month if the day exceeds the number of days in the month.
+	// Defaults to the 1st of the month if not specified.
+	DayOfMonth int64                                               `json:"day_of_month"`
+	JSON       velocityLimitParamsPeriodWindowFixedWindowMonthJSON `json:"-"`
+}
+
+// velocityLimitParamsPeriodWindowFixedWindowMonthJSON contains the JSON metadata
+// for the struct [VelocityLimitParamsPeriodWindowFixedWindowMonth]
+type velocityLimitParamsPeriodWindowFixedWindowMonthJSON struct {
+	Type        apijson.Field
+	DayOfMonth  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *VelocityLimitParamsPeriodWindowFixedWindowMonth) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r velocityLimitParamsPeriodWindowFixedWindowMonthJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r VelocityLimitParamsPeriodWindowFixedWindowMonth) implementsVelocityLimitParamsPeriodWindow() {
+}
+
+type VelocityLimitParamsPeriodWindowFixedWindowMonthType string
+
+const (
+	VelocityLimitParamsPeriodWindowFixedWindowMonthTypeMonth VelocityLimitParamsPeriodWindowFixedWindowMonthType = "MONTH"
+)
+
+func (r VelocityLimitParamsPeriodWindowFixedWindowMonthType) IsKnown() bool {
+	switch r {
+	case VelocityLimitParamsPeriodWindowFixedWindowMonthTypeMonth:
+		return true
+	}
+	return false
+}
+
+// Velocity over the current year since 00:00 / 12 AM in Eastern Time on specified
+// `month` and `day_of_month`. This validates the month and day of the year to
+// start from is a real date. In the event that February 29th is selected, in
+// non-leap years, the window will start from February 28th.
+type VelocityLimitParamsPeriodWindowFixedWindowYear struct {
+	Type VelocityLimitParamsPeriodWindowFixedWindowYearType `json:"type,required"`
+	// The day of the month to start from. Defaults to the 1st of the month if not
+	// specified.
+	DayOfMonth int64 `json:"day_of_month"`
+	// The month to start from. 1 is January and 12 is December. Defaults to January if
+	// not specified.
+	Month int64                                              `json:"month"`
+	JSON  velocityLimitParamsPeriodWindowFixedWindowYearJSON `json:"-"`
+}
+
+// velocityLimitParamsPeriodWindowFixedWindowYearJSON contains the JSON metadata
+// for the struct [VelocityLimitParamsPeriodWindowFixedWindowYear]
+type velocityLimitParamsPeriodWindowFixedWindowYearJSON struct {
+	Type        apijson.Field
+	DayOfMonth  apijson.Field
+	Month       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *VelocityLimitParamsPeriodWindowFixedWindowYear) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r velocityLimitParamsPeriodWindowFixedWindowYearJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r VelocityLimitParamsPeriodWindowFixedWindowYear) implementsVelocityLimitParamsPeriodWindow() {}
+
+type VelocityLimitParamsPeriodWindowFixedWindowYearType string
+
+const (
+	VelocityLimitParamsPeriodWindowFixedWindowYearTypeYear VelocityLimitParamsPeriodWindowFixedWindowYearType = "YEAR"
+)
+
+func (r VelocityLimitParamsPeriodWindowFixedWindowYearType) IsKnown() bool {
+	switch r {
+	case VelocityLimitParamsPeriodWindowFixedWindowYearTypeYear:
+		return true
+	}
+	return false
+}
+
+type VelocityLimitParamsPeriodWindowType string
+
+const (
+	VelocityLimitParamsPeriodWindowTypeCustom VelocityLimitParamsPeriodWindowType = "CUSTOM"
+	VelocityLimitParamsPeriodWindowTypeDay    VelocityLimitParamsPeriodWindowType = "DAY"
+	VelocityLimitParamsPeriodWindowTypeWeek   VelocityLimitParamsPeriodWindowType = "WEEK"
+	VelocityLimitParamsPeriodWindowTypeMonth  VelocityLimitParamsPeriodWindowType = "MONTH"
+	VelocityLimitParamsPeriodWindowTypeYear   VelocityLimitParamsPeriodWindowType = "YEAR"
+)
+
+func (r VelocityLimitParamsPeriodWindowType) IsKnown() bool {
+	switch r {
+	case VelocityLimitParamsPeriodWindowTypeCustom, VelocityLimitParamsPeriodWindowTypeDay, VelocityLimitParamsPeriodWindowTypeWeek, VelocityLimitParamsPeriodWindowTypeMonth, VelocityLimitParamsPeriodWindowTypeYear:
+		return true
+	}
+	return false
+}
+
+// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+type VelocityLimitParamsPeriodWindow struct {
+	Type param.Field[VelocityLimitParamsPeriodWindowType] `json:"type,required"`
+	// The day of the month to start from. Accepts values from 1 to 31, and will reset
+	// at the end of the month if the day exceeds the number of days in the month.
+	// Defaults to the 1st of the month if not specified.
+	DayOfMonth param.Field[int64] `json:"day_of_month"`
+	// The day of the week to start the week from. Following ISO-8601, 1 is Monday and
+	// 7 is Sunday. Defaults to Monday if not specified.
+	DayOfWeek param.Field[int64] `json:"day_of_week"`
+	// The size of the trailing window to calculate Spend Velocity over in seconds. The
+	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	Duration param.Field[int64] `json:"duration"`
+	// The month to start from. 1 is January and 12 is December. Defaults to January if
+	// not specified.
+	Month param.Field[int64] `json:"month"`
+}
+
+func (r VelocityLimitParamsPeriodWindow) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r VelocityLimitParamsPeriodWindow) implementsVelocityLimitParamsPeriodWindowUnion() {}
+
+// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+//
+// Satisfied by [VelocityLimitParamsPeriodWindowTrailingWindowObject],
+// [VelocityLimitParamsPeriodWindowFixedWindowDay],
+// [VelocityLimitParamsPeriodWindowFixedWindowWeek],
+// [VelocityLimitParamsPeriodWindowFixedWindowMonth],
+// [VelocityLimitParamsPeriodWindowFixedWindowYear],
+// [VelocityLimitParamsPeriodWindow].
+type VelocityLimitParamsPeriodWindowUnion interface {
+	implementsVelocityLimitParamsPeriodWindowUnion()
 }
 
 type AuthRuleV2NewResponse struct {
@@ -1330,11 +1537,8 @@ type AuthRuleV2NewResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitParamsPeriodWindow `json:"period"`
 	// The scope the velocity is calculated for
 	Scope AuthRuleV2NewResponseCurrentVersionParametersScope `json:"scope"`
 	JSON  authRuleV2NewResponseCurrentVersionParametersJSON  `json:"-"`
@@ -1764,11 +1968,8 @@ type AuthRuleV2NewResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitParamsPeriodWindow `json:"period"`
 	// The scope the velocity is calculated for
 	Scope AuthRuleV2NewResponseDraftVersionParametersScope `json:"scope"`
 	JSON  authRuleV2NewResponseDraftVersionParametersJSON  `json:"-"`
@@ -2321,11 +2522,8 @@ type AuthRuleV2GetResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitParamsPeriodWindow `json:"period"`
 	// The scope the velocity is calculated for
 	Scope AuthRuleV2GetResponseCurrentVersionParametersScope `json:"scope"`
 	JSON  authRuleV2GetResponseCurrentVersionParametersJSON  `json:"-"`
@@ -2755,11 +2953,8 @@ type AuthRuleV2GetResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitParamsPeriodWindow `json:"period"`
 	// The scope the velocity is calculated for
 	Scope AuthRuleV2GetResponseDraftVersionParametersScope `json:"scope"`
 	JSON  authRuleV2GetResponseDraftVersionParametersJSON  `json:"-"`
@@ -3312,11 +3507,8 @@ type AuthRuleV2UpdateResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitParamsPeriodWindow `json:"period"`
 	// The scope the velocity is calculated for
 	Scope AuthRuleV2UpdateResponseCurrentVersionParametersScope `json:"scope"`
 	JSON  authRuleV2UpdateResponseCurrentVersionParametersJSON  `json:"-"`
@@ -3746,11 +3938,8 @@ type AuthRuleV2UpdateResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitParamsPeriodWindow `json:"period"`
 	// The scope the velocity is calculated for
 	Scope AuthRuleV2UpdateResponseDraftVersionParametersScope `json:"scope"`
 	JSON  authRuleV2UpdateResponseDraftVersionParametersJSON  `json:"-"`
@@ -4303,11 +4492,8 @@ type AuthRuleV2ListResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitParamsPeriodWindow `json:"period"`
 	// The scope the velocity is calculated for
 	Scope AuthRuleV2ListResponseCurrentVersionParametersScope `json:"scope"`
 	JSON  authRuleV2ListResponseCurrentVersionParametersJSON  `json:"-"`
@@ -4737,11 +4923,8 @@ type AuthRuleV2ListResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitParamsPeriodWindow `json:"period"`
 	// The scope the velocity is calculated for
 	Scope AuthRuleV2ListResponseDraftVersionParametersScope `json:"scope"`
 	JSON  authRuleV2ListResponseDraftVersionParametersJSON  `json:"-"`
@@ -5181,997 +5364,6 @@ func (r AuthRuleV2ListResponseType) IsKnown() bool {
 	return false
 }
 
-type AuthRuleV2ApplyResponse struct {
-	// Auth Rule Token
-	Token string `json:"token,required" format:"uuid"`
-	// Account tokens to which the Auth Rule applies.
-	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
-	// Business Account tokens to which the Auth Rule applies.
-	BusinessAccountTokens []string `json:"business_account_tokens,required" format:"uuid"`
-	// Card tokens to which the Auth Rule applies.
-	CardTokens     []string                              `json:"card_tokens,required" format:"uuid"`
-	CurrentVersion AuthRuleV2ApplyResponseCurrentVersion `json:"current_version,required,nullable"`
-	DraftVersion   AuthRuleV2ApplyResponseDraftVersion   `json:"draft_version,required,nullable"`
-	// The event stream during which the rule will be evaluated.
-	EventStream AuthRuleV2ApplyResponseEventStream `json:"event_stream,required"`
-	// Indicates whether this auth rule is managed by Lithic. If true, the rule cannot
-	// be modified or deleted by the user
-	LithicManaged bool `json:"lithic_managed,required"`
-	// Auth Rule Name
-	Name string `json:"name,required,nullable"`
-	// Whether the Auth Rule applies to all authorizations on the card program.
-	ProgramLevel bool `json:"program_level,required"`
-	// The state of the Auth Rule
-	State AuthRuleV2ApplyResponseState `json:"state,required"`
-	// The type of Auth Rule. For certain rule types, this determines the event stream
-	// during which it will be evaluated. For rules that can be applied to one of
-	// several event streams, the effective one is defined by the separate
-	// `event_stream` field.
-	//
-	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-	// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
-	Type AuthRuleV2ApplyResponseType `json:"type,required"`
-	// Card tokens to which the Auth Rule does not apply.
-	ExcludedCardTokens []string                    `json:"excluded_card_tokens" format:"uuid"`
-	JSON               authRuleV2ApplyResponseJSON `json:"-"`
-}
-
-// authRuleV2ApplyResponseJSON contains the JSON metadata for the struct
-// [AuthRuleV2ApplyResponse]
-type authRuleV2ApplyResponseJSON struct {
-	Token                 apijson.Field
-	AccountTokens         apijson.Field
-	BusinessAccountTokens apijson.Field
-	CardTokens            apijson.Field
-	CurrentVersion        apijson.Field
-	DraftVersion          apijson.Field
-	EventStream           apijson.Field
-	LithicManaged         apijson.Field
-	Name                  apijson.Field
-	ProgramLevel          apijson.Field
-	State                 apijson.Field
-	Type                  apijson.Field
-	ExcludedCardTokens    apijson.Field
-	raw                   string
-	ExtraFields           map[string]apijson.Field
-}
-
-func (r *AuthRuleV2ApplyResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2ApplyResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-type AuthRuleV2ApplyResponseCurrentVersion struct {
-	// Parameters for the Auth Rule
-	Parameters AuthRuleV2ApplyResponseCurrentVersionParameters `json:"parameters,required"`
-	// The version of the rule, this is incremented whenever the rule's parameters
-	// change.
-	Version int64                                     `json:"version,required"`
-	JSON    authRuleV2ApplyResponseCurrentVersionJSON `json:"-"`
-}
-
-// authRuleV2ApplyResponseCurrentVersionJSON contains the JSON metadata for the
-// struct [AuthRuleV2ApplyResponseCurrentVersion]
-type authRuleV2ApplyResponseCurrentVersionJSON struct {
-	Parameters  apijson.Field
-	Version     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2ApplyResponseCurrentVersion) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2ApplyResponseCurrentVersionJSON) RawJSON() string {
-	return r.raw
-}
-
-// Parameters for the Auth Rule
-type AuthRuleV2ApplyResponseCurrentVersionParameters struct {
-	// The action to take if the conditions are met.
-	Action AuthRuleV2ApplyResponseCurrentVersionParametersAction `json:"action"`
-	// This field can have the runtime type of [[]AuthRuleCondition],
-	// [[]Conditional3DsActionParametersCondition],
-	// [[]AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersCondition].
-	Conditions interface{} `json:"conditions"`
-	// This field can have the runtime type of [VelocityLimitParamsFilters].
-	Filters interface{} `json:"filters"`
-	// The maximum amount of spend velocity allowed in the period in minor units (the
-	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
-	// limit will be declined.
-	LimitAmount int64 `json:"limit_amount,nullable"`
-	// The number of spend velocity impacting transactions may not exceed this limit in
-	// the period. Transactions exceeding this limit will be declined. A spend velocity
-	// impacting transaction is a transaction that has been authorized, and optionally
-	// settled, or a force post (a transaction that settled without prior
-	// authorization).
-	LimitCount int64 `json:"limit_count,nullable"`
-	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
-	Merchants interface{} `json:"merchants"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
-	// The scope the velocity is calculated for
-	Scope AuthRuleV2ApplyResponseCurrentVersionParametersScope `json:"scope"`
-	JSON  authRuleV2ApplyResponseCurrentVersionParametersJSON  `json:"-"`
-	union AuthRuleV2ApplyResponseCurrentVersionParametersUnion
-}
-
-// authRuleV2ApplyResponseCurrentVersionParametersJSON contains the JSON metadata
-// for the struct [AuthRuleV2ApplyResponseCurrentVersionParameters]
-type authRuleV2ApplyResponseCurrentVersionParametersJSON struct {
-	Action      apijson.Field
-	Conditions  apijson.Field
-	Filters     apijson.Field
-	LimitAmount apijson.Field
-	LimitCount  apijson.Field
-	Merchants   apijson.Field
-	Period      apijson.Field
-	Scope       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r authRuleV2ApplyResponseCurrentVersionParametersJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r *AuthRuleV2ApplyResponseCurrentVersionParameters) UnmarshalJSON(data []byte) (err error) {
-	*r = AuthRuleV2ApplyResponseCurrentVersionParameters{}
-	err = apijson.UnmarshalRoot(data, &r.union)
-	if err != nil {
-		return err
-	}
-	return apijson.Port(r.union, &r)
-}
-
-// AsUnion returns a [AuthRuleV2ApplyResponseCurrentVersionParametersUnion]
-// interface which you can cast to the specific types for more type safety.
-//
-// Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters],
-// [AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParameters].
-func (r AuthRuleV2ApplyResponseCurrentVersionParameters) AsUnion() AuthRuleV2ApplyResponseCurrentVersionParametersUnion {
-	return r.union
-}
-
-// Parameters for the Auth Rule
-//
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters] or
-// [AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParameters].
-type AuthRuleV2ApplyResponseCurrentVersionParametersUnion interface {
-	implementsAuthRuleV2ApplyResponseCurrentVersionParameters()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*AuthRuleV2ApplyResponseCurrentVersionParametersUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(VelocityLimitParams{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(MerchantLockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(Conditional3DSActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParameters{}),
-		},
-	)
-}
-
-type AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParameters struct {
-	// The action to take if the conditions are met.
-	Action     AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersAction      `json:"action,required"`
-	Conditions []AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersCondition `json:"conditions,required"`
-	JSON       authRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersJSON        `json:"-"`
-}
-
-// authRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersJSON
-// contains the JSON metadata for the struct
-// [AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParameters]
-type authRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersJSON struct {
-	Action      apijson.Field
-	Conditions  apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParameters) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParameters) implementsAuthRuleV2ApplyResponseCurrentVersionParameters() {
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersAction string
-
-const (
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersActionDecline   AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersAction = "DECLINE"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersActionChallenge AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersActionDecline, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersActionChallenge:
-		return true
-	}
-	return false
-}
-
-type AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersCondition struct {
-	// The attribute to target.
-	//
-	// The following attributes may be targeted:
-	//
-	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
-	//     business by the types of goods or services it provides.
-	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
-	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
-	//     Netherlands Antilles.
-	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
-	//     the transaction.
-	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
-	//     (merchant).
-	//   - `DESCRIPTOR`: Short description of card acceptor.
-	//   - `LIABILITY_SHIFT`: Indicates whether chargeback liability shift to the issuer
-	//     applies to the transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
-	//     `TOKEN_AUTHENTICATED`.
-	//   - `PAN_ENTRY_MODE`: The method by which the cardholder's primary account number
-	//     (PAN) was entered. Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`,
-	//     `ECOMMERCE`, `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`,
-	//     `MAGNETIC_STRIPE`, `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`,
-	//     `UNKNOWN`, `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
-	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
-	//     fee field in the settlement/cardholder billing currency. This is the amount
-	//     the issuer should authorize against unless the issuer is paying the acquirer
-	//     fee on behalf of the cardholder.
-	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
-	//     represents the amount of cash being withdrawn or advanced.
-	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
-	//     given authorization. Scores are on a range of 0-999, with 0 representing the
-	//     lowest risk and 999 representing the highest risk. For Visa transactions,
-	//     where the raw score has a range of 0-99, Lithic will normalize the score by
-	//     multiplying the raw score by 10x.
-	//   - `CARD_TRANSACTION_COUNT_15M`: The number of transactions on the card in the
-	//     trailing 15 minutes before the authorization.
-	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
-	//     trailing hour up and until the authorization.
-	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
-	//     trailing 24 hours up and until the authorization.
-	//   - `CARD_STATE`: The current state of the card associated with the transaction.
-	//     Valid values are `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`,
-	//     `PENDING_FULFILLMENT`.
-	//   - `PIN_ENTERED`: Indicates whether a PIN was entered during the transaction.
-	//     Valid values are `TRUE`, `FALSE`.
-	//   - `PIN_STATUS`: The current state of card's PIN. Valid values are `NOT_SET`,
-	//     `OK`, `BLOCKED`.
-	//   - `WALLET_TYPE`: For transactions using a digital wallet token, indicates the
-	//     source of the token. Valid values are `APPLE_PAY`, `GOOGLE_PAY`,
-	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
-	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
-	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
-	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
-	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
-	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
-	Attribute AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute"`
-	// The operation to apply to the attribute
-	Operation AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation `json:"operation"`
-	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion `json:"value"`
-	JSON  authRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionJSON        `json:"-"`
-}
-
-// authRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionJSON
-// contains the JSON metadata for the struct
-// [AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersCondition]
-type authRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionJSON struct {
-	Attribute   apijson.Field
-	Operation   apijson.Field
-	Value       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionJSON) RawJSON() string {
-	return r.raw
-}
-
-// The attribute to target.
-//
-// The following attributes may be targeted:
-//
-//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
-//     business by the types of goods or services it provides.
-//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
-//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
-//     Netherlands Antilles.
-//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
-//     the transaction.
-//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
-//     (merchant).
-//   - `DESCRIPTOR`: Short description of card acceptor.
-//   - `LIABILITY_SHIFT`: Indicates whether chargeback liability shift to the issuer
-//     applies to the transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
-//     `TOKEN_AUTHENTICATED`.
-//   - `PAN_ENTRY_MODE`: The method by which the cardholder's primary account number
-//     (PAN) was entered. Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`,
-//     `ECOMMERCE`, `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`,
-//     `MAGNETIC_STRIPE`, `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`,
-//     `UNKNOWN`, `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
-//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
-//     fee field in the settlement/cardholder billing currency. This is the amount
-//     the issuer should authorize against unless the issuer is paying the acquirer
-//     fee on behalf of the cardholder.
-//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
-//     represents the amount of cash being withdrawn or advanced.
-//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
-//     given authorization. Scores are on a range of 0-999, with 0 representing the
-//     lowest risk and 999 representing the highest risk. For Visa transactions,
-//     where the raw score has a range of 0-99, Lithic will normalize the score by
-//     multiplying the raw score by 10x.
-//   - `CARD_TRANSACTION_COUNT_15M`: The number of transactions on the card in the
-//     trailing 15 minutes before the authorization.
-//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
-//     trailing hour up and until the authorization.
-//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
-//     trailing 24 hours up and until the authorization.
-//   - `CARD_STATE`: The current state of the card associated with the transaction.
-//     Valid values are `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`,
-//     `PENDING_FULFILLMENT`.
-//   - `PIN_ENTERED`: Indicates whether a PIN was entered during the transaction.
-//     Valid values are `TRUE`, `FALSE`.
-//   - `PIN_STATUS`: The current state of card's PIN. Valid values are `NOT_SET`,
-//     `OK`, `BLOCKED`.
-//   - `WALLET_TYPE`: For transactions using a digital wallet token, indicates the
-//     source of the token. Valid values are `APPLE_PAY`, `GOOGLE_PAY`,
-//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
-//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
-//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
-//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
-//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
-//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
-type AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute string
-
-const (
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc                     AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "MCC"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry                 AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency                AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID              AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor              AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState               AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_STATE"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered              AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_ENTERED"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
-)
-
-func (r AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
-		return true
-	}
-	return false
-}
-
-// The operation to apply to the attribute
-type AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation string
-
-const (
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsOneOf                AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "IS_ONE_OF"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsNotOneOf             AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "IS_NOT_ONE_OF"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationMatches                AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "MATCHES"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationDoesNotMatch           AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "DOES_NOT_MATCH"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsEqualTo              AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "IS_EQUAL_TO"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsNotEqualTo           AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "IS_NOT_EQUAL_TO"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsGreaterThan          AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "IS_GREATER_THAN"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsGreaterThanOrEqualTo AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "IS_GREATER_THAN_OR_EQUAL_TO"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsLessThan             AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "IS_LESS_THAN"
-	AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsLessThanOrEqualTo    AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "IS_LESS_THAN_OR_EQUAL_TO"
-)
-
-func (r AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperation) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsOneOf, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsNotOneOf, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationMatches, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationDoesNotMatch, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsEqualTo, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsNotEqualTo, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsGreaterThan, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsGreaterThanOrEqualTo, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsLessThan, AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsLessThanOrEqualTo:
-		return true
-	}
-	return false
-}
-
-// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-//
-// Union satisfied by [shared.UnionString], [shared.UnionInt] or
-// [AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsValueListOfStrings].
-type AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion interface {
-	ImplementsAuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.String,
-			Type:       reflect.TypeOf(shared.UnionString("")),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionInt(0)),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsValueListOfStrings{}),
-		},
-	)
-}
-
-type AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsValueListOfStrings []string
-
-func (r AuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion() {
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2ApplyResponseCurrentVersionParametersAction string
-
-const (
-	AuthRuleV2ApplyResponseCurrentVersionParametersActionDecline   AuthRuleV2ApplyResponseCurrentVersionParametersAction = "DECLINE"
-	AuthRuleV2ApplyResponseCurrentVersionParametersActionChallenge AuthRuleV2ApplyResponseCurrentVersionParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2ApplyResponseCurrentVersionParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ApplyResponseCurrentVersionParametersActionDecline, AuthRuleV2ApplyResponseCurrentVersionParametersActionChallenge:
-		return true
-	}
-	return false
-}
-
-// The scope the velocity is calculated for
-type AuthRuleV2ApplyResponseCurrentVersionParametersScope string
-
-const (
-	AuthRuleV2ApplyResponseCurrentVersionParametersScopeCard    AuthRuleV2ApplyResponseCurrentVersionParametersScope = "CARD"
-	AuthRuleV2ApplyResponseCurrentVersionParametersScopeAccount AuthRuleV2ApplyResponseCurrentVersionParametersScope = "ACCOUNT"
-)
-
-func (r AuthRuleV2ApplyResponseCurrentVersionParametersScope) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ApplyResponseCurrentVersionParametersScopeCard, AuthRuleV2ApplyResponseCurrentVersionParametersScopeAccount:
-		return true
-	}
-	return false
-}
-
-type AuthRuleV2ApplyResponseDraftVersion struct {
-	// Parameters for the Auth Rule
-	Parameters AuthRuleV2ApplyResponseDraftVersionParameters `json:"parameters,required"`
-	// The version of the rule, this is incremented whenever the rule's parameters
-	// change.
-	Version int64                                   `json:"version,required"`
-	JSON    authRuleV2ApplyResponseDraftVersionJSON `json:"-"`
-}
-
-// authRuleV2ApplyResponseDraftVersionJSON contains the JSON metadata for the
-// struct [AuthRuleV2ApplyResponseDraftVersion]
-type authRuleV2ApplyResponseDraftVersionJSON struct {
-	Parameters  apijson.Field
-	Version     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2ApplyResponseDraftVersion) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2ApplyResponseDraftVersionJSON) RawJSON() string {
-	return r.raw
-}
-
-// Parameters for the Auth Rule
-type AuthRuleV2ApplyResponseDraftVersionParameters struct {
-	// The action to take if the conditions are met.
-	Action AuthRuleV2ApplyResponseDraftVersionParametersAction `json:"action"`
-	// This field can have the runtime type of [[]AuthRuleCondition],
-	// [[]Conditional3DsActionParametersCondition],
-	// [[]AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersCondition].
-	Conditions interface{} `json:"conditions"`
-	// This field can have the runtime type of [VelocityLimitParamsFilters].
-	Filters interface{} `json:"filters"`
-	// The maximum amount of spend velocity allowed in the period in minor units (the
-	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
-	// limit will be declined.
-	LimitAmount int64 `json:"limit_amount,nullable"`
-	// The number of spend velocity impacting transactions may not exceed this limit in
-	// the period. Transactions exceeding this limit will be declined. A spend velocity
-	// impacting transaction is a transaction that has been authorized, and optionally
-	// settled, or a force post (a transaction that settled without prior
-	// authorization).
-	LimitCount int64 `json:"limit_count,nullable"`
-	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
-	Merchants interface{} `json:"merchants"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
-	// The scope the velocity is calculated for
-	Scope AuthRuleV2ApplyResponseDraftVersionParametersScope `json:"scope"`
-	JSON  authRuleV2ApplyResponseDraftVersionParametersJSON  `json:"-"`
-	union AuthRuleV2ApplyResponseDraftVersionParametersUnion
-}
-
-// authRuleV2ApplyResponseDraftVersionParametersJSON contains the JSON metadata for
-// the struct [AuthRuleV2ApplyResponseDraftVersionParameters]
-type authRuleV2ApplyResponseDraftVersionParametersJSON struct {
-	Action      apijson.Field
-	Conditions  apijson.Field
-	Filters     apijson.Field
-	LimitAmount apijson.Field
-	LimitCount  apijson.Field
-	Merchants   apijson.Field
-	Period      apijson.Field
-	Scope       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r authRuleV2ApplyResponseDraftVersionParametersJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r *AuthRuleV2ApplyResponseDraftVersionParameters) UnmarshalJSON(data []byte) (err error) {
-	*r = AuthRuleV2ApplyResponseDraftVersionParameters{}
-	err = apijson.UnmarshalRoot(data, &r.union)
-	if err != nil {
-		return err
-	}
-	return apijson.Port(r.union, &r)
-}
-
-// AsUnion returns a [AuthRuleV2ApplyResponseDraftVersionParametersUnion] interface
-// which you can cast to the specific types for more type safety.
-//
-// Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters],
-// [AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParameters].
-func (r AuthRuleV2ApplyResponseDraftVersionParameters) AsUnion() AuthRuleV2ApplyResponseDraftVersionParametersUnion {
-	return r.union
-}
-
-// Parameters for the Auth Rule
-//
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters] or
-// [AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParameters].
-type AuthRuleV2ApplyResponseDraftVersionParametersUnion interface {
-	implementsAuthRuleV2ApplyResponseDraftVersionParameters()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*AuthRuleV2ApplyResponseDraftVersionParametersUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(VelocityLimitParams{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(MerchantLockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(Conditional3DSActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParameters{}),
-		},
-	)
-}
-
-type AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParameters struct {
-	// The action to take if the conditions are met.
-	Action     AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersAction      `json:"action,required"`
-	Conditions []AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersCondition `json:"conditions,required"`
-	JSON       authRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersJSON        `json:"-"`
-}
-
-// authRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersJSON
-// contains the JSON metadata for the struct
-// [AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParameters]
-type authRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersJSON struct {
-	Action      apijson.Field
-	Conditions  apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParameters) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParameters) implementsAuthRuleV2ApplyResponseDraftVersionParameters() {
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersAction string
-
-const (
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersActionDecline   AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersAction = "DECLINE"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersActionChallenge AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersActionDecline, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersActionChallenge:
-		return true
-	}
-	return false
-}
-
-type AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersCondition struct {
-	// The attribute to target.
-	//
-	// The following attributes may be targeted:
-	//
-	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
-	//     business by the types of goods or services it provides.
-	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
-	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
-	//     Netherlands Antilles.
-	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
-	//     the transaction.
-	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
-	//     (merchant).
-	//   - `DESCRIPTOR`: Short description of card acceptor.
-	//   - `LIABILITY_SHIFT`: Indicates whether chargeback liability shift to the issuer
-	//     applies to the transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
-	//     `TOKEN_AUTHENTICATED`.
-	//   - `PAN_ENTRY_MODE`: The method by which the cardholder's primary account number
-	//     (PAN) was entered. Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`,
-	//     `ECOMMERCE`, `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`,
-	//     `MAGNETIC_STRIPE`, `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`,
-	//     `UNKNOWN`, `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
-	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
-	//     fee field in the settlement/cardholder billing currency. This is the amount
-	//     the issuer should authorize against unless the issuer is paying the acquirer
-	//     fee on behalf of the cardholder.
-	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
-	//     represents the amount of cash being withdrawn or advanced.
-	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
-	//     given authorization. Scores are on a range of 0-999, with 0 representing the
-	//     lowest risk and 999 representing the highest risk. For Visa transactions,
-	//     where the raw score has a range of 0-99, Lithic will normalize the score by
-	//     multiplying the raw score by 10x.
-	//   - `CARD_TRANSACTION_COUNT_15M`: The number of transactions on the card in the
-	//     trailing 15 minutes before the authorization.
-	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
-	//     trailing hour up and until the authorization.
-	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
-	//     trailing 24 hours up and until the authorization.
-	//   - `CARD_STATE`: The current state of the card associated with the transaction.
-	//     Valid values are `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`,
-	//     `PENDING_FULFILLMENT`.
-	//   - `PIN_ENTERED`: Indicates whether a PIN was entered during the transaction.
-	//     Valid values are `TRUE`, `FALSE`.
-	//   - `PIN_STATUS`: The current state of card's PIN. Valid values are `NOT_SET`,
-	//     `OK`, `BLOCKED`.
-	//   - `WALLET_TYPE`: For transactions using a digital wallet token, indicates the
-	//     source of the token. Valid values are `APPLE_PAY`, `GOOGLE_PAY`,
-	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
-	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
-	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
-	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
-	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
-	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
-	Attribute AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute"`
-	// The operation to apply to the attribute
-	Operation AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation `json:"operation"`
-	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion `json:"value"`
-	JSON  authRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionJSON        `json:"-"`
-}
-
-// authRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionJSON
-// contains the JSON metadata for the struct
-// [AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersCondition]
-type authRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionJSON struct {
-	Attribute   apijson.Field
-	Operation   apijson.Field
-	Value       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionJSON) RawJSON() string {
-	return r.raw
-}
-
-// The attribute to target.
-//
-// The following attributes may be targeted:
-//
-//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
-//     business by the types of goods or services it provides.
-//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
-//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
-//     Netherlands Antilles.
-//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
-//     the transaction.
-//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
-//     (merchant).
-//   - `DESCRIPTOR`: Short description of card acceptor.
-//   - `LIABILITY_SHIFT`: Indicates whether chargeback liability shift to the issuer
-//     applies to the transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
-//     `TOKEN_AUTHENTICATED`.
-//   - `PAN_ENTRY_MODE`: The method by which the cardholder's primary account number
-//     (PAN) was entered. Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`,
-//     `ECOMMERCE`, `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`,
-//     `MAGNETIC_STRIPE`, `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`,
-//     `UNKNOWN`, `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
-//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
-//     fee field in the settlement/cardholder billing currency. This is the amount
-//     the issuer should authorize against unless the issuer is paying the acquirer
-//     fee on behalf of the cardholder.
-//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
-//     represents the amount of cash being withdrawn or advanced.
-//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
-//     given authorization. Scores are on a range of 0-999, with 0 representing the
-//     lowest risk and 999 representing the highest risk. For Visa transactions,
-//     where the raw score has a range of 0-99, Lithic will normalize the score by
-//     multiplying the raw score by 10x.
-//   - `CARD_TRANSACTION_COUNT_15M`: The number of transactions on the card in the
-//     trailing 15 minutes before the authorization.
-//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
-//     trailing hour up and until the authorization.
-//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
-//     trailing 24 hours up and until the authorization.
-//   - `CARD_STATE`: The current state of the card associated with the transaction.
-//     Valid values are `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`,
-//     `PENDING_FULFILLMENT`.
-//   - `PIN_ENTERED`: Indicates whether a PIN was entered during the transaction.
-//     Valid values are `TRUE`, `FALSE`.
-//   - `PIN_STATUS`: The current state of card's PIN. Valid values are `NOT_SET`,
-//     `OK`, `BLOCKED`.
-//   - `WALLET_TYPE`: For transactions using a digital wallet token, indicates the
-//     source of the token. Valid values are `APPLE_PAY`, `GOOGLE_PAY`,
-//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
-//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
-//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
-//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
-//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
-//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
-type AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute string
-
-const (
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc                     AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "MCC"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry                 AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "COUNTRY"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency                AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CURRENCY"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID              AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "MERCHANT_ID"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor              AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "DESCRIPTOR"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount              AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore               AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState               AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "CARD_STATE"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered              AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_ENTERED"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus               AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType              AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
-)
-
-func (r AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMcc, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCountry, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCurrency, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeMerchantID, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeDescriptor, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCashAmount, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeRiskScore, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeCardState, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinEntered, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributePinStatus, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeWalletType, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
-		return true
-	}
-	return false
-}
-
-// The operation to apply to the attribute
-type AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation string
-
-const (
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsOneOf                AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "IS_ONE_OF"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsNotOneOf             AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "IS_NOT_ONE_OF"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationMatches                AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "MATCHES"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationDoesNotMatch           AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "DOES_NOT_MATCH"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsEqualTo              AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "IS_EQUAL_TO"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsNotEqualTo           AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "IS_NOT_EQUAL_TO"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsGreaterThan          AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "IS_GREATER_THAN"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsGreaterThanOrEqualTo AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "IS_GREATER_THAN_OR_EQUAL_TO"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsLessThan             AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "IS_LESS_THAN"
-	AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsLessThanOrEqualTo    AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation = "IS_LESS_THAN_OR_EQUAL_TO"
-)
-
-func (r AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperation) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsOneOf, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsNotOneOf, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationMatches, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationDoesNotMatch, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsEqualTo, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsNotEqualTo, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsGreaterThan, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsGreaterThanOrEqualTo, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsLessThan, AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsOperationIsLessThanOrEqualTo:
-		return true
-	}
-	return false
-}
-
-// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-//
-// Union satisfied by [shared.UnionString], [shared.UnionInt] or
-// [AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsValueListOfStrings].
-type AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion interface {
-	ImplementsAuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.String,
-			Type:       reflect.TypeOf(shared.UnionString("")),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionInt(0)),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsValueListOfStrings{}),
-		},
-	)
-}
-
-type AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsValueListOfStrings []string
-
-func (r AuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsValueListOfStrings) ImplementsAuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion() {
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2ApplyResponseDraftVersionParametersAction string
-
-const (
-	AuthRuleV2ApplyResponseDraftVersionParametersActionDecline   AuthRuleV2ApplyResponseDraftVersionParametersAction = "DECLINE"
-	AuthRuleV2ApplyResponseDraftVersionParametersActionChallenge AuthRuleV2ApplyResponseDraftVersionParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2ApplyResponseDraftVersionParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ApplyResponseDraftVersionParametersActionDecline, AuthRuleV2ApplyResponseDraftVersionParametersActionChallenge:
-		return true
-	}
-	return false
-}
-
-// The scope the velocity is calculated for
-type AuthRuleV2ApplyResponseDraftVersionParametersScope string
-
-const (
-	AuthRuleV2ApplyResponseDraftVersionParametersScopeCard    AuthRuleV2ApplyResponseDraftVersionParametersScope = "CARD"
-	AuthRuleV2ApplyResponseDraftVersionParametersScopeAccount AuthRuleV2ApplyResponseDraftVersionParametersScope = "ACCOUNT"
-)
-
-func (r AuthRuleV2ApplyResponseDraftVersionParametersScope) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ApplyResponseDraftVersionParametersScopeCard, AuthRuleV2ApplyResponseDraftVersionParametersScopeAccount:
-		return true
-	}
-	return false
-}
-
-// The event stream during which the rule will be evaluated.
-type AuthRuleV2ApplyResponseEventStream string
-
-const (
-	AuthRuleV2ApplyResponseEventStreamAuthorization         AuthRuleV2ApplyResponseEventStream = "AUTHORIZATION"
-	AuthRuleV2ApplyResponseEventStreamThreeDSAuthentication AuthRuleV2ApplyResponseEventStream = "THREE_DS_AUTHENTICATION"
-)
-
-func (r AuthRuleV2ApplyResponseEventStream) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ApplyResponseEventStreamAuthorization, AuthRuleV2ApplyResponseEventStreamThreeDSAuthentication:
-		return true
-	}
-	return false
-}
-
-// The state of the Auth Rule
-type AuthRuleV2ApplyResponseState string
-
-const (
-	AuthRuleV2ApplyResponseStateActive   AuthRuleV2ApplyResponseState = "ACTIVE"
-	AuthRuleV2ApplyResponseStateInactive AuthRuleV2ApplyResponseState = "INACTIVE"
-)
-
-func (r AuthRuleV2ApplyResponseState) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ApplyResponseStateActive, AuthRuleV2ApplyResponseStateInactive:
-		return true
-	}
-	return false
-}
-
-// The type of Auth Rule. For certain rule types, this determines the event stream
-// during which it will be evaluated. For rules that can be applied to one of
-// several event streams, the effective one is defined by the separate
-// `event_stream` field.
-//
-// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
-type AuthRuleV2ApplyResponseType string
-
-const (
-	AuthRuleV2ApplyResponseTypeConditionalBlock  AuthRuleV2ApplyResponseType = "CONDITIONAL_BLOCK"
-	AuthRuleV2ApplyResponseTypeVelocityLimit     AuthRuleV2ApplyResponseType = "VELOCITY_LIMIT"
-	AuthRuleV2ApplyResponseTypeMerchantLock      AuthRuleV2ApplyResponseType = "MERCHANT_LOCK"
-	AuthRuleV2ApplyResponseTypeConditionalAction AuthRuleV2ApplyResponseType = "CONDITIONAL_ACTION"
-)
-
-func (r AuthRuleV2ApplyResponseType) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ApplyResponseTypeConditionalBlock, AuthRuleV2ApplyResponseTypeVelocityLimit, AuthRuleV2ApplyResponseTypeMerchantLock, AuthRuleV2ApplyResponseTypeConditionalAction:
-		return true
-	}
-	return false
-}
-
 type AuthRuleV2DraftResponse struct {
 	// Auth Rule Token
 	Token string `json:"token,required" format:"uuid"`
@@ -6285,11 +5477,8 @@ type AuthRuleV2DraftResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitParamsPeriodWindow `json:"period"`
 	// The scope the velocity is calculated for
 	Scope AuthRuleV2DraftResponseCurrentVersionParametersScope `json:"scope"`
 	JSON  authRuleV2DraftResponseCurrentVersionParametersJSON  `json:"-"`
@@ -6719,11 +5908,8 @@ type AuthRuleV2DraftResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitParamsPeriodWindow `json:"period"`
 	// The scope the velocity is calculated for
 	Scope AuthRuleV2DraftResponseDraftVersionParametersScope `json:"scope"`
 	JSON  authRuleV2DraftResponseDraftVersionParametersJSON  `json:"-"`
@@ -7276,11 +6462,8 @@ type AuthRuleV2PromoteResponseCurrentVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitParamsPeriodWindow `json:"period"`
 	// The scope the velocity is calculated for
 	Scope AuthRuleV2PromoteResponseCurrentVersionParametersScope `json:"scope"`
 	JSON  authRuleV2PromoteResponseCurrentVersionParametersJSON  `json:"-"`
@@ -7710,11 +6893,8 @@ type AuthRuleV2PromoteResponseDraftVersionParameters struct {
 	LimitCount int64 `json:"limit_count,nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion `json:"period"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitParamsPeriodWindow `json:"period"`
 	// The scope the velocity is calculated for
 	Scope AuthRuleV2PromoteResponseDraftVersionParametersScope `json:"scope"`
 	JSON  authRuleV2PromoteResponseDraftVersionParametersJSON  `json:"-"`
@@ -8181,11 +7361,8 @@ func (r authRuleV2GetFeaturesResponseJSON) RawJSON() string {
 
 type AuthRuleV2GetFeaturesResponseFeature struct {
 	Filters AuthRuleV2GetFeaturesResponseFeaturesFilters `json:"filters,required"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Period VelocityLimitParamsPeriodWindowUnion `json:"period,required"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitParamsPeriodWindow `json:"period,required"`
 	// The scope the velocity is calculated for
 	Scope AuthRuleV2GetFeaturesResponseFeaturesScope `json:"scope,required"`
 	Value AuthRuleV2GetFeaturesResponseFeaturesValue `json:"value,required"`
@@ -8492,10 +7669,7 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParameters struct 
 	// authorization).
 	LimitCount param.Field[int64]       `json:"limit_count"`
 	Merchants  param.Field[interface{}] `json:"merchants"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
 	Period param.Field[VelocityLimitParamsPeriodWindowUnion] `json:"period"`
 	// The scope the velocity is calculated for
 	Scope param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestAccountTokensParametersScope] `json:"scope"`
@@ -8855,10 +8029,7 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParameters struct {
 	// authorization).
 	LimitCount param.Field[int64]       `json:"limit_count"`
 	Merchants  param.Field[interface{}] `json:"merchants"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
 	Period param.Field[VelocityLimitParamsPeriodWindowUnion] `json:"period"`
 	// The scope the velocity is calculated for
 	Scope param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestCardTokensParametersScope] `json:"scope"`
@@ -9220,10 +8391,7 @@ type AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParameters struct {
 	// authorization).
 	LimitCount param.Field[int64]       `json:"limit_count"`
 	Merchants  param.Field[interface{}] `json:"merchants"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
 	Period param.Field[VelocityLimitParamsPeriodWindowUnion] `json:"period"`
 	// The scope the velocity is calculated for
 	Scope param.Field[AuthRuleV2NewParamsBodyCreateAuthRuleRequestProgramLevelParametersScope] `json:"scope"`
@@ -9748,7 +8916,7 @@ type AuthRuleV2ListParams struct {
 	CardToken param.Field[string] `query:"card_token" format:"uuid"`
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.
-	EndingBefore param.Field[string] `query:"ending_before"`
+	EndingBefore param.Field[string] `query:"ending_before" format:"uuid"`
 	// Only return Auth rules that are executed during the provided event stream.
 	EventStream param.Field[AuthRuleV2ListParamsEventStream] `query:"event_stream"`
 	// Page size (for pagination).
@@ -9757,7 +8925,7 @@ type AuthRuleV2ListParams struct {
 	Scope param.Field[AuthRuleV2ListParamsScope] `query:"scope"`
 	// A cursor representing an item's token after which a page of results should
 	// begin. Used to retrieve the next page of results after this item.
-	StartingAfter param.Field[string] `query:"starting_after"`
+	StartingAfter param.Field[string] `query:"starting_after" format:"uuid"`
 }
 
 // URLQuery serializes [AuthRuleV2ListParams]'s query parameters as `url.Values`.
@@ -9803,77 +8971,6 @@ func (r AuthRuleV2ListParamsScope) IsKnown() bool {
 	return false
 }
 
-type AuthRuleV2ApplyParams struct {
-	Body AuthRuleV2ApplyParamsBodyUnion `json:"body,required"`
-}
-
-func (r AuthRuleV2ApplyParams) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r.Body)
-}
-
-type AuthRuleV2ApplyParamsBody struct {
-	AccountTokens         param.Field[interface{}] `json:"account_tokens"`
-	BusinessAccountTokens param.Field[interface{}] `json:"business_account_tokens"`
-	CardTokens            param.Field[interface{}] `json:"card_tokens"`
-	ExcludedCardTokens    param.Field[interface{}] `json:"excluded_card_tokens"`
-	// Whether the Auth Rule applies to all authorizations on the card program.
-	ProgramLevel param.Field[bool] `json:"program_level"`
-}
-
-func (r AuthRuleV2ApplyParamsBody) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
-}
-
-func (r AuthRuleV2ApplyParamsBody) implementsAuthRuleV2ApplyParamsBodyUnion() {}
-
-// Satisfied by [AuthRuleV2ApplyParamsBodyApplyAuthRuleRequestAccountTokens],
-// [AuthRuleV2ApplyParamsBodyApplyAuthRuleRequestCardTokens],
-// [AuthRuleV2ApplyParamsBodyApplyAuthRuleRequestProgramLevel],
-// [AuthRuleV2ApplyParamsBody].
-type AuthRuleV2ApplyParamsBodyUnion interface {
-	implementsAuthRuleV2ApplyParamsBodyUnion()
-}
-
-type AuthRuleV2ApplyParamsBodyApplyAuthRuleRequestAccountTokens struct {
-	// Account tokens to which the Auth Rule applies.
-	AccountTokens param.Field[[]string] `json:"account_tokens" format:"uuid"`
-	// Business Account tokens to which the Auth Rule applies.
-	BusinessAccountTokens param.Field[[]string] `json:"business_account_tokens" format:"uuid"`
-}
-
-func (r AuthRuleV2ApplyParamsBodyApplyAuthRuleRequestAccountTokens) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
-}
-
-func (r AuthRuleV2ApplyParamsBodyApplyAuthRuleRequestAccountTokens) implementsAuthRuleV2ApplyParamsBodyUnion() {
-}
-
-type AuthRuleV2ApplyParamsBodyApplyAuthRuleRequestCardTokens struct {
-	// Card tokens to which the Auth Rule applies.
-	CardTokens param.Field[[]string] `json:"card_tokens,required" format:"uuid"`
-}
-
-func (r AuthRuleV2ApplyParamsBodyApplyAuthRuleRequestCardTokens) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
-}
-
-func (r AuthRuleV2ApplyParamsBodyApplyAuthRuleRequestCardTokens) implementsAuthRuleV2ApplyParamsBodyUnion() {
-}
-
-type AuthRuleV2ApplyParamsBodyApplyAuthRuleRequestProgramLevel struct {
-	// Whether the Auth Rule applies to all authorizations on the card program.
-	ProgramLevel param.Field[bool] `json:"program_level,required"`
-	// Card tokens to which the Auth Rule does not apply.
-	ExcludedCardTokens param.Field[[]string] `json:"excluded_card_tokens" format:"uuid"`
-}
-
-func (r AuthRuleV2ApplyParamsBodyApplyAuthRuleRequestProgramLevel) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
-}
-
-func (r AuthRuleV2ApplyParamsBodyApplyAuthRuleRequestProgramLevel) implementsAuthRuleV2ApplyParamsBodyUnion() {
-}
-
 type AuthRuleV2DraftParams struct {
 	// Parameters for the Auth Rule
 	Parameters param.Field[AuthRuleV2DraftParamsParametersUnion] `json:"parameters"`
@@ -9900,10 +8997,7 @@ type AuthRuleV2DraftParamsParameters struct {
 	// authorization).
 	LimitCount param.Field[int64]       `json:"limit_count"`
 	Merchants  param.Field[interface{}] `json:"merchants"`
-	// DEPRECATED: This has been deprecated in favor of the Trailing Window Objects
-	//
-	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
 	Period param.Field[VelocityLimitParamsPeriodWindowUnion] `json:"period"`
 	// The scope the velocity is calculated for
 	Scope param.Field[AuthRuleV2DraftParamsParametersScope] `json:"scope"`

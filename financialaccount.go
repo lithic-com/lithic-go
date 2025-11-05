@@ -187,18 +187,8 @@ type FinancialAccountCreditConfiguration struct {
 	CreditProductToken       string `json:"credit_product_token,required,nullable"`
 	ExternalBankAccountToken string `json:"external_bank_account_token,required,nullable" format:"uuid"`
 	// Tier assigned to the financial account
-	Tier string `json:"tier,required,nullable"`
-	// Reason for the financial account being marked as Charged Off
-	//
-	// Deprecated: deprecated
-	ChargedOffReason FinancialAccountCreditConfigurationChargedOffReason `json:"charged_off_reason,nullable"`
-	// State of the financial account
-	//
-	// Deprecated: deprecated
-	FinancialAccountState FinancialAccountCreditConfigurationFinancialAccountState `json:"financial_account_state,nullable"`
-	// Deprecated: deprecated
-	IsSpendBlocked bool                                    `json:"is_spend_blocked"`
-	JSON           financialAccountCreditConfigurationJSON `json:"-"`
+	Tier string                                  `json:"tier,required,nullable"`
+	JSON financialAccountCreditConfigurationJSON `json:"-"`
 }
 
 // financialAccountCreditConfigurationJSON contains the JSON metadata for the
@@ -209,9 +199,6 @@ type financialAccountCreditConfigurationJSON struct {
 	CreditProductToken          apijson.Field
 	ExternalBankAccountToken    apijson.Field
 	Tier                        apijson.Field
-	ChargedOffReason            apijson.Field
-	FinancialAccountState       apijson.Field
-	IsSpendBlocked              apijson.Field
 	raw                         string
 	ExtraFields                 map[string]apijson.Field
 }
@@ -245,40 +232,6 @@ func (r *FinancialAccountCreditConfigurationAutoCollectionConfiguration) Unmarsh
 
 func (r financialAccountCreditConfigurationAutoCollectionConfigurationJSON) RawJSON() string {
 	return r.raw
-}
-
-// Reason for the financial account being marked as Charged Off
-type FinancialAccountCreditConfigurationChargedOffReason string
-
-const (
-	FinancialAccountCreditConfigurationChargedOffReasonDelinquent FinancialAccountCreditConfigurationChargedOffReason = "DELINQUENT"
-	FinancialAccountCreditConfigurationChargedOffReasonFraud      FinancialAccountCreditConfigurationChargedOffReason = "FRAUD"
-)
-
-func (r FinancialAccountCreditConfigurationChargedOffReason) IsKnown() bool {
-	switch r {
-	case FinancialAccountCreditConfigurationChargedOffReasonDelinquent, FinancialAccountCreditConfigurationChargedOffReasonFraud:
-		return true
-	}
-	return false
-}
-
-// State of the financial account
-type FinancialAccountCreditConfigurationFinancialAccountState string
-
-const (
-	FinancialAccountCreditConfigurationFinancialAccountStatePending    FinancialAccountCreditConfigurationFinancialAccountState = "PENDING"
-	FinancialAccountCreditConfigurationFinancialAccountStateCurrent    FinancialAccountCreditConfigurationFinancialAccountState = "CURRENT"
-	FinancialAccountCreditConfigurationFinancialAccountStateDelinquent FinancialAccountCreditConfigurationFinancialAccountState = "DELINQUENT"
-	FinancialAccountCreditConfigurationFinancialAccountStateChargedOff FinancialAccountCreditConfigurationFinancialAccountState = "CHARGED_OFF"
-)
-
-func (r FinancialAccountCreditConfigurationFinancialAccountState) IsKnown() bool {
-	switch r {
-	case FinancialAccountCreditConfigurationFinancialAccountStatePending, FinancialAccountCreditConfigurationFinancialAccountStateCurrent, FinancialAccountCreditConfigurationFinancialAccountStateDelinquent, FinancialAccountCreditConfigurationFinancialAccountStateChargedOff:
-		return true
-	}
-	return false
 }
 
 // Status of the financial account

@@ -144,7 +144,9 @@ func TestPaymentSimulateActionWithOptionalParams(t *testing.T) {
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.PaymentSimulateActionParams{
 			EventType:        lithic.F(lithic.PaymentSimulateActionParamsEventTypeACHOriginationReviewed),
+			DateOfDeath:      lithic.F(time.Now()),
 			DeclineReason:    lithic.F(lithic.PaymentSimulateActionParamsDeclineReasonProgramTransactionLimitExceeded),
+			ReturnAddenda:    lithic.F("return_addenda"),
 			ReturnReasonCode: lithic.F("return_reason_code"),
 		},
 	)

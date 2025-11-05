@@ -23,10 +23,6 @@ func (UnionString) ImplementsAuthRuleV2ListResponseCurrentVersionParametersCondi
 }
 func (UnionString) ImplementsAuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion() {
 }
-func (UnionString) ImplementsAuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion() {
-}
-func (UnionString) ImplementsAuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion() {
-}
 func (UnionString) ImplementsAuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion() {
 }
 func (UnionString) ImplementsAuthRuleV2DraftResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion() {
@@ -50,7 +46,6 @@ type UnionInt int64
 func (UnionInt) ImplementsAuthRuleConditionValueUnionParam()                   {}
 func (UnionInt) ImplementsAuthRuleConditionValueUnion()                        {}
 func (UnionInt) ImplementsConditional3DsActionParametersConditionsValueUnion() {}
-func (UnionInt) ImplementsVelocityLimitParamsPeriodWindowUnion()               {}
 func (UnionInt) ImplementsAuthRuleV2NewResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion() {
 }
 func (UnionInt) ImplementsAuthRuleV2NewResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion() {
@@ -66,10 +61,6 @@ func (UnionInt) ImplementsAuthRuleV2UpdateResponseDraftVersionParametersConditio
 func (UnionInt) ImplementsAuthRuleV2ListResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion() {
 }
 func (UnionInt) ImplementsAuthRuleV2ListResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2ApplyResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion() {
-}
-func (UnionInt) ImplementsAuthRuleV2ApplyResponseDraftVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion() {
 }
 func (UnionInt) ImplementsAuthRuleV2DraftResponseCurrentVersionParametersConditionalAuthorizationActionParametersConditionsValueUnion() {
 }
