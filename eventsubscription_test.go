@@ -30,7 +30,7 @@ func TestEventSubscriptionNewWithOptionalParams(t *testing.T) {
 		URL:         lithic.F("https://example.com"),
 		Description: lithic.F("description"),
 		Disabled:    lithic.F(true),
-		EventTypes:  lithic.F([]lithic.EventSubscriptionNewParamsEventType{lithic.EventSubscriptionNewParamsEventTypeAccountHolderCreated}),
+		EventTypes:  lithic.F([]lithic.EventSubscriptionNewParamsEventType{lithic.EventSubscriptionNewParamsEventTypeAccountHolderDocumentUpdated}),
 	})
 	if err != nil {
 		var apierr *lithic.Error
@@ -82,7 +82,7 @@ func TestEventSubscriptionUpdateWithOptionalParams(t *testing.T) {
 			URL:         lithic.F("https://example.com"),
 			Description: lithic.F("description"),
 			Disabled:    lithic.F(true),
-			EventTypes:  lithic.F([]lithic.EventSubscriptionUpdateParamsEventType{lithic.EventSubscriptionUpdateParamsEventTypeAccountHolderCreated}),
+			EventTypes:  lithic.F([]lithic.EventSubscriptionUpdateParamsEventType{lithic.EventSubscriptionUpdateParamsEventTypeAccountHolderDocumentUpdated}),
 		},
 	)
 	if err != nil {
@@ -297,7 +297,7 @@ func TestEventSubscriptionSendSimulatedExampleWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"event_subscription_token",
 		lithic.EventSubscriptionSendSimulatedExampleParams{
-			EventType: lithic.F(lithic.EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderCreated),
+			EventType: lithic.F(lithic.EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderDocumentUpdated),
 		},
 	)
 	if err != nil {

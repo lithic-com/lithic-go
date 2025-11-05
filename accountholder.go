@@ -258,13 +258,13 @@ type AccountHolder struct {
 	ExemptionType AccountHolderExemptionType `json:"exemption_type"`
 	// Customer-provided token that indicates a relationship with an object outside of
 	// the Lithic ecosystem.
-	ExternalID string `json:"external_id" format:"string"`
+	ExternalID string `json:"external_id"`
 	// Only present when user_type == "INDIVIDUAL". Information about the individual
 	// for which the account is being opened and KYC is being run.
 	Individual AccountHolderIndividual `json:"individual"`
 	// Only present when user_type == "BUSINESS". User-submitted description of the
 	// business.
-	NatureOfBusiness string `json:"nature_of_business" format:"string"`
+	NatureOfBusiness string `json:"nature_of_business"`
 	// (Deprecated. Use control_person.phone_number when user_type == "BUSINESS". Use
 	// individual.phone_number when user_type == "INDIVIDUAL".) Primary phone of
 	// Account Holder, entered in E.164 format.
@@ -292,7 +292,7 @@ type AccountHolder struct {
 	// Information about the most recent identity verification attempt
 	VerificationApplication AccountHolderVerificationApplication `json:"verification_application"`
 	// Only present when user_type == "BUSINESS". Business's primary website.
-	WebsiteURL string            `json:"website_url" format:"string"`
+	WebsiteURL string            `json:"website_url"`
 	JSON       accountHolderJSON `json:"-"`
 }
 
@@ -1183,7 +1183,7 @@ type AccountHolderNewResponse struct {
 	Created time.Time `json:"created" format:"date-time"`
 	// Customer-provided token that indicates a relationship with an object outside of
 	// the Lithic ecosystem.
-	ExternalID string `json:"external_id" format:"string"`
+	ExternalID string `json:"external_id"`
 	// Only present for "KYB_BASIC" workflow. A list of documents required for the
 	// account holder to be approved.
 	RequiredDocuments []RequiredDocument           `json:"required_documents"`
@@ -1289,7 +1289,7 @@ type AccountHolderUpdateResponse struct {
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
 	// users of businesses. Pass the account_token of the enrolled business associated
 	// with the AUTHORIZED_USER in this field.
-	BusinessAccountToken string `json:"business_account_token" format:"uuid"`
+	BusinessAccountToken string `json:"business_account_token,nullable" format:"uuid"`
 	// Only present when user_type == "BUSINESS". Information about the business for
 	// which the account is being opened and KYB is being run.
 	BusinessEntity KYBBusinessEntity `json:"business_entity"`
@@ -1307,7 +1307,7 @@ type AccountHolderUpdateResponse struct {
 	ExemptionType AccountHolderUpdateResponseExemptionType `json:"exemption_type"`
 	// Customer-provided token that indicates a relationship with an object outside of
 	// the Lithic ecosystem.
-	ExternalID string `json:"external_id" format:"string"`
+	ExternalID string `json:"external_id"`
 	// The first name for the account holder
 	FirstName string `json:"first_name"`
 	// This field can have the runtime type of
@@ -1319,7 +1319,7 @@ type AccountHolderUpdateResponse struct {
 	LegalBusinessName string `json:"legal_business_name"`
 	// Only present when user_type == "BUSINESS". User-submitted description of the
 	// business.
-	NatureOfBusiness string `json:"nature_of_business" format:"string"`
+	NatureOfBusiness string `json:"nature_of_business"`
 	// (Deprecated. Use control_person.phone_number when user_type == "BUSINESS". Use
 	// individual.phone_number when user_type == "INDIVIDUAL".) Primary phone of
 	// Account Holder, entered in E.164 format.
@@ -1346,7 +1346,7 @@ type AccountHolderUpdateResponse struct {
 	// [AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplication].
 	VerificationApplication interface{} `json:"verification_application"`
 	// Only present when user_type == "BUSINESS". Business's primary website.
-	WebsiteURL string                          `json:"website_url" format:"string"`
+	WebsiteURL string                          `json:"website_url"`
 	JSON       accountHolderUpdateResponseJSON `json:"-"`
 	union      AccountHolderUpdateResponseUnion
 }
@@ -1443,7 +1443,7 @@ type AccountHolderUpdateResponseKYBKYCPatchResponse struct {
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
 	// users of businesses. Pass the account_token of the enrolled business associated
 	// with the AUTHORIZED_USER in this field.
-	BusinessAccountToken string `json:"business_account_token" format:"uuid"`
+	BusinessAccountToken string `json:"business_account_token,nullable" format:"uuid"`
 	// Only present when user_type == "BUSINESS". Information about the business for
 	// which the account is being opened and KYB is being run.
 	BusinessEntity KYBBusinessEntity `json:"business_entity"`
@@ -1470,13 +1470,13 @@ type AccountHolderUpdateResponseKYBKYCPatchResponse struct {
 	ExemptionType AccountHolderUpdateResponseKYBKYCPatchResponseExemptionType `json:"exemption_type"`
 	// Customer-provided token that indicates a relationship with an object outside of
 	// the Lithic ecosystem.
-	ExternalID string `json:"external_id" format:"string"`
+	ExternalID string `json:"external_id"`
 	// Only present when user_type == "INDIVIDUAL". Information about the individual
 	// for which the account is being opened and KYC is being run.
 	Individual AccountHolderUpdateResponseKYBKYCPatchResponseIndividual `json:"individual"`
 	// Only present when user_type == "BUSINESS". User-submitted description of the
 	// business.
-	NatureOfBusiness string `json:"nature_of_business" format:"string"`
+	NatureOfBusiness string `json:"nature_of_business"`
 	// (Deprecated. Use control_person.phone_number when user_type == "BUSINESS". Use
 	// individual.phone_number when user_type == "INDIVIDUAL".) Primary phone of
 	// Account Holder, entered in E.164 format.
@@ -1503,7 +1503,7 @@ type AccountHolderUpdateResponseKYBKYCPatchResponse struct {
 	// Information about the most recent identity verification attempt
 	VerificationApplication AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplication `json:"verification_application"`
 	// Only present when user_type == "BUSINESS". Business's primary website.
-	WebsiteURL string                                             `json:"website_url" format:"string"`
+	WebsiteURL string                                             `json:"website_url"`
 	JSON       accountHolderUpdateResponseKybkycPatchResponseJSON `json:"-"`
 }
 
@@ -2009,7 +2009,7 @@ type AccountHolderUpdateResponsePatchResponse struct {
 	// The address for the account holder
 	Address AccountHolderUpdateResponsePatchResponseAddress `json:"address"`
 	// The token for the business account that the account holder is associated with
-	BusinessAccountToken string `json:"business_account_token"`
+	BusinessAccountToken string `json:"business_account_token,nullable"`
 	// The email for the account holder
 	Email string `json:"email"`
 	// The first name for the account holder
@@ -2187,7 +2187,7 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
 	// users of businesses. Pass the account_token of the enrolled business associated
 	// with the AUTHORIZED_USER in this field.
-	BusinessAccountToken string `json:"business_account_token" format:"uuid"`
+	BusinessAccountToken string `json:"business_account_token,nullable" format:"uuid"`
 	// Only present when user_type == "BUSINESS". Information about the business for
 	// which the account is being opened and KYB is being run.
 	BusinessEntity KYBBusinessEntity `json:"business_entity"`
@@ -2214,13 +2214,13 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 	ExemptionType AccountHolderSimulateEnrollmentReviewResponseExemptionType `json:"exemption_type"`
 	// Customer-provided token that indicates a relationship with an object outside of
 	// the Lithic ecosystem.
-	ExternalID string `json:"external_id" format:"string"`
+	ExternalID string `json:"external_id"`
 	// Only present when user_type == "INDIVIDUAL". Information about the individual
 	// for which the account is being opened and KYC is being run.
 	Individual AccountHolderSimulateEnrollmentReviewResponseIndividual `json:"individual"`
 	// Only present when user_type == "BUSINESS". User-submitted description of the
 	// business.
-	NatureOfBusiness string `json:"nature_of_business" format:"string"`
+	NatureOfBusiness string `json:"nature_of_business"`
 	// (Deprecated. Use control_person.phone_number when user_type == "BUSINESS". Use
 	// individual.phone_number when user_type == "INDIVIDUAL".) Primary phone of
 	// Account Holder, entered in E.164 format.
@@ -2247,7 +2247,7 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 	// Information about the most recent identity verification attempt
 	VerificationApplication AccountHolderSimulateEnrollmentReviewResponseVerificationApplication `json:"verification_application"`
 	// Only present when user_type == "BUSINESS". Business's primary website.
-	WebsiteURL string                                            `json:"website_url" format:"string"`
+	WebsiteURL string                                            `json:"website_url"`
 	JSON       accountHolderSimulateEnrollmentReviewResponseJSON `json:"-"`
 }
 

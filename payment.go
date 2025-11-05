@@ -472,7 +472,7 @@ type PaymentMethodAttributes struct {
 	// This field can have the runtime type of [[]string].
 	TraceNumbers interface{} `json:"trace_numbers"`
 	// Type of wire message
-	WireMessageType string `json:"wire_message_type"`
+	WireMessageType string `json:"wire_message_type,nullable"`
 	// Type of wire transfer
 	WireNetwork PaymentMethodAttributesWireNetwork `json:"wire_network"`
 	JSON        paymentMethodAttributesJSON        `json:"-"`
@@ -608,6 +608,8 @@ func (r PaymentMethodAttributesACHMethodAttributesSecCode) IsKnown() bool {
 }
 
 type PaymentMethodAttributesWireMethodAttributes struct {
+	// Type of wire message
+	WireMessageType string `json:"wire_message_type,required,nullable"`
 	// Type of wire transfer
 	WireNetwork PaymentMethodAttributesWireMethodAttributesWireNetwork `json:"wire_network,required"`
 	Creditor    WirePartyDetails                                       `json:"creditor"`
@@ -616,21 +618,19 @@ type PaymentMethodAttributesWireMethodAttributes struct {
 	// for tracking the message through the Fedwire system
 	MessageID string `json:"message_id,nullable"`
 	// Payment details or invoice reference
-	RemittanceInformation string `json:"remittance_information,nullable"`
-	// Type of wire message
-	WireMessageType string                                          `json:"wire_message_type"`
-	JSON            paymentMethodAttributesWireMethodAttributesJSON `json:"-"`
+	RemittanceInformation string                                          `json:"remittance_information,nullable"`
+	JSON                  paymentMethodAttributesWireMethodAttributesJSON `json:"-"`
 }
 
 // paymentMethodAttributesWireMethodAttributesJSON contains the JSON metadata for
 // the struct [PaymentMethodAttributesWireMethodAttributes]
 type paymentMethodAttributesWireMethodAttributesJSON struct {
+	WireMessageType       apijson.Field
 	WireNetwork           apijson.Field
 	Creditor              apijson.Field
 	Debtor                apijson.Field
 	MessageID             apijson.Field
 	RemittanceInformation apijson.Field
-	WireMessageType       apijson.Field
 	raw                   string
 	ExtraFields           map[string]apijson.Field
 }
@@ -1173,8 +1173,12 @@ func (r PaymentListParamsStatus) IsKnown() bool {
 type PaymentSimulateActionParams struct {
 	// Event Type
 	EventType param.Field[PaymentSimulateActionParamsEventType] `json:"event_type,required"`
+	// Date of Death for ACH Return
+	DateOfDeath param.Field[time.Time] `json:"date_of_death" format:"date"`
 	// Decline reason
 	DeclineReason param.Field[PaymentSimulateActionParamsDeclineReason] `json:"decline_reason"`
+	// Return Addenda
+	ReturnAddenda param.Field[string] `json:"return_addenda"`
 	// Return Reason Code
 	ReturnReasonCode param.Field[string] `json:"return_reason_code"`
 }
