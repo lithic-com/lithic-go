@@ -202,8 +202,8 @@ type BookTransferResponseEvent struct {
 	// unit (e.g., cents).
 	Amount int64 `json:"amount,required"`
 	// Date and time when the financial event occurred. UTC time zone.
-	Created         time.Time                                 `json:"created,required" format:"date-time"`
-	DetailedResults BookTransferResponseEventsDetailedResults `json:"detailed_results,required"`
+	Created         time.Time                                  `json:"created,required" format:"date-time"`
+	DetailedResults []BookTransferResponseEventsDetailedResult `json:"detailed_results,required"`
 	// Memo for the transfer.
 	Memo string `json:"memo,required"`
 	// APPROVED financial events were successful while DECLINED financial events were
@@ -239,16 +239,16 @@ func (r bookTransferResponseEventJSON) RawJSON() string {
 	return r.raw
 }
 
-type BookTransferResponseEventsDetailedResults string
+type BookTransferResponseEventsDetailedResult string
 
 const (
-	BookTransferResponseEventsDetailedResultsApproved          BookTransferResponseEventsDetailedResults = "APPROVED"
-	BookTransferResponseEventsDetailedResultsFundsInsufficient BookTransferResponseEventsDetailedResults = "FUNDS_INSUFFICIENT"
+	BookTransferResponseEventsDetailedResultApproved          BookTransferResponseEventsDetailedResult = "APPROVED"
+	BookTransferResponseEventsDetailedResultFundsInsufficient BookTransferResponseEventsDetailedResult = "FUNDS_INSUFFICIENT"
 )
 
-func (r BookTransferResponseEventsDetailedResults) IsKnown() bool {
+func (r BookTransferResponseEventsDetailedResult) IsKnown() bool {
 	switch r {
-	case BookTransferResponseEventsDetailedResultsApproved, BookTransferResponseEventsDetailedResultsFundsInsufficient:
+	case BookTransferResponseEventsDetailedResultApproved, BookTransferResponseEventsDetailedResultFundsInsufficient:
 		return true
 	}
 	return false

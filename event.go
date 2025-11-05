@@ -112,37 +112,106 @@ type Event struct {
 	//
 	// If no timezone is specified, UTC will be used.
 	Created time.Time `json:"created,required" format:"date-time"`
-	// Event types:
+	// The type of event that occurred. Possible values:
 	//
-	//   - `account_holder.created` - Notification that a new account holder has been
-	//     created and was not rejected.
-	//   - `account_holder.updated` - Notification that an account holder was updated.
-	//   - `account_holder.verification` - Notification than an account holder's identity
-	//     verification is complete.
-	//   - `card.created` - Notification that a card has been created.
-	//   - `card.renewed` - Notification that a card has been renewed.
-	//   - `card.reissued` - Notification that a card has been reissued.
-	//   - `card.shipped` - Physical card shipment notification. See
-	//     https://docs.lithic.com/docs/cards#physical-card-shipped-webhook.
-	//   - `card.converted` - Notification that a virtual card has been converted to a
-	//     physical card.
-	//   - `card_transaction.updated` - Transaction Lifecycle webhook. See
-	//     https://docs.lithic.com/docs/transaction-webhooks.
-	//   - `dispute.updated` - A dispute has been updated.
-	//   - `dispute_transaction.created` - A new dispute transaction has been created.
-	//   - `dispute_transaction.updated` - A dispute transaction has been updated.
-	//   - `digital_wallet.tokenization_approval_request` - Card network's request to
-	//     Lithic to activate a digital wallet token.
-	//   - `digital_wallet.tokenization_result` - Notification of the end result of a
-	//     tokenization, whether successful or failed.
-	//   - `digital_wallet.tokenization_two_factor_authentication_code` - A code to be
-	//     passed to an end user to complete digital wallet authentication. See
-	//     https://docs.lithic.com/docs/tokenization-control#digital-wallet-tokenization-auth-code.
-	//   - `digital_wallet.tokenization_two_factor_authentication_code_sent` -
-	//     Notification that a two factor authentication code for activating a digital
-	//     wallet has been sent to the end user.
-	//   - `digital_wallet.tokenization_updated` - Notification that a digital wallet
-	//     tokenization's status has changed.
+	//   - account_holder_document.updated: Occurs when an account holder's document
+	//     upload status has been updated
+	//   - account_holder.created: Occurs when a new account_holder is created.
+	//   - account_holder.updated: Occurs when an account_holder is updated.
+	//   - account_holder.verification: Occurs when an asynchronous account_holder's
+	//     verification is completed.
+	//   - auth_rules.backtest_report.created: Auth Rules backtest report created.
+	//   - balance.updated: Financial Account Balance Update
+	//   - book_transfer_transaction.created: Occurs when a book transfer transaction is
+	//     created.
+	//   - book_transfer_transaction.updated: Occurs when a book transfer transaction is
+	//     updated.
+	//   - card_transaction.enhanced_data.created: Occurs when L2/L3 enhanced commercial
+	//     data is processed for a transaction event.
+	//   - card_transaction.enhanced_data.updated: Occurs when L2/L3 enhanced commercial
+	//     data is reprocessed for a transaction event.
+	//   - card_transaction.updated: Occurs when a card transaction happens.
+	//   - card.converted: Occurs when a card is converted from virtual to physical
+	//     cards.
+	//   - card.created: Occurs when a new card is created.
+	//   - card.reissued: Occurs when a card is reissued.
+	//   - card.renewed: Occurs when a card is renewed.
+	//   - card.shipped: Occurs when a card is shipped.
+	//   - digital_wallet.tokenization_approval_request: Occurs when a tokenization
+	//     approval request is made. This event will be deprecated in the future. We
+	//     recommend using `tokenization.approval_request` instead.
+	//   - digital_wallet.tokenization_result: Occurs when a tokenization request
+	//     succeeded or failed.
+	//
+	// This event will be deprecated in the future. We recommend using
+	// `tokenization.result` instead.
+	//
+	//   - digital_wallet.tokenization_two_factor_authentication_code: Occurs when a
+	//     tokenization request 2FA code is sent to the Lithic customer for self serve
+	//     delivery.
+	//
+	// This event will be deprecated in the future. We recommend using
+	// `tokenization.two_factor_authentication_code` instead.
+	//
+	//   - digital_wallet.tokenization_two_factor_authentication_code_sent: Occurs when a
+	//     tokenization request 2FA code is sent to our downstream messaging providers
+	//     for delivery.
+	//
+	// This event will be deprecated in the future. We recommend using
+	// `tokenization.two_factor_authentication_code_sent` instead.
+	//
+	//   - digital_wallet.tokenization_updated: Occurs when a tokenization's status has
+	//     changed.
+	//
+	// This event will be deprecated in the future. We recommend using
+	// `tokenization.updated` instead.
+	//
+	//   - dispute_evidence.upload_failed: Occurs when a dispute evidence upload fails.
+	//   - dispute_transaction.created: Occurs when a new dispute transaction is created
+	//   - dispute_transaction.updated: Occurs when a dispute transaction is updated
+	//   - dispute.updated: Occurs when a dispute is updated.
+	//   - external_bank_account.created: Occurs when an external bank account is
+	//     created.
+	//   - external_bank_account.updated: Occurs when an external bank account is
+	//     updated.
+	//   - external_payment.created: Occurs when an external payment is created.
+	//   - external_payment.updated: Occurs when an external payment is updated.
+	//   - financial_account.created: Occurs when a financial account is created.
+	//   - financial_account.updated: Occurs when a financial account is updated.
+	//   - funding_event.created: Occurs when a funding event is created.
+	//   - internal_transaction.created: Occurs when an internal adjustment is created.
+	//   - internal_transaction.updated: Occurs when an internal adjustment is updated.
+	//   - loan_tape.created: Occurs when a loan tape is created.
+	//   - loan_tape.updated: Occurs when a loan tape is updated.
+	//   - management_operation.created: Occurs when an management operation is created.
+	//   - management_operation.updated: Occurs when an management operation is updated.
+	//   - network_total.created: Occurs when a network total is created.
+	//   - network_total.updated: Occurs when a network total is updated.
+	//   - payment_transaction.created: Occurs when a payment transaction is created.
+	//   - payment_transaction.updated: Occurs when a payment transaction is updated.
+	//   - settlement_report.updated: Occurs when a settlement report is created or
+	//     updated.
+	//   - statements.created: Occurs when a statement has been created
+	//   - three_ds_authentication.challenge: The `three_ds_authentication.challenge`
+	//     event. Upon receiving this request, the Card Program should issue its own
+	//     challenge to the cardholder. After a cardholder challenge is successfully
+	//     completed, the Card Program needs to respond back to Lithic by call to
+	//     [/v1/three_ds_decisioning/challenge_response](https://docs.lithic.com/reference/post_v1-three-ds-decisioning-challenge-response).
+	//     Then the cardholder must navigate back to the merchant checkout flow to
+	//     complete the transaction. Some merchants will include an `app_requestor_url`
+	//     for app-based purchases; Lithic recommends triggering a redirect to that URL
+	//     after the cardholder completes an app-based challenge.
+	//   - three_ds_authentication.created: Occurs when a 3DS authentication is created.
+	//   - three_ds_authentication.updated: Occurs when a 3DS authentication is updated
+	//     (eg. challenge is completed).
+	//   - tokenization.approval_request: Occurs when a tokenization approval request is
+	//     made.
+	//   - tokenization.result: Occurs when a tokenization request succeeded or failed.
+	//   - tokenization.two_factor_authentication_code: Occurs when a tokenization
+	//     request 2FA code is sent to the Lithic customer for self serve delivery.
+	//   - tokenization.two_factor_authentication_code_sent: Occurs when a tokenization
+	//     request 2FA code is sent to our downstream messaging providers for delivery.
+	//   - tokenization.updated: Occurs when a tokenization's status has changed.
 	EventType EventEventType         `json:"event_type,required"`
 	Payload   map[string]interface{} `json:"payload,required"`
 	JSON      eventJSON              `json:"-"`
@@ -166,60 +235,134 @@ func (r eventJSON) RawJSON() string {
 	return r.raw
 }
 
-// Event types:
+// The type of event that occurred. Possible values:
 //
-//   - `account_holder.created` - Notification that a new account holder has been
-//     created and was not rejected.
-//   - `account_holder.updated` - Notification that an account holder was updated.
-//   - `account_holder.verification` - Notification than an account holder's identity
-//     verification is complete.
-//   - `card.created` - Notification that a card has been created.
-//   - `card.renewed` - Notification that a card has been renewed.
-//   - `card.reissued` - Notification that a card has been reissued.
-//   - `card.shipped` - Physical card shipment notification. See
-//     https://docs.lithic.com/docs/cards#physical-card-shipped-webhook.
-//   - `card.converted` - Notification that a virtual card has been converted to a
-//     physical card.
-//   - `card_transaction.updated` - Transaction Lifecycle webhook. See
-//     https://docs.lithic.com/docs/transaction-webhooks.
-//   - `dispute.updated` - A dispute has been updated.
-//   - `dispute_transaction.created` - A new dispute transaction has been created.
-//   - `dispute_transaction.updated` - A dispute transaction has been updated.
-//   - `digital_wallet.tokenization_approval_request` - Card network's request to
-//     Lithic to activate a digital wallet token.
-//   - `digital_wallet.tokenization_result` - Notification of the end result of a
-//     tokenization, whether successful or failed.
-//   - `digital_wallet.tokenization_two_factor_authentication_code` - A code to be
-//     passed to an end user to complete digital wallet authentication. See
-//     https://docs.lithic.com/docs/tokenization-control#digital-wallet-tokenization-auth-code.
-//   - `digital_wallet.tokenization_two_factor_authentication_code_sent` -
-//     Notification that a two factor authentication code for activating a digital
-//     wallet has been sent to the end user.
-//   - `digital_wallet.tokenization_updated` - Notification that a digital wallet
-//     tokenization's status has changed.
+//   - account_holder_document.updated: Occurs when an account holder's document
+//     upload status has been updated
+//   - account_holder.created: Occurs when a new account_holder is created.
+//   - account_holder.updated: Occurs when an account_holder is updated.
+//   - account_holder.verification: Occurs when an asynchronous account_holder's
+//     verification is completed.
+//   - auth_rules.backtest_report.created: Auth Rules backtest report created.
+//   - balance.updated: Financial Account Balance Update
+//   - book_transfer_transaction.created: Occurs when a book transfer transaction is
+//     created.
+//   - book_transfer_transaction.updated: Occurs when a book transfer transaction is
+//     updated.
+//   - card_transaction.enhanced_data.created: Occurs when L2/L3 enhanced commercial
+//     data is processed for a transaction event.
+//   - card_transaction.enhanced_data.updated: Occurs when L2/L3 enhanced commercial
+//     data is reprocessed for a transaction event.
+//   - card_transaction.updated: Occurs when a card transaction happens.
+//   - card.converted: Occurs when a card is converted from virtual to physical
+//     cards.
+//   - card.created: Occurs when a new card is created.
+//   - card.reissued: Occurs when a card is reissued.
+//   - card.renewed: Occurs when a card is renewed.
+//   - card.shipped: Occurs when a card is shipped.
+//   - digital_wallet.tokenization_approval_request: Occurs when a tokenization
+//     approval request is made. This event will be deprecated in the future. We
+//     recommend using `tokenization.approval_request` instead.
+//   - digital_wallet.tokenization_result: Occurs when a tokenization request
+//     succeeded or failed.
+//
+// This event will be deprecated in the future. We recommend using
+// `tokenization.result` instead.
+//
+//   - digital_wallet.tokenization_two_factor_authentication_code: Occurs when a
+//     tokenization request 2FA code is sent to the Lithic customer for self serve
+//     delivery.
+//
+// This event will be deprecated in the future. We recommend using
+// `tokenization.two_factor_authentication_code` instead.
+//
+//   - digital_wallet.tokenization_two_factor_authentication_code_sent: Occurs when a
+//     tokenization request 2FA code is sent to our downstream messaging providers
+//     for delivery.
+//
+// This event will be deprecated in the future. We recommend using
+// `tokenization.two_factor_authentication_code_sent` instead.
+//
+//   - digital_wallet.tokenization_updated: Occurs when a tokenization's status has
+//     changed.
+//
+// This event will be deprecated in the future. We recommend using
+// `tokenization.updated` instead.
+//
+//   - dispute_evidence.upload_failed: Occurs when a dispute evidence upload fails.
+//   - dispute_transaction.created: Occurs when a new dispute transaction is created
+//   - dispute_transaction.updated: Occurs when a dispute transaction is updated
+//   - dispute.updated: Occurs when a dispute is updated.
+//   - external_bank_account.created: Occurs when an external bank account is
+//     created.
+//   - external_bank_account.updated: Occurs when an external bank account is
+//     updated.
+//   - external_payment.created: Occurs when an external payment is created.
+//   - external_payment.updated: Occurs when an external payment is updated.
+//   - financial_account.created: Occurs when a financial account is created.
+//   - financial_account.updated: Occurs when a financial account is updated.
+//   - funding_event.created: Occurs when a funding event is created.
+//   - internal_transaction.created: Occurs when an internal adjustment is created.
+//   - internal_transaction.updated: Occurs when an internal adjustment is updated.
+//   - loan_tape.created: Occurs when a loan tape is created.
+//   - loan_tape.updated: Occurs when a loan tape is updated.
+//   - management_operation.created: Occurs when an management operation is created.
+//   - management_operation.updated: Occurs when an management operation is updated.
+//   - network_total.created: Occurs when a network total is created.
+//   - network_total.updated: Occurs when a network total is updated.
+//   - payment_transaction.created: Occurs when a payment transaction is created.
+//   - payment_transaction.updated: Occurs when a payment transaction is updated.
+//   - settlement_report.updated: Occurs when a settlement report is created or
+//     updated.
+//   - statements.created: Occurs when a statement has been created
+//   - three_ds_authentication.challenge: The `three_ds_authentication.challenge`
+//     event. Upon receiving this request, the Card Program should issue its own
+//     challenge to the cardholder. After a cardholder challenge is successfully
+//     completed, the Card Program needs to respond back to Lithic by call to
+//     [/v1/three_ds_decisioning/challenge_response](https://docs.lithic.com/reference/post_v1-three-ds-decisioning-challenge-response).
+//     Then the cardholder must navigate back to the merchant checkout flow to
+//     complete the transaction. Some merchants will include an `app_requestor_url`
+//     for app-based purchases; Lithic recommends triggering a redirect to that URL
+//     after the cardholder completes an app-based challenge.
+//   - three_ds_authentication.created: Occurs when a 3DS authentication is created.
+//   - three_ds_authentication.updated: Occurs when a 3DS authentication is updated
+//     (eg. challenge is completed).
+//   - tokenization.approval_request: Occurs when a tokenization approval request is
+//     made.
+//   - tokenization.result: Occurs when a tokenization request succeeded or failed.
+//   - tokenization.two_factor_authentication_code: Occurs when a tokenization
+//     request 2FA code is sent to the Lithic customer for self serve delivery.
+//   - tokenization.two_factor_authentication_code_sent: Occurs when a tokenization
+//     request 2FA code is sent to our downstream messaging providers for delivery.
+//   - tokenization.updated: Occurs when a tokenization's status has changed.
 type EventEventType string
 
 const (
+	EventEventTypeAccountHolderDocumentUpdated                             EventEventType = "account_holder_document.updated"
 	EventEventTypeAccountHolderCreated                                     EventEventType = "account_holder.created"
 	EventEventTypeAccountHolderUpdated                                     EventEventType = "account_holder.updated"
 	EventEventTypeAccountHolderVerification                                EventEventType = "account_holder.verification"
+	EventEventTypeAuthRulesBacktestReportCreated                           EventEventType = "auth_rules.backtest_report.created"
 	EventEventTypeBalanceUpdated                                           EventEventType = "balance.updated"
 	EventEventTypeBookTransferTransactionCreated                           EventEventType = "book_transfer_transaction.created"
-	EventEventTypeCardCreated                                              EventEventType = "card.created"
-	EventEventTypeCardRenewed                                              EventEventType = "card.renewed"
-	EventEventTypeCardReissued                                             EventEventType = "card.reissued"
-	EventEventTypeCardConverted                                            EventEventType = "card.converted"
-	EventEventTypeCardShipped                                              EventEventType = "card.shipped"
+	EventEventTypeBookTransferTransactionUpdated                           EventEventType = "book_transfer_transaction.updated"
+	EventEventTypeCardTransactionEnhancedDataCreated                       EventEventType = "card_transaction.enhanced_data.created"
+	EventEventTypeCardTransactionEnhancedDataUpdated                       EventEventType = "card_transaction.enhanced_data.updated"
 	EventEventTypeCardTransactionUpdated                                   EventEventType = "card_transaction.updated"
+	EventEventTypeCardConverted                                            EventEventType = "card.converted"
+	EventEventTypeCardCreated                                              EventEventType = "card.created"
+	EventEventTypeCardReissued                                             EventEventType = "card.reissued"
+	EventEventTypeCardRenewed                                              EventEventType = "card.renewed"
+	EventEventTypeCardShipped                                              EventEventType = "card.shipped"
 	EventEventTypeDigitalWalletTokenizationApprovalRequest                 EventEventType = "digital_wallet.tokenization_approval_request"
 	EventEventTypeDigitalWalletTokenizationResult                          EventEventType = "digital_wallet.tokenization_result"
 	EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode     EventEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent EventEventType = "digital_wallet.tokenization_two_factor_authentication_code_sent"
 	EventEventTypeDigitalWalletTokenizationUpdated                         EventEventType = "digital_wallet.tokenization_updated"
-	EventEventTypeDisputeUpdated                                           EventEventType = "dispute.updated"
 	EventEventTypeDisputeEvidenceUploadFailed                              EventEventType = "dispute_evidence.upload_failed"
 	EventEventTypeDisputeTransactionCreated                                EventEventType = "dispute_transaction.created"
 	EventEventTypeDisputeTransactionUpdated                                EventEventType = "dispute_transaction.updated"
+	EventEventTypeDisputeUpdated                                           EventEventType = "dispute.updated"
 	EventEventTypeExternalBankAccountCreated                               EventEventType = "external_bank_account.created"
 	EventEventTypeExternalBankAccountUpdated                               EventEventType = "external_bank_account.updated"
 	EventEventTypeExternalPaymentCreated                                   EventEventType = "external_payment.created"
@@ -227,6 +370,8 @@ const (
 	EventEventTypeFinancialAccountCreated                                  EventEventType = "financial_account.created"
 	EventEventTypeFinancialAccountUpdated                                  EventEventType = "financial_account.updated"
 	EventEventTypeFundingEventCreated                                      EventEventType = "funding_event.created"
+	EventEventTypeInternalTransactionCreated                               EventEventType = "internal_transaction.created"
+	EventEventTypeInternalTransactionUpdated                               EventEventType = "internal_transaction.updated"
 	EventEventTypeLoanTapeCreated                                          EventEventType = "loan_tape.created"
 	EventEventTypeLoanTapeUpdated                                          EventEventType = "loan_tape.updated"
 	EventEventTypeManagementOperationCreated                               EventEventType = "management_operation.created"
@@ -235,10 +380,9 @@ const (
 	EventEventTypeNetworkTotalUpdated                                      EventEventType = "network_total.updated"
 	EventEventTypePaymentTransactionCreated                                EventEventType = "payment_transaction.created"
 	EventEventTypePaymentTransactionUpdated                                EventEventType = "payment_transaction.updated"
-	EventEventTypeInternalTransactionCreated                               EventEventType = "internal_transaction.created"
-	EventEventTypeInternalTransactionUpdated                               EventEventType = "internal_transaction.updated"
 	EventEventTypeSettlementReportUpdated                                  EventEventType = "settlement_report.updated"
 	EventEventTypeStatementsCreated                                        EventEventType = "statements.created"
+	EventEventTypeThreeDSAuthenticationChallenge                           EventEventType = "three_ds_authentication.challenge"
 	EventEventTypeThreeDSAuthenticationCreated                             EventEventType = "three_ds_authentication.created"
 	EventEventTypeThreeDSAuthenticationUpdated                             EventEventType = "three_ds_authentication.updated"
 	EventEventTypeTokenizationApprovalRequest                              EventEventType = "tokenization.approval_request"
@@ -250,7 +394,7 @@ const (
 
 func (r EventEventType) IsKnown() bool {
 	switch r {
-	case EventEventTypeAccountHolderCreated, EventEventTypeAccountHolderUpdated, EventEventTypeAccountHolderVerification, EventEventTypeBalanceUpdated, EventEventTypeBookTransferTransactionCreated, EventEventTypeCardCreated, EventEventTypeCardRenewed, EventEventTypeCardReissued, EventEventTypeCardConverted, EventEventTypeCardShipped, EventEventTypeCardTransactionUpdated, EventEventTypeDigitalWalletTokenizationApprovalRequest, EventEventTypeDigitalWalletTokenizationResult, EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventEventTypeDigitalWalletTokenizationUpdated, EventEventTypeDisputeUpdated, EventEventTypeDisputeEvidenceUploadFailed, EventEventTypeDisputeTransactionCreated, EventEventTypeDisputeTransactionUpdated, EventEventTypeExternalBankAccountCreated, EventEventTypeExternalBankAccountUpdated, EventEventTypeExternalPaymentCreated, EventEventTypeExternalPaymentUpdated, EventEventTypeFinancialAccountCreated, EventEventTypeFinancialAccountUpdated, EventEventTypeFundingEventCreated, EventEventTypeLoanTapeCreated, EventEventTypeLoanTapeUpdated, EventEventTypeManagementOperationCreated, EventEventTypeManagementOperationUpdated, EventEventTypeNetworkTotalCreated, EventEventTypeNetworkTotalUpdated, EventEventTypePaymentTransactionCreated, EventEventTypePaymentTransactionUpdated, EventEventTypeInternalTransactionCreated, EventEventTypeInternalTransactionUpdated, EventEventTypeSettlementReportUpdated, EventEventTypeStatementsCreated, EventEventTypeThreeDSAuthenticationCreated, EventEventTypeThreeDSAuthenticationUpdated, EventEventTypeTokenizationApprovalRequest, EventEventTypeTokenizationResult, EventEventTypeTokenizationTwoFactorAuthenticationCode, EventEventTypeTokenizationTwoFactorAuthenticationCodeSent, EventEventTypeTokenizationUpdated:
+	case EventEventTypeAccountHolderDocumentUpdated, EventEventTypeAccountHolderCreated, EventEventTypeAccountHolderUpdated, EventEventTypeAccountHolderVerification, EventEventTypeAuthRulesBacktestReportCreated, EventEventTypeBalanceUpdated, EventEventTypeBookTransferTransactionCreated, EventEventTypeBookTransferTransactionUpdated, EventEventTypeCardTransactionEnhancedDataCreated, EventEventTypeCardTransactionEnhancedDataUpdated, EventEventTypeCardTransactionUpdated, EventEventTypeCardConverted, EventEventTypeCardCreated, EventEventTypeCardReissued, EventEventTypeCardRenewed, EventEventTypeCardShipped, EventEventTypeDigitalWalletTokenizationApprovalRequest, EventEventTypeDigitalWalletTokenizationResult, EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventEventTypeDigitalWalletTokenizationUpdated, EventEventTypeDisputeEvidenceUploadFailed, EventEventTypeDisputeTransactionCreated, EventEventTypeDisputeTransactionUpdated, EventEventTypeDisputeUpdated, EventEventTypeExternalBankAccountCreated, EventEventTypeExternalBankAccountUpdated, EventEventTypeExternalPaymentCreated, EventEventTypeExternalPaymentUpdated, EventEventTypeFinancialAccountCreated, EventEventTypeFinancialAccountUpdated, EventEventTypeFundingEventCreated, EventEventTypeInternalTransactionCreated, EventEventTypeInternalTransactionUpdated, EventEventTypeLoanTapeCreated, EventEventTypeLoanTapeUpdated, EventEventTypeManagementOperationCreated, EventEventTypeManagementOperationUpdated, EventEventTypeNetworkTotalCreated, EventEventTypeNetworkTotalUpdated, EventEventTypePaymentTransactionCreated, EventEventTypePaymentTransactionUpdated, EventEventTypeSettlementReportUpdated, EventEventTypeStatementsCreated, EventEventTypeThreeDSAuthenticationChallenge, EventEventTypeThreeDSAuthenticationCreated, EventEventTypeThreeDSAuthenticationUpdated, EventEventTypeTokenizationApprovalRequest, EventEventTypeTokenizationResult, EventEventTypeTokenizationTwoFactorAuthenticationCode, EventEventTypeTokenizationTwoFactorAuthenticationCodeSent, EventEventTypeTokenizationUpdated:
 		return true
 	}
 	return false
@@ -289,29 +433,134 @@ func (r eventSubscriptionJSON) RawJSON() string {
 	return r.raw
 }
 
+// The type of event that occurred. Possible values:
+//
+//   - account_holder_document.updated: Occurs when an account holder's document
+//     upload status has been updated
+//   - account_holder.created: Occurs when a new account_holder is created.
+//   - account_holder.updated: Occurs when an account_holder is updated.
+//   - account_holder.verification: Occurs when an asynchronous account_holder's
+//     verification is completed.
+//   - auth_rules.backtest_report.created: Auth Rules backtest report created.
+//   - balance.updated: Financial Account Balance Update
+//   - book_transfer_transaction.created: Occurs when a book transfer transaction is
+//     created.
+//   - book_transfer_transaction.updated: Occurs when a book transfer transaction is
+//     updated.
+//   - card_transaction.enhanced_data.created: Occurs when L2/L3 enhanced commercial
+//     data is processed for a transaction event.
+//   - card_transaction.enhanced_data.updated: Occurs when L2/L3 enhanced commercial
+//     data is reprocessed for a transaction event.
+//   - card_transaction.updated: Occurs when a card transaction happens.
+//   - card.converted: Occurs when a card is converted from virtual to physical
+//     cards.
+//   - card.created: Occurs when a new card is created.
+//   - card.reissued: Occurs when a card is reissued.
+//   - card.renewed: Occurs when a card is renewed.
+//   - card.shipped: Occurs when a card is shipped.
+//   - digital_wallet.tokenization_approval_request: Occurs when a tokenization
+//     approval request is made. This event will be deprecated in the future. We
+//     recommend using `tokenization.approval_request` instead.
+//   - digital_wallet.tokenization_result: Occurs when a tokenization request
+//     succeeded or failed.
+//
+// This event will be deprecated in the future. We recommend using
+// `tokenization.result` instead.
+//
+//   - digital_wallet.tokenization_two_factor_authentication_code: Occurs when a
+//     tokenization request 2FA code is sent to the Lithic customer for self serve
+//     delivery.
+//
+// This event will be deprecated in the future. We recommend using
+// `tokenization.two_factor_authentication_code` instead.
+//
+//   - digital_wallet.tokenization_two_factor_authentication_code_sent: Occurs when a
+//     tokenization request 2FA code is sent to our downstream messaging providers
+//     for delivery.
+//
+// This event will be deprecated in the future. We recommend using
+// `tokenization.two_factor_authentication_code_sent` instead.
+//
+//   - digital_wallet.tokenization_updated: Occurs when a tokenization's status has
+//     changed.
+//
+// This event will be deprecated in the future. We recommend using
+// `tokenization.updated` instead.
+//
+//   - dispute_evidence.upload_failed: Occurs when a dispute evidence upload fails.
+//   - dispute_transaction.created: Occurs when a new dispute transaction is created
+//   - dispute_transaction.updated: Occurs when a dispute transaction is updated
+//   - dispute.updated: Occurs when a dispute is updated.
+//   - external_bank_account.created: Occurs when an external bank account is
+//     created.
+//   - external_bank_account.updated: Occurs when an external bank account is
+//     updated.
+//   - external_payment.created: Occurs when an external payment is created.
+//   - external_payment.updated: Occurs when an external payment is updated.
+//   - financial_account.created: Occurs when a financial account is created.
+//   - financial_account.updated: Occurs when a financial account is updated.
+//   - funding_event.created: Occurs when a funding event is created.
+//   - internal_transaction.created: Occurs when an internal adjustment is created.
+//   - internal_transaction.updated: Occurs when an internal adjustment is updated.
+//   - loan_tape.created: Occurs when a loan tape is created.
+//   - loan_tape.updated: Occurs when a loan tape is updated.
+//   - management_operation.created: Occurs when an management operation is created.
+//   - management_operation.updated: Occurs when an management operation is updated.
+//   - network_total.created: Occurs when a network total is created.
+//   - network_total.updated: Occurs when a network total is updated.
+//   - payment_transaction.created: Occurs when a payment transaction is created.
+//   - payment_transaction.updated: Occurs when a payment transaction is updated.
+//   - settlement_report.updated: Occurs when a settlement report is created or
+//     updated.
+//   - statements.created: Occurs when a statement has been created
+//   - three_ds_authentication.challenge: The `three_ds_authentication.challenge`
+//     event. Upon receiving this request, the Card Program should issue its own
+//     challenge to the cardholder. After a cardholder challenge is successfully
+//     completed, the Card Program needs to respond back to Lithic by call to
+//     [/v1/three_ds_decisioning/challenge_response](https://docs.lithic.com/reference/post_v1-three-ds-decisioning-challenge-response).
+//     Then the cardholder must navigate back to the merchant checkout flow to
+//     complete the transaction. Some merchants will include an `app_requestor_url`
+//     for app-based purchases; Lithic recommends triggering a redirect to that URL
+//     after the cardholder completes an app-based challenge.
+//   - three_ds_authentication.created: Occurs when a 3DS authentication is created.
+//   - three_ds_authentication.updated: Occurs when a 3DS authentication is updated
+//     (eg. challenge is completed).
+//   - tokenization.approval_request: Occurs when a tokenization approval request is
+//     made.
+//   - tokenization.result: Occurs when a tokenization request succeeded or failed.
+//   - tokenization.two_factor_authentication_code: Occurs when a tokenization
+//     request 2FA code is sent to the Lithic customer for self serve delivery.
+//   - tokenization.two_factor_authentication_code_sent: Occurs when a tokenization
+//     request 2FA code is sent to our downstream messaging providers for delivery.
+//   - tokenization.updated: Occurs when a tokenization's status has changed.
 type EventSubscriptionEventType string
 
 const (
+	EventSubscriptionEventTypeAccountHolderDocumentUpdated                             EventSubscriptionEventType = "account_holder_document.updated"
 	EventSubscriptionEventTypeAccountHolderCreated                                     EventSubscriptionEventType = "account_holder.created"
 	EventSubscriptionEventTypeAccountHolderUpdated                                     EventSubscriptionEventType = "account_holder.updated"
 	EventSubscriptionEventTypeAccountHolderVerification                                EventSubscriptionEventType = "account_holder.verification"
+	EventSubscriptionEventTypeAuthRulesBacktestReportCreated                           EventSubscriptionEventType = "auth_rules.backtest_report.created"
 	EventSubscriptionEventTypeBalanceUpdated                                           EventSubscriptionEventType = "balance.updated"
 	EventSubscriptionEventTypeBookTransferTransactionCreated                           EventSubscriptionEventType = "book_transfer_transaction.created"
-	EventSubscriptionEventTypeCardCreated                                              EventSubscriptionEventType = "card.created"
-	EventSubscriptionEventTypeCardRenewed                                              EventSubscriptionEventType = "card.renewed"
-	EventSubscriptionEventTypeCardReissued                                             EventSubscriptionEventType = "card.reissued"
-	EventSubscriptionEventTypeCardConverted                                            EventSubscriptionEventType = "card.converted"
-	EventSubscriptionEventTypeCardShipped                                              EventSubscriptionEventType = "card.shipped"
+	EventSubscriptionEventTypeBookTransferTransactionUpdated                           EventSubscriptionEventType = "book_transfer_transaction.updated"
+	EventSubscriptionEventTypeCardTransactionEnhancedDataCreated                       EventSubscriptionEventType = "card_transaction.enhanced_data.created"
+	EventSubscriptionEventTypeCardTransactionEnhancedDataUpdated                       EventSubscriptionEventType = "card_transaction.enhanced_data.updated"
 	EventSubscriptionEventTypeCardTransactionUpdated                                   EventSubscriptionEventType = "card_transaction.updated"
+	EventSubscriptionEventTypeCardConverted                                            EventSubscriptionEventType = "card.converted"
+	EventSubscriptionEventTypeCardCreated                                              EventSubscriptionEventType = "card.created"
+	EventSubscriptionEventTypeCardReissued                                             EventSubscriptionEventType = "card.reissued"
+	EventSubscriptionEventTypeCardRenewed                                              EventSubscriptionEventType = "card.renewed"
+	EventSubscriptionEventTypeCardShipped                                              EventSubscriptionEventType = "card.shipped"
 	EventSubscriptionEventTypeDigitalWalletTokenizationApprovalRequest                 EventSubscriptionEventType = "digital_wallet.tokenization_approval_request"
 	EventSubscriptionEventTypeDigitalWalletTokenizationResult                          EventSubscriptionEventType = "digital_wallet.tokenization_result"
 	EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode     EventSubscriptionEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent EventSubscriptionEventType = "digital_wallet.tokenization_two_factor_authentication_code_sent"
 	EventSubscriptionEventTypeDigitalWalletTokenizationUpdated                         EventSubscriptionEventType = "digital_wallet.tokenization_updated"
-	EventSubscriptionEventTypeDisputeUpdated                                           EventSubscriptionEventType = "dispute.updated"
 	EventSubscriptionEventTypeDisputeEvidenceUploadFailed                              EventSubscriptionEventType = "dispute_evidence.upload_failed"
 	EventSubscriptionEventTypeDisputeTransactionCreated                                EventSubscriptionEventType = "dispute_transaction.created"
 	EventSubscriptionEventTypeDisputeTransactionUpdated                                EventSubscriptionEventType = "dispute_transaction.updated"
+	EventSubscriptionEventTypeDisputeUpdated                                           EventSubscriptionEventType = "dispute.updated"
 	EventSubscriptionEventTypeExternalBankAccountCreated                               EventSubscriptionEventType = "external_bank_account.created"
 	EventSubscriptionEventTypeExternalBankAccountUpdated                               EventSubscriptionEventType = "external_bank_account.updated"
 	EventSubscriptionEventTypeExternalPaymentCreated                                   EventSubscriptionEventType = "external_payment.created"
@@ -319,6 +568,8 @@ const (
 	EventSubscriptionEventTypeFinancialAccountCreated                                  EventSubscriptionEventType = "financial_account.created"
 	EventSubscriptionEventTypeFinancialAccountUpdated                                  EventSubscriptionEventType = "financial_account.updated"
 	EventSubscriptionEventTypeFundingEventCreated                                      EventSubscriptionEventType = "funding_event.created"
+	EventSubscriptionEventTypeInternalTransactionCreated                               EventSubscriptionEventType = "internal_transaction.created"
+	EventSubscriptionEventTypeInternalTransactionUpdated                               EventSubscriptionEventType = "internal_transaction.updated"
 	EventSubscriptionEventTypeLoanTapeCreated                                          EventSubscriptionEventType = "loan_tape.created"
 	EventSubscriptionEventTypeLoanTapeUpdated                                          EventSubscriptionEventType = "loan_tape.updated"
 	EventSubscriptionEventTypeManagementOperationCreated                               EventSubscriptionEventType = "management_operation.created"
@@ -327,10 +578,9 @@ const (
 	EventSubscriptionEventTypeNetworkTotalUpdated                                      EventSubscriptionEventType = "network_total.updated"
 	EventSubscriptionEventTypePaymentTransactionCreated                                EventSubscriptionEventType = "payment_transaction.created"
 	EventSubscriptionEventTypePaymentTransactionUpdated                                EventSubscriptionEventType = "payment_transaction.updated"
-	EventSubscriptionEventTypeInternalTransactionCreated                               EventSubscriptionEventType = "internal_transaction.created"
-	EventSubscriptionEventTypeInternalTransactionUpdated                               EventSubscriptionEventType = "internal_transaction.updated"
 	EventSubscriptionEventTypeSettlementReportUpdated                                  EventSubscriptionEventType = "settlement_report.updated"
 	EventSubscriptionEventTypeStatementsCreated                                        EventSubscriptionEventType = "statements.created"
+	EventSubscriptionEventTypeThreeDSAuthenticationChallenge                           EventSubscriptionEventType = "three_ds_authentication.challenge"
 	EventSubscriptionEventTypeThreeDSAuthenticationCreated                             EventSubscriptionEventType = "three_ds_authentication.created"
 	EventSubscriptionEventTypeThreeDSAuthenticationUpdated                             EventSubscriptionEventType = "three_ds_authentication.updated"
 	EventSubscriptionEventTypeTokenizationApprovalRequest                              EventSubscriptionEventType = "tokenization.approval_request"
@@ -342,7 +592,7 @@ const (
 
 func (r EventSubscriptionEventType) IsKnown() bool {
 	switch r {
-	case EventSubscriptionEventTypeAccountHolderCreated, EventSubscriptionEventTypeAccountHolderUpdated, EventSubscriptionEventTypeAccountHolderVerification, EventSubscriptionEventTypeBalanceUpdated, EventSubscriptionEventTypeBookTransferTransactionCreated, EventSubscriptionEventTypeCardCreated, EventSubscriptionEventTypeCardRenewed, EventSubscriptionEventTypeCardReissued, EventSubscriptionEventTypeCardConverted, EventSubscriptionEventTypeCardShipped, EventSubscriptionEventTypeCardTransactionUpdated, EventSubscriptionEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionEventTypeDigitalWalletTokenizationResult, EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionEventTypeDigitalWalletTokenizationUpdated, EventSubscriptionEventTypeDisputeUpdated, EventSubscriptionEventTypeDisputeEvidenceUploadFailed, EventSubscriptionEventTypeDisputeTransactionCreated, EventSubscriptionEventTypeDisputeTransactionUpdated, EventSubscriptionEventTypeExternalBankAccountCreated, EventSubscriptionEventTypeExternalBankAccountUpdated, EventSubscriptionEventTypeExternalPaymentCreated, EventSubscriptionEventTypeExternalPaymentUpdated, EventSubscriptionEventTypeFinancialAccountCreated, EventSubscriptionEventTypeFinancialAccountUpdated, EventSubscriptionEventTypeFundingEventCreated, EventSubscriptionEventTypeLoanTapeCreated, EventSubscriptionEventTypeLoanTapeUpdated, EventSubscriptionEventTypeManagementOperationCreated, EventSubscriptionEventTypeManagementOperationUpdated, EventSubscriptionEventTypeNetworkTotalCreated, EventSubscriptionEventTypeNetworkTotalUpdated, EventSubscriptionEventTypePaymentTransactionCreated, EventSubscriptionEventTypePaymentTransactionUpdated, EventSubscriptionEventTypeInternalTransactionCreated, EventSubscriptionEventTypeInternalTransactionUpdated, EventSubscriptionEventTypeSettlementReportUpdated, EventSubscriptionEventTypeStatementsCreated, EventSubscriptionEventTypeThreeDSAuthenticationCreated, EventSubscriptionEventTypeThreeDSAuthenticationUpdated, EventSubscriptionEventTypeTokenizationApprovalRequest, EventSubscriptionEventTypeTokenizationResult, EventSubscriptionEventTypeTokenizationTwoFactorAuthenticationCode, EventSubscriptionEventTypeTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionEventTypeTokenizationUpdated:
+	case EventSubscriptionEventTypeAccountHolderDocumentUpdated, EventSubscriptionEventTypeAccountHolderCreated, EventSubscriptionEventTypeAccountHolderUpdated, EventSubscriptionEventTypeAccountHolderVerification, EventSubscriptionEventTypeAuthRulesBacktestReportCreated, EventSubscriptionEventTypeBalanceUpdated, EventSubscriptionEventTypeBookTransferTransactionCreated, EventSubscriptionEventTypeBookTransferTransactionUpdated, EventSubscriptionEventTypeCardTransactionEnhancedDataCreated, EventSubscriptionEventTypeCardTransactionEnhancedDataUpdated, EventSubscriptionEventTypeCardTransactionUpdated, EventSubscriptionEventTypeCardConverted, EventSubscriptionEventTypeCardCreated, EventSubscriptionEventTypeCardReissued, EventSubscriptionEventTypeCardRenewed, EventSubscriptionEventTypeCardShipped, EventSubscriptionEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionEventTypeDigitalWalletTokenizationResult, EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionEventTypeDigitalWalletTokenizationUpdated, EventSubscriptionEventTypeDisputeEvidenceUploadFailed, EventSubscriptionEventTypeDisputeTransactionCreated, EventSubscriptionEventTypeDisputeTransactionUpdated, EventSubscriptionEventTypeDisputeUpdated, EventSubscriptionEventTypeExternalBankAccountCreated, EventSubscriptionEventTypeExternalBankAccountUpdated, EventSubscriptionEventTypeExternalPaymentCreated, EventSubscriptionEventTypeExternalPaymentUpdated, EventSubscriptionEventTypeFinancialAccountCreated, EventSubscriptionEventTypeFinancialAccountUpdated, EventSubscriptionEventTypeFundingEventCreated, EventSubscriptionEventTypeInternalTransactionCreated, EventSubscriptionEventTypeInternalTransactionUpdated, EventSubscriptionEventTypeLoanTapeCreated, EventSubscriptionEventTypeLoanTapeUpdated, EventSubscriptionEventTypeManagementOperationCreated, EventSubscriptionEventTypeManagementOperationUpdated, EventSubscriptionEventTypeNetworkTotalCreated, EventSubscriptionEventTypeNetworkTotalUpdated, EventSubscriptionEventTypePaymentTransactionCreated, EventSubscriptionEventTypePaymentTransactionUpdated, EventSubscriptionEventTypeSettlementReportUpdated, EventSubscriptionEventTypeStatementsCreated, EventSubscriptionEventTypeThreeDSAuthenticationChallenge, EventSubscriptionEventTypeThreeDSAuthenticationCreated, EventSubscriptionEventTypeThreeDSAuthenticationUpdated, EventSubscriptionEventTypeTokenizationApprovalRequest, EventSubscriptionEventTypeTokenizationResult, EventSubscriptionEventTypeTokenizationTwoFactorAuthenticationCode, EventSubscriptionEventTypeTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionEventTypeTokenizationUpdated:
 		return true
 	}
 	return false
@@ -439,29 +689,134 @@ func (r EventListParams) URLQuery() (v url.Values) {
 	})
 }
 
+// The type of event that occurred. Possible values:
+//
+//   - account_holder_document.updated: Occurs when an account holder's document
+//     upload status has been updated
+//   - account_holder.created: Occurs when a new account_holder is created.
+//   - account_holder.updated: Occurs when an account_holder is updated.
+//   - account_holder.verification: Occurs when an asynchronous account_holder's
+//     verification is completed.
+//   - auth_rules.backtest_report.created: Auth Rules backtest report created.
+//   - balance.updated: Financial Account Balance Update
+//   - book_transfer_transaction.created: Occurs when a book transfer transaction is
+//     created.
+//   - book_transfer_transaction.updated: Occurs when a book transfer transaction is
+//     updated.
+//   - card_transaction.enhanced_data.created: Occurs when L2/L3 enhanced commercial
+//     data is processed for a transaction event.
+//   - card_transaction.enhanced_data.updated: Occurs when L2/L3 enhanced commercial
+//     data is reprocessed for a transaction event.
+//   - card_transaction.updated: Occurs when a card transaction happens.
+//   - card.converted: Occurs when a card is converted from virtual to physical
+//     cards.
+//   - card.created: Occurs when a new card is created.
+//   - card.reissued: Occurs when a card is reissued.
+//   - card.renewed: Occurs when a card is renewed.
+//   - card.shipped: Occurs when a card is shipped.
+//   - digital_wallet.tokenization_approval_request: Occurs when a tokenization
+//     approval request is made. This event will be deprecated in the future. We
+//     recommend using `tokenization.approval_request` instead.
+//   - digital_wallet.tokenization_result: Occurs when a tokenization request
+//     succeeded or failed.
+//
+// This event will be deprecated in the future. We recommend using
+// `tokenization.result` instead.
+//
+//   - digital_wallet.tokenization_two_factor_authentication_code: Occurs when a
+//     tokenization request 2FA code is sent to the Lithic customer for self serve
+//     delivery.
+//
+// This event will be deprecated in the future. We recommend using
+// `tokenization.two_factor_authentication_code` instead.
+//
+//   - digital_wallet.tokenization_two_factor_authentication_code_sent: Occurs when a
+//     tokenization request 2FA code is sent to our downstream messaging providers
+//     for delivery.
+//
+// This event will be deprecated in the future. We recommend using
+// `tokenization.two_factor_authentication_code_sent` instead.
+//
+//   - digital_wallet.tokenization_updated: Occurs when a tokenization's status has
+//     changed.
+//
+// This event will be deprecated in the future. We recommend using
+// `tokenization.updated` instead.
+//
+//   - dispute_evidence.upload_failed: Occurs when a dispute evidence upload fails.
+//   - dispute_transaction.created: Occurs when a new dispute transaction is created
+//   - dispute_transaction.updated: Occurs when a dispute transaction is updated
+//   - dispute.updated: Occurs when a dispute is updated.
+//   - external_bank_account.created: Occurs when an external bank account is
+//     created.
+//   - external_bank_account.updated: Occurs when an external bank account is
+//     updated.
+//   - external_payment.created: Occurs when an external payment is created.
+//   - external_payment.updated: Occurs when an external payment is updated.
+//   - financial_account.created: Occurs when a financial account is created.
+//   - financial_account.updated: Occurs when a financial account is updated.
+//   - funding_event.created: Occurs when a funding event is created.
+//   - internal_transaction.created: Occurs when an internal adjustment is created.
+//   - internal_transaction.updated: Occurs when an internal adjustment is updated.
+//   - loan_tape.created: Occurs when a loan tape is created.
+//   - loan_tape.updated: Occurs when a loan tape is updated.
+//   - management_operation.created: Occurs when an management operation is created.
+//   - management_operation.updated: Occurs when an management operation is updated.
+//   - network_total.created: Occurs when a network total is created.
+//   - network_total.updated: Occurs when a network total is updated.
+//   - payment_transaction.created: Occurs when a payment transaction is created.
+//   - payment_transaction.updated: Occurs when a payment transaction is updated.
+//   - settlement_report.updated: Occurs when a settlement report is created or
+//     updated.
+//   - statements.created: Occurs when a statement has been created
+//   - three_ds_authentication.challenge: The `three_ds_authentication.challenge`
+//     event. Upon receiving this request, the Card Program should issue its own
+//     challenge to the cardholder. After a cardholder challenge is successfully
+//     completed, the Card Program needs to respond back to Lithic by call to
+//     [/v1/three_ds_decisioning/challenge_response](https://docs.lithic.com/reference/post_v1-three-ds-decisioning-challenge-response).
+//     Then the cardholder must navigate back to the merchant checkout flow to
+//     complete the transaction. Some merchants will include an `app_requestor_url`
+//     for app-based purchases; Lithic recommends triggering a redirect to that URL
+//     after the cardholder completes an app-based challenge.
+//   - three_ds_authentication.created: Occurs when a 3DS authentication is created.
+//   - three_ds_authentication.updated: Occurs when a 3DS authentication is updated
+//     (eg. challenge is completed).
+//   - tokenization.approval_request: Occurs when a tokenization approval request is
+//     made.
+//   - tokenization.result: Occurs when a tokenization request succeeded or failed.
+//   - tokenization.two_factor_authentication_code: Occurs when a tokenization
+//     request 2FA code is sent to the Lithic customer for self serve delivery.
+//   - tokenization.two_factor_authentication_code_sent: Occurs when a tokenization
+//     request 2FA code is sent to our downstream messaging providers for delivery.
+//   - tokenization.updated: Occurs when a tokenization's status has changed.
 type EventListParamsEventType string
 
 const (
+	EventListParamsEventTypeAccountHolderDocumentUpdated                             EventListParamsEventType = "account_holder_document.updated"
 	EventListParamsEventTypeAccountHolderCreated                                     EventListParamsEventType = "account_holder.created"
 	EventListParamsEventTypeAccountHolderUpdated                                     EventListParamsEventType = "account_holder.updated"
 	EventListParamsEventTypeAccountHolderVerification                                EventListParamsEventType = "account_holder.verification"
+	EventListParamsEventTypeAuthRulesBacktestReportCreated                           EventListParamsEventType = "auth_rules.backtest_report.created"
 	EventListParamsEventTypeBalanceUpdated                                           EventListParamsEventType = "balance.updated"
 	EventListParamsEventTypeBookTransferTransactionCreated                           EventListParamsEventType = "book_transfer_transaction.created"
-	EventListParamsEventTypeCardCreated                                              EventListParamsEventType = "card.created"
-	EventListParamsEventTypeCardRenewed                                              EventListParamsEventType = "card.renewed"
-	EventListParamsEventTypeCardReissued                                             EventListParamsEventType = "card.reissued"
-	EventListParamsEventTypeCardConverted                                            EventListParamsEventType = "card.converted"
-	EventListParamsEventTypeCardShipped                                              EventListParamsEventType = "card.shipped"
+	EventListParamsEventTypeBookTransferTransactionUpdated                           EventListParamsEventType = "book_transfer_transaction.updated"
+	EventListParamsEventTypeCardTransactionEnhancedDataCreated                       EventListParamsEventType = "card_transaction.enhanced_data.created"
+	EventListParamsEventTypeCardTransactionEnhancedDataUpdated                       EventListParamsEventType = "card_transaction.enhanced_data.updated"
 	EventListParamsEventTypeCardTransactionUpdated                                   EventListParamsEventType = "card_transaction.updated"
+	EventListParamsEventTypeCardConverted                                            EventListParamsEventType = "card.converted"
+	EventListParamsEventTypeCardCreated                                              EventListParamsEventType = "card.created"
+	EventListParamsEventTypeCardReissued                                             EventListParamsEventType = "card.reissued"
+	EventListParamsEventTypeCardRenewed                                              EventListParamsEventType = "card.renewed"
+	EventListParamsEventTypeCardShipped                                              EventListParamsEventType = "card.shipped"
 	EventListParamsEventTypeDigitalWalletTokenizationApprovalRequest                 EventListParamsEventType = "digital_wallet.tokenization_approval_request"
 	EventListParamsEventTypeDigitalWalletTokenizationResult                          EventListParamsEventType = "digital_wallet.tokenization_result"
 	EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode     EventListParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent EventListParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code_sent"
 	EventListParamsEventTypeDigitalWalletTokenizationUpdated                         EventListParamsEventType = "digital_wallet.tokenization_updated"
-	EventListParamsEventTypeDisputeUpdated                                           EventListParamsEventType = "dispute.updated"
 	EventListParamsEventTypeDisputeEvidenceUploadFailed                              EventListParamsEventType = "dispute_evidence.upload_failed"
 	EventListParamsEventTypeDisputeTransactionCreated                                EventListParamsEventType = "dispute_transaction.created"
 	EventListParamsEventTypeDisputeTransactionUpdated                                EventListParamsEventType = "dispute_transaction.updated"
+	EventListParamsEventTypeDisputeUpdated                                           EventListParamsEventType = "dispute.updated"
 	EventListParamsEventTypeExternalBankAccountCreated                               EventListParamsEventType = "external_bank_account.created"
 	EventListParamsEventTypeExternalBankAccountUpdated                               EventListParamsEventType = "external_bank_account.updated"
 	EventListParamsEventTypeExternalPaymentCreated                                   EventListParamsEventType = "external_payment.created"
@@ -469,6 +824,8 @@ const (
 	EventListParamsEventTypeFinancialAccountCreated                                  EventListParamsEventType = "financial_account.created"
 	EventListParamsEventTypeFinancialAccountUpdated                                  EventListParamsEventType = "financial_account.updated"
 	EventListParamsEventTypeFundingEventCreated                                      EventListParamsEventType = "funding_event.created"
+	EventListParamsEventTypeInternalTransactionCreated                               EventListParamsEventType = "internal_transaction.created"
+	EventListParamsEventTypeInternalTransactionUpdated                               EventListParamsEventType = "internal_transaction.updated"
 	EventListParamsEventTypeLoanTapeCreated                                          EventListParamsEventType = "loan_tape.created"
 	EventListParamsEventTypeLoanTapeUpdated                                          EventListParamsEventType = "loan_tape.updated"
 	EventListParamsEventTypeManagementOperationCreated                               EventListParamsEventType = "management_operation.created"
@@ -477,10 +834,9 @@ const (
 	EventListParamsEventTypeNetworkTotalUpdated                                      EventListParamsEventType = "network_total.updated"
 	EventListParamsEventTypePaymentTransactionCreated                                EventListParamsEventType = "payment_transaction.created"
 	EventListParamsEventTypePaymentTransactionUpdated                                EventListParamsEventType = "payment_transaction.updated"
-	EventListParamsEventTypeInternalTransactionCreated                               EventListParamsEventType = "internal_transaction.created"
-	EventListParamsEventTypeInternalTransactionUpdated                               EventListParamsEventType = "internal_transaction.updated"
 	EventListParamsEventTypeSettlementReportUpdated                                  EventListParamsEventType = "settlement_report.updated"
 	EventListParamsEventTypeStatementsCreated                                        EventListParamsEventType = "statements.created"
+	EventListParamsEventTypeThreeDSAuthenticationChallenge                           EventListParamsEventType = "three_ds_authentication.challenge"
 	EventListParamsEventTypeThreeDSAuthenticationCreated                             EventListParamsEventType = "three_ds_authentication.created"
 	EventListParamsEventTypeThreeDSAuthenticationUpdated                             EventListParamsEventType = "three_ds_authentication.updated"
 	EventListParamsEventTypeTokenizationApprovalRequest                              EventListParamsEventType = "tokenization.approval_request"
@@ -492,7 +848,7 @@ const (
 
 func (r EventListParamsEventType) IsKnown() bool {
 	switch r {
-	case EventListParamsEventTypeAccountHolderCreated, EventListParamsEventTypeAccountHolderUpdated, EventListParamsEventTypeAccountHolderVerification, EventListParamsEventTypeBalanceUpdated, EventListParamsEventTypeBookTransferTransactionCreated, EventListParamsEventTypeCardCreated, EventListParamsEventTypeCardRenewed, EventListParamsEventTypeCardReissued, EventListParamsEventTypeCardConverted, EventListParamsEventTypeCardShipped, EventListParamsEventTypeCardTransactionUpdated, EventListParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventListParamsEventTypeDigitalWalletTokenizationResult, EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventListParamsEventTypeDigitalWalletTokenizationUpdated, EventListParamsEventTypeDisputeUpdated, EventListParamsEventTypeDisputeEvidenceUploadFailed, EventListParamsEventTypeDisputeTransactionCreated, EventListParamsEventTypeDisputeTransactionUpdated, EventListParamsEventTypeExternalBankAccountCreated, EventListParamsEventTypeExternalBankAccountUpdated, EventListParamsEventTypeExternalPaymentCreated, EventListParamsEventTypeExternalPaymentUpdated, EventListParamsEventTypeFinancialAccountCreated, EventListParamsEventTypeFinancialAccountUpdated, EventListParamsEventTypeFundingEventCreated, EventListParamsEventTypeLoanTapeCreated, EventListParamsEventTypeLoanTapeUpdated, EventListParamsEventTypeManagementOperationCreated, EventListParamsEventTypeManagementOperationUpdated, EventListParamsEventTypeNetworkTotalCreated, EventListParamsEventTypeNetworkTotalUpdated, EventListParamsEventTypePaymentTransactionCreated, EventListParamsEventTypePaymentTransactionUpdated, EventListParamsEventTypeInternalTransactionCreated, EventListParamsEventTypeInternalTransactionUpdated, EventListParamsEventTypeSettlementReportUpdated, EventListParamsEventTypeStatementsCreated, EventListParamsEventTypeThreeDSAuthenticationCreated, EventListParamsEventTypeThreeDSAuthenticationUpdated, EventListParamsEventTypeTokenizationApprovalRequest, EventListParamsEventTypeTokenizationResult, EventListParamsEventTypeTokenizationTwoFactorAuthenticationCode, EventListParamsEventTypeTokenizationTwoFactorAuthenticationCodeSent, EventListParamsEventTypeTokenizationUpdated:
+	case EventListParamsEventTypeAccountHolderDocumentUpdated, EventListParamsEventTypeAccountHolderCreated, EventListParamsEventTypeAccountHolderUpdated, EventListParamsEventTypeAccountHolderVerification, EventListParamsEventTypeAuthRulesBacktestReportCreated, EventListParamsEventTypeBalanceUpdated, EventListParamsEventTypeBookTransferTransactionCreated, EventListParamsEventTypeBookTransferTransactionUpdated, EventListParamsEventTypeCardTransactionEnhancedDataCreated, EventListParamsEventTypeCardTransactionEnhancedDataUpdated, EventListParamsEventTypeCardTransactionUpdated, EventListParamsEventTypeCardConverted, EventListParamsEventTypeCardCreated, EventListParamsEventTypeCardReissued, EventListParamsEventTypeCardRenewed, EventListParamsEventTypeCardShipped, EventListParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventListParamsEventTypeDigitalWalletTokenizationResult, EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventListParamsEventTypeDigitalWalletTokenizationUpdated, EventListParamsEventTypeDisputeEvidenceUploadFailed, EventListParamsEventTypeDisputeTransactionCreated, EventListParamsEventTypeDisputeTransactionUpdated, EventListParamsEventTypeDisputeUpdated, EventListParamsEventTypeExternalBankAccountCreated, EventListParamsEventTypeExternalBankAccountUpdated, EventListParamsEventTypeExternalPaymentCreated, EventListParamsEventTypeExternalPaymentUpdated, EventListParamsEventTypeFinancialAccountCreated, EventListParamsEventTypeFinancialAccountUpdated, EventListParamsEventTypeFundingEventCreated, EventListParamsEventTypeInternalTransactionCreated, EventListParamsEventTypeInternalTransactionUpdated, EventListParamsEventTypeLoanTapeCreated, EventListParamsEventTypeLoanTapeUpdated, EventListParamsEventTypeManagementOperationCreated, EventListParamsEventTypeManagementOperationUpdated, EventListParamsEventTypeNetworkTotalCreated, EventListParamsEventTypeNetworkTotalUpdated, EventListParamsEventTypePaymentTransactionCreated, EventListParamsEventTypePaymentTransactionUpdated, EventListParamsEventTypeSettlementReportUpdated, EventListParamsEventTypeStatementsCreated, EventListParamsEventTypeThreeDSAuthenticationChallenge, EventListParamsEventTypeThreeDSAuthenticationCreated, EventListParamsEventTypeThreeDSAuthenticationUpdated, EventListParamsEventTypeTokenizationApprovalRequest, EventListParamsEventTypeTokenizationResult, EventListParamsEventTypeTokenizationTwoFactorAuthenticationCode, EventListParamsEventTypeTokenizationTwoFactorAuthenticationCodeSent, EventListParamsEventTypeTokenizationUpdated:
 		return true
 	}
 	return false

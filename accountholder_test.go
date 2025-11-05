@@ -323,7 +323,7 @@ func TestAccountHolderSimulateEnrollmentDocumentReviewWithOptionalParams(t *test
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.AccountHolders.SimulateEnrollmentDocumentReview(context.TODO(), lithic.AccountHolderSimulateEnrollmentDocumentReviewParams{
-		DocumentUploadToken:         lithic.F("document_upload_token"),
+		DocumentUploadToken:         lithic.F("b11cd67b-0a52-4180-8365-314f3def5426"),
 		Status:                      lithic.F(lithic.AccountHolderSimulateEnrollmentDocumentReviewParamsStatusUploaded),
 		AcceptedEntityStatusReasons: lithic.F([]string{"string"}),
 		StatusReason:                lithic.F(lithic.AccountHolderSimulateEnrollmentDocumentReviewParamsStatusReasonDocumentMissingRequiredData),
