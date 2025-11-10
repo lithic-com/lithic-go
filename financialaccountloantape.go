@@ -443,8 +443,10 @@ type LoanTapeDayTotals struct {
 	// Breakdown of credits
 	CreditDetails interface{} `json:"credit_details"`
 	// Breakdown of debits
-	DebitDetails interface{}           `json:"debit_details"`
-	JSON         loanTapeDayTotalsJSON `json:"-"`
+	DebitDetails interface{} `json:"debit_details"`
+	// Breakdown of payments
+	PaymentDetails interface{}           `json:"payment_details"`
+	JSON           loanTapeDayTotalsJSON `json:"-"`
 }
 
 // loanTapeDayTotalsJSON contains the JSON metadata for the struct
@@ -460,6 +462,7 @@ type loanTapeDayTotalsJSON struct {
 	Purchases        apijson.Field
 	CreditDetails    apijson.Field
 	DebitDetails     apijson.Field
+	PaymentDetails   apijson.Field
 	raw              string
 	ExtraFields      map[string]apijson.Field
 }
@@ -664,8 +667,10 @@ type LoanTapePeriodTotals struct {
 	// Breakdown of credits
 	CreditDetails interface{} `json:"credit_details"`
 	// Breakdown of debits
-	DebitDetails interface{}              `json:"debit_details"`
-	JSON         loanTapePeriodTotalsJSON `json:"-"`
+	DebitDetails interface{} `json:"debit_details"`
+	// Breakdown of payments
+	PaymentDetails interface{}              `json:"payment_details"`
+	JSON           loanTapePeriodTotalsJSON `json:"-"`
 }
 
 // loanTapePeriodTotalsJSON contains the JSON metadata for the struct
@@ -681,6 +686,7 @@ type loanTapePeriodTotalsJSON struct {
 	Purchases        apijson.Field
 	CreditDetails    apijson.Field
 	DebitDetails     apijson.Field
+	PaymentDetails   apijson.Field
 	raw              string
 	ExtraFields      map[string]apijson.Field
 }
@@ -737,8 +743,10 @@ type LoanTapeYtdTotals struct {
 	// Breakdown of credits
 	CreditDetails interface{} `json:"credit_details"`
 	// Breakdown of debits
-	DebitDetails interface{}           `json:"debit_details"`
-	JSON         loanTapeYtdTotalsJSON `json:"-"`
+	DebitDetails interface{} `json:"debit_details"`
+	// Breakdown of payments
+	PaymentDetails interface{}           `json:"payment_details"`
+	JSON           loanTapeYtdTotalsJSON `json:"-"`
 }
 
 // loanTapeYtdTotalsJSON contains the JSON metadata for the struct
@@ -754,6 +762,7 @@ type loanTapeYtdTotalsJSON struct {
 	Purchases        apijson.Field
 	CreditDetails    apijson.Field
 	DebitDetails     apijson.Field
+	PaymentDetails   apijson.Field
 	raw              string
 	ExtraFields      map[string]apijson.Field
 }

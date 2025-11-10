@@ -329,8 +329,10 @@ type StatementPeriodTotals struct {
 	// Breakdown of credits
 	CreditDetails interface{} `json:"credit_details"`
 	// Breakdown of debits
-	DebitDetails interface{}               `json:"debit_details"`
-	JSON         statementPeriodTotalsJSON `json:"-"`
+	DebitDetails interface{} `json:"debit_details"`
+	// Breakdown of payments
+	PaymentDetails interface{}               `json:"payment_details"`
+	JSON           statementPeriodTotalsJSON `json:"-"`
 }
 
 // statementPeriodTotalsJSON contains the JSON metadata for the struct
@@ -346,6 +348,7 @@ type statementPeriodTotalsJSON struct {
 	Purchases        apijson.Field
 	CreditDetails    apijson.Field
 	DebitDetails     apijson.Field
+	PaymentDetails   apijson.Field
 	raw              string
 	ExtraFields      map[string]apijson.Field
 }
@@ -395,8 +398,10 @@ type StatementYtdTotals struct {
 	// Breakdown of credits
 	CreditDetails interface{} `json:"credit_details"`
 	// Breakdown of debits
-	DebitDetails interface{}            `json:"debit_details"`
-	JSON         statementYtdTotalsJSON `json:"-"`
+	DebitDetails interface{} `json:"debit_details"`
+	// Breakdown of payments
+	PaymentDetails interface{}            `json:"payment_details"`
+	JSON           statementYtdTotalsJSON `json:"-"`
 }
 
 // statementYtdTotalsJSON contains the JSON metadata for the struct
@@ -412,6 +417,7 @@ type statementYtdTotalsJSON struct {
 	Purchases        apijson.Field
 	CreditDetails    apijson.Field
 	DebitDetails     apijson.Field
+	PaymentDetails   apijson.Field
 	raw              string
 	ExtraFields      map[string]apijson.Field
 }
