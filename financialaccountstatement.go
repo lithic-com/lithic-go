@@ -317,14 +317,20 @@ type StatementPeriodTotals struct {
 	// cents
 	Credits int64 `json:"credits,required"`
 	// Volume of debit management operation transactions less any interest in cents
+	Debits int64 `json:"debits,required"`
+	// Volume of debit management operation transactions less any interest in cents
 	Fees int64 `json:"fees,required"`
 	// Interest accrued in cents
 	Interest int64 `json:"interest,required"`
 	// Any funds transfers which affective the balance in cents
 	Payments int64 `json:"payments,required"`
 	// Net card transaction volume less any cash advances in cents
-	Purchases int64                     `json:"purchases,required"`
-	JSON      statementPeriodTotalsJSON `json:"-"`
+	Purchases int64 `json:"purchases,required"`
+	// Breakdown of credits
+	CreditDetails interface{} `json:"credit_details"`
+	// Breakdown of debits
+	DebitDetails interface{}               `json:"debit_details"`
+	JSON         statementPeriodTotalsJSON `json:"-"`
 }
 
 // statementPeriodTotalsJSON contains the JSON metadata for the struct
@@ -333,10 +339,13 @@ type statementPeriodTotalsJSON struct {
 	BalanceTransfers apijson.Field
 	CashAdvances     apijson.Field
 	Credits          apijson.Field
+	Debits           apijson.Field
 	Fees             apijson.Field
 	Interest         apijson.Field
 	Payments         apijson.Field
 	Purchases        apijson.Field
+	CreditDetails    apijson.Field
+	DebitDetails     apijson.Field
 	raw              string
 	ExtraFields      map[string]apijson.Field
 }
@@ -374,14 +383,20 @@ type StatementYtdTotals struct {
 	// cents
 	Credits int64 `json:"credits,required"`
 	// Volume of debit management operation transactions less any interest in cents
+	Debits int64 `json:"debits,required"`
+	// Volume of debit management operation transactions less any interest in cents
 	Fees int64 `json:"fees,required"`
 	// Interest accrued in cents
 	Interest int64 `json:"interest,required"`
 	// Any funds transfers which affective the balance in cents
 	Payments int64 `json:"payments,required"`
 	// Net card transaction volume less any cash advances in cents
-	Purchases int64                  `json:"purchases,required"`
-	JSON      statementYtdTotalsJSON `json:"-"`
+	Purchases int64 `json:"purchases,required"`
+	// Breakdown of credits
+	CreditDetails interface{} `json:"credit_details"`
+	// Breakdown of debits
+	DebitDetails interface{}            `json:"debit_details"`
+	JSON         statementYtdTotalsJSON `json:"-"`
 }
 
 // statementYtdTotalsJSON contains the JSON metadata for the struct
@@ -390,10 +405,13 @@ type statementYtdTotalsJSON struct {
 	BalanceTransfers apijson.Field
 	CashAdvances     apijson.Field
 	Credits          apijson.Field
+	Debits           apijson.Field
 	Fees             apijson.Field
 	Interest         apijson.Field
 	Payments         apijson.Field
 	Purchases        apijson.Field
+	CreditDetails    apijson.Field
+	DebitDetails     apijson.Field
 	raw              string
 	ExtraFields      map[string]apijson.Field
 }
