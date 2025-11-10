@@ -431,14 +431,20 @@ type LoanTapeDayTotals struct {
 	// cents
 	Credits int64 `json:"credits,required"`
 	// Volume of debit management operation transactions less any interest in cents
+	Debits int64 `json:"debits,required"`
+	// Volume of debit management operation transactions less any interest in cents
 	Fees int64 `json:"fees,required"`
 	// Interest accrued in cents
 	Interest int64 `json:"interest,required"`
 	// Any funds transfers which affective the balance in cents
 	Payments int64 `json:"payments,required"`
 	// Net card transaction volume less any cash advances in cents
-	Purchases int64                 `json:"purchases,required"`
-	JSON      loanTapeDayTotalsJSON `json:"-"`
+	Purchases int64 `json:"purchases,required"`
+	// Breakdown of credits
+	CreditDetails interface{} `json:"credit_details"`
+	// Breakdown of debits
+	DebitDetails interface{}           `json:"debit_details"`
+	JSON         loanTapeDayTotalsJSON `json:"-"`
 }
 
 // loanTapeDayTotalsJSON contains the JSON metadata for the struct
@@ -447,10 +453,13 @@ type loanTapeDayTotalsJSON struct {
 	BalanceTransfers apijson.Field
 	CashAdvances     apijson.Field
 	Credits          apijson.Field
+	Debits           apijson.Field
 	Fees             apijson.Field
 	Interest         apijson.Field
 	Payments         apijson.Field
 	Purchases        apijson.Field
+	CreditDetails    apijson.Field
+	DebitDetails     apijson.Field
 	raw              string
 	ExtraFields      map[string]apijson.Field
 }
@@ -643,14 +652,20 @@ type LoanTapePeriodTotals struct {
 	// cents
 	Credits int64 `json:"credits,required"`
 	// Volume of debit management operation transactions less any interest in cents
+	Debits int64 `json:"debits,required"`
+	// Volume of debit management operation transactions less any interest in cents
 	Fees int64 `json:"fees,required"`
 	// Interest accrued in cents
 	Interest int64 `json:"interest,required"`
 	// Any funds transfers which affective the balance in cents
 	Payments int64 `json:"payments,required"`
 	// Net card transaction volume less any cash advances in cents
-	Purchases int64                    `json:"purchases,required"`
-	JSON      loanTapePeriodTotalsJSON `json:"-"`
+	Purchases int64 `json:"purchases,required"`
+	// Breakdown of credits
+	CreditDetails interface{} `json:"credit_details"`
+	// Breakdown of debits
+	DebitDetails interface{}              `json:"debit_details"`
+	JSON         loanTapePeriodTotalsJSON `json:"-"`
 }
 
 // loanTapePeriodTotalsJSON contains the JSON metadata for the struct
@@ -659,10 +674,13 @@ type loanTapePeriodTotalsJSON struct {
 	BalanceTransfers apijson.Field
 	CashAdvances     apijson.Field
 	Credits          apijson.Field
+	Debits           apijson.Field
 	Fees             apijson.Field
 	Interest         apijson.Field
 	Payments         apijson.Field
 	Purchases        apijson.Field
+	CreditDetails    apijson.Field
+	DebitDetails     apijson.Field
 	raw              string
 	ExtraFields      map[string]apijson.Field
 }
@@ -707,14 +725,20 @@ type LoanTapeYtdTotals struct {
 	// cents
 	Credits int64 `json:"credits,required"`
 	// Volume of debit management operation transactions less any interest in cents
+	Debits int64 `json:"debits,required"`
+	// Volume of debit management operation transactions less any interest in cents
 	Fees int64 `json:"fees,required"`
 	// Interest accrued in cents
 	Interest int64 `json:"interest,required"`
 	// Any funds transfers which affective the balance in cents
 	Payments int64 `json:"payments,required"`
 	// Net card transaction volume less any cash advances in cents
-	Purchases int64                 `json:"purchases,required"`
-	JSON      loanTapeYtdTotalsJSON `json:"-"`
+	Purchases int64 `json:"purchases,required"`
+	// Breakdown of credits
+	CreditDetails interface{} `json:"credit_details"`
+	// Breakdown of debits
+	DebitDetails interface{}           `json:"debit_details"`
+	JSON         loanTapeYtdTotalsJSON `json:"-"`
 }
 
 // loanTapeYtdTotalsJSON contains the JSON metadata for the struct
@@ -723,10 +747,13 @@ type loanTapeYtdTotalsJSON struct {
 	BalanceTransfers apijson.Field
 	CashAdvances     apijson.Field
 	Credits          apijson.Field
+	Debits           apijson.Field
 	Fees             apijson.Field
 	Interest         apijson.Field
 	Payments         apijson.Field
 	Purchases        apijson.Field
+	CreditDetails    apijson.Field
+	DebitDetails     apijson.Field
 	raw              string
 	ExtraFields      map[string]apijson.Field
 }

@@ -114,13 +114,13 @@ func (r enhancedDataCommonJSON) RawJSON() string {
 // An L2/L3 enhanced commercial data line item.
 type EnhancedDataCommonLineItem struct {
 	// The price of the item purchased in merchant currency.
-	Amount float64 `json:"amount"`
+	Amount string `json:"amount"`
 	// A human-readable description of the item.
 	Description string `json:"description"`
 	// An identifier for the item purchased.
 	ProductCode string `json:"product_code"`
 	// The quantity of the item purchased.
-	Quantity float64                        `json:"quantity"`
+	Quantity string                         `json:"quantity"`
 	JSON     enhancedDataCommonLineItemJSON `json:"-"`
 }
 
@@ -255,7 +255,7 @@ func (r enhancedDataFleetAmountTotalsJSON) RawJSON() string {
 
 type EnhancedDataFleetFuel struct {
 	// The quantity of fuel purchased.
-	Quantity float64 `json:"quantity"`
+	Quantity string `json:"quantity"`
 	// The type of fuel purchased.
 	Type EnhancedDataFleetFuelType `json:"type"`
 	// Unit of measure for fuel disbursement.

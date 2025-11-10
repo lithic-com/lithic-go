@@ -212,14 +212,13 @@ type Tokenization struct {
 	CardToken string `json:"card_token,required" format:"uuid"`
 	// Date and time when the tokenization first occurred. UTC time zone.
 	CreatedAt time.Time `json:"created_at,required" format:"date-time"`
-	// The device identifier associated with the tokenization.
-	DeviceID string `json:"device_id,required,nullable"`
 	// The dynamic pan assigned to the token by the network.
 	Dpan string `json:"dpan,required,nullable"`
 	// The status of the tokenization request
 	Status TokenizationStatus `json:"status,required"`
-	// The entity that requested the tokenization. Represents a Digital Wallet or
-	// merchant.
+	// The entity that requested the tokenization. For digital wallets, this will be
+	// one of the defined wallet types. For merchant tokenizations, this will be a
+	// free-form merchant name string.
 	TokenRequestorName TokenizationTokenRequestorName `json:"token_requestor_name,required"`
 	// The network's unique reference for the tokenization.
 	TokenUniqueReference string `json:"token_unique_reference,required"`
@@ -227,11 +226,13 @@ type Tokenization struct {
 	TokenizationChannel TokenizationTokenizationChannel `json:"tokenization_channel,required"`
 	// Latest date and time when the tokenization was updated. UTC time zone.
 	UpdatedAt time.Time `json:"updated_at,required" format:"date-time"`
-	// Specifies the digital card art displayed in the user’s digital wallet after
+	// The device identifier associated with the tokenization.
+	DeviceID string `json:"device_id,nullable"`
+	// Specifies the digital card art displayed in the user's digital wallet after
 	// tokenization. This will be null if the tokenization was created without an
 	// associated digital card art. See
 	// [Flexible Card Art Guide](https://docs.lithic.com/docs/about-digital-wallets#flexible-card-art).
-	DigitalCardArtToken string `json:"digital_card_art_token" format:"uuid"`
+	DigitalCardArtToken string `json:"digital_card_art_token,nullable" format:"uuid"`
 	// A list of events related to the tokenization.
 	Events []TokenizationEvent `json:"events"`
 	// The network's unique reference for the card that is tokenized.
@@ -245,13 +246,13 @@ type tokenizationJSON struct {
 	AccountToken              apijson.Field
 	CardToken                 apijson.Field
 	CreatedAt                 apijson.Field
-	DeviceID                  apijson.Field
 	Dpan                      apijson.Field
 	Status                    apijson.Field
 	TokenRequestorName        apijson.Field
 	TokenUniqueReference      apijson.Field
 	TokenizationChannel       apijson.Field
 	UpdatedAt                 apijson.Field
+	DeviceID                  apijson.Field
 	DigitalCardArtToken       apijson.Field
 	Events                    apijson.Field
 	PaymentAccountReferenceID apijson.Field
@@ -288,8 +289,7 @@ func (r TokenizationStatus) IsKnown() bool {
 	return false
 }
 
-// The entity that requested the tokenization. Represents a Digital Wallet or
-// merchant.
+// Digital wallet type
 type TokenizationTokenRequestorName string
 
 const (
@@ -299,6 +299,7 @@ const (
 	TokenizationTokenRequestorNameFacebook     TokenizationTokenRequestorName = "FACEBOOK"
 	TokenizationTokenRequestorNameFitbitPay    TokenizationTokenRequestorName = "FITBIT_PAY"
 	TokenizationTokenRequestorNameGarminPay    TokenizationTokenRequestorName = "GARMIN_PAY"
+	TokenizationTokenRequestorNameGooglePay    TokenizationTokenRequestorName = "GOOGLE_PAY"
 	TokenizationTokenRequestorNameMicrosoftPay TokenizationTokenRequestorName = "MICROSOFT_PAY"
 	TokenizationTokenRequestorNameNetflix      TokenizationTokenRequestorName = "NETFLIX"
 	TokenizationTokenRequestorNameSamsungPay   TokenizationTokenRequestorName = "SAMSUNG_PAY"
@@ -308,7 +309,7 @@ const (
 
 func (r TokenizationTokenRequestorName) IsKnown() bool {
 	switch r {
-	case TokenizationTokenRequestorNameAmazonOne, TokenizationTokenRequestorNameAndroidPay, TokenizationTokenRequestorNameApplePay, TokenizationTokenRequestorNameFacebook, TokenizationTokenRequestorNameFitbitPay, TokenizationTokenRequestorNameGarminPay, TokenizationTokenRequestorNameMicrosoftPay, TokenizationTokenRequestorNameNetflix, TokenizationTokenRequestorNameSamsungPay, TokenizationTokenRequestorNameUnknown, TokenizationTokenRequestorNameVisaCheckout:
+	case TokenizationTokenRequestorNameAmazonOne, TokenizationTokenRequestorNameAndroidPay, TokenizationTokenRequestorNameApplePay, TokenizationTokenRequestorNameFacebook, TokenizationTokenRequestorNameFitbitPay, TokenizationTokenRequestorNameGarminPay, TokenizationTokenRequestorNameGooglePay, TokenizationTokenRequestorNameMicrosoftPay, TokenizationTokenRequestorNameNetflix, TokenizationTokenRequestorNameSamsungPay, TokenizationTokenRequestorNameUnknown, TokenizationTokenRequestorNameVisaCheckout:
 		return true
 	}
 	return false
