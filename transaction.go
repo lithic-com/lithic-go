@@ -454,15 +454,8 @@ func (r transactionAvsJSON) RawJSON() string {
 }
 
 type TransactionCardholderAuthentication struct {
-	// The 3DS version used for the authentication
-	//
-	// Deprecated: deprecated
-	ThreeDSVersion string `json:"3ds_version,required,nullable"`
-	// Whether an acquirer exemption applied to the transaction. Not currently
-	// populated and will be removed in the future.
-	//
-	// Deprecated: deprecated
-	AcquirerExemption TransactionCardholderAuthenticationAcquirerExemption `json:"acquirer_exemption,required"`
+	// Indicates the method used to authenticate the cardholder.
+	AuthenticationMethod TransactionCardholderAuthenticationAuthenticationMethod `json:"authentication_method,required"`
 	// Indicates the outcome of the 3DS authentication process.
 	AuthenticationResult TransactionCardholderAuthenticationAuthenticationResult `json:"authentication_result,required"`
 	// Indicates which party made the 3DS authentication decision.
@@ -482,34 +475,18 @@ type TransactionCardholderAuthentication struct {
 	// the three_ds_authentication.created event webhook) and the transaction. Note
 	// that in cases where liability shift does not occur, this token is matched to the
 	// transaction on a best-effort basis.
-	ThreeDSAuthenticationToken string `json:"three_ds_authentication_token,required,nullable" format:"uuid"`
-	// Indicates whether a 3DS challenge flow was used, and if so, what the
-	// verification method was. (deprecated, use `authentication_result`)
-	//
-	// Deprecated: deprecated
-	VerificationAttempted TransactionCardholderAuthenticationVerificationAttempted `json:"verification_attempted,required"`
-	// Indicates whether a transaction is considered 3DS authenticated. (deprecated,
-	// use `authentication_result`)
-	//
-	// Deprecated: deprecated
-	VerificationResult TransactionCardholderAuthenticationVerificationResult `json:"verification_result,required"`
-	// Indicates the method used to authenticate the cardholder.
-	AuthenticationMethod TransactionCardholderAuthenticationAuthenticationMethod `json:"authentication_method"`
-	JSON                 transactionCardholderAuthenticationJSON                 `json:"-"`
+	ThreeDSAuthenticationToken string                                  `json:"three_ds_authentication_token,required,nullable" format:"uuid"`
+	JSON                       transactionCardholderAuthenticationJSON `json:"-"`
 }
 
 // transactionCardholderAuthenticationJSON contains the JSON metadata for the
 // struct [TransactionCardholderAuthentication]
 type transactionCardholderAuthenticationJSON struct {
-	ThreeDSVersion             apijson.Field
-	AcquirerExemption          apijson.Field
+	AuthenticationMethod       apijson.Field
 	AuthenticationResult       apijson.Field
 	DecisionMadeBy             apijson.Field
 	LiabilityShift             apijson.Field
 	ThreeDSAuthenticationToken apijson.Field
-	VerificationAttempted      apijson.Field
-	VerificationResult         apijson.Field
-	AuthenticationMethod       apijson.Field
 	raw                        string
 	ExtraFields                map[string]apijson.Field
 }
@@ -522,24 +499,18 @@ func (r transactionCardholderAuthenticationJSON) RawJSON() string {
 	return r.raw
 }
 
-// Whether an acquirer exemption applied to the transaction. Not currently
-// populated and will be removed in the future.
-type TransactionCardholderAuthenticationAcquirerExemption string
+// Indicates the method used to authenticate the cardholder.
+type TransactionCardholderAuthenticationAuthenticationMethod string
 
 const (
-	TransactionCardholderAuthenticationAcquirerExemptionAuthenticationOutageException          TransactionCardholderAuthenticationAcquirerExemption = "AUTHENTICATION_OUTAGE_EXCEPTION"
-	TransactionCardholderAuthenticationAcquirerExemptionLowValue                               TransactionCardholderAuthenticationAcquirerExemption = "LOW_VALUE"
-	TransactionCardholderAuthenticationAcquirerExemptionMerchantInitiatedTransaction           TransactionCardholderAuthenticationAcquirerExemption = "MERCHANT_INITIATED_TRANSACTION"
-	TransactionCardholderAuthenticationAcquirerExemptionNone                                   TransactionCardholderAuthenticationAcquirerExemption = "NONE"
-	TransactionCardholderAuthenticationAcquirerExemptionRecurringPayment                       TransactionCardholderAuthenticationAcquirerExemption = "RECURRING_PAYMENT"
-	TransactionCardholderAuthenticationAcquirerExemptionSecureCorporatePayment                 TransactionCardholderAuthenticationAcquirerExemption = "SECURE_CORPORATE_PAYMENT"
-	TransactionCardholderAuthenticationAcquirerExemptionStrongCustomerAuthenticationDelegation TransactionCardholderAuthenticationAcquirerExemption = "STRONG_CUSTOMER_AUTHENTICATION_DELEGATION"
-	TransactionCardholderAuthenticationAcquirerExemptionTransactionRiskAnalysis                TransactionCardholderAuthenticationAcquirerExemption = "TRANSACTION_RISK_ANALYSIS"
+	TransactionCardholderAuthenticationAuthenticationMethodFrictionless TransactionCardholderAuthenticationAuthenticationMethod = "FRICTIONLESS"
+	TransactionCardholderAuthenticationAuthenticationMethodChallenge    TransactionCardholderAuthenticationAuthenticationMethod = "CHALLENGE"
+	TransactionCardholderAuthenticationAuthenticationMethodNone         TransactionCardholderAuthenticationAuthenticationMethod = "NONE"
 )
 
-func (r TransactionCardholderAuthenticationAcquirerExemption) IsKnown() bool {
+func (r TransactionCardholderAuthenticationAuthenticationMethod) IsKnown() bool {
 	switch r {
-	case TransactionCardholderAuthenticationAcquirerExemptionAuthenticationOutageException, TransactionCardholderAuthenticationAcquirerExemptionLowValue, TransactionCardholderAuthenticationAcquirerExemptionMerchantInitiatedTransaction, TransactionCardholderAuthenticationAcquirerExemptionNone, TransactionCardholderAuthenticationAcquirerExemptionRecurringPayment, TransactionCardholderAuthenticationAcquirerExemptionSecureCorporatePayment, TransactionCardholderAuthenticationAcquirerExemptionStrongCustomerAuthenticationDelegation, TransactionCardholderAuthenticationAcquirerExemptionTransactionRiskAnalysis:
+	case TransactionCardholderAuthenticationAuthenticationMethodFrictionless, TransactionCardholderAuthenticationAuthenticationMethodChallenge, TransactionCardholderAuthenticationAuthenticationMethodNone:
 		return true
 	}
 	return false
@@ -604,61 +575,6 @@ const (
 func (r TransactionCardholderAuthenticationLiabilityShift) IsKnown() bool {
 	switch r {
 	case TransactionCardholderAuthenticationLiabilityShift3DSAuthenticated, TransactionCardholderAuthenticationLiabilityShiftTokenAuthenticated, TransactionCardholderAuthenticationLiabilityShiftNone:
-		return true
-	}
-	return false
-}
-
-// Indicates whether a 3DS challenge flow was used, and if so, what the
-// verification method was. (deprecated, use `authentication_result`)
-type TransactionCardholderAuthenticationVerificationAttempted string
-
-const (
-	TransactionCardholderAuthenticationVerificationAttemptedNone  TransactionCardholderAuthenticationVerificationAttempted = "NONE"
-	TransactionCardholderAuthenticationVerificationAttemptedOther TransactionCardholderAuthenticationVerificationAttempted = "OTHER"
-)
-
-func (r TransactionCardholderAuthenticationVerificationAttempted) IsKnown() bool {
-	switch r {
-	case TransactionCardholderAuthenticationVerificationAttemptedNone, TransactionCardholderAuthenticationVerificationAttemptedOther:
-		return true
-	}
-	return false
-}
-
-// Indicates whether a transaction is considered 3DS authenticated. (deprecated,
-// use `authentication_result`)
-type TransactionCardholderAuthenticationVerificationResult string
-
-const (
-	TransactionCardholderAuthenticationVerificationResultCancelled    TransactionCardholderAuthenticationVerificationResult = "CANCELLED"
-	TransactionCardholderAuthenticationVerificationResultFailed       TransactionCardholderAuthenticationVerificationResult = "FAILED"
-	TransactionCardholderAuthenticationVerificationResultFrictionless TransactionCardholderAuthenticationVerificationResult = "FRICTIONLESS"
-	TransactionCardholderAuthenticationVerificationResultNotAttempted TransactionCardholderAuthenticationVerificationResult = "NOT_ATTEMPTED"
-	TransactionCardholderAuthenticationVerificationResultRejected     TransactionCardholderAuthenticationVerificationResult = "REJECTED"
-	TransactionCardholderAuthenticationVerificationResultSuccess      TransactionCardholderAuthenticationVerificationResult = "SUCCESS"
-)
-
-func (r TransactionCardholderAuthenticationVerificationResult) IsKnown() bool {
-	switch r {
-	case TransactionCardholderAuthenticationVerificationResultCancelled, TransactionCardholderAuthenticationVerificationResultFailed, TransactionCardholderAuthenticationVerificationResultFrictionless, TransactionCardholderAuthenticationVerificationResultNotAttempted, TransactionCardholderAuthenticationVerificationResultRejected, TransactionCardholderAuthenticationVerificationResultSuccess:
-		return true
-	}
-	return false
-}
-
-// Indicates the method used to authenticate the cardholder.
-type TransactionCardholderAuthenticationAuthenticationMethod string
-
-const (
-	TransactionCardholderAuthenticationAuthenticationMethodFrictionless TransactionCardholderAuthenticationAuthenticationMethod = "FRICTIONLESS"
-	TransactionCardholderAuthenticationAuthenticationMethodChallenge    TransactionCardholderAuthenticationAuthenticationMethod = "CHALLENGE"
-	TransactionCardholderAuthenticationAuthenticationMethodNone         TransactionCardholderAuthenticationAuthenticationMethod = "NONE"
-)
-
-func (r TransactionCardholderAuthenticationAuthenticationMethod) IsKnown() bool {
-	switch r {
-	case TransactionCardholderAuthenticationAuthenticationMethodFrictionless, TransactionCardholderAuthenticationAuthenticationMethodChallenge, TransactionCardholderAuthenticationAuthenticationMethodNone:
 		return true
 	}
 	return false
