@@ -12,6 +12,7 @@ import (
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/option"
+	"github.com/lithic-com/lithic-go/shared"
 )
 
 // TransferService contains methods and other services that help with interacting
@@ -61,7 +62,7 @@ type Transfer struct {
 	// to users.
 	Descriptor string `json:"descriptor"`
 	// A list of all financial events that have modified this trasnfer.
-	Events []TransferEvent `json:"events"`
+	Events []shared.FinancialEvent `json:"events"`
 	// The updated balance of the sending financial account.
 	FromBalance []Balance `json:"from_balance"`
 	// Pending amount of the transaction in the currency's smallest unit (e.g., cents),
@@ -129,142 +130,6 @@ const (
 func (r TransferCategory) IsKnown() bool {
 	switch r {
 	case TransferCategoryTransfer:
-		return true
-	}
-	return false
-}
-
-// Financial Event
-type TransferEvent struct {
-	// Globally unique identifier.
-	Token string `json:"token" format:"uuid"`
-	// Amount of the financial event that has been settled in the currency's smallest
-	// unit (e.g., cents).
-	Amount int64 `json:"amount"`
-	// Date and time when the financial event occurred. UTC time zone.
-	Created time.Time `json:"created" format:"date-time"`
-	// APPROVED financial events were successful while DECLINED financial events were
-	// declined by user, Lithic, or the network.
-	Result TransferEventsResult `json:"result"`
-	Type   TransferEventsType   `json:"type"`
-	JSON   transferEventJSON    `json:"-"`
-}
-
-// transferEventJSON contains the JSON metadata for the struct [TransferEvent]
-type transferEventJSON struct {
-	Token       apijson.Field
-	Amount      apijson.Field
-	Created     apijson.Field
-	Result      apijson.Field
-	Type        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *TransferEvent) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r transferEventJSON) RawJSON() string {
-	return r.raw
-}
-
-// APPROVED financial events were successful while DECLINED financial events were
-// declined by user, Lithic, or the network.
-type TransferEventsResult string
-
-const (
-	TransferEventsResultApproved TransferEventsResult = "APPROVED"
-	TransferEventsResultDeclined TransferEventsResult = "DECLINED"
-)
-
-func (r TransferEventsResult) IsKnown() bool {
-	switch r {
-	case TransferEventsResultApproved, TransferEventsResultDeclined:
-		return true
-	}
-	return false
-}
-
-type TransferEventsType string
-
-const (
-	TransferEventsTypeACHOriginationCancelled      TransferEventsType = "ACH_ORIGINATION_CANCELLED"
-	TransferEventsTypeACHOriginationInitiated      TransferEventsType = "ACH_ORIGINATION_INITIATED"
-	TransferEventsTypeACHOriginationProcessed      TransferEventsType = "ACH_ORIGINATION_PROCESSED"
-	TransferEventsTypeACHOriginationReleased       TransferEventsType = "ACH_ORIGINATION_RELEASED"
-	TransferEventsTypeACHOriginationRejected       TransferEventsType = "ACH_ORIGINATION_REJECTED"
-	TransferEventsTypeACHOriginationReviewed       TransferEventsType = "ACH_ORIGINATION_REVIEWED"
-	TransferEventsTypeACHOriginationSettled        TransferEventsType = "ACH_ORIGINATION_SETTLED"
-	TransferEventsTypeACHReceiptProcessed          TransferEventsType = "ACH_RECEIPT_PROCESSED"
-	TransferEventsTypeACHReceiptReleased           TransferEventsType = "ACH_RECEIPT_RELEASED"
-	TransferEventsTypeACHReceiptSettled            TransferEventsType = "ACH_RECEIPT_SETTLED"
-	TransferEventsTypeACHReturnInitiated           TransferEventsType = "ACH_RETURN_INITIATED"
-	TransferEventsTypeACHReturnProcessed           TransferEventsType = "ACH_RETURN_PROCESSED"
-	TransferEventsTypeACHReturnRejected            TransferEventsType = "ACH_RETURN_REJECTED"
-	TransferEventsTypeACHReturnSettled             TransferEventsType = "ACH_RETURN_SETTLED"
-	TransferEventsTypeAuthorization                TransferEventsType = "AUTHORIZATION"
-	TransferEventsTypeAuthorizationAdvice          TransferEventsType = "AUTHORIZATION_ADVICE"
-	TransferEventsTypeAuthorizationExpiry          TransferEventsType = "AUTHORIZATION_EXPIRY"
-	TransferEventsTypeAuthorizationReversal        TransferEventsType = "AUTHORIZATION_REVERSAL"
-	TransferEventsTypeBalanceInquiry               TransferEventsType = "BALANCE_INQUIRY"
-	TransferEventsTypeBillingError                 TransferEventsType = "BILLING_ERROR"
-	TransferEventsTypeBillingErrorReversal         TransferEventsType = "BILLING_ERROR_REVERSAL"
-	TransferEventsTypeCardToCard                   TransferEventsType = "CARD_TO_CARD"
-	TransferEventsTypeCashBack                     TransferEventsType = "CASH_BACK"
-	TransferEventsTypeCashBackReversal             TransferEventsType = "CASH_BACK_REVERSAL"
-	TransferEventsTypeClearing                     TransferEventsType = "CLEARING"
-	TransferEventsTypeCollection                   TransferEventsType = "COLLECTION"
-	TransferEventsTypeCorrectionCredit             TransferEventsType = "CORRECTION_CREDIT"
-	TransferEventsTypeCorrectionDebit              TransferEventsType = "CORRECTION_DEBIT"
-	TransferEventsTypeCreditAuthorization          TransferEventsType = "CREDIT_AUTHORIZATION"
-	TransferEventsTypeCreditAuthorizationAdvice    TransferEventsType = "CREDIT_AUTHORIZATION_ADVICE"
-	TransferEventsTypeCurrencyConversion           TransferEventsType = "CURRENCY_CONVERSION"
-	TransferEventsTypeCurrencyConversionReversal   TransferEventsType = "CURRENCY_CONVERSION_REVERSAL"
-	TransferEventsTypeDisputeWon                   TransferEventsType = "DISPUTE_WON"
-	TransferEventsTypeExternalACHCanceled          TransferEventsType = "EXTERNAL_ACH_CANCELED"
-	TransferEventsTypeExternalACHInitiated         TransferEventsType = "EXTERNAL_ACH_INITIATED"
-	TransferEventsTypeExternalACHReleased          TransferEventsType = "EXTERNAL_ACH_RELEASED"
-	TransferEventsTypeExternalACHReversed          TransferEventsType = "EXTERNAL_ACH_REVERSED"
-	TransferEventsTypeExternalACHSettled           TransferEventsType = "EXTERNAL_ACH_SETTLED"
-	TransferEventsTypeExternalCheckCanceled        TransferEventsType = "EXTERNAL_CHECK_CANCELED"
-	TransferEventsTypeExternalCheckInitiated       TransferEventsType = "EXTERNAL_CHECK_INITIATED"
-	TransferEventsTypeExternalCheckReleased        TransferEventsType = "EXTERNAL_CHECK_RELEASED"
-	TransferEventsTypeExternalCheckReversed        TransferEventsType = "EXTERNAL_CHECK_REVERSED"
-	TransferEventsTypeExternalCheckSettled         TransferEventsType = "EXTERNAL_CHECK_SETTLED"
-	TransferEventsTypeExternalTransferCanceled     TransferEventsType = "EXTERNAL_TRANSFER_CANCELED"
-	TransferEventsTypeExternalTransferInitiated    TransferEventsType = "EXTERNAL_TRANSFER_INITIATED"
-	TransferEventsTypeExternalTransferReleased     TransferEventsType = "EXTERNAL_TRANSFER_RELEASED"
-	TransferEventsTypeExternalTransferReversed     TransferEventsType = "EXTERNAL_TRANSFER_REVERSED"
-	TransferEventsTypeExternalTransferSettled      TransferEventsType = "EXTERNAL_TRANSFER_SETTLED"
-	TransferEventsTypeExternalWireCanceled         TransferEventsType = "EXTERNAL_WIRE_CANCELED"
-	TransferEventsTypeExternalWireInitiated        TransferEventsType = "EXTERNAL_WIRE_INITIATED"
-	TransferEventsTypeExternalWireReleased         TransferEventsType = "EXTERNAL_WIRE_RELEASED"
-	TransferEventsTypeExternalWireReversed         TransferEventsType = "EXTERNAL_WIRE_REVERSED"
-	TransferEventsTypeExternalWireSettled          TransferEventsType = "EXTERNAL_WIRE_SETTLED"
-	TransferEventsTypeFinancialAuthorization       TransferEventsType = "FINANCIAL_AUTHORIZATION"
-	TransferEventsTypeFinancialCreditAuthorization TransferEventsType = "FINANCIAL_CREDIT_AUTHORIZATION"
-	TransferEventsTypeInterest                     TransferEventsType = "INTEREST"
-	TransferEventsTypeInterestReversal             TransferEventsType = "INTEREST_REVERSAL"
-	TransferEventsTypeInternalAdjustment           TransferEventsType = "INTERNAL_ADJUSTMENT"
-	TransferEventsTypeLatePayment                  TransferEventsType = "LATE_PAYMENT"
-	TransferEventsTypeLatePaymentReversal          TransferEventsType = "LATE_PAYMENT_REVERSAL"
-	TransferEventsTypeLossWriteOff                 TransferEventsType = "LOSS_WRITE_OFF"
-	TransferEventsTypeProvisionalCredit            TransferEventsType = "PROVISIONAL_CREDIT"
-	TransferEventsTypeProvisionalCreditReversal    TransferEventsType = "PROVISIONAL_CREDIT_REVERSAL"
-	TransferEventsTypeService                      TransferEventsType = "SERVICE"
-	TransferEventsTypeReturn                       TransferEventsType = "RETURN"
-	TransferEventsTypeReturnReversal               TransferEventsType = "RETURN_REVERSAL"
-	TransferEventsTypeTransfer                     TransferEventsType = "TRANSFER"
-	TransferEventsTypeTransferInsufficientFunds    TransferEventsType = "TRANSFER_INSUFFICIENT_FUNDS"
-	TransferEventsTypeReturnedPayment              TransferEventsType = "RETURNED_PAYMENT"
-	TransferEventsTypeReturnedPaymentReversal      TransferEventsType = "RETURNED_PAYMENT_REVERSAL"
-	TransferEventsTypeLithicNetworkPayment         TransferEventsType = "LITHIC_NETWORK_PAYMENT"
-)
-
-func (r TransferEventsType) IsKnown() bool {
-	switch r {
-	case TransferEventsTypeACHOriginationCancelled, TransferEventsTypeACHOriginationInitiated, TransferEventsTypeACHOriginationProcessed, TransferEventsTypeACHOriginationReleased, TransferEventsTypeACHOriginationRejected, TransferEventsTypeACHOriginationReviewed, TransferEventsTypeACHOriginationSettled, TransferEventsTypeACHReceiptProcessed, TransferEventsTypeACHReceiptReleased, TransferEventsTypeACHReceiptSettled, TransferEventsTypeACHReturnInitiated, TransferEventsTypeACHReturnProcessed, TransferEventsTypeACHReturnRejected, TransferEventsTypeACHReturnSettled, TransferEventsTypeAuthorization, TransferEventsTypeAuthorizationAdvice, TransferEventsTypeAuthorizationExpiry, TransferEventsTypeAuthorizationReversal, TransferEventsTypeBalanceInquiry, TransferEventsTypeBillingError, TransferEventsTypeBillingErrorReversal, TransferEventsTypeCardToCard, TransferEventsTypeCashBack, TransferEventsTypeCashBackReversal, TransferEventsTypeClearing, TransferEventsTypeCollection, TransferEventsTypeCorrectionCredit, TransferEventsTypeCorrectionDebit, TransferEventsTypeCreditAuthorization, TransferEventsTypeCreditAuthorizationAdvice, TransferEventsTypeCurrencyConversion, TransferEventsTypeCurrencyConversionReversal, TransferEventsTypeDisputeWon, TransferEventsTypeExternalACHCanceled, TransferEventsTypeExternalACHInitiated, TransferEventsTypeExternalACHReleased, TransferEventsTypeExternalACHReversed, TransferEventsTypeExternalACHSettled, TransferEventsTypeExternalCheckCanceled, TransferEventsTypeExternalCheckInitiated, TransferEventsTypeExternalCheckReleased, TransferEventsTypeExternalCheckReversed, TransferEventsTypeExternalCheckSettled, TransferEventsTypeExternalTransferCanceled, TransferEventsTypeExternalTransferInitiated, TransferEventsTypeExternalTransferReleased, TransferEventsTypeExternalTransferReversed, TransferEventsTypeExternalTransferSettled, TransferEventsTypeExternalWireCanceled, TransferEventsTypeExternalWireInitiated, TransferEventsTypeExternalWireReleased, TransferEventsTypeExternalWireReversed, TransferEventsTypeExternalWireSettled, TransferEventsTypeFinancialAuthorization, TransferEventsTypeFinancialCreditAuthorization, TransferEventsTypeInterest, TransferEventsTypeInterestReversal, TransferEventsTypeInternalAdjustment, TransferEventsTypeLatePayment, TransferEventsTypeLatePaymentReversal, TransferEventsTypeLossWriteOff, TransferEventsTypeProvisionalCredit, TransferEventsTypeProvisionalCreditReversal, TransferEventsTypeService, TransferEventsTypeReturn, TransferEventsTypeReturnReversal, TransferEventsTypeTransfer, TransferEventsTypeTransferInsufficientFunds, TransferEventsTypeReturnedPayment, TransferEventsTypeReturnedPaymentReversal, TransferEventsTypeLithicNetworkPayment:
 		return true
 	}
 	return false

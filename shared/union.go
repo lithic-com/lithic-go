@@ -4,15 +4,11 @@ package shared
 
 type UnionString string
 
-func (UnionString) ImplementsAuthRuleConditionValueUnionParam()                             {}
-func (UnionString) ImplementsAuthRuleConditionValueUnion()                                  {}
-func (UnionString) ImplementsConditional3DsActionParametersConditionsValueUnion()           {}
-func (UnionString) ImplementsConditionalAuthorizationActionParametersConditionsValueUnion() {}
-func (UnionString) ImplementsCardProvisionResponseProvisioningPayloadUnion()                {}
+func (UnionString) ImplementsConditionalValueUnionParam()                    {}
+func (UnionString) ImplementsConditionalValueUnion()                         {}
+func (UnionString) ImplementsCardProvisionResponseProvisioningPayloadUnion() {}
 
 type UnionInt int64
 
-func (UnionInt) ImplementsAuthRuleConditionValueUnionParam()                             {}
-func (UnionInt) ImplementsAuthRuleConditionValueUnion()                                  {}
-func (UnionInt) ImplementsConditional3DsActionParametersConditionsValueUnion()           {}
-func (UnionInt) ImplementsConditionalAuthorizationActionParametersConditionsValueUnion() {}
+func (UnionInt) ImplementsConditionalValueUnionParam() {}
+func (UnionInt) ImplementsConditionalValueUnion()      {}

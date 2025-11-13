@@ -95,6 +95,31 @@ func (r *PaymentService) Retry(ctx context.Context, paymentToken string, opts ..
 	return
 }
 
+// Return an ACH payment with a specified return reason code. Returns must be
+// initiated within the time window specified by NACHA rules for each return code
+// (typically 2 banking days for most codes, 60 calendar days for unauthorized
+// debits). For a complete list of return codes and their meanings, see the
+// [ACH Return Reasons documentation](https://docs.lithic.com/docs/ach-overview#ach-return-reasons).
+//
+// Note:
+//
+//   - This endpoint does not modify the state of the financial account associated
+//     with the payment. If you would like to change the account state, use the
+//     [Update financial account status](https://docs.lithic.com/reference/updatefinancialaccountstatus)
+//     endpoint.
+//   - By default this endpoint is not enabled for your account. Please contact your
+//     implementations manager to enable this feature.
+func (r *PaymentService) Return(ctx context.Context, paymentToken string, body PaymentReturnParams, opts ...option.RequestOption) (res *PaymentReturnResponse, err error) {
+	opts = slices.Concat(r.Options, opts)
+	if paymentToken == "" {
+		err = errors.New("missing required payment_token parameter")
+		return
+	}
+	path := fmt.Sprintf("v1/payments/%s/return", paymentToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+	return
+}
+
 // Simulate payment lifecycle event
 func (r *PaymentService) SimulateAction(ctx context.Context, paymentToken string, body PaymentSimulateActionParams, opts ...option.RequestOption) (res *PaymentSimulateActionResponse, err error) {
 	opts = slices.Concat(r.Options, opts)
@@ -155,8 +180,8 @@ type Payment struct {
 	MethodAttributes PaymentMethodAttributes `json:"method_attributes,required"`
 	// Pending amount in cents
 	PendingAmount int64 `json:"pending_amount,required"`
-	// Related account tokens for the transaction
-	RelatedAccountTokens PaymentRelatedAccountTokens `json:"related_account_tokens,required"`
+	// Account tokens related to a payment transaction
+	RelatedAccountTokens PaymentRelatedAccountTokens `json:"related_account_tokens,required,nullable"`
 	// Transaction result
 	Result PaymentResult `json:"result,required"`
 	// Settled amount in cents
@@ -401,6 +426,7 @@ type PaymentEventsDetailedResult string
 
 const (
 	PaymentEventsDetailedResultApproved                        PaymentEventsDetailedResult = "APPROVED"
+	PaymentEventsDetailedResultDeclined                        PaymentEventsDetailedResult = "DECLINED"
 	PaymentEventsDetailedResultFundsInsufficient               PaymentEventsDetailedResult = "FUNDS_INSUFFICIENT"
 	PaymentEventsDetailedResultAccountInvalid                  PaymentEventsDetailedResult = "ACCOUNT_INVALID"
 	PaymentEventsDetailedResultProgramTransactionLimitExceeded PaymentEventsDetailedResult = "PROGRAM_TRANSACTION_LIMIT_EXCEEDED"
@@ -410,7 +436,7 @@ const (
 
 func (r PaymentEventsDetailedResult) IsKnown() bool {
 	switch r {
-	case PaymentEventsDetailedResultApproved, PaymentEventsDetailedResultFundsInsufficient, PaymentEventsDetailedResultAccountInvalid, PaymentEventsDetailedResultProgramTransactionLimitExceeded, PaymentEventsDetailedResultProgramDailyLimitExceeded, PaymentEventsDetailedResultProgramMonthlyLimitExceeded:
+	case PaymentEventsDetailedResultApproved, PaymentEventsDetailedResultDeclined, PaymentEventsDetailedResultFundsInsufficient, PaymentEventsDetailedResultAccountInvalid, PaymentEventsDetailedResultProgramTransactionLimitExceeded, PaymentEventsDetailedResultProgramDailyLimitExceeded, PaymentEventsDetailedResultProgramMonthlyLimitExceeded:
 		return true
 	}
 	return false
@@ -697,7 +723,7 @@ func (r PaymentMethodAttributesWireNetwork) IsKnown() bool {
 	return false
 }
 
-// Related account tokens for the transaction
+// Account tokens related to a payment transaction
 type PaymentRelatedAccountTokens struct {
 	// Globally unique identifier for the account
 	AccountToken string `json:"account_token,required,nullable" format:"uuid"`
@@ -765,11 +791,12 @@ const (
 	PaymentStatusDeclined PaymentStatus = "DECLINED"
 	PaymentStatusReversed PaymentStatus = "REVERSED"
 	PaymentStatusCanceled PaymentStatus = "CANCELED"
+	PaymentStatusReturned PaymentStatus = "RETURNED"
 )
 
 func (r PaymentStatus) IsKnown() bool {
 	switch r {
-	case PaymentStatusPending, PaymentStatusSettled, PaymentStatusDeclined, PaymentStatusReversed, PaymentStatusCanceled:
+	case PaymentStatusPending, PaymentStatusSettled, PaymentStatusDeclined, PaymentStatusReversed, PaymentStatusCanceled, PaymentStatusReturned:
 		return true
 	}
 	return false
@@ -842,6 +869,51 @@ func (r *PaymentRetryResponse) UnmarshalJSON(data []byte) (err error) {
 
 func (r paymentRetryResponseJSON) RawJSON() string {
 	return r.raw
+}
+
+// Response from ACH operations including returns
+type PaymentReturnResponse struct {
+	// Transaction result
+	Result PaymentReturnResponseResult `json:"result,required"`
+	// Globally unique identifier for the transaction group
+	TransactionGroupUuid string `json:"transaction_group_uuid,required" format:"uuid"`
+	// Globally unique identifier for the transaction
+	TransactionUuid string                    `json:"transaction_uuid,required" format:"uuid"`
+	JSON            paymentReturnResponseJSON `json:"-"`
+}
+
+// paymentReturnResponseJSON contains the JSON metadata for the struct
+// [PaymentReturnResponse]
+type paymentReturnResponseJSON struct {
+	Result               apijson.Field
+	TransactionGroupUuid apijson.Field
+	TransactionUuid      apijson.Field
+	raw                  string
+	ExtraFields          map[string]apijson.Field
+}
+
+func (r *PaymentReturnResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r paymentReturnResponseJSON) RawJSON() string {
+	return r.raw
+}
+
+// Transaction result
+type PaymentReturnResponseResult string
+
+const (
+	PaymentReturnResponseResultApproved PaymentReturnResponseResult = "APPROVED"
+	PaymentReturnResponseResultDeclined PaymentReturnResponseResult = "DECLINED"
+)
+
+func (r PaymentReturnResponseResult) IsKnown() bool {
+	switch r {
+	case PaymentReturnResponseResultApproved, PaymentReturnResponseResultDeclined:
+		return true
+	}
+	return false
 }
 
 type PaymentSimulateActionResponse struct {
@@ -1168,6 +1240,28 @@ func (r PaymentListParamsStatus) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+type PaymentReturnParams struct {
+	// Globally unique identifier for the financial account
+	FinancialAccountToken param.Field[string] `json:"financial_account_token,required" format:"uuid"`
+	// ACH return reason code indicating the reason for returning the payment.
+	// Supported codes include R01-R53 and R80-R85. For a complete list of return codes
+	// and their meanings, see
+	// [ACH Return Reasons](https://docs.lithic.com/docs/ach-overview#ach-return-reasons)
+	ReturnReasonCode param.Field[string] `json:"return_reason_code,required"`
+	// Optional additional information about the return. Limited to 44 characters
+	Addenda param.Field[string] `json:"addenda"`
+	// Date of death in YYYY-MM-DD format. Required when using return codes **R14**
+	// (representative payee deceased) or **R15** (beneficiary or account holder
+	// deceased)
+	DateOfDeath param.Field[time.Time] `json:"date_of_death" format:"date"`
+	// Optional memo for the return. Limited to 10 characters
+	Memo param.Field[string] `json:"memo"`
+}
+
+func (r PaymentReturnParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }
 
 type PaymentSimulateActionParams struct {

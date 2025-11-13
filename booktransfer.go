@@ -359,11 +359,12 @@ const (
 	BookTransferResponseStatusDeclined BookTransferResponseStatus = "DECLINED"
 	BookTransferResponseStatusReversed BookTransferResponseStatus = "REVERSED"
 	BookTransferResponseStatusCanceled BookTransferResponseStatus = "CANCELED"
+	BookTransferResponseStatusReturned BookTransferResponseStatus = "RETURNED"
 )
 
 func (r BookTransferResponseStatus) IsKnown() bool {
 	switch r {
-	case BookTransferResponseStatusPending, BookTransferResponseStatusSettled, BookTransferResponseStatusDeclined, BookTransferResponseStatusReversed, BookTransferResponseStatusCanceled:
+	case BookTransferResponseStatusPending, BookTransferResponseStatusSettled, BookTransferResponseStatusDeclined, BookTransferResponseStatusReversed, BookTransferResponseStatusCanceled, BookTransferResponseStatusReturned:
 		return true
 	}
 	return false

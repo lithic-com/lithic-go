@@ -162,7 +162,7 @@ type ManagementOperationTransaction struct {
 	Result                ManagementOperationTransactionResult            `json:"result"`
 	SettledAmount         int64                                           `json:"settled_amount"`
 	TransactionSeries     ManagementOperationTransactionTransactionSeries `json:"transaction_series,nullable"`
-	UserDefinedID         string                                          `json:"user_defined_id"`
+	UserDefinedID         string                                          `json:"user_defined_id,nullable"`
 	JSON                  managementOperationTransactionJSON              `json:"-"`
 }
 
@@ -210,11 +210,12 @@ const (
 	ManagementOperationTransactionStatusDeclined ManagementOperationTransactionStatus = "DECLINED"
 	ManagementOperationTransactionStatusReversed ManagementOperationTransactionStatus = "REVERSED"
 	ManagementOperationTransactionStatusCanceled ManagementOperationTransactionStatus = "CANCELED"
+	ManagementOperationTransactionStatusReturned ManagementOperationTransactionStatus = "RETURNED"
 )
 
 func (r ManagementOperationTransactionStatus) IsKnown() bool {
 	switch r {
-	case ManagementOperationTransactionStatusPending, ManagementOperationTransactionStatusSettled, ManagementOperationTransactionStatusDeclined, ManagementOperationTransactionStatusReversed, ManagementOperationTransactionStatusCanceled:
+	case ManagementOperationTransactionStatusPending, ManagementOperationTransactionStatusSettled, ManagementOperationTransactionStatusDeclined, ManagementOperationTransactionStatusReversed, ManagementOperationTransactionStatusCanceled, ManagementOperationTransactionStatusReturned:
 		return true
 	}
 	return false
@@ -262,7 +263,7 @@ type ManagementOperationTransactionEvent struct {
 	Memo            string                                               `json:"memo,required"`
 	Result          ManagementOperationTransactionEventsResult           `json:"result,required"`
 	Type            ManagementOperationTransactionEventsType             `json:"type,required"`
-	Subtype         string                                               `json:"subtype"`
+	Subtype         string                                               `json:"subtype,nullable"`
 	JSON            managementOperationTransactionEventJSON              `json:"-"`
 }
 
@@ -569,11 +570,12 @@ const (
 	ManagementOperationListParamsStatusDeclined ManagementOperationListParamsStatus = "DECLINED"
 	ManagementOperationListParamsStatusReversed ManagementOperationListParamsStatus = "REVERSED"
 	ManagementOperationListParamsStatusCanceled ManagementOperationListParamsStatus = "CANCELED"
+	ManagementOperationListParamsStatusReturned ManagementOperationListParamsStatus = "RETURNED"
 )
 
 func (r ManagementOperationListParamsStatus) IsKnown() bool {
 	switch r {
-	case ManagementOperationListParamsStatusPending, ManagementOperationListParamsStatusSettled, ManagementOperationListParamsStatusDeclined, ManagementOperationListParamsStatusReversed, ManagementOperationListParamsStatusCanceled:
+	case ManagementOperationListParamsStatusPending, ManagementOperationListParamsStatusSettled, ManagementOperationListParamsStatusDeclined, ManagementOperationListParamsStatusReversed, ManagementOperationListParamsStatusCanceled, ManagementOperationListParamsStatusReturned:
 		return true
 	}
 	return false

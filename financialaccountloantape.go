@@ -81,6 +81,31 @@ func (r *FinancialAccountLoanTapeService) ListAutoPaging(ctx context.Context, fi
 	return pagination.NewCursorPageAutoPager(r.List(ctx, financialAccountToken, query, opts...))
 }
 
+type CategoryBalances struct {
+	Fees      int64                `json:"fees,required"`
+	Interest  int64                `json:"interest,required"`
+	Principal int64                `json:"principal,required"`
+	JSON      categoryBalancesJSON `json:"-"`
+}
+
+// categoryBalancesJSON contains the JSON metadata for the struct
+// [CategoryBalances]
+type categoryBalancesJSON struct {
+	Fees        apijson.Field
+	Interest    apijson.Field
+	Principal   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CategoryBalances) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r categoryBalancesJSON) RawJSON() string {
+	return r.raw
+}
+
 type LoanTape struct {
 	// Globally unique identifier for a loan tape
 	Token           string                  `json:"token,required"`
@@ -97,8 +122,8 @@ type LoanTape struct {
 	// Globally unique identifier for a credit product
 	CreditProductToken string `json:"credit_product_token,required"`
 	// Date of transactions that this loan tape covers
-	Date      time.Time         `json:"date,required" format:"date"`
-	DayTotals LoanTapeDayTotals `json:"day_totals,required"`
+	Date      time.Time       `json:"date,required" format:"date"`
+	DayTotals StatementTotals `json:"day_totals,required"`
 	// Balance at the end of the day
 	EndingBalance int64 `json:"ending_balance,required"`
 	// Excess credits in the form of provisional credits, payments, or purchase
@@ -109,18 +134,18 @@ type LoanTape struct {
 	FinancialAccountToken    string                           `json:"financial_account_token,required" format:"uuid"`
 	InterestDetails          LoanTapeInterestDetails          `json:"interest_details,required,nullable"`
 	MinimumPaymentBalance    LoanTapeMinimumPaymentBalance    `json:"minimum_payment_balance,required"`
-	PaymentAllocation        LoanTapePaymentAllocation        `json:"payment_allocation,required"`
-	PeriodTotals             LoanTapePeriodTotals             `json:"period_totals,required"`
+	PaymentAllocation        CategoryBalances                 `json:"payment_allocation,required"`
+	PeriodTotals             StatementTotals                  `json:"period_totals,required"`
 	PreviousStatementBalance LoanTapePreviousStatementBalance `json:"previous_statement_balance,required"`
 	// Balance at the start of the day
 	StartingBalance int64 `json:"starting_balance,required"`
 	// Timestamp of when the loan tape was updated
 	Updated time.Time `json:"updated,required" format:"date-time"`
 	// Version number of the loan tape. This starts at 1
-	Version   int64             `json:"version,required"`
-	YtdTotals LoanTapeYtdTotals `json:"ytd_totals,required"`
+	Version   int64           `json:"version,required"`
+	YtdTotals StatementTotals `json:"ytd_totals,required"`
 	// Interest tier to which this account belongs to
-	Tier string       `json:"tier"`
+	Tier string       `json:"tier,nullable"`
 	JSON loanTapeJSON `json:"-"`
 }
 
@@ -284,16 +309,16 @@ func (r LoanTapeAccountStandingPeriodState) IsKnown() bool {
 type LoanTapeBalances struct {
 	// Amount due for the prior billing cycle. Any amounts not fully paid off on this
 	// due date will be considered past due the next day
-	Due LoanTapeBalancesDue `json:"due,required"`
+	Due CategoryBalances `json:"due,required"`
 	// Amount due for the current billing cycle. Any amounts not paid off by early
 	// payments or credits will be considered due at the end of the current billing
 	// period
-	NextStatementDue LoanTapeBalancesNextStatementDue `json:"next_statement_due,required"`
+	NextStatementDue CategoryBalances `json:"next_statement_due,required"`
 	// Amount not paid off on previous due dates
-	PastDue LoanTapeBalancesPastDue `json:"past_due,required"`
+	PastDue CategoryBalances `json:"past_due,required"`
 	// Amount due for the past billing cycles.
-	PastStatementsDue LoanTapeBalancesPastStatementsDue `json:"past_statements_due,required"`
-	JSON              loanTapeBalancesJSON              `json:"-"`
+	PastStatementsDue CategoryBalances     `json:"past_statements_due,required"`
+	JSON              loanTapeBalancesJSON `json:"-"`
 }
 
 // loanTapeBalancesJSON contains the JSON metadata for the struct
@@ -315,172 +340,12 @@ func (r loanTapeBalancesJSON) RawJSON() string {
 	return r.raw
 }
 
-// Amount due for the prior billing cycle. Any amounts not fully paid off on this
-// due date will be considered past due the next day
-type LoanTapeBalancesDue struct {
-	Fees      int64                   `json:"fees,required"`
-	Interest  int64                   `json:"interest,required"`
-	Principal int64                   `json:"principal,required"`
-	JSON      loanTapeBalancesDueJSON `json:"-"`
-}
-
-// loanTapeBalancesDueJSON contains the JSON metadata for the struct
-// [LoanTapeBalancesDue]
-type loanTapeBalancesDueJSON struct {
-	Fees        apijson.Field
-	Interest    apijson.Field
-	Principal   apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *LoanTapeBalancesDue) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r loanTapeBalancesDueJSON) RawJSON() string {
-	return r.raw
-}
-
-// Amount due for the current billing cycle. Any amounts not paid off by early
-// payments or credits will be considered due at the end of the current billing
-// period
-type LoanTapeBalancesNextStatementDue struct {
-	Fees      int64                                `json:"fees,required"`
-	Interest  int64                                `json:"interest,required"`
-	Principal int64                                `json:"principal,required"`
-	JSON      loanTapeBalancesNextStatementDueJSON `json:"-"`
-}
-
-// loanTapeBalancesNextStatementDueJSON contains the JSON metadata for the struct
-// [LoanTapeBalancesNextStatementDue]
-type loanTapeBalancesNextStatementDueJSON struct {
-	Fees        apijson.Field
-	Interest    apijson.Field
-	Principal   apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *LoanTapeBalancesNextStatementDue) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r loanTapeBalancesNextStatementDueJSON) RawJSON() string {
-	return r.raw
-}
-
-// Amount not paid off on previous due dates
-type LoanTapeBalancesPastDue struct {
-	Fees      int64                       `json:"fees,required"`
-	Interest  int64                       `json:"interest,required"`
-	Principal int64                       `json:"principal,required"`
-	JSON      loanTapeBalancesPastDueJSON `json:"-"`
-}
-
-// loanTapeBalancesPastDueJSON contains the JSON metadata for the struct
-// [LoanTapeBalancesPastDue]
-type loanTapeBalancesPastDueJSON struct {
-	Fees        apijson.Field
-	Interest    apijson.Field
-	Principal   apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *LoanTapeBalancesPastDue) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r loanTapeBalancesPastDueJSON) RawJSON() string {
-	return r.raw
-}
-
-// Amount due for the past billing cycles.
-type LoanTapeBalancesPastStatementsDue struct {
-	Fees      int64                                 `json:"fees,required"`
-	Interest  int64                                 `json:"interest,required"`
-	Principal int64                                 `json:"principal,required"`
-	JSON      loanTapeBalancesPastStatementsDueJSON `json:"-"`
-}
-
-// loanTapeBalancesPastStatementsDueJSON contains the JSON metadata for the struct
-// [LoanTapeBalancesPastStatementsDue]
-type loanTapeBalancesPastStatementsDueJSON struct {
-	Fees        apijson.Field
-	Interest    apijson.Field
-	Principal   apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *LoanTapeBalancesPastStatementsDue) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r loanTapeBalancesPastStatementsDueJSON) RawJSON() string {
-	return r.raw
-}
-
-type LoanTapeDayTotals struct {
-	// Opening balance transferred from previous account in cents
-	BalanceTransfers int64 `json:"balance_transfers,required"`
-	// ATM and cashback transactions in cents
-	CashAdvances int64 `json:"cash_advances,required"`
-	// Volume of credit management operation transactions less any balance transfers in
-	// cents
-	Credits int64 `json:"credits,required"`
-	// Volume of debit management operation transactions less any interest in cents
-	Debits int64 `json:"debits,required"`
-	// Volume of debit management operation transactions less any interest in cents
-	Fees int64 `json:"fees,required"`
-	// Interest accrued in cents
-	Interest int64 `json:"interest,required"`
-	// Any funds transfers which affective the balance in cents
-	Payments int64 `json:"payments,required"`
-	// Net card transaction volume less any cash advances in cents
-	Purchases int64 `json:"purchases,required"`
-	// Breakdown of credits
-	CreditDetails interface{} `json:"credit_details"`
-	// Breakdown of debits
-	DebitDetails interface{} `json:"debit_details"`
-	// Breakdown of payments
-	PaymentDetails interface{}           `json:"payment_details"`
-	JSON           loanTapeDayTotalsJSON `json:"-"`
-}
-
-// loanTapeDayTotalsJSON contains the JSON metadata for the struct
-// [LoanTapeDayTotals]
-type loanTapeDayTotalsJSON struct {
-	BalanceTransfers apijson.Field
-	CashAdvances     apijson.Field
-	Credits          apijson.Field
-	Debits           apijson.Field
-	Fees             apijson.Field
-	Interest         apijson.Field
-	Payments         apijson.Field
-	Purchases        apijson.Field
-	CreditDetails    apijson.Field
-	DebitDetails     apijson.Field
-	PaymentDetails   apijson.Field
-	raw              string
-	ExtraFields      map[string]apijson.Field
-}
-
-func (r *LoanTapeDayTotals) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r loanTapeDayTotalsJSON) RawJSON() string {
-	return r.raw
-}
-
 type LoanTapeInterestDetails struct {
 	ActualInterestCharged     int64                                            `json:"actual_interest_charged,required,nullable"`
-	DailyBalanceAmounts       LoanTapeInterestDetailsDailyBalanceAmounts       `json:"daily_balance_amounts,required"`
-	EffectiveApr              LoanTapeInterestDetailsEffectiveApr              `json:"effective_apr,required"`
+	DailyBalanceAmounts       CategoryDetails                                  `json:"daily_balance_amounts,required"`
+	EffectiveApr              CategoryDetails                                  `json:"effective_apr,required"`
 	InterestCalculationMethod LoanTapeInterestDetailsInterestCalculationMethod `json:"interest_calculation_method,required"`
-	InterestForPeriod         LoanTapeInterestDetailsInterestForPeriod         `json:"interest_for_period,required"`
+	InterestForPeriod         CategoryDetails                                  `json:"interest_for_period,required"`
 	PrimeRate                 string                                           `json:"prime_rate,required,nullable"`
 	MinimumInterestCharged    int64                                            `json:"minimum_interest_charged,nullable"`
 	JSON                      loanTapeInterestDetailsJSON                      `json:"-"`
@@ -508,56 +373,6 @@ func (r loanTapeInterestDetailsJSON) RawJSON() string {
 	return r.raw
 }
 
-type LoanTapeInterestDetailsDailyBalanceAmounts struct {
-	BalanceTransfers string                                         `json:"balance_transfers,required"`
-	CashAdvances     string                                         `json:"cash_advances,required"`
-	Purchases        string                                         `json:"purchases,required"`
-	JSON             loanTapeInterestDetailsDailyBalanceAmountsJSON `json:"-"`
-}
-
-// loanTapeInterestDetailsDailyBalanceAmountsJSON contains the JSON metadata for
-// the struct [LoanTapeInterestDetailsDailyBalanceAmounts]
-type loanTapeInterestDetailsDailyBalanceAmountsJSON struct {
-	BalanceTransfers apijson.Field
-	CashAdvances     apijson.Field
-	Purchases        apijson.Field
-	raw              string
-	ExtraFields      map[string]apijson.Field
-}
-
-func (r *LoanTapeInterestDetailsDailyBalanceAmounts) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r loanTapeInterestDetailsDailyBalanceAmountsJSON) RawJSON() string {
-	return r.raw
-}
-
-type LoanTapeInterestDetailsEffectiveApr struct {
-	BalanceTransfers string                                  `json:"balance_transfers,required"`
-	CashAdvances     string                                  `json:"cash_advances,required"`
-	Purchases        string                                  `json:"purchases,required"`
-	JSON             loanTapeInterestDetailsEffectiveAprJSON `json:"-"`
-}
-
-// loanTapeInterestDetailsEffectiveAprJSON contains the JSON metadata for the
-// struct [LoanTapeInterestDetailsEffectiveApr]
-type loanTapeInterestDetailsEffectiveAprJSON struct {
-	BalanceTransfers apijson.Field
-	CashAdvances     apijson.Field
-	Purchases        apijson.Field
-	raw              string
-	ExtraFields      map[string]apijson.Field
-}
-
-func (r *LoanTapeInterestDetailsEffectiveApr) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r loanTapeInterestDetailsEffectiveAprJSON) RawJSON() string {
-	return r.raw
-}
-
 type LoanTapeInterestDetailsInterestCalculationMethod string
 
 const (
@@ -571,31 +386,6 @@ func (r LoanTapeInterestDetailsInterestCalculationMethod) IsKnown() bool {
 		return true
 	}
 	return false
-}
-
-type LoanTapeInterestDetailsInterestForPeriod struct {
-	BalanceTransfers string                                       `json:"balance_transfers,required"`
-	CashAdvances     string                                       `json:"cash_advances,required"`
-	Purchases        string                                       `json:"purchases,required"`
-	JSON             loanTapeInterestDetailsInterestForPeriodJSON `json:"-"`
-}
-
-// loanTapeInterestDetailsInterestForPeriodJSON contains the JSON metadata for the
-// struct [LoanTapeInterestDetailsInterestForPeriod]
-type loanTapeInterestDetailsInterestForPeriodJSON struct {
-	BalanceTransfers apijson.Field
-	CashAdvances     apijson.Field
-	Purchases        apijson.Field
-	raw              string
-	ExtraFields      map[string]apijson.Field
-}
-
-func (r *LoanTapeInterestDetailsInterestForPeriod) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r loanTapeInterestDetailsInterestForPeriodJSON) RawJSON() string {
-	return r.raw
 }
 
 type LoanTapeMinimumPaymentBalance struct {
@@ -621,84 +411,6 @@ func (r loanTapeMinimumPaymentBalanceJSON) RawJSON() string {
 	return r.raw
 }
 
-type LoanTapePaymentAllocation struct {
-	Fees      int64                         `json:"fees,required"`
-	Interest  int64                         `json:"interest,required"`
-	Principal int64                         `json:"principal,required"`
-	JSON      loanTapePaymentAllocationJSON `json:"-"`
-}
-
-// loanTapePaymentAllocationJSON contains the JSON metadata for the struct
-// [LoanTapePaymentAllocation]
-type loanTapePaymentAllocationJSON struct {
-	Fees        apijson.Field
-	Interest    apijson.Field
-	Principal   apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *LoanTapePaymentAllocation) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r loanTapePaymentAllocationJSON) RawJSON() string {
-	return r.raw
-}
-
-type LoanTapePeriodTotals struct {
-	// Opening balance transferred from previous account in cents
-	BalanceTransfers int64 `json:"balance_transfers,required"`
-	// ATM and cashback transactions in cents
-	CashAdvances int64 `json:"cash_advances,required"`
-	// Volume of credit management operation transactions less any balance transfers in
-	// cents
-	Credits int64 `json:"credits,required"`
-	// Volume of debit management operation transactions less any interest in cents
-	Debits int64 `json:"debits,required"`
-	// Volume of debit management operation transactions less any interest in cents
-	Fees int64 `json:"fees,required"`
-	// Interest accrued in cents
-	Interest int64 `json:"interest,required"`
-	// Any funds transfers which affective the balance in cents
-	Payments int64 `json:"payments,required"`
-	// Net card transaction volume less any cash advances in cents
-	Purchases int64 `json:"purchases,required"`
-	// Breakdown of credits
-	CreditDetails interface{} `json:"credit_details"`
-	// Breakdown of debits
-	DebitDetails interface{} `json:"debit_details"`
-	// Breakdown of payments
-	PaymentDetails interface{}              `json:"payment_details"`
-	JSON           loanTapePeriodTotalsJSON `json:"-"`
-}
-
-// loanTapePeriodTotalsJSON contains the JSON metadata for the struct
-// [LoanTapePeriodTotals]
-type loanTapePeriodTotalsJSON struct {
-	BalanceTransfers apijson.Field
-	CashAdvances     apijson.Field
-	Credits          apijson.Field
-	Debits           apijson.Field
-	Fees             apijson.Field
-	Interest         apijson.Field
-	Payments         apijson.Field
-	Purchases        apijson.Field
-	CreditDetails    apijson.Field
-	DebitDetails     apijson.Field
-	PaymentDetails   apijson.Field
-	raw              string
-	ExtraFields      map[string]apijson.Field
-}
-
-func (r *LoanTapePeriodTotals) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r loanTapePeriodTotalsJSON) RawJSON() string {
-	return r.raw
-}
-
 type LoanTapePreviousStatementBalance struct {
 	Amount    int64                                `json:"amount,required"`
 	Remaining int64                                `json:"remaining,required"`
@@ -719,59 +431,6 @@ func (r *LoanTapePreviousStatementBalance) UnmarshalJSON(data []byte) (err error
 }
 
 func (r loanTapePreviousStatementBalanceJSON) RawJSON() string {
-	return r.raw
-}
-
-type LoanTapeYtdTotals struct {
-	// Opening balance transferred from previous account in cents
-	BalanceTransfers int64 `json:"balance_transfers,required"`
-	// ATM and cashback transactions in cents
-	CashAdvances int64 `json:"cash_advances,required"`
-	// Volume of credit management operation transactions less any balance transfers in
-	// cents
-	Credits int64 `json:"credits,required"`
-	// Volume of debit management operation transactions less any interest in cents
-	Debits int64 `json:"debits,required"`
-	// Volume of debit management operation transactions less any interest in cents
-	Fees int64 `json:"fees,required"`
-	// Interest accrued in cents
-	Interest int64 `json:"interest,required"`
-	// Any funds transfers which affective the balance in cents
-	Payments int64 `json:"payments,required"`
-	// Net card transaction volume less any cash advances in cents
-	Purchases int64 `json:"purchases,required"`
-	// Breakdown of credits
-	CreditDetails interface{} `json:"credit_details"`
-	// Breakdown of debits
-	DebitDetails interface{} `json:"debit_details"`
-	// Breakdown of payments
-	PaymentDetails interface{}           `json:"payment_details"`
-	JSON           loanTapeYtdTotalsJSON `json:"-"`
-}
-
-// loanTapeYtdTotalsJSON contains the JSON metadata for the struct
-// [LoanTapeYtdTotals]
-type loanTapeYtdTotalsJSON struct {
-	BalanceTransfers apijson.Field
-	CashAdvances     apijson.Field
-	Credits          apijson.Field
-	Debits           apijson.Field
-	Fees             apijson.Field
-	Interest         apijson.Field
-	Payments         apijson.Field
-	Purchases        apijson.Field
-	CreditDetails    apijson.Field
-	DebitDetails     apijson.Field
-	PaymentDetails   apijson.Field
-	raw              string
-	ExtraFields      map[string]apijson.Field
-}
-
-func (r *LoanTapeYtdTotals) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r loanTapeYtdTotalsJSON) RawJSON() string {
 	return r.raw
 }
 
