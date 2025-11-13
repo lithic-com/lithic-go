@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.96.0 (2025-11-13)
+
+Full Changelog: [v0.95.0...v0.96.0](https://github.com/lithic-com/lithic-go/compare/v0.95.0...v0.96.0)
+
+### Features
+
+* **api:** add disputes V2 endpoints ([9b75696](https://github.com/lithic-com/lithic-go/commit/9b756967728bea18ec1ccaa576a17c94085d904c))
+* **api:** add payment_details ([fc4261b](https://github.com/lithic-com/lithic-go/commit/fc4261b057837c2f9087dfe8b85d7560befa5b20))
+* **api:** add return payment method ([9b75696](https://github.com/lithic-com/lithic-go/commit/9b756967728bea18ec1ccaa576a17c94085d904c))
+* **api:** add Tokenization and ACH Rules ([9b75696](https://github.com/lithic-com/lithic-go/commit/9b756967728bea18ec1ccaa576a17c94085d904c))
+* **api:** add unpause external_bank_accounts API method ([9b75696](https://github.com/lithic-com/lithic-go/commit/9b756967728bea18ec1ccaa576a17c94085d904c))
+* **api:** deprecate auth rule apply endpoint and fix several schemas ([d2978d9](https://github.com/lithic-com/lithic-go/commit/d2978d94b65315cb4081283f6738d865461db215))
+* **api:** extract some common schemas into models ([9b75696](https://github.com/lithic-com/lithic-go/commit/9b756967728bea18ec1ccaa576a17c94085d904c))
+* **api:** new fields in Statements APIs ([176cd0f](https://github.com/lithic-com/lithic-go/commit/176cd0f34a8627b955655187310e5ff811b49071))
+* **api:** re-add rules metadata to tokenization events ([a7fe2bd](https://github.com/lithic-com/lithic-go/commit/a7fe2bd5daefaa0781b13cd267d9ec946153624d))
+* **api:** remove deprecated fields from Cardholder Authentication object ([a7fe2bd](https://github.com/lithic-com/lithic-go/commit/a7fe2bd5daefaa0781b13cd267d9ec946153624d))
+
+
+### Bug Fixes
+
+* **api:** adjust Auth Rules spec for better SDK structure ([a7fe2bd](https://github.com/lithic-com/lithic-go/commit/a7fe2bd5daefaa0781b13cd267d9ec946153624d))
+* **api:** change allowed phone number length from 18 to 16 ([9b75696](https://github.com/lithic-com/lithic-go/commit/9b756967728bea18ec1ccaa576a17c94085d904c))
+* **api:** fix oneOf -&gt; anyOf in account holder update ([fc4261b](https://github.com/lithic-com/lithic-go/commit/fc4261b057837c2f9087dfe8b85d7560befa5b20))
+* **api:** fixing spec for Tokenizations and Enhanced data ([176cd0f](https://github.com/lithic-com/lithic-go/commit/176cd0f34a8627b955655187310e5ff811b49071))
+* **api:** mark certain optional fields as nullable ([9b75696](https://github.com/lithic-com/lithic-go/commit/9b756967728bea18ec1ccaa576a17c94085d904c))
+
+
+### Chores
+
+* **api:** adds support for new ACH_RECEIPT_RELEASED event ([32a90ab](https://github.com/lithic-com/lithic-go/commit/32a90ab31f5a632ed4c6926e32e9a4e32a0e9c25))
+
 ## 0.95.0 (2025-10-23)
 
 Full Changelog: [v0.94.0...v0.95.0](https://github.com/lithic-com/lithic-go/compare/v0.94.0...v0.95.0)
