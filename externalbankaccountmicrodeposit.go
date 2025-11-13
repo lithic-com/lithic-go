@@ -84,25 +84,25 @@ type ExternalBankAccountMicroDepositNewResponse struct {
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
-	AccountToken string `json:"account_token" format:"uuid"`
+	AccountToken string `json:"account_token,nullable" format:"uuid"`
 	// Address
-	Address ExternalBankAccountAddress `json:"address"`
+	Address ExternalBankAccountAddress `json:"address,nullable"`
 	// Optional field that helps identify bank accounts in receipts
-	CompanyID string `json:"company_id"`
+	CompanyID string `json:"company_id,nullable"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob time.Time `json:"dob" format:"date"`
+	Dob time.Time `json:"dob,nullable" format:"date"`
 	// Doing Business As
-	DoingBusinessAs string `json:"doing_business_as"`
+	DoingBusinessAs string `json:"doing_business_as,nullable"`
 	// The financial account token of the operating account to fund the micro deposits
-	FinancialAccountToken string `json:"financial_account_token" format:"uuid"`
+	FinancialAccountToken string `json:"financial_account_token,nullable" format:"uuid"`
 	// The nickname for this External Bank Account
-	Name string `json:"name"`
+	Name string `json:"name,nullable"`
 	// User Defined ID
-	UserDefinedID string `json:"user_defined_id"`
+	UserDefinedID string `json:"user_defined_id,nullable"`
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
 	// by the ACH network
-	VerificationFailedReason string                                         `json:"verification_failed_reason"`
+	VerificationFailedReason string                                         `json:"verification_failed_reason,nullable"`
 	JSON                     externalBankAccountMicroDepositNewResponseJSON `json:"-"`
 }
 

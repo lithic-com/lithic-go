@@ -165,5 +165,241 @@ const DocumentRequiredDocumentUploadsStatusReasonUnknownFailureReason = shared.D
 // This is an alias to an internal value.
 const DocumentRequiredDocumentUploadsStatusReasonUnknownError = shared.DocumentRequiredDocumentUploadsStatusReasonUnknownError
 
+// Financial Event
+//
+// This is an alias to an internal type.
+type FinancialEvent = shared.FinancialEvent
+
+// APPROVED financial events were successful while DECLINED financial events were
+// declined by user, Lithic, or the network.
+//
+// This is an alias to an internal type.
+type FinancialEventResult = shared.FinancialEventResult
+
+// This is an alias to an internal value.
+const FinancialEventResultApproved = shared.FinancialEventResultApproved
+
+// This is an alias to an internal value.
+const FinancialEventResultDeclined = shared.FinancialEventResultDeclined
+
+// This is an alias to an internal type.
+type FinancialEventType = shared.FinancialEventType
+
+// This is an alias to an internal value.
+const FinancialEventTypeACHOriginationCancelled = shared.FinancialEventTypeACHOriginationCancelled
+
+// This is an alias to an internal value.
+const FinancialEventTypeACHOriginationInitiated = shared.FinancialEventTypeACHOriginationInitiated
+
+// This is an alias to an internal value.
+const FinancialEventTypeACHOriginationProcessed = shared.FinancialEventTypeACHOriginationProcessed
+
+// This is an alias to an internal value.
+const FinancialEventTypeACHOriginationReleased = shared.FinancialEventTypeACHOriginationReleased
+
+// This is an alias to an internal value.
+const FinancialEventTypeACHOriginationRejected = shared.FinancialEventTypeACHOriginationRejected
+
+// This is an alias to an internal value.
+const FinancialEventTypeACHOriginationReviewed = shared.FinancialEventTypeACHOriginationReviewed
+
+// This is an alias to an internal value.
+const FinancialEventTypeACHOriginationSettled = shared.FinancialEventTypeACHOriginationSettled
+
+// This is an alias to an internal value.
+const FinancialEventTypeACHReceiptProcessed = shared.FinancialEventTypeACHReceiptProcessed
+
+// This is an alias to an internal value.
+const FinancialEventTypeACHReceiptReleased = shared.FinancialEventTypeACHReceiptReleased
+
+// This is an alias to an internal value.
+const FinancialEventTypeACHReceiptSettled = shared.FinancialEventTypeACHReceiptSettled
+
+// This is an alias to an internal value.
+const FinancialEventTypeACHReturnInitiated = shared.FinancialEventTypeACHReturnInitiated
+
+// This is an alias to an internal value.
+const FinancialEventTypeACHReturnProcessed = shared.FinancialEventTypeACHReturnProcessed
+
+// This is an alias to an internal value.
+const FinancialEventTypeACHReturnRejected = shared.FinancialEventTypeACHReturnRejected
+
+// This is an alias to an internal value.
+const FinancialEventTypeACHReturnSettled = shared.FinancialEventTypeACHReturnSettled
+
+// This is an alias to an internal value.
+const FinancialEventTypeAuthorization = shared.FinancialEventTypeAuthorization
+
+// This is an alias to an internal value.
+const FinancialEventTypeAuthorizationAdvice = shared.FinancialEventTypeAuthorizationAdvice
+
+// This is an alias to an internal value.
+const FinancialEventTypeAuthorizationExpiry = shared.FinancialEventTypeAuthorizationExpiry
+
+// This is an alias to an internal value.
+const FinancialEventTypeAuthorizationReversal = shared.FinancialEventTypeAuthorizationReversal
+
+// This is an alias to an internal value.
+const FinancialEventTypeBalanceInquiry = shared.FinancialEventTypeBalanceInquiry
+
+// This is an alias to an internal value.
+const FinancialEventTypeBillingError = shared.FinancialEventTypeBillingError
+
+// This is an alias to an internal value.
+const FinancialEventTypeBillingErrorReversal = shared.FinancialEventTypeBillingErrorReversal
+
+// This is an alias to an internal value.
+const FinancialEventTypeCardToCard = shared.FinancialEventTypeCardToCard
+
+// This is an alias to an internal value.
+const FinancialEventTypeCashBack = shared.FinancialEventTypeCashBack
+
+// This is an alias to an internal value.
+const FinancialEventTypeCashBackReversal = shared.FinancialEventTypeCashBackReversal
+
+// This is an alias to an internal value.
+const FinancialEventTypeClearing = shared.FinancialEventTypeClearing
+
+// This is an alias to an internal value.
+const FinancialEventTypeCollection = shared.FinancialEventTypeCollection
+
+// This is an alias to an internal value.
+const FinancialEventTypeCorrectionCredit = shared.FinancialEventTypeCorrectionCredit
+
+// This is an alias to an internal value.
+const FinancialEventTypeCorrectionDebit = shared.FinancialEventTypeCorrectionDebit
+
+// This is an alias to an internal value.
+const FinancialEventTypeCreditAuthorization = shared.FinancialEventTypeCreditAuthorization
+
+// This is an alias to an internal value.
+const FinancialEventTypeCreditAuthorizationAdvice = shared.FinancialEventTypeCreditAuthorizationAdvice
+
+// This is an alias to an internal value.
+const FinancialEventTypeCurrencyConversion = shared.FinancialEventTypeCurrencyConversion
+
+// This is an alias to an internal value.
+const FinancialEventTypeCurrencyConversionReversal = shared.FinancialEventTypeCurrencyConversionReversal
+
+// This is an alias to an internal value.
+const FinancialEventTypeDisputeWon = shared.FinancialEventTypeDisputeWon
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalACHCanceled = shared.FinancialEventTypeExternalACHCanceled
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalACHInitiated = shared.FinancialEventTypeExternalACHInitiated
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalACHReleased = shared.FinancialEventTypeExternalACHReleased
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalACHReversed = shared.FinancialEventTypeExternalACHReversed
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalACHSettled = shared.FinancialEventTypeExternalACHSettled
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalCheckCanceled = shared.FinancialEventTypeExternalCheckCanceled
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalCheckInitiated = shared.FinancialEventTypeExternalCheckInitiated
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalCheckReleased = shared.FinancialEventTypeExternalCheckReleased
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalCheckReversed = shared.FinancialEventTypeExternalCheckReversed
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalCheckSettled = shared.FinancialEventTypeExternalCheckSettled
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalTransferCanceled = shared.FinancialEventTypeExternalTransferCanceled
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalTransferInitiated = shared.FinancialEventTypeExternalTransferInitiated
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalTransferReleased = shared.FinancialEventTypeExternalTransferReleased
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalTransferReversed = shared.FinancialEventTypeExternalTransferReversed
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalTransferSettled = shared.FinancialEventTypeExternalTransferSettled
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalWireCanceled = shared.FinancialEventTypeExternalWireCanceled
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalWireInitiated = shared.FinancialEventTypeExternalWireInitiated
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalWireReleased = shared.FinancialEventTypeExternalWireReleased
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalWireReversed = shared.FinancialEventTypeExternalWireReversed
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalWireSettled = shared.FinancialEventTypeExternalWireSettled
+
+// This is an alias to an internal value.
+const FinancialEventTypeFinancialAuthorization = shared.FinancialEventTypeFinancialAuthorization
+
+// This is an alias to an internal value.
+const FinancialEventTypeFinancialCreditAuthorization = shared.FinancialEventTypeFinancialCreditAuthorization
+
+// This is an alias to an internal value.
+const FinancialEventTypeInterest = shared.FinancialEventTypeInterest
+
+// This is an alias to an internal value.
+const FinancialEventTypeInterestReversal = shared.FinancialEventTypeInterestReversal
+
+// This is an alias to an internal value.
+const FinancialEventTypeInternalAdjustment = shared.FinancialEventTypeInternalAdjustment
+
+// This is an alias to an internal value.
+const FinancialEventTypeLatePayment = shared.FinancialEventTypeLatePayment
+
+// This is an alias to an internal value.
+const FinancialEventTypeLatePaymentReversal = shared.FinancialEventTypeLatePaymentReversal
+
+// This is an alias to an internal value.
+const FinancialEventTypeLossWriteOff = shared.FinancialEventTypeLossWriteOff
+
+// This is an alias to an internal value.
+const FinancialEventTypeProvisionalCredit = shared.FinancialEventTypeProvisionalCredit
+
+// This is an alias to an internal value.
+const FinancialEventTypeProvisionalCreditReversal = shared.FinancialEventTypeProvisionalCreditReversal
+
+// This is an alias to an internal value.
+const FinancialEventTypeService = shared.FinancialEventTypeService
+
+// This is an alias to an internal value.
+const FinancialEventTypeReturn = shared.FinancialEventTypeReturn
+
+// This is an alias to an internal value.
+const FinancialEventTypeReturnReversal = shared.FinancialEventTypeReturnReversal
+
+// This is an alias to an internal value.
+const FinancialEventTypeTransfer = shared.FinancialEventTypeTransfer
+
+// This is an alias to an internal value.
+const FinancialEventTypeTransferInsufficientFunds = shared.FinancialEventTypeTransferInsufficientFunds
+
+// This is an alias to an internal value.
+const FinancialEventTypeReturnedPayment = shared.FinancialEventTypeReturnedPayment
+
+// This is an alias to an internal value.
+const FinancialEventTypeReturnedPaymentReversal = shared.FinancialEventTypeReturnedPaymentReversal
+
+// This is an alias to an internal value.
+const FinancialEventTypeLithicNetworkPayment = shared.FinancialEventTypeLithicNetworkPayment
+
+// This is an alias to an internal type.
+type Merchant = shared.Merchant
+
 // This is an alias to an internal type.
 type ShippingAddressParam = shared.ShippingAddressParam
