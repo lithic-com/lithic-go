@@ -218,9 +218,9 @@ type Transaction struct {
 	CardToken                string                              `json:"card_token,required" format:"uuid"`
 	CardholderAuthentication TransactionCardholderAuthentication `json:"cardholder_authentication,required,nullable"`
 	// Date and time when the transaction first occurred. UTC time zone.
-	Created               time.Time           `json:"created,required" format:"date-time"`
-	FinancialAccountToken string              `json:"financial_account_token,required,nullable" format:"uuid"`
-	Merchant              TransactionMerchant `json:"merchant,required"`
+	Created               time.Time       `json:"created,required" format:"date-time"`
+	FinancialAccountToken string          `json:"financial_account_token,required,nullable" format:"uuid"`
+	Merchant              shared.Merchant `json:"merchant,required"`
 	// Analogous to the 'amount', but in the merchant currency.
 	//
 	// Deprecated: deprecated
@@ -578,49 +578,6 @@ func (r TransactionCardholderAuthenticationLiabilityShift) IsKnown() bool {
 		return true
 	}
 	return false
-}
-
-type TransactionMerchant struct {
-	// Unique alphanumeric identifier for the payment card acceptor (merchant).
-	AcceptorID string `json:"acceptor_id,required"`
-	// Unique numeric identifier of the acquiring institution.
-	AcquiringInstitutionID string `json:"acquiring_institution_id,required"`
-	// City of card acceptor. Note that in many cases, particularly in card-not-present
-	// transactions, merchants may send through a phone number or URL in this field.
-	City string `json:"city,required"`
-	// Country or entity of card acceptor. Possible values are: (1) all ISO 3166-1
-	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
-	Country string `json:"country,required"`
-	// Short description of card acceptor.
-	Descriptor string `json:"descriptor,required"`
-	// Merchant category code (MCC). A four-digit number listed in ISO 18245. An MCC is
-	// used to classify a business by the types of goods or services it provides.
-	Mcc string `json:"mcc,required"`
-	// Geographic state of card acceptor.
-	State string                  `json:"state,required"`
-	JSON  transactionMerchantJSON `json:"-"`
-}
-
-// transactionMerchantJSON contains the JSON metadata for the struct
-// [TransactionMerchant]
-type transactionMerchantJSON struct {
-	AcceptorID             apijson.Field
-	AcquiringInstitutionID apijson.Field
-	City                   apijson.Field
-	Country                apijson.Field
-	Descriptor             apijson.Field
-	Mcc                    apijson.Field
-	State                  apijson.Field
-	raw                    string
-	ExtraFields            map[string]apijson.Field
-}
-
-func (r *TransactionMerchant) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r transactionMerchantJSON) RawJSON() string {
-	return r.raw
 }
 
 // Card network of the authorization. Value is `UNKNOWN` when Lithic cannot

@@ -259,14 +259,14 @@ type ThreeDSAuthenticationGetResponseCardholder struct {
 	Email string `json:"email,nullable"`
 	// Name of the cardholder. Maps to EMV 3DS field `cardholderName`.
 	Name string `json:"name,nullable"`
-	// Home phone number provided by the cardholder. Maps to EMV 3DS fields
-	// `homePhone.cc` and `homePhone.subscriber`.
+	// Home phone number in E.164 format provided by the cardholder. Maps to EMV 3DS
+	// fields `homePhone.cc` and `homePhone.subscriber`.
 	PhoneNumberHome string `json:"phone_number_home,nullable"`
-	// Mobile/cell phone number provided by the cardholder. Maps to EMV 3DS fields
-	// `mobilePhone.cc` and `mobilePhone.subscriber`.
+	// Mobile/cell phone number in E.164 format provided by the cardholder. Maps to EMV
+	// 3DS fields `mobilePhone.cc` and `mobilePhone.subscriber`.
 	PhoneNumberMobile string `json:"phone_number_mobile,nullable"`
-	// Work phone number provided by the cardholder. Maps to EMV 3DS fields
-	// `workPhone.cc` and `workPhone.subscriber`.
+	// Work phone number in E.164 format provided by the cardholder. Maps to EMV 3DS
+	// fields `workPhone.cc` and `workPhone.subscriber`.
 	PhoneNumberWork string `json:"phone_number_work,nullable"`
 	// Object containing data on the shipping address provided during the transaction.
 	ShippingAddress ThreeDSAuthenticationGetResponseCardholderShippingAddress `json:"shipping_address"`

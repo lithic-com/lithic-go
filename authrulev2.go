@@ -238,12 +238,12 @@ type AuthRuleCondition struct {
 	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
 	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
 	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
-	Attribute ConditionalAttribute `json:"attribute"`
+	Attribute ConditionalAttribute `json:"attribute,required"`
 	// The operation to apply to the attribute
-	Operation AuthRuleConditionOperation `json:"operation"`
+	Operation ConditionalOperation `json:"operation,required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value AuthRuleConditionValueUnion `json:"value"`
-	JSON  authRuleConditionJSON       `json:"-"`
+	Value ConditionalValueUnion `json:"value,required"`
+	JSON  authRuleConditionJSON `json:"-"`
 }
 
 // authRuleConditionJSON contains the JSON metadata for the struct
@@ -263,61 +263,6 @@ func (r *AuthRuleCondition) UnmarshalJSON(data []byte) (err error) {
 func (r authRuleConditionJSON) RawJSON() string {
 	return r.raw
 }
-
-// The operation to apply to the attribute
-type AuthRuleConditionOperation string
-
-const (
-	AuthRuleConditionOperationIsOneOf                AuthRuleConditionOperation = "IS_ONE_OF"
-	AuthRuleConditionOperationIsNotOneOf             AuthRuleConditionOperation = "IS_NOT_ONE_OF"
-	AuthRuleConditionOperationMatches                AuthRuleConditionOperation = "MATCHES"
-	AuthRuleConditionOperationDoesNotMatch           AuthRuleConditionOperation = "DOES_NOT_MATCH"
-	AuthRuleConditionOperationIsEqualTo              AuthRuleConditionOperation = "IS_EQUAL_TO"
-	AuthRuleConditionOperationIsNotEqualTo           AuthRuleConditionOperation = "IS_NOT_EQUAL_TO"
-	AuthRuleConditionOperationIsGreaterThan          AuthRuleConditionOperation = "IS_GREATER_THAN"
-	AuthRuleConditionOperationIsGreaterThanOrEqualTo AuthRuleConditionOperation = "IS_GREATER_THAN_OR_EQUAL_TO"
-	AuthRuleConditionOperationIsLessThan             AuthRuleConditionOperation = "IS_LESS_THAN"
-	AuthRuleConditionOperationIsLessThanOrEqualTo    AuthRuleConditionOperation = "IS_LESS_THAN_OR_EQUAL_TO"
-)
-
-func (r AuthRuleConditionOperation) IsKnown() bool {
-	switch r {
-	case AuthRuleConditionOperationIsOneOf, AuthRuleConditionOperationIsNotOneOf, AuthRuleConditionOperationMatches, AuthRuleConditionOperationDoesNotMatch, AuthRuleConditionOperationIsEqualTo, AuthRuleConditionOperationIsNotEqualTo, AuthRuleConditionOperationIsGreaterThan, AuthRuleConditionOperationIsGreaterThanOrEqualTo, AuthRuleConditionOperationIsLessThan, AuthRuleConditionOperationIsLessThanOrEqualTo:
-		return true
-	}
-	return false
-}
-
-// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-//
-// Union satisfied by [shared.UnionString], [shared.UnionInt] or
-// [AuthRuleConditionValueListOfStrings].
-type AuthRuleConditionValueUnion interface {
-	ImplementsAuthRuleConditionValueUnion()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*AuthRuleConditionValueUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.String,
-			Type:       reflect.TypeOf(shared.UnionString("")),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionInt(0)),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AuthRuleConditionValueListOfStrings{}),
-		},
-	)
-}
-
-type AuthRuleConditionValueListOfStrings []string
-
-func (r AuthRuleConditionValueListOfStrings) ImplementsAuthRuleConditionValueUnion() {}
 
 type AuthRuleConditionParam struct {
 	// The attribute to target.
@@ -370,28 +315,16 @@ type AuthRuleConditionParam struct {
 	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
 	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
 	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
-	Attribute param.Field[ConditionalAttribute] `json:"attribute"`
+	Attribute param.Field[ConditionalAttribute] `json:"attribute,required"`
 	// The operation to apply to the attribute
-	Operation param.Field[AuthRuleConditionOperation] `json:"operation"`
+	Operation param.Field[ConditionalOperation] `json:"operation,required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value param.Field[AuthRuleConditionValueUnionParam] `json:"value"`
+	Value param.Field[ConditionalValueUnionParam] `json:"value,required"`
 }
 
 func (r AuthRuleConditionParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
-
-// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-//
-// Satisfied by [shared.UnionString], [shared.UnionInt],
-// [AuthRuleConditionValueListOfStringsParam].
-type AuthRuleConditionValueUnionParam interface {
-	ImplementsAuthRuleConditionValueUnionParam()
-}
-
-type AuthRuleConditionValueListOfStringsParam []string
-
-func (r AuthRuleConditionValueListOfStringsParam) ImplementsAuthRuleConditionValueUnionParam() {}
 
 type Conditional3DSActionParameters struct {
 	// The action to take if the conditions are met.
@@ -484,12 +417,12 @@ type Conditional3DsActionParametersCondition struct {
 	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
 	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
 	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
-	Attribute Conditional3DSActionParametersConditionsAttribute `json:"attribute"`
+	Attribute Conditional3DSActionParametersConditionsAttribute `json:"attribute,required"`
 	// The operation to apply to the attribute
-	Operation Conditional3DSActionParametersConditionsOperation `json:"operation"`
+	Operation ConditionalOperation `json:"operation,required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value Conditional3DSActionParametersConditionsValueUnion `json:"value"`
-	JSON  conditional3DsActionParametersConditionJSON        `json:"-"`
+	Value ConditionalValueUnion                       `json:"value,required"`
+	JSON  conditional3DsActionParametersConditionJSON `json:"-"`
 }
 
 // conditional3DsActionParametersConditionJSON contains the JSON metadata for the
@@ -556,60 +489,470 @@ func (r Conditional3DSActionParametersConditionsAttribute) IsKnown() bool {
 	return false
 }
 
-// The operation to apply to the attribute
-type Conditional3DSActionParametersConditionsOperation string
+type ConditionalACHActionParameters struct {
+	// The action to take if the conditions are met
+	Action     ConditionalACHActionParametersAction      `json:"action,required"`
+	Conditions []ConditionalACHActionParametersCondition `json:"conditions,required"`
+	JSON       conditionalACHActionParametersJSON        `json:"-"`
+}
+
+// conditionalACHActionParametersJSON contains the JSON metadata for the struct
+// [ConditionalACHActionParameters]
+type conditionalACHActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ConditionalACHActionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r conditionalACHActionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ConditionalACHActionParameters) implementsAuthRuleV2NewResponseCurrentVersionParameters() {}
+
+func (r ConditionalACHActionParameters) implementsAuthRuleV2NewResponseDraftVersionParameters() {}
+
+func (r ConditionalACHActionParameters) implementsAuthRuleV2GetResponseCurrentVersionParameters() {}
+
+func (r ConditionalACHActionParameters) implementsAuthRuleV2GetResponseDraftVersionParameters() {}
+
+func (r ConditionalACHActionParameters) implementsAuthRuleV2UpdateResponseCurrentVersionParameters() {
+}
+
+func (r ConditionalACHActionParameters) implementsAuthRuleV2UpdateResponseDraftVersionParameters() {}
+
+func (r ConditionalACHActionParameters) implementsAuthRuleV2ListResponseCurrentVersionParameters() {}
+
+func (r ConditionalACHActionParameters) implementsAuthRuleV2ListResponseDraftVersionParameters() {}
+
+func (r ConditionalACHActionParameters) implementsAuthRuleV2DraftResponseCurrentVersionParameters() {}
+
+func (r ConditionalACHActionParameters) implementsAuthRuleV2DraftResponseDraftVersionParameters() {}
+
+func (r ConditionalACHActionParameters) implementsAuthRuleV2PromoteResponseCurrentVersionParameters() {
+}
+
+func (r ConditionalACHActionParameters) implementsAuthRuleV2PromoteResponseDraftVersionParameters() {}
+
+// The action to take if the conditions are met
+type ConditionalACHActionParametersAction struct {
+	// Approve the ACH transaction
+	Type ConditionalACHActionParametersActionType `json:"type,required"`
+	// NACHA return code to use when returning the transaction. Note that the list of
+	// available return codes is subject to an allowlist configured at the program
+	// level
+	Code  ConditionalACHActionParametersActionCode `json:"code"`
+	JSON  conditionalACHActionParametersActionJSON `json:"-"`
+	union ConditionalACHActionParametersActionUnion
+}
+
+// conditionalACHActionParametersActionJSON contains the JSON metadata for the
+// struct [ConditionalACHActionParametersAction]
+type conditionalACHActionParametersActionJSON struct {
+	Type        apijson.Field
+	Code        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r conditionalACHActionParametersActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r *ConditionalACHActionParametersAction) UnmarshalJSON(data []byte) (err error) {
+	*r = ConditionalACHActionParametersAction{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a [ConditionalACHActionParametersActionUnion] interface which
+// you can cast to the specific types for more type safety.
+//
+// Possible runtime types of the union are
+// [ConditionalACHActionParametersActionApproveAction],
+// [ConditionalACHActionParametersActionReturnAction].
+func (r ConditionalACHActionParametersAction) AsUnion() ConditionalACHActionParametersActionUnion {
+	return r.union
+}
+
+// The action to take if the conditions are met
+//
+// Union satisfied by [ConditionalACHActionParametersActionApproveAction] or
+// [ConditionalACHActionParametersActionReturnAction].
+type ConditionalACHActionParametersActionUnion interface {
+	implementsConditionalACHActionParametersAction()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*ConditionalACHActionParametersActionUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHActionParametersActionApproveAction{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHActionParametersActionReturnAction{}),
+		},
+	)
+}
+
+type ConditionalACHActionParametersActionApproveAction struct {
+	// Approve the ACH transaction
+	Type ConditionalACHActionParametersActionApproveActionType `json:"type,required"`
+	JSON conditionalACHActionParametersActionApproveActionJSON `json:"-"`
+}
+
+// conditionalACHActionParametersActionApproveActionJSON contains the JSON metadata
+// for the struct [ConditionalACHActionParametersActionApproveAction]
+type conditionalACHActionParametersActionApproveActionJSON struct {
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ConditionalACHActionParametersActionApproveAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r conditionalACHActionParametersActionApproveActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ConditionalACHActionParametersActionApproveAction) implementsConditionalACHActionParametersAction() {
+}
+
+// Approve the ACH transaction
+type ConditionalACHActionParametersActionApproveActionType string
 
 const (
-	Conditional3DSActionParametersConditionsOperationIsOneOf                Conditional3DSActionParametersConditionsOperation = "IS_ONE_OF"
-	Conditional3DSActionParametersConditionsOperationIsNotOneOf             Conditional3DSActionParametersConditionsOperation = "IS_NOT_ONE_OF"
-	Conditional3DSActionParametersConditionsOperationMatches                Conditional3DSActionParametersConditionsOperation = "MATCHES"
-	Conditional3DSActionParametersConditionsOperationDoesNotMatch           Conditional3DSActionParametersConditionsOperation = "DOES_NOT_MATCH"
-	Conditional3DSActionParametersConditionsOperationIsEqualTo              Conditional3DSActionParametersConditionsOperation = "IS_EQUAL_TO"
-	Conditional3DSActionParametersConditionsOperationIsNotEqualTo           Conditional3DSActionParametersConditionsOperation = "IS_NOT_EQUAL_TO"
-	Conditional3DSActionParametersConditionsOperationIsGreaterThan          Conditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN"
-	Conditional3DSActionParametersConditionsOperationIsGreaterThanOrEqualTo Conditional3DSActionParametersConditionsOperation = "IS_GREATER_THAN_OR_EQUAL_TO"
-	Conditional3DSActionParametersConditionsOperationIsLessThan             Conditional3DSActionParametersConditionsOperation = "IS_LESS_THAN"
-	Conditional3DSActionParametersConditionsOperationIsLessThanOrEqualTo    Conditional3DSActionParametersConditionsOperation = "IS_LESS_THAN_OR_EQUAL_TO"
+	ConditionalACHActionParametersActionApproveActionTypeApprove ConditionalACHActionParametersActionApproveActionType = "APPROVE"
 )
 
-func (r Conditional3DSActionParametersConditionsOperation) IsKnown() bool {
+func (r ConditionalACHActionParametersActionApproveActionType) IsKnown() bool {
 	switch r {
-	case Conditional3DSActionParametersConditionsOperationIsOneOf, Conditional3DSActionParametersConditionsOperationIsNotOneOf, Conditional3DSActionParametersConditionsOperationMatches, Conditional3DSActionParametersConditionsOperationDoesNotMatch, Conditional3DSActionParametersConditionsOperationIsEqualTo, Conditional3DSActionParametersConditionsOperationIsNotEqualTo, Conditional3DSActionParametersConditionsOperationIsGreaterThan, Conditional3DSActionParametersConditionsOperationIsGreaterThanOrEqualTo, Conditional3DSActionParametersConditionsOperationIsLessThan, Conditional3DSActionParametersConditionsOperationIsLessThanOrEqualTo:
+	case ConditionalACHActionParametersActionApproveActionTypeApprove:
 		return true
 	}
 	return false
 }
 
-// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+type ConditionalACHActionParametersActionReturnAction struct {
+	// NACHA return code to use when returning the transaction. Note that the list of
+	// available return codes is subject to an allowlist configured at the program
+	// level
+	Code ConditionalACHActionParametersActionReturnActionCode `json:"code,required"`
+	// Return the ACH transaction
+	Type ConditionalACHActionParametersActionReturnActionType `json:"type,required"`
+	JSON conditionalACHActionParametersActionReturnActionJSON `json:"-"`
+}
+
+// conditionalACHActionParametersActionReturnActionJSON contains the JSON metadata
+// for the struct [ConditionalACHActionParametersActionReturnAction]
+type conditionalACHActionParametersActionReturnActionJSON struct {
+	Code        apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ConditionalACHActionParametersActionReturnAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r conditionalACHActionParametersActionReturnActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ConditionalACHActionParametersActionReturnAction) implementsConditionalACHActionParametersAction() {
+}
+
+// NACHA return code to use when returning the transaction. Note that the list of
+// available return codes is subject to an allowlist configured at the program
+// level
+type ConditionalACHActionParametersActionReturnActionCode string
+
+const (
+	ConditionalACHActionParametersActionReturnActionCodeR01 ConditionalACHActionParametersActionReturnActionCode = "R01"
+	ConditionalACHActionParametersActionReturnActionCodeR02 ConditionalACHActionParametersActionReturnActionCode = "R02"
+	ConditionalACHActionParametersActionReturnActionCodeR03 ConditionalACHActionParametersActionReturnActionCode = "R03"
+	ConditionalACHActionParametersActionReturnActionCodeR04 ConditionalACHActionParametersActionReturnActionCode = "R04"
+	ConditionalACHActionParametersActionReturnActionCodeR05 ConditionalACHActionParametersActionReturnActionCode = "R05"
+	ConditionalACHActionParametersActionReturnActionCodeR06 ConditionalACHActionParametersActionReturnActionCode = "R06"
+	ConditionalACHActionParametersActionReturnActionCodeR07 ConditionalACHActionParametersActionReturnActionCode = "R07"
+	ConditionalACHActionParametersActionReturnActionCodeR08 ConditionalACHActionParametersActionReturnActionCode = "R08"
+	ConditionalACHActionParametersActionReturnActionCodeR09 ConditionalACHActionParametersActionReturnActionCode = "R09"
+	ConditionalACHActionParametersActionReturnActionCodeR10 ConditionalACHActionParametersActionReturnActionCode = "R10"
+	ConditionalACHActionParametersActionReturnActionCodeR11 ConditionalACHActionParametersActionReturnActionCode = "R11"
+	ConditionalACHActionParametersActionReturnActionCodeR12 ConditionalACHActionParametersActionReturnActionCode = "R12"
+	ConditionalACHActionParametersActionReturnActionCodeR13 ConditionalACHActionParametersActionReturnActionCode = "R13"
+	ConditionalACHActionParametersActionReturnActionCodeR14 ConditionalACHActionParametersActionReturnActionCode = "R14"
+	ConditionalACHActionParametersActionReturnActionCodeR15 ConditionalACHActionParametersActionReturnActionCode = "R15"
+	ConditionalACHActionParametersActionReturnActionCodeR16 ConditionalACHActionParametersActionReturnActionCode = "R16"
+	ConditionalACHActionParametersActionReturnActionCodeR17 ConditionalACHActionParametersActionReturnActionCode = "R17"
+	ConditionalACHActionParametersActionReturnActionCodeR18 ConditionalACHActionParametersActionReturnActionCode = "R18"
+	ConditionalACHActionParametersActionReturnActionCodeR19 ConditionalACHActionParametersActionReturnActionCode = "R19"
+	ConditionalACHActionParametersActionReturnActionCodeR20 ConditionalACHActionParametersActionReturnActionCode = "R20"
+	ConditionalACHActionParametersActionReturnActionCodeR21 ConditionalACHActionParametersActionReturnActionCode = "R21"
+	ConditionalACHActionParametersActionReturnActionCodeR22 ConditionalACHActionParametersActionReturnActionCode = "R22"
+	ConditionalACHActionParametersActionReturnActionCodeR23 ConditionalACHActionParametersActionReturnActionCode = "R23"
+	ConditionalACHActionParametersActionReturnActionCodeR24 ConditionalACHActionParametersActionReturnActionCode = "R24"
+	ConditionalACHActionParametersActionReturnActionCodeR25 ConditionalACHActionParametersActionReturnActionCode = "R25"
+	ConditionalACHActionParametersActionReturnActionCodeR26 ConditionalACHActionParametersActionReturnActionCode = "R26"
+	ConditionalACHActionParametersActionReturnActionCodeR27 ConditionalACHActionParametersActionReturnActionCode = "R27"
+	ConditionalACHActionParametersActionReturnActionCodeR28 ConditionalACHActionParametersActionReturnActionCode = "R28"
+	ConditionalACHActionParametersActionReturnActionCodeR29 ConditionalACHActionParametersActionReturnActionCode = "R29"
+	ConditionalACHActionParametersActionReturnActionCodeR30 ConditionalACHActionParametersActionReturnActionCode = "R30"
+	ConditionalACHActionParametersActionReturnActionCodeR31 ConditionalACHActionParametersActionReturnActionCode = "R31"
+	ConditionalACHActionParametersActionReturnActionCodeR32 ConditionalACHActionParametersActionReturnActionCode = "R32"
+	ConditionalACHActionParametersActionReturnActionCodeR33 ConditionalACHActionParametersActionReturnActionCode = "R33"
+	ConditionalACHActionParametersActionReturnActionCodeR34 ConditionalACHActionParametersActionReturnActionCode = "R34"
+	ConditionalACHActionParametersActionReturnActionCodeR35 ConditionalACHActionParametersActionReturnActionCode = "R35"
+	ConditionalACHActionParametersActionReturnActionCodeR36 ConditionalACHActionParametersActionReturnActionCode = "R36"
+	ConditionalACHActionParametersActionReturnActionCodeR37 ConditionalACHActionParametersActionReturnActionCode = "R37"
+	ConditionalACHActionParametersActionReturnActionCodeR38 ConditionalACHActionParametersActionReturnActionCode = "R38"
+	ConditionalACHActionParametersActionReturnActionCodeR39 ConditionalACHActionParametersActionReturnActionCode = "R39"
+	ConditionalACHActionParametersActionReturnActionCodeR40 ConditionalACHActionParametersActionReturnActionCode = "R40"
+	ConditionalACHActionParametersActionReturnActionCodeR41 ConditionalACHActionParametersActionReturnActionCode = "R41"
+	ConditionalACHActionParametersActionReturnActionCodeR42 ConditionalACHActionParametersActionReturnActionCode = "R42"
+	ConditionalACHActionParametersActionReturnActionCodeR43 ConditionalACHActionParametersActionReturnActionCode = "R43"
+	ConditionalACHActionParametersActionReturnActionCodeR44 ConditionalACHActionParametersActionReturnActionCode = "R44"
+	ConditionalACHActionParametersActionReturnActionCodeR45 ConditionalACHActionParametersActionReturnActionCode = "R45"
+	ConditionalACHActionParametersActionReturnActionCodeR46 ConditionalACHActionParametersActionReturnActionCode = "R46"
+	ConditionalACHActionParametersActionReturnActionCodeR47 ConditionalACHActionParametersActionReturnActionCode = "R47"
+	ConditionalACHActionParametersActionReturnActionCodeR50 ConditionalACHActionParametersActionReturnActionCode = "R50"
+	ConditionalACHActionParametersActionReturnActionCodeR51 ConditionalACHActionParametersActionReturnActionCode = "R51"
+	ConditionalACHActionParametersActionReturnActionCodeR52 ConditionalACHActionParametersActionReturnActionCode = "R52"
+	ConditionalACHActionParametersActionReturnActionCodeR53 ConditionalACHActionParametersActionReturnActionCode = "R53"
+	ConditionalACHActionParametersActionReturnActionCodeR61 ConditionalACHActionParametersActionReturnActionCode = "R61"
+	ConditionalACHActionParametersActionReturnActionCodeR62 ConditionalACHActionParametersActionReturnActionCode = "R62"
+	ConditionalACHActionParametersActionReturnActionCodeR67 ConditionalACHActionParametersActionReturnActionCode = "R67"
+	ConditionalACHActionParametersActionReturnActionCodeR68 ConditionalACHActionParametersActionReturnActionCode = "R68"
+	ConditionalACHActionParametersActionReturnActionCodeR69 ConditionalACHActionParametersActionReturnActionCode = "R69"
+	ConditionalACHActionParametersActionReturnActionCodeR70 ConditionalACHActionParametersActionReturnActionCode = "R70"
+	ConditionalACHActionParametersActionReturnActionCodeR71 ConditionalACHActionParametersActionReturnActionCode = "R71"
+	ConditionalACHActionParametersActionReturnActionCodeR72 ConditionalACHActionParametersActionReturnActionCode = "R72"
+	ConditionalACHActionParametersActionReturnActionCodeR73 ConditionalACHActionParametersActionReturnActionCode = "R73"
+	ConditionalACHActionParametersActionReturnActionCodeR74 ConditionalACHActionParametersActionReturnActionCode = "R74"
+	ConditionalACHActionParametersActionReturnActionCodeR75 ConditionalACHActionParametersActionReturnActionCode = "R75"
+	ConditionalACHActionParametersActionReturnActionCodeR76 ConditionalACHActionParametersActionReturnActionCode = "R76"
+	ConditionalACHActionParametersActionReturnActionCodeR77 ConditionalACHActionParametersActionReturnActionCode = "R77"
+	ConditionalACHActionParametersActionReturnActionCodeR80 ConditionalACHActionParametersActionReturnActionCode = "R80"
+	ConditionalACHActionParametersActionReturnActionCodeR81 ConditionalACHActionParametersActionReturnActionCode = "R81"
+	ConditionalACHActionParametersActionReturnActionCodeR82 ConditionalACHActionParametersActionReturnActionCode = "R82"
+	ConditionalACHActionParametersActionReturnActionCodeR83 ConditionalACHActionParametersActionReturnActionCode = "R83"
+	ConditionalACHActionParametersActionReturnActionCodeR84 ConditionalACHActionParametersActionReturnActionCode = "R84"
+	ConditionalACHActionParametersActionReturnActionCodeR85 ConditionalACHActionParametersActionReturnActionCode = "R85"
+)
+
+func (r ConditionalACHActionParametersActionReturnActionCode) IsKnown() bool {
+	switch r {
+	case ConditionalACHActionParametersActionReturnActionCodeR01, ConditionalACHActionParametersActionReturnActionCodeR02, ConditionalACHActionParametersActionReturnActionCodeR03, ConditionalACHActionParametersActionReturnActionCodeR04, ConditionalACHActionParametersActionReturnActionCodeR05, ConditionalACHActionParametersActionReturnActionCodeR06, ConditionalACHActionParametersActionReturnActionCodeR07, ConditionalACHActionParametersActionReturnActionCodeR08, ConditionalACHActionParametersActionReturnActionCodeR09, ConditionalACHActionParametersActionReturnActionCodeR10, ConditionalACHActionParametersActionReturnActionCodeR11, ConditionalACHActionParametersActionReturnActionCodeR12, ConditionalACHActionParametersActionReturnActionCodeR13, ConditionalACHActionParametersActionReturnActionCodeR14, ConditionalACHActionParametersActionReturnActionCodeR15, ConditionalACHActionParametersActionReturnActionCodeR16, ConditionalACHActionParametersActionReturnActionCodeR17, ConditionalACHActionParametersActionReturnActionCodeR18, ConditionalACHActionParametersActionReturnActionCodeR19, ConditionalACHActionParametersActionReturnActionCodeR20, ConditionalACHActionParametersActionReturnActionCodeR21, ConditionalACHActionParametersActionReturnActionCodeR22, ConditionalACHActionParametersActionReturnActionCodeR23, ConditionalACHActionParametersActionReturnActionCodeR24, ConditionalACHActionParametersActionReturnActionCodeR25, ConditionalACHActionParametersActionReturnActionCodeR26, ConditionalACHActionParametersActionReturnActionCodeR27, ConditionalACHActionParametersActionReturnActionCodeR28, ConditionalACHActionParametersActionReturnActionCodeR29, ConditionalACHActionParametersActionReturnActionCodeR30, ConditionalACHActionParametersActionReturnActionCodeR31, ConditionalACHActionParametersActionReturnActionCodeR32, ConditionalACHActionParametersActionReturnActionCodeR33, ConditionalACHActionParametersActionReturnActionCodeR34, ConditionalACHActionParametersActionReturnActionCodeR35, ConditionalACHActionParametersActionReturnActionCodeR36, ConditionalACHActionParametersActionReturnActionCodeR37, ConditionalACHActionParametersActionReturnActionCodeR38, ConditionalACHActionParametersActionReturnActionCodeR39, ConditionalACHActionParametersActionReturnActionCodeR40, ConditionalACHActionParametersActionReturnActionCodeR41, ConditionalACHActionParametersActionReturnActionCodeR42, ConditionalACHActionParametersActionReturnActionCodeR43, ConditionalACHActionParametersActionReturnActionCodeR44, ConditionalACHActionParametersActionReturnActionCodeR45, ConditionalACHActionParametersActionReturnActionCodeR46, ConditionalACHActionParametersActionReturnActionCodeR47, ConditionalACHActionParametersActionReturnActionCodeR50, ConditionalACHActionParametersActionReturnActionCodeR51, ConditionalACHActionParametersActionReturnActionCodeR52, ConditionalACHActionParametersActionReturnActionCodeR53, ConditionalACHActionParametersActionReturnActionCodeR61, ConditionalACHActionParametersActionReturnActionCodeR62, ConditionalACHActionParametersActionReturnActionCodeR67, ConditionalACHActionParametersActionReturnActionCodeR68, ConditionalACHActionParametersActionReturnActionCodeR69, ConditionalACHActionParametersActionReturnActionCodeR70, ConditionalACHActionParametersActionReturnActionCodeR71, ConditionalACHActionParametersActionReturnActionCodeR72, ConditionalACHActionParametersActionReturnActionCodeR73, ConditionalACHActionParametersActionReturnActionCodeR74, ConditionalACHActionParametersActionReturnActionCodeR75, ConditionalACHActionParametersActionReturnActionCodeR76, ConditionalACHActionParametersActionReturnActionCodeR77, ConditionalACHActionParametersActionReturnActionCodeR80, ConditionalACHActionParametersActionReturnActionCodeR81, ConditionalACHActionParametersActionReturnActionCodeR82, ConditionalACHActionParametersActionReturnActionCodeR83, ConditionalACHActionParametersActionReturnActionCodeR84, ConditionalACHActionParametersActionReturnActionCodeR85:
+		return true
+	}
+	return false
+}
+
+// Return the ACH transaction
+type ConditionalACHActionParametersActionReturnActionType string
+
+const (
+	ConditionalACHActionParametersActionReturnActionTypeReturn ConditionalACHActionParametersActionReturnActionType = "RETURN"
+)
+
+func (r ConditionalACHActionParametersActionReturnActionType) IsKnown() bool {
+	switch r {
+	case ConditionalACHActionParametersActionReturnActionTypeReturn:
+		return true
+	}
+	return false
+}
+
+// Approve the ACH transaction
+type ConditionalACHActionParametersActionType string
+
+const (
+	ConditionalACHActionParametersActionTypeApprove ConditionalACHActionParametersActionType = "APPROVE"
+	ConditionalACHActionParametersActionTypeReturn  ConditionalACHActionParametersActionType = "RETURN"
+)
+
+func (r ConditionalACHActionParametersActionType) IsKnown() bool {
+	switch r {
+	case ConditionalACHActionParametersActionTypeApprove, ConditionalACHActionParametersActionTypeReturn:
+		return true
+	}
+	return false
+}
+
+// NACHA return code to use when returning the transaction. Note that the list of
+// available return codes is subject to an allowlist configured at the program
+// level
+type ConditionalACHActionParametersActionCode string
+
+const (
+	ConditionalACHActionParametersActionCodeR01 ConditionalACHActionParametersActionCode = "R01"
+	ConditionalACHActionParametersActionCodeR02 ConditionalACHActionParametersActionCode = "R02"
+	ConditionalACHActionParametersActionCodeR03 ConditionalACHActionParametersActionCode = "R03"
+	ConditionalACHActionParametersActionCodeR04 ConditionalACHActionParametersActionCode = "R04"
+	ConditionalACHActionParametersActionCodeR05 ConditionalACHActionParametersActionCode = "R05"
+	ConditionalACHActionParametersActionCodeR06 ConditionalACHActionParametersActionCode = "R06"
+	ConditionalACHActionParametersActionCodeR07 ConditionalACHActionParametersActionCode = "R07"
+	ConditionalACHActionParametersActionCodeR08 ConditionalACHActionParametersActionCode = "R08"
+	ConditionalACHActionParametersActionCodeR09 ConditionalACHActionParametersActionCode = "R09"
+	ConditionalACHActionParametersActionCodeR10 ConditionalACHActionParametersActionCode = "R10"
+	ConditionalACHActionParametersActionCodeR11 ConditionalACHActionParametersActionCode = "R11"
+	ConditionalACHActionParametersActionCodeR12 ConditionalACHActionParametersActionCode = "R12"
+	ConditionalACHActionParametersActionCodeR13 ConditionalACHActionParametersActionCode = "R13"
+	ConditionalACHActionParametersActionCodeR14 ConditionalACHActionParametersActionCode = "R14"
+	ConditionalACHActionParametersActionCodeR15 ConditionalACHActionParametersActionCode = "R15"
+	ConditionalACHActionParametersActionCodeR16 ConditionalACHActionParametersActionCode = "R16"
+	ConditionalACHActionParametersActionCodeR17 ConditionalACHActionParametersActionCode = "R17"
+	ConditionalACHActionParametersActionCodeR18 ConditionalACHActionParametersActionCode = "R18"
+	ConditionalACHActionParametersActionCodeR19 ConditionalACHActionParametersActionCode = "R19"
+	ConditionalACHActionParametersActionCodeR20 ConditionalACHActionParametersActionCode = "R20"
+	ConditionalACHActionParametersActionCodeR21 ConditionalACHActionParametersActionCode = "R21"
+	ConditionalACHActionParametersActionCodeR22 ConditionalACHActionParametersActionCode = "R22"
+	ConditionalACHActionParametersActionCodeR23 ConditionalACHActionParametersActionCode = "R23"
+	ConditionalACHActionParametersActionCodeR24 ConditionalACHActionParametersActionCode = "R24"
+	ConditionalACHActionParametersActionCodeR25 ConditionalACHActionParametersActionCode = "R25"
+	ConditionalACHActionParametersActionCodeR26 ConditionalACHActionParametersActionCode = "R26"
+	ConditionalACHActionParametersActionCodeR27 ConditionalACHActionParametersActionCode = "R27"
+	ConditionalACHActionParametersActionCodeR28 ConditionalACHActionParametersActionCode = "R28"
+	ConditionalACHActionParametersActionCodeR29 ConditionalACHActionParametersActionCode = "R29"
+	ConditionalACHActionParametersActionCodeR30 ConditionalACHActionParametersActionCode = "R30"
+	ConditionalACHActionParametersActionCodeR31 ConditionalACHActionParametersActionCode = "R31"
+	ConditionalACHActionParametersActionCodeR32 ConditionalACHActionParametersActionCode = "R32"
+	ConditionalACHActionParametersActionCodeR33 ConditionalACHActionParametersActionCode = "R33"
+	ConditionalACHActionParametersActionCodeR34 ConditionalACHActionParametersActionCode = "R34"
+	ConditionalACHActionParametersActionCodeR35 ConditionalACHActionParametersActionCode = "R35"
+	ConditionalACHActionParametersActionCodeR36 ConditionalACHActionParametersActionCode = "R36"
+	ConditionalACHActionParametersActionCodeR37 ConditionalACHActionParametersActionCode = "R37"
+	ConditionalACHActionParametersActionCodeR38 ConditionalACHActionParametersActionCode = "R38"
+	ConditionalACHActionParametersActionCodeR39 ConditionalACHActionParametersActionCode = "R39"
+	ConditionalACHActionParametersActionCodeR40 ConditionalACHActionParametersActionCode = "R40"
+	ConditionalACHActionParametersActionCodeR41 ConditionalACHActionParametersActionCode = "R41"
+	ConditionalACHActionParametersActionCodeR42 ConditionalACHActionParametersActionCode = "R42"
+	ConditionalACHActionParametersActionCodeR43 ConditionalACHActionParametersActionCode = "R43"
+	ConditionalACHActionParametersActionCodeR44 ConditionalACHActionParametersActionCode = "R44"
+	ConditionalACHActionParametersActionCodeR45 ConditionalACHActionParametersActionCode = "R45"
+	ConditionalACHActionParametersActionCodeR46 ConditionalACHActionParametersActionCode = "R46"
+	ConditionalACHActionParametersActionCodeR47 ConditionalACHActionParametersActionCode = "R47"
+	ConditionalACHActionParametersActionCodeR50 ConditionalACHActionParametersActionCode = "R50"
+	ConditionalACHActionParametersActionCodeR51 ConditionalACHActionParametersActionCode = "R51"
+	ConditionalACHActionParametersActionCodeR52 ConditionalACHActionParametersActionCode = "R52"
+	ConditionalACHActionParametersActionCodeR53 ConditionalACHActionParametersActionCode = "R53"
+	ConditionalACHActionParametersActionCodeR61 ConditionalACHActionParametersActionCode = "R61"
+	ConditionalACHActionParametersActionCodeR62 ConditionalACHActionParametersActionCode = "R62"
+	ConditionalACHActionParametersActionCodeR67 ConditionalACHActionParametersActionCode = "R67"
+	ConditionalACHActionParametersActionCodeR68 ConditionalACHActionParametersActionCode = "R68"
+	ConditionalACHActionParametersActionCodeR69 ConditionalACHActionParametersActionCode = "R69"
+	ConditionalACHActionParametersActionCodeR70 ConditionalACHActionParametersActionCode = "R70"
+	ConditionalACHActionParametersActionCodeR71 ConditionalACHActionParametersActionCode = "R71"
+	ConditionalACHActionParametersActionCodeR72 ConditionalACHActionParametersActionCode = "R72"
+	ConditionalACHActionParametersActionCodeR73 ConditionalACHActionParametersActionCode = "R73"
+	ConditionalACHActionParametersActionCodeR74 ConditionalACHActionParametersActionCode = "R74"
+	ConditionalACHActionParametersActionCodeR75 ConditionalACHActionParametersActionCode = "R75"
+	ConditionalACHActionParametersActionCodeR76 ConditionalACHActionParametersActionCode = "R76"
+	ConditionalACHActionParametersActionCodeR77 ConditionalACHActionParametersActionCode = "R77"
+	ConditionalACHActionParametersActionCodeR80 ConditionalACHActionParametersActionCode = "R80"
+	ConditionalACHActionParametersActionCodeR81 ConditionalACHActionParametersActionCode = "R81"
+	ConditionalACHActionParametersActionCodeR82 ConditionalACHActionParametersActionCode = "R82"
+	ConditionalACHActionParametersActionCodeR83 ConditionalACHActionParametersActionCode = "R83"
+	ConditionalACHActionParametersActionCodeR84 ConditionalACHActionParametersActionCode = "R84"
+	ConditionalACHActionParametersActionCodeR85 ConditionalACHActionParametersActionCode = "R85"
+)
+
+func (r ConditionalACHActionParametersActionCode) IsKnown() bool {
+	switch r {
+	case ConditionalACHActionParametersActionCodeR01, ConditionalACHActionParametersActionCodeR02, ConditionalACHActionParametersActionCodeR03, ConditionalACHActionParametersActionCodeR04, ConditionalACHActionParametersActionCodeR05, ConditionalACHActionParametersActionCodeR06, ConditionalACHActionParametersActionCodeR07, ConditionalACHActionParametersActionCodeR08, ConditionalACHActionParametersActionCodeR09, ConditionalACHActionParametersActionCodeR10, ConditionalACHActionParametersActionCodeR11, ConditionalACHActionParametersActionCodeR12, ConditionalACHActionParametersActionCodeR13, ConditionalACHActionParametersActionCodeR14, ConditionalACHActionParametersActionCodeR15, ConditionalACHActionParametersActionCodeR16, ConditionalACHActionParametersActionCodeR17, ConditionalACHActionParametersActionCodeR18, ConditionalACHActionParametersActionCodeR19, ConditionalACHActionParametersActionCodeR20, ConditionalACHActionParametersActionCodeR21, ConditionalACHActionParametersActionCodeR22, ConditionalACHActionParametersActionCodeR23, ConditionalACHActionParametersActionCodeR24, ConditionalACHActionParametersActionCodeR25, ConditionalACHActionParametersActionCodeR26, ConditionalACHActionParametersActionCodeR27, ConditionalACHActionParametersActionCodeR28, ConditionalACHActionParametersActionCodeR29, ConditionalACHActionParametersActionCodeR30, ConditionalACHActionParametersActionCodeR31, ConditionalACHActionParametersActionCodeR32, ConditionalACHActionParametersActionCodeR33, ConditionalACHActionParametersActionCodeR34, ConditionalACHActionParametersActionCodeR35, ConditionalACHActionParametersActionCodeR36, ConditionalACHActionParametersActionCodeR37, ConditionalACHActionParametersActionCodeR38, ConditionalACHActionParametersActionCodeR39, ConditionalACHActionParametersActionCodeR40, ConditionalACHActionParametersActionCodeR41, ConditionalACHActionParametersActionCodeR42, ConditionalACHActionParametersActionCodeR43, ConditionalACHActionParametersActionCodeR44, ConditionalACHActionParametersActionCodeR45, ConditionalACHActionParametersActionCodeR46, ConditionalACHActionParametersActionCodeR47, ConditionalACHActionParametersActionCodeR50, ConditionalACHActionParametersActionCodeR51, ConditionalACHActionParametersActionCodeR52, ConditionalACHActionParametersActionCodeR53, ConditionalACHActionParametersActionCodeR61, ConditionalACHActionParametersActionCodeR62, ConditionalACHActionParametersActionCodeR67, ConditionalACHActionParametersActionCodeR68, ConditionalACHActionParametersActionCodeR69, ConditionalACHActionParametersActionCodeR70, ConditionalACHActionParametersActionCodeR71, ConditionalACHActionParametersActionCodeR72, ConditionalACHActionParametersActionCodeR73, ConditionalACHActionParametersActionCodeR74, ConditionalACHActionParametersActionCodeR75, ConditionalACHActionParametersActionCodeR76, ConditionalACHActionParametersActionCodeR77, ConditionalACHActionParametersActionCodeR80, ConditionalACHActionParametersActionCodeR81, ConditionalACHActionParametersActionCodeR82, ConditionalACHActionParametersActionCodeR83, ConditionalACHActionParametersActionCodeR84, ConditionalACHActionParametersActionCodeR85:
+		return true
+	}
+	return false
+}
+
+type ConditionalACHActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `COMPANY_NAME`: The name of the company initiating the ACH transaction.
+	//   - `COMPANY_ID`: The company ID (also known as Standard Entry Class (SEC) Company
+	//     ID) of the entity initiating the ACH transaction.
+	//   - `TIMESTAMP`: The timestamp of the ACH transaction in ISO 8601 format.
+	//   - `TRANSACTION_AMOUNT`: The amount of the ACH transaction in minor units
+	//     (cents).
+	//   - `SEC_CODE`: Standard Entry Class code indicating the type of ACH transaction.
+	//     Valid values include PPD (Prearranged Payment and Deposit Entry), CCD
+	//     (Corporate Credit or Debit Entry), WEB (Internet-Initiated/Mobile Entry), TEL
+	//     (Telephone-Initiated Entry), and others.
+	//   - `MEMO`: Optional memo or description field included with the ACH transaction.
+	Attribute ConditionalACHActionParametersConditionsAttribute `json:"attribute,required"`
+	// The operation to apply to the attribute
+	Operation ConditionalOperation `json:"operation,required"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value ConditionalValueUnion                       `json:"value,required"`
+	JSON  conditionalACHActionParametersConditionJSON `json:"-"`
+}
+
+// conditionalACHActionParametersConditionJSON contains the JSON metadata for the
+// struct [ConditionalACHActionParametersCondition]
+type conditionalACHActionParametersConditionJSON struct {
+	Attribute   apijson.Field
+	Operation   apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ConditionalACHActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r conditionalACHActionParametersConditionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The attribute to target.
 //
-// Union satisfied by [shared.UnionString], [shared.UnionInt] or
-// [Conditional3DSActionParametersConditionsValueListOfStrings].
-type Conditional3DSActionParametersConditionsValueUnion interface {
-	ImplementsConditional3DsActionParametersConditionsValueUnion()
-}
+// The following attributes may be targeted:
+//
+//   - `COMPANY_NAME`: The name of the company initiating the ACH transaction.
+//   - `COMPANY_ID`: The company ID (also known as Standard Entry Class (SEC) Company
+//     ID) of the entity initiating the ACH transaction.
+//   - `TIMESTAMP`: The timestamp of the ACH transaction in ISO 8601 format.
+//   - `TRANSACTION_AMOUNT`: The amount of the ACH transaction in minor units
+//     (cents).
+//   - `SEC_CODE`: Standard Entry Class code indicating the type of ACH transaction.
+//     Valid values include PPD (Prearranged Payment and Deposit Entry), CCD
+//     (Corporate Credit or Debit Entry), WEB (Internet-Initiated/Mobile Entry), TEL
+//     (Telephone-Initiated Entry), and others.
+//   - `MEMO`: Optional memo or description field included with the ACH transaction.
+type ConditionalACHActionParametersConditionsAttribute string
 
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*Conditional3DSActionParametersConditionsValueUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.String,
-			Type:       reflect.TypeOf(shared.UnionString("")),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionInt(0)),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(Conditional3DSActionParametersConditionsValueListOfStrings{}),
-		},
-	)
-}
+const (
+	ConditionalACHActionParametersConditionsAttributeCompanyName       ConditionalACHActionParametersConditionsAttribute = "COMPANY_NAME"
+	ConditionalACHActionParametersConditionsAttributeCompanyID         ConditionalACHActionParametersConditionsAttribute = "COMPANY_ID"
+	ConditionalACHActionParametersConditionsAttributeTimestamp         ConditionalACHActionParametersConditionsAttribute = "TIMESTAMP"
+	ConditionalACHActionParametersConditionsAttributeTransactionAmount ConditionalACHActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	ConditionalACHActionParametersConditionsAttributeSecCode           ConditionalACHActionParametersConditionsAttribute = "SEC_CODE"
+	ConditionalACHActionParametersConditionsAttributeMemo              ConditionalACHActionParametersConditionsAttribute = "MEMO"
+)
 
-type Conditional3DSActionParametersConditionsValueListOfStrings []string
-
-func (r Conditional3DSActionParametersConditionsValueListOfStrings) ImplementsConditional3DsActionParametersConditionsValueUnion() {
+func (r ConditionalACHActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case ConditionalACHActionParametersConditionsAttributeCompanyName, ConditionalACHActionParametersConditionsAttributeCompanyID, ConditionalACHActionParametersConditionsAttributeTimestamp, ConditionalACHActionParametersConditionsAttributeTransactionAmount, ConditionalACHActionParametersConditionsAttributeSecCode, ConditionalACHActionParametersConditionsAttributeMemo:
+		return true
+	}
+	return false
 }
 
 // The attribute to target.
@@ -823,12 +1166,12 @@ type ConditionalAuthorizationActionParametersCondition struct {
 	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
 	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
 	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
-	Attribute ConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute"`
+	Attribute ConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute,required"`
 	// The operation to apply to the attribute
-	Operation ConditionalAuthorizationActionParametersConditionsOperation `json:"operation"`
+	Operation ConditionalOperation `json:"operation,required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value ConditionalAuthorizationActionParametersConditionsValueUnion `json:"value"`
-	JSON  conditionalAuthorizationActionParametersConditionJSON        `json:"-"`
+	Value ConditionalValueUnion                                 `json:"value,required"`
+	JSON  conditionalAuthorizationActionParametersConditionJSON `json:"-"`
 }
 
 // conditionalAuthorizationActionParametersConditionJSON contains the JSON metadata
@@ -935,62 +1278,6 @@ func (r ConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() b
 	return false
 }
 
-// The operation to apply to the attribute
-type ConditionalAuthorizationActionParametersConditionsOperation string
-
-const (
-	ConditionalAuthorizationActionParametersConditionsOperationIsOneOf                ConditionalAuthorizationActionParametersConditionsOperation = "IS_ONE_OF"
-	ConditionalAuthorizationActionParametersConditionsOperationIsNotOneOf             ConditionalAuthorizationActionParametersConditionsOperation = "IS_NOT_ONE_OF"
-	ConditionalAuthorizationActionParametersConditionsOperationMatches                ConditionalAuthorizationActionParametersConditionsOperation = "MATCHES"
-	ConditionalAuthorizationActionParametersConditionsOperationDoesNotMatch           ConditionalAuthorizationActionParametersConditionsOperation = "DOES_NOT_MATCH"
-	ConditionalAuthorizationActionParametersConditionsOperationIsEqualTo              ConditionalAuthorizationActionParametersConditionsOperation = "IS_EQUAL_TO"
-	ConditionalAuthorizationActionParametersConditionsOperationIsNotEqualTo           ConditionalAuthorizationActionParametersConditionsOperation = "IS_NOT_EQUAL_TO"
-	ConditionalAuthorizationActionParametersConditionsOperationIsGreaterThan          ConditionalAuthorizationActionParametersConditionsOperation = "IS_GREATER_THAN"
-	ConditionalAuthorizationActionParametersConditionsOperationIsGreaterThanOrEqualTo ConditionalAuthorizationActionParametersConditionsOperation = "IS_GREATER_THAN_OR_EQUAL_TO"
-	ConditionalAuthorizationActionParametersConditionsOperationIsLessThan             ConditionalAuthorizationActionParametersConditionsOperation = "IS_LESS_THAN"
-	ConditionalAuthorizationActionParametersConditionsOperationIsLessThanOrEqualTo    ConditionalAuthorizationActionParametersConditionsOperation = "IS_LESS_THAN_OR_EQUAL_TO"
-)
-
-func (r ConditionalAuthorizationActionParametersConditionsOperation) IsKnown() bool {
-	switch r {
-	case ConditionalAuthorizationActionParametersConditionsOperationIsOneOf, ConditionalAuthorizationActionParametersConditionsOperationIsNotOneOf, ConditionalAuthorizationActionParametersConditionsOperationMatches, ConditionalAuthorizationActionParametersConditionsOperationDoesNotMatch, ConditionalAuthorizationActionParametersConditionsOperationIsEqualTo, ConditionalAuthorizationActionParametersConditionsOperationIsNotEqualTo, ConditionalAuthorizationActionParametersConditionsOperationIsGreaterThan, ConditionalAuthorizationActionParametersConditionsOperationIsGreaterThanOrEqualTo, ConditionalAuthorizationActionParametersConditionsOperationIsLessThan, ConditionalAuthorizationActionParametersConditionsOperationIsLessThanOrEqualTo:
-		return true
-	}
-	return false
-}
-
-// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-//
-// Union satisfied by [shared.UnionString], [shared.UnionInt] or
-// [ConditionalAuthorizationActionParametersConditionsValueListOfStrings].
-type ConditionalAuthorizationActionParametersConditionsValueUnion interface {
-	ImplementsConditionalAuthorizationActionParametersConditionsValueUnion()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*ConditionalAuthorizationActionParametersConditionsValueUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.String,
-			Type:       reflect.TypeOf(shared.UnionString("")),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.Number,
-			Type:       reflect.TypeOf(shared.UnionInt(0)),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalAuthorizationActionParametersConditionsValueListOfStrings{}),
-		},
-	)
-}
-
-type ConditionalAuthorizationActionParametersConditionsValueListOfStrings []string
-
-func (r ConditionalAuthorizationActionParametersConditionsValueListOfStrings) ImplementsConditionalAuthorizationActionParametersConditionsValueUnion() {
-}
-
 type ConditionalBlockParameters struct {
 	Conditions []AuthRuleCondition            `json:"conditions,required"`
 	JSON       conditionalBlockParametersJSON `json:"-"`
@@ -1035,6 +1322,497 @@ func (r ConditionalBlockParameters) implementsAuthRuleV2DraftResponseDraftVersio
 func (r ConditionalBlockParameters) implementsAuthRuleV2PromoteResponseCurrentVersionParameters() {}
 
 func (r ConditionalBlockParameters) implementsAuthRuleV2PromoteResponseDraftVersionParameters() {}
+
+// The operation to apply to the attribute
+type ConditionalOperation string
+
+const (
+	ConditionalOperationIsOneOf                ConditionalOperation = "IS_ONE_OF"
+	ConditionalOperationIsNotOneOf             ConditionalOperation = "IS_NOT_ONE_OF"
+	ConditionalOperationMatches                ConditionalOperation = "MATCHES"
+	ConditionalOperationDoesNotMatch           ConditionalOperation = "DOES_NOT_MATCH"
+	ConditionalOperationIsEqualTo              ConditionalOperation = "IS_EQUAL_TO"
+	ConditionalOperationIsNotEqualTo           ConditionalOperation = "IS_NOT_EQUAL_TO"
+	ConditionalOperationIsGreaterThan          ConditionalOperation = "IS_GREATER_THAN"
+	ConditionalOperationIsGreaterThanOrEqualTo ConditionalOperation = "IS_GREATER_THAN_OR_EQUAL_TO"
+	ConditionalOperationIsLessThan             ConditionalOperation = "IS_LESS_THAN"
+	ConditionalOperationIsLessThanOrEqualTo    ConditionalOperation = "IS_LESS_THAN_OR_EQUAL_TO"
+)
+
+func (r ConditionalOperation) IsKnown() bool {
+	switch r {
+	case ConditionalOperationIsOneOf, ConditionalOperationIsNotOneOf, ConditionalOperationMatches, ConditionalOperationDoesNotMatch, ConditionalOperationIsEqualTo, ConditionalOperationIsNotEqualTo, ConditionalOperationIsGreaterThan, ConditionalOperationIsGreaterThanOrEqualTo, ConditionalOperationIsLessThan, ConditionalOperationIsLessThanOrEqualTo:
+		return true
+	}
+	return false
+}
+
+type ConditionalTokenizationActionParameters struct {
+	// The action to take if the conditions are met
+	Action     ConditionalTokenizationActionParametersAction      `json:"action,required"`
+	Conditions []ConditionalTokenizationActionParametersCondition `json:"conditions,required"`
+	JSON       conditionalTokenizationActionParametersJSON        `json:"-"`
+}
+
+// conditionalTokenizationActionParametersJSON contains the JSON metadata for the
+// struct [ConditionalTokenizationActionParameters]
+type conditionalTokenizationActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ConditionalTokenizationActionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r conditionalTokenizationActionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2NewResponseCurrentVersionParameters() {
+}
+
+func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2NewResponseDraftVersionParameters() {
+}
+
+func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2GetResponseCurrentVersionParameters() {
+}
+
+func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2GetResponseDraftVersionParameters() {
+}
+
+func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2UpdateResponseCurrentVersionParameters() {
+}
+
+func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2UpdateResponseDraftVersionParameters() {
+}
+
+func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2ListResponseCurrentVersionParameters() {
+}
+
+func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2ListResponseDraftVersionParameters() {
+}
+
+func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2DraftResponseCurrentVersionParameters() {
+}
+
+func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2DraftResponseDraftVersionParameters() {
+}
+
+func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2PromoteResponseCurrentVersionParameters() {
+}
+
+func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2PromoteResponseDraftVersionParameters() {
+}
+
+// The action to take if the conditions are met
+type ConditionalTokenizationActionParametersAction struct {
+	// Decline the tokenization request
+	Type ConditionalTokenizationActionParametersActionType `json:"type,required"`
+	// Reason code for declining the tokenization request
+	Reason ConditionalTokenizationActionParametersActionReason `json:"reason"`
+	JSON   conditionalTokenizationActionParametersActionJSON   `json:"-"`
+	union  ConditionalTokenizationActionParametersActionUnion
+}
+
+// conditionalTokenizationActionParametersActionJSON contains the JSON metadata for
+// the struct [ConditionalTokenizationActionParametersAction]
+type conditionalTokenizationActionParametersActionJSON struct {
+	Type        apijson.Field
+	Reason      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r conditionalTokenizationActionParametersActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r *ConditionalTokenizationActionParametersAction) UnmarshalJSON(data []byte) (err error) {
+	*r = ConditionalTokenizationActionParametersAction{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a [ConditionalTokenizationActionParametersActionUnion] interface
+// which you can cast to the specific types for more type safety.
+//
+// Possible runtime types of the union are
+// [ConditionalTokenizationActionParametersActionDeclineAction],
+// [ConditionalTokenizationActionParametersActionRequireTfaAction].
+func (r ConditionalTokenizationActionParametersAction) AsUnion() ConditionalTokenizationActionParametersActionUnion {
+	return r.union
+}
+
+// The action to take if the conditions are met
+//
+// Union satisfied by [ConditionalTokenizationActionParametersActionDeclineAction]
+// or [ConditionalTokenizationActionParametersActionRequireTfaAction].
+type ConditionalTokenizationActionParametersActionUnion interface {
+	implementsConditionalTokenizationActionParametersAction()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*ConditionalTokenizationActionParametersActionUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalTokenizationActionParametersActionDeclineAction{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalTokenizationActionParametersActionRequireTfaAction{}),
+		},
+	)
+}
+
+type ConditionalTokenizationActionParametersActionDeclineAction struct {
+	// Decline the tokenization request
+	Type ConditionalTokenizationActionParametersActionDeclineActionType `json:"type,required"`
+	// Reason code for declining the tokenization request
+	Reason ConditionalTokenizationActionParametersActionDeclineActionReason `json:"reason"`
+	JSON   conditionalTokenizationActionParametersActionDeclineActionJSON   `json:"-"`
+}
+
+// conditionalTokenizationActionParametersActionDeclineActionJSON contains the JSON
+// metadata for the struct
+// [ConditionalTokenizationActionParametersActionDeclineAction]
+type conditionalTokenizationActionParametersActionDeclineActionJSON struct {
+	Type        apijson.Field
+	Reason      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ConditionalTokenizationActionParametersActionDeclineAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r conditionalTokenizationActionParametersActionDeclineActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ConditionalTokenizationActionParametersActionDeclineAction) implementsConditionalTokenizationActionParametersAction() {
+}
+
+// Decline the tokenization request
+type ConditionalTokenizationActionParametersActionDeclineActionType string
+
+const (
+	ConditionalTokenizationActionParametersActionDeclineActionTypeDecline ConditionalTokenizationActionParametersActionDeclineActionType = "DECLINE"
+)
+
+func (r ConditionalTokenizationActionParametersActionDeclineActionType) IsKnown() bool {
+	switch r {
+	case ConditionalTokenizationActionParametersActionDeclineActionTypeDecline:
+		return true
+	}
+	return false
+}
+
+// Reason code for declining the tokenization request
+type ConditionalTokenizationActionParametersActionDeclineActionReason string
+
+const (
+	ConditionalTokenizationActionParametersActionDeclineActionReasonAccountScore1                  ConditionalTokenizationActionParametersActionDeclineActionReason = "ACCOUNT_SCORE_1"
+	ConditionalTokenizationActionParametersActionDeclineActionReasonDeviceScore1                   ConditionalTokenizationActionParametersActionDeclineActionReason = "DEVICE_SCORE_1"
+	ConditionalTokenizationActionParametersActionDeclineActionReasonAllWalletDeclineReasonsPresent ConditionalTokenizationActionParametersActionDeclineActionReason = "ALL_WALLET_DECLINE_REASONS_PRESENT"
+	ConditionalTokenizationActionParametersActionDeclineActionReasonWalletRecommendedDecisionRed   ConditionalTokenizationActionParametersActionDeclineActionReason = "WALLET_RECOMMENDED_DECISION_RED"
+	ConditionalTokenizationActionParametersActionDeclineActionReasonCvcMismatch                    ConditionalTokenizationActionParametersActionDeclineActionReason = "CVC_MISMATCH"
+	ConditionalTokenizationActionParametersActionDeclineActionReasonCardExpiryMonthMismatch        ConditionalTokenizationActionParametersActionDeclineActionReason = "CARD_EXPIRY_MONTH_MISMATCH"
+	ConditionalTokenizationActionParametersActionDeclineActionReasonCardExpiryYearMismatch         ConditionalTokenizationActionParametersActionDeclineActionReason = "CARD_EXPIRY_YEAR_MISMATCH"
+	ConditionalTokenizationActionParametersActionDeclineActionReasonCardInvalidState               ConditionalTokenizationActionParametersActionDeclineActionReason = "CARD_INVALID_STATE"
+	ConditionalTokenizationActionParametersActionDeclineActionReasonCustomerRedPath                ConditionalTokenizationActionParametersActionDeclineActionReason = "CUSTOMER_RED_PATH"
+	ConditionalTokenizationActionParametersActionDeclineActionReasonInvalidCustomerResponse        ConditionalTokenizationActionParametersActionDeclineActionReason = "INVALID_CUSTOMER_RESPONSE"
+	ConditionalTokenizationActionParametersActionDeclineActionReasonNetworkFailure                 ConditionalTokenizationActionParametersActionDeclineActionReason = "NETWORK_FAILURE"
+	ConditionalTokenizationActionParametersActionDeclineActionReasonGenericDecline                 ConditionalTokenizationActionParametersActionDeclineActionReason = "GENERIC_DECLINE"
+	ConditionalTokenizationActionParametersActionDeclineActionReasonDigitalCardArtRequired         ConditionalTokenizationActionParametersActionDeclineActionReason = "DIGITAL_CARD_ART_REQUIRED"
+)
+
+func (r ConditionalTokenizationActionParametersActionDeclineActionReason) IsKnown() bool {
+	switch r {
+	case ConditionalTokenizationActionParametersActionDeclineActionReasonAccountScore1, ConditionalTokenizationActionParametersActionDeclineActionReasonDeviceScore1, ConditionalTokenizationActionParametersActionDeclineActionReasonAllWalletDeclineReasonsPresent, ConditionalTokenizationActionParametersActionDeclineActionReasonWalletRecommendedDecisionRed, ConditionalTokenizationActionParametersActionDeclineActionReasonCvcMismatch, ConditionalTokenizationActionParametersActionDeclineActionReasonCardExpiryMonthMismatch, ConditionalTokenizationActionParametersActionDeclineActionReasonCardExpiryYearMismatch, ConditionalTokenizationActionParametersActionDeclineActionReasonCardInvalidState, ConditionalTokenizationActionParametersActionDeclineActionReasonCustomerRedPath, ConditionalTokenizationActionParametersActionDeclineActionReasonInvalidCustomerResponse, ConditionalTokenizationActionParametersActionDeclineActionReasonNetworkFailure, ConditionalTokenizationActionParametersActionDeclineActionReasonGenericDecline, ConditionalTokenizationActionParametersActionDeclineActionReasonDigitalCardArtRequired:
+		return true
+	}
+	return false
+}
+
+type ConditionalTokenizationActionParametersActionRequireTfaAction struct {
+	// Require two-factor authentication for the tokenization request
+	Type ConditionalTokenizationActionParametersActionRequireTfaActionType `json:"type,required"`
+	// Reason code for requiring two-factor authentication
+	Reason ConditionalTokenizationActionParametersActionRequireTfaActionReason `json:"reason"`
+	JSON   conditionalTokenizationActionParametersActionRequireTfaActionJSON   `json:"-"`
+}
+
+// conditionalTokenizationActionParametersActionRequireTfaActionJSON contains the
+// JSON metadata for the struct
+// [ConditionalTokenizationActionParametersActionRequireTfaAction]
+type conditionalTokenizationActionParametersActionRequireTfaActionJSON struct {
+	Type        apijson.Field
+	Reason      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ConditionalTokenizationActionParametersActionRequireTfaAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r conditionalTokenizationActionParametersActionRequireTfaActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ConditionalTokenizationActionParametersActionRequireTfaAction) implementsConditionalTokenizationActionParametersAction() {
+}
+
+// Require two-factor authentication for the tokenization request
+type ConditionalTokenizationActionParametersActionRequireTfaActionType string
+
+const (
+	ConditionalTokenizationActionParametersActionRequireTfaActionTypeRequireTfa ConditionalTokenizationActionParametersActionRequireTfaActionType = "REQUIRE_TFA"
+)
+
+func (r ConditionalTokenizationActionParametersActionRequireTfaActionType) IsKnown() bool {
+	switch r {
+	case ConditionalTokenizationActionParametersActionRequireTfaActionTypeRequireTfa:
+		return true
+	}
+	return false
+}
+
+// Reason code for requiring two-factor authentication
+type ConditionalTokenizationActionParametersActionRequireTfaActionReason string
+
+const (
+	ConditionalTokenizationActionParametersActionRequireTfaActionReasonWalletRecommendedTfa        ConditionalTokenizationActionParametersActionRequireTfaActionReason = "WALLET_RECOMMENDED_TFA"
+	ConditionalTokenizationActionParametersActionRequireTfaActionReasonSuspiciousActivity          ConditionalTokenizationActionParametersActionRequireTfaActionReason = "SUSPICIOUS_ACTIVITY"
+	ConditionalTokenizationActionParametersActionRequireTfaActionReasonDeviceRecentlyLost          ConditionalTokenizationActionParametersActionRequireTfaActionReason = "DEVICE_RECENTLY_LOST"
+	ConditionalTokenizationActionParametersActionRequireTfaActionReasonTooManyRecentAttempts       ConditionalTokenizationActionParametersActionRequireTfaActionReason = "TOO_MANY_RECENT_ATTEMPTS"
+	ConditionalTokenizationActionParametersActionRequireTfaActionReasonTooManyRecentTokens         ConditionalTokenizationActionParametersActionRequireTfaActionReason = "TOO_MANY_RECENT_TOKENS"
+	ConditionalTokenizationActionParametersActionRequireTfaActionReasonTooManyDifferentCardholders ConditionalTokenizationActionParametersActionRequireTfaActionReason = "TOO_MANY_DIFFERENT_CARDHOLDERS"
+	ConditionalTokenizationActionParametersActionRequireTfaActionReasonOutsideHomeTerritory        ConditionalTokenizationActionParametersActionRequireTfaActionReason = "OUTSIDE_HOME_TERRITORY"
+	ConditionalTokenizationActionParametersActionRequireTfaActionReasonHasSuspendedTokens          ConditionalTokenizationActionParametersActionRequireTfaActionReason = "HAS_SUSPENDED_TOKENS"
+	ConditionalTokenizationActionParametersActionRequireTfaActionReasonHighRisk                    ConditionalTokenizationActionParametersActionRequireTfaActionReason = "HIGH_RISK"
+	ConditionalTokenizationActionParametersActionRequireTfaActionReasonAccountScoreLow             ConditionalTokenizationActionParametersActionRequireTfaActionReason = "ACCOUNT_SCORE_LOW"
+	ConditionalTokenizationActionParametersActionRequireTfaActionReasonDeviceScoreLow              ConditionalTokenizationActionParametersActionRequireTfaActionReason = "DEVICE_SCORE_LOW"
+	ConditionalTokenizationActionParametersActionRequireTfaActionReasonCardStateTfa                ConditionalTokenizationActionParametersActionRequireTfaActionReason = "CARD_STATE_TFA"
+	ConditionalTokenizationActionParametersActionRequireTfaActionReasonHardcodedTfa                ConditionalTokenizationActionParametersActionRequireTfaActionReason = "HARDCODED_TFA"
+	ConditionalTokenizationActionParametersActionRequireTfaActionReasonCustomerRuleTfa             ConditionalTokenizationActionParametersActionRequireTfaActionReason = "CUSTOMER_RULE_TFA"
+	ConditionalTokenizationActionParametersActionRequireTfaActionReasonDeviceHostCardEmulation     ConditionalTokenizationActionParametersActionRequireTfaActionReason = "DEVICE_HOST_CARD_EMULATION"
+)
+
+func (r ConditionalTokenizationActionParametersActionRequireTfaActionReason) IsKnown() bool {
+	switch r {
+	case ConditionalTokenizationActionParametersActionRequireTfaActionReasonWalletRecommendedTfa, ConditionalTokenizationActionParametersActionRequireTfaActionReasonSuspiciousActivity, ConditionalTokenizationActionParametersActionRequireTfaActionReasonDeviceRecentlyLost, ConditionalTokenizationActionParametersActionRequireTfaActionReasonTooManyRecentAttempts, ConditionalTokenizationActionParametersActionRequireTfaActionReasonTooManyRecentTokens, ConditionalTokenizationActionParametersActionRequireTfaActionReasonTooManyDifferentCardholders, ConditionalTokenizationActionParametersActionRequireTfaActionReasonOutsideHomeTerritory, ConditionalTokenizationActionParametersActionRequireTfaActionReasonHasSuspendedTokens, ConditionalTokenizationActionParametersActionRequireTfaActionReasonHighRisk, ConditionalTokenizationActionParametersActionRequireTfaActionReasonAccountScoreLow, ConditionalTokenizationActionParametersActionRequireTfaActionReasonDeviceScoreLow, ConditionalTokenizationActionParametersActionRequireTfaActionReasonCardStateTfa, ConditionalTokenizationActionParametersActionRequireTfaActionReasonHardcodedTfa, ConditionalTokenizationActionParametersActionRequireTfaActionReasonCustomerRuleTfa, ConditionalTokenizationActionParametersActionRequireTfaActionReasonDeviceHostCardEmulation:
+		return true
+	}
+	return false
+}
+
+// Decline the tokenization request
+type ConditionalTokenizationActionParametersActionType string
+
+const (
+	ConditionalTokenizationActionParametersActionTypeDecline    ConditionalTokenizationActionParametersActionType = "DECLINE"
+	ConditionalTokenizationActionParametersActionTypeRequireTfa ConditionalTokenizationActionParametersActionType = "REQUIRE_TFA"
+)
+
+func (r ConditionalTokenizationActionParametersActionType) IsKnown() bool {
+	switch r {
+	case ConditionalTokenizationActionParametersActionTypeDecline, ConditionalTokenizationActionParametersActionTypeRequireTfa:
+		return true
+	}
+	return false
+}
+
+// Reason code for declining the tokenization request
+type ConditionalTokenizationActionParametersActionReason string
+
+const (
+	ConditionalTokenizationActionParametersActionReasonAccountScore1                  ConditionalTokenizationActionParametersActionReason = "ACCOUNT_SCORE_1"
+	ConditionalTokenizationActionParametersActionReasonDeviceScore1                   ConditionalTokenizationActionParametersActionReason = "DEVICE_SCORE_1"
+	ConditionalTokenizationActionParametersActionReasonAllWalletDeclineReasonsPresent ConditionalTokenizationActionParametersActionReason = "ALL_WALLET_DECLINE_REASONS_PRESENT"
+	ConditionalTokenizationActionParametersActionReasonWalletRecommendedDecisionRed   ConditionalTokenizationActionParametersActionReason = "WALLET_RECOMMENDED_DECISION_RED"
+	ConditionalTokenizationActionParametersActionReasonCvcMismatch                    ConditionalTokenizationActionParametersActionReason = "CVC_MISMATCH"
+	ConditionalTokenizationActionParametersActionReasonCardExpiryMonthMismatch        ConditionalTokenizationActionParametersActionReason = "CARD_EXPIRY_MONTH_MISMATCH"
+	ConditionalTokenizationActionParametersActionReasonCardExpiryYearMismatch         ConditionalTokenizationActionParametersActionReason = "CARD_EXPIRY_YEAR_MISMATCH"
+	ConditionalTokenizationActionParametersActionReasonCardInvalidState               ConditionalTokenizationActionParametersActionReason = "CARD_INVALID_STATE"
+	ConditionalTokenizationActionParametersActionReasonCustomerRedPath                ConditionalTokenizationActionParametersActionReason = "CUSTOMER_RED_PATH"
+	ConditionalTokenizationActionParametersActionReasonInvalidCustomerResponse        ConditionalTokenizationActionParametersActionReason = "INVALID_CUSTOMER_RESPONSE"
+	ConditionalTokenizationActionParametersActionReasonNetworkFailure                 ConditionalTokenizationActionParametersActionReason = "NETWORK_FAILURE"
+	ConditionalTokenizationActionParametersActionReasonGenericDecline                 ConditionalTokenizationActionParametersActionReason = "GENERIC_DECLINE"
+	ConditionalTokenizationActionParametersActionReasonDigitalCardArtRequired         ConditionalTokenizationActionParametersActionReason = "DIGITAL_CARD_ART_REQUIRED"
+	ConditionalTokenizationActionParametersActionReasonWalletRecommendedTfa           ConditionalTokenizationActionParametersActionReason = "WALLET_RECOMMENDED_TFA"
+	ConditionalTokenizationActionParametersActionReasonSuspiciousActivity             ConditionalTokenizationActionParametersActionReason = "SUSPICIOUS_ACTIVITY"
+	ConditionalTokenizationActionParametersActionReasonDeviceRecentlyLost             ConditionalTokenizationActionParametersActionReason = "DEVICE_RECENTLY_LOST"
+	ConditionalTokenizationActionParametersActionReasonTooManyRecentAttempts          ConditionalTokenizationActionParametersActionReason = "TOO_MANY_RECENT_ATTEMPTS"
+	ConditionalTokenizationActionParametersActionReasonTooManyRecentTokens            ConditionalTokenizationActionParametersActionReason = "TOO_MANY_RECENT_TOKENS"
+	ConditionalTokenizationActionParametersActionReasonTooManyDifferentCardholders    ConditionalTokenizationActionParametersActionReason = "TOO_MANY_DIFFERENT_CARDHOLDERS"
+	ConditionalTokenizationActionParametersActionReasonOutsideHomeTerritory           ConditionalTokenizationActionParametersActionReason = "OUTSIDE_HOME_TERRITORY"
+	ConditionalTokenizationActionParametersActionReasonHasSuspendedTokens             ConditionalTokenizationActionParametersActionReason = "HAS_SUSPENDED_TOKENS"
+	ConditionalTokenizationActionParametersActionReasonHighRisk                       ConditionalTokenizationActionParametersActionReason = "HIGH_RISK"
+	ConditionalTokenizationActionParametersActionReasonAccountScoreLow                ConditionalTokenizationActionParametersActionReason = "ACCOUNT_SCORE_LOW"
+	ConditionalTokenizationActionParametersActionReasonDeviceScoreLow                 ConditionalTokenizationActionParametersActionReason = "DEVICE_SCORE_LOW"
+	ConditionalTokenizationActionParametersActionReasonCardStateTfa                   ConditionalTokenizationActionParametersActionReason = "CARD_STATE_TFA"
+	ConditionalTokenizationActionParametersActionReasonHardcodedTfa                   ConditionalTokenizationActionParametersActionReason = "HARDCODED_TFA"
+	ConditionalTokenizationActionParametersActionReasonCustomerRuleTfa                ConditionalTokenizationActionParametersActionReason = "CUSTOMER_RULE_TFA"
+	ConditionalTokenizationActionParametersActionReasonDeviceHostCardEmulation        ConditionalTokenizationActionParametersActionReason = "DEVICE_HOST_CARD_EMULATION"
+)
+
+func (r ConditionalTokenizationActionParametersActionReason) IsKnown() bool {
+	switch r {
+	case ConditionalTokenizationActionParametersActionReasonAccountScore1, ConditionalTokenizationActionParametersActionReasonDeviceScore1, ConditionalTokenizationActionParametersActionReasonAllWalletDeclineReasonsPresent, ConditionalTokenizationActionParametersActionReasonWalletRecommendedDecisionRed, ConditionalTokenizationActionParametersActionReasonCvcMismatch, ConditionalTokenizationActionParametersActionReasonCardExpiryMonthMismatch, ConditionalTokenizationActionParametersActionReasonCardExpiryYearMismatch, ConditionalTokenizationActionParametersActionReasonCardInvalidState, ConditionalTokenizationActionParametersActionReasonCustomerRedPath, ConditionalTokenizationActionParametersActionReasonInvalidCustomerResponse, ConditionalTokenizationActionParametersActionReasonNetworkFailure, ConditionalTokenizationActionParametersActionReasonGenericDecline, ConditionalTokenizationActionParametersActionReasonDigitalCardArtRequired, ConditionalTokenizationActionParametersActionReasonWalletRecommendedTfa, ConditionalTokenizationActionParametersActionReasonSuspiciousActivity, ConditionalTokenizationActionParametersActionReasonDeviceRecentlyLost, ConditionalTokenizationActionParametersActionReasonTooManyRecentAttempts, ConditionalTokenizationActionParametersActionReasonTooManyRecentTokens, ConditionalTokenizationActionParametersActionReasonTooManyDifferentCardholders, ConditionalTokenizationActionParametersActionReasonOutsideHomeTerritory, ConditionalTokenizationActionParametersActionReasonHasSuspendedTokens, ConditionalTokenizationActionParametersActionReasonHighRisk, ConditionalTokenizationActionParametersActionReasonAccountScoreLow, ConditionalTokenizationActionParametersActionReasonDeviceScoreLow, ConditionalTokenizationActionParametersActionReasonCardStateTfa, ConditionalTokenizationActionParametersActionReasonHardcodedTfa, ConditionalTokenizationActionParametersActionReasonCustomerRuleTfa, ConditionalTokenizationActionParametersActionReasonDeviceHostCardEmulation:
+		return true
+	}
+	return false
+}
+
+type ConditionalTokenizationActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `TIMESTAMP`: The timestamp of the tokenization request in ISO 8601 format.
+	//   - `TOKENIZATION_CHANNEL`: The channel through which the tokenization request was
+	//     initiated (e.g., DIGITAL_WALLET, ECOMMERCE).
+	//   - `TOKENIZATION_SOURCE`: The source of the tokenization request.
+	//   - `TOKEN_REQUESTOR_NAME`: The name of the entity requesting the token. Valid
+	//     values are `ALT_ID`, `AMAZON_ONE`, `AMERICAN_EXPRESS_TOKEN_SERVICE`,
+	//     `ANDROID_PAY`, `APPLE_PAY`, `FACEBOOK`, `FITBIT_PAY`, `GARMIN_PAY`,
+	//     `GOOGLE_PAY`, `GOOGLE_VCN`, `ISSUER_HCE`, `MICROSOFT_PAY`, `NETFLIX`,
+	//     `SAMSUNG_PAY`, `UNKNOWN`, `VISA_CHECKOUT`.
+	//   - `WALLET_ACCOUNT_SCORE`: Risk score for the account in the digital wallet.
+	//     Numeric value where lower numbers indicate higher risk (e.g., 1 = high risk, 2
+	//     = medium risk).
+	//   - `WALLET_DEVICE_SCORE`: Risk score for the device in the digital wallet.
+	//     Numeric value where lower numbers indicate higher risk (e.g., 1 = high risk, 2
+	//     = medium risk).
+	//   - `WALLET_RECOMMENDED_DECISION`: The decision recommended by the digital wallet
+	//     provider. Valid values include APPROVE, DECLINE,
+	//     REQUIRE_ADDITIONAL_AUTHENTICATION.
+	//   - `TOKEN_REQUESTOR_ID`: Unique identifier for the entity requesting the token.
+	//   - `WALLET_TOKEN_STATUS`: The current status of the wallet token.
+	Attribute ConditionalTokenizationActionParametersConditionsAttribute `json:"attribute,required"`
+	// The operation to apply to the attribute
+	Operation ConditionalOperation `json:"operation,required"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value ConditionalValueUnion                                `json:"value,required"`
+	JSON  conditionalTokenizationActionParametersConditionJSON `json:"-"`
+}
+
+// conditionalTokenizationActionParametersConditionJSON contains the JSON metadata
+// for the struct [ConditionalTokenizationActionParametersCondition]
+type conditionalTokenizationActionParametersConditionJSON struct {
+	Attribute   apijson.Field
+	Operation   apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ConditionalTokenizationActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r conditionalTokenizationActionParametersConditionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `TIMESTAMP`: The timestamp of the tokenization request in ISO 8601 format.
+//   - `TOKENIZATION_CHANNEL`: The channel through which the tokenization request was
+//     initiated (e.g., DIGITAL_WALLET, ECOMMERCE).
+//   - `TOKENIZATION_SOURCE`: The source of the tokenization request.
+//   - `TOKEN_REQUESTOR_NAME`: The name of the entity requesting the token. Valid
+//     values are `ALT_ID`, `AMAZON_ONE`, `AMERICAN_EXPRESS_TOKEN_SERVICE`,
+//     `ANDROID_PAY`, `APPLE_PAY`, `FACEBOOK`, `FITBIT_PAY`, `GARMIN_PAY`,
+//     `GOOGLE_PAY`, `GOOGLE_VCN`, `ISSUER_HCE`, `MICROSOFT_PAY`, `NETFLIX`,
+//     `SAMSUNG_PAY`, `UNKNOWN`, `VISA_CHECKOUT`.
+//   - `WALLET_ACCOUNT_SCORE`: Risk score for the account in the digital wallet.
+//     Numeric value where lower numbers indicate higher risk (e.g., 1 = high risk, 2
+//     = medium risk).
+//   - `WALLET_DEVICE_SCORE`: Risk score for the device in the digital wallet.
+//     Numeric value where lower numbers indicate higher risk (e.g., 1 = high risk, 2
+//     = medium risk).
+//   - `WALLET_RECOMMENDED_DECISION`: The decision recommended by the digital wallet
+//     provider. Valid values include APPROVE, DECLINE,
+//     REQUIRE_ADDITIONAL_AUTHENTICATION.
+//   - `TOKEN_REQUESTOR_ID`: Unique identifier for the entity requesting the token.
+//   - `WALLET_TOKEN_STATUS`: The current status of the wallet token.
+type ConditionalTokenizationActionParametersConditionsAttribute string
+
+const (
+	ConditionalTokenizationActionParametersConditionsAttributeTimestamp                 ConditionalTokenizationActionParametersConditionsAttribute = "TIMESTAMP"
+	ConditionalTokenizationActionParametersConditionsAttributeTokenizationChannel       ConditionalTokenizationActionParametersConditionsAttribute = "TOKENIZATION_CHANNEL"
+	ConditionalTokenizationActionParametersConditionsAttributeTokenizationSource        ConditionalTokenizationActionParametersConditionsAttribute = "TOKENIZATION_SOURCE"
+	ConditionalTokenizationActionParametersConditionsAttributeTokenRequestorName        ConditionalTokenizationActionParametersConditionsAttribute = "TOKEN_REQUESTOR_NAME"
+	ConditionalTokenizationActionParametersConditionsAttributeWalletAccountScore        ConditionalTokenizationActionParametersConditionsAttribute = "WALLET_ACCOUNT_SCORE"
+	ConditionalTokenizationActionParametersConditionsAttributeWalletDeviceScore         ConditionalTokenizationActionParametersConditionsAttribute = "WALLET_DEVICE_SCORE"
+	ConditionalTokenizationActionParametersConditionsAttributeWalletRecommendedDecision ConditionalTokenizationActionParametersConditionsAttribute = "WALLET_RECOMMENDED_DECISION"
+	ConditionalTokenizationActionParametersConditionsAttributeTokenRequestorID          ConditionalTokenizationActionParametersConditionsAttribute = "TOKEN_REQUESTOR_ID"
+	ConditionalTokenizationActionParametersConditionsAttributeWalletTokenStatus         ConditionalTokenizationActionParametersConditionsAttribute = "WALLET_TOKEN_STATUS"
+)
+
+func (r ConditionalTokenizationActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case ConditionalTokenizationActionParametersConditionsAttributeTimestamp, ConditionalTokenizationActionParametersConditionsAttributeTokenizationChannel, ConditionalTokenizationActionParametersConditionsAttributeTokenizationSource, ConditionalTokenizationActionParametersConditionsAttributeTokenRequestorName, ConditionalTokenizationActionParametersConditionsAttributeWalletAccountScore, ConditionalTokenizationActionParametersConditionsAttributeWalletDeviceScore, ConditionalTokenizationActionParametersConditionsAttributeWalletRecommendedDecision, ConditionalTokenizationActionParametersConditionsAttributeTokenRequestorID, ConditionalTokenizationActionParametersConditionsAttributeWalletTokenStatus:
+		return true
+	}
+	return false
+}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Union satisfied by [shared.UnionString], [shared.UnionInt] or
+// [ConditionalValueListOfStrings].
+type ConditionalValueUnion interface {
+	ImplementsConditionalValueUnion()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*ConditionalValueUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(shared.UnionString("")),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(shared.UnionInt(0)),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalValueListOfStrings{}),
+		},
+	)
+}
+
+type ConditionalValueListOfStrings []string
+
+func (r ConditionalValueListOfStrings) ImplementsConditionalValueUnion() {}
+
+// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+//
+// Satisfied by [shared.UnionString], [shared.UnionInt],
+// [ConditionalValueListOfStringsParam].
+type ConditionalValueUnionParam interface {
+	ImplementsConditionalValueUnionParam()
+}
+
+type ConditionalValueListOfStringsParam []string
+
+func (r ConditionalValueListOfStringsParam) ImplementsConditionalValueUnionParam() {}
 
 type MerchantLockParameters struct {
 	// A list of merchant locks defining specific merchants or groups of merchants
@@ -1818,10 +2596,11 @@ type AuthRuleV2NewResponse struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-	// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type AuthRuleV2NewResponseType `json:"type,required"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens []string                  `json:"excluded_card_tokens" format:"uuid"`
@@ -1884,11 +2663,16 @@ func (r authRuleV2NewResponseCurrentVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2NewResponseCurrentVersionParameters struct {
-	// The action to take if the conditions are met.
-	Action AuthRuleV2NewResponseCurrentVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [Conditional3DSActionParametersAction],
+	// [ConditionalAuthorizationActionParametersAction],
+	// [ConditionalACHActionParametersAction],
+	// [ConditionalTokenizationActionParametersAction].
+	Action interface{} `json:"action"`
 	// This field can have the runtime type of [[]AuthRuleCondition],
 	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition].
+	// [[]ConditionalAuthorizationActionParametersCondition],
+	// [[]ConditionalACHActionParametersCondition],
+	// [[]ConditionalTokenizationActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -1945,7 +2729,8 @@ func (r *AuthRuleV2NewResponseCurrentVersionParameters) UnmarshalJSON(data []byt
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters].
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
 func (r AuthRuleV2NewResponseCurrentVersionParameters) AsUnion() AuthRuleV2NewResponseCurrentVersionParametersUnion {
 	return r.union
 }
@@ -1953,8 +2738,9 @@ func (r AuthRuleV2NewResponseCurrentVersionParameters) AsUnion() AuthRuleV2NewRe
 // Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters] or
-// [ConditionalAuthorizationActionParameters].
+// [MerchantLockParameters], [Conditional3DSActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
+// [ConditionalTokenizationActionParameters].
 type AuthRuleV2NewResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2NewResponseCurrentVersionParameters()
 }
@@ -1983,23 +2769,15 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
+		},
 	)
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2NewResponseCurrentVersionParametersAction string
-
-const (
-	AuthRuleV2NewResponseCurrentVersionParametersActionDecline   AuthRuleV2NewResponseCurrentVersionParametersAction = "DECLINE"
-	AuthRuleV2NewResponseCurrentVersionParametersActionChallenge AuthRuleV2NewResponseCurrentVersionParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2NewResponseCurrentVersionParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2NewResponseCurrentVersionParametersActionDecline, AuthRuleV2NewResponseCurrentVersionParametersActionChallenge:
-		return true
-	}
-	return false
 }
 
 // The scope the velocity is calculated for
@@ -2046,11 +2824,16 @@ func (r authRuleV2NewResponseDraftVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2NewResponseDraftVersionParameters struct {
-	// The action to take if the conditions are met.
-	Action AuthRuleV2NewResponseDraftVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [Conditional3DSActionParametersAction],
+	// [ConditionalAuthorizationActionParametersAction],
+	// [ConditionalACHActionParametersAction],
+	// [ConditionalTokenizationActionParametersAction].
+	Action interface{} `json:"action"`
 	// This field can have the runtime type of [[]AuthRuleCondition],
 	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition].
+	// [[]ConditionalAuthorizationActionParametersCondition],
+	// [[]ConditionalACHActionParametersCondition],
+	// [[]ConditionalTokenizationActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -2107,7 +2890,8 @@ func (r *AuthRuleV2NewResponseDraftVersionParameters) UnmarshalJSON(data []byte)
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters].
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
 func (r AuthRuleV2NewResponseDraftVersionParameters) AsUnion() AuthRuleV2NewResponseDraftVersionParametersUnion {
 	return r.union
 }
@@ -2115,8 +2899,9 @@ func (r AuthRuleV2NewResponseDraftVersionParameters) AsUnion() AuthRuleV2NewResp
 // Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters] or
-// [ConditionalAuthorizationActionParameters].
+// [MerchantLockParameters], [Conditional3DSActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
+// [ConditionalTokenizationActionParameters].
 type AuthRuleV2NewResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2NewResponseDraftVersionParameters()
 }
@@ -2145,23 +2930,15 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
+		},
 	)
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2NewResponseDraftVersionParametersAction string
-
-const (
-	AuthRuleV2NewResponseDraftVersionParametersActionDecline   AuthRuleV2NewResponseDraftVersionParametersAction = "DECLINE"
-	AuthRuleV2NewResponseDraftVersionParametersActionChallenge AuthRuleV2NewResponseDraftVersionParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2NewResponseDraftVersionParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2NewResponseDraftVersionParametersActionDecline, AuthRuleV2NewResponseDraftVersionParametersActionChallenge:
-		return true
-	}
-	return false
 }
 
 // The scope the velocity is calculated for
@@ -2186,11 +2963,14 @@ type AuthRuleV2NewResponseEventStream string
 const (
 	AuthRuleV2NewResponseEventStreamAuthorization         AuthRuleV2NewResponseEventStream = "AUTHORIZATION"
 	AuthRuleV2NewResponseEventStreamThreeDSAuthentication AuthRuleV2NewResponseEventStream = "THREE_DS_AUTHENTICATION"
+	AuthRuleV2NewResponseEventStreamTokenization          AuthRuleV2NewResponseEventStream = "TOKENIZATION"
+	AuthRuleV2NewResponseEventStreamACHCreditReceipt      AuthRuleV2NewResponseEventStream = "ACH_CREDIT_RECEIPT"
+	AuthRuleV2NewResponseEventStreamACHDebitReceipt       AuthRuleV2NewResponseEventStream = "ACH_DEBIT_RECEIPT"
 )
 
 func (r AuthRuleV2NewResponseEventStream) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewResponseEventStreamAuthorization, AuthRuleV2NewResponseEventStreamThreeDSAuthentication:
+	case AuthRuleV2NewResponseEventStreamAuthorization, AuthRuleV2NewResponseEventStreamThreeDSAuthentication, AuthRuleV2NewResponseEventStreamTokenization, AuthRuleV2NewResponseEventStreamACHCreditReceipt, AuthRuleV2NewResponseEventStreamACHDebitReceipt:
 		return true
 	}
 	return false
@@ -2217,10 +2997,11 @@ func (r AuthRuleV2NewResponseState) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleV2NewResponseType string
 
 const (
@@ -2265,10 +3046,11 @@ type AuthRuleV2GetResponse struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-	// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type AuthRuleV2GetResponseType `json:"type,required"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens []string                  `json:"excluded_card_tokens" format:"uuid"`
@@ -2331,11 +3113,16 @@ func (r authRuleV2GetResponseCurrentVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2GetResponseCurrentVersionParameters struct {
-	// The action to take if the conditions are met.
-	Action AuthRuleV2GetResponseCurrentVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [Conditional3DSActionParametersAction],
+	// [ConditionalAuthorizationActionParametersAction],
+	// [ConditionalACHActionParametersAction],
+	// [ConditionalTokenizationActionParametersAction].
+	Action interface{} `json:"action"`
 	// This field can have the runtime type of [[]AuthRuleCondition],
 	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition].
+	// [[]ConditionalAuthorizationActionParametersCondition],
+	// [[]ConditionalACHActionParametersCondition],
+	// [[]ConditionalTokenizationActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -2392,7 +3179,8 @@ func (r *AuthRuleV2GetResponseCurrentVersionParameters) UnmarshalJSON(data []byt
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters].
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
 func (r AuthRuleV2GetResponseCurrentVersionParameters) AsUnion() AuthRuleV2GetResponseCurrentVersionParametersUnion {
 	return r.union
 }
@@ -2400,8 +3188,9 @@ func (r AuthRuleV2GetResponseCurrentVersionParameters) AsUnion() AuthRuleV2GetRe
 // Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters] or
-// [ConditionalAuthorizationActionParameters].
+// [MerchantLockParameters], [Conditional3DSActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
+// [ConditionalTokenizationActionParameters].
 type AuthRuleV2GetResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2GetResponseCurrentVersionParameters()
 }
@@ -2430,23 +3219,15 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
+		},
 	)
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2GetResponseCurrentVersionParametersAction string
-
-const (
-	AuthRuleV2GetResponseCurrentVersionParametersActionDecline   AuthRuleV2GetResponseCurrentVersionParametersAction = "DECLINE"
-	AuthRuleV2GetResponseCurrentVersionParametersActionChallenge AuthRuleV2GetResponseCurrentVersionParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2GetResponseCurrentVersionParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2GetResponseCurrentVersionParametersActionDecline, AuthRuleV2GetResponseCurrentVersionParametersActionChallenge:
-		return true
-	}
-	return false
 }
 
 // The scope the velocity is calculated for
@@ -2493,11 +3274,16 @@ func (r authRuleV2GetResponseDraftVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2GetResponseDraftVersionParameters struct {
-	// The action to take if the conditions are met.
-	Action AuthRuleV2GetResponseDraftVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [Conditional3DSActionParametersAction],
+	// [ConditionalAuthorizationActionParametersAction],
+	// [ConditionalACHActionParametersAction],
+	// [ConditionalTokenizationActionParametersAction].
+	Action interface{} `json:"action"`
 	// This field can have the runtime type of [[]AuthRuleCondition],
 	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition].
+	// [[]ConditionalAuthorizationActionParametersCondition],
+	// [[]ConditionalACHActionParametersCondition],
+	// [[]ConditionalTokenizationActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -2554,7 +3340,8 @@ func (r *AuthRuleV2GetResponseDraftVersionParameters) UnmarshalJSON(data []byte)
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters].
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
 func (r AuthRuleV2GetResponseDraftVersionParameters) AsUnion() AuthRuleV2GetResponseDraftVersionParametersUnion {
 	return r.union
 }
@@ -2562,8 +3349,9 @@ func (r AuthRuleV2GetResponseDraftVersionParameters) AsUnion() AuthRuleV2GetResp
 // Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters] or
-// [ConditionalAuthorizationActionParameters].
+// [MerchantLockParameters], [Conditional3DSActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
+// [ConditionalTokenizationActionParameters].
 type AuthRuleV2GetResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2GetResponseDraftVersionParameters()
 }
@@ -2592,23 +3380,15 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
+		},
 	)
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2GetResponseDraftVersionParametersAction string
-
-const (
-	AuthRuleV2GetResponseDraftVersionParametersActionDecline   AuthRuleV2GetResponseDraftVersionParametersAction = "DECLINE"
-	AuthRuleV2GetResponseDraftVersionParametersActionChallenge AuthRuleV2GetResponseDraftVersionParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2GetResponseDraftVersionParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2GetResponseDraftVersionParametersActionDecline, AuthRuleV2GetResponseDraftVersionParametersActionChallenge:
-		return true
-	}
-	return false
 }
 
 // The scope the velocity is calculated for
@@ -2633,11 +3413,14 @@ type AuthRuleV2GetResponseEventStream string
 const (
 	AuthRuleV2GetResponseEventStreamAuthorization         AuthRuleV2GetResponseEventStream = "AUTHORIZATION"
 	AuthRuleV2GetResponseEventStreamThreeDSAuthentication AuthRuleV2GetResponseEventStream = "THREE_DS_AUTHENTICATION"
+	AuthRuleV2GetResponseEventStreamTokenization          AuthRuleV2GetResponseEventStream = "TOKENIZATION"
+	AuthRuleV2GetResponseEventStreamACHCreditReceipt      AuthRuleV2GetResponseEventStream = "ACH_CREDIT_RECEIPT"
+	AuthRuleV2GetResponseEventStreamACHDebitReceipt       AuthRuleV2GetResponseEventStream = "ACH_DEBIT_RECEIPT"
 )
 
 func (r AuthRuleV2GetResponseEventStream) IsKnown() bool {
 	switch r {
-	case AuthRuleV2GetResponseEventStreamAuthorization, AuthRuleV2GetResponseEventStreamThreeDSAuthentication:
+	case AuthRuleV2GetResponseEventStreamAuthorization, AuthRuleV2GetResponseEventStreamThreeDSAuthentication, AuthRuleV2GetResponseEventStreamTokenization, AuthRuleV2GetResponseEventStreamACHCreditReceipt, AuthRuleV2GetResponseEventStreamACHDebitReceipt:
 		return true
 	}
 	return false
@@ -2664,10 +3447,11 @@ func (r AuthRuleV2GetResponseState) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleV2GetResponseType string
 
 const (
@@ -2712,10 +3496,11 @@ type AuthRuleV2UpdateResponse struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-	// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type AuthRuleV2UpdateResponseType `json:"type,required"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens []string                     `json:"excluded_card_tokens" format:"uuid"`
@@ -2778,11 +3563,16 @@ func (r authRuleV2UpdateResponseCurrentVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2UpdateResponseCurrentVersionParameters struct {
-	// The action to take if the conditions are met.
-	Action AuthRuleV2UpdateResponseCurrentVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [Conditional3DSActionParametersAction],
+	// [ConditionalAuthorizationActionParametersAction],
+	// [ConditionalACHActionParametersAction],
+	// [ConditionalTokenizationActionParametersAction].
+	Action interface{} `json:"action"`
 	// This field can have the runtime type of [[]AuthRuleCondition],
 	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition].
+	// [[]ConditionalAuthorizationActionParametersCondition],
+	// [[]ConditionalACHActionParametersCondition],
+	// [[]ConditionalTokenizationActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -2839,7 +3629,8 @@ func (r *AuthRuleV2UpdateResponseCurrentVersionParameters) UnmarshalJSON(data []
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters].
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
 func (r AuthRuleV2UpdateResponseCurrentVersionParameters) AsUnion() AuthRuleV2UpdateResponseCurrentVersionParametersUnion {
 	return r.union
 }
@@ -2847,8 +3638,9 @@ func (r AuthRuleV2UpdateResponseCurrentVersionParameters) AsUnion() AuthRuleV2Up
 // Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters] or
-// [ConditionalAuthorizationActionParameters].
+// [MerchantLockParameters], [Conditional3DSActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
+// [ConditionalTokenizationActionParameters].
 type AuthRuleV2UpdateResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2UpdateResponseCurrentVersionParameters()
 }
@@ -2877,23 +3669,15 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
+		},
 	)
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2UpdateResponseCurrentVersionParametersAction string
-
-const (
-	AuthRuleV2UpdateResponseCurrentVersionParametersActionDecline   AuthRuleV2UpdateResponseCurrentVersionParametersAction = "DECLINE"
-	AuthRuleV2UpdateResponseCurrentVersionParametersActionChallenge AuthRuleV2UpdateResponseCurrentVersionParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2UpdateResponseCurrentVersionParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2UpdateResponseCurrentVersionParametersActionDecline, AuthRuleV2UpdateResponseCurrentVersionParametersActionChallenge:
-		return true
-	}
-	return false
 }
 
 // The scope the velocity is calculated for
@@ -2940,11 +3724,16 @@ func (r authRuleV2UpdateResponseDraftVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2UpdateResponseDraftVersionParameters struct {
-	// The action to take if the conditions are met.
-	Action AuthRuleV2UpdateResponseDraftVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [Conditional3DSActionParametersAction],
+	// [ConditionalAuthorizationActionParametersAction],
+	// [ConditionalACHActionParametersAction],
+	// [ConditionalTokenizationActionParametersAction].
+	Action interface{} `json:"action"`
 	// This field can have the runtime type of [[]AuthRuleCondition],
 	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition].
+	// [[]ConditionalAuthorizationActionParametersCondition],
+	// [[]ConditionalACHActionParametersCondition],
+	// [[]ConditionalTokenizationActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -3001,7 +3790,8 @@ func (r *AuthRuleV2UpdateResponseDraftVersionParameters) UnmarshalJSON(data []by
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters].
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
 func (r AuthRuleV2UpdateResponseDraftVersionParameters) AsUnion() AuthRuleV2UpdateResponseDraftVersionParametersUnion {
 	return r.union
 }
@@ -3009,8 +3799,9 @@ func (r AuthRuleV2UpdateResponseDraftVersionParameters) AsUnion() AuthRuleV2Upda
 // Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters] or
-// [ConditionalAuthorizationActionParameters].
+// [MerchantLockParameters], [Conditional3DSActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
+// [ConditionalTokenizationActionParameters].
 type AuthRuleV2UpdateResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2UpdateResponseDraftVersionParameters()
 }
@@ -3039,23 +3830,15 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
+		},
 	)
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2UpdateResponseDraftVersionParametersAction string
-
-const (
-	AuthRuleV2UpdateResponseDraftVersionParametersActionDecline   AuthRuleV2UpdateResponseDraftVersionParametersAction = "DECLINE"
-	AuthRuleV2UpdateResponseDraftVersionParametersActionChallenge AuthRuleV2UpdateResponseDraftVersionParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2UpdateResponseDraftVersionParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2UpdateResponseDraftVersionParametersActionDecline, AuthRuleV2UpdateResponseDraftVersionParametersActionChallenge:
-		return true
-	}
-	return false
 }
 
 // The scope the velocity is calculated for
@@ -3080,11 +3863,14 @@ type AuthRuleV2UpdateResponseEventStream string
 const (
 	AuthRuleV2UpdateResponseEventStreamAuthorization         AuthRuleV2UpdateResponseEventStream = "AUTHORIZATION"
 	AuthRuleV2UpdateResponseEventStreamThreeDSAuthentication AuthRuleV2UpdateResponseEventStream = "THREE_DS_AUTHENTICATION"
+	AuthRuleV2UpdateResponseEventStreamTokenization          AuthRuleV2UpdateResponseEventStream = "TOKENIZATION"
+	AuthRuleV2UpdateResponseEventStreamACHCreditReceipt      AuthRuleV2UpdateResponseEventStream = "ACH_CREDIT_RECEIPT"
+	AuthRuleV2UpdateResponseEventStreamACHDebitReceipt       AuthRuleV2UpdateResponseEventStream = "ACH_DEBIT_RECEIPT"
 )
 
 func (r AuthRuleV2UpdateResponseEventStream) IsKnown() bool {
 	switch r {
-	case AuthRuleV2UpdateResponseEventStreamAuthorization, AuthRuleV2UpdateResponseEventStreamThreeDSAuthentication:
+	case AuthRuleV2UpdateResponseEventStreamAuthorization, AuthRuleV2UpdateResponseEventStreamThreeDSAuthentication, AuthRuleV2UpdateResponseEventStreamTokenization, AuthRuleV2UpdateResponseEventStreamACHCreditReceipt, AuthRuleV2UpdateResponseEventStreamACHDebitReceipt:
 		return true
 	}
 	return false
@@ -3111,10 +3897,11 @@ func (r AuthRuleV2UpdateResponseState) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleV2UpdateResponseType string
 
 const (
@@ -3159,10 +3946,11 @@ type AuthRuleV2ListResponse struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-	// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type AuthRuleV2ListResponseType `json:"type,required"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens []string                   `json:"excluded_card_tokens" format:"uuid"`
@@ -3225,11 +4013,16 @@ func (r authRuleV2ListResponseCurrentVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2ListResponseCurrentVersionParameters struct {
-	// The action to take if the conditions are met.
-	Action AuthRuleV2ListResponseCurrentVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [Conditional3DSActionParametersAction],
+	// [ConditionalAuthorizationActionParametersAction],
+	// [ConditionalACHActionParametersAction],
+	// [ConditionalTokenizationActionParametersAction].
+	Action interface{} `json:"action"`
 	// This field can have the runtime type of [[]AuthRuleCondition],
 	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition].
+	// [[]ConditionalAuthorizationActionParametersCondition],
+	// [[]ConditionalACHActionParametersCondition],
+	// [[]ConditionalTokenizationActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -3286,7 +4079,8 @@ func (r *AuthRuleV2ListResponseCurrentVersionParameters) UnmarshalJSON(data []by
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters].
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
 func (r AuthRuleV2ListResponseCurrentVersionParameters) AsUnion() AuthRuleV2ListResponseCurrentVersionParametersUnion {
 	return r.union
 }
@@ -3294,8 +4088,9 @@ func (r AuthRuleV2ListResponseCurrentVersionParameters) AsUnion() AuthRuleV2List
 // Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters] or
-// [ConditionalAuthorizationActionParameters].
+// [MerchantLockParameters], [Conditional3DSActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
+// [ConditionalTokenizationActionParameters].
 type AuthRuleV2ListResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2ListResponseCurrentVersionParameters()
 }
@@ -3324,23 +4119,15 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
+		},
 	)
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2ListResponseCurrentVersionParametersAction string
-
-const (
-	AuthRuleV2ListResponseCurrentVersionParametersActionDecline   AuthRuleV2ListResponseCurrentVersionParametersAction = "DECLINE"
-	AuthRuleV2ListResponseCurrentVersionParametersActionChallenge AuthRuleV2ListResponseCurrentVersionParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2ListResponseCurrentVersionParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ListResponseCurrentVersionParametersActionDecline, AuthRuleV2ListResponseCurrentVersionParametersActionChallenge:
-		return true
-	}
-	return false
 }
 
 // The scope the velocity is calculated for
@@ -3387,11 +4174,16 @@ func (r authRuleV2ListResponseDraftVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2ListResponseDraftVersionParameters struct {
-	// The action to take if the conditions are met.
-	Action AuthRuleV2ListResponseDraftVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [Conditional3DSActionParametersAction],
+	// [ConditionalAuthorizationActionParametersAction],
+	// [ConditionalACHActionParametersAction],
+	// [ConditionalTokenizationActionParametersAction].
+	Action interface{} `json:"action"`
 	// This field can have the runtime type of [[]AuthRuleCondition],
 	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition].
+	// [[]ConditionalAuthorizationActionParametersCondition],
+	// [[]ConditionalACHActionParametersCondition],
+	// [[]ConditionalTokenizationActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -3448,7 +4240,8 @@ func (r *AuthRuleV2ListResponseDraftVersionParameters) UnmarshalJSON(data []byte
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters].
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
 func (r AuthRuleV2ListResponseDraftVersionParameters) AsUnion() AuthRuleV2ListResponseDraftVersionParametersUnion {
 	return r.union
 }
@@ -3456,8 +4249,9 @@ func (r AuthRuleV2ListResponseDraftVersionParameters) AsUnion() AuthRuleV2ListRe
 // Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters] or
-// [ConditionalAuthorizationActionParameters].
+// [MerchantLockParameters], [Conditional3DSActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
+// [ConditionalTokenizationActionParameters].
 type AuthRuleV2ListResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2ListResponseDraftVersionParameters()
 }
@@ -3486,23 +4280,15 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
+		},
 	)
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2ListResponseDraftVersionParametersAction string
-
-const (
-	AuthRuleV2ListResponseDraftVersionParametersActionDecline   AuthRuleV2ListResponseDraftVersionParametersAction = "DECLINE"
-	AuthRuleV2ListResponseDraftVersionParametersActionChallenge AuthRuleV2ListResponseDraftVersionParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2ListResponseDraftVersionParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ListResponseDraftVersionParametersActionDecline, AuthRuleV2ListResponseDraftVersionParametersActionChallenge:
-		return true
-	}
-	return false
 }
 
 // The scope the velocity is calculated for
@@ -3527,11 +4313,14 @@ type AuthRuleV2ListResponseEventStream string
 const (
 	AuthRuleV2ListResponseEventStreamAuthorization         AuthRuleV2ListResponseEventStream = "AUTHORIZATION"
 	AuthRuleV2ListResponseEventStreamThreeDSAuthentication AuthRuleV2ListResponseEventStream = "THREE_DS_AUTHENTICATION"
+	AuthRuleV2ListResponseEventStreamTokenization          AuthRuleV2ListResponseEventStream = "TOKENIZATION"
+	AuthRuleV2ListResponseEventStreamACHCreditReceipt      AuthRuleV2ListResponseEventStream = "ACH_CREDIT_RECEIPT"
+	AuthRuleV2ListResponseEventStreamACHDebitReceipt       AuthRuleV2ListResponseEventStream = "ACH_DEBIT_RECEIPT"
 )
 
 func (r AuthRuleV2ListResponseEventStream) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResponseEventStreamAuthorization, AuthRuleV2ListResponseEventStreamThreeDSAuthentication:
+	case AuthRuleV2ListResponseEventStreamAuthorization, AuthRuleV2ListResponseEventStreamThreeDSAuthentication, AuthRuleV2ListResponseEventStreamTokenization, AuthRuleV2ListResponseEventStreamACHCreditReceipt, AuthRuleV2ListResponseEventStreamACHDebitReceipt:
 		return true
 	}
 	return false
@@ -3558,10 +4347,11 @@ func (r AuthRuleV2ListResponseState) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleV2ListResponseType string
 
 const (
@@ -3606,10 +4396,11 @@ type AuthRuleV2DraftResponse struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-	// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type AuthRuleV2DraftResponseType `json:"type,required"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens []string                    `json:"excluded_card_tokens" format:"uuid"`
@@ -3672,11 +4463,16 @@ func (r authRuleV2DraftResponseCurrentVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2DraftResponseCurrentVersionParameters struct {
-	// The action to take if the conditions are met.
-	Action AuthRuleV2DraftResponseCurrentVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [Conditional3DSActionParametersAction],
+	// [ConditionalAuthorizationActionParametersAction],
+	// [ConditionalACHActionParametersAction],
+	// [ConditionalTokenizationActionParametersAction].
+	Action interface{} `json:"action"`
 	// This field can have the runtime type of [[]AuthRuleCondition],
 	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition].
+	// [[]ConditionalAuthorizationActionParametersCondition],
+	// [[]ConditionalACHActionParametersCondition],
+	// [[]ConditionalTokenizationActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -3733,7 +4529,8 @@ func (r *AuthRuleV2DraftResponseCurrentVersionParameters) UnmarshalJSON(data []b
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters].
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
 func (r AuthRuleV2DraftResponseCurrentVersionParameters) AsUnion() AuthRuleV2DraftResponseCurrentVersionParametersUnion {
 	return r.union
 }
@@ -3741,8 +4538,9 @@ func (r AuthRuleV2DraftResponseCurrentVersionParameters) AsUnion() AuthRuleV2Dra
 // Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters] or
-// [ConditionalAuthorizationActionParameters].
+// [MerchantLockParameters], [Conditional3DSActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
+// [ConditionalTokenizationActionParameters].
 type AuthRuleV2DraftResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2DraftResponseCurrentVersionParameters()
 }
@@ -3771,23 +4569,15 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
+		},
 	)
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2DraftResponseCurrentVersionParametersAction string
-
-const (
-	AuthRuleV2DraftResponseCurrentVersionParametersActionDecline   AuthRuleV2DraftResponseCurrentVersionParametersAction = "DECLINE"
-	AuthRuleV2DraftResponseCurrentVersionParametersActionChallenge AuthRuleV2DraftResponseCurrentVersionParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2DraftResponseCurrentVersionParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2DraftResponseCurrentVersionParametersActionDecline, AuthRuleV2DraftResponseCurrentVersionParametersActionChallenge:
-		return true
-	}
-	return false
 }
 
 // The scope the velocity is calculated for
@@ -3834,11 +4624,16 @@ func (r authRuleV2DraftResponseDraftVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2DraftResponseDraftVersionParameters struct {
-	// The action to take if the conditions are met.
-	Action AuthRuleV2DraftResponseDraftVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [Conditional3DSActionParametersAction],
+	// [ConditionalAuthorizationActionParametersAction],
+	// [ConditionalACHActionParametersAction],
+	// [ConditionalTokenizationActionParametersAction].
+	Action interface{} `json:"action"`
 	// This field can have the runtime type of [[]AuthRuleCondition],
 	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition].
+	// [[]ConditionalAuthorizationActionParametersCondition],
+	// [[]ConditionalACHActionParametersCondition],
+	// [[]ConditionalTokenizationActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -3895,7 +4690,8 @@ func (r *AuthRuleV2DraftResponseDraftVersionParameters) UnmarshalJSON(data []byt
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters].
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
 func (r AuthRuleV2DraftResponseDraftVersionParameters) AsUnion() AuthRuleV2DraftResponseDraftVersionParametersUnion {
 	return r.union
 }
@@ -3903,8 +4699,9 @@ func (r AuthRuleV2DraftResponseDraftVersionParameters) AsUnion() AuthRuleV2Draft
 // Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters] or
-// [ConditionalAuthorizationActionParameters].
+// [MerchantLockParameters], [Conditional3DSActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
+// [ConditionalTokenizationActionParameters].
 type AuthRuleV2DraftResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2DraftResponseDraftVersionParameters()
 }
@@ -3933,23 +4730,15 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
+		},
 	)
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2DraftResponseDraftVersionParametersAction string
-
-const (
-	AuthRuleV2DraftResponseDraftVersionParametersActionDecline   AuthRuleV2DraftResponseDraftVersionParametersAction = "DECLINE"
-	AuthRuleV2DraftResponseDraftVersionParametersActionChallenge AuthRuleV2DraftResponseDraftVersionParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2DraftResponseDraftVersionParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2DraftResponseDraftVersionParametersActionDecline, AuthRuleV2DraftResponseDraftVersionParametersActionChallenge:
-		return true
-	}
-	return false
 }
 
 // The scope the velocity is calculated for
@@ -3974,11 +4763,14 @@ type AuthRuleV2DraftResponseEventStream string
 const (
 	AuthRuleV2DraftResponseEventStreamAuthorization         AuthRuleV2DraftResponseEventStream = "AUTHORIZATION"
 	AuthRuleV2DraftResponseEventStreamThreeDSAuthentication AuthRuleV2DraftResponseEventStream = "THREE_DS_AUTHENTICATION"
+	AuthRuleV2DraftResponseEventStreamTokenization          AuthRuleV2DraftResponseEventStream = "TOKENIZATION"
+	AuthRuleV2DraftResponseEventStreamACHCreditReceipt      AuthRuleV2DraftResponseEventStream = "ACH_CREDIT_RECEIPT"
+	AuthRuleV2DraftResponseEventStreamACHDebitReceipt       AuthRuleV2DraftResponseEventStream = "ACH_DEBIT_RECEIPT"
 )
 
 func (r AuthRuleV2DraftResponseEventStream) IsKnown() bool {
 	switch r {
-	case AuthRuleV2DraftResponseEventStreamAuthorization, AuthRuleV2DraftResponseEventStreamThreeDSAuthentication:
+	case AuthRuleV2DraftResponseEventStreamAuthorization, AuthRuleV2DraftResponseEventStreamThreeDSAuthentication, AuthRuleV2DraftResponseEventStreamTokenization, AuthRuleV2DraftResponseEventStreamACHCreditReceipt, AuthRuleV2DraftResponseEventStreamACHDebitReceipt:
 		return true
 	}
 	return false
@@ -4005,10 +4797,11 @@ func (r AuthRuleV2DraftResponseState) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleV2DraftResponseType string
 
 const (
@@ -4053,10 +4846,11 @@ type AuthRuleV2PromoteResponse struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-	// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type AuthRuleV2PromoteResponseType `json:"type,required"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens []string                      `json:"excluded_card_tokens" format:"uuid"`
@@ -4119,11 +4913,16 @@ func (r authRuleV2PromoteResponseCurrentVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2PromoteResponseCurrentVersionParameters struct {
-	// The action to take if the conditions are met.
-	Action AuthRuleV2PromoteResponseCurrentVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [Conditional3DSActionParametersAction],
+	// [ConditionalAuthorizationActionParametersAction],
+	// [ConditionalACHActionParametersAction],
+	// [ConditionalTokenizationActionParametersAction].
+	Action interface{} `json:"action"`
 	// This field can have the runtime type of [[]AuthRuleCondition],
 	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition].
+	// [[]ConditionalAuthorizationActionParametersCondition],
+	// [[]ConditionalACHActionParametersCondition],
+	// [[]ConditionalTokenizationActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -4180,7 +4979,8 @@ func (r *AuthRuleV2PromoteResponseCurrentVersionParameters) UnmarshalJSON(data [
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters].
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
 func (r AuthRuleV2PromoteResponseCurrentVersionParameters) AsUnion() AuthRuleV2PromoteResponseCurrentVersionParametersUnion {
 	return r.union
 }
@@ -4188,8 +4988,9 @@ func (r AuthRuleV2PromoteResponseCurrentVersionParameters) AsUnion() AuthRuleV2P
 // Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters] or
-// [ConditionalAuthorizationActionParameters].
+// [MerchantLockParameters], [Conditional3DSActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
+// [ConditionalTokenizationActionParameters].
 type AuthRuleV2PromoteResponseCurrentVersionParametersUnion interface {
 	implementsAuthRuleV2PromoteResponseCurrentVersionParameters()
 }
@@ -4218,23 +5019,15 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
+		},
 	)
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2PromoteResponseCurrentVersionParametersAction string
-
-const (
-	AuthRuleV2PromoteResponseCurrentVersionParametersActionDecline   AuthRuleV2PromoteResponseCurrentVersionParametersAction = "DECLINE"
-	AuthRuleV2PromoteResponseCurrentVersionParametersActionChallenge AuthRuleV2PromoteResponseCurrentVersionParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2PromoteResponseCurrentVersionParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2PromoteResponseCurrentVersionParametersActionDecline, AuthRuleV2PromoteResponseCurrentVersionParametersActionChallenge:
-		return true
-	}
-	return false
 }
 
 // The scope the velocity is calculated for
@@ -4281,11 +5074,16 @@ func (r authRuleV2PromoteResponseDraftVersionJSON) RawJSON() string {
 
 // Parameters for the Auth Rule
 type AuthRuleV2PromoteResponseDraftVersionParameters struct {
-	// The action to take if the conditions are met.
-	Action AuthRuleV2PromoteResponseDraftVersionParametersAction `json:"action"`
+	// This field can have the runtime type of [Conditional3DSActionParametersAction],
+	// [ConditionalAuthorizationActionParametersAction],
+	// [ConditionalACHActionParametersAction],
+	// [ConditionalTokenizationActionParametersAction].
+	Action interface{} `json:"action"`
 	// This field can have the runtime type of [[]AuthRuleCondition],
 	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition].
+	// [[]ConditionalAuthorizationActionParametersCondition],
+	// [[]ConditionalACHActionParametersCondition],
+	// [[]ConditionalTokenizationActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [VelocityLimitParamsFilters].
 	Filters interface{} `json:"filters"`
@@ -4342,7 +5140,8 @@ func (r *AuthRuleV2PromoteResponseDraftVersionParameters) UnmarshalJSON(data []b
 //
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters].
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
 func (r AuthRuleV2PromoteResponseDraftVersionParameters) AsUnion() AuthRuleV2PromoteResponseDraftVersionParametersUnion {
 	return r.union
 }
@@ -4350,8 +5149,9 @@ func (r AuthRuleV2PromoteResponseDraftVersionParameters) AsUnion() AuthRuleV2Pro
 // Parameters for the Auth Rule
 //
 // Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters] or
-// [ConditionalAuthorizationActionParameters].
+// [MerchantLockParameters], [Conditional3DSActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
+// [ConditionalTokenizationActionParameters].
 type AuthRuleV2PromoteResponseDraftVersionParametersUnion interface {
 	implementsAuthRuleV2PromoteResponseDraftVersionParameters()
 }
@@ -4380,23 +5180,15 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
+		},
 	)
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2PromoteResponseDraftVersionParametersAction string
-
-const (
-	AuthRuleV2PromoteResponseDraftVersionParametersActionDecline   AuthRuleV2PromoteResponseDraftVersionParametersAction = "DECLINE"
-	AuthRuleV2PromoteResponseDraftVersionParametersActionChallenge AuthRuleV2PromoteResponseDraftVersionParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2PromoteResponseDraftVersionParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2PromoteResponseDraftVersionParametersActionDecline, AuthRuleV2PromoteResponseDraftVersionParametersActionChallenge:
-		return true
-	}
-	return false
 }
 
 // The scope the velocity is calculated for
@@ -4421,11 +5213,14 @@ type AuthRuleV2PromoteResponseEventStream string
 const (
 	AuthRuleV2PromoteResponseEventStreamAuthorization         AuthRuleV2PromoteResponseEventStream = "AUTHORIZATION"
 	AuthRuleV2PromoteResponseEventStreamThreeDSAuthentication AuthRuleV2PromoteResponseEventStream = "THREE_DS_AUTHENTICATION"
+	AuthRuleV2PromoteResponseEventStreamTokenization          AuthRuleV2PromoteResponseEventStream = "TOKENIZATION"
+	AuthRuleV2PromoteResponseEventStreamACHCreditReceipt      AuthRuleV2PromoteResponseEventStream = "ACH_CREDIT_RECEIPT"
+	AuthRuleV2PromoteResponseEventStreamACHDebitReceipt       AuthRuleV2PromoteResponseEventStream = "ACH_DEBIT_RECEIPT"
 )
 
 func (r AuthRuleV2PromoteResponseEventStream) IsKnown() bool {
 	switch r {
-	case AuthRuleV2PromoteResponseEventStreamAuthorization, AuthRuleV2PromoteResponseEventStreamThreeDSAuthentication:
+	case AuthRuleV2PromoteResponseEventStreamAuthorization, AuthRuleV2PromoteResponseEventStreamThreeDSAuthentication, AuthRuleV2PromoteResponseEventStreamTokenization, AuthRuleV2PromoteResponseEventStreamACHCreditReceipt, AuthRuleV2PromoteResponseEventStreamACHDebitReceipt:
 		return true
 	}
 	return false
@@ -4452,10 +5247,11 @@ func (r AuthRuleV2PromoteResponseState) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleV2PromoteResponseType string
 
 const (
@@ -4714,10 +5510,11 @@ type AuthRuleV2NewParamsBody struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-	// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type                  param.Field[AuthRuleV2NewParamsBodyType] `json:"type,required"`
 	AccountTokens         param.Field[interface{}]                 `json:"account_tokens"`
 	BusinessAccountTokens param.Field[interface{}]                 `json:"business_account_tokens"`
@@ -4752,10 +5549,11 @@ type AuthRuleV2NewParamsBodyAccountLevelRule struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-	// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type param.Field[AuthRuleV2NewParamsBodyAccountLevelRuleType] `json:"type,required"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens param.Field[[]string] `json:"account_tokens" format:"uuid"`
@@ -4775,10 +5573,9 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRule) implementsAuthRuleV2NewParamsBo
 
 // Parameters for the Auth Rule
 type AuthRuleV2NewParamsBodyAccountLevelRuleParameters struct {
-	// The action to take if the conditions are met.
-	Action     param.Field[AuthRuleV2NewParamsBodyAccountLevelRuleParametersAction] `json:"action"`
-	Conditions param.Field[interface{}]                                             `json:"conditions"`
-	Filters    param.Field[interface{}]                                             `json:"filters"`
+	Action     param.Field[interface{}] `json:"action"`
+	Conditions param.Field[interface{}] `json:"conditions"`
+	Filters    param.Field[interface{}] `json:"filters"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -4807,26 +5604,11 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRuleParameters) implementsAuthRuleV2N
 //
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
+// [ConditionalTokenizationActionParameters],
 // [AuthRuleV2NewParamsBodyAccountLevelRuleParameters].
 type AuthRuleV2NewParamsBodyAccountLevelRuleParametersUnion interface {
 	implementsAuthRuleV2NewParamsBodyAccountLevelRuleParametersUnion()
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2NewParamsBodyAccountLevelRuleParametersAction string
-
-const (
-	AuthRuleV2NewParamsBodyAccountLevelRuleParametersActionDecline   AuthRuleV2NewParamsBodyAccountLevelRuleParametersAction = "DECLINE"
-	AuthRuleV2NewParamsBodyAccountLevelRuleParametersActionChallenge AuthRuleV2NewParamsBodyAccountLevelRuleParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2NewParamsBodyAccountLevelRuleParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2NewParamsBodyAccountLevelRuleParametersActionDecline, AuthRuleV2NewParamsBodyAccountLevelRuleParametersActionChallenge:
-		return true
-	}
-	return false
 }
 
 // The scope the velocity is calculated for
@@ -4850,10 +5632,11 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRuleParametersScope) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleV2NewParamsBodyAccountLevelRuleType string
 
 const (
@@ -4877,11 +5660,14 @@ type AuthRuleV2NewParamsBodyAccountLevelRuleEventStream string
 const (
 	AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamAuthorization         AuthRuleV2NewParamsBodyAccountLevelRuleEventStream = "AUTHORIZATION"
 	AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamThreeDSAuthentication AuthRuleV2NewParamsBodyAccountLevelRuleEventStream = "THREE_DS_AUTHENTICATION"
+	AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamTokenization          AuthRuleV2NewParamsBodyAccountLevelRuleEventStream = "TOKENIZATION"
+	AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamACHCreditReceipt      AuthRuleV2NewParamsBodyAccountLevelRuleEventStream = "ACH_CREDIT_RECEIPT"
+	AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamACHDebitReceipt       AuthRuleV2NewParamsBodyAccountLevelRuleEventStream = "ACH_DEBIT_RECEIPT"
 )
 
 func (r AuthRuleV2NewParamsBodyAccountLevelRuleEventStream) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamAuthorization, AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamThreeDSAuthentication:
+	case AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamAuthorization, AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamThreeDSAuthentication, AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamTokenization, AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamACHCreditReceipt, AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamACHDebitReceipt:
 		return true
 	}
 	return false
@@ -4897,10 +5683,11 @@ type AuthRuleV2NewParamsBodyCardLevelRule struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-	// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type param.Field[AuthRuleV2NewParamsBodyCardLevelRuleType] `json:"type,required"`
 	// The event stream during which the rule will be evaluated.
 	EventStream param.Field[AuthRuleV2NewParamsBodyCardLevelRuleEventStream] `json:"event_stream"`
@@ -4916,10 +5703,9 @@ func (r AuthRuleV2NewParamsBodyCardLevelRule) implementsAuthRuleV2NewParamsBodyU
 
 // Parameters for the Auth Rule
 type AuthRuleV2NewParamsBodyCardLevelRuleParameters struct {
-	// The action to take if the conditions are met.
-	Action     param.Field[AuthRuleV2NewParamsBodyCardLevelRuleParametersAction] `json:"action"`
-	Conditions param.Field[interface{}]                                          `json:"conditions"`
-	Filters    param.Field[interface{}]                                          `json:"filters"`
+	Action     param.Field[interface{}] `json:"action"`
+	Conditions param.Field[interface{}] `json:"conditions"`
+	Filters    param.Field[interface{}] `json:"filters"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -4948,26 +5734,11 @@ func (r AuthRuleV2NewParamsBodyCardLevelRuleParameters) implementsAuthRuleV2NewP
 //
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
+// [ConditionalTokenizationActionParameters],
 // [AuthRuleV2NewParamsBodyCardLevelRuleParameters].
 type AuthRuleV2NewParamsBodyCardLevelRuleParametersUnion interface {
 	implementsAuthRuleV2NewParamsBodyCardLevelRuleParametersUnion()
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2NewParamsBodyCardLevelRuleParametersAction string
-
-const (
-	AuthRuleV2NewParamsBodyCardLevelRuleParametersActionDecline   AuthRuleV2NewParamsBodyCardLevelRuleParametersAction = "DECLINE"
-	AuthRuleV2NewParamsBodyCardLevelRuleParametersActionChallenge AuthRuleV2NewParamsBodyCardLevelRuleParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2NewParamsBodyCardLevelRuleParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2NewParamsBodyCardLevelRuleParametersActionDecline, AuthRuleV2NewParamsBodyCardLevelRuleParametersActionChallenge:
-		return true
-	}
-	return false
 }
 
 // The scope the velocity is calculated for
@@ -4991,10 +5762,11 @@ func (r AuthRuleV2NewParamsBodyCardLevelRuleParametersScope) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleV2NewParamsBodyCardLevelRuleType string
 
 const (
@@ -5018,11 +5790,14 @@ type AuthRuleV2NewParamsBodyCardLevelRuleEventStream string
 const (
 	AuthRuleV2NewParamsBodyCardLevelRuleEventStreamAuthorization         AuthRuleV2NewParamsBodyCardLevelRuleEventStream = "AUTHORIZATION"
 	AuthRuleV2NewParamsBodyCardLevelRuleEventStreamThreeDSAuthentication AuthRuleV2NewParamsBodyCardLevelRuleEventStream = "THREE_DS_AUTHENTICATION"
+	AuthRuleV2NewParamsBodyCardLevelRuleEventStreamTokenization          AuthRuleV2NewParamsBodyCardLevelRuleEventStream = "TOKENIZATION"
+	AuthRuleV2NewParamsBodyCardLevelRuleEventStreamACHCreditReceipt      AuthRuleV2NewParamsBodyCardLevelRuleEventStream = "ACH_CREDIT_RECEIPT"
+	AuthRuleV2NewParamsBodyCardLevelRuleEventStreamACHDebitReceipt       AuthRuleV2NewParamsBodyCardLevelRuleEventStream = "ACH_DEBIT_RECEIPT"
 )
 
 func (r AuthRuleV2NewParamsBodyCardLevelRuleEventStream) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCardLevelRuleEventStreamAuthorization, AuthRuleV2NewParamsBodyCardLevelRuleEventStreamThreeDSAuthentication:
+	case AuthRuleV2NewParamsBodyCardLevelRuleEventStreamAuthorization, AuthRuleV2NewParamsBodyCardLevelRuleEventStreamThreeDSAuthentication, AuthRuleV2NewParamsBodyCardLevelRuleEventStreamTokenization, AuthRuleV2NewParamsBodyCardLevelRuleEventStreamACHCreditReceipt, AuthRuleV2NewParamsBodyCardLevelRuleEventStreamACHDebitReceipt:
 		return true
 	}
 	return false
@@ -5038,10 +5813,11 @@ type AuthRuleV2NewParamsBodyProgramLevelRule struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-	// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-	// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-	// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type param.Field[AuthRuleV2NewParamsBodyProgramLevelRuleType] `json:"type,required"`
 	// The event stream during which the rule will be evaluated.
 	EventStream param.Field[AuthRuleV2NewParamsBodyProgramLevelRuleEventStream] `json:"event_stream"`
@@ -5059,10 +5835,9 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRule) implementsAuthRuleV2NewParamsBo
 
 // Parameters for the Auth Rule
 type AuthRuleV2NewParamsBodyProgramLevelRuleParameters struct {
-	// The action to take if the conditions are met.
-	Action     param.Field[AuthRuleV2NewParamsBodyProgramLevelRuleParametersAction] `json:"action"`
-	Conditions param.Field[interface{}]                                             `json:"conditions"`
-	Filters    param.Field[interface{}]                                             `json:"filters"`
+	Action     param.Field[interface{}] `json:"action"`
+	Conditions param.Field[interface{}] `json:"conditions"`
+	Filters    param.Field[interface{}] `json:"filters"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -5091,26 +5866,11 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleParameters) implementsAuthRuleV2N
 //
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
+// [ConditionalTokenizationActionParameters],
 // [AuthRuleV2NewParamsBodyProgramLevelRuleParameters].
 type AuthRuleV2NewParamsBodyProgramLevelRuleParametersUnion interface {
 	implementsAuthRuleV2NewParamsBodyProgramLevelRuleParametersUnion()
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2NewParamsBodyProgramLevelRuleParametersAction string
-
-const (
-	AuthRuleV2NewParamsBodyProgramLevelRuleParametersActionDecline   AuthRuleV2NewParamsBodyProgramLevelRuleParametersAction = "DECLINE"
-	AuthRuleV2NewParamsBodyProgramLevelRuleParametersActionChallenge AuthRuleV2NewParamsBodyProgramLevelRuleParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2NewParamsBodyProgramLevelRuleParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2NewParamsBodyProgramLevelRuleParametersActionDecline, AuthRuleV2NewParamsBodyProgramLevelRuleParametersActionChallenge:
-		return true
-	}
-	return false
 }
 
 // The scope the velocity is calculated for
@@ -5134,10 +5894,11 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleParametersScope) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleV2NewParamsBodyProgramLevelRuleType string
 
 const (
@@ -5161,11 +5922,14 @@ type AuthRuleV2NewParamsBodyProgramLevelRuleEventStream string
 const (
 	AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamAuthorization         AuthRuleV2NewParamsBodyProgramLevelRuleEventStream = "AUTHORIZATION"
 	AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamThreeDSAuthentication AuthRuleV2NewParamsBodyProgramLevelRuleEventStream = "THREE_DS_AUTHENTICATION"
+	AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamTokenization          AuthRuleV2NewParamsBodyProgramLevelRuleEventStream = "TOKENIZATION"
+	AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamACHCreditReceipt      AuthRuleV2NewParamsBodyProgramLevelRuleEventStream = "ACH_CREDIT_RECEIPT"
+	AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamACHDebitReceipt       AuthRuleV2NewParamsBodyProgramLevelRuleEventStream = "ACH_DEBIT_RECEIPT"
 )
 
 func (r AuthRuleV2NewParamsBodyProgramLevelRuleEventStream) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamAuthorization, AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamThreeDSAuthentication:
+	case AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamAuthorization, AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamThreeDSAuthentication, AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamTokenization, AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamACHCreditReceipt, AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamACHDebitReceipt:
 		return true
 	}
 	return false
@@ -5176,10 +5940,11 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleEventStream) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-// - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-// - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-// - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-// - `CONDITIONAL_ACTION`: AUTHORIZATION or THREE_DS_AUTHENTICATION event stream.
+//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleV2NewParamsBodyType string
 
 const (
@@ -5203,11 +5968,14 @@ type AuthRuleV2NewParamsBodyEventStream string
 const (
 	AuthRuleV2NewParamsBodyEventStreamAuthorization         AuthRuleV2NewParamsBodyEventStream = "AUTHORIZATION"
 	AuthRuleV2NewParamsBodyEventStreamThreeDSAuthentication AuthRuleV2NewParamsBodyEventStream = "THREE_DS_AUTHENTICATION"
+	AuthRuleV2NewParamsBodyEventStreamTokenization          AuthRuleV2NewParamsBodyEventStream = "TOKENIZATION"
+	AuthRuleV2NewParamsBodyEventStreamACHCreditReceipt      AuthRuleV2NewParamsBodyEventStream = "ACH_CREDIT_RECEIPT"
+	AuthRuleV2NewParamsBodyEventStreamACHDebitReceipt       AuthRuleV2NewParamsBodyEventStream = "ACH_DEBIT_RECEIPT"
 )
 
 func (r AuthRuleV2NewParamsBodyEventStream) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyEventStreamAuthorization, AuthRuleV2NewParamsBodyEventStreamThreeDSAuthentication:
+	case AuthRuleV2NewParamsBodyEventStreamAuthorization, AuthRuleV2NewParamsBodyEventStreamThreeDSAuthentication, AuthRuleV2NewParamsBodyEventStreamTokenization, AuthRuleV2NewParamsBodyEventStreamACHCreditReceipt, AuthRuleV2NewParamsBodyEventStreamACHDebitReceipt:
 		return true
 	}
 	return false
@@ -5423,11 +6191,14 @@ type AuthRuleV2ListParamsEventStream string
 const (
 	AuthRuleV2ListParamsEventStreamAuthorization         AuthRuleV2ListParamsEventStream = "AUTHORIZATION"
 	AuthRuleV2ListParamsEventStreamThreeDSAuthentication AuthRuleV2ListParamsEventStream = "THREE_DS_AUTHENTICATION"
+	AuthRuleV2ListParamsEventStreamTokenization          AuthRuleV2ListParamsEventStream = "TOKENIZATION"
+	AuthRuleV2ListParamsEventStreamACHCreditReceipt      AuthRuleV2ListParamsEventStream = "ACH_CREDIT_RECEIPT"
+	AuthRuleV2ListParamsEventStreamACHDebitReceipt       AuthRuleV2ListParamsEventStream = "ACH_DEBIT_RECEIPT"
 )
 
 func (r AuthRuleV2ListParamsEventStream) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListParamsEventStreamAuthorization, AuthRuleV2ListParamsEventStreamThreeDSAuthentication:
+	case AuthRuleV2ListParamsEventStreamAuthorization, AuthRuleV2ListParamsEventStreamThreeDSAuthentication, AuthRuleV2ListParamsEventStreamTokenization, AuthRuleV2ListParamsEventStreamACHCreditReceipt, AuthRuleV2ListParamsEventStreamACHDebitReceipt:
 		return true
 	}
 	return false
@@ -5463,10 +6234,9 @@ func (r AuthRuleV2DraftParams) MarshalJSON() (data []byte, err error) {
 
 // Parameters for the Auth Rule
 type AuthRuleV2DraftParamsParameters struct {
-	// The action to take if the conditions are met.
-	Action     param.Field[AuthRuleV2DraftParamsParametersAction] `json:"action"`
-	Conditions param.Field[interface{}]                           `json:"conditions"`
-	Filters    param.Field[interface{}]                           `json:"filters"`
+	Action     param.Field[interface{}] `json:"action"`
+	Conditions param.Field[interface{}] `json:"conditions"`
+	Filters    param.Field[interface{}] `json:"filters"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -5494,25 +6264,10 @@ func (r AuthRuleV2DraftParamsParameters) implementsAuthRuleV2DraftParamsParamete
 //
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [AuthRuleV2DraftParamsParameters].
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
+// [ConditionalTokenizationActionParameters], [AuthRuleV2DraftParamsParameters].
 type AuthRuleV2DraftParamsParametersUnion interface {
 	implementsAuthRuleV2DraftParamsParametersUnion()
-}
-
-// The action to take if the conditions are met.
-type AuthRuleV2DraftParamsParametersAction string
-
-const (
-	AuthRuleV2DraftParamsParametersActionDecline   AuthRuleV2DraftParamsParametersAction = "DECLINE"
-	AuthRuleV2DraftParamsParametersActionChallenge AuthRuleV2DraftParamsParametersAction = "CHALLENGE"
-)
-
-func (r AuthRuleV2DraftParamsParametersAction) IsKnown() bool {
-	switch r {
-	case AuthRuleV2DraftParamsParametersActionDecline, AuthRuleV2DraftParamsParametersActionChallenge:
-		return true
-	}
-	return false
 }
 
 // The scope the velocity is calculated for

@@ -104,8 +104,8 @@ type Statement struct {
 	// Globally unique identifier for a financial account
 	FinancialAccountToken string `json:"financial_account_token,required" format:"uuid"`
 	// Date when the payment is due
-	PaymentDueDate time.Time             `json:"payment_due_date,required,nullable" format:"date"`
-	PeriodTotals   StatementPeriodTotals `json:"period_totals,required"`
+	PaymentDueDate time.Time       `json:"payment_due_date,required,nullable" format:"date"`
+	PeriodTotals   StatementTotals `json:"period_totals,required"`
 	// Balance at the start of the billing period
 	StartingBalance int64 `json:"starting_balance,required"`
 	// Date when the billing period ended
@@ -115,7 +115,7 @@ type Statement struct {
 	StatementType      StatementStatementType `json:"statement_type,required"`
 	// Timestamp of when the statement was updated
 	Updated         time.Time                `json:"updated,required" format:"date-time"`
-	YtdTotals       StatementYtdTotals       `json:"ytd_totals,required"`
+	YtdTotals       StatementTotals          `json:"ytd_totals,required"`
 	InterestDetails StatementInterestDetails `json:"interest_details,nullable"`
 	// Date when the next payment is due
 	NextPaymentDueDate time.Time `json:"next_payment_due_date" format:"date"`
@@ -308,59 +308,6 @@ func (r statementAmountDueJSON) RawJSON() string {
 	return r.raw
 }
 
-type StatementPeriodTotals struct {
-	// Opening balance transferred from previous account in cents
-	BalanceTransfers int64 `json:"balance_transfers,required"`
-	// ATM and cashback transactions in cents
-	CashAdvances int64 `json:"cash_advances,required"`
-	// Volume of credit management operation transactions less any balance transfers in
-	// cents
-	Credits int64 `json:"credits,required"`
-	// Volume of debit management operation transactions less any interest in cents
-	Debits int64 `json:"debits,required"`
-	// Volume of debit management operation transactions less any interest in cents
-	Fees int64 `json:"fees,required"`
-	// Interest accrued in cents
-	Interest int64 `json:"interest,required"`
-	// Any funds transfers which affective the balance in cents
-	Payments int64 `json:"payments,required"`
-	// Net card transaction volume less any cash advances in cents
-	Purchases int64 `json:"purchases,required"`
-	// Breakdown of credits
-	CreditDetails interface{} `json:"credit_details"`
-	// Breakdown of debits
-	DebitDetails interface{} `json:"debit_details"`
-	// Breakdown of payments
-	PaymentDetails interface{}               `json:"payment_details"`
-	JSON           statementPeriodTotalsJSON `json:"-"`
-}
-
-// statementPeriodTotalsJSON contains the JSON metadata for the struct
-// [StatementPeriodTotals]
-type statementPeriodTotalsJSON struct {
-	BalanceTransfers apijson.Field
-	CashAdvances     apijson.Field
-	Credits          apijson.Field
-	Debits           apijson.Field
-	Fees             apijson.Field
-	Interest         apijson.Field
-	Payments         apijson.Field
-	Purchases        apijson.Field
-	CreditDetails    apijson.Field
-	DebitDetails     apijson.Field
-	PaymentDetails   apijson.Field
-	raw              string
-	ExtraFields      map[string]apijson.Field
-}
-
-func (r *StatementPeriodTotals) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r statementPeriodTotalsJSON) RawJSON() string {
-	return r.raw
-}
-
 type StatementStatementType string
 
 const (
@@ -377,65 +324,12 @@ func (r StatementStatementType) IsKnown() bool {
 	return false
 }
 
-type StatementYtdTotals struct {
-	// Opening balance transferred from previous account in cents
-	BalanceTransfers int64 `json:"balance_transfers,required"`
-	// ATM and cashback transactions in cents
-	CashAdvances int64 `json:"cash_advances,required"`
-	// Volume of credit management operation transactions less any balance transfers in
-	// cents
-	Credits int64 `json:"credits,required"`
-	// Volume of debit management operation transactions less any interest in cents
-	Debits int64 `json:"debits,required"`
-	// Volume of debit management operation transactions less any interest in cents
-	Fees int64 `json:"fees,required"`
-	// Interest accrued in cents
-	Interest int64 `json:"interest,required"`
-	// Any funds transfers which affective the balance in cents
-	Payments int64 `json:"payments,required"`
-	// Net card transaction volume less any cash advances in cents
-	Purchases int64 `json:"purchases,required"`
-	// Breakdown of credits
-	CreditDetails interface{} `json:"credit_details"`
-	// Breakdown of debits
-	DebitDetails interface{} `json:"debit_details"`
-	// Breakdown of payments
-	PaymentDetails interface{}            `json:"payment_details"`
-	JSON           statementYtdTotalsJSON `json:"-"`
-}
-
-// statementYtdTotalsJSON contains the JSON metadata for the struct
-// [StatementYtdTotals]
-type statementYtdTotalsJSON struct {
-	BalanceTransfers apijson.Field
-	CashAdvances     apijson.Field
-	Credits          apijson.Field
-	Debits           apijson.Field
-	Fees             apijson.Field
-	Interest         apijson.Field
-	Payments         apijson.Field
-	Purchases        apijson.Field
-	CreditDetails    apijson.Field
-	DebitDetails     apijson.Field
-	PaymentDetails   apijson.Field
-	raw              string
-	ExtraFields      map[string]apijson.Field
-}
-
-func (r *StatementYtdTotals) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r statementYtdTotalsJSON) RawJSON() string {
-	return r.raw
-}
-
 type StatementInterestDetails struct {
 	ActualInterestCharged     int64                                             `json:"actual_interest_charged,required,nullable"`
-	DailyBalanceAmounts       StatementInterestDetailsDailyBalanceAmounts       `json:"daily_balance_amounts,required"`
-	EffectiveApr              StatementInterestDetailsEffectiveApr              `json:"effective_apr,required"`
+	DailyBalanceAmounts       CategoryDetails                                   `json:"daily_balance_amounts,required"`
+	EffectiveApr              CategoryDetails                                   `json:"effective_apr,required"`
 	InterestCalculationMethod StatementInterestDetailsInterestCalculationMethod `json:"interest_calculation_method,required"`
-	InterestForPeriod         StatementInterestDetailsInterestForPeriod         `json:"interest_for_period,required"`
+	InterestForPeriod         CategoryDetails                                   `json:"interest_for_period,required"`
 	PrimeRate                 string                                            `json:"prime_rate,required,nullable"`
 	MinimumInterestCharged    int64                                             `json:"minimum_interest_charged,nullable"`
 	JSON                      statementInterestDetailsJSON                      `json:"-"`
@@ -463,56 +357,6 @@ func (r statementInterestDetailsJSON) RawJSON() string {
 	return r.raw
 }
 
-type StatementInterestDetailsDailyBalanceAmounts struct {
-	BalanceTransfers string                                          `json:"balance_transfers,required"`
-	CashAdvances     string                                          `json:"cash_advances,required"`
-	Purchases        string                                          `json:"purchases,required"`
-	JSON             statementInterestDetailsDailyBalanceAmountsJSON `json:"-"`
-}
-
-// statementInterestDetailsDailyBalanceAmountsJSON contains the JSON metadata for
-// the struct [StatementInterestDetailsDailyBalanceAmounts]
-type statementInterestDetailsDailyBalanceAmountsJSON struct {
-	BalanceTransfers apijson.Field
-	CashAdvances     apijson.Field
-	Purchases        apijson.Field
-	raw              string
-	ExtraFields      map[string]apijson.Field
-}
-
-func (r *StatementInterestDetailsDailyBalanceAmounts) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r statementInterestDetailsDailyBalanceAmountsJSON) RawJSON() string {
-	return r.raw
-}
-
-type StatementInterestDetailsEffectiveApr struct {
-	BalanceTransfers string                                   `json:"balance_transfers,required"`
-	CashAdvances     string                                   `json:"cash_advances,required"`
-	Purchases        string                                   `json:"purchases,required"`
-	JSON             statementInterestDetailsEffectiveAprJSON `json:"-"`
-}
-
-// statementInterestDetailsEffectiveAprJSON contains the JSON metadata for the
-// struct [StatementInterestDetailsEffectiveApr]
-type statementInterestDetailsEffectiveAprJSON struct {
-	BalanceTransfers apijson.Field
-	CashAdvances     apijson.Field
-	Purchases        apijson.Field
-	raw              string
-	ExtraFields      map[string]apijson.Field
-}
-
-func (r *StatementInterestDetailsEffectiveApr) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r statementInterestDetailsEffectiveAprJSON) RawJSON() string {
-	return r.raw
-}
-
 type StatementInterestDetailsInterestCalculationMethod string
 
 const (
@@ -526,31 +370,6 @@ func (r StatementInterestDetailsInterestCalculationMethod) IsKnown() bool {
 		return true
 	}
 	return false
-}
-
-type StatementInterestDetailsInterestForPeriod struct {
-	BalanceTransfers string                                        `json:"balance_transfers,required"`
-	CashAdvances     string                                        `json:"cash_advances,required"`
-	Purchases        string                                        `json:"purchases,required"`
-	JSON             statementInterestDetailsInterestForPeriodJSON `json:"-"`
-}
-
-// statementInterestDetailsInterestForPeriodJSON contains the JSON metadata for the
-// struct [StatementInterestDetailsInterestForPeriod]
-type statementInterestDetailsInterestForPeriodJSON struct {
-	BalanceTransfers apijson.Field
-	CashAdvances     apijson.Field
-	Purchases        apijson.Field
-	raw              string
-	ExtraFields      map[string]apijson.Field
-}
-
-func (r *StatementInterestDetailsInterestForPeriod) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r statementInterestDetailsInterestForPeriodJSON) RawJSON() string {
-	return r.raw
 }
 
 type Statements struct {

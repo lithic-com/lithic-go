@@ -17,6 +17,7 @@ import (
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/packages/pagination"
+	"github.com/lithic-com/lithic-go/shared"
 )
 
 // FinancialAccountService contains methods and other services that help with
@@ -133,6 +134,30 @@ func (r *FinancialAccountService) UpdateStatus(ctx context.Context, financialAcc
 	return
 }
 
+type CategoryDetails struct {
+	BalanceTransfers string              `json:"balance_transfers,required"`
+	CashAdvances     string              `json:"cash_advances,required"`
+	Purchases        string              `json:"purchases,required"`
+	JSON             categoryDetailsJSON `json:"-"`
+}
+
+// categoryDetailsJSON contains the JSON metadata for the struct [CategoryDetails]
+type categoryDetailsJSON struct {
+	BalanceTransfers apijson.Field
+	CashAdvances     apijson.Field
+	Purchases        apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
+}
+
+func (r *CategoryDetails) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r categoryDetailsJSON) RawJSON() string {
+	return r.raw
+}
+
 type FinancialAccount struct {
 	// Globally unique identifier for the account
 	Token               string                              `json:"token,required" format:"uuid"`
@@ -181,7 +206,7 @@ func (r financialAccountJSON) RawJSON() string {
 }
 
 type FinancialAccountCreditConfiguration struct {
-	AutoCollectionConfiguration FinancialAccountCreditConfigurationAutoCollectionConfiguration `json:"auto_collection_configuration,required"`
+	AutoCollectionConfiguration FinancialAccountCreditConfigurationAutoCollectionConfiguration `json:"auto_collection_configuration,required,nullable"`
 	CreditLimit                 int64                                                          `json:"credit_limit,required,nullable"`
 	// Globally unique identifier for the credit product
 	CreditProductToken       string `json:"credit_product_token,required,nullable"`
@@ -314,7 +339,7 @@ type FinancialTransaction struct {
 	// to display to users.
 	Descriptor string `json:"descriptor,required"`
 	// A list of all financial events that have modified this financial transaction.
-	Events []FinancialTransactionEvent `json:"events,required"`
+	Events []shared.FinancialEvent `json:"events,required"`
 	// Pending amount of the transaction in the currency's smallest unit (e.g., cents),
 	// including any acquirer fees. The value of this field will go to zero over time
 	// once the financial transaction is settled.
@@ -390,143 +415,6 @@ func (r FinancialTransactionCategory) IsKnown() bool {
 	return false
 }
 
-// Financial Event
-type FinancialTransactionEvent struct {
-	// Globally unique identifier.
-	Token string `json:"token" format:"uuid"`
-	// Amount of the financial event that has been settled in the currency's smallest
-	// unit (e.g., cents).
-	Amount int64 `json:"amount"`
-	// Date and time when the financial event occurred. UTC time zone.
-	Created time.Time `json:"created" format:"date-time"`
-	// APPROVED financial events were successful while DECLINED financial events were
-	// declined by user, Lithic, or the network.
-	Result FinancialTransactionEventsResult `json:"result"`
-	Type   FinancialTransactionEventsType   `json:"type"`
-	JSON   financialTransactionEventJSON    `json:"-"`
-}
-
-// financialTransactionEventJSON contains the JSON metadata for the struct
-// [FinancialTransactionEvent]
-type financialTransactionEventJSON struct {
-	Token       apijson.Field
-	Amount      apijson.Field
-	Created     apijson.Field
-	Result      apijson.Field
-	Type        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *FinancialTransactionEvent) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r financialTransactionEventJSON) RawJSON() string {
-	return r.raw
-}
-
-// APPROVED financial events were successful while DECLINED financial events were
-// declined by user, Lithic, or the network.
-type FinancialTransactionEventsResult string
-
-const (
-	FinancialTransactionEventsResultApproved FinancialTransactionEventsResult = "APPROVED"
-	FinancialTransactionEventsResultDeclined FinancialTransactionEventsResult = "DECLINED"
-)
-
-func (r FinancialTransactionEventsResult) IsKnown() bool {
-	switch r {
-	case FinancialTransactionEventsResultApproved, FinancialTransactionEventsResultDeclined:
-		return true
-	}
-	return false
-}
-
-type FinancialTransactionEventsType string
-
-const (
-	FinancialTransactionEventsTypeACHOriginationCancelled      FinancialTransactionEventsType = "ACH_ORIGINATION_CANCELLED"
-	FinancialTransactionEventsTypeACHOriginationInitiated      FinancialTransactionEventsType = "ACH_ORIGINATION_INITIATED"
-	FinancialTransactionEventsTypeACHOriginationProcessed      FinancialTransactionEventsType = "ACH_ORIGINATION_PROCESSED"
-	FinancialTransactionEventsTypeACHOriginationReleased       FinancialTransactionEventsType = "ACH_ORIGINATION_RELEASED"
-	FinancialTransactionEventsTypeACHOriginationRejected       FinancialTransactionEventsType = "ACH_ORIGINATION_REJECTED"
-	FinancialTransactionEventsTypeACHOriginationReviewed       FinancialTransactionEventsType = "ACH_ORIGINATION_REVIEWED"
-	FinancialTransactionEventsTypeACHOriginationSettled        FinancialTransactionEventsType = "ACH_ORIGINATION_SETTLED"
-	FinancialTransactionEventsTypeACHReceiptProcessed          FinancialTransactionEventsType = "ACH_RECEIPT_PROCESSED"
-	FinancialTransactionEventsTypeACHReceiptReleased           FinancialTransactionEventsType = "ACH_RECEIPT_RELEASED"
-	FinancialTransactionEventsTypeACHReceiptSettled            FinancialTransactionEventsType = "ACH_RECEIPT_SETTLED"
-	FinancialTransactionEventsTypeACHReturnInitiated           FinancialTransactionEventsType = "ACH_RETURN_INITIATED"
-	FinancialTransactionEventsTypeACHReturnProcessed           FinancialTransactionEventsType = "ACH_RETURN_PROCESSED"
-	FinancialTransactionEventsTypeACHReturnRejected            FinancialTransactionEventsType = "ACH_RETURN_REJECTED"
-	FinancialTransactionEventsTypeACHReturnSettled             FinancialTransactionEventsType = "ACH_RETURN_SETTLED"
-	FinancialTransactionEventsTypeAuthorization                FinancialTransactionEventsType = "AUTHORIZATION"
-	FinancialTransactionEventsTypeAuthorizationAdvice          FinancialTransactionEventsType = "AUTHORIZATION_ADVICE"
-	FinancialTransactionEventsTypeAuthorizationExpiry          FinancialTransactionEventsType = "AUTHORIZATION_EXPIRY"
-	FinancialTransactionEventsTypeAuthorizationReversal        FinancialTransactionEventsType = "AUTHORIZATION_REVERSAL"
-	FinancialTransactionEventsTypeBalanceInquiry               FinancialTransactionEventsType = "BALANCE_INQUIRY"
-	FinancialTransactionEventsTypeBillingError                 FinancialTransactionEventsType = "BILLING_ERROR"
-	FinancialTransactionEventsTypeBillingErrorReversal         FinancialTransactionEventsType = "BILLING_ERROR_REVERSAL"
-	FinancialTransactionEventsTypeCardToCard                   FinancialTransactionEventsType = "CARD_TO_CARD"
-	FinancialTransactionEventsTypeCashBack                     FinancialTransactionEventsType = "CASH_BACK"
-	FinancialTransactionEventsTypeCashBackReversal             FinancialTransactionEventsType = "CASH_BACK_REVERSAL"
-	FinancialTransactionEventsTypeClearing                     FinancialTransactionEventsType = "CLEARING"
-	FinancialTransactionEventsTypeCollection                   FinancialTransactionEventsType = "COLLECTION"
-	FinancialTransactionEventsTypeCorrectionCredit             FinancialTransactionEventsType = "CORRECTION_CREDIT"
-	FinancialTransactionEventsTypeCorrectionDebit              FinancialTransactionEventsType = "CORRECTION_DEBIT"
-	FinancialTransactionEventsTypeCreditAuthorization          FinancialTransactionEventsType = "CREDIT_AUTHORIZATION"
-	FinancialTransactionEventsTypeCreditAuthorizationAdvice    FinancialTransactionEventsType = "CREDIT_AUTHORIZATION_ADVICE"
-	FinancialTransactionEventsTypeCurrencyConversion           FinancialTransactionEventsType = "CURRENCY_CONVERSION"
-	FinancialTransactionEventsTypeCurrencyConversionReversal   FinancialTransactionEventsType = "CURRENCY_CONVERSION_REVERSAL"
-	FinancialTransactionEventsTypeDisputeWon                   FinancialTransactionEventsType = "DISPUTE_WON"
-	FinancialTransactionEventsTypeExternalACHCanceled          FinancialTransactionEventsType = "EXTERNAL_ACH_CANCELED"
-	FinancialTransactionEventsTypeExternalACHInitiated         FinancialTransactionEventsType = "EXTERNAL_ACH_INITIATED"
-	FinancialTransactionEventsTypeExternalACHReleased          FinancialTransactionEventsType = "EXTERNAL_ACH_RELEASED"
-	FinancialTransactionEventsTypeExternalACHReversed          FinancialTransactionEventsType = "EXTERNAL_ACH_REVERSED"
-	FinancialTransactionEventsTypeExternalACHSettled           FinancialTransactionEventsType = "EXTERNAL_ACH_SETTLED"
-	FinancialTransactionEventsTypeExternalCheckCanceled        FinancialTransactionEventsType = "EXTERNAL_CHECK_CANCELED"
-	FinancialTransactionEventsTypeExternalCheckInitiated       FinancialTransactionEventsType = "EXTERNAL_CHECK_INITIATED"
-	FinancialTransactionEventsTypeExternalCheckReleased        FinancialTransactionEventsType = "EXTERNAL_CHECK_RELEASED"
-	FinancialTransactionEventsTypeExternalCheckReversed        FinancialTransactionEventsType = "EXTERNAL_CHECK_REVERSED"
-	FinancialTransactionEventsTypeExternalCheckSettled         FinancialTransactionEventsType = "EXTERNAL_CHECK_SETTLED"
-	FinancialTransactionEventsTypeExternalTransferCanceled     FinancialTransactionEventsType = "EXTERNAL_TRANSFER_CANCELED"
-	FinancialTransactionEventsTypeExternalTransferInitiated    FinancialTransactionEventsType = "EXTERNAL_TRANSFER_INITIATED"
-	FinancialTransactionEventsTypeExternalTransferReleased     FinancialTransactionEventsType = "EXTERNAL_TRANSFER_RELEASED"
-	FinancialTransactionEventsTypeExternalTransferReversed     FinancialTransactionEventsType = "EXTERNAL_TRANSFER_REVERSED"
-	FinancialTransactionEventsTypeExternalTransferSettled      FinancialTransactionEventsType = "EXTERNAL_TRANSFER_SETTLED"
-	FinancialTransactionEventsTypeExternalWireCanceled         FinancialTransactionEventsType = "EXTERNAL_WIRE_CANCELED"
-	FinancialTransactionEventsTypeExternalWireInitiated        FinancialTransactionEventsType = "EXTERNAL_WIRE_INITIATED"
-	FinancialTransactionEventsTypeExternalWireReleased         FinancialTransactionEventsType = "EXTERNAL_WIRE_RELEASED"
-	FinancialTransactionEventsTypeExternalWireReversed         FinancialTransactionEventsType = "EXTERNAL_WIRE_REVERSED"
-	FinancialTransactionEventsTypeExternalWireSettled          FinancialTransactionEventsType = "EXTERNAL_WIRE_SETTLED"
-	FinancialTransactionEventsTypeFinancialAuthorization       FinancialTransactionEventsType = "FINANCIAL_AUTHORIZATION"
-	FinancialTransactionEventsTypeFinancialCreditAuthorization FinancialTransactionEventsType = "FINANCIAL_CREDIT_AUTHORIZATION"
-	FinancialTransactionEventsTypeInterest                     FinancialTransactionEventsType = "INTEREST"
-	FinancialTransactionEventsTypeInterestReversal             FinancialTransactionEventsType = "INTEREST_REVERSAL"
-	FinancialTransactionEventsTypeInternalAdjustment           FinancialTransactionEventsType = "INTERNAL_ADJUSTMENT"
-	FinancialTransactionEventsTypeLatePayment                  FinancialTransactionEventsType = "LATE_PAYMENT"
-	FinancialTransactionEventsTypeLatePaymentReversal          FinancialTransactionEventsType = "LATE_PAYMENT_REVERSAL"
-	FinancialTransactionEventsTypeLossWriteOff                 FinancialTransactionEventsType = "LOSS_WRITE_OFF"
-	FinancialTransactionEventsTypeProvisionalCredit            FinancialTransactionEventsType = "PROVISIONAL_CREDIT"
-	FinancialTransactionEventsTypeProvisionalCreditReversal    FinancialTransactionEventsType = "PROVISIONAL_CREDIT_REVERSAL"
-	FinancialTransactionEventsTypeService                      FinancialTransactionEventsType = "SERVICE"
-	FinancialTransactionEventsTypeReturn                       FinancialTransactionEventsType = "RETURN"
-	FinancialTransactionEventsTypeReturnReversal               FinancialTransactionEventsType = "RETURN_REVERSAL"
-	FinancialTransactionEventsTypeTransfer                     FinancialTransactionEventsType = "TRANSFER"
-	FinancialTransactionEventsTypeTransferInsufficientFunds    FinancialTransactionEventsType = "TRANSFER_INSUFFICIENT_FUNDS"
-	FinancialTransactionEventsTypeReturnedPayment              FinancialTransactionEventsType = "RETURNED_PAYMENT"
-	FinancialTransactionEventsTypeReturnedPaymentReversal      FinancialTransactionEventsType = "RETURNED_PAYMENT_REVERSAL"
-	FinancialTransactionEventsTypeLithicNetworkPayment         FinancialTransactionEventsType = "LITHIC_NETWORK_PAYMENT"
-)
-
-func (r FinancialTransactionEventsType) IsKnown() bool {
-	switch r {
-	case FinancialTransactionEventsTypeACHOriginationCancelled, FinancialTransactionEventsTypeACHOriginationInitiated, FinancialTransactionEventsTypeACHOriginationProcessed, FinancialTransactionEventsTypeACHOriginationReleased, FinancialTransactionEventsTypeACHOriginationRejected, FinancialTransactionEventsTypeACHOriginationReviewed, FinancialTransactionEventsTypeACHOriginationSettled, FinancialTransactionEventsTypeACHReceiptProcessed, FinancialTransactionEventsTypeACHReceiptReleased, FinancialTransactionEventsTypeACHReceiptSettled, FinancialTransactionEventsTypeACHReturnInitiated, FinancialTransactionEventsTypeACHReturnProcessed, FinancialTransactionEventsTypeACHReturnRejected, FinancialTransactionEventsTypeACHReturnSettled, FinancialTransactionEventsTypeAuthorization, FinancialTransactionEventsTypeAuthorizationAdvice, FinancialTransactionEventsTypeAuthorizationExpiry, FinancialTransactionEventsTypeAuthorizationReversal, FinancialTransactionEventsTypeBalanceInquiry, FinancialTransactionEventsTypeBillingError, FinancialTransactionEventsTypeBillingErrorReversal, FinancialTransactionEventsTypeCardToCard, FinancialTransactionEventsTypeCashBack, FinancialTransactionEventsTypeCashBackReversal, FinancialTransactionEventsTypeClearing, FinancialTransactionEventsTypeCollection, FinancialTransactionEventsTypeCorrectionCredit, FinancialTransactionEventsTypeCorrectionDebit, FinancialTransactionEventsTypeCreditAuthorization, FinancialTransactionEventsTypeCreditAuthorizationAdvice, FinancialTransactionEventsTypeCurrencyConversion, FinancialTransactionEventsTypeCurrencyConversionReversal, FinancialTransactionEventsTypeDisputeWon, FinancialTransactionEventsTypeExternalACHCanceled, FinancialTransactionEventsTypeExternalACHInitiated, FinancialTransactionEventsTypeExternalACHReleased, FinancialTransactionEventsTypeExternalACHReversed, FinancialTransactionEventsTypeExternalACHSettled, FinancialTransactionEventsTypeExternalCheckCanceled, FinancialTransactionEventsTypeExternalCheckInitiated, FinancialTransactionEventsTypeExternalCheckReleased, FinancialTransactionEventsTypeExternalCheckReversed, FinancialTransactionEventsTypeExternalCheckSettled, FinancialTransactionEventsTypeExternalTransferCanceled, FinancialTransactionEventsTypeExternalTransferInitiated, FinancialTransactionEventsTypeExternalTransferReleased, FinancialTransactionEventsTypeExternalTransferReversed, FinancialTransactionEventsTypeExternalTransferSettled, FinancialTransactionEventsTypeExternalWireCanceled, FinancialTransactionEventsTypeExternalWireInitiated, FinancialTransactionEventsTypeExternalWireReleased, FinancialTransactionEventsTypeExternalWireReversed, FinancialTransactionEventsTypeExternalWireSettled, FinancialTransactionEventsTypeFinancialAuthorization, FinancialTransactionEventsTypeFinancialCreditAuthorization, FinancialTransactionEventsTypeInterest, FinancialTransactionEventsTypeInterestReversal, FinancialTransactionEventsTypeInternalAdjustment, FinancialTransactionEventsTypeLatePayment, FinancialTransactionEventsTypeLatePaymentReversal, FinancialTransactionEventsTypeLossWriteOff, FinancialTransactionEventsTypeProvisionalCredit, FinancialTransactionEventsTypeProvisionalCreditReversal, FinancialTransactionEventsTypeService, FinancialTransactionEventsTypeReturn, FinancialTransactionEventsTypeReturnReversal, FinancialTransactionEventsTypeTransfer, FinancialTransactionEventsTypeTransferInsufficientFunds, FinancialTransactionEventsTypeReturnedPayment, FinancialTransactionEventsTypeReturnedPaymentReversal, FinancialTransactionEventsTypeLithicNetworkPayment:
-		return true
-	}
-	return false
-}
-
 // APPROVED transactions were successful while DECLINED transactions were declined
 // by user, Lithic, or the network.
 type FinancialTransactionResult string
@@ -570,6 +458,58 @@ func (r FinancialTransactionStatus) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+type StatementTotals struct {
+	// Opening balance transferred from previous account in cents
+	BalanceTransfers int64 `json:"balance_transfers,required"`
+	// ATM and cashback transactions in cents
+	CashAdvances int64 `json:"cash_advances,required"`
+	// Volume of credit management operation transactions less any balance transfers in
+	// cents
+	Credits int64 `json:"credits,required"`
+	// Volume of debit management operation transactions less any interest in cents
+	Debits int64 `json:"debits,required"`
+	// Volume of debit management operation transactions less any interest in cents
+	Fees int64 `json:"fees,required"`
+	// Interest accrued in cents
+	Interest int64 `json:"interest,required"`
+	// Any funds transfers which affective the balance in cents
+	Payments int64 `json:"payments,required"`
+	// Net card transaction volume less any cash advances in cents
+	Purchases int64 `json:"purchases,required"`
+	// Breakdown of credits
+	CreditDetails interface{} `json:"credit_details"`
+	// Breakdown of debits
+	DebitDetails interface{} `json:"debit_details"`
+	// Breakdown of payments
+	PaymentDetails interface{}         `json:"payment_details"`
+	JSON           statementTotalsJSON `json:"-"`
+}
+
+// statementTotalsJSON contains the JSON metadata for the struct [StatementTotals]
+type statementTotalsJSON struct {
+	BalanceTransfers apijson.Field
+	CashAdvances     apijson.Field
+	Credits          apijson.Field
+	Debits           apijson.Field
+	Fees             apijson.Field
+	Interest         apijson.Field
+	Payments         apijson.Field
+	Purchases        apijson.Field
+	CreditDetails    apijson.Field
+	DebitDetails     apijson.Field
+	PaymentDetails   apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
+}
+
+func (r *StatementTotals) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r statementTotalsJSON) RawJSON() string {
+	return r.raw
 }
 
 type FinancialAccountNewParams struct {

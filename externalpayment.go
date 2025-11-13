@@ -148,7 +148,7 @@ type ExternalPayment struct {
 	PendingAmount         int64                      `json:"pending_amount"`
 	Result                ExternalPaymentResult      `json:"result"`
 	SettledAmount         int64                      `json:"settled_amount"`
-	UserDefinedID         string                     `json:"user_defined_id"`
+	UserDefinedID         string                     `json:"user_defined_id,nullable"`
 	JSON                  externalPaymentJSON        `json:"-"`
 }
 
@@ -193,11 +193,12 @@ const (
 	ExternalPaymentStatusDeclined ExternalPaymentStatus = "DECLINED"
 	ExternalPaymentStatusReversed ExternalPaymentStatus = "REVERSED"
 	ExternalPaymentStatusCanceled ExternalPaymentStatus = "CANCELED"
+	ExternalPaymentStatusReturned ExternalPaymentStatus = "RETURNED"
 )
 
 func (r ExternalPaymentStatus) IsKnown() bool {
 	switch r {
-	case ExternalPaymentStatusPending, ExternalPaymentStatusSettled, ExternalPaymentStatusDeclined, ExternalPaymentStatusReversed, ExternalPaymentStatusCanceled:
+	case ExternalPaymentStatusPending, ExternalPaymentStatusSettled, ExternalPaymentStatusDeclined, ExternalPaymentStatusReversed, ExternalPaymentStatusCanceled, ExternalPaymentStatusReturned:
 		return true
 	}
 	return false
@@ -505,11 +506,12 @@ const (
 	ExternalPaymentListParamsStatusDeclined ExternalPaymentListParamsStatus = "DECLINED"
 	ExternalPaymentListParamsStatusReversed ExternalPaymentListParamsStatus = "REVERSED"
 	ExternalPaymentListParamsStatusCanceled ExternalPaymentListParamsStatus = "CANCELED"
+	ExternalPaymentListParamsStatusReturned ExternalPaymentListParamsStatus = "RETURNED"
 )
 
 func (r ExternalPaymentListParamsStatus) IsKnown() bool {
 	switch r {
-	case ExternalPaymentListParamsStatusPending, ExternalPaymentListParamsStatusSettled, ExternalPaymentListParamsStatusDeclined, ExternalPaymentListParamsStatusReversed, ExternalPaymentListParamsStatusCanceled:
+	case ExternalPaymentListParamsStatusPending, ExternalPaymentListParamsStatusSettled, ExternalPaymentListParamsStatusDeclined, ExternalPaymentListParamsStatusReversed, ExternalPaymentListParamsStatusCanceled, ExternalPaymentListParamsStatusReturned:
 		return true
 	}
 	return false
