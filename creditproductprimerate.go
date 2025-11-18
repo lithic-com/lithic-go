@@ -40,7 +40,7 @@ func NewCreditProductPrimeRateService(opts ...option.RequestOption) (r *CreditPr
 // Post Credit Product Prime Rate
 func (r *CreditProductPrimeRateService) New(ctx context.Context, creditProductToken string, body CreditProductPrimeRateNewParams, opts ...option.RequestOption) (err error) {
 	opts = slices.Concat(r.Options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if creditProductToken == "" {
 		err = errors.New("missing required credit_product_token parameter")
 		return

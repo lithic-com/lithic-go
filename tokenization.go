@@ -83,7 +83,7 @@ func (r *TokenizationService) ListAutoPaging(ctx context.Context, query Tokeniza
 // [lithic.com/contact](https://lithic.com/contact) for more information.
 func (r *TokenizationService) Activate(ctx context.Context, tokenizationToken string, opts ...option.RequestOption) (err error) {
 	opts = slices.Concat(r.Options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if tokenizationToken == "" {
 		err = errors.New("missing required tokenization_token parameter")
 		return
@@ -104,7 +104,7 @@ func (r *TokenizationService) Activate(ctx context.Context, tokenizationToken st
 // for more information.
 func (r *TokenizationService) Deactivate(ctx context.Context, tokenizationToken string, opts ...option.RequestOption) (err error) {
 	opts = slices.Concat(r.Options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if tokenizationToken == "" {
 		err = errors.New("missing required tokenization_token parameter")
 		return
@@ -124,7 +124,7 @@ func (r *TokenizationService) Deactivate(ctx context.Context, tokenizationToken 
 // information.
 func (r *TokenizationService) Pause(ctx context.Context, tokenizationToken string, opts ...option.RequestOption) (err error) {
 	opts = slices.Concat(r.Options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if tokenizationToken == "" {
 		err = errors.New("missing required tokenization_token parameter")
 		return
@@ -146,7 +146,7 @@ func (r *TokenizationService) Pause(ctx context.Context, tokenizationToken strin
 // [lithic.com/contact](https://lithic.com/contact) for more information.
 func (r *TokenizationService) ResendActivationCode(ctx context.Context, tokenizationToken string, body TokenizationResendActivationCodeParams, opts ...option.RequestOption) (err error) {
 	opts = slices.Concat(r.Options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if tokenizationToken == "" {
 		err = errors.New("missing required tokenization_token parameter")
 		return
@@ -174,7 +174,7 @@ func (r *TokenizationService) Simulate(ctx context.Context, body TokenizationSim
 // [lithic.com/contact](https://lithic.com/contact) for more information.
 func (r *TokenizationService) Unpause(ctx context.Context, tokenizationToken string, opts ...option.RequestOption) (err error) {
 	opts = slices.Concat(r.Options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if tokenizationToken == "" {
 		err = errors.New("missing required tokenization_token parameter")
 		return

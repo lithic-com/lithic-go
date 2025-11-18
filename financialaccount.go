@@ -112,7 +112,7 @@ func (r *FinancialAccountService) ListAutoPaging(ctx context.Context, query Fina
 // Register account number
 func (r *FinancialAccountService) RegisterAccountNumber(ctx context.Context, financialAccountToken string, body FinancialAccountRegisterAccountNumberParams, opts ...option.RequestOption) (err error) {
 	opts = slices.Concat(r.Options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
 		return

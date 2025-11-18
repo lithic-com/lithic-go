@@ -105,7 +105,7 @@ func (r *AuthRuleV2Service) ListAutoPaging(ctx context.Context, query AuthRuleV2
 // Deletes a V2 Auth rule
 func (r *AuthRuleV2Service) Delete(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (err error) {
 	opts = slices.Concat(r.Options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
 		return
