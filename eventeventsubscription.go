@@ -35,7 +35,7 @@ func NewEventEventSubscriptionService(opts ...option.RequestOption) (r *EventEve
 // Resend an event to an event subscription.
 func (r *EventEventSubscriptionService) Resend(ctx context.Context, eventToken string, eventSubscriptionToken string, opts ...option.RequestOption) (err error) {
 	opts = slices.Concat(r.Options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if eventToken == "" {
 		err = errors.New("missing required event_token parameter")
 		return

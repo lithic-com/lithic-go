@@ -45,7 +45,7 @@ func (r *ResponderEndpointService) New(ctx context.Context, body ResponderEndpoi
 // Disenroll a responder endpoint
 func (r *ResponderEndpointService) Delete(ctx context.Context, body ResponderEndpointDeleteParams, opts ...option.RequestOption) (err error) {
 	opts = slices.Concat(r.Options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	path := "v1/responder_endpoints"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, body, nil, opts...)
 	return

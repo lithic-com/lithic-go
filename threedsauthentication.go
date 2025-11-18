@@ -66,7 +66,7 @@ func (r *ThreeDSAuthenticationService) Simulate(ctx context.Context, body ThreeD
 // is supported; upon entering OTP, the challenge is either approved or declined.
 func (r *ThreeDSAuthenticationService) SimulateOtpEntry(ctx context.Context, body ThreeDSAuthenticationSimulateOtpEntryParams, opts ...option.RequestOption) (err error) {
 	opts = slices.Concat(r.Options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	path := "v1/three_ds_decisioning/simulate/enter_otp"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
 	return
