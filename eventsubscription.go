@@ -96,7 +96,7 @@ func (r *EventSubscriptionService) ListAutoPaging(ctx context.Context, query Eve
 // Delete an event subscription.
 func (r *EventSubscriptionService) Delete(ctx context.Context, eventSubscriptionToken string, opts ...option.RequestOption) (err error) {
 	opts = slices.Concat(r.Options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if eventSubscriptionToken == "" {
 		err = errors.New("missing required event_subscription_token parameter")
 		return
@@ -136,7 +136,7 @@ func (r *EventSubscriptionService) ListAttemptsAutoPaging(ctx context.Context, e
 // Resend all failed messages since a given time.
 func (r *EventSubscriptionService) Recover(ctx context.Context, eventSubscriptionToken string, body EventSubscriptionRecoverParams, opts ...option.RequestOption) (err error) {
 	opts = slices.Concat(r.Options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if eventSubscriptionToken == "" {
 		err = errors.New("missing required event_subscription_token parameter")
 		return
@@ -153,7 +153,7 @@ func (r *EventSubscriptionService) Recover(ctx context.Context, eventSubscriptio
 // details.
 func (r *EventSubscriptionService) ReplayMissing(ctx context.Context, eventSubscriptionToken string, body EventSubscriptionReplayMissingParams, opts ...option.RequestOption) (err error) {
 	opts = slices.Concat(r.Options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if eventSubscriptionToken == "" {
 		err = errors.New("missing required event_subscription_token parameter")
 		return
@@ -179,7 +179,7 @@ func (r *EventSubscriptionService) GetSecret(ctx context.Context, eventSubscript
 // for the next 24 hours.
 func (r *EventSubscriptionService) RotateSecret(ctx context.Context, eventSubscriptionToken string, opts ...option.RequestOption) (err error) {
 	opts = slices.Concat(r.Options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if eventSubscriptionToken == "" {
 		err = errors.New("missing required event_subscription_token parameter")
 		return
@@ -192,7 +192,7 @@ func (r *EventSubscriptionService) RotateSecret(ctx context.Context, eventSubscr
 // Send an example message for event.
 func (r *EventSubscriptionService) SendSimulatedExample(ctx context.Context, eventSubscriptionToken string, body EventSubscriptionSendSimulatedExampleParams, opts ...option.RequestOption) (err error) {
 	opts = slices.Concat(r.Options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if eventSubscriptionToken == "" {
 		err = errors.New("missing required event_subscription_token parameter")
 		return

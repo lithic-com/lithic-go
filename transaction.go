@@ -84,7 +84,7 @@ func (r *TransactionService) ListAutoPaging(ctx context.Context, query Transacti
 // Expire authorization
 func (r *TransactionService) ExpireAuthorization(ctx context.Context, transactionToken string, opts ...option.RequestOption) (err error) {
 	opts = slices.Concat(r.Options, opts)
-	opts = append([]option.RequestOption{option.WithHeader("Accept", "")}, opts...)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if transactionToken == "" {
 		err = errors.New("missing required transaction_token parameter")
 		return
