@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.96.1 (2025-11-18)
+
+Full Changelog: [v0.96.0...v0.96.1](https://github.com/lithic-com/lithic-go/compare/v0.96.0...v0.96.1)
+
+### Bug Fixes
+
+* **client:** correctly specify Accept header with */* instead of empty ([008026d](https://github.com/lithic-com/lithic-go/commit/008026da0b5c0b7bad2f8d5d1e2a19722f904e12))
+
 ## 0.96.0 (2025-11-13)
 
 Full Changelog: [v0.95.0...v0.96.0](https://github.com/lithic-com/lithic-go/compare/v0.95.0...v0.96.0)
