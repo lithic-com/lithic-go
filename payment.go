@@ -109,7 +109,7 @@ func (r *PaymentService) Retry(ctx context.Context, paymentToken string, opts ..
 //     endpoint.
 //   - By default this endpoint is not enabled for your account. Please contact your
 //     implementations manager to enable this feature.
-func (r *PaymentService) Return(ctx context.Context, paymentToken string, body PaymentReturnParams, opts ...option.RequestOption) (res *PaymentReturnResponse, err error) {
+func (r *PaymentService) Return(ctx context.Context, paymentToken string, body PaymentReturnParams, opts ...option.RequestOption) (res *Payment, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if paymentToken == "" {
 		err = errors.New("missing required payment_token parameter")
@@ -869,51 +869,6 @@ func (r *PaymentRetryResponse) UnmarshalJSON(data []byte) (err error) {
 
 func (r paymentRetryResponseJSON) RawJSON() string {
 	return r.raw
-}
-
-// Response from ACH operations including returns
-type PaymentReturnResponse struct {
-	// Transaction result
-	Result PaymentReturnResponseResult `json:"result,required"`
-	// Globally unique identifier for the transaction group
-	TransactionGroupUuid string `json:"transaction_group_uuid,required" format:"uuid"`
-	// Globally unique identifier for the transaction
-	TransactionUuid string                    `json:"transaction_uuid,required" format:"uuid"`
-	JSON            paymentReturnResponseJSON `json:"-"`
-}
-
-// paymentReturnResponseJSON contains the JSON metadata for the struct
-// [PaymentReturnResponse]
-type paymentReturnResponseJSON struct {
-	Result               apijson.Field
-	TransactionGroupUuid apijson.Field
-	TransactionUuid      apijson.Field
-	raw                  string
-	ExtraFields          map[string]apijson.Field
-}
-
-func (r *PaymentReturnResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r paymentReturnResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-// Transaction result
-type PaymentReturnResponseResult string
-
-const (
-	PaymentReturnResponseResultApproved PaymentReturnResponseResult = "APPROVED"
-	PaymentReturnResponseResultDeclined PaymentReturnResponseResult = "DECLINED"
-)
-
-func (r PaymentReturnResponseResult) IsKnown() bool {
-	switch r {
-	case PaymentReturnResponseResultApproved, PaymentReturnResponseResultDeclined:
-		return true
-	}
-	return false
 }
 
 type PaymentSimulateActionResponse struct {
