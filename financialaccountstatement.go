@@ -120,8 +120,10 @@ type Statement struct {
 	// Date when the next payment is due
 	NextPaymentDueDate time.Time `json:"next_payment_due_date" format:"date"`
 	// Date when the next billing period will end
-	NextStatementEndDate time.Time     `json:"next_statement_end_date" format:"date"`
-	JSON                 statementJSON `json:"-"`
+	NextStatementEndDate time.Time `json:"next_statement_end_date" format:"date"`
+	// Details on number and size of payments to pay off balance
+	PayoffDetails StatementPayoffDetails `json:"payoff_details,nullable"`
+	JSON          statementJSON          `json:"-"`
 }
 
 // statementJSON contains the JSON metadata for the struct [Statement]
@@ -147,6 +149,7 @@ type statementJSON struct {
 	InterestDetails       apijson.Field
 	NextPaymentDueDate    apijson.Field
 	NextStatementEndDate  apijson.Field
+	PayoffDetails         apijson.Field
 	raw                   string
 	ExtraFields           map[string]apijson.Field
 }
@@ -370,6 +373,45 @@ func (r StatementInterestDetailsInterestCalculationMethod) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+// Details on number and size of payments to pay off balance
+type StatementPayoffDetails struct {
+	// The number of months it would take to pay off the balance in full by only paying
+	// the minimum payment. "NA" will signal negative or zero amortization
+	MinimumPaymentMonths string `json:"minimum_payment_months,required"`
+	// The sum of all interest and principal paid, in cents, when only paying minimum
+	// monthly payment. "NA" will signal negative or zero amortization
+	MinimumPaymentTotal string `json:"minimum_payment_total,required"`
+	// Number of months to full pay off
+	PayoffPeriodLengthMonths int64 `json:"payoff_period_length_months,required"`
+	// The amount needed to be paid, in cents, each month in order to pay off current
+	// balance in the payoff period
+	PayoffPeriodMonthlyPaymentAmount int64 `json:"payoff_period_monthly_payment_amount,required"`
+	// The sum of all interest and principal paid, in cents, when paying off in the
+	// payoff period
+	PayoffPeriodPaymentTotal int64                      `json:"payoff_period_payment_total,required"`
+	JSON                     statementPayoffDetailsJSON `json:"-"`
+}
+
+// statementPayoffDetailsJSON contains the JSON metadata for the struct
+// [StatementPayoffDetails]
+type statementPayoffDetailsJSON struct {
+	MinimumPaymentMonths             apijson.Field
+	MinimumPaymentTotal              apijson.Field
+	PayoffPeriodLengthMonths         apijson.Field
+	PayoffPeriodMonthlyPaymentAmount apijson.Field
+	PayoffPeriodPaymentTotal         apijson.Field
+	raw                              string
+	ExtraFields                      map[string]apijson.Field
+}
+
+func (r *StatementPayoffDetails) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r statementPayoffDetailsJSON) RawJSON() string {
+	return r.raw
 }
 
 type Statements struct {
