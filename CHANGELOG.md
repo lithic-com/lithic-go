@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.97.0 (2025-11-20)
+
+Full Changelog: [v0.96.1...v0.97.0](https://github.com/lithic-com/lithic-go/compare/v0.96.1...v0.97.0)
+
+### Features
+
+* **api:** Add Payoff Details ([7c60f38](https://github.com/lithic-com/lithic-go/commit/7c60f381d8db19db8ec899fc380b07b3b62c4d61))
+
+
+### Bug Fixes
+
+* **api:** Modify return type of returns API to payment-transaction ([7c60f38](https://github.com/lithic-com/lithic-go/commit/7c60f381d8db19db8ec899fc380b07b3b62c4d61))
+
 ## 0.96.1 (2025-11-18)
 
 Full Changelog: [v0.96.0...v0.96.1](https://github.com/lithic-com/lithic-go/compare/v0.96.0...v0.96.1)
