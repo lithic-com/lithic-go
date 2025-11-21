@@ -57,7 +57,7 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 				GovernmentID:      lithic.F("12-3456789"),
 				LegalBusinessName: lithic.F("Busy Business, Inc."),
 				PhoneNumbers:      lithic.F([]string{"+15555555555"}),
-				DbaBusinessName:   lithic.F("dba_business_name"),
+				DbaBusinessName:   lithic.F("Example Business Solutions"),
 				ParentCompany:     lithic.F("parent_company"),
 			}),
 			ControlPerson: lithic.F(lithic.KYBControlPersonParam{
@@ -78,7 +78,7 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 			}),
 			NatureOfBusiness: lithic.F("Software company selling solutions to the restaurant industry"),
 			TosTimestamp:     lithic.F("2022-03-08T08:00:00Z"),
-			Workflow:         lithic.F(lithic.KYBWorkflowKYBBasic),
+			Workflow:         lithic.F(lithic.KYBWorkflowKYBByo),
 			BeneficialOwnerEntities: lithic.F([]lithic.KYBBeneficialOwnerEntityParam{{
 				Address: lithic.F(shared.AddressParam{
 					Address1:   lithic.F("300 Normal Forest Way"),
@@ -91,7 +91,7 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 				GovernmentID:      lithic.F("98-7654321"),
 				LegalBusinessName: lithic.F("Majority Holdings LLC"),
 				PhoneNumbers:      lithic.F([]string{"+15555555555"}),
-				DbaBusinessName:   lithic.F("dba_business_name"),
+				DbaBusinessName:   lithic.F("MHoldings"),
 				ParentCompany:     lithic.F("parent_company"),
 			}}),
 			ExternalID:         lithic.F("external_id"),
@@ -147,7 +147,75 @@ func TestAccountHolderUpdateWithOptionalParams(t *testing.T) {
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.AccountHolderUpdateParams{
 			Body: lithic.AccountHolderUpdateParamsBodyKYBPatchRequest{
-				ExternalID: lithic.F("external_id"),
+				BeneficialOwnerEntities: lithic.F([]lithic.AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerEntity{{
+					EntityToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+					Address: lithic.F(lithic.AddressUpdateParam{
+						Address1:   lithic.F("123 Old Forest Way"),
+						Address2:   lithic.F("address2"),
+						City:       lithic.F("Omaha"),
+						Country:    lithic.F("USA"),
+						PostalCode: lithic.F("68022"),
+						State:      lithic.F("NE"),
+					}),
+					DbaBusinessName:   lithic.F("dba_business_name"),
+					GovernmentID:      lithic.F("114-123-1513"),
+					LegalBusinessName: lithic.F("Acme, Inc."),
+					ParentCompany:     lithic.F("parent_company"),
+					PhoneNumbers:      lithic.F([]string{"+15555555555"}),
+				}}),
+				BeneficialOwnerIndividuals: lithic.F([]lithic.AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerIndividual{{
+					EntityToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+					Address: lithic.F(lithic.AddressUpdateParam{
+						Address1:   lithic.F("123 Old Forest Way"),
+						Address2:   lithic.F("address2"),
+						City:       lithic.F("Omaha"),
+						Country:    lithic.F("USA"),
+						PostalCode: lithic.F("68022"),
+						State:      lithic.F("NE"),
+					}),
+					Dob:          lithic.F("1991-03-08 08:00:00"),
+					Email:        lithic.F("tom@middle-earth.com"),
+					FirstName:    lithic.F("Tom"),
+					GovernmentID: lithic.F("111-23-1412"),
+					LastName:     lithic.F("Bombadil"),
+					PhoneNumber:  lithic.F("+15555555555"),
+				}}),
+				BusinessEntity: lithic.F(lithic.AccountHolderUpdateParamsBodyKYBPatchRequestBusinessEntity{
+					EntityToken: lithic.F("83cf25ae-c14f-4d10-9fa2-0119f36c7286"),
+					Address: lithic.F(lithic.AddressUpdateParam{
+						Address1:   lithic.F("123 Old Forest Way"),
+						Address2:   lithic.F("address2"),
+						City:       lithic.F("Omaha"),
+						Country:    lithic.F("USA"),
+						PostalCode: lithic.F("61023"),
+						State:      lithic.F("NE"),
+					}),
+					DbaBusinessName:   lithic.F("dba_business_name"),
+					GovernmentID:      lithic.F("114-123-1513"),
+					LegalBusinessName: lithic.F("Acme, Inc."),
+					ParentCompany:     lithic.F("parent_company"),
+					PhoneNumbers:      lithic.F([]string{"+15555555555"}),
+				}),
+				ControlPerson: lithic.F(lithic.AccountHolderUpdateParamsBodyKYBPatchRequestControlPerson{
+					EntityToken: lithic.F("fd771a07-c5c2-42f3-a53c-a6c79c6c0d07"),
+					Address: lithic.F(lithic.AddressUpdateParam{
+						Address1:   lithic.F("123 Old Forest Way"),
+						Address2:   lithic.F("address2"),
+						City:       lithic.F("Omaha"),
+						Country:    lithic.F("USA"),
+						PostalCode: lithic.F("68023"),
+						State:      lithic.F("NE"),
+					}),
+					Dob:          lithic.F("1991-03-08 08:00:00"),
+					Email:        lithic.F("tom@middle-earth.com"),
+					FirstName:    lithic.F("Tom"),
+					GovernmentID: lithic.F("111-23-1412"),
+					LastName:     lithic.F("Bombadil"),
+					PhoneNumber:  lithic.F("+15555555555"),
+				}),
+				ExternalID:       lithic.F("external_id"),
+				NatureOfBusiness: lithic.F("Software company selling solutions to the restaurant industry"),
+				WebsiteURL:       lithic.F("https://www.mynewbusiness.com"),
 			},
 		},
 	)
@@ -312,7 +380,7 @@ func TestAccountHolderUploadDocument(t *testing.T) {
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.AccountHolderUploadDocumentParams{
 			DocumentType: lithic.F(lithic.AccountHolderUploadDocumentParamsDocumentTypeEinLetter),
-			EntityToken:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+			EntityToken:  lithic.F("83cf25ae-c14f-4d10-9fa2-0119f36c7286"),
 		},
 	)
 	if err != nil {

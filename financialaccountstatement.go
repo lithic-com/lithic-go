@@ -384,13 +384,13 @@ type StatementPayoffDetails struct {
 	// monthly payment. "NA" will signal negative or zero amortization
 	MinimumPaymentTotal string `json:"minimum_payment_total,required"`
 	// Number of months to full pay off
-	PayoffPeriodLengthMonths int64 `json:"payoff_period_length_months,required"`
+	PayoffPeriodLengthMonths int64 `json:"payoff_period_length_months,required,nullable"`
 	// The amount needed to be paid, in cents, each month in order to pay off current
 	// balance in the payoff period
-	PayoffPeriodMonthlyPaymentAmount int64 `json:"payoff_period_monthly_payment_amount,required"`
+	PayoffPeriodMonthlyPaymentAmount int64 `json:"payoff_period_monthly_payment_amount,required,nullable"`
 	// The sum of all interest and principal paid, in cents, when paying off in the
 	// payoff period
-	PayoffPeriodPaymentTotal int64                      `json:"payoff_period_payment_total,required"`
+	PayoffPeriodPaymentTotal int64                      `json:"payoff_period_payment_total,required,nullable"`
 	JSON                     statementPayoffDetailsJSON `json:"-"`
 }
 
