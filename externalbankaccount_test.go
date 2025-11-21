@@ -36,7 +36,7 @@ func TestExternalBankAccountNewWithOptionalParams(t *testing.T) {
 			OwnerType:             lithic.F(lithic.OwnerTypeBusiness),
 			RoutingNumber:         lithic.F("011103093"),
 			Type:                  lithic.F(lithic.ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestTypeChecking),
-			VerificationMethod:    lithic.F(lithic.VerificationMethodPrenote),
+			VerificationMethod:    lithic.F(lithic.VerificationMethodMicroDeposit),
 			AccountToken:          lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 			Address: lithic.F(lithic.ExternalBankAccountAddressParam{
 				Address1:   lithic.F("5 Broad Street"),

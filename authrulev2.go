@@ -44,7 +44,7 @@ func NewAuthRuleV2Service(opts ...option.RequestOption) (r *AuthRuleV2Service) {
 }
 
 // Creates a new V2 Auth rule in draft mode
-func (r *AuthRuleV2Service) New(ctx context.Context, body AuthRuleV2NewParams, opts ...option.RequestOption) (res *AuthRuleV2NewResponse, err error) {
+func (r *AuthRuleV2Service) New(ctx context.Context, body AuthRuleV2NewParams, opts ...option.RequestOption) (res *AuthRule, err error) {
 	opts = slices.Concat(r.Options, opts)
 	path := "v2/auth_rules"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -52,7 +52,7 @@ func (r *AuthRuleV2Service) New(ctx context.Context, body AuthRuleV2NewParams, o
 }
 
 // Fetches a V2 Auth rule by its token
-func (r *AuthRuleV2Service) Get(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (res *AuthRuleV2GetResponse, err error) {
+func (r *AuthRuleV2Service) Get(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (res *AuthRule, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
@@ -68,7 +68,7 @@ func (r *AuthRuleV2Service) Get(ctx context.Context, authRuleToken string, opts 
 // If `account_tokens`, `card_tokens`, `program_level`, or `excluded_card_tokens`
 // is provided, this will replace existing associations with the provided list of
 // entities.
-func (r *AuthRuleV2Service) Update(ctx context.Context, authRuleToken string, body AuthRuleV2UpdateParams, opts ...option.RequestOption) (res *AuthRuleV2UpdateResponse, err error) {
+func (r *AuthRuleV2Service) Update(ctx context.Context, authRuleToken string, body AuthRuleV2UpdateParams, opts ...option.RequestOption) (res *AuthRule, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
@@ -80,7 +80,7 @@ func (r *AuthRuleV2Service) Update(ctx context.Context, authRuleToken string, bo
 }
 
 // Lists V2 Auth rules
-func (r *AuthRuleV2Service) List(ctx context.Context, query AuthRuleV2ListParams, opts ...option.RequestOption) (res *pagination.CursorPage[AuthRuleV2ListResponse], err error) {
+func (r *AuthRuleV2Service) List(ctx context.Context, query AuthRuleV2ListParams, opts ...option.RequestOption) (res *pagination.CursorPage[AuthRule], err error) {
 	var raw *http.Response
 	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -98,7 +98,7 @@ func (r *AuthRuleV2Service) List(ctx context.Context, query AuthRuleV2ListParams
 }
 
 // Lists V2 Auth rules
-func (r *AuthRuleV2Service) ListAutoPaging(ctx context.Context, query AuthRuleV2ListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[AuthRuleV2ListResponse] {
+func (r *AuthRuleV2Service) ListAutoPaging(ctx context.Context, query AuthRuleV2ListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[AuthRule] {
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
@@ -119,7 +119,7 @@ func (r *AuthRuleV2Service) Delete(ctx context.Context, authRuleToken string, op
 //
 // This can also be utilized to reset the draft parameters, causing a draft version
 // to no longer be ran in shadow mode.
-func (r *AuthRuleV2Service) Draft(ctx context.Context, authRuleToken string, body AuthRuleV2DraftParams, opts ...option.RequestOption) (res *AuthRuleV2DraftResponse, err error) {
+func (r *AuthRuleV2Service) Draft(ctx context.Context, authRuleToken string, body AuthRuleV2DraftParams, opts ...option.RequestOption) (res *AuthRule, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
@@ -132,7 +132,7 @@ func (r *AuthRuleV2Service) Draft(ctx context.Context, authRuleToken string, bod
 
 // Promotes the draft version of an Auth rule to the currently active version such
 // that it is enforced in the respective stream.
-func (r *AuthRuleV2Service) Promote(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (res *AuthRuleV2PromoteResponse, err error) {
+func (r *AuthRuleV2Service) Promote(ctx context.Context, authRuleToken string, opts ...option.RequestOption) (res *AuthRule, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
@@ -185,6 +185,455 @@ func (r *AuthRuleV2Service) GetReport(ctx context.Context, authRuleToken string,
 	path := fmt.Sprintf("v2/auth_rules/%s/report", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
 	return
+}
+
+type AuthRule struct {
+	// Auth Rule Token
+	Token string `json:"token,required" format:"uuid"`
+	// Account tokens to which the Auth Rule applies.
+	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
+	// Business Account tokens to which the Auth Rule applies.
+	BusinessAccountTokens []string `json:"business_account_tokens,required" format:"uuid"`
+	// Card tokens to which the Auth Rule applies.
+	CardTokens     []string               `json:"card_tokens,required" format:"uuid"`
+	CurrentVersion AuthRuleCurrentVersion `json:"current_version,required,nullable"`
+	DraftVersion   AuthRuleDraftVersion   `json:"draft_version,required,nullable"`
+	// The event stream during which the rule will be evaluated.
+	EventStream AuthRuleEventStream `json:"event_stream,required"`
+	// Indicates whether this auth rule is managed by Lithic. If true, the rule cannot
+	// be modified or deleted by the user
+	LithicManaged bool `json:"lithic_managed,required"`
+	// Auth Rule Name
+	Name string `json:"name,required,nullable"`
+	// Whether the Auth Rule applies to all authorizations on the card program.
+	ProgramLevel bool `json:"program_level,required"`
+	// The state of the Auth Rule
+	State AuthRuleState `json:"state,required"`
+	// The type of Auth Rule. For certain rule types, this determines the event stream
+	// during which it will be evaluated. For rules that can be applied to one of
+	// several event streams, the effective one is defined by the separate
+	// `event_stream` field.
+	//
+	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+	Type AuthRuleType `json:"type,required"`
+	// Card tokens to which the Auth Rule does not apply.
+	ExcludedCardTokens []string     `json:"excluded_card_tokens" format:"uuid"`
+	JSON               authRuleJSON `json:"-"`
+}
+
+// authRuleJSON contains the JSON metadata for the struct [AuthRule]
+type authRuleJSON struct {
+	Token                 apijson.Field
+	AccountTokens         apijson.Field
+	BusinessAccountTokens apijson.Field
+	CardTokens            apijson.Field
+	CurrentVersion        apijson.Field
+	DraftVersion          apijson.Field
+	EventStream           apijson.Field
+	LithicManaged         apijson.Field
+	Name                  apijson.Field
+	ProgramLevel          apijson.Field
+	State                 apijson.Field
+	Type                  apijson.Field
+	ExcludedCardTokens    apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
+}
+
+func (r *AuthRule) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleJSON) RawJSON() string {
+	return r.raw
+}
+
+type AuthRuleCurrentVersion struct {
+	// Parameters for the Auth Rule
+	Parameters AuthRuleCurrentVersionParameters `json:"parameters,required"`
+	// The version of the rule, this is incremented whenever the rule's parameters
+	// change.
+	Version int64                      `json:"version,required"`
+	JSON    authRuleCurrentVersionJSON `json:"-"`
+}
+
+// authRuleCurrentVersionJSON contains the JSON metadata for the struct
+// [AuthRuleCurrentVersion]
+type authRuleCurrentVersionJSON struct {
+	Parameters  apijson.Field
+	Version     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleCurrentVersion) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleCurrentVersionJSON) RawJSON() string {
+	return r.raw
+}
+
+// Parameters for the Auth Rule
+type AuthRuleCurrentVersionParameters struct {
+	// This field can have the runtime type of [Conditional3DSActionParametersAction],
+	// [ConditionalAuthorizationActionParametersAction],
+	// [ConditionalACHActionParametersAction],
+	// [ConditionalTokenizationActionParametersAction].
+	Action interface{} `json:"action"`
+	// This field can have the runtime type of [[]AuthRuleCondition],
+	// [[]Conditional3DsActionParametersCondition],
+	// [[]ConditionalAuthorizationActionParametersCondition],
+	// [[]ConditionalACHActionParametersCondition],
+	// [[]ConditionalTokenizationActionParametersCondition].
+	Conditions interface{} `json:"conditions"`
+	// This field can have the runtime type of [VelocityLimitParamsFilters].
+	Filters interface{} `json:"filters"`
+	// The maximum amount of spend velocity allowed in the period in minor units (the
+	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
+	// limit will be declined.
+	LimitAmount int64 `json:"limit_amount,nullable"`
+	// The number of spend velocity impacting transactions may not exceed this limit in
+	// the period. Transactions exceeding this limit will be declined. A spend velocity
+	// impacting transaction is a transaction that has been authorized, and optionally
+	// settled, or a force post (a transaction that settled without prior
+	// authorization).
+	LimitCount int64 `json:"limit_count,nullable"`
+	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
+	Merchants interface{} `json:"merchants"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitPeriod `json:"period"`
+	// The scope the velocity is calculated for
+	Scope AuthRuleCurrentVersionParametersScope `json:"scope"`
+	JSON  authRuleCurrentVersionParametersJSON  `json:"-"`
+	union AuthRuleCurrentVersionParametersUnion
+}
+
+// authRuleCurrentVersionParametersJSON contains the JSON metadata for the struct
+// [AuthRuleCurrentVersionParameters]
+type authRuleCurrentVersionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	Filters     apijson.Field
+	LimitAmount apijson.Field
+	LimitCount  apijson.Field
+	Merchants   apijson.Field
+	Period      apijson.Field
+	Scope       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r authRuleCurrentVersionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r *AuthRuleCurrentVersionParameters) UnmarshalJSON(data []byte) (err error) {
+	*r = AuthRuleCurrentVersionParameters{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a [AuthRuleCurrentVersionParametersUnion] interface which you
+// can cast to the specific types for more type safety.
+//
+// Possible runtime types of the union are [ConditionalBlockParameters],
+// [VelocityLimitParams], [MerchantLockParameters],
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
+func (r AuthRuleCurrentVersionParameters) AsUnion() AuthRuleCurrentVersionParametersUnion {
+	return r.union
+}
+
+// Parameters for the Auth Rule
+//
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [MerchantLockParameters], [Conditional3DSActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
+// [ConditionalTokenizationActionParameters].
+type AuthRuleCurrentVersionParametersUnion interface {
+	implementsAuthRuleCurrentVersionParameters()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleCurrentVersionParametersUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(VelocityLimitParams{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(MerchantLockParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(Conditional3DSActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
+		},
+	)
+}
+
+// The scope the velocity is calculated for
+type AuthRuleCurrentVersionParametersScope string
+
+const (
+	AuthRuleCurrentVersionParametersScopeCard    AuthRuleCurrentVersionParametersScope = "CARD"
+	AuthRuleCurrentVersionParametersScopeAccount AuthRuleCurrentVersionParametersScope = "ACCOUNT"
+)
+
+func (r AuthRuleCurrentVersionParametersScope) IsKnown() bool {
+	switch r {
+	case AuthRuleCurrentVersionParametersScopeCard, AuthRuleCurrentVersionParametersScopeAccount:
+		return true
+	}
+	return false
+}
+
+type AuthRuleDraftVersion struct {
+	// Parameters for the Auth Rule
+	Parameters AuthRuleDraftVersionParameters `json:"parameters,required"`
+	// The version of the rule, this is incremented whenever the rule's parameters
+	// change.
+	Version int64                    `json:"version,required"`
+	JSON    authRuleDraftVersionJSON `json:"-"`
+}
+
+// authRuleDraftVersionJSON contains the JSON metadata for the struct
+// [AuthRuleDraftVersion]
+type authRuleDraftVersionJSON struct {
+	Parameters  apijson.Field
+	Version     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleDraftVersion) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleDraftVersionJSON) RawJSON() string {
+	return r.raw
+}
+
+// Parameters for the Auth Rule
+type AuthRuleDraftVersionParameters struct {
+	// This field can have the runtime type of [Conditional3DSActionParametersAction],
+	// [ConditionalAuthorizationActionParametersAction],
+	// [ConditionalACHActionParametersAction],
+	// [ConditionalTokenizationActionParametersAction].
+	Action interface{} `json:"action"`
+	// This field can have the runtime type of [[]AuthRuleCondition],
+	// [[]Conditional3DsActionParametersCondition],
+	// [[]ConditionalAuthorizationActionParametersCondition],
+	// [[]ConditionalACHActionParametersCondition],
+	// [[]ConditionalTokenizationActionParametersCondition].
+	Conditions interface{} `json:"conditions"`
+	// This field can have the runtime type of [VelocityLimitParamsFilters].
+	Filters interface{} `json:"filters"`
+	// The maximum amount of spend velocity allowed in the period in minor units (the
+	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
+	// limit will be declined.
+	LimitAmount int64 `json:"limit_amount,nullable"`
+	// The number of spend velocity impacting transactions may not exceed this limit in
+	// the period. Transactions exceeding this limit will be declined. A spend velocity
+	// impacting transaction is a transaction that has been authorized, and optionally
+	// settled, or a force post (a transaction that settled without prior
+	// authorization).
+	LimitCount int64 `json:"limit_count,nullable"`
+	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
+	Merchants interface{} `json:"merchants"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitPeriod `json:"period"`
+	// The scope the velocity is calculated for
+	Scope AuthRuleDraftVersionParametersScope `json:"scope"`
+	JSON  authRuleDraftVersionParametersJSON  `json:"-"`
+	union AuthRuleDraftVersionParametersUnion
+}
+
+// authRuleDraftVersionParametersJSON contains the JSON metadata for the struct
+// [AuthRuleDraftVersionParameters]
+type authRuleDraftVersionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	Filters     apijson.Field
+	LimitAmount apijson.Field
+	LimitCount  apijson.Field
+	Merchants   apijson.Field
+	Period      apijson.Field
+	Scope       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r authRuleDraftVersionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r *AuthRuleDraftVersionParameters) UnmarshalJSON(data []byte) (err error) {
+	*r = AuthRuleDraftVersionParameters{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a [AuthRuleDraftVersionParametersUnion] interface which you can
+// cast to the specific types for more type safety.
+//
+// Possible runtime types of the union are [ConditionalBlockParameters],
+// [VelocityLimitParams], [MerchantLockParameters],
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
+func (r AuthRuleDraftVersionParameters) AsUnion() AuthRuleDraftVersionParametersUnion {
+	return r.union
+}
+
+// Parameters for the Auth Rule
+//
+// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
+// [MerchantLockParameters], [Conditional3DSActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
+// [ConditionalTokenizationActionParameters].
+type AuthRuleDraftVersionParametersUnion interface {
+	implementsAuthRuleDraftVersionParameters()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleDraftVersionParametersUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(VelocityLimitParams{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(MerchantLockParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(Conditional3DSActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
+		},
+	)
+}
+
+// The scope the velocity is calculated for
+type AuthRuleDraftVersionParametersScope string
+
+const (
+	AuthRuleDraftVersionParametersScopeCard    AuthRuleDraftVersionParametersScope = "CARD"
+	AuthRuleDraftVersionParametersScopeAccount AuthRuleDraftVersionParametersScope = "ACCOUNT"
+)
+
+func (r AuthRuleDraftVersionParametersScope) IsKnown() bool {
+	switch r {
+	case AuthRuleDraftVersionParametersScopeCard, AuthRuleDraftVersionParametersScopeAccount:
+		return true
+	}
+	return false
+}
+
+// The event stream during which the rule will be evaluated.
+type AuthRuleEventStream string
+
+const (
+	AuthRuleEventStreamAuthorization         AuthRuleEventStream = "AUTHORIZATION"
+	AuthRuleEventStreamThreeDSAuthentication AuthRuleEventStream = "THREE_DS_AUTHENTICATION"
+	AuthRuleEventStreamTokenization          AuthRuleEventStream = "TOKENIZATION"
+	AuthRuleEventStreamACHCreditReceipt      AuthRuleEventStream = "ACH_CREDIT_RECEIPT"
+	AuthRuleEventStreamACHDebitReceipt       AuthRuleEventStream = "ACH_DEBIT_RECEIPT"
+)
+
+func (r AuthRuleEventStream) IsKnown() bool {
+	switch r {
+	case AuthRuleEventStreamAuthorization, AuthRuleEventStreamThreeDSAuthentication, AuthRuleEventStreamTokenization, AuthRuleEventStreamACHCreditReceipt, AuthRuleEventStreamACHDebitReceipt:
+		return true
+	}
+	return false
+}
+
+// The state of the Auth Rule
+type AuthRuleState string
+
+const (
+	AuthRuleStateActive   AuthRuleState = "ACTIVE"
+	AuthRuleStateInactive AuthRuleState = "INACTIVE"
+)
+
+func (r AuthRuleState) IsKnown() bool {
+	switch r {
+	case AuthRuleStateActive, AuthRuleStateInactive:
+		return true
+	}
+	return false
+}
+
+// The type of Auth Rule. For certain rule types, this determines the event stream
+// during which it will be evaluated. For rules that can be applied to one of
+// several event streams, the effective one is defined by the separate
+// `event_stream` field.
+//
+//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+type AuthRuleType string
+
+const (
+	AuthRuleTypeConditionalBlock  AuthRuleType = "CONDITIONAL_BLOCK"
+	AuthRuleTypeVelocityLimit     AuthRuleType = "VELOCITY_LIMIT"
+	AuthRuleTypeMerchantLock      AuthRuleType = "MERCHANT_LOCK"
+	AuthRuleTypeConditionalAction AuthRuleType = "CONDITIONAL_ACTION"
+)
+
+func (r AuthRuleType) IsKnown() bool {
+	switch r {
+	case AuthRuleTypeConditionalBlock, AuthRuleTypeVelocityLimit, AuthRuleTypeMerchantLock, AuthRuleTypeConditionalAction:
+		return true
+	}
+	return false
 }
 
 type AuthRuleCondition struct {
@@ -350,31 +799,9 @@ func (r conditional3DsActionParametersJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r Conditional3DSActionParameters) implementsAuthRuleV2NewResponseCurrentVersionParameters() {}
+func (r Conditional3DSActionParameters) implementsAuthRuleCurrentVersionParameters() {}
 
-func (r Conditional3DSActionParameters) implementsAuthRuleV2NewResponseDraftVersionParameters() {}
-
-func (r Conditional3DSActionParameters) implementsAuthRuleV2GetResponseCurrentVersionParameters() {}
-
-func (r Conditional3DSActionParameters) implementsAuthRuleV2GetResponseDraftVersionParameters() {}
-
-func (r Conditional3DSActionParameters) implementsAuthRuleV2UpdateResponseCurrentVersionParameters() {
-}
-
-func (r Conditional3DSActionParameters) implementsAuthRuleV2UpdateResponseDraftVersionParameters() {}
-
-func (r Conditional3DSActionParameters) implementsAuthRuleV2ListResponseCurrentVersionParameters() {}
-
-func (r Conditional3DSActionParameters) implementsAuthRuleV2ListResponseDraftVersionParameters() {}
-
-func (r Conditional3DSActionParameters) implementsAuthRuleV2DraftResponseCurrentVersionParameters() {}
-
-func (r Conditional3DSActionParameters) implementsAuthRuleV2DraftResponseDraftVersionParameters() {}
-
-func (r Conditional3DSActionParameters) implementsAuthRuleV2PromoteResponseCurrentVersionParameters() {
-}
-
-func (r Conditional3DSActionParameters) implementsAuthRuleV2PromoteResponseDraftVersionParameters() {}
+func (r Conditional3DSActionParameters) implementsAuthRuleDraftVersionParameters() {}
 
 // The action to take if the conditions are met.
 type Conditional3DSActionParametersAction string
@@ -513,31 +940,9 @@ func (r conditionalACHActionParametersJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r ConditionalACHActionParameters) implementsAuthRuleV2NewResponseCurrentVersionParameters() {}
+func (r ConditionalACHActionParameters) implementsAuthRuleCurrentVersionParameters() {}
 
-func (r ConditionalACHActionParameters) implementsAuthRuleV2NewResponseDraftVersionParameters() {}
-
-func (r ConditionalACHActionParameters) implementsAuthRuleV2GetResponseCurrentVersionParameters() {}
-
-func (r ConditionalACHActionParameters) implementsAuthRuleV2GetResponseDraftVersionParameters() {}
-
-func (r ConditionalACHActionParameters) implementsAuthRuleV2UpdateResponseCurrentVersionParameters() {
-}
-
-func (r ConditionalACHActionParameters) implementsAuthRuleV2UpdateResponseDraftVersionParameters() {}
-
-func (r ConditionalACHActionParameters) implementsAuthRuleV2ListResponseCurrentVersionParameters() {}
-
-func (r ConditionalACHActionParameters) implementsAuthRuleV2ListResponseDraftVersionParameters() {}
-
-func (r ConditionalACHActionParameters) implementsAuthRuleV2DraftResponseCurrentVersionParameters() {}
-
-func (r ConditionalACHActionParameters) implementsAuthRuleV2DraftResponseDraftVersionParameters() {}
-
-func (r ConditionalACHActionParameters) implementsAuthRuleV2PromoteResponseCurrentVersionParameters() {
-}
-
-func (r ConditionalACHActionParameters) implementsAuthRuleV2PromoteResponseDraftVersionParameters() {}
+func (r ConditionalACHActionParameters) implementsAuthRuleDraftVersionParameters() {}
 
 // The action to take if the conditions are met
 type ConditionalACHActionParametersAction struct {
@@ -1059,41 +1464,9 @@ func (r conditionalAuthorizationActionParametersJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r ConditionalAuthorizationActionParameters) implementsAuthRuleV2NewResponseCurrentVersionParameters() {
-}
+func (r ConditionalAuthorizationActionParameters) implementsAuthRuleCurrentVersionParameters() {}
 
-func (r ConditionalAuthorizationActionParameters) implementsAuthRuleV2NewResponseDraftVersionParameters() {
-}
-
-func (r ConditionalAuthorizationActionParameters) implementsAuthRuleV2GetResponseCurrentVersionParameters() {
-}
-
-func (r ConditionalAuthorizationActionParameters) implementsAuthRuleV2GetResponseDraftVersionParameters() {
-}
-
-func (r ConditionalAuthorizationActionParameters) implementsAuthRuleV2UpdateResponseCurrentVersionParameters() {
-}
-
-func (r ConditionalAuthorizationActionParameters) implementsAuthRuleV2UpdateResponseDraftVersionParameters() {
-}
-
-func (r ConditionalAuthorizationActionParameters) implementsAuthRuleV2ListResponseCurrentVersionParameters() {
-}
-
-func (r ConditionalAuthorizationActionParameters) implementsAuthRuleV2ListResponseDraftVersionParameters() {
-}
-
-func (r ConditionalAuthorizationActionParameters) implementsAuthRuleV2DraftResponseCurrentVersionParameters() {
-}
-
-func (r ConditionalAuthorizationActionParameters) implementsAuthRuleV2DraftResponseDraftVersionParameters() {
-}
-
-func (r ConditionalAuthorizationActionParameters) implementsAuthRuleV2PromoteResponseCurrentVersionParameters() {
-}
-
-func (r ConditionalAuthorizationActionParameters) implementsAuthRuleV2PromoteResponseDraftVersionParameters() {
-}
+func (r ConditionalAuthorizationActionParameters) implementsAuthRuleDraftVersionParameters() {}
 
 // The action to take if the conditions are met.
 type ConditionalAuthorizationActionParametersAction string
@@ -1299,29 +1672,9 @@ func (r conditionalBlockParametersJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r ConditionalBlockParameters) implementsAuthRuleV2NewResponseCurrentVersionParameters() {}
+func (r ConditionalBlockParameters) implementsAuthRuleCurrentVersionParameters() {}
 
-func (r ConditionalBlockParameters) implementsAuthRuleV2NewResponseDraftVersionParameters() {}
-
-func (r ConditionalBlockParameters) implementsAuthRuleV2GetResponseCurrentVersionParameters() {}
-
-func (r ConditionalBlockParameters) implementsAuthRuleV2GetResponseDraftVersionParameters() {}
-
-func (r ConditionalBlockParameters) implementsAuthRuleV2UpdateResponseCurrentVersionParameters() {}
-
-func (r ConditionalBlockParameters) implementsAuthRuleV2UpdateResponseDraftVersionParameters() {}
-
-func (r ConditionalBlockParameters) implementsAuthRuleV2ListResponseCurrentVersionParameters() {}
-
-func (r ConditionalBlockParameters) implementsAuthRuleV2ListResponseDraftVersionParameters() {}
-
-func (r ConditionalBlockParameters) implementsAuthRuleV2DraftResponseCurrentVersionParameters() {}
-
-func (r ConditionalBlockParameters) implementsAuthRuleV2DraftResponseDraftVersionParameters() {}
-
-func (r ConditionalBlockParameters) implementsAuthRuleV2PromoteResponseCurrentVersionParameters() {}
-
-func (r ConditionalBlockParameters) implementsAuthRuleV2PromoteResponseDraftVersionParameters() {}
+func (r ConditionalBlockParameters) implementsAuthRuleDraftVersionParameters() {}
 
 // The operation to apply to the attribute
 type ConditionalOperation string
@@ -1337,11 +1690,14 @@ const (
 	ConditionalOperationIsGreaterThanOrEqualTo ConditionalOperation = "IS_GREATER_THAN_OR_EQUAL_TO"
 	ConditionalOperationIsLessThan             ConditionalOperation = "IS_LESS_THAN"
 	ConditionalOperationIsLessThanOrEqualTo    ConditionalOperation = "IS_LESS_THAN_OR_EQUAL_TO"
+	ConditionalOperationContainsAny            ConditionalOperation = "CONTAINS_ANY"
+	ConditionalOperationContainsAll            ConditionalOperation = "CONTAINS_ALL"
+	ConditionalOperationContainsNone           ConditionalOperation = "CONTAINS_NONE"
 )
 
 func (r ConditionalOperation) IsKnown() bool {
 	switch r {
-	case ConditionalOperationIsOneOf, ConditionalOperationIsNotOneOf, ConditionalOperationMatches, ConditionalOperationDoesNotMatch, ConditionalOperationIsEqualTo, ConditionalOperationIsNotEqualTo, ConditionalOperationIsGreaterThan, ConditionalOperationIsGreaterThanOrEqualTo, ConditionalOperationIsLessThan, ConditionalOperationIsLessThanOrEqualTo:
+	case ConditionalOperationIsOneOf, ConditionalOperationIsNotOneOf, ConditionalOperationMatches, ConditionalOperationDoesNotMatch, ConditionalOperationIsEqualTo, ConditionalOperationIsNotEqualTo, ConditionalOperationIsGreaterThan, ConditionalOperationIsGreaterThanOrEqualTo, ConditionalOperationIsLessThan, ConditionalOperationIsLessThanOrEqualTo, ConditionalOperationContainsAny, ConditionalOperationContainsAll, ConditionalOperationContainsNone:
 		return true
 	}
 	return false
@@ -1371,41 +1727,9 @@ func (r conditionalTokenizationActionParametersJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2NewResponseCurrentVersionParameters() {
-}
+func (r ConditionalTokenizationActionParameters) implementsAuthRuleCurrentVersionParameters() {}
 
-func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2NewResponseDraftVersionParameters() {
-}
-
-func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2GetResponseCurrentVersionParameters() {
-}
-
-func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2GetResponseDraftVersionParameters() {
-}
-
-func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2UpdateResponseCurrentVersionParameters() {
-}
-
-func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2UpdateResponseDraftVersionParameters() {
-}
-
-func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2ListResponseCurrentVersionParameters() {
-}
-
-func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2ListResponseDraftVersionParameters() {
-}
-
-func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2DraftResponseCurrentVersionParameters() {
-}
-
-func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2DraftResponseDraftVersionParameters() {
-}
-
-func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2PromoteResponseCurrentVersionParameters() {
-}
-
-func (r ConditionalTokenizationActionParameters) implementsAuthRuleV2PromoteResponseDraftVersionParameters() {
-}
+func (r ConditionalTokenizationActionParameters) implementsAuthRuleDraftVersionParameters() {}
 
 // The action to take if the conditions are met
 type ConditionalTokenizationActionParametersAction struct {
@@ -1697,6 +2021,14 @@ type ConditionalTokenizationActionParametersCondition struct {
 	//   - `WALLET_RECOMMENDED_DECISION`: The decision recommended by the digital wallet
 	//     provider. Valid values include APPROVE, DECLINE,
 	//     REQUIRE_ADDITIONAL_AUTHENTICATION.
+	//   - `WALLET_RECOMMENDATION_REASONS`: List of reasons provided by the digital
+	//     wallet provider for the recommended decision. Valid values are
+	//     `ACCOUNT_CARD_TOO_NEW`, `ACCOUNT_RECENTLY_CHANGED`, `ACCOUNT_TOO_NEW`,
+	//     `ACCOUNT_TOO_NEW_SINCE_LAUNCH`, `DEVICE_RECENTLY_LOST`,
+	//     `HAS_SUSPENDED_TOKENS`, `HIGH_RISK`, `INACTIVE_ACCOUNT`, `LOW_ACCOUNT_SCORE`,
+	//     `LOW_DEVICE_SCORE`, `OUTSIDE_HOME_TERRITORY`, `SUSPICIOUS_ACTIVITY`,
+	//     `TOO_MANY_DIFFERENT_CARDHOLDERS`, `TOO_MANY_RECENT_ATTEMPTS`,
+	//     `TOO_MANY_RECENT_TOKENS`, `UNABLE_TO_ASSESS`.
 	//   - `TOKEN_REQUESTOR_ID`: Unique identifier for the entity requesting the token.
 	//   - `WALLET_TOKEN_STATUS`: The current status of the wallet token.
 	Attribute ConditionalTokenizationActionParametersConditionsAttribute `json:"attribute,required"`
@@ -1747,25 +2079,34 @@ func (r conditionalTokenizationActionParametersConditionJSON) RawJSON() string {
 //   - `WALLET_RECOMMENDED_DECISION`: The decision recommended by the digital wallet
 //     provider. Valid values include APPROVE, DECLINE,
 //     REQUIRE_ADDITIONAL_AUTHENTICATION.
+//   - `WALLET_RECOMMENDATION_REASONS`: List of reasons provided by the digital
+//     wallet provider for the recommended decision. Valid values are
+//     `ACCOUNT_CARD_TOO_NEW`, `ACCOUNT_RECENTLY_CHANGED`, `ACCOUNT_TOO_NEW`,
+//     `ACCOUNT_TOO_NEW_SINCE_LAUNCH`, `DEVICE_RECENTLY_LOST`,
+//     `HAS_SUSPENDED_TOKENS`, `HIGH_RISK`, `INACTIVE_ACCOUNT`, `LOW_ACCOUNT_SCORE`,
+//     `LOW_DEVICE_SCORE`, `OUTSIDE_HOME_TERRITORY`, `SUSPICIOUS_ACTIVITY`,
+//     `TOO_MANY_DIFFERENT_CARDHOLDERS`, `TOO_MANY_RECENT_ATTEMPTS`,
+//     `TOO_MANY_RECENT_TOKENS`, `UNABLE_TO_ASSESS`.
 //   - `TOKEN_REQUESTOR_ID`: Unique identifier for the entity requesting the token.
 //   - `WALLET_TOKEN_STATUS`: The current status of the wallet token.
 type ConditionalTokenizationActionParametersConditionsAttribute string
 
 const (
-	ConditionalTokenizationActionParametersConditionsAttributeTimestamp                 ConditionalTokenizationActionParametersConditionsAttribute = "TIMESTAMP"
-	ConditionalTokenizationActionParametersConditionsAttributeTokenizationChannel       ConditionalTokenizationActionParametersConditionsAttribute = "TOKENIZATION_CHANNEL"
-	ConditionalTokenizationActionParametersConditionsAttributeTokenizationSource        ConditionalTokenizationActionParametersConditionsAttribute = "TOKENIZATION_SOURCE"
-	ConditionalTokenizationActionParametersConditionsAttributeTokenRequestorName        ConditionalTokenizationActionParametersConditionsAttribute = "TOKEN_REQUESTOR_NAME"
-	ConditionalTokenizationActionParametersConditionsAttributeWalletAccountScore        ConditionalTokenizationActionParametersConditionsAttribute = "WALLET_ACCOUNT_SCORE"
-	ConditionalTokenizationActionParametersConditionsAttributeWalletDeviceScore         ConditionalTokenizationActionParametersConditionsAttribute = "WALLET_DEVICE_SCORE"
-	ConditionalTokenizationActionParametersConditionsAttributeWalletRecommendedDecision ConditionalTokenizationActionParametersConditionsAttribute = "WALLET_RECOMMENDED_DECISION"
-	ConditionalTokenizationActionParametersConditionsAttributeTokenRequestorID          ConditionalTokenizationActionParametersConditionsAttribute = "TOKEN_REQUESTOR_ID"
-	ConditionalTokenizationActionParametersConditionsAttributeWalletTokenStatus         ConditionalTokenizationActionParametersConditionsAttribute = "WALLET_TOKEN_STATUS"
+	ConditionalTokenizationActionParametersConditionsAttributeTimestamp                   ConditionalTokenizationActionParametersConditionsAttribute = "TIMESTAMP"
+	ConditionalTokenizationActionParametersConditionsAttributeTokenizationChannel         ConditionalTokenizationActionParametersConditionsAttribute = "TOKENIZATION_CHANNEL"
+	ConditionalTokenizationActionParametersConditionsAttributeTokenizationSource          ConditionalTokenizationActionParametersConditionsAttribute = "TOKENIZATION_SOURCE"
+	ConditionalTokenizationActionParametersConditionsAttributeTokenRequestorName          ConditionalTokenizationActionParametersConditionsAttribute = "TOKEN_REQUESTOR_NAME"
+	ConditionalTokenizationActionParametersConditionsAttributeWalletAccountScore          ConditionalTokenizationActionParametersConditionsAttribute = "WALLET_ACCOUNT_SCORE"
+	ConditionalTokenizationActionParametersConditionsAttributeWalletDeviceScore           ConditionalTokenizationActionParametersConditionsAttribute = "WALLET_DEVICE_SCORE"
+	ConditionalTokenizationActionParametersConditionsAttributeWalletRecommendedDecision   ConditionalTokenizationActionParametersConditionsAttribute = "WALLET_RECOMMENDED_DECISION"
+	ConditionalTokenizationActionParametersConditionsAttributeWalletRecommendationReasons ConditionalTokenizationActionParametersConditionsAttribute = "WALLET_RECOMMENDATION_REASONS"
+	ConditionalTokenizationActionParametersConditionsAttributeTokenRequestorID            ConditionalTokenizationActionParametersConditionsAttribute = "TOKEN_REQUESTOR_ID"
+	ConditionalTokenizationActionParametersConditionsAttributeWalletTokenStatus           ConditionalTokenizationActionParametersConditionsAttribute = "WALLET_TOKEN_STATUS"
 )
 
 func (r ConditionalTokenizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case ConditionalTokenizationActionParametersConditionsAttributeTimestamp, ConditionalTokenizationActionParametersConditionsAttributeTokenizationChannel, ConditionalTokenizationActionParametersConditionsAttributeTokenizationSource, ConditionalTokenizationActionParametersConditionsAttributeTokenRequestorName, ConditionalTokenizationActionParametersConditionsAttributeWalletAccountScore, ConditionalTokenizationActionParametersConditionsAttributeWalletDeviceScore, ConditionalTokenizationActionParametersConditionsAttributeWalletRecommendedDecision, ConditionalTokenizationActionParametersConditionsAttributeTokenRequestorID, ConditionalTokenizationActionParametersConditionsAttributeWalletTokenStatus:
+	case ConditionalTokenizationActionParametersConditionsAttributeTimestamp, ConditionalTokenizationActionParametersConditionsAttributeTokenizationChannel, ConditionalTokenizationActionParametersConditionsAttributeTokenizationSource, ConditionalTokenizationActionParametersConditionsAttributeTokenRequestorName, ConditionalTokenizationActionParametersConditionsAttributeWalletAccountScore, ConditionalTokenizationActionParametersConditionsAttributeWalletDeviceScore, ConditionalTokenizationActionParametersConditionsAttributeWalletRecommendedDecision, ConditionalTokenizationActionParametersConditionsAttributeWalletRecommendationReasons, ConditionalTokenizationActionParametersConditionsAttributeTokenRequestorID, ConditionalTokenizationActionParametersConditionsAttributeWalletTokenStatus:
 		return true
 	}
 	return false
@@ -1837,29 +2178,9 @@ func (r merchantLockParametersJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r MerchantLockParameters) implementsAuthRuleV2NewResponseCurrentVersionParameters() {}
+func (r MerchantLockParameters) implementsAuthRuleCurrentVersionParameters() {}
 
-func (r MerchantLockParameters) implementsAuthRuleV2NewResponseDraftVersionParameters() {}
-
-func (r MerchantLockParameters) implementsAuthRuleV2GetResponseCurrentVersionParameters() {}
-
-func (r MerchantLockParameters) implementsAuthRuleV2GetResponseDraftVersionParameters() {}
-
-func (r MerchantLockParameters) implementsAuthRuleV2UpdateResponseCurrentVersionParameters() {}
-
-func (r MerchantLockParameters) implementsAuthRuleV2UpdateResponseDraftVersionParameters() {}
-
-func (r MerchantLockParameters) implementsAuthRuleV2ListResponseCurrentVersionParameters() {}
-
-func (r MerchantLockParameters) implementsAuthRuleV2ListResponseDraftVersionParameters() {}
-
-func (r MerchantLockParameters) implementsAuthRuleV2DraftResponseCurrentVersionParameters() {}
-
-func (r MerchantLockParameters) implementsAuthRuleV2DraftResponseDraftVersionParameters() {}
-
-func (r MerchantLockParameters) implementsAuthRuleV2PromoteResponseCurrentVersionParameters() {}
-
-func (r MerchantLockParameters) implementsAuthRuleV2PromoteResponseDraftVersionParameters() {}
+func (r MerchantLockParameters) implementsAuthRuleDraftVersionParameters() {}
 
 // Represents a specific merchant lock based on their ID or descriptor. Each
 // merchant object allows transaction rules to work at a granular level and
@@ -2025,29 +2346,9 @@ func (r velocityLimitParamsJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r VelocityLimitParams) implementsAuthRuleV2NewResponseCurrentVersionParameters() {}
+func (r VelocityLimitParams) implementsAuthRuleCurrentVersionParameters() {}
 
-func (r VelocityLimitParams) implementsAuthRuleV2NewResponseDraftVersionParameters() {}
-
-func (r VelocityLimitParams) implementsAuthRuleV2GetResponseCurrentVersionParameters() {}
-
-func (r VelocityLimitParams) implementsAuthRuleV2GetResponseDraftVersionParameters() {}
-
-func (r VelocityLimitParams) implementsAuthRuleV2UpdateResponseCurrentVersionParameters() {}
-
-func (r VelocityLimitParams) implementsAuthRuleV2UpdateResponseDraftVersionParameters() {}
-
-func (r VelocityLimitParams) implementsAuthRuleV2ListResponseCurrentVersionParameters() {}
-
-func (r VelocityLimitParams) implementsAuthRuleV2ListResponseDraftVersionParameters() {}
-
-func (r VelocityLimitParams) implementsAuthRuleV2DraftResponseCurrentVersionParameters() {}
-
-func (r VelocityLimitParams) implementsAuthRuleV2DraftResponseDraftVersionParameters() {}
-
-func (r VelocityLimitParams) implementsAuthRuleV2PromoteResponseCurrentVersionParameters() {}
-
-func (r VelocityLimitParams) implementsAuthRuleV2PromoteResponseDraftVersionParameters() {}
+func (r VelocityLimitParams) implementsAuthRuleDraftVersionParameters() {}
 
 type VelocityLimitParamsFilters struct {
 	// ISO-3166-1 alpha-3 Country Codes to exclude from the velocity calculation.
@@ -2568,2706 +2869,6 @@ func (r VelocityLimitPeriodFixedWindowYearParam) MarshalJSON() (data []byte, err
 }
 
 func (r VelocityLimitPeriodFixedWindowYearParam) implementsVelocityLimitPeriodUnionParam() {}
-
-type AuthRuleV2NewResponse struct {
-	// Auth Rule Token
-	Token string `json:"token,required" format:"uuid"`
-	// Account tokens to which the Auth Rule applies.
-	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
-	// Business Account tokens to which the Auth Rule applies.
-	BusinessAccountTokens []string `json:"business_account_tokens,required" format:"uuid"`
-	// Card tokens to which the Auth Rule applies.
-	CardTokens     []string                            `json:"card_tokens,required" format:"uuid"`
-	CurrentVersion AuthRuleV2NewResponseCurrentVersion `json:"current_version,required,nullable"`
-	DraftVersion   AuthRuleV2NewResponseDraftVersion   `json:"draft_version,required,nullable"`
-	// The event stream during which the rule will be evaluated.
-	EventStream AuthRuleV2NewResponseEventStream `json:"event_stream,required"`
-	// Indicates whether this auth rule is managed by Lithic. If true, the rule cannot
-	// be modified or deleted by the user
-	LithicManaged bool `json:"lithic_managed,required"`
-	// Auth Rule Name
-	Name string `json:"name,required,nullable"`
-	// Whether the Auth Rule applies to all authorizations on the card program.
-	ProgramLevel bool `json:"program_level,required"`
-	// The state of the Auth Rule
-	State AuthRuleV2NewResponseState `json:"state,required"`
-	// The type of Auth Rule. For certain rule types, this determines the event stream
-	// during which it will be evaluated. For rules that can be applied to one of
-	// several event streams, the effective one is defined by the separate
-	// `event_stream` field.
-	//
-	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
-	Type AuthRuleV2NewResponseType `json:"type,required"`
-	// Card tokens to which the Auth Rule does not apply.
-	ExcludedCardTokens []string                  `json:"excluded_card_tokens" format:"uuid"`
-	JSON               authRuleV2NewResponseJSON `json:"-"`
-}
-
-// authRuleV2NewResponseJSON contains the JSON metadata for the struct
-// [AuthRuleV2NewResponse]
-type authRuleV2NewResponseJSON struct {
-	Token                 apijson.Field
-	AccountTokens         apijson.Field
-	BusinessAccountTokens apijson.Field
-	CardTokens            apijson.Field
-	CurrentVersion        apijson.Field
-	DraftVersion          apijson.Field
-	EventStream           apijson.Field
-	LithicManaged         apijson.Field
-	Name                  apijson.Field
-	ProgramLevel          apijson.Field
-	State                 apijson.Field
-	Type                  apijson.Field
-	ExcludedCardTokens    apijson.Field
-	raw                   string
-	ExtraFields           map[string]apijson.Field
-}
-
-func (r *AuthRuleV2NewResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2NewResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-type AuthRuleV2NewResponseCurrentVersion struct {
-	// Parameters for the Auth Rule
-	Parameters AuthRuleV2NewResponseCurrentVersionParameters `json:"parameters,required"`
-	// The version of the rule, this is incremented whenever the rule's parameters
-	// change.
-	Version int64                                   `json:"version,required"`
-	JSON    authRuleV2NewResponseCurrentVersionJSON `json:"-"`
-}
-
-// authRuleV2NewResponseCurrentVersionJSON contains the JSON metadata for the
-// struct [AuthRuleV2NewResponseCurrentVersion]
-type authRuleV2NewResponseCurrentVersionJSON struct {
-	Parameters  apijson.Field
-	Version     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2NewResponseCurrentVersion) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2NewResponseCurrentVersionJSON) RawJSON() string {
-	return r.raw
-}
-
-// Parameters for the Auth Rule
-type AuthRuleV2NewResponseCurrentVersionParameters struct {
-	// This field can have the runtime type of [Conditional3DSActionParametersAction],
-	// [ConditionalAuthorizationActionParametersAction],
-	// [ConditionalACHActionParametersAction],
-	// [ConditionalTokenizationActionParametersAction].
-	Action interface{} `json:"action"`
-	// This field can have the runtime type of [[]AuthRuleCondition],
-	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition],
-	// [[]ConditionalACHActionParametersCondition],
-	// [[]ConditionalTokenizationActionParametersCondition].
-	Conditions interface{} `json:"conditions"`
-	// This field can have the runtime type of [VelocityLimitParamsFilters].
-	Filters interface{} `json:"filters"`
-	// The maximum amount of spend velocity allowed in the period in minor units (the
-	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
-	// limit will be declined.
-	LimitAmount int64 `json:"limit_amount,nullable"`
-	// The number of spend velocity impacting transactions may not exceed this limit in
-	// the period. Transactions exceeding this limit will be declined. A spend velocity
-	// impacting transaction is a transaction that has been authorized, and optionally
-	// settled, or a force post (a transaction that settled without prior
-	// authorization).
-	LimitCount int64 `json:"limit_count,nullable"`
-	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
-	Merchants interface{} `json:"merchants"`
-	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
-	Period VelocityLimitPeriod `json:"period"`
-	// The scope the velocity is calculated for
-	Scope AuthRuleV2NewResponseCurrentVersionParametersScope `json:"scope"`
-	JSON  authRuleV2NewResponseCurrentVersionParametersJSON  `json:"-"`
-	union AuthRuleV2NewResponseCurrentVersionParametersUnion
-}
-
-// authRuleV2NewResponseCurrentVersionParametersJSON contains the JSON metadata for
-// the struct [AuthRuleV2NewResponseCurrentVersionParameters]
-type authRuleV2NewResponseCurrentVersionParametersJSON struct {
-	Action      apijson.Field
-	Conditions  apijson.Field
-	Filters     apijson.Field
-	LimitAmount apijson.Field
-	LimitCount  apijson.Field
-	Merchants   apijson.Field
-	Period      apijson.Field
-	Scope       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r authRuleV2NewResponseCurrentVersionParametersJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r *AuthRuleV2NewResponseCurrentVersionParameters) UnmarshalJSON(data []byte) (err error) {
-	*r = AuthRuleV2NewResponseCurrentVersionParameters{}
-	err = apijson.UnmarshalRoot(data, &r.union)
-	if err != nil {
-		return err
-	}
-	return apijson.Port(r.union, &r)
-}
-
-// AsUnion returns a [AuthRuleV2NewResponseCurrentVersionParametersUnion] interface
-// which you can cast to the specific types for more type safety.
-//
-// Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
-// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
-func (r AuthRuleV2NewResponseCurrentVersionParameters) AsUnion() AuthRuleV2NewResponseCurrentVersionParametersUnion {
-	return r.union
-}
-
-// Parameters for the Auth Rule
-//
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
-// [ConditionalTokenizationActionParameters].
-type AuthRuleV2NewResponseCurrentVersionParametersUnion interface {
-	implementsAuthRuleV2NewResponseCurrentVersionParameters()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*AuthRuleV2NewResponseCurrentVersionParametersUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(VelocityLimitParams{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(MerchantLockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(Conditional3DSActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
-		},
-	)
-}
-
-// The scope the velocity is calculated for
-type AuthRuleV2NewResponseCurrentVersionParametersScope string
-
-const (
-	AuthRuleV2NewResponseCurrentVersionParametersScopeCard    AuthRuleV2NewResponseCurrentVersionParametersScope = "CARD"
-	AuthRuleV2NewResponseCurrentVersionParametersScopeAccount AuthRuleV2NewResponseCurrentVersionParametersScope = "ACCOUNT"
-)
-
-func (r AuthRuleV2NewResponseCurrentVersionParametersScope) IsKnown() bool {
-	switch r {
-	case AuthRuleV2NewResponseCurrentVersionParametersScopeCard, AuthRuleV2NewResponseCurrentVersionParametersScopeAccount:
-		return true
-	}
-	return false
-}
-
-type AuthRuleV2NewResponseDraftVersion struct {
-	// Parameters for the Auth Rule
-	Parameters AuthRuleV2NewResponseDraftVersionParameters `json:"parameters,required"`
-	// The version of the rule, this is incremented whenever the rule's parameters
-	// change.
-	Version int64                                 `json:"version,required"`
-	JSON    authRuleV2NewResponseDraftVersionJSON `json:"-"`
-}
-
-// authRuleV2NewResponseDraftVersionJSON contains the JSON metadata for the struct
-// [AuthRuleV2NewResponseDraftVersion]
-type authRuleV2NewResponseDraftVersionJSON struct {
-	Parameters  apijson.Field
-	Version     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2NewResponseDraftVersion) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2NewResponseDraftVersionJSON) RawJSON() string {
-	return r.raw
-}
-
-// Parameters for the Auth Rule
-type AuthRuleV2NewResponseDraftVersionParameters struct {
-	// This field can have the runtime type of [Conditional3DSActionParametersAction],
-	// [ConditionalAuthorizationActionParametersAction],
-	// [ConditionalACHActionParametersAction],
-	// [ConditionalTokenizationActionParametersAction].
-	Action interface{} `json:"action"`
-	// This field can have the runtime type of [[]AuthRuleCondition],
-	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition],
-	// [[]ConditionalACHActionParametersCondition],
-	// [[]ConditionalTokenizationActionParametersCondition].
-	Conditions interface{} `json:"conditions"`
-	// This field can have the runtime type of [VelocityLimitParamsFilters].
-	Filters interface{} `json:"filters"`
-	// The maximum amount of spend velocity allowed in the period in minor units (the
-	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
-	// limit will be declined.
-	LimitAmount int64 `json:"limit_amount,nullable"`
-	// The number of spend velocity impacting transactions may not exceed this limit in
-	// the period. Transactions exceeding this limit will be declined. A spend velocity
-	// impacting transaction is a transaction that has been authorized, and optionally
-	// settled, or a force post (a transaction that settled without prior
-	// authorization).
-	LimitCount int64 `json:"limit_count,nullable"`
-	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
-	Merchants interface{} `json:"merchants"`
-	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
-	Period VelocityLimitPeriod `json:"period"`
-	// The scope the velocity is calculated for
-	Scope AuthRuleV2NewResponseDraftVersionParametersScope `json:"scope"`
-	JSON  authRuleV2NewResponseDraftVersionParametersJSON  `json:"-"`
-	union AuthRuleV2NewResponseDraftVersionParametersUnion
-}
-
-// authRuleV2NewResponseDraftVersionParametersJSON contains the JSON metadata for
-// the struct [AuthRuleV2NewResponseDraftVersionParameters]
-type authRuleV2NewResponseDraftVersionParametersJSON struct {
-	Action      apijson.Field
-	Conditions  apijson.Field
-	Filters     apijson.Field
-	LimitAmount apijson.Field
-	LimitCount  apijson.Field
-	Merchants   apijson.Field
-	Period      apijson.Field
-	Scope       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r authRuleV2NewResponseDraftVersionParametersJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r *AuthRuleV2NewResponseDraftVersionParameters) UnmarshalJSON(data []byte) (err error) {
-	*r = AuthRuleV2NewResponseDraftVersionParameters{}
-	err = apijson.UnmarshalRoot(data, &r.union)
-	if err != nil {
-		return err
-	}
-	return apijson.Port(r.union, &r)
-}
-
-// AsUnion returns a [AuthRuleV2NewResponseDraftVersionParametersUnion] interface
-// which you can cast to the specific types for more type safety.
-//
-// Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
-// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
-func (r AuthRuleV2NewResponseDraftVersionParameters) AsUnion() AuthRuleV2NewResponseDraftVersionParametersUnion {
-	return r.union
-}
-
-// Parameters for the Auth Rule
-//
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
-// [ConditionalTokenizationActionParameters].
-type AuthRuleV2NewResponseDraftVersionParametersUnion interface {
-	implementsAuthRuleV2NewResponseDraftVersionParameters()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*AuthRuleV2NewResponseDraftVersionParametersUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(VelocityLimitParams{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(MerchantLockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(Conditional3DSActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
-		},
-	)
-}
-
-// The scope the velocity is calculated for
-type AuthRuleV2NewResponseDraftVersionParametersScope string
-
-const (
-	AuthRuleV2NewResponseDraftVersionParametersScopeCard    AuthRuleV2NewResponseDraftVersionParametersScope = "CARD"
-	AuthRuleV2NewResponseDraftVersionParametersScopeAccount AuthRuleV2NewResponseDraftVersionParametersScope = "ACCOUNT"
-)
-
-func (r AuthRuleV2NewResponseDraftVersionParametersScope) IsKnown() bool {
-	switch r {
-	case AuthRuleV2NewResponseDraftVersionParametersScopeCard, AuthRuleV2NewResponseDraftVersionParametersScopeAccount:
-		return true
-	}
-	return false
-}
-
-// The event stream during which the rule will be evaluated.
-type AuthRuleV2NewResponseEventStream string
-
-const (
-	AuthRuleV2NewResponseEventStreamAuthorization         AuthRuleV2NewResponseEventStream = "AUTHORIZATION"
-	AuthRuleV2NewResponseEventStreamThreeDSAuthentication AuthRuleV2NewResponseEventStream = "THREE_DS_AUTHENTICATION"
-	AuthRuleV2NewResponseEventStreamTokenization          AuthRuleV2NewResponseEventStream = "TOKENIZATION"
-	AuthRuleV2NewResponseEventStreamACHCreditReceipt      AuthRuleV2NewResponseEventStream = "ACH_CREDIT_RECEIPT"
-	AuthRuleV2NewResponseEventStreamACHDebitReceipt       AuthRuleV2NewResponseEventStream = "ACH_DEBIT_RECEIPT"
-)
-
-func (r AuthRuleV2NewResponseEventStream) IsKnown() bool {
-	switch r {
-	case AuthRuleV2NewResponseEventStreamAuthorization, AuthRuleV2NewResponseEventStreamThreeDSAuthentication, AuthRuleV2NewResponseEventStreamTokenization, AuthRuleV2NewResponseEventStreamACHCreditReceipt, AuthRuleV2NewResponseEventStreamACHDebitReceipt:
-		return true
-	}
-	return false
-}
-
-// The state of the Auth Rule
-type AuthRuleV2NewResponseState string
-
-const (
-	AuthRuleV2NewResponseStateActive   AuthRuleV2NewResponseState = "ACTIVE"
-	AuthRuleV2NewResponseStateInactive AuthRuleV2NewResponseState = "INACTIVE"
-)
-
-func (r AuthRuleV2NewResponseState) IsKnown() bool {
-	switch r {
-	case AuthRuleV2NewResponseStateActive, AuthRuleV2NewResponseStateInactive:
-		return true
-	}
-	return false
-}
-
-// The type of Auth Rule. For certain rule types, this determines the event stream
-// during which it will be evaluated. For rules that can be applied to one of
-// several event streams, the effective one is defined by the separate
-// `event_stream` field.
-//
-//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
-type AuthRuleV2NewResponseType string
-
-const (
-	AuthRuleV2NewResponseTypeConditionalBlock  AuthRuleV2NewResponseType = "CONDITIONAL_BLOCK"
-	AuthRuleV2NewResponseTypeVelocityLimit     AuthRuleV2NewResponseType = "VELOCITY_LIMIT"
-	AuthRuleV2NewResponseTypeMerchantLock      AuthRuleV2NewResponseType = "MERCHANT_LOCK"
-	AuthRuleV2NewResponseTypeConditionalAction AuthRuleV2NewResponseType = "CONDITIONAL_ACTION"
-)
-
-func (r AuthRuleV2NewResponseType) IsKnown() bool {
-	switch r {
-	case AuthRuleV2NewResponseTypeConditionalBlock, AuthRuleV2NewResponseTypeVelocityLimit, AuthRuleV2NewResponseTypeMerchantLock, AuthRuleV2NewResponseTypeConditionalAction:
-		return true
-	}
-	return false
-}
-
-type AuthRuleV2GetResponse struct {
-	// Auth Rule Token
-	Token string `json:"token,required" format:"uuid"`
-	// Account tokens to which the Auth Rule applies.
-	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
-	// Business Account tokens to which the Auth Rule applies.
-	BusinessAccountTokens []string `json:"business_account_tokens,required" format:"uuid"`
-	// Card tokens to which the Auth Rule applies.
-	CardTokens     []string                            `json:"card_tokens,required" format:"uuid"`
-	CurrentVersion AuthRuleV2GetResponseCurrentVersion `json:"current_version,required,nullable"`
-	DraftVersion   AuthRuleV2GetResponseDraftVersion   `json:"draft_version,required,nullable"`
-	// The event stream during which the rule will be evaluated.
-	EventStream AuthRuleV2GetResponseEventStream `json:"event_stream,required"`
-	// Indicates whether this auth rule is managed by Lithic. If true, the rule cannot
-	// be modified or deleted by the user
-	LithicManaged bool `json:"lithic_managed,required"`
-	// Auth Rule Name
-	Name string `json:"name,required,nullable"`
-	// Whether the Auth Rule applies to all authorizations on the card program.
-	ProgramLevel bool `json:"program_level,required"`
-	// The state of the Auth Rule
-	State AuthRuleV2GetResponseState `json:"state,required"`
-	// The type of Auth Rule. For certain rule types, this determines the event stream
-	// during which it will be evaluated. For rules that can be applied to one of
-	// several event streams, the effective one is defined by the separate
-	// `event_stream` field.
-	//
-	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
-	Type AuthRuleV2GetResponseType `json:"type,required"`
-	// Card tokens to which the Auth Rule does not apply.
-	ExcludedCardTokens []string                  `json:"excluded_card_tokens" format:"uuid"`
-	JSON               authRuleV2GetResponseJSON `json:"-"`
-}
-
-// authRuleV2GetResponseJSON contains the JSON metadata for the struct
-// [AuthRuleV2GetResponse]
-type authRuleV2GetResponseJSON struct {
-	Token                 apijson.Field
-	AccountTokens         apijson.Field
-	BusinessAccountTokens apijson.Field
-	CardTokens            apijson.Field
-	CurrentVersion        apijson.Field
-	DraftVersion          apijson.Field
-	EventStream           apijson.Field
-	LithicManaged         apijson.Field
-	Name                  apijson.Field
-	ProgramLevel          apijson.Field
-	State                 apijson.Field
-	Type                  apijson.Field
-	ExcludedCardTokens    apijson.Field
-	raw                   string
-	ExtraFields           map[string]apijson.Field
-}
-
-func (r *AuthRuleV2GetResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2GetResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-type AuthRuleV2GetResponseCurrentVersion struct {
-	// Parameters for the Auth Rule
-	Parameters AuthRuleV2GetResponseCurrentVersionParameters `json:"parameters,required"`
-	// The version of the rule, this is incremented whenever the rule's parameters
-	// change.
-	Version int64                                   `json:"version,required"`
-	JSON    authRuleV2GetResponseCurrentVersionJSON `json:"-"`
-}
-
-// authRuleV2GetResponseCurrentVersionJSON contains the JSON metadata for the
-// struct [AuthRuleV2GetResponseCurrentVersion]
-type authRuleV2GetResponseCurrentVersionJSON struct {
-	Parameters  apijson.Field
-	Version     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2GetResponseCurrentVersion) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2GetResponseCurrentVersionJSON) RawJSON() string {
-	return r.raw
-}
-
-// Parameters for the Auth Rule
-type AuthRuleV2GetResponseCurrentVersionParameters struct {
-	// This field can have the runtime type of [Conditional3DSActionParametersAction],
-	// [ConditionalAuthorizationActionParametersAction],
-	// [ConditionalACHActionParametersAction],
-	// [ConditionalTokenizationActionParametersAction].
-	Action interface{} `json:"action"`
-	// This field can have the runtime type of [[]AuthRuleCondition],
-	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition],
-	// [[]ConditionalACHActionParametersCondition],
-	// [[]ConditionalTokenizationActionParametersCondition].
-	Conditions interface{} `json:"conditions"`
-	// This field can have the runtime type of [VelocityLimitParamsFilters].
-	Filters interface{} `json:"filters"`
-	// The maximum amount of spend velocity allowed in the period in minor units (the
-	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
-	// limit will be declined.
-	LimitAmount int64 `json:"limit_amount,nullable"`
-	// The number of spend velocity impacting transactions may not exceed this limit in
-	// the period. Transactions exceeding this limit will be declined. A spend velocity
-	// impacting transaction is a transaction that has been authorized, and optionally
-	// settled, or a force post (a transaction that settled without prior
-	// authorization).
-	LimitCount int64 `json:"limit_count,nullable"`
-	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
-	Merchants interface{} `json:"merchants"`
-	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
-	Period VelocityLimitPeriod `json:"period"`
-	// The scope the velocity is calculated for
-	Scope AuthRuleV2GetResponseCurrentVersionParametersScope `json:"scope"`
-	JSON  authRuleV2GetResponseCurrentVersionParametersJSON  `json:"-"`
-	union AuthRuleV2GetResponseCurrentVersionParametersUnion
-}
-
-// authRuleV2GetResponseCurrentVersionParametersJSON contains the JSON metadata for
-// the struct [AuthRuleV2GetResponseCurrentVersionParameters]
-type authRuleV2GetResponseCurrentVersionParametersJSON struct {
-	Action      apijson.Field
-	Conditions  apijson.Field
-	Filters     apijson.Field
-	LimitAmount apijson.Field
-	LimitCount  apijson.Field
-	Merchants   apijson.Field
-	Period      apijson.Field
-	Scope       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r authRuleV2GetResponseCurrentVersionParametersJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r *AuthRuleV2GetResponseCurrentVersionParameters) UnmarshalJSON(data []byte) (err error) {
-	*r = AuthRuleV2GetResponseCurrentVersionParameters{}
-	err = apijson.UnmarshalRoot(data, &r.union)
-	if err != nil {
-		return err
-	}
-	return apijson.Port(r.union, &r)
-}
-
-// AsUnion returns a [AuthRuleV2GetResponseCurrentVersionParametersUnion] interface
-// which you can cast to the specific types for more type safety.
-//
-// Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
-// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
-func (r AuthRuleV2GetResponseCurrentVersionParameters) AsUnion() AuthRuleV2GetResponseCurrentVersionParametersUnion {
-	return r.union
-}
-
-// Parameters for the Auth Rule
-//
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
-// [ConditionalTokenizationActionParameters].
-type AuthRuleV2GetResponseCurrentVersionParametersUnion interface {
-	implementsAuthRuleV2GetResponseCurrentVersionParameters()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*AuthRuleV2GetResponseCurrentVersionParametersUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(VelocityLimitParams{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(MerchantLockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(Conditional3DSActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
-		},
-	)
-}
-
-// The scope the velocity is calculated for
-type AuthRuleV2GetResponseCurrentVersionParametersScope string
-
-const (
-	AuthRuleV2GetResponseCurrentVersionParametersScopeCard    AuthRuleV2GetResponseCurrentVersionParametersScope = "CARD"
-	AuthRuleV2GetResponseCurrentVersionParametersScopeAccount AuthRuleV2GetResponseCurrentVersionParametersScope = "ACCOUNT"
-)
-
-func (r AuthRuleV2GetResponseCurrentVersionParametersScope) IsKnown() bool {
-	switch r {
-	case AuthRuleV2GetResponseCurrentVersionParametersScopeCard, AuthRuleV2GetResponseCurrentVersionParametersScopeAccount:
-		return true
-	}
-	return false
-}
-
-type AuthRuleV2GetResponseDraftVersion struct {
-	// Parameters for the Auth Rule
-	Parameters AuthRuleV2GetResponseDraftVersionParameters `json:"parameters,required"`
-	// The version of the rule, this is incremented whenever the rule's parameters
-	// change.
-	Version int64                                 `json:"version,required"`
-	JSON    authRuleV2GetResponseDraftVersionJSON `json:"-"`
-}
-
-// authRuleV2GetResponseDraftVersionJSON contains the JSON metadata for the struct
-// [AuthRuleV2GetResponseDraftVersion]
-type authRuleV2GetResponseDraftVersionJSON struct {
-	Parameters  apijson.Field
-	Version     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2GetResponseDraftVersion) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2GetResponseDraftVersionJSON) RawJSON() string {
-	return r.raw
-}
-
-// Parameters for the Auth Rule
-type AuthRuleV2GetResponseDraftVersionParameters struct {
-	// This field can have the runtime type of [Conditional3DSActionParametersAction],
-	// [ConditionalAuthorizationActionParametersAction],
-	// [ConditionalACHActionParametersAction],
-	// [ConditionalTokenizationActionParametersAction].
-	Action interface{} `json:"action"`
-	// This field can have the runtime type of [[]AuthRuleCondition],
-	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition],
-	// [[]ConditionalACHActionParametersCondition],
-	// [[]ConditionalTokenizationActionParametersCondition].
-	Conditions interface{} `json:"conditions"`
-	// This field can have the runtime type of [VelocityLimitParamsFilters].
-	Filters interface{} `json:"filters"`
-	// The maximum amount of spend velocity allowed in the period in minor units (the
-	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
-	// limit will be declined.
-	LimitAmount int64 `json:"limit_amount,nullable"`
-	// The number of spend velocity impacting transactions may not exceed this limit in
-	// the period. Transactions exceeding this limit will be declined. A spend velocity
-	// impacting transaction is a transaction that has been authorized, and optionally
-	// settled, or a force post (a transaction that settled without prior
-	// authorization).
-	LimitCount int64 `json:"limit_count,nullable"`
-	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
-	Merchants interface{} `json:"merchants"`
-	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
-	Period VelocityLimitPeriod `json:"period"`
-	// The scope the velocity is calculated for
-	Scope AuthRuleV2GetResponseDraftVersionParametersScope `json:"scope"`
-	JSON  authRuleV2GetResponseDraftVersionParametersJSON  `json:"-"`
-	union AuthRuleV2GetResponseDraftVersionParametersUnion
-}
-
-// authRuleV2GetResponseDraftVersionParametersJSON contains the JSON metadata for
-// the struct [AuthRuleV2GetResponseDraftVersionParameters]
-type authRuleV2GetResponseDraftVersionParametersJSON struct {
-	Action      apijson.Field
-	Conditions  apijson.Field
-	Filters     apijson.Field
-	LimitAmount apijson.Field
-	LimitCount  apijson.Field
-	Merchants   apijson.Field
-	Period      apijson.Field
-	Scope       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r authRuleV2GetResponseDraftVersionParametersJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r *AuthRuleV2GetResponseDraftVersionParameters) UnmarshalJSON(data []byte) (err error) {
-	*r = AuthRuleV2GetResponseDraftVersionParameters{}
-	err = apijson.UnmarshalRoot(data, &r.union)
-	if err != nil {
-		return err
-	}
-	return apijson.Port(r.union, &r)
-}
-
-// AsUnion returns a [AuthRuleV2GetResponseDraftVersionParametersUnion] interface
-// which you can cast to the specific types for more type safety.
-//
-// Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
-// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
-func (r AuthRuleV2GetResponseDraftVersionParameters) AsUnion() AuthRuleV2GetResponseDraftVersionParametersUnion {
-	return r.union
-}
-
-// Parameters for the Auth Rule
-//
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
-// [ConditionalTokenizationActionParameters].
-type AuthRuleV2GetResponseDraftVersionParametersUnion interface {
-	implementsAuthRuleV2GetResponseDraftVersionParameters()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*AuthRuleV2GetResponseDraftVersionParametersUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(VelocityLimitParams{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(MerchantLockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(Conditional3DSActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
-		},
-	)
-}
-
-// The scope the velocity is calculated for
-type AuthRuleV2GetResponseDraftVersionParametersScope string
-
-const (
-	AuthRuleV2GetResponseDraftVersionParametersScopeCard    AuthRuleV2GetResponseDraftVersionParametersScope = "CARD"
-	AuthRuleV2GetResponseDraftVersionParametersScopeAccount AuthRuleV2GetResponseDraftVersionParametersScope = "ACCOUNT"
-)
-
-func (r AuthRuleV2GetResponseDraftVersionParametersScope) IsKnown() bool {
-	switch r {
-	case AuthRuleV2GetResponseDraftVersionParametersScopeCard, AuthRuleV2GetResponseDraftVersionParametersScopeAccount:
-		return true
-	}
-	return false
-}
-
-// The event stream during which the rule will be evaluated.
-type AuthRuleV2GetResponseEventStream string
-
-const (
-	AuthRuleV2GetResponseEventStreamAuthorization         AuthRuleV2GetResponseEventStream = "AUTHORIZATION"
-	AuthRuleV2GetResponseEventStreamThreeDSAuthentication AuthRuleV2GetResponseEventStream = "THREE_DS_AUTHENTICATION"
-	AuthRuleV2GetResponseEventStreamTokenization          AuthRuleV2GetResponseEventStream = "TOKENIZATION"
-	AuthRuleV2GetResponseEventStreamACHCreditReceipt      AuthRuleV2GetResponseEventStream = "ACH_CREDIT_RECEIPT"
-	AuthRuleV2GetResponseEventStreamACHDebitReceipt       AuthRuleV2GetResponseEventStream = "ACH_DEBIT_RECEIPT"
-)
-
-func (r AuthRuleV2GetResponseEventStream) IsKnown() bool {
-	switch r {
-	case AuthRuleV2GetResponseEventStreamAuthorization, AuthRuleV2GetResponseEventStreamThreeDSAuthentication, AuthRuleV2GetResponseEventStreamTokenization, AuthRuleV2GetResponseEventStreamACHCreditReceipt, AuthRuleV2GetResponseEventStreamACHDebitReceipt:
-		return true
-	}
-	return false
-}
-
-// The state of the Auth Rule
-type AuthRuleV2GetResponseState string
-
-const (
-	AuthRuleV2GetResponseStateActive   AuthRuleV2GetResponseState = "ACTIVE"
-	AuthRuleV2GetResponseStateInactive AuthRuleV2GetResponseState = "INACTIVE"
-)
-
-func (r AuthRuleV2GetResponseState) IsKnown() bool {
-	switch r {
-	case AuthRuleV2GetResponseStateActive, AuthRuleV2GetResponseStateInactive:
-		return true
-	}
-	return false
-}
-
-// The type of Auth Rule. For certain rule types, this determines the event stream
-// during which it will be evaluated. For rules that can be applied to one of
-// several event streams, the effective one is defined by the separate
-// `event_stream` field.
-//
-//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
-type AuthRuleV2GetResponseType string
-
-const (
-	AuthRuleV2GetResponseTypeConditionalBlock  AuthRuleV2GetResponseType = "CONDITIONAL_BLOCK"
-	AuthRuleV2GetResponseTypeVelocityLimit     AuthRuleV2GetResponseType = "VELOCITY_LIMIT"
-	AuthRuleV2GetResponseTypeMerchantLock      AuthRuleV2GetResponseType = "MERCHANT_LOCK"
-	AuthRuleV2GetResponseTypeConditionalAction AuthRuleV2GetResponseType = "CONDITIONAL_ACTION"
-)
-
-func (r AuthRuleV2GetResponseType) IsKnown() bool {
-	switch r {
-	case AuthRuleV2GetResponseTypeConditionalBlock, AuthRuleV2GetResponseTypeVelocityLimit, AuthRuleV2GetResponseTypeMerchantLock, AuthRuleV2GetResponseTypeConditionalAction:
-		return true
-	}
-	return false
-}
-
-type AuthRuleV2UpdateResponse struct {
-	// Auth Rule Token
-	Token string `json:"token,required" format:"uuid"`
-	// Account tokens to which the Auth Rule applies.
-	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
-	// Business Account tokens to which the Auth Rule applies.
-	BusinessAccountTokens []string `json:"business_account_tokens,required" format:"uuid"`
-	// Card tokens to which the Auth Rule applies.
-	CardTokens     []string                               `json:"card_tokens,required" format:"uuid"`
-	CurrentVersion AuthRuleV2UpdateResponseCurrentVersion `json:"current_version,required,nullable"`
-	DraftVersion   AuthRuleV2UpdateResponseDraftVersion   `json:"draft_version,required,nullable"`
-	// The event stream during which the rule will be evaluated.
-	EventStream AuthRuleV2UpdateResponseEventStream `json:"event_stream,required"`
-	// Indicates whether this auth rule is managed by Lithic. If true, the rule cannot
-	// be modified or deleted by the user
-	LithicManaged bool `json:"lithic_managed,required"`
-	// Auth Rule Name
-	Name string `json:"name,required,nullable"`
-	// Whether the Auth Rule applies to all authorizations on the card program.
-	ProgramLevel bool `json:"program_level,required"`
-	// The state of the Auth Rule
-	State AuthRuleV2UpdateResponseState `json:"state,required"`
-	// The type of Auth Rule. For certain rule types, this determines the event stream
-	// during which it will be evaluated. For rules that can be applied to one of
-	// several event streams, the effective one is defined by the separate
-	// `event_stream` field.
-	//
-	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
-	Type AuthRuleV2UpdateResponseType `json:"type,required"`
-	// Card tokens to which the Auth Rule does not apply.
-	ExcludedCardTokens []string                     `json:"excluded_card_tokens" format:"uuid"`
-	JSON               authRuleV2UpdateResponseJSON `json:"-"`
-}
-
-// authRuleV2UpdateResponseJSON contains the JSON metadata for the struct
-// [AuthRuleV2UpdateResponse]
-type authRuleV2UpdateResponseJSON struct {
-	Token                 apijson.Field
-	AccountTokens         apijson.Field
-	BusinessAccountTokens apijson.Field
-	CardTokens            apijson.Field
-	CurrentVersion        apijson.Field
-	DraftVersion          apijson.Field
-	EventStream           apijson.Field
-	LithicManaged         apijson.Field
-	Name                  apijson.Field
-	ProgramLevel          apijson.Field
-	State                 apijson.Field
-	Type                  apijson.Field
-	ExcludedCardTokens    apijson.Field
-	raw                   string
-	ExtraFields           map[string]apijson.Field
-}
-
-func (r *AuthRuleV2UpdateResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2UpdateResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-type AuthRuleV2UpdateResponseCurrentVersion struct {
-	// Parameters for the Auth Rule
-	Parameters AuthRuleV2UpdateResponseCurrentVersionParameters `json:"parameters,required"`
-	// The version of the rule, this is incremented whenever the rule's parameters
-	// change.
-	Version int64                                      `json:"version,required"`
-	JSON    authRuleV2UpdateResponseCurrentVersionJSON `json:"-"`
-}
-
-// authRuleV2UpdateResponseCurrentVersionJSON contains the JSON metadata for the
-// struct [AuthRuleV2UpdateResponseCurrentVersion]
-type authRuleV2UpdateResponseCurrentVersionJSON struct {
-	Parameters  apijson.Field
-	Version     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2UpdateResponseCurrentVersion) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2UpdateResponseCurrentVersionJSON) RawJSON() string {
-	return r.raw
-}
-
-// Parameters for the Auth Rule
-type AuthRuleV2UpdateResponseCurrentVersionParameters struct {
-	// This field can have the runtime type of [Conditional3DSActionParametersAction],
-	// [ConditionalAuthorizationActionParametersAction],
-	// [ConditionalACHActionParametersAction],
-	// [ConditionalTokenizationActionParametersAction].
-	Action interface{} `json:"action"`
-	// This field can have the runtime type of [[]AuthRuleCondition],
-	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition],
-	// [[]ConditionalACHActionParametersCondition],
-	// [[]ConditionalTokenizationActionParametersCondition].
-	Conditions interface{} `json:"conditions"`
-	// This field can have the runtime type of [VelocityLimitParamsFilters].
-	Filters interface{} `json:"filters"`
-	// The maximum amount of spend velocity allowed in the period in minor units (the
-	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
-	// limit will be declined.
-	LimitAmount int64 `json:"limit_amount,nullable"`
-	// The number of spend velocity impacting transactions may not exceed this limit in
-	// the period. Transactions exceeding this limit will be declined. A spend velocity
-	// impacting transaction is a transaction that has been authorized, and optionally
-	// settled, or a force post (a transaction that settled without prior
-	// authorization).
-	LimitCount int64 `json:"limit_count,nullable"`
-	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
-	Merchants interface{} `json:"merchants"`
-	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
-	Period VelocityLimitPeriod `json:"period"`
-	// The scope the velocity is calculated for
-	Scope AuthRuleV2UpdateResponseCurrentVersionParametersScope `json:"scope"`
-	JSON  authRuleV2UpdateResponseCurrentVersionParametersJSON  `json:"-"`
-	union AuthRuleV2UpdateResponseCurrentVersionParametersUnion
-}
-
-// authRuleV2UpdateResponseCurrentVersionParametersJSON contains the JSON metadata
-// for the struct [AuthRuleV2UpdateResponseCurrentVersionParameters]
-type authRuleV2UpdateResponseCurrentVersionParametersJSON struct {
-	Action      apijson.Field
-	Conditions  apijson.Field
-	Filters     apijson.Field
-	LimitAmount apijson.Field
-	LimitCount  apijson.Field
-	Merchants   apijson.Field
-	Period      apijson.Field
-	Scope       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r authRuleV2UpdateResponseCurrentVersionParametersJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r *AuthRuleV2UpdateResponseCurrentVersionParameters) UnmarshalJSON(data []byte) (err error) {
-	*r = AuthRuleV2UpdateResponseCurrentVersionParameters{}
-	err = apijson.UnmarshalRoot(data, &r.union)
-	if err != nil {
-		return err
-	}
-	return apijson.Port(r.union, &r)
-}
-
-// AsUnion returns a [AuthRuleV2UpdateResponseCurrentVersionParametersUnion]
-// interface which you can cast to the specific types for more type safety.
-//
-// Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
-// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
-func (r AuthRuleV2UpdateResponseCurrentVersionParameters) AsUnion() AuthRuleV2UpdateResponseCurrentVersionParametersUnion {
-	return r.union
-}
-
-// Parameters for the Auth Rule
-//
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
-// [ConditionalTokenizationActionParameters].
-type AuthRuleV2UpdateResponseCurrentVersionParametersUnion interface {
-	implementsAuthRuleV2UpdateResponseCurrentVersionParameters()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*AuthRuleV2UpdateResponseCurrentVersionParametersUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(VelocityLimitParams{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(MerchantLockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(Conditional3DSActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
-		},
-	)
-}
-
-// The scope the velocity is calculated for
-type AuthRuleV2UpdateResponseCurrentVersionParametersScope string
-
-const (
-	AuthRuleV2UpdateResponseCurrentVersionParametersScopeCard    AuthRuleV2UpdateResponseCurrentVersionParametersScope = "CARD"
-	AuthRuleV2UpdateResponseCurrentVersionParametersScopeAccount AuthRuleV2UpdateResponseCurrentVersionParametersScope = "ACCOUNT"
-)
-
-func (r AuthRuleV2UpdateResponseCurrentVersionParametersScope) IsKnown() bool {
-	switch r {
-	case AuthRuleV2UpdateResponseCurrentVersionParametersScopeCard, AuthRuleV2UpdateResponseCurrentVersionParametersScopeAccount:
-		return true
-	}
-	return false
-}
-
-type AuthRuleV2UpdateResponseDraftVersion struct {
-	// Parameters for the Auth Rule
-	Parameters AuthRuleV2UpdateResponseDraftVersionParameters `json:"parameters,required"`
-	// The version of the rule, this is incremented whenever the rule's parameters
-	// change.
-	Version int64                                    `json:"version,required"`
-	JSON    authRuleV2UpdateResponseDraftVersionJSON `json:"-"`
-}
-
-// authRuleV2UpdateResponseDraftVersionJSON contains the JSON metadata for the
-// struct [AuthRuleV2UpdateResponseDraftVersion]
-type authRuleV2UpdateResponseDraftVersionJSON struct {
-	Parameters  apijson.Field
-	Version     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2UpdateResponseDraftVersion) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2UpdateResponseDraftVersionJSON) RawJSON() string {
-	return r.raw
-}
-
-// Parameters for the Auth Rule
-type AuthRuleV2UpdateResponseDraftVersionParameters struct {
-	// This field can have the runtime type of [Conditional3DSActionParametersAction],
-	// [ConditionalAuthorizationActionParametersAction],
-	// [ConditionalACHActionParametersAction],
-	// [ConditionalTokenizationActionParametersAction].
-	Action interface{} `json:"action"`
-	// This field can have the runtime type of [[]AuthRuleCondition],
-	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition],
-	// [[]ConditionalACHActionParametersCondition],
-	// [[]ConditionalTokenizationActionParametersCondition].
-	Conditions interface{} `json:"conditions"`
-	// This field can have the runtime type of [VelocityLimitParamsFilters].
-	Filters interface{} `json:"filters"`
-	// The maximum amount of spend velocity allowed in the period in minor units (the
-	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
-	// limit will be declined.
-	LimitAmount int64 `json:"limit_amount,nullable"`
-	// The number of spend velocity impacting transactions may not exceed this limit in
-	// the period. Transactions exceeding this limit will be declined. A spend velocity
-	// impacting transaction is a transaction that has been authorized, and optionally
-	// settled, or a force post (a transaction that settled without prior
-	// authorization).
-	LimitCount int64 `json:"limit_count,nullable"`
-	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
-	Merchants interface{} `json:"merchants"`
-	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
-	Period VelocityLimitPeriod `json:"period"`
-	// The scope the velocity is calculated for
-	Scope AuthRuleV2UpdateResponseDraftVersionParametersScope `json:"scope"`
-	JSON  authRuleV2UpdateResponseDraftVersionParametersJSON  `json:"-"`
-	union AuthRuleV2UpdateResponseDraftVersionParametersUnion
-}
-
-// authRuleV2UpdateResponseDraftVersionParametersJSON contains the JSON metadata
-// for the struct [AuthRuleV2UpdateResponseDraftVersionParameters]
-type authRuleV2UpdateResponseDraftVersionParametersJSON struct {
-	Action      apijson.Field
-	Conditions  apijson.Field
-	Filters     apijson.Field
-	LimitAmount apijson.Field
-	LimitCount  apijson.Field
-	Merchants   apijson.Field
-	Period      apijson.Field
-	Scope       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r authRuleV2UpdateResponseDraftVersionParametersJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r *AuthRuleV2UpdateResponseDraftVersionParameters) UnmarshalJSON(data []byte) (err error) {
-	*r = AuthRuleV2UpdateResponseDraftVersionParameters{}
-	err = apijson.UnmarshalRoot(data, &r.union)
-	if err != nil {
-		return err
-	}
-	return apijson.Port(r.union, &r)
-}
-
-// AsUnion returns a [AuthRuleV2UpdateResponseDraftVersionParametersUnion]
-// interface which you can cast to the specific types for more type safety.
-//
-// Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
-// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
-func (r AuthRuleV2UpdateResponseDraftVersionParameters) AsUnion() AuthRuleV2UpdateResponseDraftVersionParametersUnion {
-	return r.union
-}
-
-// Parameters for the Auth Rule
-//
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
-// [ConditionalTokenizationActionParameters].
-type AuthRuleV2UpdateResponseDraftVersionParametersUnion interface {
-	implementsAuthRuleV2UpdateResponseDraftVersionParameters()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*AuthRuleV2UpdateResponseDraftVersionParametersUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(VelocityLimitParams{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(MerchantLockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(Conditional3DSActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
-		},
-	)
-}
-
-// The scope the velocity is calculated for
-type AuthRuleV2UpdateResponseDraftVersionParametersScope string
-
-const (
-	AuthRuleV2UpdateResponseDraftVersionParametersScopeCard    AuthRuleV2UpdateResponseDraftVersionParametersScope = "CARD"
-	AuthRuleV2UpdateResponseDraftVersionParametersScopeAccount AuthRuleV2UpdateResponseDraftVersionParametersScope = "ACCOUNT"
-)
-
-func (r AuthRuleV2UpdateResponseDraftVersionParametersScope) IsKnown() bool {
-	switch r {
-	case AuthRuleV2UpdateResponseDraftVersionParametersScopeCard, AuthRuleV2UpdateResponseDraftVersionParametersScopeAccount:
-		return true
-	}
-	return false
-}
-
-// The event stream during which the rule will be evaluated.
-type AuthRuleV2UpdateResponseEventStream string
-
-const (
-	AuthRuleV2UpdateResponseEventStreamAuthorization         AuthRuleV2UpdateResponseEventStream = "AUTHORIZATION"
-	AuthRuleV2UpdateResponseEventStreamThreeDSAuthentication AuthRuleV2UpdateResponseEventStream = "THREE_DS_AUTHENTICATION"
-	AuthRuleV2UpdateResponseEventStreamTokenization          AuthRuleV2UpdateResponseEventStream = "TOKENIZATION"
-	AuthRuleV2UpdateResponseEventStreamACHCreditReceipt      AuthRuleV2UpdateResponseEventStream = "ACH_CREDIT_RECEIPT"
-	AuthRuleV2UpdateResponseEventStreamACHDebitReceipt       AuthRuleV2UpdateResponseEventStream = "ACH_DEBIT_RECEIPT"
-)
-
-func (r AuthRuleV2UpdateResponseEventStream) IsKnown() bool {
-	switch r {
-	case AuthRuleV2UpdateResponseEventStreamAuthorization, AuthRuleV2UpdateResponseEventStreamThreeDSAuthentication, AuthRuleV2UpdateResponseEventStreamTokenization, AuthRuleV2UpdateResponseEventStreamACHCreditReceipt, AuthRuleV2UpdateResponseEventStreamACHDebitReceipt:
-		return true
-	}
-	return false
-}
-
-// The state of the Auth Rule
-type AuthRuleV2UpdateResponseState string
-
-const (
-	AuthRuleV2UpdateResponseStateActive   AuthRuleV2UpdateResponseState = "ACTIVE"
-	AuthRuleV2UpdateResponseStateInactive AuthRuleV2UpdateResponseState = "INACTIVE"
-)
-
-func (r AuthRuleV2UpdateResponseState) IsKnown() bool {
-	switch r {
-	case AuthRuleV2UpdateResponseStateActive, AuthRuleV2UpdateResponseStateInactive:
-		return true
-	}
-	return false
-}
-
-// The type of Auth Rule. For certain rule types, this determines the event stream
-// during which it will be evaluated. For rules that can be applied to one of
-// several event streams, the effective one is defined by the separate
-// `event_stream` field.
-//
-//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
-type AuthRuleV2UpdateResponseType string
-
-const (
-	AuthRuleV2UpdateResponseTypeConditionalBlock  AuthRuleV2UpdateResponseType = "CONDITIONAL_BLOCK"
-	AuthRuleV2UpdateResponseTypeVelocityLimit     AuthRuleV2UpdateResponseType = "VELOCITY_LIMIT"
-	AuthRuleV2UpdateResponseTypeMerchantLock      AuthRuleV2UpdateResponseType = "MERCHANT_LOCK"
-	AuthRuleV2UpdateResponseTypeConditionalAction AuthRuleV2UpdateResponseType = "CONDITIONAL_ACTION"
-)
-
-func (r AuthRuleV2UpdateResponseType) IsKnown() bool {
-	switch r {
-	case AuthRuleV2UpdateResponseTypeConditionalBlock, AuthRuleV2UpdateResponseTypeVelocityLimit, AuthRuleV2UpdateResponseTypeMerchantLock, AuthRuleV2UpdateResponseTypeConditionalAction:
-		return true
-	}
-	return false
-}
-
-type AuthRuleV2ListResponse struct {
-	// Auth Rule Token
-	Token string `json:"token,required" format:"uuid"`
-	// Account tokens to which the Auth Rule applies.
-	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
-	// Business Account tokens to which the Auth Rule applies.
-	BusinessAccountTokens []string `json:"business_account_tokens,required" format:"uuid"`
-	// Card tokens to which the Auth Rule applies.
-	CardTokens     []string                             `json:"card_tokens,required" format:"uuid"`
-	CurrentVersion AuthRuleV2ListResponseCurrentVersion `json:"current_version,required,nullable"`
-	DraftVersion   AuthRuleV2ListResponseDraftVersion   `json:"draft_version,required,nullable"`
-	// The event stream during which the rule will be evaluated.
-	EventStream AuthRuleV2ListResponseEventStream `json:"event_stream,required"`
-	// Indicates whether this auth rule is managed by Lithic. If true, the rule cannot
-	// be modified or deleted by the user
-	LithicManaged bool `json:"lithic_managed,required"`
-	// Auth Rule Name
-	Name string `json:"name,required,nullable"`
-	// Whether the Auth Rule applies to all authorizations on the card program.
-	ProgramLevel bool `json:"program_level,required"`
-	// The state of the Auth Rule
-	State AuthRuleV2ListResponseState `json:"state,required"`
-	// The type of Auth Rule. For certain rule types, this determines the event stream
-	// during which it will be evaluated. For rules that can be applied to one of
-	// several event streams, the effective one is defined by the separate
-	// `event_stream` field.
-	//
-	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
-	Type AuthRuleV2ListResponseType `json:"type,required"`
-	// Card tokens to which the Auth Rule does not apply.
-	ExcludedCardTokens []string                   `json:"excluded_card_tokens" format:"uuid"`
-	JSON               authRuleV2ListResponseJSON `json:"-"`
-}
-
-// authRuleV2ListResponseJSON contains the JSON metadata for the struct
-// [AuthRuleV2ListResponse]
-type authRuleV2ListResponseJSON struct {
-	Token                 apijson.Field
-	AccountTokens         apijson.Field
-	BusinessAccountTokens apijson.Field
-	CardTokens            apijson.Field
-	CurrentVersion        apijson.Field
-	DraftVersion          apijson.Field
-	EventStream           apijson.Field
-	LithicManaged         apijson.Field
-	Name                  apijson.Field
-	ProgramLevel          apijson.Field
-	State                 apijson.Field
-	Type                  apijson.Field
-	ExcludedCardTokens    apijson.Field
-	raw                   string
-	ExtraFields           map[string]apijson.Field
-}
-
-func (r *AuthRuleV2ListResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2ListResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-type AuthRuleV2ListResponseCurrentVersion struct {
-	// Parameters for the Auth Rule
-	Parameters AuthRuleV2ListResponseCurrentVersionParameters `json:"parameters,required"`
-	// The version of the rule, this is incremented whenever the rule's parameters
-	// change.
-	Version int64                                    `json:"version,required"`
-	JSON    authRuleV2ListResponseCurrentVersionJSON `json:"-"`
-}
-
-// authRuleV2ListResponseCurrentVersionJSON contains the JSON metadata for the
-// struct [AuthRuleV2ListResponseCurrentVersion]
-type authRuleV2ListResponseCurrentVersionJSON struct {
-	Parameters  apijson.Field
-	Version     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2ListResponseCurrentVersion) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2ListResponseCurrentVersionJSON) RawJSON() string {
-	return r.raw
-}
-
-// Parameters for the Auth Rule
-type AuthRuleV2ListResponseCurrentVersionParameters struct {
-	// This field can have the runtime type of [Conditional3DSActionParametersAction],
-	// [ConditionalAuthorizationActionParametersAction],
-	// [ConditionalACHActionParametersAction],
-	// [ConditionalTokenizationActionParametersAction].
-	Action interface{} `json:"action"`
-	// This field can have the runtime type of [[]AuthRuleCondition],
-	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition],
-	// [[]ConditionalACHActionParametersCondition],
-	// [[]ConditionalTokenizationActionParametersCondition].
-	Conditions interface{} `json:"conditions"`
-	// This field can have the runtime type of [VelocityLimitParamsFilters].
-	Filters interface{} `json:"filters"`
-	// The maximum amount of spend velocity allowed in the period in minor units (the
-	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
-	// limit will be declined.
-	LimitAmount int64 `json:"limit_amount,nullable"`
-	// The number of spend velocity impacting transactions may not exceed this limit in
-	// the period. Transactions exceeding this limit will be declined. A spend velocity
-	// impacting transaction is a transaction that has been authorized, and optionally
-	// settled, or a force post (a transaction that settled without prior
-	// authorization).
-	LimitCount int64 `json:"limit_count,nullable"`
-	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
-	Merchants interface{} `json:"merchants"`
-	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
-	Period VelocityLimitPeriod `json:"period"`
-	// The scope the velocity is calculated for
-	Scope AuthRuleV2ListResponseCurrentVersionParametersScope `json:"scope"`
-	JSON  authRuleV2ListResponseCurrentVersionParametersJSON  `json:"-"`
-	union AuthRuleV2ListResponseCurrentVersionParametersUnion
-}
-
-// authRuleV2ListResponseCurrentVersionParametersJSON contains the JSON metadata
-// for the struct [AuthRuleV2ListResponseCurrentVersionParameters]
-type authRuleV2ListResponseCurrentVersionParametersJSON struct {
-	Action      apijson.Field
-	Conditions  apijson.Field
-	Filters     apijson.Field
-	LimitAmount apijson.Field
-	LimitCount  apijson.Field
-	Merchants   apijson.Field
-	Period      apijson.Field
-	Scope       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r authRuleV2ListResponseCurrentVersionParametersJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r *AuthRuleV2ListResponseCurrentVersionParameters) UnmarshalJSON(data []byte) (err error) {
-	*r = AuthRuleV2ListResponseCurrentVersionParameters{}
-	err = apijson.UnmarshalRoot(data, &r.union)
-	if err != nil {
-		return err
-	}
-	return apijson.Port(r.union, &r)
-}
-
-// AsUnion returns a [AuthRuleV2ListResponseCurrentVersionParametersUnion]
-// interface which you can cast to the specific types for more type safety.
-//
-// Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
-// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
-func (r AuthRuleV2ListResponseCurrentVersionParameters) AsUnion() AuthRuleV2ListResponseCurrentVersionParametersUnion {
-	return r.union
-}
-
-// Parameters for the Auth Rule
-//
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
-// [ConditionalTokenizationActionParameters].
-type AuthRuleV2ListResponseCurrentVersionParametersUnion interface {
-	implementsAuthRuleV2ListResponseCurrentVersionParameters()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*AuthRuleV2ListResponseCurrentVersionParametersUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(VelocityLimitParams{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(MerchantLockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(Conditional3DSActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
-		},
-	)
-}
-
-// The scope the velocity is calculated for
-type AuthRuleV2ListResponseCurrentVersionParametersScope string
-
-const (
-	AuthRuleV2ListResponseCurrentVersionParametersScopeCard    AuthRuleV2ListResponseCurrentVersionParametersScope = "CARD"
-	AuthRuleV2ListResponseCurrentVersionParametersScopeAccount AuthRuleV2ListResponseCurrentVersionParametersScope = "ACCOUNT"
-)
-
-func (r AuthRuleV2ListResponseCurrentVersionParametersScope) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ListResponseCurrentVersionParametersScopeCard, AuthRuleV2ListResponseCurrentVersionParametersScopeAccount:
-		return true
-	}
-	return false
-}
-
-type AuthRuleV2ListResponseDraftVersion struct {
-	// Parameters for the Auth Rule
-	Parameters AuthRuleV2ListResponseDraftVersionParameters `json:"parameters,required"`
-	// The version of the rule, this is incremented whenever the rule's parameters
-	// change.
-	Version int64                                  `json:"version,required"`
-	JSON    authRuleV2ListResponseDraftVersionJSON `json:"-"`
-}
-
-// authRuleV2ListResponseDraftVersionJSON contains the JSON metadata for the struct
-// [AuthRuleV2ListResponseDraftVersion]
-type authRuleV2ListResponseDraftVersionJSON struct {
-	Parameters  apijson.Field
-	Version     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2ListResponseDraftVersion) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2ListResponseDraftVersionJSON) RawJSON() string {
-	return r.raw
-}
-
-// Parameters for the Auth Rule
-type AuthRuleV2ListResponseDraftVersionParameters struct {
-	// This field can have the runtime type of [Conditional3DSActionParametersAction],
-	// [ConditionalAuthorizationActionParametersAction],
-	// [ConditionalACHActionParametersAction],
-	// [ConditionalTokenizationActionParametersAction].
-	Action interface{} `json:"action"`
-	// This field can have the runtime type of [[]AuthRuleCondition],
-	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition],
-	// [[]ConditionalACHActionParametersCondition],
-	// [[]ConditionalTokenizationActionParametersCondition].
-	Conditions interface{} `json:"conditions"`
-	// This field can have the runtime type of [VelocityLimitParamsFilters].
-	Filters interface{} `json:"filters"`
-	// The maximum amount of spend velocity allowed in the period in minor units (the
-	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
-	// limit will be declined.
-	LimitAmount int64 `json:"limit_amount,nullable"`
-	// The number of spend velocity impacting transactions may not exceed this limit in
-	// the period. Transactions exceeding this limit will be declined. A spend velocity
-	// impacting transaction is a transaction that has been authorized, and optionally
-	// settled, or a force post (a transaction that settled without prior
-	// authorization).
-	LimitCount int64 `json:"limit_count,nullable"`
-	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
-	Merchants interface{} `json:"merchants"`
-	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
-	Period VelocityLimitPeriod `json:"period"`
-	// The scope the velocity is calculated for
-	Scope AuthRuleV2ListResponseDraftVersionParametersScope `json:"scope"`
-	JSON  authRuleV2ListResponseDraftVersionParametersJSON  `json:"-"`
-	union AuthRuleV2ListResponseDraftVersionParametersUnion
-}
-
-// authRuleV2ListResponseDraftVersionParametersJSON contains the JSON metadata for
-// the struct [AuthRuleV2ListResponseDraftVersionParameters]
-type authRuleV2ListResponseDraftVersionParametersJSON struct {
-	Action      apijson.Field
-	Conditions  apijson.Field
-	Filters     apijson.Field
-	LimitAmount apijson.Field
-	LimitCount  apijson.Field
-	Merchants   apijson.Field
-	Period      apijson.Field
-	Scope       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r authRuleV2ListResponseDraftVersionParametersJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r *AuthRuleV2ListResponseDraftVersionParameters) UnmarshalJSON(data []byte) (err error) {
-	*r = AuthRuleV2ListResponseDraftVersionParameters{}
-	err = apijson.UnmarshalRoot(data, &r.union)
-	if err != nil {
-		return err
-	}
-	return apijson.Port(r.union, &r)
-}
-
-// AsUnion returns a [AuthRuleV2ListResponseDraftVersionParametersUnion] interface
-// which you can cast to the specific types for more type safety.
-//
-// Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
-// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
-func (r AuthRuleV2ListResponseDraftVersionParameters) AsUnion() AuthRuleV2ListResponseDraftVersionParametersUnion {
-	return r.union
-}
-
-// Parameters for the Auth Rule
-//
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
-// [ConditionalTokenizationActionParameters].
-type AuthRuleV2ListResponseDraftVersionParametersUnion interface {
-	implementsAuthRuleV2ListResponseDraftVersionParameters()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*AuthRuleV2ListResponseDraftVersionParametersUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(VelocityLimitParams{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(MerchantLockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(Conditional3DSActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
-		},
-	)
-}
-
-// The scope the velocity is calculated for
-type AuthRuleV2ListResponseDraftVersionParametersScope string
-
-const (
-	AuthRuleV2ListResponseDraftVersionParametersScopeCard    AuthRuleV2ListResponseDraftVersionParametersScope = "CARD"
-	AuthRuleV2ListResponseDraftVersionParametersScopeAccount AuthRuleV2ListResponseDraftVersionParametersScope = "ACCOUNT"
-)
-
-func (r AuthRuleV2ListResponseDraftVersionParametersScope) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ListResponseDraftVersionParametersScopeCard, AuthRuleV2ListResponseDraftVersionParametersScopeAccount:
-		return true
-	}
-	return false
-}
-
-// The event stream during which the rule will be evaluated.
-type AuthRuleV2ListResponseEventStream string
-
-const (
-	AuthRuleV2ListResponseEventStreamAuthorization         AuthRuleV2ListResponseEventStream = "AUTHORIZATION"
-	AuthRuleV2ListResponseEventStreamThreeDSAuthentication AuthRuleV2ListResponseEventStream = "THREE_DS_AUTHENTICATION"
-	AuthRuleV2ListResponseEventStreamTokenization          AuthRuleV2ListResponseEventStream = "TOKENIZATION"
-	AuthRuleV2ListResponseEventStreamACHCreditReceipt      AuthRuleV2ListResponseEventStream = "ACH_CREDIT_RECEIPT"
-	AuthRuleV2ListResponseEventStreamACHDebitReceipt       AuthRuleV2ListResponseEventStream = "ACH_DEBIT_RECEIPT"
-)
-
-func (r AuthRuleV2ListResponseEventStream) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ListResponseEventStreamAuthorization, AuthRuleV2ListResponseEventStreamThreeDSAuthentication, AuthRuleV2ListResponseEventStreamTokenization, AuthRuleV2ListResponseEventStreamACHCreditReceipt, AuthRuleV2ListResponseEventStreamACHDebitReceipt:
-		return true
-	}
-	return false
-}
-
-// The state of the Auth Rule
-type AuthRuleV2ListResponseState string
-
-const (
-	AuthRuleV2ListResponseStateActive   AuthRuleV2ListResponseState = "ACTIVE"
-	AuthRuleV2ListResponseStateInactive AuthRuleV2ListResponseState = "INACTIVE"
-)
-
-func (r AuthRuleV2ListResponseState) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ListResponseStateActive, AuthRuleV2ListResponseStateInactive:
-		return true
-	}
-	return false
-}
-
-// The type of Auth Rule. For certain rule types, this determines the event stream
-// during which it will be evaluated. For rules that can be applied to one of
-// several event streams, the effective one is defined by the separate
-// `event_stream` field.
-//
-//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
-type AuthRuleV2ListResponseType string
-
-const (
-	AuthRuleV2ListResponseTypeConditionalBlock  AuthRuleV2ListResponseType = "CONDITIONAL_BLOCK"
-	AuthRuleV2ListResponseTypeVelocityLimit     AuthRuleV2ListResponseType = "VELOCITY_LIMIT"
-	AuthRuleV2ListResponseTypeMerchantLock      AuthRuleV2ListResponseType = "MERCHANT_LOCK"
-	AuthRuleV2ListResponseTypeConditionalAction AuthRuleV2ListResponseType = "CONDITIONAL_ACTION"
-)
-
-func (r AuthRuleV2ListResponseType) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ListResponseTypeConditionalBlock, AuthRuleV2ListResponseTypeVelocityLimit, AuthRuleV2ListResponseTypeMerchantLock, AuthRuleV2ListResponseTypeConditionalAction:
-		return true
-	}
-	return false
-}
-
-type AuthRuleV2DraftResponse struct {
-	// Auth Rule Token
-	Token string `json:"token,required" format:"uuid"`
-	// Account tokens to which the Auth Rule applies.
-	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
-	// Business Account tokens to which the Auth Rule applies.
-	BusinessAccountTokens []string `json:"business_account_tokens,required" format:"uuid"`
-	// Card tokens to which the Auth Rule applies.
-	CardTokens     []string                              `json:"card_tokens,required" format:"uuid"`
-	CurrentVersion AuthRuleV2DraftResponseCurrentVersion `json:"current_version,required,nullable"`
-	DraftVersion   AuthRuleV2DraftResponseDraftVersion   `json:"draft_version,required,nullable"`
-	// The event stream during which the rule will be evaluated.
-	EventStream AuthRuleV2DraftResponseEventStream `json:"event_stream,required"`
-	// Indicates whether this auth rule is managed by Lithic. If true, the rule cannot
-	// be modified or deleted by the user
-	LithicManaged bool `json:"lithic_managed,required"`
-	// Auth Rule Name
-	Name string `json:"name,required,nullable"`
-	// Whether the Auth Rule applies to all authorizations on the card program.
-	ProgramLevel bool `json:"program_level,required"`
-	// The state of the Auth Rule
-	State AuthRuleV2DraftResponseState `json:"state,required"`
-	// The type of Auth Rule. For certain rule types, this determines the event stream
-	// during which it will be evaluated. For rules that can be applied to one of
-	// several event streams, the effective one is defined by the separate
-	// `event_stream` field.
-	//
-	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
-	Type AuthRuleV2DraftResponseType `json:"type,required"`
-	// Card tokens to which the Auth Rule does not apply.
-	ExcludedCardTokens []string                    `json:"excluded_card_tokens" format:"uuid"`
-	JSON               authRuleV2DraftResponseJSON `json:"-"`
-}
-
-// authRuleV2DraftResponseJSON contains the JSON metadata for the struct
-// [AuthRuleV2DraftResponse]
-type authRuleV2DraftResponseJSON struct {
-	Token                 apijson.Field
-	AccountTokens         apijson.Field
-	BusinessAccountTokens apijson.Field
-	CardTokens            apijson.Field
-	CurrentVersion        apijson.Field
-	DraftVersion          apijson.Field
-	EventStream           apijson.Field
-	LithicManaged         apijson.Field
-	Name                  apijson.Field
-	ProgramLevel          apijson.Field
-	State                 apijson.Field
-	Type                  apijson.Field
-	ExcludedCardTokens    apijson.Field
-	raw                   string
-	ExtraFields           map[string]apijson.Field
-}
-
-func (r *AuthRuleV2DraftResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2DraftResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-type AuthRuleV2DraftResponseCurrentVersion struct {
-	// Parameters for the Auth Rule
-	Parameters AuthRuleV2DraftResponseCurrentVersionParameters `json:"parameters,required"`
-	// The version of the rule, this is incremented whenever the rule's parameters
-	// change.
-	Version int64                                     `json:"version,required"`
-	JSON    authRuleV2DraftResponseCurrentVersionJSON `json:"-"`
-}
-
-// authRuleV2DraftResponseCurrentVersionJSON contains the JSON metadata for the
-// struct [AuthRuleV2DraftResponseCurrentVersion]
-type authRuleV2DraftResponseCurrentVersionJSON struct {
-	Parameters  apijson.Field
-	Version     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2DraftResponseCurrentVersion) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2DraftResponseCurrentVersionJSON) RawJSON() string {
-	return r.raw
-}
-
-// Parameters for the Auth Rule
-type AuthRuleV2DraftResponseCurrentVersionParameters struct {
-	// This field can have the runtime type of [Conditional3DSActionParametersAction],
-	// [ConditionalAuthorizationActionParametersAction],
-	// [ConditionalACHActionParametersAction],
-	// [ConditionalTokenizationActionParametersAction].
-	Action interface{} `json:"action"`
-	// This field can have the runtime type of [[]AuthRuleCondition],
-	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition],
-	// [[]ConditionalACHActionParametersCondition],
-	// [[]ConditionalTokenizationActionParametersCondition].
-	Conditions interface{} `json:"conditions"`
-	// This field can have the runtime type of [VelocityLimitParamsFilters].
-	Filters interface{} `json:"filters"`
-	// The maximum amount of spend velocity allowed in the period in minor units (the
-	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
-	// limit will be declined.
-	LimitAmount int64 `json:"limit_amount,nullable"`
-	// The number of spend velocity impacting transactions may not exceed this limit in
-	// the period. Transactions exceeding this limit will be declined. A spend velocity
-	// impacting transaction is a transaction that has been authorized, and optionally
-	// settled, or a force post (a transaction that settled without prior
-	// authorization).
-	LimitCount int64 `json:"limit_count,nullable"`
-	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
-	Merchants interface{} `json:"merchants"`
-	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
-	Period VelocityLimitPeriod `json:"period"`
-	// The scope the velocity is calculated for
-	Scope AuthRuleV2DraftResponseCurrentVersionParametersScope `json:"scope"`
-	JSON  authRuleV2DraftResponseCurrentVersionParametersJSON  `json:"-"`
-	union AuthRuleV2DraftResponseCurrentVersionParametersUnion
-}
-
-// authRuleV2DraftResponseCurrentVersionParametersJSON contains the JSON metadata
-// for the struct [AuthRuleV2DraftResponseCurrentVersionParameters]
-type authRuleV2DraftResponseCurrentVersionParametersJSON struct {
-	Action      apijson.Field
-	Conditions  apijson.Field
-	Filters     apijson.Field
-	LimitAmount apijson.Field
-	LimitCount  apijson.Field
-	Merchants   apijson.Field
-	Period      apijson.Field
-	Scope       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r authRuleV2DraftResponseCurrentVersionParametersJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r *AuthRuleV2DraftResponseCurrentVersionParameters) UnmarshalJSON(data []byte) (err error) {
-	*r = AuthRuleV2DraftResponseCurrentVersionParameters{}
-	err = apijson.UnmarshalRoot(data, &r.union)
-	if err != nil {
-		return err
-	}
-	return apijson.Port(r.union, &r)
-}
-
-// AsUnion returns a [AuthRuleV2DraftResponseCurrentVersionParametersUnion]
-// interface which you can cast to the specific types for more type safety.
-//
-// Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
-// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
-func (r AuthRuleV2DraftResponseCurrentVersionParameters) AsUnion() AuthRuleV2DraftResponseCurrentVersionParametersUnion {
-	return r.union
-}
-
-// Parameters for the Auth Rule
-//
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
-// [ConditionalTokenizationActionParameters].
-type AuthRuleV2DraftResponseCurrentVersionParametersUnion interface {
-	implementsAuthRuleV2DraftResponseCurrentVersionParameters()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*AuthRuleV2DraftResponseCurrentVersionParametersUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(VelocityLimitParams{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(MerchantLockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(Conditional3DSActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
-		},
-	)
-}
-
-// The scope the velocity is calculated for
-type AuthRuleV2DraftResponseCurrentVersionParametersScope string
-
-const (
-	AuthRuleV2DraftResponseCurrentVersionParametersScopeCard    AuthRuleV2DraftResponseCurrentVersionParametersScope = "CARD"
-	AuthRuleV2DraftResponseCurrentVersionParametersScopeAccount AuthRuleV2DraftResponseCurrentVersionParametersScope = "ACCOUNT"
-)
-
-func (r AuthRuleV2DraftResponseCurrentVersionParametersScope) IsKnown() bool {
-	switch r {
-	case AuthRuleV2DraftResponseCurrentVersionParametersScopeCard, AuthRuleV2DraftResponseCurrentVersionParametersScopeAccount:
-		return true
-	}
-	return false
-}
-
-type AuthRuleV2DraftResponseDraftVersion struct {
-	// Parameters for the Auth Rule
-	Parameters AuthRuleV2DraftResponseDraftVersionParameters `json:"parameters,required"`
-	// The version of the rule, this is incremented whenever the rule's parameters
-	// change.
-	Version int64                                   `json:"version,required"`
-	JSON    authRuleV2DraftResponseDraftVersionJSON `json:"-"`
-}
-
-// authRuleV2DraftResponseDraftVersionJSON contains the JSON metadata for the
-// struct [AuthRuleV2DraftResponseDraftVersion]
-type authRuleV2DraftResponseDraftVersionJSON struct {
-	Parameters  apijson.Field
-	Version     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2DraftResponseDraftVersion) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2DraftResponseDraftVersionJSON) RawJSON() string {
-	return r.raw
-}
-
-// Parameters for the Auth Rule
-type AuthRuleV2DraftResponseDraftVersionParameters struct {
-	// This field can have the runtime type of [Conditional3DSActionParametersAction],
-	// [ConditionalAuthorizationActionParametersAction],
-	// [ConditionalACHActionParametersAction],
-	// [ConditionalTokenizationActionParametersAction].
-	Action interface{} `json:"action"`
-	// This field can have the runtime type of [[]AuthRuleCondition],
-	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition],
-	// [[]ConditionalACHActionParametersCondition],
-	// [[]ConditionalTokenizationActionParametersCondition].
-	Conditions interface{} `json:"conditions"`
-	// This field can have the runtime type of [VelocityLimitParamsFilters].
-	Filters interface{} `json:"filters"`
-	// The maximum amount of spend velocity allowed in the period in minor units (the
-	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
-	// limit will be declined.
-	LimitAmount int64 `json:"limit_amount,nullable"`
-	// The number of spend velocity impacting transactions may not exceed this limit in
-	// the period. Transactions exceeding this limit will be declined. A spend velocity
-	// impacting transaction is a transaction that has been authorized, and optionally
-	// settled, or a force post (a transaction that settled without prior
-	// authorization).
-	LimitCount int64 `json:"limit_count,nullable"`
-	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
-	Merchants interface{} `json:"merchants"`
-	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
-	Period VelocityLimitPeriod `json:"period"`
-	// The scope the velocity is calculated for
-	Scope AuthRuleV2DraftResponseDraftVersionParametersScope `json:"scope"`
-	JSON  authRuleV2DraftResponseDraftVersionParametersJSON  `json:"-"`
-	union AuthRuleV2DraftResponseDraftVersionParametersUnion
-}
-
-// authRuleV2DraftResponseDraftVersionParametersJSON contains the JSON metadata for
-// the struct [AuthRuleV2DraftResponseDraftVersionParameters]
-type authRuleV2DraftResponseDraftVersionParametersJSON struct {
-	Action      apijson.Field
-	Conditions  apijson.Field
-	Filters     apijson.Field
-	LimitAmount apijson.Field
-	LimitCount  apijson.Field
-	Merchants   apijson.Field
-	Period      apijson.Field
-	Scope       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r authRuleV2DraftResponseDraftVersionParametersJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r *AuthRuleV2DraftResponseDraftVersionParameters) UnmarshalJSON(data []byte) (err error) {
-	*r = AuthRuleV2DraftResponseDraftVersionParameters{}
-	err = apijson.UnmarshalRoot(data, &r.union)
-	if err != nil {
-		return err
-	}
-	return apijson.Port(r.union, &r)
-}
-
-// AsUnion returns a [AuthRuleV2DraftResponseDraftVersionParametersUnion] interface
-// which you can cast to the specific types for more type safety.
-//
-// Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
-// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
-func (r AuthRuleV2DraftResponseDraftVersionParameters) AsUnion() AuthRuleV2DraftResponseDraftVersionParametersUnion {
-	return r.union
-}
-
-// Parameters for the Auth Rule
-//
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
-// [ConditionalTokenizationActionParameters].
-type AuthRuleV2DraftResponseDraftVersionParametersUnion interface {
-	implementsAuthRuleV2DraftResponseDraftVersionParameters()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*AuthRuleV2DraftResponseDraftVersionParametersUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(VelocityLimitParams{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(MerchantLockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(Conditional3DSActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
-		},
-	)
-}
-
-// The scope the velocity is calculated for
-type AuthRuleV2DraftResponseDraftVersionParametersScope string
-
-const (
-	AuthRuleV2DraftResponseDraftVersionParametersScopeCard    AuthRuleV2DraftResponseDraftVersionParametersScope = "CARD"
-	AuthRuleV2DraftResponseDraftVersionParametersScopeAccount AuthRuleV2DraftResponseDraftVersionParametersScope = "ACCOUNT"
-)
-
-func (r AuthRuleV2DraftResponseDraftVersionParametersScope) IsKnown() bool {
-	switch r {
-	case AuthRuleV2DraftResponseDraftVersionParametersScopeCard, AuthRuleV2DraftResponseDraftVersionParametersScopeAccount:
-		return true
-	}
-	return false
-}
-
-// The event stream during which the rule will be evaluated.
-type AuthRuleV2DraftResponseEventStream string
-
-const (
-	AuthRuleV2DraftResponseEventStreamAuthorization         AuthRuleV2DraftResponseEventStream = "AUTHORIZATION"
-	AuthRuleV2DraftResponseEventStreamThreeDSAuthentication AuthRuleV2DraftResponseEventStream = "THREE_DS_AUTHENTICATION"
-	AuthRuleV2DraftResponseEventStreamTokenization          AuthRuleV2DraftResponseEventStream = "TOKENIZATION"
-	AuthRuleV2DraftResponseEventStreamACHCreditReceipt      AuthRuleV2DraftResponseEventStream = "ACH_CREDIT_RECEIPT"
-	AuthRuleV2DraftResponseEventStreamACHDebitReceipt       AuthRuleV2DraftResponseEventStream = "ACH_DEBIT_RECEIPT"
-)
-
-func (r AuthRuleV2DraftResponseEventStream) IsKnown() bool {
-	switch r {
-	case AuthRuleV2DraftResponseEventStreamAuthorization, AuthRuleV2DraftResponseEventStreamThreeDSAuthentication, AuthRuleV2DraftResponseEventStreamTokenization, AuthRuleV2DraftResponseEventStreamACHCreditReceipt, AuthRuleV2DraftResponseEventStreamACHDebitReceipt:
-		return true
-	}
-	return false
-}
-
-// The state of the Auth Rule
-type AuthRuleV2DraftResponseState string
-
-const (
-	AuthRuleV2DraftResponseStateActive   AuthRuleV2DraftResponseState = "ACTIVE"
-	AuthRuleV2DraftResponseStateInactive AuthRuleV2DraftResponseState = "INACTIVE"
-)
-
-func (r AuthRuleV2DraftResponseState) IsKnown() bool {
-	switch r {
-	case AuthRuleV2DraftResponseStateActive, AuthRuleV2DraftResponseStateInactive:
-		return true
-	}
-	return false
-}
-
-// The type of Auth Rule. For certain rule types, this determines the event stream
-// during which it will be evaluated. For rules that can be applied to one of
-// several event streams, the effective one is defined by the separate
-// `event_stream` field.
-//
-//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
-type AuthRuleV2DraftResponseType string
-
-const (
-	AuthRuleV2DraftResponseTypeConditionalBlock  AuthRuleV2DraftResponseType = "CONDITIONAL_BLOCK"
-	AuthRuleV2DraftResponseTypeVelocityLimit     AuthRuleV2DraftResponseType = "VELOCITY_LIMIT"
-	AuthRuleV2DraftResponseTypeMerchantLock      AuthRuleV2DraftResponseType = "MERCHANT_LOCK"
-	AuthRuleV2DraftResponseTypeConditionalAction AuthRuleV2DraftResponseType = "CONDITIONAL_ACTION"
-)
-
-func (r AuthRuleV2DraftResponseType) IsKnown() bool {
-	switch r {
-	case AuthRuleV2DraftResponseTypeConditionalBlock, AuthRuleV2DraftResponseTypeVelocityLimit, AuthRuleV2DraftResponseTypeMerchantLock, AuthRuleV2DraftResponseTypeConditionalAction:
-		return true
-	}
-	return false
-}
-
-type AuthRuleV2PromoteResponse struct {
-	// Auth Rule Token
-	Token string `json:"token,required" format:"uuid"`
-	// Account tokens to which the Auth Rule applies.
-	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
-	// Business Account tokens to which the Auth Rule applies.
-	BusinessAccountTokens []string `json:"business_account_tokens,required" format:"uuid"`
-	// Card tokens to which the Auth Rule applies.
-	CardTokens     []string                                `json:"card_tokens,required" format:"uuid"`
-	CurrentVersion AuthRuleV2PromoteResponseCurrentVersion `json:"current_version,required,nullable"`
-	DraftVersion   AuthRuleV2PromoteResponseDraftVersion   `json:"draft_version,required,nullable"`
-	// The event stream during which the rule will be evaluated.
-	EventStream AuthRuleV2PromoteResponseEventStream `json:"event_stream,required"`
-	// Indicates whether this auth rule is managed by Lithic. If true, the rule cannot
-	// be modified or deleted by the user
-	LithicManaged bool `json:"lithic_managed,required"`
-	// Auth Rule Name
-	Name string `json:"name,required,nullable"`
-	// Whether the Auth Rule applies to all authorizations on the card program.
-	ProgramLevel bool `json:"program_level,required"`
-	// The state of the Auth Rule
-	State AuthRuleV2PromoteResponseState `json:"state,required"`
-	// The type of Auth Rule. For certain rule types, this determines the event stream
-	// during which it will be evaluated. For rules that can be applied to one of
-	// several event streams, the effective one is defined by the separate
-	// `event_stream` field.
-	//
-	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
-	Type AuthRuleV2PromoteResponseType `json:"type,required"`
-	// Card tokens to which the Auth Rule does not apply.
-	ExcludedCardTokens []string                      `json:"excluded_card_tokens" format:"uuid"`
-	JSON               authRuleV2PromoteResponseJSON `json:"-"`
-}
-
-// authRuleV2PromoteResponseJSON contains the JSON metadata for the struct
-// [AuthRuleV2PromoteResponse]
-type authRuleV2PromoteResponseJSON struct {
-	Token                 apijson.Field
-	AccountTokens         apijson.Field
-	BusinessAccountTokens apijson.Field
-	CardTokens            apijson.Field
-	CurrentVersion        apijson.Field
-	DraftVersion          apijson.Field
-	EventStream           apijson.Field
-	LithicManaged         apijson.Field
-	Name                  apijson.Field
-	ProgramLevel          apijson.Field
-	State                 apijson.Field
-	Type                  apijson.Field
-	ExcludedCardTokens    apijson.Field
-	raw                   string
-	ExtraFields           map[string]apijson.Field
-}
-
-func (r *AuthRuleV2PromoteResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2PromoteResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-type AuthRuleV2PromoteResponseCurrentVersion struct {
-	// Parameters for the Auth Rule
-	Parameters AuthRuleV2PromoteResponseCurrentVersionParameters `json:"parameters,required"`
-	// The version of the rule, this is incremented whenever the rule's parameters
-	// change.
-	Version int64                                       `json:"version,required"`
-	JSON    authRuleV2PromoteResponseCurrentVersionJSON `json:"-"`
-}
-
-// authRuleV2PromoteResponseCurrentVersionJSON contains the JSON metadata for the
-// struct [AuthRuleV2PromoteResponseCurrentVersion]
-type authRuleV2PromoteResponseCurrentVersionJSON struct {
-	Parameters  apijson.Field
-	Version     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2PromoteResponseCurrentVersion) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2PromoteResponseCurrentVersionJSON) RawJSON() string {
-	return r.raw
-}
-
-// Parameters for the Auth Rule
-type AuthRuleV2PromoteResponseCurrentVersionParameters struct {
-	// This field can have the runtime type of [Conditional3DSActionParametersAction],
-	// [ConditionalAuthorizationActionParametersAction],
-	// [ConditionalACHActionParametersAction],
-	// [ConditionalTokenizationActionParametersAction].
-	Action interface{} `json:"action"`
-	// This field can have the runtime type of [[]AuthRuleCondition],
-	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition],
-	// [[]ConditionalACHActionParametersCondition],
-	// [[]ConditionalTokenizationActionParametersCondition].
-	Conditions interface{} `json:"conditions"`
-	// This field can have the runtime type of [VelocityLimitParamsFilters].
-	Filters interface{} `json:"filters"`
-	// The maximum amount of spend velocity allowed in the period in minor units (the
-	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
-	// limit will be declined.
-	LimitAmount int64 `json:"limit_amount,nullable"`
-	// The number of spend velocity impacting transactions may not exceed this limit in
-	// the period. Transactions exceeding this limit will be declined. A spend velocity
-	// impacting transaction is a transaction that has been authorized, and optionally
-	// settled, or a force post (a transaction that settled without prior
-	// authorization).
-	LimitCount int64 `json:"limit_count,nullable"`
-	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
-	Merchants interface{} `json:"merchants"`
-	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
-	Period VelocityLimitPeriod `json:"period"`
-	// The scope the velocity is calculated for
-	Scope AuthRuleV2PromoteResponseCurrentVersionParametersScope `json:"scope"`
-	JSON  authRuleV2PromoteResponseCurrentVersionParametersJSON  `json:"-"`
-	union AuthRuleV2PromoteResponseCurrentVersionParametersUnion
-}
-
-// authRuleV2PromoteResponseCurrentVersionParametersJSON contains the JSON metadata
-// for the struct [AuthRuleV2PromoteResponseCurrentVersionParameters]
-type authRuleV2PromoteResponseCurrentVersionParametersJSON struct {
-	Action      apijson.Field
-	Conditions  apijson.Field
-	Filters     apijson.Field
-	LimitAmount apijson.Field
-	LimitCount  apijson.Field
-	Merchants   apijson.Field
-	Period      apijson.Field
-	Scope       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r authRuleV2PromoteResponseCurrentVersionParametersJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r *AuthRuleV2PromoteResponseCurrentVersionParameters) UnmarshalJSON(data []byte) (err error) {
-	*r = AuthRuleV2PromoteResponseCurrentVersionParameters{}
-	err = apijson.UnmarshalRoot(data, &r.union)
-	if err != nil {
-		return err
-	}
-	return apijson.Port(r.union, &r)
-}
-
-// AsUnion returns a [AuthRuleV2PromoteResponseCurrentVersionParametersUnion]
-// interface which you can cast to the specific types for more type safety.
-//
-// Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
-// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
-func (r AuthRuleV2PromoteResponseCurrentVersionParameters) AsUnion() AuthRuleV2PromoteResponseCurrentVersionParametersUnion {
-	return r.union
-}
-
-// Parameters for the Auth Rule
-//
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
-// [ConditionalTokenizationActionParameters].
-type AuthRuleV2PromoteResponseCurrentVersionParametersUnion interface {
-	implementsAuthRuleV2PromoteResponseCurrentVersionParameters()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*AuthRuleV2PromoteResponseCurrentVersionParametersUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(VelocityLimitParams{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(MerchantLockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(Conditional3DSActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
-		},
-	)
-}
-
-// The scope the velocity is calculated for
-type AuthRuleV2PromoteResponseCurrentVersionParametersScope string
-
-const (
-	AuthRuleV2PromoteResponseCurrentVersionParametersScopeCard    AuthRuleV2PromoteResponseCurrentVersionParametersScope = "CARD"
-	AuthRuleV2PromoteResponseCurrentVersionParametersScopeAccount AuthRuleV2PromoteResponseCurrentVersionParametersScope = "ACCOUNT"
-)
-
-func (r AuthRuleV2PromoteResponseCurrentVersionParametersScope) IsKnown() bool {
-	switch r {
-	case AuthRuleV2PromoteResponseCurrentVersionParametersScopeCard, AuthRuleV2PromoteResponseCurrentVersionParametersScopeAccount:
-		return true
-	}
-	return false
-}
-
-type AuthRuleV2PromoteResponseDraftVersion struct {
-	// Parameters for the Auth Rule
-	Parameters AuthRuleV2PromoteResponseDraftVersionParameters `json:"parameters,required"`
-	// The version of the rule, this is incremented whenever the rule's parameters
-	// change.
-	Version int64                                     `json:"version,required"`
-	JSON    authRuleV2PromoteResponseDraftVersionJSON `json:"-"`
-}
-
-// authRuleV2PromoteResponseDraftVersionJSON contains the JSON metadata for the
-// struct [AuthRuleV2PromoteResponseDraftVersion]
-type authRuleV2PromoteResponseDraftVersionJSON struct {
-	Parameters  apijson.Field
-	Version     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2PromoteResponseDraftVersion) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2PromoteResponseDraftVersionJSON) RawJSON() string {
-	return r.raw
-}
-
-// Parameters for the Auth Rule
-type AuthRuleV2PromoteResponseDraftVersionParameters struct {
-	// This field can have the runtime type of [Conditional3DSActionParametersAction],
-	// [ConditionalAuthorizationActionParametersAction],
-	// [ConditionalACHActionParametersAction],
-	// [ConditionalTokenizationActionParametersAction].
-	Action interface{} `json:"action"`
-	// This field can have the runtime type of [[]AuthRuleCondition],
-	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition],
-	// [[]ConditionalACHActionParametersCondition],
-	// [[]ConditionalTokenizationActionParametersCondition].
-	Conditions interface{} `json:"conditions"`
-	// This field can have the runtime type of [VelocityLimitParamsFilters].
-	Filters interface{} `json:"filters"`
-	// The maximum amount of spend velocity allowed in the period in minor units (the
-	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
-	// limit will be declined.
-	LimitAmount int64 `json:"limit_amount,nullable"`
-	// The number of spend velocity impacting transactions may not exceed this limit in
-	// the period. Transactions exceeding this limit will be declined. A spend velocity
-	// impacting transaction is a transaction that has been authorized, and optionally
-	// settled, or a force post (a transaction that settled without prior
-	// authorization).
-	LimitCount int64 `json:"limit_count,nullable"`
-	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
-	Merchants interface{} `json:"merchants"`
-	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
-	Period VelocityLimitPeriod `json:"period"`
-	// The scope the velocity is calculated for
-	Scope AuthRuleV2PromoteResponseDraftVersionParametersScope `json:"scope"`
-	JSON  authRuleV2PromoteResponseDraftVersionParametersJSON  `json:"-"`
-	union AuthRuleV2PromoteResponseDraftVersionParametersUnion
-}
-
-// authRuleV2PromoteResponseDraftVersionParametersJSON contains the JSON metadata
-// for the struct [AuthRuleV2PromoteResponseDraftVersionParameters]
-type authRuleV2PromoteResponseDraftVersionParametersJSON struct {
-	Action      apijson.Field
-	Conditions  apijson.Field
-	Filters     apijson.Field
-	LimitAmount apijson.Field
-	LimitCount  apijson.Field
-	Merchants   apijson.Field
-	Period      apijson.Field
-	Scope       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r authRuleV2PromoteResponseDraftVersionParametersJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r *AuthRuleV2PromoteResponseDraftVersionParameters) UnmarshalJSON(data []byte) (err error) {
-	*r = AuthRuleV2PromoteResponseDraftVersionParameters{}
-	err = apijson.UnmarshalRoot(data, &r.union)
-	if err != nil {
-		return err
-	}
-	return apijson.Port(r.union, &r)
-}
-
-// AsUnion returns a [AuthRuleV2PromoteResponseDraftVersionParametersUnion]
-// interface which you can cast to the specific types for more type safety.
-//
-// Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
-// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
-func (r AuthRuleV2PromoteResponseDraftVersionParameters) AsUnion() AuthRuleV2PromoteResponseDraftVersionParametersUnion {
-	return r.union
-}
-
-// Parameters for the Auth Rule
-//
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
-// [ConditionalTokenizationActionParameters].
-type AuthRuleV2PromoteResponseDraftVersionParametersUnion interface {
-	implementsAuthRuleV2PromoteResponseDraftVersionParameters()
-}
-
-func init() {
-	apijson.RegisterUnion(
-		reflect.TypeOf((*AuthRuleV2PromoteResponseDraftVersionParametersUnion)(nil)).Elem(),
-		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(VelocityLimitParams{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(MerchantLockParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(Conditional3DSActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalAuthorizationActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalACHActionParameters{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
-		},
-	)
-}
-
-// The scope the velocity is calculated for
-type AuthRuleV2PromoteResponseDraftVersionParametersScope string
-
-const (
-	AuthRuleV2PromoteResponseDraftVersionParametersScopeCard    AuthRuleV2PromoteResponseDraftVersionParametersScope = "CARD"
-	AuthRuleV2PromoteResponseDraftVersionParametersScopeAccount AuthRuleV2PromoteResponseDraftVersionParametersScope = "ACCOUNT"
-)
-
-func (r AuthRuleV2PromoteResponseDraftVersionParametersScope) IsKnown() bool {
-	switch r {
-	case AuthRuleV2PromoteResponseDraftVersionParametersScopeCard, AuthRuleV2PromoteResponseDraftVersionParametersScopeAccount:
-		return true
-	}
-	return false
-}
-
-// The event stream during which the rule will be evaluated.
-type AuthRuleV2PromoteResponseEventStream string
-
-const (
-	AuthRuleV2PromoteResponseEventStreamAuthorization         AuthRuleV2PromoteResponseEventStream = "AUTHORIZATION"
-	AuthRuleV2PromoteResponseEventStreamThreeDSAuthentication AuthRuleV2PromoteResponseEventStream = "THREE_DS_AUTHENTICATION"
-	AuthRuleV2PromoteResponseEventStreamTokenization          AuthRuleV2PromoteResponseEventStream = "TOKENIZATION"
-	AuthRuleV2PromoteResponseEventStreamACHCreditReceipt      AuthRuleV2PromoteResponseEventStream = "ACH_CREDIT_RECEIPT"
-	AuthRuleV2PromoteResponseEventStreamACHDebitReceipt       AuthRuleV2PromoteResponseEventStream = "ACH_DEBIT_RECEIPT"
-)
-
-func (r AuthRuleV2PromoteResponseEventStream) IsKnown() bool {
-	switch r {
-	case AuthRuleV2PromoteResponseEventStreamAuthorization, AuthRuleV2PromoteResponseEventStreamThreeDSAuthentication, AuthRuleV2PromoteResponseEventStreamTokenization, AuthRuleV2PromoteResponseEventStreamACHCreditReceipt, AuthRuleV2PromoteResponseEventStreamACHDebitReceipt:
-		return true
-	}
-	return false
-}
-
-// The state of the Auth Rule
-type AuthRuleV2PromoteResponseState string
-
-const (
-	AuthRuleV2PromoteResponseStateActive   AuthRuleV2PromoteResponseState = "ACTIVE"
-	AuthRuleV2PromoteResponseStateInactive AuthRuleV2PromoteResponseState = "INACTIVE"
-)
-
-func (r AuthRuleV2PromoteResponseState) IsKnown() bool {
-	switch r {
-	case AuthRuleV2PromoteResponseStateActive, AuthRuleV2PromoteResponseStateInactive:
-		return true
-	}
-	return false
-}
-
-// The type of Auth Rule. For certain rule types, this determines the event stream
-// during which it will be evaluated. For rules that can be applied to one of
-// several event streams, the effective one is defined by the separate
-// `event_stream` field.
-//
-//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
-//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
-//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
-//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
-type AuthRuleV2PromoteResponseType string
-
-const (
-	AuthRuleV2PromoteResponseTypeConditionalBlock  AuthRuleV2PromoteResponseType = "CONDITIONAL_BLOCK"
-	AuthRuleV2PromoteResponseTypeVelocityLimit     AuthRuleV2PromoteResponseType = "VELOCITY_LIMIT"
-	AuthRuleV2PromoteResponseTypeMerchantLock      AuthRuleV2PromoteResponseType = "MERCHANT_LOCK"
-	AuthRuleV2PromoteResponseTypeConditionalAction AuthRuleV2PromoteResponseType = "CONDITIONAL_ACTION"
-)
-
-func (r AuthRuleV2PromoteResponseType) IsKnown() bool {
-	switch r {
-	case AuthRuleV2PromoteResponseTypeConditionalBlock, AuthRuleV2PromoteResponseTypeVelocityLimit, AuthRuleV2PromoteResponseTypeMerchantLock, AuthRuleV2PromoteResponseTypeConditionalAction:
-		return true
-	}
-	return false
-}
 
 type AuthRuleV2GetFeaturesResponse struct {
 	// Timestamp at which the Features were evaluated

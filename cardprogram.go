@@ -76,6 +76,9 @@ func (r *CardProgramService) ListAutoPaging(ctx context.Context, query CardProgr
 type CardProgram struct {
 	// Globally unique identifier.
 	Token string `json:"token,required" format:"uuid"`
+	// Whether the card program is participating in Account Level Management. Currently
+	// applicable to Visa card programs only.
+	AccountLevelManagementEnabled bool `json:"account_level_management_enabled,required"`
 	// Timestamp of when the card program was created.
 	Created time.Time `json:"created,required" format:"date-time"`
 	// The name of the card program.
@@ -84,9 +87,6 @@ type CardProgram struct {
 	PanRangeEnd string `json:"pan_range_end,required"`
 	// The first digits of the card number that this card program starts with.
 	PanRangeStart string `json:"pan_range_start,required"`
-	// Whether the card program is participating in Account Level Management. Currently
-	// applicable to Visa card programs only.
-	AccountLevelManagementEnabled bool `json:"account_level_management_enabled"`
 	// 3-character alphabetic ISO 4217 code for the currency of the cardholder.
 	CardholderCurrency string `json:"cardholder_currency"`
 	// List of 3-character alphabetic ISO 4217 codes for the currencies that the card
@@ -98,11 +98,11 @@ type CardProgram struct {
 // cardProgramJSON contains the JSON metadata for the struct [CardProgram]
 type cardProgramJSON struct {
 	Token                         apijson.Field
+	AccountLevelManagementEnabled apijson.Field
 	Created                       apijson.Field
 	Name                          apijson.Field
 	PanRangeEnd                   apijson.Field
 	PanRangeStart                 apijson.Field
-	AccountLevelManagementEnabled apijson.Field
 	CardholderCurrency            apijson.Field
 	SettlementCurrencies          apijson.Field
 	raw                           string
