@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.98.0 (2025-11-21)
+
+Full Changelog: [v0.97.0...v0.98.0](https://github.com/lithic-com/lithic-go/compare/v0.97.0...v0.98.0)
+
+### Features
+
+* **api:** add WALLET_RECOMMENDATION_REASONS attribute for tokenization rules ([2a11b16](https://github.com/lithic-com/lithic-go/commit/2a11b1659b3ba327c5a3dc6232b3171ff211bb1c))
+* **api:** provide a unified model for AuthRule ([2a11b16](https://github.com/lithic-com/lithic-go/commit/2a11b1659b3ba327c5a3dc6232b3171ff211bb1c))
+
+
+### Bug Fixes
+
+* **api:** fix examples in spec that were not fully valid ([2a11b16](https://github.com/lithic-com/lithic-go/commit/2a11b1659b3ba327c5a3dc6232b3171ff211bb1c))
+* **api:** make certain payoff fields nullable ([2a11b16](https://github.com/lithic-com/lithic-go/commit/2a11b1659b3ba327c5a3dc6232b3171ff211bb1c))
+
 ## 0.97.0 (2025-11-20)
 
 Full Changelog: [v0.96.1...v0.97.0](https://github.com/lithic-com/lithic-go/compare/v0.96.1...v0.97.0)
