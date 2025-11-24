@@ -158,7 +158,7 @@ func (r *TokenizationService) ResendActivationCode(ctx context.Context, tokeniza
 
 // This endpoint is used to simulate a card's tokenization in the Digital Wallet
 // and merchant tokenization ecosystem.
-func (r *TokenizationService) Simulate(ctx context.Context, body TokenizationSimulateParams, opts ...option.RequestOption) (res *TokenizationSimulateResponse, err error) {
+func (r *TokenizationService) Simulate(ctx context.Context, body TokenizationSimulateParams, opts ...option.RequestOption) (res *Tokenization, err error) {
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/tokenizations"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
@@ -192,7 +192,7 @@ func (r *TokenizationService) Unpause(ctx context.Context, tokenizationToken str
 // all tokenizations for a card. New tokenizations for a card will be created with
 // the art referenced in the card object's `digital_card_art_token` field. Reach
 // out at [lithic.com/contact](https://lithic.com/contact) for more information.
-func (r *TokenizationService) UpdateDigitalCardArt(ctx context.Context, tokenizationToken string, body TokenizationUpdateDigitalCardArtParams, opts ...option.RequestOption) (res *TokenizationUpdateDigitalCardArtResponse, err error) {
+func (r *TokenizationService) UpdateDigitalCardArt(ctx context.Context, tokenizationToken string, body TokenizationUpdateDigitalCardArtParams, opts ...option.RequestOption) (res *Tokenization, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if tokenizationToken == "" {
 		err = errors.New("missing required tokenization_token parameter")
@@ -522,48 +522,6 @@ func (r TokenizationEventsType) IsKnown() bool {
 		return true
 	}
 	return false
-}
-
-type TokenizationSimulateResponse struct {
-	Data []Tokenization                   `json:"data"`
-	JSON tokenizationSimulateResponseJSON `json:"-"`
-}
-
-// tokenizationSimulateResponseJSON contains the JSON metadata for the struct
-// [TokenizationSimulateResponse]
-type tokenizationSimulateResponseJSON struct {
-	Data        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *TokenizationSimulateResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r tokenizationSimulateResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-type TokenizationUpdateDigitalCardArtResponse struct {
-	Data Tokenization                                 `json:"data"`
-	JSON tokenizationUpdateDigitalCardArtResponseJSON `json:"-"`
-}
-
-// tokenizationUpdateDigitalCardArtResponseJSON contains the JSON metadata for the
-// struct [TokenizationUpdateDigitalCardArtResponse]
-type tokenizationUpdateDigitalCardArtResponseJSON struct {
-	Data        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *TokenizationUpdateDigitalCardArtResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r tokenizationUpdateDigitalCardArtResponseJSON) RawJSON() string {
-	return r.raw
 }
 
 type TokenizationListParams struct {
