@@ -39,7 +39,7 @@ func NewFundingEventService(opts ...option.RequestOption) (r *FundingEventServic
 }
 
 // Get funding event for program by id
-func (r *FundingEventService) Get(ctx context.Context, fundingEventToken string, opts ...option.RequestOption) (res *FundingEventGetResponse, err error) {
+func (r *FundingEventService) Get(ctx context.Context, fundingEventToken string, opts ...option.RequestOption) (res *FundingEvent, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if fundingEventToken == "" {
 		err = errors.New("missing required funding_event_token parameter")
@@ -51,7 +51,7 @@ func (r *FundingEventService) Get(ctx context.Context, fundingEventToken string,
 }
 
 // Get all funding events for program
-func (r *FundingEventService) List(ctx context.Context, query FundingEventListParams, opts ...option.RequestOption) (res *pagination.CursorPage[FundingEventListResponse], err error) {
+func (r *FundingEventService) List(ctx context.Context, query FundingEventListParams, opts ...option.RequestOption) (res *pagination.CursorPage[FundingEvent], err error) {
 	var raw *http.Response
 	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -69,7 +69,7 @@ func (r *FundingEventService) List(ctx context.Context, query FundingEventListPa
 }
 
 // Get all funding events for program
-func (r *FundingEventService) ListAutoPaging(ctx context.Context, query FundingEventListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[FundingEventListResponse] {
+func (r *FundingEventService) ListAutoPaging(ctx context.Context, query FundingEventListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[FundingEvent] {
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
@@ -85,11 +85,11 @@ func (r *FundingEventService) GetDetails(ctx context.Context, fundingEventToken 
 	return
 }
 
-type FundingEventGetResponse struct {
+type FundingEvent struct {
 	// Unique token ID
 	Token string `json:"token,required" format:"uuid"`
 	// Collection resource type
-	CollectionResourceType FundingEventGetResponseCollectionResourceType `json:"collection_resource_type,required"`
+	CollectionResourceType FundingEventCollectionResourceType `json:"collection_resource_type,required"`
 	// IDs of collections, further information can be gathered from the appropriate
 	// collection API based on collection_resource_type
 	CollectionTokens []string `json:"collection_tokens,required" format:"uuid"`
@@ -98,17 +98,16 @@ type FundingEventGetResponse struct {
 	// Time of the high watermark
 	HighWatermark time.Time `json:"high_watermark,required" format:"date-time"`
 	// Network settlement summary breakdown by network settlement date
-	NetworkSettlementSummary []FundingEventGetResponseNetworkSettlementSummary `json:"network_settlement_summary,required"`
+	NetworkSettlementSummary []FundingEventNetworkSettlementSummary `json:"network_settlement_summary,required"`
 	// Time of the previous high watermark
 	PreviousHighWatermark time.Time `json:"previous_high_watermark,required" format:"date-time"`
 	// Time of the update
-	Updated time.Time                   `json:"updated,required" format:"date-time"`
-	JSON    fundingEventGetResponseJSON `json:"-"`
+	Updated time.Time        `json:"updated,required" format:"date-time"`
+	JSON    fundingEventJSON `json:"-"`
 }
 
-// fundingEventGetResponseJSON contains the JSON metadata for the struct
-// [FundingEventGetResponse]
-type fundingEventGetResponseJSON struct {
+// fundingEventJSON contains the JSON metadata for the struct [FundingEvent]
+type fundingEventJSON struct {
 	Token                    apijson.Field
 	CollectionResourceType   apijson.Field
 	CollectionTokens         apijson.Field
@@ -121,133 +120,50 @@ type fundingEventGetResponseJSON struct {
 	ExtraFields              map[string]apijson.Field
 }
 
-func (r *FundingEventGetResponse) UnmarshalJSON(data []byte) (err error) {
+func (r *FundingEvent) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r fundingEventGetResponseJSON) RawJSON() string {
+func (r fundingEventJSON) RawJSON() string {
 	return r.raw
 }
 
 // Collection resource type
-type FundingEventGetResponseCollectionResourceType string
+type FundingEventCollectionResourceType string
 
 const (
-	FundingEventGetResponseCollectionResourceTypeBookTransfer FundingEventGetResponseCollectionResourceType = "BOOK_TRANSFER"
-	FundingEventGetResponseCollectionResourceTypePayment      FundingEventGetResponseCollectionResourceType = "PAYMENT"
+	FundingEventCollectionResourceTypeBookTransfer FundingEventCollectionResourceType = "BOOK_TRANSFER"
+	FundingEventCollectionResourceTypePayment      FundingEventCollectionResourceType = "PAYMENT"
 )
 
-func (r FundingEventGetResponseCollectionResourceType) IsKnown() bool {
+func (r FundingEventCollectionResourceType) IsKnown() bool {
 	switch r {
-	case FundingEventGetResponseCollectionResourceTypeBookTransfer, FundingEventGetResponseCollectionResourceTypePayment:
+	case FundingEventCollectionResourceTypeBookTransfer, FundingEventCollectionResourceTypePayment:
 		return true
 	}
 	return false
 }
 
-type FundingEventGetResponseNetworkSettlementSummary struct {
-	NetworkSettlementDate time.Time                                           `json:"network_settlement_date,required" format:"date"`
-	SettledGrossAmount    int64                                               `json:"settled_gross_amount,required"`
-	JSON                  fundingEventGetResponseNetworkSettlementSummaryJSON `json:"-"`
+type FundingEventNetworkSettlementSummary struct {
+	NetworkSettlementDate time.Time                                `json:"network_settlement_date,required" format:"date"`
+	SettledGrossAmount    int64                                    `json:"settled_gross_amount,required"`
+	JSON                  fundingEventNetworkSettlementSummaryJSON `json:"-"`
 }
 
-// fundingEventGetResponseNetworkSettlementSummaryJSON contains the JSON metadata
-// for the struct [FundingEventGetResponseNetworkSettlementSummary]
-type fundingEventGetResponseNetworkSettlementSummaryJSON struct {
+// fundingEventNetworkSettlementSummaryJSON contains the JSON metadata for the
+// struct [FundingEventNetworkSettlementSummary]
+type fundingEventNetworkSettlementSummaryJSON struct {
 	NetworkSettlementDate apijson.Field
 	SettledGrossAmount    apijson.Field
 	raw                   string
 	ExtraFields           map[string]apijson.Field
 }
 
-func (r *FundingEventGetResponseNetworkSettlementSummary) UnmarshalJSON(data []byte) (err error) {
+func (r *FundingEventNetworkSettlementSummary) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r fundingEventGetResponseNetworkSettlementSummaryJSON) RawJSON() string {
-	return r.raw
-}
-
-type FundingEventListResponse struct {
-	// Unique token ID
-	Token string `json:"token,required" format:"uuid"`
-	// Collection resource type
-	CollectionResourceType FundingEventListResponseCollectionResourceType `json:"collection_resource_type,required"`
-	// IDs of collections, further information can be gathered from the appropriate
-	// collection API based on collection_resource_type
-	CollectionTokens []string `json:"collection_tokens,required" format:"uuid"`
-	// Time of the creation
-	Created time.Time `json:"created,required" format:"date-time"`
-	// Time of the high watermark
-	HighWatermark time.Time `json:"high_watermark,required" format:"date-time"`
-	// Network settlement summary breakdown by network settlement date
-	NetworkSettlementSummary []FundingEventListResponseNetworkSettlementSummary `json:"network_settlement_summary,required"`
-	// Time of the previous high watermark
-	PreviousHighWatermark time.Time `json:"previous_high_watermark,required" format:"date-time"`
-	// Time of the update
-	Updated time.Time                    `json:"updated,required" format:"date-time"`
-	JSON    fundingEventListResponseJSON `json:"-"`
-}
-
-// fundingEventListResponseJSON contains the JSON metadata for the struct
-// [FundingEventListResponse]
-type fundingEventListResponseJSON struct {
-	Token                    apijson.Field
-	CollectionResourceType   apijson.Field
-	CollectionTokens         apijson.Field
-	Created                  apijson.Field
-	HighWatermark            apijson.Field
-	NetworkSettlementSummary apijson.Field
-	PreviousHighWatermark    apijson.Field
-	Updated                  apijson.Field
-	raw                      string
-	ExtraFields              map[string]apijson.Field
-}
-
-func (r *FundingEventListResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r fundingEventListResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-// Collection resource type
-type FundingEventListResponseCollectionResourceType string
-
-const (
-	FundingEventListResponseCollectionResourceTypeBookTransfer FundingEventListResponseCollectionResourceType = "BOOK_TRANSFER"
-	FundingEventListResponseCollectionResourceTypePayment      FundingEventListResponseCollectionResourceType = "PAYMENT"
-)
-
-func (r FundingEventListResponseCollectionResourceType) IsKnown() bool {
-	switch r {
-	case FundingEventListResponseCollectionResourceTypeBookTransfer, FundingEventListResponseCollectionResourceTypePayment:
-		return true
-	}
-	return false
-}
-
-type FundingEventListResponseNetworkSettlementSummary struct {
-	NetworkSettlementDate time.Time                                            `json:"network_settlement_date,required" format:"date"`
-	SettledGrossAmount    int64                                                `json:"settled_gross_amount,required"`
-	JSON                  fundingEventListResponseNetworkSettlementSummaryJSON `json:"-"`
-}
-
-// fundingEventListResponseNetworkSettlementSummaryJSON contains the JSON metadata
-// for the struct [FundingEventListResponseNetworkSettlementSummary]
-type fundingEventListResponseNetworkSettlementSummaryJSON struct {
-	NetworkSettlementDate apijson.Field
-	SettledGrossAmount    apijson.Field
-	raw                   string
-	ExtraFields           map[string]apijson.Field
-}
-
-func (r *FundingEventListResponseNetworkSettlementSummary) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r fundingEventListResponseNetworkSettlementSummaryJSON) RawJSON() string {
+func (r fundingEventNetworkSettlementSummaryJSON) RawJSON() string {
 	return r.raw
 }
 

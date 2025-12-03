@@ -11,7 +11,6 @@ import (
 	"slices"
 	"time"
 
-	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
@@ -39,7 +38,7 @@ func NewFinancialAccountBalanceService(opts ...option.RequestOption) (r *Financi
 }
 
 // Get the balances for a given financial account.
-func (r *FinancialAccountBalanceService) List(ctx context.Context, financialAccountToken string, query FinancialAccountBalanceListParams, opts ...option.RequestOption) (res *pagination.SinglePage[FinancialAccountBalanceListResponse], err error) {
+func (r *FinancialAccountBalanceService) List(ctx context.Context, financialAccountToken string, query FinancialAccountBalanceListParams, opts ...option.RequestOption) (res *pagination.SinglePage[FinancialAccountBalance], err error) {
 	var raw *http.Response
 	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -61,80 +60,8 @@ func (r *FinancialAccountBalanceService) List(ctx context.Context, financialAcco
 }
 
 // Get the balances for a given financial account.
-func (r *FinancialAccountBalanceService) ListAutoPaging(ctx context.Context, financialAccountToken string, query FinancialAccountBalanceListParams, opts ...option.RequestOption) *pagination.SinglePageAutoPager[FinancialAccountBalanceListResponse] {
+func (r *FinancialAccountBalanceService) ListAutoPaging(ctx context.Context, financialAccountToken string, query FinancialAccountBalanceListParams, opts ...option.RequestOption) *pagination.SinglePageAutoPager[FinancialAccountBalance] {
 	return pagination.NewSinglePageAutoPager(r.List(ctx, financialAccountToken, query, opts...))
-}
-
-// Balance of a Financial Account
-type FinancialAccountBalanceListResponse struct {
-	// Globally unique identifier for the financial account that holds this balance.
-	Token string `json:"token,required" format:"uuid"`
-	// Funds available for spend in the currency's smallest unit (e.g., cents for USD)
-	AvailableAmount int64 `json:"available_amount,required"`
-	// Date and time for when the balance was first created.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// 3-character alphabetic ISO 4217 code for the local currency of the balance.
-	Currency string `json:"currency,required"`
-	// Globally unique identifier for the last financial transaction event that
-	// impacted this balance.
-	LastTransactionEventToken string `json:"last_transaction_event_token,required" format:"uuid"`
-	// Globally unique identifier for the last financial transaction that impacted this
-	// balance.
-	LastTransactionToken string `json:"last_transaction_token,required" format:"uuid"`
-	// Funds not available for spend due to card authorizations or pending ACH release.
-	// Shown in the currency's smallest unit (e.g., cents for USD).
-	PendingAmount int64 `json:"pending_amount,required"`
-	// The sum of available and pending balance in the currency's smallest unit (e.g.,
-	// cents for USD).
-	TotalAmount int64 `json:"total_amount,required"`
-	// Type of financial account.
-	Type FinancialAccountBalanceListResponseType `json:"type,required"`
-	// Date and time for when the balance was last updated.
-	Updated time.Time                               `json:"updated,required" format:"date-time"`
-	JSON    financialAccountBalanceListResponseJSON `json:"-"`
-}
-
-// financialAccountBalanceListResponseJSON contains the JSON metadata for the
-// struct [FinancialAccountBalanceListResponse]
-type financialAccountBalanceListResponseJSON struct {
-	Token                     apijson.Field
-	AvailableAmount           apijson.Field
-	Created                   apijson.Field
-	Currency                  apijson.Field
-	LastTransactionEventToken apijson.Field
-	LastTransactionToken      apijson.Field
-	PendingAmount             apijson.Field
-	TotalAmount               apijson.Field
-	Type                      apijson.Field
-	Updated                   apijson.Field
-	raw                       string
-	ExtraFields               map[string]apijson.Field
-}
-
-func (r *FinancialAccountBalanceListResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r financialAccountBalanceListResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-// Type of financial account.
-type FinancialAccountBalanceListResponseType string
-
-const (
-	FinancialAccountBalanceListResponseTypeIssuing   FinancialAccountBalanceListResponseType = "ISSUING"
-	FinancialAccountBalanceListResponseTypeOperating FinancialAccountBalanceListResponseType = "OPERATING"
-	FinancialAccountBalanceListResponseTypeReserve   FinancialAccountBalanceListResponseType = "RESERVE"
-	FinancialAccountBalanceListResponseTypeSecurity  FinancialAccountBalanceListResponseType = "SECURITY"
-)
-
-func (r FinancialAccountBalanceListResponseType) IsKnown() bool {
-	switch r {
-	case FinancialAccountBalanceListResponseTypeIssuing, FinancialAccountBalanceListResponseTypeOperating, FinancialAccountBalanceListResponseTypeReserve, FinancialAccountBalanceListResponseTypeSecurity:
-		return true
-	}
-	return false
 }
 
 type FinancialAccountBalanceListParams struct {

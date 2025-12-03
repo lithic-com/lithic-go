@@ -24,6 +24,7 @@ type Client struct {
 	TokenizationDecisioning *TokenizationDecisioningService
 	Tokenizations           *TokenizationService
 	Cards                   *CardService
+	CardBulkOrders          *CardBulkOrderService
 	Balances                *BalanceService
 	AggregateBalances       *AggregateBalanceService
 	Disputes                *DisputeService
@@ -44,6 +45,7 @@ type Client struct {
 	CreditProducts          *CreditProductService
 	ExternalPayments        *ExternalPaymentService
 	ManagementOperations    *ManagementOperationService
+	InternalTransaction     *InternalTransactionService
 	FundingEvents           *FundingEventService
 	Fraud                   *FraudService
 	NetworkPrograms         *NetworkProgramService
@@ -83,6 +85,7 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.TokenizationDecisioning = NewTokenizationDecisioningService(opts...)
 	r.Tokenizations = NewTokenizationService(opts...)
 	r.Cards = NewCardService(opts...)
+	r.CardBulkOrders = NewCardBulkOrderService(opts...)
 	r.Balances = NewBalanceService(opts...)
 	r.AggregateBalances = NewAggregateBalanceService(opts...)
 	r.Disputes = NewDisputeService(opts...)
@@ -103,6 +106,7 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.CreditProducts = NewCreditProductService(opts...)
 	r.ExternalPayments = NewExternalPaymentService(opts...)
 	r.ManagementOperations = NewManagementOperationService(opts...)
+	r.InternalTransaction = NewInternalTransactionService(opts...)
 	r.FundingEvents = NewFundingEventService(opts...)
 	r.Fraud = NewFraudService(opts...)
 	r.NetworkPrograms = NewNetworkProgramService(opts...)

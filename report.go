@@ -30,6 +30,117 @@ func NewReportService(opts ...option.RequestOption) (r *ReportService) {
 	return
 }
 
+type NetworkTotal struct {
+	// Globally unique identifier.
+	Token   string              `json:"token,required" format:"uuid"`
+	Amounts NetworkTotalAmounts `json:"amounts,required"`
+	// RFC 3339 timestamp for when the record was created. UTC time zone.
+	Created time.Time `json:"created,required" format:"date-time"`
+	// 3-character alphabetic ISO 4217 code.
+	Currency string `json:"currency,required"`
+	// The institution that activity occurred on. For Mastercard: ICA (Interbank Card
+	// Association). For Maestro: institution ID. For Visa: lowest level SRE
+	// (Settlement Reporting Entity).
+	InstitutionID string `json:"institution_id,required"`
+	// Indicates that all settlement records related to this Network Total are
+	// available in the details endpoint.
+	IsComplete bool `json:"is_complete,required"`
+	// Card network where the transaction took place. AMEX, VISA, MASTERCARD, MAESTRO,
+	// or INTERLINK.
+	Network NetworkTotalNetwork `json:"network,required"`
+	// Date that the network total record applies to. YYYY-MM-DD format.
+	ReportDate time.Time `json:"report_date,required" format:"date"`
+	// The institution responsible for settlement. For Mastercard: same as
+	// `institution_id`. For Maestro: billing ICA. For Visa: Funds Transfer SRE
+	// (FTSRE).
+	SettlementInstitutionID string `json:"settlement_institution_id,required"`
+	// Settlement service.
+	SettlementService string `json:"settlement_service,required"`
+	// RFC 3339 timestamp for when the record was last updated. UTC time zone.
+	Updated time.Time `json:"updated,required" format:"date-time"`
+	// The clearing cycle that the network total record applies to. Mastercard only.
+	Cycle int64            `json:"cycle"`
+	JSON  networkTotalJSON `json:"-"`
+}
+
+// networkTotalJSON contains the JSON metadata for the struct [NetworkTotal]
+type networkTotalJSON struct {
+	Token                   apijson.Field
+	Amounts                 apijson.Field
+	Created                 apijson.Field
+	Currency                apijson.Field
+	InstitutionID           apijson.Field
+	IsComplete              apijson.Field
+	Network                 apijson.Field
+	ReportDate              apijson.Field
+	SettlementInstitutionID apijson.Field
+	SettlementService       apijson.Field
+	Updated                 apijson.Field
+	Cycle                   apijson.Field
+	raw                     string
+	ExtraFields             map[string]apijson.Field
+}
+
+func (r *NetworkTotal) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r networkTotalJSON) RawJSON() string {
+	return r.raw
+}
+
+type NetworkTotalAmounts struct {
+	// Total settlement amount excluding interchange, in currency's smallest unit.
+	GrossSettlement int64 `json:"gross_settlement,required"`
+	// Interchange amount, in currency's smallest unit.
+	InterchangeFees int64 `json:"interchange_fees,required"`
+	// `gross_settlement` net of `interchange_fees` and `visa_charges` (if applicable),
+	// in currency's smallest unit.
+	NetSettlement int64 `json:"net_settlement,required"`
+	// Charges specific to Visa/Interlink, in currency's smallest unit.
+	VisaCharges int64                   `json:"visa_charges"`
+	JSON        networkTotalAmountsJSON `json:"-"`
+}
+
+// networkTotalAmountsJSON contains the JSON metadata for the struct
+// [NetworkTotalAmounts]
+type networkTotalAmountsJSON struct {
+	GrossSettlement apijson.Field
+	InterchangeFees apijson.Field
+	NetSettlement   apijson.Field
+	VisaCharges     apijson.Field
+	raw             string
+	ExtraFields     map[string]apijson.Field
+}
+
+func (r *NetworkTotalAmounts) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r networkTotalAmountsJSON) RawJSON() string {
+	return r.raw
+}
+
+// Card network where the transaction took place. AMEX, VISA, MASTERCARD, MAESTRO,
+// or INTERLINK.
+type NetworkTotalNetwork string
+
+const (
+	NetworkTotalNetworkAmex       NetworkTotalNetwork = "AMEX"
+	NetworkTotalNetworkVisa       NetworkTotalNetwork = "VISA"
+	NetworkTotalNetworkMastercard NetworkTotalNetwork = "MASTERCARD"
+	NetworkTotalNetworkMaestro    NetworkTotalNetwork = "MAESTRO"
+	NetworkTotalNetworkInterlink  NetworkTotalNetwork = "INTERLINK"
+)
+
+func (r NetworkTotalNetwork) IsKnown() bool {
+	switch r {
+	case NetworkTotalNetworkAmex, NetworkTotalNetworkVisa, NetworkTotalNetworkMastercard, NetworkTotalNetworkMaestro, NetworkTotalNetworkInterlink:
+		return true
+	}
+	return false
+}
+
 type SettlementDetail struct {
 	// Globally unique identifier denoting the Settlement Detail.
 	Token string `json:"token,required" format:"uuid"`

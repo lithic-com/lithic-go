@@ -319,6 +319,78 @@ func (r FinancialAccountSubstatus) IsKnown() bool {
 	return false
 }
 
+// Balance of a Financial Account
+type FinancialAccountBalance struct {
+	// Globally unique identifier for the financial account that holds this balance.
+	Token string `json:"token,required" format:"uuid"`
+	// Funds available for spend in the currency's smallest unit (e.g., cents for USD)
+	AvailableAmount int64 `json:"available_amount,required"`
+	// Date and time for when the balance was first created.
+	Created time.Time `json:"created,required" format:"date-time"`
+	// 3-character alphabetic ISO 4217 code for the local currency of the balance.
+	Currency string `json:"currency,required"`
+	// Globally unique identifier for the last financial transaction event that
+	// impacted this balance.
+	LastTransactionEventToken string `json:"last_transaction_event_token,required" format:"uuid"`
+	// Globally unique identifier for the last financial transaction that impacted this
+	// balance.
+	LastTransactionToken string `json:"last_transaction_token,required" format:"uuid"`
+	// Funds not available for spend due to card authorizations or pending ACH release.
+	// Shown in the currency's smallest unit (e.g., cents for USD).
+	PendingAmount int64 `json:"pending_amount,required"`
+	// The sum of available and pending balance in the currency's smallest unit (e.g.,
+	// cents for USD).
+	TotalAmount int64 `json:"total_amount,required"`
+	// Type of financial account.
+	Type FinancialAccountBalanceType `json:"type,required"`
+	// Date and time for when the balance was last updated.
+	Updated time.Time                   `json:"updated,required" format:"date-time"`
+	JSON    financialAccountBalanceJSON `json:"-"`
+}
+
+// financialAccountBalanceJSON contains the JSON metadata for the struct
+// [FinancialAccountBalance]
+type financialAccountBalanceJSON struct {
+	Token                     apijson.Field
+	AvailableAmount           apijson.Field
+	Created                   apijson.Field
+	Currency                  apijson.Field
+	LastTransactionEventToken apijson.Field
+	LastTransactionToken      apijson.Field
+	PendingAmount             apijson.Field
+	TotalAmount               apijson.Field
+	Type                      apijson.Field
+	Updated                   apijson.Field
+	raw                       string
+	ExtraFields               map[string]apijson.Field
+}
+
+func (r *FinancialAccountBalance) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r financialAccountBalanceJSON) RawJSON() string {
+	return r.raw
+}
+
+// Type of financial account.
+type FinancialAccountBalanceType string
+
+const (
+	FinancialAccountBalanceTypeIssuing   FinancialAccountBalanceType = "ISSUING"
+	FinancialAccountBalanceTypeOperating FinancialAccountBalanceType = "OPERATING"
+	FinancialAccountBalanceTypeReserve   FinancialAccountBalanceType = "RESERVE"
+	FinancialAccountBalanceTypeSecurity  FinancialAccountBalanceType = "SECURITY"
+)
+
+func (r FinancialAccountBalanceType) IsKnown() bool {
+	switch r {
+	case FinancialAccountBalanceTypeIssuing, FinancialAccountBalanceTypeOperating, FinancialAccountBalanceTypeReserve, FinancialAccountBalanceTypeSecurity:
+		return true
+	}
+	return false
+}
+
 type FinancialTransaction struct {
 	// Globally unique identifier.
 	Token string `json:"token,required" format:"uuid"`

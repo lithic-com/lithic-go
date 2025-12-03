@@ -183,6 +183,180 @@ func (r *TransactionService) SimulateVoid(ctx context.Context, body TransactionS
 	return
 }
 
+type CardholderAuthentication struct {
+	// Indicates the method used to authenticate the cardholder.
+	AuthenticationMethod CardholderAuthenticationAuthenticationMethod `json:"authentication_method,required"`
+	// Indicates the outcome of the 3DS authentication process.
+	AuthenticationResult CardholderAuthenticationAuthenticationResult `json:"authentication_result,required"`
+	// Indicates which party made the 3DS authentication decision.
+	DecisionMadeBy CardholderAuthenticationDecisionMadeBy `json:"decision_made_by,required"`
+	// Indicates whether chargeback liability shift applies to the transaction.
+	// Possible enum values:
+	//
+	//   - `3DS_AUTHENTICATED`: The transaction was fully authenticated through a 3-D
+	//     Secure flow, chargeback liability shift applies.
+	//   - `NONE`: Chargeback liability shift has not shifted to the issuer, i.e. the
+	//     merchant is liable.
+	//   - `TOKEN_AUTHENTICATED`: The transaction was a tokenized payment with validated
+	//     cryptography, possibly recurring. Chargeback liability shift to the issuer
+	//     applies.
+	LiabilityShift CardholderAuthenticationLiabilityShift `json:"liability_shift,required"`
+	// Unique identifier you can use to match a given 3DS authentication (available via
+	// the three_ds_authentication.created event webhook) and the transaction. Note
+	// that in cases where liability shift does not occur, this token is matched to the
+	// transaction on a best-effort basis.
+	ThreeDSAuthenticationToken string                       `json:"three_ds_authentication_token,required,nullable" format:"uuid"`
+	JSON                       cardholderAuthenticationJSON `json:"-"`
+}
+
+// cardholderAuthenticationJSON contains the JSON metadata for the struct
+// [CardholderAuthentication]
+type cardholderAuthenticationJSON struct {
+	AuthenticationMethod       apijson.Field
+	AuthenticationResult       apijson.Field
+	DecisionMadeBy             apijson.Field
+	LiabilityShift             apijson.Field
+	ThreeDSAuthenticationToken apijson.Field
+	raw                        string
+	ExtraFields                map[string]apijson.Field
+}
+
+func (r *CardholderAuthentication) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardholderAuthenticationJSON) RawJSON() string {
+	return r.raw
+}
+
+// Indicates the method used to authenticate the cardholder.
+type CardholderAuthenticationAuthenticationMethod string
+
+const (
+	CardholderAuthenticationAuthenticationMethodFrictionless CardholderAuthenticationAuthenticationMethod = "FRICTIONLESS"
+	CardholderAuthenticationAuthenticationMethodChallenge    CardholderAuthenticationAuthenticationMethod = "CHALLENGE"
+	CardholderAuthenticationAuthenticationMethodNone         CardholderAuthenticationAuthenticationMethod = "NONE"
+)
+
+func (r CardholderAuthenticationAuthenticationMethod) IsKnown() bool {
+	switch r {
+	case CardholderAuthenticationAuthenticationMethodFrictionless, CardholderAuthenticationAuthenticationMethodChallenge, CardholderAuthenticationAuthenticationMethodNone:
+		return true
+	}
+	return false
+}
+
+// Indicates the outcome of the 3DS authentication process.
+type CardholderAuthenticationAuthenticationResult string
+
+const (
+	CardholderAuthenticationAuthenticationResultAttempts CardholderAuthenticationAuthenticationResult = "ATTEMPTS"
+	CardholderAuthenticationAuthenticationResultDecline  CardholderAuthenticationAuthenticationResult = "DECLINE"
+	CardholderAuthenticationAuthenticationResultNone     CardholderAuthenticationAuthenticationResult = "NONE"
+	CardholderAuthenticationAuthenticationResultSuccess  CardholderAuthenticationAuthenticationResult = "SUCCESS"
+)
+
+func (r CardholderAuthenticationAuthenticationResult) IsKnown() bool {
+	switch r {
+	case CardholderAuthenticationAuthenticationResultAttempts, CardholderAuthenticationAuthenticationResultDecline, CardholderAuthenticationAuthenticationResultNone, CardholderAuthenticationAuthenticationResultSuccess:
+		return true
+	}
+	return false
+}
+
+// Indicates which party made the 3DS authentication decision.
+type CardholderAuthenticationDecisionMadeBy string
+
+const (
+	CardholderAuthenticationDecisionMadeByCustomerRules    CardholderAuthenticationDecisionMadeBy = "CUSTOMER_RULES"
+	CardholderAuthenticationDecisionMadeByCustomerEndpoint CardholderAuthenticationDecisionMadeBy = "CUSTOMER_ENDPOINT"
+	CardholderAuthenticationDecisionMadeByLithicDefault    CardholderAuthenticationDecisionMadeBy = "LITHIC_DEFAULT"
+	CardholderAuthenticationDecisionMadeByLithicRules      CardholderAuthenticationDecisionMadeBy = "LITHIC_RULES"
+	CardholderAuthenticationDecisionMadeByNetwork          CardholderAuthenticationDecisionMadeBy = "NETWORK"
+	CardholderAuthenticationDecisionMadeByUnknown          CardholderAuthenticationDecisionMadeBy = "UNKNOWN"
+)
+
+func (r CardholderAuthenticationDecisionMadeBy) IsKnown() bool {
+	switch r {
+	case CardholderAuthenticationDecisionMadeByCustomerRules, CardholderAuthenticationDecisionMadeByCustomerEndpoint, CardholderAuthenticationDecisionMadeByLithicDefault, CardholderAuthenticationDecisionMadeByLithicRules, CardholderAuthenticationDecisionMadeByNetwork, CardholderAuthenticationDecisionMadeByUnknown:
+		return true
+	}
+	return false
+}
+
+// Indicates whether chargeback liability shift applies to the transaction.
+// Possible enum values:
+//
+//   - `3DS_AUTHENTICATED`: The transaction was fully authenticated through a 3-D
+//     Secure flow, chargeback liability shift applies.
+//   - `NONE`: Chargeback liability shift has not shifted to the issuer, i.e. the
+//     merchant is liable.
+//   - `TOKEN_AUTHENTICATED`: The transaction was a tokenized payment with validated
+//     cryptography, possibly recurring. Chargeback liability shift to the issuer
+//     applies.
+type CardholderAuthenticationLiabilityShift string
+
+const (
+	CardholderAuthenticationLiabilityShift3DSAuthenticated   CardholderAuthenticationLiabilityShift = "3DS_AUTHENTICATED"
+	CardholderAuthenticationLiabilityShiftTokenAuthenticated CardholderAuthenticationLiabilityShift = "TOKEN_AUTHENTICATED"
+	CardholderAuthenticationLiabilityShiftNone               CardholderAuthenticationLiabilityShift = "NONE"
+)
+
+func (r CardholderAuthenticationLiabilityShift) IsKnown() bool {
+	switch r {
+	case CardholderAuthenticationLiabilityShift3DSAuthenticated, CardholderAuthenticationLiabilityShiftTokenAuthenticated, CardholderAuthenticationLiabilityShiftNone:
+		return true
+	}
+	return false
+}
+
+type TokenInfo struct {
+	// The wallet_type field will indicate the source of the token. Possible token
+	// sources include digital wallets (Apple, Google, or Samsung Pay), merchant
+	// tokenization, and “other” sources like in-flight commerce. Masterpass is not
+	// currently supported and is included for future use.
+	WalletType TokenInfoWalletType `json:"wallet_type,required"`
+	JSON       tokenInfoJSON       `json:"-"`
+}
+
+// tokenInfoJSON contains the JSON metadata for the struct [TokenInfo]
+type tokenInfoJSON struct {
+	WalletType  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *TokenInfo) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r tokenInfoJSON) RawJSON() string {
+	return r.raw
+}
+
+// The wallet_type field will indicate the source of the token. Possible token
+// sources include digital wallets (Apple, Google, or Samsung Pay), merchant
+// tokenization, and “other” sources like in-flight commerce. Masterpass is not
+// currently supported and is included for future use.
+type TokenInfoWalletType string
+
+const (
+	TokenInfoWalletTypeApplePay   TokenInfoWalletType = "APPLE_PAY"
+	TokenInfoWalletTypeGooglePay  TokenInfoWalletType = "GOOGLE_PAY"
+	TokenInfoWalletTypeMasterpass TokenInfoWalletType = "MASTERPASS"
+	TokenInfoWalletTypeMerchant   TokenInfoWalletType = "MERCHANT"
+	TokenInfoWalletTypeOther      TokenInfoWalletType = "OTHER"
+	TokenInfoWalletTypeSamsungPay TokenInfoWalletType = "SAMSUNG_PAY"
+)
+
+func (r TokenInfoWalletType) IsKnown() bool {
+	switch r {
+	case TokenInfoWalletTypeApplePay, TokenInfoWalletTypeGooglePay, TokenInfoWalletTypeMasterpass, TokenInfoWalletTypeMerchant, TokenInfoWalletTypeOther, TokenInfoWalletTypeSamsungPay:
+		return true
+	}
+	return false
+}
+
 type Transaction struct {
 	// Globally unique identifier.
 	Token string `json:"token,required" format:"uuid"`
@@ -215,8 +389,8 @@ type Transaction struct {
 	AuthorizationCode string         `json:"authorization_code,required,nullable"`
 	Avs               TransactionAvs `json:"avs,required,nullable"`
 	// Token for the card used in this transaction.
-	CardToken                string                              `json:"card_token,required" format:"uuid"`
-	CardholderAuthentication TransactionCardholderAuthentication `json:"cardholder_authentication,required,nullable"`
+	CardToken                string                   `json:"card_token,required" format:"uuid"`
+	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication,required,nullable"`
 	// Date and time when the transaction first occurred. UTC time zone.
 	Created               time.Time       `json:"created,required" format:"date-time"`
 	FinancialAccountToken string          `json:"financial_account_token,required,nullable" format:"uuid"`
@@ -249,8 +423,8 @@ type Transaction struct {
 	// Deprecated: deprecated
 	SettledAmount int64 `json:"settled_amount,required"`
 	// Status of the transaction.
-	Status    TransactionStatus    `json:"status,required"`
-	TokenInfo TransactionTokenInfo `json:"token_info,required,nullable"`
+	Status    TransactionStatus `json:"status,required"`
+	TokenInfo TokenInfo         `json:"token_info,required,nullable"`
 	// Date and time when the transaction last updated. UTC time zone.
 	Updated time.Time          `json:"updated,required" format:"date-time"`
 	Events  []TransactionEvent `json:"events"`
@@ -451,133 +625,6 @@ func (r *TransactionAvs) UnmarshalJSON(data []byte) (err error) {
 
 func (r transactionAvsJSON) RawJSON() string {
 	return r.raw
-}
-
-type TransactionCardholderAuthentication struct {
-	// Indicates the method used to authenticate the cardholder.
-	AuthenticationMethod TransactionCardholderAuthenticationAuthenticationMethod `json:"authentication_method,required"`
-	// Indicates the outcome of the 3DS authentication process.
-	AuthenticationResult TransactionCardholderAuthenticationAuthenticationResult `json:"authentication_result,required"`
-	// Indicates which party made the 3DS authentication decision.
-	DecisionMadeBy TransactionCardholderAuthenticationDecisionMadeBy `json:"decision_made_by,required"`
-	// Indicates whether chargeback liability shift applies to the transaction.
-	// Possible enum values:
-	//
-	//   - `3DS_AUTHENTICATED`: The transaction was fully authenticated through a 3-D
-	//     Secure flow, chargeback liability shift applies.
-	//   - `NONE`: Chargeback liability shift has not shifted to the issuer, i.e. the
-	//     merchant is liable.
-	//   - `TOKEN_AUTHENTICATED`: The transaction was a tokenized payment with validated
-	//     cryptography, possibly recurring. Chargeback liability shift to the issuer
-	//     applies.
-	LiabilityShift TransactionCardholderAuthenticationLiabilityShift `json:"liability_shift,required"`
-	// Unique identifier you can use to match a given 3DS authentication (available via
-	// the three_ds_authentication.created event webhook) and the transaction. Note
-	// that in cases where liability shift does not occur, this token is matched to the
-	// transaction on a best-effort basis.
-	ThreeDSAuthenticationToken string                                  `json:"three_ds_authentication_token,required,nullable" format:"uuid"`
-	JSON                       transactionCardholderAuthenticationJSON `json:"-"`
-}
-
-// transactionCardholderAuthenticationJSON contains the JSON metadata for the
-// struct [TransactionCardholderAuthentication]
-type transactionCardholderAuthenticationJSON struct {
-	AuthenticationMethod       apijson.Field
-	AuthenticationResult       apijson.Field
-	DecisionMadeBy             apijson.Field
-	LiabilityShift             apijson.Field
-	ThreeDSAuthenticationToken apijson.Field
-	raw                        string
-	ExtraFields                map[string]apijson.Field
-}
-
-func (r *TransactionCardholderAuthentication) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r transactionCardholderAuthenticationJSON) RawJSON() string {
-	return r.raw
-}
-
-// Indicates the method used to authenticate the cardholder.
-type TransactionCardholderAuthenticationAuthenticationMethod string
-
-const (
-	TransactionCardholderAuthenticationAuthenticationMethodFrictionless TransactionCardholderAuthenticationAuthenticationMethod = "FRICTIONLESS"
-	TransactionCardholderAuthenticationAuthenticationMethodChallenge    TransactionCardholderAuthenticationAuthenticationMethod = "CHALLENGE"
-	TransactionCardholderAuthenticationAuthenticationMethodNone         TransactionCardholderAuthenticationAuthenticationMethod = "NONE"
-)
-
-func (r TransactionCardholderAuthenticationAuthenticationMethod) IsKnown() bool {
-	switch r {
-	case TransactionCardholderAuthenticationAuthenticationMethodFrictionless, TransactionCardholderAuthenticationAuthenticationMethodChallenge, TransactionCardholderAuthenticationAuthenticationMethodNone:
-		return true
-	}
-	return false
-}
-
-// Indicates the outcome of the 3DS authentication process.
-type TransactionCardholderAuthenticationAuthenticationResult string
-
-const (
-	TransactionCardholderAuthenticationAuthenticationResultAttempts TransactionCardholderAuthenticationAuthenticationResult = "ATTEMPTS"
-	TransactionCardholderAuthenticationAuthenticationResultDecline  TransactionCardholderAuthenticationAuthenticationResult = "DECLINE"
-	TransactionCardholderAuthenticationAuthenticationResultNone     TransactionCardholderAuthenticationAuthenticationResult = "NONE"
-	TransactionCardholderAuthenticationAuthenticationResultSuccess  TransactionCardholderAuthenticationAuthenticationResult = "SUCCESS"
-)
-
-func (r TransactionCardholderAuthenticationAuthenticationResult) IsKnown() bool {
-	switch r {
-	case TransactionCardholderAuthenticationAuthenticationResultAttempts, TransactionCardholderAuthenticationAuthenticationResultDecline, TransactionCardholderAuthenticationAuthenticationResultNone, TransactionCardholderAuthenticationAuthenticationResultSuccess:
-		return true
-	}
-	return false
-}
-
-// Indicates which party made the 3DS authentication decision.
-type TransactionCardholderAuthenticationDecisionMadeBy string
-
-const (
-	TransactionCardholderAuthenticationDecisionMadeByCustomerRules    TransactionCardholderAuthenticationDecisionMadeBy = "CUSTOMER_RULES"
-	TransactionCardholderAuthenticationDecisionMadeByCustomerEndpoint TransactionCardholderAuthenticationDecisionMadeBy = "CUSTOMER_ENDPOINT"
-	TransactionCardholderAuthenticationDecisionMadeByLithicDefault    TransactionCardholderAuthenticationDecisionMadeBy = "LITHIC_DEFAULT"
-	TransactionCardholderAuthenticationDecisionMadeByLithicRules      TransactionCardholderAuthenticationDecisionMadeBy = "LITHIC_RULES"
-	TransactionCardholderAuthenticationDecisionMadeByNetwork          TransactionCardholderAuthenticationDecisionMadeBy = "NETWORK"
-	TransactionCardholderAuthenticationDecisionMadeByUnknown          TransactionCardholderAuthenticationDecisionMadeBy = "UNKNOWN"
-)
-
-func (r TransactionCardholderAuthenticationDecisionMadeBy) IsKnown() bool {
-	switch r {
-	case TransactionCardholderAuthenticationDecisionMadeByCustomerRules, TransactionCardholderAuthenticationDecisionMadeByCustomerEndpoint, TransactionCardholderAuthenticationDecisionMadeByLithicDefault, TransactionCardholderAuthenticationDecisionMadeByLithicRules, TransactionCardholderAuthenticationDecisionMadeByNetwork, TransactionCardholderAuthenticationDecisionMadeByUnknown:
-		return true
-	}
-	return false
-}
-
-// Indicates whether chargeback liability shift applies to the transaction.
-// Possible enum values:
-//
-//   - `3DS_AUTHENTICATED`: The transaction was fully authenticated through a 3-D
-//     Secure flow, chargeback liability shift applies.
-//   - `NONE`: Chargeback liability shift has not shifted to the issuer, i.e. the
-//     merchant is liable.
-//   - `TOKEN_AUTHENTICATED`: The transaction was a tokenized payment with validated
-//     cryptography, possibly recurring. Chargeback liability shift to the issuer
-//     applies.
-type TransactionCardholderAuthenticationLiabilityShift string
-
-const (
-	TransactionCardholderAuthenticationLiabilityShift3DSAuthenticated   TransactionCardholderAuthenticationLiabilityShift = "3DS_AUTHENTICATED"
-	TransactionCardholderAuthenticationLiabilityShiftTokenAuthenticated TransactionCardholderAuthenticationLiabilityShift = "TOKEN_AUTHENTICATED"
-	TransactionCardholderAuthenticationLiabilityShiftNone               TransactionCardholderAuthenticationLiabilityShift = "NONE"
-)
-
-func (r TransactionCardholderAuthenticationLiabilityShift) IsKnown() bool {
-	switch r {
-	case TransactionCardholderAuthenticationLiabilityShift3DSAuthenticated, TransactionCardholderAuthenticationLiabilityShiftTokenAuthenticated, TransactionCardholderAuthenticationLiabilityShiftNone:
-		return true
-	}
-	return false
 }
 
 // Card network of the authorization. Value is `UNKNOWN` when Lithic cannot
@@ -899,54 +946,6 @@ const (
 func (r TransactionStatus) IsKnown() bool {
 	switch r {
 	case TransactionStatusDeclined, TransactionStatusExpired, TransactionStatusPending, TransactionStatusSettled, TransactionStatusVoided:
-		return true
-	}
-	return false
-}
-
-type TransactionTokenInfo struct {
-	// The wallet_type field will indicate the source of the token. Possible token
-	// sources include digital wallets (Apple, Google, or Samsung Pay), merchant
-	// tokenization, and “other” sources like in-flight commerce. Masterpass is not
-	// currently supported and is included for future use.
-	WalletType TransactionTokenInfoWalletType `json:"wallet_type,required"`
-	JSON       transactionTokenInfoJSON       `json:"-"`
-}
-
-// transactionTokenInfoJSON contains the JSON metadata for the struct
-// [TransactionTokenInfo]
-type transactionTokenInfoJSON struct {
-	WalletType  apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *TransactionTokenInfo) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r transactionTokenInfoJSON) RawJSON() string {
-	return r.raw
-}
-
-// The wallet_type field will indicate the source of the token. Possible token
-// sources include digital wallets (Apple, Google, or Samsung Pay), merchant
-// tokenization, and “other” sources like in-flight commerce. Masterpass is not
-// currently supported and is included for future use.
-type TransactionTokenInfoWalletType string
-
-const (
-	TransactionTokenInfoWalletTypeApplePay   TransactionTokenInfoWalletType = "APPLE_PAY"
-	TransactionTokenInfoWalletTypeGooglePay  TransactionTokenInfoWalletType = "GOOGLE_PAY"
-	TransactionTokenInfoWalletTypeMasterpass TransactionTokenInfoWalletType = "MASTERPASS"
-	TransactionTokenInfoWalletTypeMerchant   TransactionTokenInfoWalletType = "MERCHANT"
-	TransactionTokenInfoWalletTypeOther      TransactionTokenInfoWalletType = "OTHER"
-	TransactionTokenInfoWalletTypeSamsungPay TransactionTokenInfoWalletType = "SAMSUNG_PAY"
-)
-
-func (r TransactionTokenInfoWalletType) IsKnown() bool {
-	switch r {
-	case TransactionTokenInfoWalletTypeApplePay, TransactionTokenInfoWalletTypeGooglePay, TransactionTokenInfoWalletTypeMasterpass, TransactionTokenInfoWalletTypeMerchant, TransactionTokenInfoWalletTypeOther, TransactionTokenInfoWalletTypeSamsungPay:
 		return true
 	}
 	return false
