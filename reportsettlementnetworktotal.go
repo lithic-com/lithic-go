@@ -11,7 +11,6 @@ import (
 	"slices"
 	"time"
 
-	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/apiquery"
 	"github.com/lithic-com/lithic-go/internal/param"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
@@ -39,7 +38,7 @@ func NewReportSettlementNetworkTotalService(opts ...option.RequestOption) (r *Re
 }
 
 // Retrieve a specific network total record by token. Not available in sandbox.
-func (r *ReportSettlementNetworkTotalService) Get(ctx context.Context, token string, opts ...option.RequestOption) (res *ReportSettlementNetworkTotalGetResponse, err error) {
+func (r *ReportSettlementNetworkTotalService) Get(ctx context.Context, token string, opts ...option.RequestOption) (res *NetworkTotal, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if token == "" {
 		err = errors.New("missing required token parameter")
@@ -51,7 +50,7 @@ func (r *ReportSettlementNetworkTotalService) Get(ctx context.Context, token str
 }
 
 // List network total records with optional filters. Not available in sandbox.
-func (r *ReportSettlementNetworkTotalService) List(ctx context.Context, query ReportSettlementNetworkTotalListParams, opts ...option.RequestOption) (res *pagination.CursorPage[ReportSettlementNetworkTotalListResponse], err error) {
+func (r *ReportSettlementNetworkTotalService) List(ctx context.Context, query ReportSettlementNetworkTotalListParams, opts ...option.RequestOption) (res *pagination.CursorPage[NetworkTotal], err error) {
 	var raw *http.Response
 	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -69,232 +68,8 @@ func (r *ReportSettlementNetworkTotalService) List(ctx context.Context, query Re
 }
 
 // List network total records with optional filters. Not available in sandbox.
-func (r *ReportSettlementNetworkTotalService) ListAutoPaging(ctx context.Context, query ReportSettlementNetworkTotalListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[ReportSettlementNetworkTotalListResponse] {
+func (r *ReportSettlementNetworkTotalService) ListAutoPaging(ctx context.Context, query ReportSettlementNetworkTotalListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[NetworkTotal] {
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
-}
-
-type ReportSettlementNetworkTotalGetResponse struct {
-	// Globally unique identifier.
-	Token   string                                         `json:"token,required" format:"uuid"`
-	Amounts ReportSettlementNetworkTotalGetResponseAmounts `json:"amounts,required"`
-	// RFC 3339 timestamp for when the record was created. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// 3-character alphabetic ISO 4217 code.
-	Currency string `json:"currency,required"`
-	// The institution that activity occurred on. For Mastercard: ICA (Interbank Card
-	// Association). For Maestro: institution ID. For Visa: lowest level SRE
-	// (Settlement Reporting Entity).
-	InstitutionID string `json:"institution_id,required"`
-	// Indicates that all settlement records related to this Network Total are
-	// available in the details endpoint.
-	IsComplete bool `json:"is_complete,required"`
-	// Card network where the transaction took place. AMEX, VISA, MASTERCARD, MAESTRO,
-	// or INTERLINK.
-	Network ReportSettlementNetworkTotalGetResponseNetwork `json:"network,required"`
-	// Date that the network total record applies to. YYYY-MM-DD format.
-	ReportDate time.Time `json:"report_date,required" format:"date"`
-	// The institution responsible for settlement. For Mastercard: same as
-	// `institution_id`. For Maestro: billing ICA. For Visa: Funds Transfer SRE
-	// (FTSRE).
-	SettlementInstitutionID string `json:"settlement_institution_id,required"`
-	// Settlement service.
-	SettlementService string `json:"settlement_service,required"`
-	// RFC 3339 timestamp for when the record was last updated. UTC time zone.
-	Updated time.Time `json:"updated,required" format:"date-time"`
-	// The clearing cycle that the network total record applies to. Mastercard only.
-	Cycle int64                                       `json:"cycle"`
-	JSON  reportSettlementNetworkTotalGetResponseJSON `json:"-"`
-}
-
-// reportSettlementNetworkTotalGetResponseJSON contains the JSON metadata for the
-// struct [ReportSettlementNetworkTotalGetResponse]
-type reportSettlementNetworkTotalGetResponseJSON struct {
-	Token                   apijson.Field
-	Amounts                 apijson.Field
-	Created                 apijson.Field
-	Currency                apijson.Field
-	InstitutionID           apijson.Field
-	IsComplete              apijson.Field
-	Network                 apijson.Field
-	ReportDate              apijson.Field
-	SettlementInstitutionID apijson.Field
-	SettlementService       apijson.Field
-	Updated                 apijson.Field
-	Cycle                   apijson.Field
-	raw                     string
-	ExtraFields             map[string]apijson.Field
-}
-
-func (r *ReportSettlementNetworkTotalGetResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r reportSettlementNetworkTotalGetResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-type ReportSettlementNetworkTotalGetResponseAmounts struct {
-	// Total settlement amount excluding interchange, in currency's smallest unit.
-	GrossSettlement int64 `json:"gross_settlement,required"`
-	// Interchange amount, in currency's smallest unit.
-	InterchangeFees int64 `json:"interchange_fees,required"`
-	// `gross_settlement` net of `interchange_fees` and `visa_charges` (if applicable),
-	// in currency's smallest unit.
-	NetSettlement int64 `json:"net_settlement,required"`
-	// Charges specific to Visa/Interlink, in currency's smallest unit.
-	VisaCharges int64                                              `json:"visa_charges"`
-	JSON        reportSettlementNetworkTotalGetResponseAmountsJSON `json:"-"`
-}
-
-// reportSettlementNetworkTotalGetResponseAmountsJSON contains the JSON metadata
-// for the struct [ReportSettlementNetworkTotalGetResponseAmounts]
-type reportSettlementNetworkTotalGetResponseAmountsJSON struct {
-	GrossSettlement apijson.Field
-	InterchangeFees apijson.Field
-	NetSettlement   apijson.Field
-	VisaCharges     apijson.Field
-	raw             string
-	ExtraFields     map[string]apijson.Field
-}
-
-func (r *ReportSettlementNetworkTotalGetResponseAmounts) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r reportSettlementNetworkTotalGetResponseAmountsJSON) RawJSON() string {
-	return r.raw
-}
-
-// Card network where the transaction took place. AMEX, VISA, MASTERCARD, MAESTRO,
-// or INTERLINK.
-type ReportSettlementNetworkTotalGetResponseNetwork string
-
-const (
-	ReportSettlementNetworkTotalGetResponseNetworkAmex       ReportSettlementNetworkTotalGetResponseNetwork = "AMEX"
-	ReportSettlementNetworkTotalGetResponseNetworkVisa       ReportSettlementNetworkTotalGetResponseNetwork = "VISA"
-	ReportSettlementNetworkTotalGetResponseNetworkMastercard ReportSettlementNetworkTotalGetResponseNetwork = "MASTERCARD"
-	ReportSettlementNetworkTotalGetResponseNetworkMaestro    ReportSettlementNetworkTotalGetResponseNetwork = "MAESTRO"
-	ReportSettlementNetworkTotalGetResponseNetworkInterlink  ReportSettlementNetworkTotalGetResponseNetwork = "INTERLINK"
-)
-
-func (r ReportSettlementNetworkTotalGetResponseNetwork) IsKnown() bool {
-	switch r {
-	case ReportSettlementNetworkTotalGetResponseNetworkAmex, ReportSettlementNetworkTotalGetResponseNetworkVisa, ReportSettlementNetworkTotalGetResponseNetworkMastercard, ReportSettlementNetworkTotalGetResponseNetworkMaestro, ReportSettlementNetworkTotalGetResponseNetworkInterlink:
-		return true
-	}
-	return false
-}
-
-type ReportSettlementNetworkTotalListResponse struct {
-	// Globally unique identifier.
-	Token   string                                          `json:"token,required" format:"uuid"`
-	Amounts ReportSettlementNetworkTotalListResponseAmounts `json:"amounts,required"`
-	// RFC 3339 timestamp for when the record was created. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
-	// 3-character alphabetic ISO 4217 code.
-	Currency string `json:"currency,required"`
-	// The institution that activity occurred on. For Mastercard: ICA (Interbank Card
-	// Association). For Maestro: institution ID. For Visa: lowest level SRE
-	// (Settlement Reporting Entity).
-	InstitutionID string `json:"institution_id,required"`
-	// Indicates that all settlement records related to this Network Total are
-	// available in the details endpoint.
-	IsComplete bool `json:"is_complete,required"`
-	// Card network where the transaction took place. AMEX, VISA, MASTERCARD, MAESTRO,
-	// or INTERLINK.
-	Network ReportSettlementNetworkTotalListResponseNetwork `json:"network,required"`
-	// Date that the network total record applies to. YYYY-MM-DD format.
-	ReportDate time.Time `json:"report_date,required" format:"date"`
-	// The institution responsible for settlement. For Mastercard: same as
-	// `institution_id`. For Maestro: billing ICA. For Visa: Funds Transfer SRE
-	// (FTSRE).
-	SettlementInstitutionID string `json:"settlement_institution_id,required"`
-	// Settlement service.
-	SettlementService string `json:"settlement_service,required"`
-	// RFC 3339 timestamp for when the record was last updated. UTC time zone.
-	Updated time.Time `json:"updated,required" format:"date-time"`
-	// The clearing cycle that the network total record applies to. Mastercard only.
-	Cycle int64                                        `json:"cycle"`
-	JSON  reportSettlementNetworkTotalListResponseJSON `json:"-"`
-}
-
-// reportSettlementNetworkTotalListResponseJSON contains the JSON metadata for the
-// struct [ReportSettlementNetworkTotalListResponse]
-type reportSettlementNetworkTotalListResponseJSON struct {
-	Token                   apijson.Field
-	Amounts                 apijson.Field
-	Created                 apijson.Field
-	Currency                apijson.Field
-	InstitutionID           apijson.Field
-	IsComplete              apijson.Field
-	Network                 apijson.Field
-	ReportDate              apijson.Field
-	SettlementInstitutionID apijson.Field
-	SettlementService       apijson.Field
-	Updated                 apijson.Field
-	Cycle                   apijson.Field
-	raw                     string
-	ExtraFields             map[string]apijson.Field
-}
-
-func (r *ReportSettlementNetworkTotalListResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r reportSettlementNetworkTotalListResponseJSON) RawJSON() string {
-	return r.raw
-}
-
-type ReportSettlementNetworkTotalListResponseAmounts struct {
-	// Total settlement amount excluding interchange, in currency's smallest unit.
-	GrossSettlement int64 `json:"gross_settlement,required"`
-	// Interchange amount, in currency's smallest unit.
-	InterchangeFees int64 `json:"interchange_fees,required"`
-	// `gross_settlement` net of `interchange_fees` and `visa_charges` (if applicable),
-	// in currency's smallest unit.
-	NetSettlement int64 `json:"net_settlement,required"`
-	// Charges specific to Visa/Interlink, in currency's smallest unit.
-	VisaCharges int64                                               `json:"visa_charges"`
-	JSON        reportSettlementNetworkTotalListResponseAmountsJSON `json:"-"`
-}
-
-// reportSettlementNetworkTotalListResponseAmountsJSON contains the JSON metadata
-// for the struct [ReportSettlementNetworkTotalListResponseAmounts]
-type reportSettlementNetworkTotalListResponseAmountsJSON struct {
-	GrossSettlement apijson.Field
-	InterchangeFees apijson.Field
-	NetSettlement   apijson.Field
-	VisaCharges     apijson.Field
-	raw             string
-	ExtraFields     map[string]apijson.Field
-}
-
-func (r *ReportSettlementNetworkTotalListResponseAmounts) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r reportSettlementNetworkTotalListResponseAmountsJSON) RawJSON() string {
-	return r.raw
-}
-
-// Card network where the transaction took place. AMEX, VISA, MASTERCARD, MAESTRO,
-// or INTERLINK.
-type ReportSettlementNetworkTotalListResponseNetwork string
-
-const (
-	ReportSettlementNetworkTotalListResponseNetworkAmex       ReportSettlementNetworkTotalListResponseNetwork = "AMEX"
-	ReportSettlementNetworkTotalListResponseNetworkVisa       ReportSettlementNetworkTotalListResponseNetwork = "VISA"
-	ReportSettlementNetworkTotalListResponseNetworkMastercard ReportSettlementNetworkTotalListResponseNetwork = "MASTERCARD"
-	ReportSettlementNetworkTotalListResponseNetworkMaestro    ReportSettlementNetworkTotalListResponseNetwork = "MAESTRO"
-	ReportSettlementNetworkTotalListResponseNetworkInterlink  ReportSettlementNetworkTotalListResponseNetwork = "INTERLINK"
-)
-
-func (r ReportSettlementNetworkTotalListResponseNetwork) IsKnown() bool {
-	switch r {
-	case ReportSettlementNetworkTotalListResponseNetworkAmex, ReportSettlementNetworkTotalListResponseNetworkVisa, ReportSettlementNetworkTotalListResponseNetworkMastercard, ReportSettlementNetworkTotalListResponseNetworkMaestro, ReportSettlementNetworkTotalListResponseNetworkInterlink:
-		return true
-	}
-	return false
 }
 
 type ReportSettlementNetworkTotalListParams struct {

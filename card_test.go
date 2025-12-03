@@ -30,6 +30,7 @@ func TestCardNewWithOptionalParams(t *testing.T) {
 	_, err := client.Cards.New(context.TODO(), lithic.CardNewParams{
 		Type:             lithic.F(lithic.CardNewParamsTypeVirtual),
 		AccountToken:     lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		BulkOrderToken:   lithic.F("5e9483eb-8103-4e16-9794-2106111b2eca"),
 		CardProgramToken: lithic.F("5e9483eb-8103-4e16-9794-2106111b2eca"),
 		Carrier: lithic.F(shared.CarrierParam{
 			QrCodeURL: lithic.F("qr_code_url"),
