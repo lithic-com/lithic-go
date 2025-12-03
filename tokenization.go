@@ -339,11 +339,11 @@ type TokenizationEvent struct {
 	// Enum representing the result of the tokenization event
 	Result TokenizationEventsResult `json:"result"`
 	// Results from rules that were evaluated for this tokenization
-	RuleResults []TokenizationEventsRuleResult `json:"rule_results"`
+	RuleResults []TokenizationRuleResult `json:"rule_results"`
 	// List of reasons why the tokenization was declined
-	TokenizationDeclineReasons []TokenizationEventsTokenizationDeclineReason `json:"tokenization_decline_reasons"`
+	TokenizationDeclineReasons []TokenizationDeclineReason `json:"tokenization_decline_reasons"`
 	// List of reasons why two-factor authentication was required
-	TokenizationTfaReasons []TokenizationEventsTokenizationTfaReason `json:"tokenization_tfa_reasons"`
+	TokenizationTfaReasons []TokenizationTfaReason `json:"tokenization_tfa_reasons"`
 	// Enum representing the type of tokenization event that occurred
 	Type TokenizationEventsType `json:"type"`
 	JSON tokenizationEventJSON  `json:"-"`
@@ -397,114 +397,6 @@ func (r TokenizationEventsResult) IsKnown() bool {
 	return false
 }
 
-type TokenizationEventsRuleResult struct {
-	// The Auth Rule Token associated with the rule. If this is set to null, then the
-	// result was not associated with a customer-configured rule. This may happen in
-	// cases where a tokenization is declined or requires TFA due to a
-	// Lithic-configured security or compliance rule, for example.
-	AuthRuleToken string `json:"auth_rule_token,required,nullable" format:"uuid"`
-	// A human-readable explanation outlining the motivation for the rule's result
-	Explanation string `json:"explanation,required,nullable"`
-	// The name for the rule, if any was configured
-	Name string `json:"name,required,nullable"`
-	// The result associated with this rule
-	Result TokenizationEventsRuleResultsResult `json:"result,required"`
-	JSON   tokenizationEventsRuleResultJSON    `json:"-"`
-}
-
-// tokenizationEventsRuleResultJSON contains the JSON metadata for the struct
-// [TokenizationEventsRuleResult]
-type tokenizationEventsRuleResultJSON struct {
-	AuthRuleToken apijson.Field
-	Explanation   apijson.Field
-	Name          apijson.Field
-	Result        apijson.Field
-	raw           string
-	ExtraFields   map[string]apijson.Field
-}
-
-func (r *TokenizationEventsRuleResult) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r tokenizationEventsRuleResultJSON) RawJSON() string {
-	return r.raw
-}
-
-// The result associated with this rule
-type TokenizationEventsRuleResultsResult string
-
-const (
-	TokenizationEventsRuleResultsResultApproved   TokenizationEventsRuleResultsResult = "APPROVED"
-	TokenizationEventsRuleResultsResultDeclined   TokenizationEventsRuleResultsResult = "DECLINED"
-	TokenizationEventsRuleResultsResultRequireTfa TokenizationEventsRuleResultsResult = "REQUIRE_TFA"
-	TokenizationEventsRuleResultsResultError      TokenizationEventsRuleResultsResult = "ERROR"
-)
-
-func (r TokenizationEventsRuleResultsResult) IsKnown() bool {
-	switch r {
-	case TokenizationEventsRuleResultsResultApproved, TokenizationEventsRuleResultsResultDeclined, TokenizationEventsRuleResultsResultRequireTfa, TokenizationEventsRuleResultsResultError:
-		return true
-	}
-	return false
-}
-
-// Reason code for why a tokenization was declined
-type TokenizationEventsTokenizationDeclineReason string
-
-const (
-	TokenizationEventsTokenizationDeclineReasonAccountScore1                  TokenizationEventsTokenizationDeclineReason = "ACCOUNT_SCORE_1"
-	TokenizationEventsTokenizationDeclineReasonDeviceScore1                   TokenizationEventsTokenizationDeclineReason = "DEVICE_SCORE_1"
-	TokenizationEventsTokenizationDeclineReasonAllWalletDeclineReasonsPresent TokenizationEventsTokenizationDeclineReason = "ALL_WALLET_DECLINE_REASONS_PRESENT"
-	TokenizationEventsTokenizationDeclineReasonWalletRecommendedDecisionRed   TokenizationEventsTokenizationDeclineReason = "WALLET_RECOMMENDED_DECISION_RED"
-	TokenizationEventsTokenizationDeclineReasonCvcMismatch                    TokenizationEventsTokenizationDeclineReason = "CVC_MISMATCH"
-	TokenizationEventsTokenizationDeclineReasonCardExpiryMonthMismatch        TokenizationEventsTokenizationDeclineReason = "CARD_EXPIRY_MONTH_MISMATCH"
-	TokenizationEventsTokenizationDeclineReasonCardExpiryYearMismatch         TokenizationEventsTokenizationDeclineReason = "CARD_EXPIRY_YEAR_MISMATCH"
-	TokenizationEventsTokenizationDeclineReasonCardInvalidState               TokenizationEventsTokenizationDeclineReason = "CARD_INVALID_STATE"
-	TokenizationEventsTokenizationDeclineReasonCustomerRedPath                TokenizationEventsTokenizationDeclineReason = "CUSTOMER_RED_PATH"
-	TokenizationEventsTokenizationDeclineReasonInvalidCustomerResponse        TokenizationEventsTokenizationDeclineReason = "INVALID_CUSTOMER_RESPONSE"
-	TokenizationEventsTokenizationDeclineReasonNetworkFailure                 TokenizationEventsTokenizationDeclineReason = "NETWORK_FAILURE"
-	TokenizationEventsTokenizationDeclineReasonGenericDecline                 TokenizationEventsTokenizationDeclineReason = "GENERIC_DECLINE"
-	TokenizationEventsTokenizationDeclineReasonDigitalCardArtRequired         TokenizationEventsTokenizationDeclineReason = "DIGITAL_CARD_ART_REQUIRED"
-)
-
-func (r TokenizationEventsTokenizationDeclineReason) IsKnown() bool {
-	switch r {
-	case TokenizationEventsTokenizationDeclineReasonAccountScore1, TokenizationEventsTokenizationDeclineReasonDeviceScore1, TokenizationEventsTokenizationDeclineReasonAllWalletDeclineReasonsPresent, TokenizationEventsTokenizationDeclineReasonWalletRecommendedDecisionRed, TokenizationEventsTokenizationDeclineReasonCvcMismatch, TokenizationEventsTokenizationDeclineReasonCardExpiryMonthMismatch, TokenizationEventsTokenizationDeclineReasonCardExpiryYearMismatch, TokenizationEventsTokenizationDeclineReasonCardInvalidState, TokenizationEventsTokenizationDeclineReasonCustomerRedPath, TokenizationEventsTokenizationDeclineReasonInvalidCustomerResponse, TokenizationEventsTokenizationDeclineReasonNetworkFailure, TokenizationEventsTokenizationDeclineReasonGenericDecline, TokenizationEventsTokenizationDeclineReasonDigitalCardArtRequired:
-		return true
-	}
-	return false
-}
-
-// Reason code for why a tokenization required two-factor authentication
-type TokenizationEventsTokenizationTfaReason string
-
-const (
-	TokenizationEventsTokenizationTfaReasonWalletRecommendedTfa        TokenizationEventsTokenizationTfaReason = "WALLET_RECOMMENDED_TFA"
-	TokenizationEventsTokenizationTfaReasonSuspiciousActivity          TokenizationEventsTokenizationTfaReason = "SUSPICIOUS_ACTIVITY"
-	TokenizationEventsTokenizationTfaReasonDeviceRecentlyLost          TokenizationEventsTokenizationTfaReason = "DEVICE_RECENTLY_LOST"
-	TokenizationEventsTokenizationTfaReasonTooManyRecentAttempts       TokenizationEventsTokenizationTfaReason = "TOO_MANY_RECENT_ATTEMPTS"
-	TokenizationEventsTokenizationTfaReasonTooManyRecentTokens         TokenizationEventsTokenizationTfaReason = "TOO_MANY_RECENT_TOKENS"
-	TokenizationEventsTokenizationTfaReasonTooManyDifferentCardholders TokenizationEventsTokenizationTfaReason = "TOO_MANY_DIFFERENT_CARDHOLDERS"
-	TokenizationEventsTokenizationTfaReasonOutsideHomeTerritory        TokenizationEventsTokenizationTfaReason = "OUTSIDE_HOME_TERRITORY"
-	TokenizationEventsTokenizationTfaReasonHasSuspendedTokens          TokenizationEventsTokenizationTfaReason = "HAS_SUSPENDED_TOKENS"
-	TokenizationEventsTokenizationTfaReasonHighRisk                    TokenizationEventsTokenizationTfaReason = "HIGH_RISK"
-	TokenizationEventsTokenizationTfaReasonAccountScoreLow             TokenizationEventsTokenizationTfaReason = "ACCOUNT_SCORE_LOW"
-	TokenizationEventsTokenizationTfaReasonDeviceScoreLow              TokenizationEventsTokenizationTfaReason = "DEVICE_SCORE_LOW"
-	TokenizationEventsTokenizationTfaReasonCardStateTfa                TokenizationEventsTokenizationTfaReason = "CARD_STATE_TFA"
-	TokenizationEventsTokenizationTfaReasonHardcodedTfa                TokenizationEventsTokenizationTfaReason = "HARDCODED_TFA"
-	TokenizationEventsTokenizationTfaReasonCustomerRuleTfa             TokenizationEventsTokenizationTfaReason = "CUSTOMER_RULE_TFA"
-	TokenizationEventsTokenizationTfaReasonDeviceHostCardEmulation     TokenizationEventsTokenizationTfaReason = "DEVICE_HOST_CARD_EMULATION"
-)
-
-func (r TokenizationEventsTokenizationTfaReason) IsKnown() bool {
-	switch r {
-	case TokenizationEventsTokenizationTfaReasonWalletRecommendedTfa, TokenizationEventsTokenizationTfaReasonSuspiciousActivity, TokenizationEventsTokenizationTfaReasonDeviceRecentlyLost, TokenizationEventsTokenizationTfaReasonTooManyRecentAttempts, TokenizationEventsTokenizationTfaReasonTooManyRecentTokens, TokenizationEventsTokenizationTfaReasonTooManyDifferentCardholders, TokenizationEventsTokenizationTfaReasonOutsideHomeTerritory, TokenizationEventsTokenizationTfaReasonHasSuspendedTokens, TokenizationEventsTokenizationTfaReasonHighRisk, TokenizationEventsTokenizationTfaReasonAccountScoreLow, TokenizationEventsTokenizationTfaReasonDeviceScoreLow, TokenizationEventsTokenizationTfaReasonCardStateTfa, TokenizationEventsTokenizationTfaReasonHardcodedTfa, TokenizationEventsTokenizationTfaReasonCustomerRuleTfa, TokenizationEventsTokenizationTfaReasonDeviceHostCardEmulation:
-		return true
-	}
-	return false
-}
-
 // Enum representing the type of tokenization event that occurred
 type TokenizationEventsType string
 
@@ -519,6 +411,114 @@ const (
 func (r TokenizationEventsType) IsKnown() bool {
 	switch r {
 	case TokenizationEventsTypeTokenization2Fa, TokenizationEventsTypeTokenizationAuthorization, TokenizationEventsTypeTokenizationDecisioning, TokenizationEventsTypeTokenizationEligibilityCheck, TokenizationEventsTypeTokenizationUpdated:
+		return true
+	}
+	return false
+}
+
+// Reason code for why a tokenization was declined
+type TokenizationDeclineReason string
+
+const (
+	TokenizationDeclineReasonAccountScore1                  TokenizationDeclineReason = "ACCOUNT_SCORE_1"
+	TokenizationDeclineReasonDeviceScore1                   TokenizationDeclineReason = "DEVICE_SCORE_1"
+	TokenizationDeclineReasonAllWalletDeclineReasonsPresent TokenizationDeclineReason = "ALL_WALLET_DECLINE_REASONS_PRESENT"
+	TokenizationDeclineReasonWalletRecommendedDecisionRed   TokenizationDeclineReason = "WALLET_RECOMMENDED_DECISION_RED"
+	TokenizationDeclineReasonCvcMismatch                    TokenizationDeclineReason = "CVC_MISMATCH"
+	TokenizationDeclineReasonCardExpiryMonthMismatch        TokenizationDeclineReason = "CARD_EXPIRY_MONTH_MISMATCH"
+	TokenizationDeclineReasonCardExpiryYearMismatch         TokenizationDeclineReason = "CARD_EXPIRY_YEAR_MISMATCH"
+	TokenizationDeclineReasonCardInvalidState               TokenizationDeclineReason = "CARD_INVALID_STATE"
+	TokenizationDeclineReasonCustomerRedPath                TokenizationDeclineReason = "CUSTOMER_RED_PATH"
+	TokenizationDeclineReasonInvalidCustomerResponse        TokenizationDeclineReason = "INVALID_CUSTOMER_RESPONSE"
+	TokenizationDeclineReasonNetworkFailure                 TokenizationDeclineReason = "NETWORK_FAILURE"
+	TokenizationDeclineReasonGenericDecline                 TokenizationDeclineReason = "GENERIC_DECLINE"
+	TokenizationDeclineReasonDigitalCardArtRequired         TokenizationDeclineReason = "DIGITAL_CARD_ART_REQUIRED"
+)
+
+func (r TokenizationDeclineReason) IsKnown() bool {
+	switch r {
+	case TokenizationDeclineReasonAccountScore1, TokenizationDeclineReasonDeviceScore1, TokenizationDeclineReasonAllWalletDeclineReasonsPresent, TokenizationDeclineReasonWalletRecommendedDecisionRed, TokenizationDeclineReasonCvcMismatch, TokenizationDeclineReasonCardExpiryMonthMismatch, TokenizationDeclineReasonCardExpiryYearMismatch, TokenizationDeclineReasonCardInvalidState, TokenizationDeclineReasonCustomerRedPath, TokenizationDeclineReasonInvalidCustomerResponse, TokenizationDeclineReasonNetworkFailure, TokenizationDeclineReasonGenericDecline, TokenizationDeclineReasonDigitalCardArtRequired:
+		return true
+	}
+	return false
+}
+
+type TokenizationRuleResult struct {
+	// The Auth Rule Token associated with the rule. If this is set to null, then the
+	// result was not associated with a customer-configured rule. This may happen in
+	// cases where a tokenization is declined or requires TFA due to a
+	// Lithic-configured security or compliance rule, for example.
+	AuthRuleToken string `json:"auth_rule_token,required,nullable" format:"uuid"`
+	// A human-readable explanation outlining the motivation for the rule's result
+	Explanation string `json:"explanation,required,nullable"`
+	// The name for the rule, if any was configured
+	Name string `json:"name,required,nullable"`
+	// The result associated with this rule
+	Result TokenizationRuleResultResult `json:"result,required"`
+	JSON   tokenizationRuleResultJSON   `json:"-"`
+}
+
+// tokenizationRuleResultJSON contains the JSON metadata for the struct
+// [TokenizationRuleResult]
+type tokenizationRuleResultJSON struct {
+	AuthRuleToken apijson.Field
+	Explanation   apijson.Field
+	Name          apijson.Field
+	Result        apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
+}
+
+func (r *TokenizationRuleResult) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r tokenizationRuleResultJSON) RawJSON() string {
+	return r.raw
+}
+
+// The result associated with this rule
+type TokenizationRuleResultResult string
+
+const (
+	TokenizationRuleResultResultApproved   TokenizationRuleResultResult = "APPROVED"
+	TokenizationRuleResultResultDeclined   TokenizationRuleResultResult = "DECLINED"
+	TokenizationRuleResultResultRequireTfa TokenizationRuleResultResult = "REQUIRE_TFA"
+	TokenizationRuleResultResultError      TokenizationRuleResultResult = "ERROR"
+)
+
+func (r TokenizationRuleResultResult) IsKnown() bool {
+	switch r {
+	case TokenizationRuleResultResultApproved, TokenizationRuleResultResultDeclined, TokenizationRuleResultResultRequireTfa, TokenizationRuleResultResultError:
+		return true
+	}
+	return false
+}
+
+// Reason code for why a tokenization required two-factor authentication
+type TokenizationTfaReason string
+
+const (
+	TokenizationTfaReasonWalletRecommendedTfa        TokenizationTfaReason = "WALLET_RECOMMENDED_TFA"
+	TokenizationTfaReasonSuspiciousActivity          TokenizationTfaReason = "SUSPICIOUS_ACTIVITY"
+	TokenizationTfaReasonDeviceRecentlyLost          TokenizationTfaReason = "DEVICE_RECENTLY_LOST"
+	TokenizationTfaReasonTooManyRecentAttempts       TokenizationTfaReason = "TOO_MANY_RECENT_ATTEMPTS"
+	TokenizationTfaReasonTooManyRecentTokens         TokenizationTfaReason = "TOO_MANY_RECENT_TOKENS"
+	TokenizationTfaReasonTooManyDifferentCardholders TokenizationTfaReason = "TOO_MANY_DIFFERENT_CARDHOLDERS"
+	TokenizationTfaReasonOutsideHomeTerritory        TokenizationTfaReason = "OUTSIDE_HOME_TERRITORY"
+	TokenizationTfaReasonHasSuspendedTokens          TokenizationTfaReason = "HAS_SUSPENDED_TOKENS"
+	TokenizationTfaReasonHighRisk                    TokenizationTfaReason = "HIGH_RISK"
+	TokenizationTfaReasonAccountScoreLow             TokenizationTfaReason = "ACCOUNT_SCORE_LOW"
+	TokenizationTfaReasonDeviceScoreLow              TokenizationTfaReason = "DEVICE_SCORE_LOW"
+	TokenizationTfaReasonCardStateTfa                TokenizationTfaReason = "CARD_STATE_TFA"
+	TokenizationTfaReasonHardcodedTfa                TokenizationTfaReason = "HARDCODED_TFA"
+	TokenizationTfaReasonCustomerRuleTfa             TokenizationTfaReason = "CUSTOMER_RULE_TFA"
+	TokenizationTfaReasonDeviceHostCardEmulation     TokenizationTfaReason = "DEVICE_HOST_CARD_EMULATION"
+)
+
+func (r TokenizationTfaReason) IsKnown() bool {
+	switch r {
+	case TokenizationTfaReasonWalletRecommendedTfa, TokenizationTfaReasonSuspiciousActivity, TokenizationTfaReasonDeviceRecentlyLost, TokenizationTfaReasonTooManyRecentAttempts, TokenizationTfaReasonTooManyRecentTokens, TokenizationTfaReasonTooManyDifferentCardholders, TokenizationTfaReasonOutsideHomeTerritory, TokenizationTfaReasonHasSuspendedTokens, TokenizationTfaReasonHighRisk, TokenizationTfaReasonAccountScoreLow, TokenizationTfaReasonDeviceScoreLow, TokenizationTfaReasonCardStateTfa, TokenizationTfaReasonHardcodedTfa, TokenizationTfaReasonCustomerRuleTfa, TokenizationTfaReasonDeviceHostCardEmulation:
 		return true
 	}
 	return false
