@@ -152,9 +152,8 @@ type AccountActivityListResponse struct {
 	// This field can have the runtime type of [TransactionAvs].
 	Avs interface{} `json:"avs"`
 	// Token for the card used in this transaction.
-	CardToken string `json:"card_token" format:"uuid"`
-	// This field can have the runtime type of [TransactionCardholderAuthentication].
-	CardholderAuthentication interface{} `json:"cardholder_authentication"`
+	CardToken                string                   `json:"card_token" format:"uuid"`
+	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication,nullable"`
 	// Transaction category
 	Category AccountActivityListResponseCategory `json:"category"`
 	// Currency of the transaction, represented in ISO 4217 format
@@ -223,9 +222,8 @@ type AccountActivityListResponse struct {
 	Source AccountActivityListResponseSource `json:"source"`
 	// Globally unique identifier for the financial account or card that will receive
 	// the funds. Accepted type dependent on the program's use case
-	ToFinancialAccountToken string `json:"to_financial_account_token" format:"uuid"`
-	// This field can have the runtime type of [TransactionTokenInfo].
-	TokenInfo interface{} `json:"token_info"`
+	ToFinancialAccountToken string    `json:"to_financial_account_token" format:"uuid"`
+	TokenInfo               TokenInfo `json:"token_info,nullable"`
 	// This field can have the runtime type of [BookTransferResponseTransactionSeries],
 	// [ManagementOperationTransactionTransactionSeries].
 	TransactionSeries interface{}                     `json:"transaction_series"`
@@ -847,9 +845,8 @@ type AccountActivityGetTransactionResponse struct {
 	// This field can have the runtime type of [TransactionAvs].
 	Avs interface{} `json:"avs"`
 	// Token for the card used in this transaction.
-	CardToken string `json:"card_token" format:"uuid"`
-	// This field can have the runtime type of [TransactionCardholderAuthentication].
-	CardholderAuthentication interface{} `json:"cardholder_authentication"`
+	CardToken                string                   `json:"card_token" format:"uuid"`
+	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication,nullable"`
 	// Transaction category
 	Category AccountActivityGetTransactionResponseCategory `json:"category"`
 	// Currency of the transaction, represented in ISO 4217 format
@@ -918,9 +915,8 @@ type AccountActivityGetTransactionResponse struct {
 	Source AccountActivityGetTransactionResponseSource `json:"source"`
 	// Globally unique identifier for the financial account or card that will receive
 	// the funds. Accepted type dependent on the program's use case
-	ToFinancialAccountToken string `json:"to_financial_account_token" format:"uuid"`
-	// This field can have the runtime type of [TransactionTokenInfo].
-	TokenInfo interface{} `json:"token_info"`
+	ToFinancialAccountToken string    `json:"to_financial_account_token" format:"uuid"`
+	TokenInfo               TokenInfo `json:"token_info,nullable"`
 	// This field can have the runtime type of [BookTransferResponseTransactionSeries],
 	// [ManagementOperationTransactionTransactionSeries].
 	TransactionSeries interface{}                               `json:"transaction_series"`

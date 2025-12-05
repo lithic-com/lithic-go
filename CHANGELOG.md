@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.98.0 (2025-12-05)
+
+Full Changelog: [v0.97.0...v0.98.0](https://github.com/lithic-com/lithic-go/compare/v0.97.0...v0.98.0)
+
+### Features
+
+* **api:** add bulk card creation APIs ([b9b6d6f](https://github.com/lithic-com/lithic-go/commit/b9b6d6fe2126d1e0eedfaa77a5c29ffe2b7831a8))
+* **api:** add WALLET_RECOMMENDATION_REASONS attribute for tokenization rules ([2a11b16](https://github.com/lithic-com/lithic-go/commit/2a11b1659b3ba327c5a3dc6232b3171ff211bb1c))
+* **api:** provide a unified model for AuthRule ([2a11b16](https://github.com/lithic-com/lithic-go/commit/2a11b1659b3ba327c5a3dc6232b3171ff211bb1c))
+
+
+### Bug Fixes
+
+* **api:** extract several common types to reduce duplication ([b9b6d6f](https://github.com/lithic-com/lithic-go/commit/b9b6d6fe2126d1e0eedfaa77a5c29ffe2b7831a8))
+* **api:** fix examples in spec that were not fully valid ([2a11b16](https://github.com/lithic-com/lithic-go/commit/2a11b1659b3ba327c5a3dc6232b3171ff211bb1c))
+* **api:** make certain payoff fields nullable ([2a11b16](https://github.com/lithic-com/lithic-go/commit/2a11b1659b3ba327c5a3dc6232b3171ff211bb1c))
+* **mcp:** correct code tool API endpoint ([174ec9e](https://github.com/lithic-com/lithic-go/commit/174ec9e1fa53e8b700a437ec864f135f1ca89e5a))
+
+
+### Chores
+
+* elide duplicate aliases ([829889f](https://github.com/lithic-com/lithic-go/commit/829889fb8e62be7cce0405f30d2ddd3918ae374b))
+* **internal:** codegen related update ([70d9a3d](https://github.com/lithic-com/lithic-go/commit/70d9a3dd440e1693c67cd4b355e2837be01df3c4))
+
 ## 0.97.0 (2025-11-20)
 
 Full Changelog: [v0.96.1...v0.97.0](https://github.com/lithic-com/lithic-go/compare/v0.96.1...v0.97.0)
