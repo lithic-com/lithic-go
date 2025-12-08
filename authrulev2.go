@@ -3767,8 +3767,13 @@ type AuthRuleV2ListParams struct {
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string] `query:"ending_before" format:"uuid"`
-	// Only return Auth rules that are executed during the provided event stream.
+	// Deprecated: Use event_streams instead. Only return Auth rules that are executed
+	// during the provided event stream.
 	EventStream param.Field[AuthRuleV2ListParamsEventStream] `query:"event_stream"`
+	// Only return Auth rules that are executed during any of the provided event
+	// streams. If event_streams and event_stream are specified, the values will be
+	// combined.
+	EventStreams param.Field[[]AuthRuleV2ListParamsEventStream] `query:"event_streams"`
 	// Page size (for pagination).
 	PageSize param.Field[int64] `query:"page_size"`
 	// Only return Auth Rules that are bound to the provided scope.
@@ -3786,7 +3791,8 @@ func (r AuthRuleV2ListParams) URLQuery() (v url.Values) {
 	})
 }
 
-// Only return Auth rules that are executed during the provided event stream.
+// Deprecated: Use event_streams instead. Only return Auth rules that are executed
+// during the provided event stream.
 type AuthRuleV2ListParamsEventStream string
 
 const (
