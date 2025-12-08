@@ -258,6 +258,8 @@ const (
 	PaymentCategoryCard                   PaymentCategory = "CARD"
 	PaymentCategoryExternalACH            PaymentCategory = "EXTERNAL_ACH"
 	PaymentCategoryExternalCheck          PaymentCategory = "EXTERNAL_CHECK"
+	PaymentCategoryExternalFednow         PaymentCategory = "EXTERNAL_FEDNOW"
+	PaymentCategoryExternalRtp            PaymentCategory = "EXTERNAL_RTP"
 	PaymentCategoryExternalTransfer       PaymentCategory = "EXTERNAL_TRANSFER"
 	PaymentCategoryExternalWire           PaymentCategory = "EXTERNAL_WIRE"
 	PaymentCategoryManagementAdjustment   PaymentCategory = "MANAGEMENT_ADJUSTMENT"
@@ -270,7 +272,7 @@ const (
 
 func (r PaymentCategory) IsKnown() bool {
 	switch r {
-	case PaymentCategoryACH, PaymentCategoryBalanceOrFunding, PaymentCategoryFee, PaymentCategoryReward, PaymentCategoryAdjustment, PaymentCategoryDerecognition, PaymentCategoryDispute, PaymentCategoryCard, PaymentCategoryExternalACH, PaymentCategoryExternalCheck, PaymentCategoryExternalTransfer, PaymentCategoryExternalWire, PaymentCategoryManagementAdjustment, PaymentCategoryManagementDispute, PaymentCategoryManagementFee, PaymentCategoryManagementReward, PaymentCategoryManagementDisbursement, PaymentCategoryProgramFunding:
+	case PaymentCategoryACH, PaymentCategoryBalanceOrFunding, PaymentCategoryFee, PaymentCategoryReward, PaymentCategoryAdjustment, PaymentCategoryDerecognition, PaymentCategoryDispute, PaymentCategoryCard, PaymentCategoryExternalACH, PaymentCategoryExternalCheck, PaymentCategoryExternalFednow, PaymentCategoryExternalRtp, PaymentCategoryExternalTransfer, PaymentCategoryExternalWire, PaymentCategoryManagementAdjustment, PaymentCategoryManagementDispute, PaymentCategoryManagementFee, PaymentCategoryManagementReward, PaymentCategoryManagementDisbursement, PaymentCategoryProgramFunding:
 		return true
 	}
 	return false
@@ -476,6 +478,8 @@ func (r PaymentMethod) IsKnown() bool {
 
 // Method-specific attributes
 type PaymentMethodAttributes struct {
+	// Number of days the ACH transaction is on hold
+	ACHHoldPeriod int64 `json:"ach_hold_period,nullable"`
 	// Addenda information
 	Addenda string `json:"addenda,nullable"`
 	// Company ID for the ACH transaction
@@ -508,6 +512,7 @@ type PaymentMethodAttributes struct {
 // paymentMethodAttributesJSON contains the JSON metadata for the struct
 // [PaymentMethodAttributes]
 type paymentMethodAttributesJSON struct {
+	ACHHoldPeriod         apijson.Field
 	Addenda               apijson.Field
 	CompanyID             apijson.Field
 	Creditor              apijson.Field
@@ -574,6 +579,8 @@ func init() {
 type PaymentMethodAttributesACHMethodAttributes struct {
 	// SEC code for ACH transaction
 	SecCode PaymentMethodAttributesACHMethodAttributesSecCode `json:"sec_code,required"`
+	// Number of days the ACH transaction is on hold
+	ACHHoldPeriod int64 `json:"ach_hold_period,nullable"`
 	// Addenda information
 	Addenda string `json:"addenda,nullable"`
 	// Company ID for the ACH transaction
@@ -593,6 +600,7 @@ type PaymentMethodAttributesACHMethodAttributes struct {
 // the struct [PaymentMethodAttributesACHMethodAttributes]
 type paymentMethodAttributesACHMethodAttributesJSON struct {
 	SecCode              apijson.Field
+	ACHHoldPeriod        apijson.Field
 	Addenda              apijson.Field
 	CompanyID            apijson.Field
 	ReceiptRoutingNumber apijson.Field
@@ -1082,7 +1090,9 @@ func (r PaymentNewParamsMethod) IsKnown() bool {
 
 type PaymentNewParamsMethodAttributes struct {
 	SecCode param.Field[PaymentNewParamsMethodAttributesSecCode] `json:"sec_code,required"`
-	Addenda param.Field[string]                                  `json:"addenda"`
+	// Number of days to hold the ACH payment
+	ACHHoldPeriod param.Field[int64]  `json:"ach_hold__period"`
+	Addenda       param.Field[string] `json:"addenda"`
 }
 
 func (r PaymentNewParamsMethodAttributes) MarshalJSON() (data []byte, err error) {
