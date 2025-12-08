@@ -210,12 +210,14 @@ const (
 	ExternalPaymentCategoryExternalWire     ExternalPaymentCategory = "EXTERNAL_WIRE"
 	ExternalPaymentCategoryExternalACH      ExternalPaymentCategory = "EXTERNAL_ACH"
 	ExternalPaymentCategoryExternalCheck    ExternalPaymentCategory = "EXTERNAL_CHECK"
+	ExternalPaymentCategoryExternalFednow   ExternalPaymentCategory = "EXTERNAL_FEDNOW"
+	ExternalPaymentCategoryExternalRtp      ExternalPaymentCategory = "EXTERNAL_RTP"
 	ExternalPaymentCategoryExternalTransfer ExternalPaymentCategory = "EXTERNAL_TRANSFER"
 )
 
 func (r ExternalPaymentCategory) IsKnown() bool {
 	switch r {
-	case ExternalPaymentCategoryExternalWire, ExternalPaymentCategoryExternalACH, ExternalPaymentCategoryExternalCheck, ExternalPaymentCategoryExternalTransfer:
+	case ExternalPaymentCategoryExternalWire, ExternalPaymentCategoryExternalACH, ExternalPaymentCategoryExternalCheck, ExternalPaymentCategoryExternalFednow, ExternalPaymentCategoryExternalRtp, ExternalPaymentCategoryExternalTransfer:
 		return true
 	}
 	return false
@@ -309,11 +311,21 @@ const (
 	ExternalPaymentEventsTypeExternalCheckSettled      ExternalPaymentEventsType = "EXTERNAL_CHECK_SETTLED"
 	ExternalPaymentEventsTypeExternalCheckReversed     ExternalPaymentEventsType = "EXTERNAL_CHECK_REVERSED"
 	ExternalPaymentEventsTypeExternalCheckReleased     ExternalPaymentEventsType = "EXTERNAL_CHECK_RELEASED"
+	ExternalPaymentEventsTypeExternalFednowInitiated   ExternalPaymentEventsType = "EXTERNAL_FEDNOW_INITIATED"
+	ExternalPaymentEventsTypeExternalFednowCanceled    ExternalPaymentEventsType = "EXTERNAL_FEDNOW_CANCELED"
+	ExternalPaymentEventsTypeExternalFednowSettled     ExternalPaymentEventsType = "EXTERNAL_FEDNOW_SETTLED"
+	ExternalPaymentEventsTypeExternalFednowReversed    ExternalPaymentEventsType = "EXTERNAL_FEDNOW_REVERSED"
+	ExternalPaymentEventsTypeExternalFednowReleased    ExternalPaymentEventsType = "EXTERNAL_FEDNOW_RELEASED"
+	ExternalPaymentEventsTypeExternalRtpInitiated      ExternalPaymentEventsType = "EXTERNAL_RTP_INITIATED"
+	ExternalPaymentEventsTypeExternalRtpCanceled       ExternalPaymentEventsType = "EXTERNAL_RTP_CANCELED"
+	ExternalPaymentEventsTypeExternalRtpSettled        ExternalPaymentEventsType = "EXTERNAL_RTP_SETTLED"
+	ExternalPaymentEventsTypeExternalRtpReversed       ExternalPaymentEventsType = "EXTERNAL_RTP_REVERSED"
+	ExternalPaymentEventsTypeExternalRtpReleased       ExternalPaymentEventsType = "EXTERNAL_RTP_RELEASED"
 )
 
 func (r ExternalPaymentEventsType) IsKnown() bool {
 	switch r {
-	case ExternalPaymentEventsTypeExternalWireInitiated, ExternalPaymentEventsTypeExternalWireCanceled, ExternalPaymentEventsTypeExternalWireSettled, ExternalPaymentEventsTypeExternalWireReversed, ExternalPaymentEventsTypeExternalWireReleased, ExternalPaymentEventsTypeExternalACHInitiated, ExternalPaymentEventsTypeExternalACHCanceled, ExternalPaymentEventsTypeExternalACHSettled, ExternalPaymentEventsTypeExternalACHReversed, ExternalPaymentEventsTypeExternalACHReleased, ExternalPaymentEventsTypeExternalTransferInitiated, ExternalPaymentEventsTypeExternalTransferCanceled, ExternalPaymentEventsTypeExternalTransferSettled, ExternalPaymentEventsTypeExternalTransferReversed, ExternalPaymentEventsTypeExternalTransferReleased, ExternalPaymentEventsTypeExternalCheckInitiated, ExternalPaymentEventsTypeExternalCheckCanceled, ExternalPaymentEventsTypeExternalCheckSettled, ExternalPaymentEventsTypeExternalCheckReversed, ExternalPaymentEventsTypeExternalCheckReleased:
+	case ExternalPaymentEventsTypeExternalWireInitiated, ExternalPaymentEventsTypeExternalWireCanceled, ExternalPaymentEventsTypeExternalWireSettled, ExternalPaymentEventsTypeExternalWireReversed, ExternalPaymentEventsTypeExternalWireReleased, ExternalPaymentEventsTypeExternalACHInitiated, ExternalPaymentEventsTypeExternalACHCanceled, ExternalPaymentEventsTypeExternalACHSettled, ExternalPaymentEventsTypeExternalACHReversed, ExternalPaymentEventsTypeExternalACHReleased, ExternalPaymentEventsTypeExternalTransferInitiated, ExternalPaymentEventsTypeExternalTransferCanceled, ExternalPaymentEventsTypeExternalTransferSettled, ExternalPaymentEventsTypeExternalTransferReversed, ExternalPaymentEventsTypeExternalTransferReleased, ExternalPaymentEventsTypeExternalCheckInitiated, ExternalPaymentEventsTypeExternalCheckCanceled, ExternalPaymentEventsTypeExternalCheckSettled, ExternalPaymentEventsTypeExternalCheckReversed, ExternalPaymentEventsTypeExternalCheckReleased, ExternalPaymentEventsTypeExternalFednowInitiated, ExternalPaymentEventsTypeExternalFednowCanceled, ExternalPaymentEventsTypeExternalFednowSettled, ExternalPaymentEventsTypeExternalFednowReversed, ExternalPaymentEventsTypeExternalFednowReleased, ExternalPaymentEventsTypeExternalRtpInitiated, ExternalPaymentEventsTypeExternalRtpCanceled, ExternalPaymentEventsTypeExternalRtpSettled, ExternalPaymentEventsTypeExternalRtpReversed, ExternalPaymentEventsTypeExternalRtpReleased:
 		return true
 	}
 	return false
@@ -386,12 +398,14 @@ const (
 	ExternalPaymentNewParamsCategoryExternalWire     ExternalPaymentNewParamsCategory = "EXTERNAL_WIRE"
 	ExternalPaymentNewParamsCategoryExternalACH      ExternalPaymentNewParamsCategory = "EXTERNAL_ACH"
 	ExternalPaymentNewParamsCategoryExternalCheck    ExternalPaymentNewParamsCategory = "EXTERNAL_CHECK"
+	ExternalPaymentNewParamsCategoryExternalFednow   ExternalPaymentNewParamsCategory = "EXTERNAL_FEDNOW"
+	ExternalPaymentNewParamsCategoryExternalRtp      ExternalPaymentNewParamsCategory = "EXTERNAL_RTP"
 	ExternalPaymentNewParamsCategoryExternalTransfer ExternalPaymentNewParamsCategory = "EXTERNAL_TRANSFER"
 )
 
 func (r ExternalPaymentNewParamsCategory) IsKnown() bool {
 	switch r {
-	case ExternalPaymentNewParamsCategoryExternalWire, ExternalPaymentNewParamsCategoryExternalACH, ExternalPaymentNewParamsCategoryExternalCheck, ExternalPaymentNewParamsCategoryExternalTransfer:
+	case ExternalPaymentNewParamsCategoryExternalWire, ExternalPaymentNewParamsCategoryExternalACH, ExternalPaymentNewParamsCategoryExternalCheck, ExternalPaymentNewParamsCategoryExternalFednow, ExternalPaymentNewParamsCategoryExternalRtp, ExternalPaymentNewParamsCategoryExternalTransfer:
 		return true
 	}
 	return false
@@ -470,12 +484,14 @@ const (
 	ExternalPaymentListParamsCategoryExternalWire     ExternalPaymentListParamsCategory = "EXTERNAL_WIRE"
 	ExternalPaymentListParamsCategoryExternalACH      ExternalPaymentListParamsCategory = "EXTERNAL_ACH"
 	ExternalPaymentListParamsCategoryExternalCheck    ExternalPaymentListParamsCategory = "EXTERNAL_CHECK"
+	ExternalPaymentListParamsCategoryExternalFednow   ExternalPaymentListParamsCategory = "EXTERNAL_FEDNOW"
+	ExternalPaymentListParamsCategoryExternalRtp      ExternalPaymentListParamsCategory = "EXTERNAL_RTP"
 	ExternalPaymentListParamsCategoryExternalTransfer ExternalPaymentListParamsCategory = "EXTERNAL_TRANSFER"
 )
 
 func (r ExternalPaymentListParamsCategory) IsKnown() bool {
 	switch r {
-	case ExternalPaymentListParamsCategoryExternalWire, ExternalPaymentListParamsCategoryExternalACH, ExternalPaymentListParamsCategoryExternalCheck, ExternalPaymentListParamsCategoryExternalTransfer:
+	case ExternalPaymentListParamsCategoryExternalWire, ExternalPaymentListParamsCategoryExternalACH, ExternalPaymentListParamsCategoryExternalCheck, ExternalPaymentListParamsCategoryExternalFednow, ExternalPaymentListParamsCategoryExternalRtp, ExternalPaymentListParamsCategoryExternalTransfer:
 		return true
 	}
 	return false
