@@ -419,7 +419,10 @@ func TestCardWebProvisionWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.CardWebProvisionParams{
-			DigitalWallet: lithic.F(lithic.CardWebProvisionParamsDigitalWalletApplePay),
+			ClientDeviceID:        lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+			ClientWalletAccountID: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+			DigitalWallet:         lithic.F(lithic.CardWebProvisionParamsDigitalWalletApplePay),
+			ServerSessionID:       lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		},
 	)
 	if err != nil {

@@ -881,48 +881,124 @@ func init() {
 }
 
 type CardWebProvisionResponse struct {
-	// JWS object required for handoff to Apple's script.
-	Jws CardWebProvisionResponseJws `json:"jws"`
+	// A base64 encoded and encrypted payload representing card data for the Google Pay
+	// UWPP FPAN flow.
+	GoogleOpc string `json:"google_opc"`
+	// This field can have the runtime type of
+	// [CardWebProvisionResponseAppleWebPushProvisioningResponseJws].
+	Jws interface{} `json:"jws"`
 	// A unique identifier for the JWS object.
-	State string                       `json:"state"`
-	JSON  cardWebProvisionResponseJSON `json:"-"`
+	State string `json:"state"`
+	// A base64 encoded and encrypted payload representing card data for the Google Pay
+	// UWPP tokenization flow.
+	TspOpc string                       `json:"tsp_opc"`
+	JSON   cardWebProvisionResponseJSON `json:"-"`
+	union  CardWebProvisionResponseUnion
 }
 
 // cardWebProvisionResponseJSON contains the JSON metadata for the struct
 // [CardWebProvisionResponse]
 type cardWebProvisionResponseJSON struct {
+	GoogleOpc   apijson.Field
 	Jws         apijson.Field
 	State       apijson.Field
+	TspOpc      apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
-}
-
-func (r *CardWebProvisionResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
 }
 
 func (r cardWebProvisionResponseJSON) RawJSON() string {
 	return r.raw
 }
 
+func (r *CardWebProvisionResponse) UnmarshalJSON(data []byte) (err error) {
+	*r = CardWebProvisionResponse{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a [CardWebProvisionResponseUnion] interface which you can cast
+// to the specific types for more type safety.
+//
+// Possible runtime types of the union are
+// [CardWebProvisionResponseAppleWebPushProvisioningResponse],
+// [CardWebProvisionResponseGoogleWebPushProvisioningResponse].
+func (r CardWebProvisionResponse) AsUnion() CardWebProvisionResponseUnion {
+	return r.union
+}
+
+// Union satisfied by [CardWebProvisionResponseAppleWebPushProvisioningResponse] or
+// [CardWebProvisionResponseGoogleWebPushProvisioningResponse].
+type CardWebProvisionResponseUnion interface {
+	implementsCardWebProvisionResponse()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*CardWebProvisionResponseUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(CardWebProvisionResponseAppleWebPushProvisioningResponse{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(CardWebProvisionResponseGoogleWebPushProvisioningResponse{}),
+		},
+	)
+}
+
+type CardWebProvisionResponseAppleWebPushProvisioningResponse struct {
+	// JWS object required for handoff to Apple's script.
+	Jws CardWebProvisionResponseAppleWebPushProvisioningResponseJws `json:"jws"`
+	// A unique identifier for the JWS object.
+	State string                                                       `json:"state"`
+	JSON  cardWebProvisionResponseAppleWebPushProvisioningResponseJSON `json:"-"`
+}
+
+// cardWebProvisionResponseAppleWebPushProvisioningResponseJSON contains the JSON
+// metadata for the struct
+// [CardWebProvisionResponseAppleWebPushProvisioningResponse]
+type cardWebProvisionResponseAppleWebPushProvisioningResponseJSON struct {
+	Jws         apijson.Field
+	State       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CardWebProvisionResponseAppleWebPushProvisioningResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardWebProvisionResponseAppleWebPushProvisioningResponseJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r CardWebProvisionResponseAppleWebPushProvisioningResponse) implementsCardWebProvisionResponse() {
+}
+
 // JWS object required for handoff to Apple's script.
-type CardWebProvisionResponseJws struct {
+type CardWebProvisionResponseAppleWebPushProvisioningResponseJws struct {
 	// JWS unprotected headers containing header parameters that aren't
 	// integrity-protected by the JWS signature.
-	Header CardWebProvisionResponseJwsHeader `json:"header"`
+	Header CardWebProvisionResponseAppleWebPushProvisioningResponseJwsHeader `json:"header"`
 	// Base64url encoded JSON object containing the provisioning payload.
 	Payload string `json:"payload"`
 	// Base64url encoded JWS protected headers containing the header parameters that
 	// are integrity-protected by the JWS signature.
 	Protected string `json:"protected"`
 	// Base64url encoded signature of the JWS object.
-	Signature string                          `json:"signature"`
-	JSON      cardWebProvisionResponseJwsJSON `json:"-"`
+	Signature string                                                          `json:"signature"`
+	JSON      cardWebProvisionResponseAppleWebPushProvisioningResponseJwsJSON `json:"-"`
 }
 
-// cardWebProvisionResponseJwsJSON contains the JSON metadata for the struct
-// [CardWebProvisionResponseJws]
-type cardWebProvisionResponseJwsJSON struct {
+// cardWebProvisionResponseAppleWebPushProvisioningResponseJwsJSON contains the
+// JSON metadata for the struct
+// [CardWebProvisionResponseAppleWebPushProvisioningResponseJws]
+type cardWebProvisionResponseAppleWebPushProvisioningResponseJwsJSON struct {
 	Header      apijson.Field
 	Payload     apijson.Field
 	Protected   apijson.Field
@@ -931,36 +1007,68 @@ type cardWebProvisionResponseJwsJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *CardWebProvisionResponseJws) UnmarshalJSON(data []byte) (err error) {
+func (r *CardWebProvisionResponseAppleWebPushProvisioningResponseJws) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r cardWebProvisionResponseJwsJSON) RawJSON() string {
+func (r cardWebProvisionResponseAppleWebPushProvisioningResponseJwsJSON) RawJSON() string {
 	return r.raw
 }
 
 // JWS unprotected headers containing header parameters that aren't
 // integrity-protected by the JWS signature.
-type CardWebProvisionResponseJwsHeader struct {
+type CardWebProvisionResponseAppleWebPushProvisioningResponseJwsHeader struct {
 	// The ID for the JWS Public Key of the key pair used to generate the signature.
-	Kid  string                                `json:"kid"`
-	JSON cardWebProvisionResponseJwsHeaderJSON `json:"-"`
+	Kid  string                                                                `json:"kid"`
+	JSON cardWebProvisionResponseAppleWebPushProvisioningResponseJwsHeaderJSON `json:"-"`
 }
 
-// cardWebProvisionResponseJwsHeaderJSON contains the JSON metadata for the struct
-// [CardWebProvisionResponseJwsHeader]
-type cardWebProvisionResponseJwsHeaderJSON struct {
+// cardWebProvisionResponseAppleWebPushProvisioningResponseJwsHeaderJSON contains
+// the JSON metadata for the struct
+// [CardWebProvisionResponseAppleWebPushProvisioningResponseJwsHeader]
+type cardWebProvisionResponseAppleWebPushProvisioningResponseJwsHeaderJSON struct {
 	Kid         apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *CardWebProvisionResponseJwsHeader) UnmarshalJSON(data []byte) (err error) {
+func (r *CardWebProvisionResponseAppleWebPushProvisioningResponseJwsHeader) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r cardWebProvisionResponseJwsHeaderJSON) RawJSON() string {
+func (r cardWebProvisionResponseAppleWebPushProvisioningResponseJwsHeaderJSON) RawJSON() string {
 	return r.raw
+}
+
+type CardWebProvisionResponseGoogleWebPushProvisioningResponse struct {
+	// A base64 encoded and encrypted payload representing card data for the Google Pay
+	// UWPP FPAN flow.
+	GoogleOpc string `json:"google_opc"`
+	// A base64 encoded and encrypted payload representing card data for the Google Pay
+	// UWPP tokenization flow.
+	TspOpc string                                                        `json:"tsp_opc"`
+	JSON   cardWebProvisionResponseGoogleWebPushProvisioningResponseJSON `json:"-"`
+}
+
+// cardWebProvisionResponseGoogleWebPushProvisioningResponseJSON contains the JSON
+// metadata for the struct
+// [CardWebProvisionResponseGoogleWebPushProvisioningResponse]
+type cardWebProvisionResponseGoogleWebPushProvisioningResponseJSON struct {
+	GoogleOpc   apijson.Field
+	TspOpc      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CardWebProvisionResponseGoogleWebPushProvisioningResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardWebProvisionResponseGoogleWebPushProvisioningResponseJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r CardWebProvisionResponseGoogleWebPushProvisioningResponse) implementsCardWebProvisionResponse() {
 }
 
 type CardNewParams struct {
@@ -1750,8 +1858,17 @@ func (r CardSearchByPanParams) MarshalJSON() (data []byte, err error) {
 }
 
 type CardWebProvisionParams struct {
+	// Only applicable if `digital_wallet` is GOOGLE_PAY. Google Pay Web Push
+	// Provisioning device identifier required for the tokenization flow
+	ClientDeviceID param.Field[string] `json:"client_device_id" format:"uuid"`
+	// Only applicable if `digital_wallet` is GOOGLE_PAY. Google Pay Web Push
+	// Provisioning wallet account identifier required for the tokenization flow
+	ClientWalletAccountID param.Field[string] `json:"client_wallet_account_id" format:"uuid"`
 	// Name of digital wallet provider.
 	DigitalWallet param.Field[CardWebProvisionParamsDigitalWallet] `json:"digital_wallet"`
+	// Only applicable if `digital_wallet` is GOOGLE_PAY. Google Pay Web Push
+	// Provisioning session identifier required for the FPAN flow.
+	ServerSessionID param.Field[string] `json:"server_session_id" format:"uuid"`
 }
 
 func (r CardWebProvisionParams) MarshalJSON() (data []byte, err error) {
@@ -1762,12 +1879,13 @@ func (r CardWebProvisionParams) MarshalJSON() (data []byte, err error) {
 type CardWebProvisionParamsDigitalWallet string
 
 const (
-	CardWebProvisionParamsDigitalWalletApplePay CardWebProvisionParamsDigitalWallet = "APPLE_PAY"
+	CardWebProvisionParamsDigitalWalletApplePay  CardWebProvisionParamsDigitalWallet = "APPLE_PAY"
+	CardWebProvisionParamsDigitalWalletGooglePay CardWebProvisionParamsDigitalWallet = "GOOGLE_PAY"
 )
 
 func (r CardWebProvisionParamsDigitalWallet) IsKnown() bool {
 	switch r {
-	case CardWebProvisionParamsDigitalWalletApplePay:
+	case CardWebProvisionParamsDigitalWalletApplePay, CardWebProvisionParamsDigitalWalletGooglePay:
 		return true
 	}
 	return false

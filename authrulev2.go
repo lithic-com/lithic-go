@@ -691,7 +691,7 @@ type AuthRuleCondition struct {
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation,required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value ConditionalValueUnion `json:"value,required"`
+	Value ConditionalValueUnion `json:"value,required" format:"date-time"`
 	JSON  authRuleConditionJSON `json:"-"`
 }
 
@@ -768,7 +768,7 @@ type AuthRuleConditionParam struct {
 	// The operation to apply to the attribute
 	Operation param.Field[ConditionalOperation] `json:"operation,required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value param.Field[ConditionalValueUnionParam] `json:"value,required"`
+	Value param.Field[ConditionalValueUnionParam] `json:"value,required" format:"date-time"`
 }
 
 func (r AuthRuleConditionParam) MarshalJSON() (data []byte, err error) {
@@ -848,7 +848,7 @@ type Conditional3DsActionParametersCondition struct {
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation,required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value ConditionalValueUnion                       `json:"value,required"`
+	Value ConditionalValueUnion                       `json:"value,required" format:"date-time"`
 	JSON  conditional3DsActionParametersConditionJSON `json:"-"`
 }
 
@@ -1304,7 +1304,7 @@ type ConditionalACHActionParametersCondition struct {
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation,required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value ConditionalValueUnion                       `json:"value,required"`
+	Value ConditionalValueUnion                       `json:"value,required" format:"date-time"`
 	JSON  conditionalACHActionParametersConditionJSON `json:"-"`
 }
 
@@ -1543,7 +1543,7 @@ type ConditionalAuthorizationActionParametersCondition struct {
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation,required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value ConditionalValueUnion                                 `json:"value,required"`
+	Value ConditionalValueUnion                                 `json:"value,required" format:"date-time"`
 	JSON  conditionalAuthorizationActionParametersConditionJSON `json:"-"`
 }
 
@@ -1690,6 +1690,8 @@ const (
 	ConditionalOperationIsGreaterThanOrEqualTo ConditionalOperation = "IS_GREATER_THAN_OR_EQUAL_TO"
 	ConditionalOperationIsLessThan             ConditionalOperation = "IS_LESS_THAN"
 	ConditionalOperationIsLessThanOrEqualTo    ConditionalOperation = "IS_LESS_THAN_OR_EQUAL_TO"
+	ConditionalOperationIsAfter                ConditionalOperation = "IS_AFTER"
+	ConditionalOperationIsBefore               ConditionalOperation = "IS_BEFORE"
 	ConditionalOperationContainsAny            ConditionalOperation = "CONTAINS_ANY"
 	ConditionalOperationContainsAll            ConditionalOperation = "CONTAINS_ALL"
 	ConditionalOperationContainsNone           ConditionalOperation = "CONTAINS_NONE"
@@ -1697,7 +1699,7 @@ const (
 
 func (r ConditionalOperation) IsKnown() bool {
 	switch r {
-	case ConditionalOperationIsOneOf, ConditionalOperationIsNotOneOf, ConditionalOperationMatches, ConditionalOperationDoesNotMatch, ConditionalOperationIsEqualTo, ConditionalOperationIsNotEqualTo, ConditionalOperationIsGreaterThan, ConditionalOperationIsGreaterThanOrEqualTo, ConditionalOperationIsLessThan, ConditionalOperationIsLessThanOrEqualTo, ConditionalOperationContainsAny, ConditionalOperationContainsAll, ConditionalOperationContainsNone:
+	case ConditionalOperationIsOneOf, ConditionalOperationIsNotOneOf, ConditionalOperationMatches, ConditionalOperationDoesNotMatch, ConditionalOperationIsEqualTo, ConditionalOperationIsNotEqualTo, ConditionalOperationIsGreaterThan, ConditionalOperationIsGreaterThanOrEqualTo, ConditionalOperationIsLessThan, ConditionalOperationIsLessThanOrEqualTo, ConditionalOperationIsAfter, ConditionalOperationIsBefore, ConditionalOperationContainsAny, ConditionalOperationContainsAll, ConditionalOperationContainsNone:
 		return true
 	}
 	return false
@@ -2035,7 +2037,7 @@ type ConditionalTokenizationActionParametersCondition struct {
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation,required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value ConditionalValueUnion                                `json:"value,required"`
+	Value ConditionalValueUnion                                `json:"value,required" format:"date-time"`
 	JSON  conditionalTokenizationActionParametersConditionJSON `json:"-"`
 }
 
@@ -2114,8 +2116,8 @@ func (r ConditionalTokenizationActionParametersConditionsAttribute) IsKnown() bo
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionInt] or
-// [ConditionalValueListOfStrings].
+// Union satisfied by [shared.UnionString], [shared.UnionInt],
+// [ConditionalValueListOfStrings] or [shared.UnionTime].
 type ConditionalValueUnion interface {
 	ImplementsConditionalValueUnion()
 }
@@ -2136,6 +2138,10 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalValueListOfStrings{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.String,
+			Type:       reflect.TypeOf(shared.UnionTime(shared.UnionTime{})),
+		},
 	)
 }
 
@@ -2146,7 +2152,7 @@ func (r ConditionalValueListOfStrings) ImplementsConditionalValueUnion() {}
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
 // Satisfied by [shared.UnionString], [shared.UnionInt],
-// [ConditionalValueListOfStringsParam].
+// [ConditionalValueListOfStringsParam], [shared.UnionTime].
 type ConditionalValueUnionParam interface {
 	ImplementsConditionalValueUnionParam()
 }
