@@ -82,6 +82,7 @@ Params Types:
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ConditionalOperation">ConditionalOperation</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ConditionalTokenizationActionParameters">ConditionalTokenizationActionParameters</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ConditionalValueUnionParam">ConditionalValueUnionParam</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#EventStream">EventStream</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#MerchantLockParameters">MerchantLockParameters</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#VelocityLimitParams">VelocityLimitParams</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#VelocityLimitPeriodUnionParam">VelocityLimitPeriodUnionParam</a>
@@ -98,6 +99,7 @@ Response Types:
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ConditionalOperation">ConditionalOperation</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ConditionalTokenizationActionParameters">ConditionalTokenizationActionParameters</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ConditionalValueUnion">ConditionalValueUnion</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#EventStream">EventStream</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#MerchantLockParameters">MerchantLockParameters</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#RuleStats">RuleStats</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#VelocityLimitParams">VelocityLimitParams</a>
