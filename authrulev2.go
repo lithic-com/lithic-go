@@ -199,7 +199,7 @@ type AuthRule struct {
 	CurrentVersion AuthRuleCurrentVersion `json:"current_version,required,nullable"`
 	DraftVersion   AuthRuleDraftVersion   `json:"draft_version,required,nullable"`
 	// The event stream during which the rule will be evaluated.
-	EventStream AuthRuleEventStream `json:"event_stream,required"`
+	EventStream EventStream `json:"event_stream,required"`
 	// Indicates whether this auth rule is managed by Lithic. If true, the rule cannot
 	// be modified or deleted by the user
 	LithicManaged bool `json:"lithic_managed,required"`
@@ -569,25 +569,6 @@ const (
 func (r AuthRuleDraftVersionParametersScope) IsKnown() bool {
 	switch r {
 	case AuthRuleDraftVersionParametersScopeCard, AuthRuleDraftVersionParametersScopeAccount:
-		return true
-	}
-	return false
-}
-
-// The event stream during which the rule will be evaluated.
-type AuthRuleEventStream string
-
-const (
-	AuthRuleEventStreamAuthorization         AuthRuleEventStream = "AUTHORIZATION"
-	AuthRuleEventStreamThreeDSAuthentication AuthRuleEventStream = "THREE_DS_AUTHENTICATION"
-	AuthRuleEventStreamTokenization          AuthRuleEventStream = "TOKENIZATION"
-	AuthRuleEventStreamACHCreditReceipt      AuthRuleEventStream = "ACH_CREDIT_RECEIPT"
-	AuthRuleEventStreamACHDebitReceipt       AuthRuleEventStream = "ACH_DEBIT_RECEIPT"
-)
-
-func (r AuthRuleEventStream) IsKnown() bool {
-	switch r {
-	case AuthRuleEventStreamAuthorization, AuthRuleEventStreamThreeDSAuthentication, AuthRuleEventStreamTokenization, AuthRuleEventStreamACHCreditReceipt, AuthRuleEventStreamACHDebitReceipt:
 		return true
 	}
 	return false
@@ -2161,6 +2142,25 @@ type ConditionalValueListOfStringsParam []string
 
 func (r ConditionalValueListOfStringsParam) ImplementsConditionalValueUnionParam() {}
 
+// The event stream during which the rule will be evaluated.
+type EventStream string
+
+const (
+	EventStreamAuthorization         EventStream = "AUTHORIZATION"
+	EventStreamThreeDSAuthentication EventStream = "THREE_DS_AUTHENTICATION"
+	EventStreamTokenization          EventStream = "TOKENIZATION"
+	EventStreamACHCreditReceipt      EventStream = "ACH_CREDIT_RECEIPT"
+	EventStreamACHDebitReceipt       EventStream = "ACH_DEBIT_RECEIPT"
+)
+
+func (r EventStream) IsKnown() bool {
+	switch r {
+	case EventStreamAuthorization, EventStreamThreeDSAuthentication, EventStreamTokenization, EventStreamACHCreditReceipt, EventStreamACHDebitReceipt:
+		return true
+	}
+	return false
+}
+
 type MerchantLockParameters struct {
 	// A list of merchant locks defining specific merchants or groups of merchants
 	// (based on descriptors or IDs) that the lock applies to.
@@ -3127,8 +3127,8 @@ type AuthRuleV2NewParamsBody struct {
 	BusinessAccountTokens param.Field[interface{}]                 `json:"business_account_tokens"`
 	CardTokens            param.Field[interface{}]                 `json:"card_tokens"`
 	// The event stream during which the rule will be evaluated.
-	EventStream        param.Field[AuthRuleV2NewParamsBodyEventStream] `json:"event_stream"`
-	ExcludedCardTokens param.Field[interface{}]                        `json:"excluded_card_tokens"`
+	EventStream        param.Field[EventStream] `json:"event_stream"`
+	ExcludedCardTokens param.Field[interface{}] `json:"excluded_card_tokens"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
@@ -3167,7 +3167,7 @@ type AuthRuleV2NewParamsBodyAccountLevelRule struct {
 	// Business Account tokens to which the Auth Rule applies.
 	BusinessAccountTokens param.Field[[]string] `json:"business_account_tokens" format:"uuid"`
 	// The event stream during which the rule will be evaluated.
-	EventStream param.Field[AuthRuleV2NewParamsBodyAccountLevelRuleEventStream] `json:"event_stream"`
+	EventStream param.Field[EventStream] `json:"event_stream"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
 }
@@ -3261,25 +3261,6 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRuleType) IsKnown() bool {
 	return false
 }
 
-// The event stream during which the rule will be evaluated.
-type AuthRuleV2NewParamsBodyAccountLevelRuleEventStream string
-
-const (
-	AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamAuthorization         AuthRuleV2NewParamsBodyAccountLevelRuleEventStream = "AUTHORIZATION"
-	AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamThreeDSAuthentication AuthRuleV2NewParamsBodyAccountLevelRuleEventStream = "THREE_DS_AUTHENTICATION"
-	AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamTokenization          AuthRuleV2NewParamsBodyAccountLevelRuleEventStream = "TOKENIZATION"
-	AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamACHCreditReceipt      AuthRuleV2NewParamsBodyAccountLevelRuleEventStream = "ACH_CREDIT_RECEIPT"
-	AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamACHDebitReceipt       AuthRuleV2NewParamsBodyAccountLevelRuleEventStream = "ACH_DEBIT_RECEIPT"
-)
-
-func (r AuthRuleV2NewParamsBodyAccountLevelRuleEventStream) IsKnown() bool {
-	switch r {
-	case AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamAuthorization, AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamThreeDSAuthentication, AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamTokenization, AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamACHCreditReceipt, AuthRuleV2NewParamsBodyAccountLevelRuleEventStreamACHDebitReceipt:
-		return true
-	}
-	return false
-}
-
 type AuthRuleV2NewParamsBodyCardLevelRule struct {
 	// Card tokens to which the Auth Rule applies.
 	CardTokens param.Field[[]string] `json:"card_tokens,required" format:"uuid"`
@@ -3297,7 +3278,7 @@ type AuthRuleV2NewParamsBodyCardLevelRule struct {
 	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type param.Field[AuthRuleV2NewParamsBodyCardLevelRuleType] `json:"type,required"`
 	// The event stream during which the rule will be evaluated.
-	EventStream param.Field[AuthRuleV2NewParamsBodyCardLevelRuleEventStream] `json:"event_stream"`
+	EventStream param.Field[EventStream] `json:"event_stream"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
 }
@@ -3391,25 +3372,6 @@ func (r AuthRuleV2NewParamsBodyCardLevelRuleType) IsKnown() bool {
 	return false
 }
 
-// The event stream during which the rule will be evaluated.
-type AuthRuleV2NewParamsBodyCardLevelRuleEventStream string
-
-const (
-	AuthRuleV2NewParamsBodyCardLevelRuleEventStreamAuthorization         AuthRuleV2NewParamsBodyCardLevelRuleEventStream = "AUTHORIZATION"
-	AuthRuleV2NewParamsBodyCardLevelRuleEventStreamThreeDSAuthentication AuthRuleV2NewParamsBodyCardLevelRuleEventStream = "THREE_DS_AUTHENTICATION"
-	AuthRuleV2NewParamsBodyCardLevelRuleEventStreamTokenization          AuthRuleV2NewParamsBodyCardLevelRuleEventStream = "TOKENIZATION"
-	AuthRuleV2NewParamsBodyCardLevelRuleEventStreamACHCreditReceipt      AuthRuleV2NewParamsBodyCardLevelRuleEventStream = "ACH_CREDIT_RECEIPT"
-	AuthRuleV2NewParamsBodyCardLevelRuleEventStreamACHDebitReceipt       AuthRuleV2NewParamsBodyCardLevelRuleEventStream = "ACH_DEBIT_RECEIPT"
-)
-
-func (r AuthRuleV2NewParamsBodyCardLevelRuleEventStream) IsKnown() bool {
-	switch r {
-	case AuthRuleV2NewParamsBodyCardLevelRuleEventStreamAuthorization, AuthRuleV2NewParamsBodyCardLevelRuleEventStreamThreeDSAuthentication, AuthRuleV2NewParamsBodyCardLevelRuleEventStreamTokenization, AuthRuleV2NewParamsBodyCardLevelRuleEventStreamACHCreditReceipt, AuthRuleV2NewParamsBodyCardLevelRuleEventStreamACHDebitReceipt:
-		return true
-	}
-	return false
-}
-
 type AuthRuleV2NewParamsBodyProgramLevelRule struct {
 	// Parameters for the Auth Rule
 	Parameters param.Field[AuthRuleV2NewParamsBodyProgramLevelRuleParametersUnion] `json:"parameters,required"`
@@ -3427,7 +3389,7 @@ type AuthRuleV2NewParamsBodyProgramLevelRule struct {
 	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type param.Field[AuthRuleV2NewParamsBodyProgramLevelRuleType] `json:"type,required"`
 	// The event stream during which the rule will be evaluated.
-	EventStream param.Field[AuthRuleV2NewParamsBodyProgramLevelRuleEventStream] `json:"event_stream"`
+	EventStream param.Field[EventStream] `json:"event_stream"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens param.Field[[]string] `json:"excluded_card_tokens" format:"uuid"`
 	// Auth Rule Name
@@ -3523,25 +3485,6 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleType) IsKnown() bool {
 	return false
 }
 
-// The event stream during which the rule will be evaluated.
-type AuthRuleV2NewParamsBodyProgramLevelRuleEventStream string
-
-const (
-	AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamAuthorization         AuthRuleV2NewParamsBodyProgramLevelRuleEventStream = "AUTHORIZATION"
-	AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamThreeDSAuthentication AuthRuleV2NewParamsBodyProgramLevelRuleEventStream = "THREE_DS_AUTHENTICATION"
-	AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamTokenization          AuthRuleV2NewParamsBodyProgramLevelRuleEventStream = "TOKENIZATION"
-	AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamACHCreditReceipt      AuthRuleV2NewParamsBodyProgramLevelRuleEventStream = "ACH_CREDIT_RECEIPT"
-	AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamACHDebitReceipt       AuthRuleV2NewParamsBodyProgramLevelRuleEventStream = "ACH_DEBIT_RECEIPT"
-)
-
-func (r AuthRuleV2NewParamsBodyProgramLevelRuleEventStream) IsKnown() bool {
-	switch r {
-	case AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamAuthorization, AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamThreeDSAuthentication, AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamTokenization, AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamACHCreditReceipt, AuthRuleV2NewParamsBodyProgramLevelRuleEventStreamACHDebitReceipt:
-		return true
-	}
-	return false
-}
-
 // The type of Auth Rule. For certain rule types, this determines the event stream
 // during which it will be evaluated. For rules that can be applied to one of
 // several event streams, the effective one is defined by the separate
@@ -3564,25 +3507,6 @@ const (
 func (r AuthRuleV2NewParamsBodyType) IsKnown() bool {
 	switch r {
 	case AuthRuleV2NewParamsBodyTypeConditionalBlock, AuthRuleV2NewParamsBodyTypeVelocityLimit, AuthRuleV2NewParamsBodyTypeMerchantLock, AuthRuleV2NewParamsBodyTypeConditionalAction:
-		return true
-	}
-	return false
-}
-
-// The event stream during which the rule will be evaluated.
-type AuthRuleV2NewParamsBodyEventStream string
-
-const (
-	AuthRuleV2NewParamsBodyEventStreamAuthorization         AuthRuleV2NewParamsBodyEventStream = "AUTHORIZATION"
-	AuthRuleV2NewParamsBodyEventStreamThreeDSAuthentication AuthRuleV2NewParamsBodyEventStream = "THREE_DS_AUTHENTICATION"
-	AuthRuleV2NewParamsBodyEventStreamTokenization          AuthRuleV2NewParamsBodyEventStream = "TOKENIZATION"
-	AuthRuleV2NewParamsBodyEventStreamACHCreditReceipt      AuthRuleV2NewParamsBodyEventStream = "ACH_CREDIT_RECEIPT"
-	AuthRuleV2NewParamsBodyEventStreamACHDebitReceipt       AuthRuleV2NewParamsBodyEventStream = "ACH_DEBIT_RECEIPT"
-)
-
-func (r AuthRuleV2NewParamsBodyEventStream) IsKnown() bool {
-	switch r {
-	case AuthRuleV2NewParamsBodyEventStreamAuthorization, AuthRuleV2NewParamsBodyEventStreamThreeDSAuthentication, AuthRuleV2NewParamsBodyEventStreamTokenization, AuthRuleV2NewParamsBodyEventStreamACHCreditReceipt, AuthRuleV2NewParamsBodyEventStreamACHDebitReceipt:
 		return true
 	}
 	return false
@@ -3775,11 +3699,11 @@ type AuthRuleV2ListParams struct {
 	EndingBefore param.Field[string] `query:"ending_before" format:"uuid"`
 	// Deprecated: Use event_streams instead. Only return Auth rules that are executed
 	// during the provided event stream.
-	EventStream param.Field[AuthRuleV2ListParamsEventStream] `query:"event_stream"`
+	EventStream param.Field[EventStream] `query:"event_stream"`
 	// Only return Auth rules that are executed during any of the provided event
 	// streams. If event_streams and event_stream are specified, the values will be
 	// combined.
-	EventStreams param.Field[[]AuthRuleV2ListParamsEventStream] `query:"event_streams"`
+	EventStreams param.Field[[]EventStream] `query:"event_streams"`
 	// Page size (for pagination).
 	PageSize param.Field[int64] `query:"page_size"`
 	// Only return Auth Rules that are bound to the provided scope.
@@ -3795,26 +3719,6 @@ func (r AuthRuleV2ListParams) URLQuery() (v url.Values) {
 		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
-}
-
-// Deprecated: Use event_streams instead. Only return Auth rules that are executed
-// during the provided event stream.
-type AuthRuleV2ListParamsEventStream string
-
-const (
-	AuthRuleV2ListParamsEventStreamAuthorization         AuthRuleV2ListParamsEventStream = "AUTHORIZATION"
-	AuthRuleV2ListParamsEventStreamThreeDSAuthentication AuthRuleV2ListParamsEventStream = "THREE_DS_AUTHENTICATION"
-	AuthRuleV2ListParamsEventStreamTokenization          AuthRuleV2ListParamsEventStream = "TOKENIZATION"
-	AuthRuleV2ListParamsEventStreamACHCreditReceipt      AuthRuleV2ListParamsEventStream = "ACH_CREDIT_RECEIPT"
-	AuthRuleV2ListParamsEventStreamACHDebitReceipt       AuthRuleV2ListParamsEventStream = "ACH_DEBIT_RECEIPT"
-)
-
-func (r AuthRuleV2ListParamsEventStream) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ListParamsEventStreamAuthorization, AuthRuleV2ListParamsEventStreamThreeDSAuthentication, AuthRuleV2ListParamsEventStreamTokenization, AuthRuleV2ListParamsEventStreamACHCreditReceipt, AuthRuleV2ListParamsEventStreamACHDebitReceipt:
-		return true
-	}
-	return false
 }
 
 // Only return Auth Rules that are bound to the provided scope.
