@@ -2,6 +2,15 @@
 
 package shared
 
+import (
+	"time"
+)
+
+type UnionTime time.Time
+
+func (UnionTime) ImplementsConditionalValueUnionParam() {}
+func (UnionTime) ImplementsConditionalValueUnion()      {}
+
 type UnionString string
 
 func (UnionString) ImplementsConditionalValueUnionParam()                    {}
