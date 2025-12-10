@@ -349,6 +349,43 @@ with `result.JSON.RawJSON()`, or get the raw JSON of a particular field on the r
 
 Any fields that are not present on the response struct will be saved and can be accessed by `result.JSON.ExtraFields()` which returns the extra fields as a `map[string]Field`.
 
+### Webhooks
+
+Lithic uses webhooks to notify your application when events happen. The library
+provides signature verification using the `standard-webhooks` dependency which
+is already included.
+
+#### Parsing and verifying webhooks
+
+```go
+// Verifies signature and returns typed event
+event, err := client.Webhooks.Parse(
+	payload,
+	request.Header,
+	// optionally pass option.WithWebhookSecret(secret), otherwise reads from client config
+)
+if err != nil {
+	log.Fatal(err)
+}
+
+// Use type switch on AsUnion() to handle different event types
+switch e := event.AsUnion().(type) {
+case lithic.CardCreatedWebhookEvent:
+	fmt.Printf("Card created: %s\n", e.CardToken)
+case lithic.AccountHolderCreatedWebhookEvent:
+	fmt.Printf("Account holder created: %s\n", e.Token)
+default:
+	fmt.Printf("Unknown event type: %T\n", e)
+}
+```
+
+#### Parsing without verification
+
+```go
+// Parse only - skips signature verification (not recommended for production)
+event, err := client.Webhooks.ParseUnsafe(payload)
+```
+
 ### Middleware
 
 We provide `option.WithMiddleware` which applies the given

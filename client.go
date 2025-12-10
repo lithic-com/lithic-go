@@ -34,7 +34,6 @@ type Client struct {
 	FinancialAccounts       *FinancialAccountService
 	Transactions            *TransactionService
 	ResponderEndpoints      *ResponderEndpointService
-	Webhooks                *WebhookService
 	ExternalBankAccounts    *ExternalBankAccountService
 	Payments                *PaymentService
 	ThreeDS                 *ThreeDSService
@@ -50,6 +49,7 @@ type Client struct {
 	Fraud                   *FraudService
 	NetworkPrograms         *NetworkProgramService
 	AccountActivity         *AccountActivityService
+	Webhooks                *WebhookService
 }
 
 // DefaultClientOptions read from the environment (LITHIC_API_KEY,
@@ -95,7 +95,6 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.FinancialAccounts = NewFinancialAccountService(opts...)
 	r.Transactions = NewTransactionService(opts...)
 	r.ResponderEndpoints = NewResponderEndpointService(opts...)
-	r.Webhooks = NewWebhookService(opts...)
 	r.ExternalBankAccounts = NewExternalBankAccountService(opts...)
 	r.Payments = NewPaymentService(opts...)
 	r.ThreeDS = NewThreeDSService(opts...)
@@ -111,6 +110,7 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.Fraud = NewFraudService(opts...)
 	r.NetworkPrograms = NewNetworkProgramService(opts...)
 	r.AccountActivity = NewAccountActivityService(opts...)
+	r.Webhooks = NewWebhookService(opts...)
 
 	return
 }
