@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.98.0 (2025-12-10)
+
+Full Changelog: [v0.97.0...v0.98.0](https://github.com/lithic-com/lithic-go/compare/v0.97.0...v0.98.0)
+
+### Features
+
+* **api:** add bulk card creation APIs ([b9b6d6f](https://github.com/lithic-com/lithic-go/commit/b9b6d6fe2126d1e0eedfaa77a5c29ffe2b7831a8))
+* **api:** Add event_streams to auth rules APIs ([e8956cb](https://github.com/lithic-com/lithic-go/commit/e8956cb7728230b222c4b8e25bab944f476a3436))
+* **api:** add Google WPP to SDKs ([884c10a](https://github.com/lithic-com/lithic-go/commit/884c10a5f163eba876ddbf4edfc07894461a1f9a))
+* **api:** add IS_AFTER / IS_BEFORE operators to Auth Rule APIs ([884c10a](https://github.com/lithic-com/lithic-go/commit/884c10a5f163eba876ddbf4edfc07894461a1f9a))
+* **api:** Add new fee types ([e8956cb](https://github.com/lithic-com/lithic-go/commit/e8956cb7728230b222c4b8e25bab944f476a3436))
+* **api:** Add optional ach_hold_period ([e8956cb](https://github.com/lithic-com/lithic-go/commit/e8956cb7728230b222c4b8e25bab944f476a3436))
+* **api:** add WALLET_RECOMMENDATION_REASONS attribute for tokenization rules ([2a11b16](https://github.com/lithic-com/lithic-go/commit/2a11b1659b3ba327c5a3dc6232b3171ff211bb1c))
+* **api:** add webhook schemas to SDKs - add parse and parse_unsafe ([ff840e9](https://github.com/lithic-com/lithic-go/commit/ff840e9306eeed31ccd58c477f5f8286399af3e2))
+* **api:** provide a unified model for AuthRule ([2a11b16](https://github.com/lithic-com/lithic-go/commit/2a11b1659b3ba327c5a3dc6232b3171ff211bb1c))
+* **api:** support event_streams in auth_rules list endpoint ([8e9cc3c](https://github.com/lithic-com/lithic-go/commit/8e9cc3c7ef4bdcf3c1de9e6e72922feee2792032))
+
+
+### Bug Fixes
+
+* **api:** extract several common types to reduce duplication ([b9b6d6f](https://github.com/lithic-com/lithic-go/commit/b9b6d6fe2126d1e0eedfaa77a5c29ffe2b7831a8))
+* **api:** fix examples in spec that were not fully valid ([2a11b16](https://github.com/lithic-com/lithic-go/commit/2a11b1659b3ba327c5a3dc6232b3171ff211bb1c))
+* **api:** make certain payoff fields nullable ([2a11b16](https://github.com/lithic-com/lithic-go/commit/2a11b1659b3ba327c5a3dc6232b3171ff211bb1c))
+* **mcp:** correct code tool API endpoint ([174ec9e](https://github.com/lithic-com/lithic-go/commit/174ec9e1fa53e8b700a437ec864f135f1ca89e5a))
+* rename param to avoid collision ([6f48a03](https://github.com/lithic-com/lithic-go/commit/6f48a036f88939f79d8111d840c491763044dcac))
+
+
+### Chores
+
+* elide duplicate aliases ([829889f](https://github.com/lithic-com/lithic-go/commit/829889fb8e62be7cce0405f30d2ddd3918ae374b))
+* **internal:** codegen related update ([c2d4254](https://github.com/lithic-com/lithic-go/commit/c2d4254cb85fb5376b30753cb5816d2e2550675c))
+* **internal:** codegen related update ([70d9a3d](https://github.com/lithic-com/lithic-go/commit/70d9a3dd440e1693c67cd4b355e2837be01df3c4))
+* replace custom webhook signature verification with standardwebhooks ([ff840e9](https://github.com/lithic-com/lithic-go/commit/ff840e9306eeed31ccd58c477f5f8286399af3e2))
+* revert some unnecessary custom code ([89da376](https://github.com/lithic-com/lithic-go/commit/89da3762a1cebcfa181fecdfe910ef60834c3360))
+
+
+### Documentation
+
+* **api:** clarify error 422 for 3DS challenge response ([884c10a](https://github.com/lithic-com/lithic-go/commit/884c10a5f163eba876ddbf4edfc07894461a1f9a))
+
 ## 0.97.0 (2025-11-20)
 
 Full Changelog: [v0.96.1...v0.97.0](https://github.com/lithic-com/lithic-go/compare/v0.96.1...v0.97.0)
