@@ -158,10 +158,13 @@ Methods:
 
 Response Types:
 
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#Device">Device</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DigitalWalletTokenMetadata">DigitalWalletTokenMetadata</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#Tokenization">Tokenization</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TokenizationDeclineReason">TokenizationDeclineReason</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TokenizationRuleResult">TokenizationRuleResult</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TokenizationTfaReason">TokenizationTfaReason</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#WalletDecisioningInfo">WalletDecisioningInfo</a>
 
 Methods:
 
@@ -697,6 +700,10 @@ Methods:
 
 # InternalTransaction
 
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#InternalTransaction">InternalTransaction</a>
+
 # FundingEvents
 
 Response Types:
@@ -747,3 +754,63 @@ Methods:
 
 - <code title="get /v1/account_activity">client.AccountActivity.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountActivityService.List">List</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, query <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountActivityListParams">AccountActivityListParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/packages/pagination">pagination</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/packages/pagination#CursorPage">CursorPage</a>[<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountActivityListResponse">AccountActivityListResponse</a>], <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 - <code title="get /v1/account_activity/{transaction_token}">client.AccountActivity.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountActivityService.GetTransaction">GetTransaction</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, transactionToken <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountActivityGetTransactionResponse">AccountActivityGetTransactionResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
+# Webhooks
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderCreatedWebhookEvent">AccountHolderCreatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderUpdatedWebhookEvent">AccountHolderUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderVerificationWebhookEvent">AccountHolderVerificationWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderDocumentUpdatedWebhookEvent">AccountHolderDocumentUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AsaRequestWebhookEvent">AsaRequestWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TokenizationDecisioningRequestWebhookEvent">TokenizationDecisioningRequestWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRulesBacktestReportCreatedWebhookEvent">AuthRulesBacktestReportCreatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#BalanceUpdatedWebhookEvent">BalanceUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#BookTransferTransactionCreatedWebhookEvent">BookTransferTransactionCreatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#BookTransferTransactionUpdatedWebhookEvent">BookTransferTransactionUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardCreatedWebhookEvent">CardCreatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardConvertedWebhookEvent">CardConvertedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardRenewedWebhookEvent">CardRenewedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardReissuedWebhookEvent">CardReissuedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardShippedWebhookEvent">CardShippedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardTransactionUpdatedWebhookEvent">CardTransactionUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardTransactionEnhancedDataCreatedWebhookEvent">CardTransactionEnhancedDataCreatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardTransactionEnhancedDataUpdatedWebhookEvent">CardTransactionEnhancedDataUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DigitalWalletTokenizationApprovalRequestWebhookEvent">DigitalWalletTokenizationApprovalRequestWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DigitalWalletTokenizationResultWebhookEvent">DigitalWalletTokenizationResultWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DigitalWalletTokenizationTwoFactorAuthenticationCodeWebhookEvent">DigitalWalletTokenizationTwoFactorAuthenticationCodeWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DigitalWalletTokenizationTwoFactorAuthenticationCodeSentWebhookEvent">DigitalWalletTokenizationTwoFactorAuthenticationCodeSentWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DigitalWalletTokenizationUpdatedWebhookEvent">DigitalWalletTokenizationUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DisputeUpdatedWebhookEvent">DisputeUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DisputeEvidenceUploadFailedWebhookEvent">DisputeEvidenceUploadFailedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountCreatedWebhookEvent">ExternalBankAccountCreatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountUpdatedWebhookEvent">ExternalBankAccountUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalPaymentCreatedWebhookEvent">ExternalPaymentCreatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalPaymentUpdatedWebhookEvent">ExternalPaymentUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#FinancialAccountCreatedWebhookEvent">FinancialAccountCreatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#FinancialAccountUpdatedWebhookEvent">FinancialAccountUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#FundingEventCreatedWebhookEvent">FundingEventCreatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#LoanTapeCreatedWebhookEvent">LoanTapeCreatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#LoanTapeUpdatedWebhookEvent">LoanTapeUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ManagementOperationCreatedWebhookEvent">ManagementOperationCreatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ManagementOperationUpdatedWebhookEvent">ManagementOperationUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#InternalTransactionCreatedWebhookEvent">InternalTransactionCreatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#InternalTransactionUpdatedWebhookEvent">InternalTransactionUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#NetworkTotalCreatedWebhookEvent">NetworkTotalCreatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#NetworkTotalUpdatedWebhookEvent">NetworkTotalUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentTransactionCreatedWebhookEvent">PaymentTransactionCreatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#PaymentTransactionUpdatedWebhookEvent">PaymentTransactionUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#SettlementReportUpdatedWebhookEvent">SettlementReportUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#StatementsCreatedWebhookEvent">StatementsCreatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSAuthenticationCreatedWebhookEvent">ThreeDSAuthenticationCreatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSAuthenticationUpdatedWebhookEvent">ThreeDSAuthenticationUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ThreeDSAuthenticationChallengeWebhookEvent">ThreeDSAuthenticationChallengeWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TokenizationApprovalRequestWebhookEvent">TokenizationApprovalRequestWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TokenizationResultWebhookEvent">TokenizationResultWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TokenizationTwoFactorAuthenticationCodeWebhookEvent">TokenizationTwoFactorAuthenticationCodeWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TokenizationTwoFactorAuthenticationCodeSentWebhookEvent">TokenizationTwoFactorAuthenticationCodeSentWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#TokenizationUpdatedWebhookEvent">TokenizationUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DisputeTransactionCreatedWebhookEvent">DisputeTransactionCreatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DisputeTransactionUpdatedWebhookEvent">DisputeTransactionUpdatedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ParsedWebhookEvent">ParsedWebhookEvent</a>

@@ -49,6 +49,7 @@ type Client struct {
 	Fraud                   *FraudService
 	NetworkPrograms         *NetworkProgramService
 	AccountActivity         *AccountActivityService
+	Webhooks                *WebhookService
 }
 
 // DefaultClientOptions read from the environment (LITHIC_API_KEY,
@@ -109,6 +110,7 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.Fraud = NewFraudService(opts...)
 	r.NetworkPrograms = NewNetworkProgramService(opts...)
 	r.AccountActivity = NewAccountActivityService(opts...)
+	r.Webhooks = NewWebhookService(opts...)
 
 	return
 }
