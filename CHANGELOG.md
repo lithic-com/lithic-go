@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.98.1 (2025-12-12)
+
+Full Changelog: [v0.98.0...v0.98.1](https://github.com/lithic-com/lithic-go/compare/v0.98.0...v0.98.1)
+
+### Bug Fixes
+
+* **api:** include schema and base URL in GetEmbedURL ([09f2a83](https://github.com/lithic-com/lithic-go/commit/09f2a83e006afa2339f0dd388c564779e1dc0511))
+
 ## 0.98.0 (2025-12-10)
 
 Full Changelog: [v0.97.0...v0.98.0](https://github.com/lithic-com/lithic-go/compare/v0.97.0...v0.98.0)
