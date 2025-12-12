@@ -259,30 +259,57 @@ func TestCardGetEmbedHTMLWithOptionalParams(t *testing.T) {
 	}
 }
 
-func TestCardGetEmbedURLWithOptionalParams(t *testing.T) {
-	baseURL := "http://localhost:4010"
-	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
-		baseURL = envURL
-	}
-	if !testutil.CheckTestServer(t, baseURL) {
-		return
-	}
+func TestCardGetEmbedURL_URLConstruction(t *testing.T) {
+	// Use fixed inputs to verify URL construction and signature
 	client := lithic.NewClient(
-		option.WithBaseURL(baseURL),
-		option.WithAPIKey("My Lithic API Key"),
+		option.WithBaseURL("https://sandbox.lithic.com"),
+		option.WithAPIKey("test-api-key-12345"),
 	)
-	_, err := client.Cards.GetEmbedURL(context.TODO(), lithic.CardGetEmbedURLParams{
-		Token:        lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-		Css:          lithic.F("string"),
-		Expiration:   lithic.F(time.Now()),
-		TargetOrigin: lithic.F("string"),
+
+	expiration, err := time.Parse(time.RFC3339, "2025-01-01T00:00:00Z")
+	if err != nil {
+		t.Fatalf("failed to parse expiration: %s", err.Error())
+	}
+
+	url, err := client.Cards.GetEmbedURL(context.TODO(), lithic.CardGetEmbedURLParams{
+		Token:        lithic.F("test-card-token-abc123"),
+		Css:          lithic.F("https://example.com/style.css"),
+		Expiration:   lithic.F(expiration),
+		TargetOrigin: lithic.F("https://example.com"),
 	})
 	if err != nil {
-		var apierr *lithic.Error
-		if errors.As(err, &apierr) {
-			t.Log(string(apierr.DumpRequest(true)))
-		}
 		t.Fatalf("err should be nil: %s", err.Error())
+	}
+
+	// Verify URL structure
+	if url.Scheme != "https" {
+		t.Errorf("expected scheme 'https', got '%s'", url.Scheme)
+	}
+	if url.Host != "sandbox.lithic.com" {
+		t.Errorf("expected host 'sandbox.lithic.com', got '%s'", url.Host)
+	}
+	if url.Path != "/v1/embed/card" {
+		t.Errorf("expected path '/v1/embed/card', got '%s'", url.Path)
+	}
+
+	// Verify query params exist
+	query := url.Query()
+	if query.Get("embed_request") == "" {
+		t.Error("expected 'embed_request' query param to be present")
+	}
+	if query.Get("hmac") == "" {
+		t.Error("expected 'hmac' query param to be present")
+	}
+
+	// Verify exact values to prevent signature regressions
+	expectedEmbedRequest := "eyJjc3MiOiJodHRwczovL2V4YW1wbGUuY29tL3N0eWxlLmNzcyIsImV4cGlyYXRpb24iOiIyMDI1LTAxLTAxVDAwOjAwOjAwWiIsInRhcmdldF9vcmlnaW4iOiJodHRwczovL2V4YW1wbGUuY29tIiwidG9rZW4iOiJ0ZXN0LWNhcmQtdG9rZW4tYWJjMTIzIn0="
+	expectedHmac := "tHf1AsLDIO7gHDA+N/3d5RT446tSmorVbjELGXF/UKQ="
+
+	if query.Get("embed_request") != expectedEmbedRequest {
+		t.Errorf("embed_request mismatch:\n  got:  %s\n  want: %s", query.Get("embed_request"), expectedEmbedRequest)
+	}
+	if query.Get("hmac") != expectedHmac {
+		t.Errorf("hmac mismatch:\n  got:  %s\n  want: %s", query.Get("hmac"), expectedHmac)
 	}
 }
 

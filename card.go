@@ -222,6 +222,7 @@ func (r *CardService) GetEmbedHTML(ctx context.Context, params CardGetEmbedHTMLP
 // but **do not ever embed your API key into front end code, as doing so introduces
 // a serious security vulnerability**.
 func (r *CardService) GetEmbedURL(ctx context.Context, params CardGetEmbedURLParams, opts ...option.RequestOption) (res *url.URL, err error) {
+	opts = slices.Concat(r.Options, opts)
 	buf, err := params.MarshalJSON()
 	if err != nil {
 		return nil, err
@@ -240,7 +241,14 @@ func (r *CardService) GetEmbedURL(ctx context.Context, params CardGetEmbedURLPar
 	if err != nil {
 		return nil, err
 	}
-	return cfg.Request.URL, nil
+	baseURL := cfg.BaseURL
+	if baseURL == nil {
+		baseURL = cfg.DefaultBaseURL
+	}
+	if baseURL == nil {
+		return nil, errors.New("base url is not set")
+	}
+	return baseURL.Parse(cfg.Request.URL.String())
 }
 
 // Allow your cardholders to directly add payment cards to the device's digital
