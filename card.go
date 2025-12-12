@@ -33,7 +33,6 @@ import (
 // the [NewCardService] method instead.
 type CardService struct {
 	Options               []option.RequestOption
-	AggregateBalances     *CardAggregateBalanceService
 	Balances              *CardBalanceService
 	FinancialTransactions *CardFinancialTransactionService
 }
@@ -44,7 +43,6 @@ type CardService struct {
 func NewCardService(opts ...option.RequestOption) (r *CardService) {
 	r = &CardService{}
 	r.Options = opts
-	r.AggregateBalances = NewCardAggregateBalanceService(opts...)
 	r.Balances = NewCardBalanceService(opts...)
 	r.FinancialTransactions = NewCardFinancialTransactionService(opts...)
 	return
