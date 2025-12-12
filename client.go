@@ -26,7 +26,6 @@ type Client struct {
 	Cards                   *CardService
 	CardBulkOrders          *CardBulkOrderService
 	Balances                *BalanceService
-	AggregateBalances       *AggregateBalanceService
 	Disputes                *DisputeService
 	DisputesV2              *DisputesV2Service
 	Events                  *EventService
@@ -87,7 +86,6 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.Cards = NewCardService(opts...)
 	r.CardBulkOrders = NewCardBulkOrderService(opts...)
 	r.Balances = NewBalanceService(opts...)
-	r.AggregateBalances = NewAggregateBalanceService(opts...)
 	r.Disputes = NewDisputeService(opts...)
 	r.DisputesV2 = NewDisputesV2Service(opts...)
 	r.Events = NewEventService(opts...)

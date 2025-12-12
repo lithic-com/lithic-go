@@ -209,16 +209,6 @@ Methods:
 - <code title="post /v1/cards/search_by_pan">client.Cards.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardService.SearchByPan">SearchByPan</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardSearchByPanParams">CardSearchByPanParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#Card">Card</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 - <code title="post /v1/cards/{card_token}/web_provision">client.Cards.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardService.WebProvision">WebProvision</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, cardToken <a href="https://pkg.go.dev/builtin#string">string</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardWebProvisionParams">CardWebProvisionParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardWebProvisionResponse">CardWebProvisionResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 
-## AggregateBalances
-
-Response Types:
-
-- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardAggregateBalanceListResponse">CardAggregateBalanceListResponse</a>
-
-Methods:
-
-- <code title="get /v1/cards/aggregate_balances">client.Cards.AggregateBalances.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardAggregateBalanceService.List">List</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, query <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardAggregateBalanceListParams">CardAggregateBalanceListParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/packages/pagination">pagination</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/packages/pagination#SinglePage">SinglePage</a>[<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardAggregateBalanceListResponse">CardAggregateBalanceListResponse</a>], <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
-
 ## Balances
 
 Methods:
@@ -254,16 +244,6 @@ Response Types:
 Methods:
 
 - <code title="get /v1/balances">client.Balances.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#BalanceService.List">List</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, query <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#BalanceListParams">BalanceListParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/packages/pagination">pagination</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/packages/pagination#SinglePage">SinglePage</a>[<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#Balance">Balance</a>], <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
-
-# AggregateBalances
-
-Response Types:
-
-- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AggregateBalance">AggregateBalance</a>
-
-Methods:
-
-- <code title="get /v1/aggregate_balances">client.AggregateBalances.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AggregateBalanceService.List">List</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, query <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AggregateBalanceListParams">AggregateBalanceListParams</a>) (<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/packages/pagination">pagination</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/packages/pagination#SinglePage">SinglePage</a>[<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AggregateBalance">AggregateBalance</a>], <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 
 # Disputes
 
