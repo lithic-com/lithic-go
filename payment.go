@@ -333,7 +333,9 @@ type PaymentEvent struct {
 	Type PaymentEventsType `json:"type,required"`
 	// More detailed reasons for the event
 	DetailedResults []PaymentEventsDetailedResult `json:"detailed_results"`
-	JSON            paymentEventJSON              `json:"-"`
+	// Payment event external ID, for example, ACH trace number.
+	ExternalID string           `json:"external_id,nullable"`
+	JSON       paymentEventJSON `json:"-"`
 }
 
 // paymentEventJSON contains the JSON metadata for the struct [PaymentEvent]
@@ -344,6 +346,7 @@ type paymentEventJSON struct {
 	Result          apijson.Field
 	Type            apijson.Field
 	DetailedResults apijson.Field
+	ExternalID      apijson.Field
 	raw             string
 	ExtraFields     map[string]apijson.Field
 }

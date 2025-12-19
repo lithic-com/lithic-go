@@ -82,6 +82,18 @@ func (r *BookTransferService) ListAutoPaging(ctx context.Context, query BookTran
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
+// Retry a book transfer that has been declined
+func (r *BookTransferService) Retry(ctx context.Context, bookTransferToken string, body BookTransferRetryParams, opts ...option.RequestOption) (res *BookTransferResponse, err error) {
+	opts = slices.Concat(r.Options, opts)
+	if bookTransferToken == "" {
+		err = errors.New("missing required book_transfer_token parameter")
+		return
+	}
+	path := fmt.Sprintf("v1/book_transfers/%s/retry", bookTransferToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+	return
+}
+
 // Reverse a book transfer
 func (r *BookTransferService) Reverse(ctx context.Context, bookTransferToken string, body BookTransferReverseParams, opts ...option.RequestOption) (res *BookTransferResponse, err error) {
 	opts = slices.Concat(r.Options, opts)
@@ -602,6 +614,15 @@ func (r BookTransferListParamsStatus) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+type BookTransferRetryParams struct {
+	// Globally unique identifier for the retry.
+	RetryToken param.Field[string] `json:"retry_token,required" format:"uuid"`
+}
+
+func (r BookTransferRetryParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }
 
 type BookTransferReverseParams struct {
