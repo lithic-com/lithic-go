@@ -382,10 +382,12 @@ type ExternalPaymentNewParams struct {
 	EffectiveDate         param.Field[time.Time]                           `json:"effective_date,required" format:"date"`
 	FinancialAccountToken param.Field[string]                              `json:"financial_account_token,required" format:"uuid"`
 	PaymentType           param.Field[ExternalPaymentNewParamsPaymentType] `json:"payment_type,required"`
-	Token                 param.Field[string]                              `json:"token" format:"uuid"`
-	Memo                  param.Field[string]                              `json:"memo"`
-	ProgressTo            param.Field[ExternalPaymentNewParamsProgressTo]  `json:"progress_to"`
-	UserDefinedID         param.Field[string]                              `json:"user_defined_id"`
+	// Customer-provided token that will serve as an idempotency token. This token will
+	// become the transaction token.
+	Token         param.Field[string]                             `json:"token" format:"uuid"`
+	Memo          param.Field[string]                             `json:"memo"`
+	ProgressTo    param.Field[ExternalPaymentNewParamsProgressTo] `json:"progress_to"`
+	UserDefinedID param.Field[string]                             `json:"user_defined_id"`
 }
 
 func (r ExternalPaymentNewParams) MarshalJSON() (data []byte, err error) {
