@@ -156,7 +156,7 @@ func NewRequestConfig(ctx context.Context, method string, u string, body interfa
 	for k, v := range getDefaultHeaders() {
 		req.Header.Add(k, v)
 	}
-	req.Header.Set("X-Lithic-Pagination", "cursor")
+
 	for k, v := range getPlatformProperties() {
 		req.Header.Add(k, v)
 	}

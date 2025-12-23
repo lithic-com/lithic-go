@@ -617,7 +617,8 @@ func (r BookTransferListParamsStatus) IsKnown() bool {
 }
 
 type BookTransferRetryParams struct {
-	// Globally unique identifier for the retry.
+	// Customer-provided token that will serve as an idempotency token. This token will
+	// become the transaction token.
 	RetryToken param.Field[string] `json:"retry_token,required" format:"uuid"`
 }
 
