@@ -26,7 +26,6 @@ type Client struct {
 	Cards                   *CardService
 	CardBulkOrders          *CardBulkOrderService
 	Balances                *BalanceService
-	AggregateBalances       *AggregateBalanceService
 	Disputes                *DisputeService
 	DisputesV2              *DisputesV2Service
 	Events                  *EventService
@@ -49,6 +48,7 @@ type Client struct {
 	Fraud                   *FraudService
 	NetworkPrograms         *NetworkProgramService
 	AccountActivity         *AccountActivityService
+	TransferLimits          *TransferLimitService
 	Webhooks                *WebhookService
 }
 
@@ -87,7 +87,6 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.Cards = NewCardService(opts...)
 	r.CardBulkOrders = NewCardBulkOrderService(opts...)
 	r.Balances = NewBalanceService(opts...)
-	r.AggregateBalances = NewAggregateBalanceService(opts...)
 	r.Disputes = NewDisputeService(opts...)
 	r.DisputesV2 = NewDisputesV2Service(opts...)
 	r.Events = NewEventService(opts...)
@@ -110,6 +109,7 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.Fraud = NewFraudService(opts...)
 	r.NetworkPrograms = NewNetworkProgramService(opts...)
 	r.AccountActivity = NewAccountActivityService(opts...)
+	r.TransferLimits = NewTransferLimitService(opts...)
 	r.Webhooks = NewWebhookService(opts...)
 
 	return

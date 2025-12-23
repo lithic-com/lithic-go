@@ -7,13 +7,14 @@ import (
 	"errors"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/lithic-com/lithic-go"
 	"github.com/lithic-com/lithic-go/internal/testutil"
 	"github.com/lithic-com/lithic-go/option"
 )
 
-func TestCardAggregateBalanceListWithOptionalParams(t *testing.T) {
+func TestTransferLimitListWithOptionalParams(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -25,9 +26,8 @@ func TestCardAggregateBalanceListWithOptionalParams(t *testing.T) {
 		option.WithBaseURL(baseURL),
 		option.WithAPIKey("My Lithic API Key"),
 	)
-	_, err := client.Cards.AggregateBalances.List(context.TODO(), lithic.CardAggregateBalanceListParams{
-		AccountToken:         lithic.F("account_token"),
-		BusinessAccountToken: lithic.F("business_account_token"),
+	_, err := client.TransferLimits.List(context.TODO(), lithic.TransferLimitListParams{
+		Date: lithic.F(time.Now()),
 	})
 	if err != nil {
 		var apierr *lithic.Error

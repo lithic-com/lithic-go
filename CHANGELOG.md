@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.99.0 (2025-12-23)
+
+Full Changelog: [v0.98.1...v0.99.0](https://github.com/lithic-com/lithic-go/compare/v0.98.1...v0.99.0)
+
+### Features
+
+* **api:** add external_id to payment_event ([f42a314](https://github.com/lithic-com/lithic-go/commit/f42a31473d6cc020a3e7da98976258de4831883e))
+* **api:** add get /v1/transfer_limits endpoint ([f42a314](https://github.com/lithic-com/lithic-go/commit/f42a31473d6cc020a3e7da98976258de4831883e))
+* **api:** add post /v1/book_transfers/{book_transfer_token}/retry endpoint ([f42a314](https://github.com/lithic-com/lithic-go/commit/f42a31473d6cc020a3e7da98976258de4831883e))
+* **api:** add WIRE_DRAWDOWN_REQUEST transfer type ([9015ffc](https://github.com/lithic-com/lithic-go/commit/9015ffcce5361aa50cc171ce720b00adda0987ad))
+* **api:** remove unnecessary X-Lithic-Pagination header ([9015ffc](https://github.com/lithic-com/lithic-go/commit/9015ffcce5361aa50cc171ce720b00adda0987ad))
+* **api:** remove v1/aggregate_balances and related models ([da86140](https://github.com/lithic-com/lithic-go/commit/da861407f17db3494fcbece040e8b695cc4ec7f4))
+
+
+### Documentation
+
+* **api:** clarify description of token /  retry_token when it serves as idempotency key ([9015ffc](https://github.com/lithic-com/lithic-go/commit/9015ffcce5361aa50cc171ce720b00adda0987ad))
+
 ## 0.98.1 (2025-12-12)
 
 Full Changelog: [v0.98.0...v0.98.1](https://github.com/lithic-com/lithic-go/compare/v0.98.0...v0.98.1)

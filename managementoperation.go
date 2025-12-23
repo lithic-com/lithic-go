@@ -421,8 +421,10 @@ type ManagementOperationNewParams struct {
 	EffectiveDate         param.Field[time.Time]                             `json:"effective_date,required" format:"date"`
 	EventType             param.Field[ManagementOperationNewParamsEventType] `json:"event_type,required"`
 	FinancialAccountToken param.Field[string]                                `json:"financial_account_token,required" format:"uuid"`
-	Token                 param.Field[string]                                `json:"token" format:"uuid"`
-	Memo                  param.Field[string]                                `json:"memo"`
+	// Customer-provided token that will serve as an idempotency token. This token will
+	// become the transaction token.
+	Token param.Field[string] `json:"token" format:"uuid"`
+	Memo  param.Field[string] `json:"memo"`
 	// What to do if the financial account is closed when posting an operation
 	OnClosedAccount param.Field[ManagementOperationNewParamsOnClosedAccount] `json:"on_closed_account"`
 	Subtype         param.Field[string]                                      `json:"subtype"`
