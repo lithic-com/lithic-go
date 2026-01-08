@@ -614,9 +614,11 @@ func (d *decoderBuilder) newTimeTypeDecoder(t reflect.Type) decoderFunc {
 			return nil
 		}
 
-		if guardStrict(state, true) {
-			return err
-		}
+		// NOTE: we don't use guardStrict here because we want to try
+		// alternative layouts - these produce semantically identical time.Time
+		// values - only the string representation differs. Since the parsed value
+		// is the same, we don't mark this as "loose" (which would affect union
+		// discrimination)
 
 		layouts := []string{
 			"2006-01-02",
