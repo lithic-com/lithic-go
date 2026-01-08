@@ -168,14 +168,16 @@ type FinancialAccount struct {
 	IsForBenefitOf bool   `json:"is_for_benefit_of,required"`
 	Nickname       string `json:"nickname,required,nullable"`
 	// Status of the financial account
-	Status        FinancialAccountStatus `json:"status,required"`
-	Type          FinancialAccountType   `json:"type,required"`
-	Updated       time.Time              `json:"updated,required" format:"date-time"`
-	AccountNumber string                 `json:"account_number,nullable"`
-	RoutingNumber string                 `json:"routing_number,nullable"`
+	Status FinancialAccountStatus `json:"status,required"`
 	// Substatus for the financial account
-	Substatus FinancialAccountSubstatus `json:"substatus,nullable"`
-	JSON      financialAccountJSON      `json:"-"`
+	Substatus FinancialAccountSubstatus `json:"substatus,required,nullable"`
+	Type      FinancialAccountType      `json:"type,required"`
+	Updated   time.Time                 `json:"updated,required" format:"date-time"`
+	// User-defined status for the financial account
+	UserDefinedStatus string               `json:"user_defined_status,required,nullable"`
+	AccountNumber     string               `json:"account_number,nullable"`
+	RoutingNumber     string               `json:"routing_number,nullable"`
+	JSON              financialAccountJSON `json:"-"`
 }
 
 // financialAccountJSON contains the JSON metadata for the struct
@@ -188,11 +190,12 @@ type financialAccountJSON struct {
 	IsForBenefitOf      apijson.Field
 	Nickname            apijson.Field
 	Status              apijson.Field
+	Substatus           apijson.Field
 	Type                apijson.Field
 	Updated             apijson.Field
+	UserDefinedStatus   apijson.Field
 	AccountNumber       apijson.Field
 	RoutingNumber       apijson.Field
-	Substatus           apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
 }
@@ -277,6 +280,25 @@ func (r FinancialAccountStatus) IsKnown() bool {
 	return false
 }
 
+// Substatus for the financial account
+type FinancialAccountSubstatus string
+
+const (
+	FinancialAccountSubstatusChargedOffDelinquent FinancialAccountSubstatus = "CHARGED_OFF_DELINQUENT"
+	FinancialAccountSubstatusChargedOffFraud      FinancialAccountSubstatus = "CHARGED_OFF_FRAUD"
+	FinancialAccountSubstatusEndUserRequest       FinancialAccountSubstatus = "END_USER_REQUEST"
+	FinancialAccountSubstatusBankRequest          FinancialAccountSubstatus = "BANK_REQUEST"
+	FinancialAccountSubstatusDelinquent           FinancialAccountSubstatus = "DELINQUENT"
+)
+
+func (r FinancialAccountSubstatus) IsKnown() bool {
+	switch r {
+	case FinancialAccountSubstatusChargedOffDelinquent, FinancialAccountSubstatusChargedOffFraud, FinancialAccountSubstatusEndUserRequest, FinancialAccountSubstatusBankRequest, FinancialAccountSubstatusDelinquent:
+		return true
+	}
+	return false
+}
+
 type FinancialAccountType string
 
 const (
@@ -295,25 +317,6 @@ const (
 func (r FinancialAccountType) IsKnown() bool {
 	switch r {
 	case FinancialAccountTypeIssuing, FinancialAccountTypeReserve, FinancialAccountTypeOperating, FinancialAccountTypeChargedOffFees, FinancialAccountTypeChargedOffInterest, FinancialAccountTypeChargedOffPrincipal, FinancialAccountTypeSecurity, FinancialAccountTypeProgramReceivables, FinancialAccountTypeCollection, FinancialAccountTypeProgramBankAccountsPayable:
-		return true
-	}
-	return false
-}
-
-// Substatus for the financial account
-type FinancialAccountSubstatus string
-
-const (
-	FinancialAccountSubstatusChargedOffDelinquent FinancialAccountSubstatus = "CHARGED_OFF_DELINQUENT"
-	FinancialAccountSubstatusChargedOffFraud      FinancialAccountSubstatus = "CHARGED_OFF_FRAUD"
-	FinancialAccountSubstatusEndUserRequest       FinancialAccountSubstatus = "END_USER_REQUEST"
-	FinancialAccountSubstatusBankRequest          FinancialAccountSubstatus = "BANK_REQUEST"
-	FinancialAccountSubstatusDelinquent           FinancialAccountSubstatus = "DELINQUENT"
-)
-
-func (r FinancialAccountSubstatus) IsKnown() bool {
-	switch r {
-	case FinancialAccountSubstatusChargedOffDelinquent, FinancialAccountSubstatusChargedOffFraud, FinancialAccountSubstatusEndUserRequest, FinancialAccountSubstatusBankRequest, FinancialAccountSubstatusDelinquent:
 		return true
 	}
 	return false
@@ -667,6 +670,8 @@ type FinancialAccountUpdateStatusParams struct {
 	Status param.Field[FinancialAccountUpdateStatusParamsStatus] `json:"status,required"`
 	// Substatus for the financial account
 	Substatus param.Field[FinancialAccountUpdateStatusParamsSubstatus] `json:"substatus,required"`
+	// User-defined status for the financial account
+	UserDefinedStatus param.Field[string] `json:"user_defined_status"`
 }
 
 func (r FinancialAccountUpdateStatusParams) MarshalJSON() (data []byte, err error) {

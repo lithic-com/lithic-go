@@ -2014,6 +2014,8 @@ type ConditionalTokenizationActionParametersCondition struct {
 	//     `TOO_MANY_RECENT_TOKENS`, `UNABLE_TO_ASSESS`.
 	//   - `TOKEN_REQUESTOR_ID`: Unique identifier for the entity requesting the token.
 	//   - `WALLET_TOKEN_STATUS`: The current status of the wallet token.
+	//   - `CARD_STATE`: The state of the card being tokenized. Valid values are
+	//     `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`, `PENDING_FULFILLMENT`.
 	Attribute ConditionalTokenizationActionParametersConditionsAttribute `json:"attribute,required"`
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation,required"`
@@ -2072,6 +2074,8 @@ func (r conditionalTokenizationActionParametersConditionJSON) RawJSON() string {
 //     `TOO_MANY_RECENT_TOKENS`, `UNABLE_TO_ASSESS`.
 //   - `TOKEN_REQUESTOR_ID`: Unique identifier for the entity requesting the token.
 //   - `WALLET_TOKEN_STATUS`: The current status of the wallet token.
+//   - `CARD_STATE`: The state of the card being tokenized. Valid values are
+//     `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`, `PENDING_FULFILLMENT`.
 type ConditionalTokenizationActionParametersConditionsAttribute string
 
 const (
@@ -2085,11 +2089,12 @@ const (
 	ConditionalTokenizationActionParametersConditionsAttributeWalletRecommendationReasons ConditionalTokenizationActionParametersConditionsAttribute = "WALLET_RECOMMENDATION_REASONS"
 	ConditionalTokenizationActionParametersConditionsAttributeTokenRequestorID            ConditionalTokenizationActionParametersConditionsAttribute = "TOKEN_REQUESTOR_ID"
 	ConditionalTokenizationActionParametersConditionsAttributeWalletTokenStatus           ConditionalTokenizationActionParametersConditionsAttribute = "WALLET_TOKEN_STATUS"
+	ConditionalTokenizationActionParametersConditionsAttributeCardState                   ConditionalTokenizationActionParametersConditionsAttribute = "CARD_STATE"
 )
 
 func (r ConditionalTokenizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case ConditionalTokenizationActionParametersConditionsAttributeTimestamp, ConditionalTokenizationActionParametersConditionsAttributeTokenizationChannel, ConditionalTokenizationActionParametersConditionsAttributeTokenizationSource, ConditionalTokenizationActionParametersConditionsAttributeTokenRequestorName, ConditionalTokenizationActionParametersConditionsAttributeWalletAccountScore, ConditionalTokenizationActionParametersConditionsAttributeWalletDeviceScore, ConditionalTokenizationActionParametersConditionsAttributeWalletRecommendedDecision, ConditionalTokenizationActionParametersConditionsAttributeWalletRecommendationReasons, ConditionalTokenizationActionParametersConditionsAttributeTokenRequestorID, ConditionalTokenizationActionParametersConditionsAttributeWalletTokenStatus:
+	case ConditionalTokenizationActionParametersConditionsAttributeTimestamp, ConditionalTokenizationActionParametersConditionsAttributeTokenizationChannel, ConditionalTokenizationActionParametersConditionsAttributeTokenizationSource, ConditionalTokenizationActionParametersConditionsAttributeTokenRequestorName, ConditionalTokenizationActionParametersConditionsAttributeWalletAccountScore, ConditionalTokenizationActionParametersConditionsAttributeWalletDeviceScore, ConditionalTokenizationActionParametersConditionsAttributeWalletRecommendedDecision, ConditionalTokenizationActionParametersConditionsAttributeWalletRecommendationReasons, ConditionalTokenizationActionParametersConditionsAttributeTokenRequestorID, ConditionalTokenizationActionParametersConditionsAttributeWalletTokenStatus, ConditionalTokenizationActionParametersConditionsAttributeCardState:
 		return true
 	}
 	return false

@@ -134,7 +134,7 @@ type LoanTape struct {
 	FinancialAccountToken    string                           `json:"financial_account_token,required" format:"uuid"`
 	InterestDetails          LoanTapeInterestDetails          `json:"interest_details,required,nullable"`
 	MinimumPaymentBalance    LoanTapeMinimumPaymentBalance    `json:"minimum_payment_balance,required"`
-	PaymentAllocation        CategoryBalances                 `json:"payment_allocation,required"`
+	PaymentAllocation        LoanTapePaymentAllocation        `json:"payment_allocation,required"`
 	PeriodTotals             StatementTotals                  `json:"period_totals,required"`
 	PreviousStatementBalance LoanTapePreviousStatementBalance `json:"previous_statement_balance,required"`
 	// Balance at the start of the day
@@ -408,6 +408,40 @@ func (r *LoanTapeMinimumPaymentBalance) UnmarshalJSON(data []byte) (err error) {
 }
 
 func (r loanTapeMinimumPaymentBalanceJSON) RawJSON() string {
+	return r.raw
+}
+
+type LoanTapePaymentAllocation struct {
+	FeeDetails CategoryDetails `json:"fee_details,required,nullable"`
+	// Amount allocated to fees in cents
+	Fees int64 `json:"fees,required"`
+	// Amount allocated to interest in cents
+	Interest        int64           `json:"interest,required"`
+	InterestDetails CategoryDetails `json:"interest_details,required,nullable"`
+	// Amount allocated to principal in cents
+	Principal        int64                         `json:"principal,required"`
+	PrincipalDetails CategoryDetails               `json:"principal_details,required,nullable"`
+	JSON             loanTapePaymentAllocationJSON `json:"-"`
+}
+
+// loanTapePaymentAllocationJSON contains the JSON metadata for the struct
+// [LoanTapePaymentAllocation]
+type loanTapePaymentAllocationJSON struct {
+	FeeDetails       apijson.Field
+	Fees             apijson.Field
+	Interest         apijson.Field
+	InterestDetails  apijson.Field
+	Principal        apijson.Field
+	PrincipalDetails apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
+}
+
+func (r *LoanTapePaymentAllocation) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r loanTapePaymentAllocationJSON) RawJSON() string {
 	return r.raw
 }
 
