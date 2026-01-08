@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.99.1 (2026-01-08)
+
+Full Changelog: [v0.99.0...v0.99.1](https://github.com/lithic-com/lithic-go/compare/v0.99.0...v0.99.1)
+
+### Chores
+
+* configure new SDK language ([06ce143](https://github.com/lithic-com/lithic-go/commit/06ce14305a25ca5b8bf71817824597a2258a8db4))
+
 ## 0.99.0 (2026-01-08)
 
 Full Changelog: [v0.98.1...v0.99.0](https://github.com/lithic-com/lithic-go/compare/v0.98.1...v0.99.0)
