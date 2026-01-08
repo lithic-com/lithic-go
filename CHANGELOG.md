@@ -1,5 +1,39 @@
 # Changelog
 
+## 0.99.0 (2026-01-08)
+
+Full Changelog: [v0.98.1...v0.99.0](https://github.com/lithic-com/lithic-go/compare/v0.98.1...v0.99.0)
+
+### Features
+
+* **api:** Add card state attribute to tokenization rules ([d2a631a](https://github.com/lithic-com/lithic-go/commit/d2a631ab05d150bdb92e64b9852e7d2cac0ac2c4))
+* **api:** Add event_type to ASA request and 3DS decisioning request ([d2a631a](https://github.com/lithic-com/lithic-go/commit/d2a631ab05d150bdb92e64b9852e7d2cac0ac2c4))
+* **api:** add external_id to payment_event ([f42a314](https://github.com/lithic-com/lithic-go/commit/f42a31473d6cc020a3e7da98976258de4831883e))
+* **api:** add get /v1/transfer_limits endpoint ([f42a314](https://github.com/lithic-com/lithic-go/commit/f42a31473d6cc020a3e7da98976258de4831883e))
+* **api:** add post /v1/book_transfers/{book_transfer_token}/retry endpoint ([f42a314](https://github.com/lithic-com/lithic-go/commit/f42a31473d6cc020a3e7da98976258de4831883e))
+* **api:** Add user defined status to ledger accounts ([d2a631a](https://github.com/lithic-com/lithic-go/commit/d2a631ab05d150bdb92e64b9852e7d2cac0ac2c4))
+* **api:** add WIRE_DRAWDOWN_REQUEST transfer type ([9015ffc](https://github.com/lithic-com/lithic-go/commit/9015ffcce5361aa50cc171ce720b00adda0987ad))
+* **api:** Expose Payment Allocation Details ([d2a631a](https://github.com/lithic-com/lithic-go/commit/d2a631ab05d150bdb92e64b9852e7d2cac0ac2c4))
+* **api:** remove unnecessary X-Lithic-Pagination header ([9015ffc](https://github.com/lithic-com/lithic-go/commit/9015ffcce5361aa50cc171ce720b00adda0987ad))
+* **api:** remove v1/aggregate_balances and related models ([da86140](https://github.com/lithic-com/lithic-go/commit/da861407f17db3494fcbece040e8b695cc4ec7f4))
+
+
+### Bug Fixes
+
+* **api:** don't mark timestamp parsing as loose when a fallback format succeeds ([78776e3](https://github.com/lithic-com/lithic-go/commit/78776e39e5470b4951dd59da77f706f18ce14861))
+
+
+### Chores
+
+* **internal:** codegen related update ([0ddba7d](https://github.com/lithic-com/lithic-go/commit/0ddba7d03aaca11c6ee445ea81ce731421ff2aeb))
+* update code formatting ([d2a631a](https://github.com/lithic-com/lithic-go/commit/d2a631ab05d150bdb92e64b9852e7d2cac0ac2c4))
+
+
+### Documentation
+
+* **api:** clarify description of token /  retry_token when it serves as idempotency key ([9015ffc](https://github.com/lithic-com/lithic-go/commit/9015ffcce5361aa50cc171ce720b00adda0987ad))
+* Update language for Google Web Push Provisioning docs ([d2a631a](https://github.com/lithic-com/lithic-go/commit/d2a631ab05d150bdb92e64b9852e7d2cac0ac2c4))
+
 ## 0.98.1 (2025-12-12)
 
 Full Changelog: [v0.98.0...v0.98.1](https://github.com/lithic-com/lithic-go/compare/v0.98.0...v0.98.1)
