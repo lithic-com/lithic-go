@@ -146,8 +146,6 @@ func (r threeDSAuthenticationJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r ThreeDSAuthentication) implementsParsedWebhookEvent() {}
-
 // Type of account/card that is being used for the transaction. Maps to EMV 3DS
 // field `acctType`.
 type ThreeDSAuthenticationAccountType string
