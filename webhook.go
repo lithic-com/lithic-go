@@ -1020,8 +1020,7 @@ func (r AccountHolderDocumentUpdatedWebhookEventRequiredDocumentUploadsStatus) I
 	return false
 }
 
-// The Auth Stream Access request payload that was sent to the ASA responder.
-type AsaRequestWebhookEvent struct {
+type CardAuthorizationApprovalRequestWebhookEvent struct {
 	// The provisional transaction group uuid associated with the authorization
 	Token string `json:"token,required" format:"uuid"`
 	// Fee (in cents) assessed by the merchant and paid for by the cardholder. Will be
@@ -1034,10 +1033,10 @@ type AsaRequestWebhookEvent struct {
 	// The base transaction amount (in cents) plus the acquirer fee field. This is the
 	// amount the issuer should authorize against unless the issuer is paying the
 	// acquirer fee on behalf of the cardholder.
-	AuthorizationAmount int64                     `json:"authorization_amount,required"`
-	Avs                 AsaRequestWebhookEventAvs `json:"avs,required"`
+	AuthorizationAmount int64                                           `json:"authorization_amount,required"`
+	Avs                 CardAuthorizationApprovalRequestWebhookEventAvs `json:"avs,required"`
 	// Card object in ASA
-	Card AsaRequestWebhookEventCard `json:"card,required"`
+	Card CardAuthorizationApprovalRequestWebhookEventCard `json:"card,required"`
 	// 3-character alphabetic ISO 4217 code for cardholder's billing currency.
 	CardholderCurrency string `json:"cardholder_currency,required"`
 	// The portion of the transaction requested as cash back by the cardholder, and
@@ -1048,8 +1047,9 @@ type AsaRequestWebhookEvent struct {
 	// will always be present.
 	CashAmount int64 `json:"cash_amount,required"`
 	// Date and time when the transaction first occurred in UTC.
-	Created  time.Time       `json:"created,required" format:"date-time"`
-	Merchant shared.Merchant `json:"merchant,required"`
+	Created   time.Time                                             `json:"created,required" format:"date-time"`
+	EventType CardAuthorizationApprovalRequestWebhookEventEventType `json:"event_type,required"`
+	Merchant  shared.Merchant                                       `json:"merchant,required"`
 	// The amount that the merchant will receive, denominated in `merchant_currency`
 	// and in the smallest currency unit. Note the amount includes `acquirer_fee`,
 	// similar to `authorization_amount`. It will be different from
@@ -1064,11 +1064,11 @@ type AsaRequestWebhookEvent struct {
 	// The type of authorization request that this request is for. Note that
 	// `CREDIT_AUTHORIZATION` and `FINANCIAL_CREDIT_AUTHORIZATION` is only available to
 	// users with credit decisioning via ASA enabled.
-	Status AsaRequestWebhookEventStatus `json:"status,required"`
+	Status CardAuthorizationApprovalRequestWebhookEventStatus `json:"status,required"`
 	// The entity that initiated the transaction.
-	TransactionInitiator     AsaRequestWebhookEventTransactionInitiator `json:"transaction_initiator,required"`
-	AccountType              AsaRequestWebhookEventAccountType          `json:"account_type"`
-	CardholderAuthentication CardholderAuthentication                   `json:"cardholder_authentication"`
+	TransactionInitiator     CardAuthorizationApprovalRequestWebhookEventTransactionInitiator `json:"transaction_initiator,required"`
+	AccountType              CardAuthorizationApprovalRequestWebhookEventAccountType          `json:"account_type"`
+	CardholderAuthentication CardholderAuthentication                                         `json:"cardholder_authentication"`
 	// Deprecated, use `cash_amount`.
 	Cashback int64 `json:"cashback"`
 	// If the transaction was requested in a currency other than the settlement
@@ -1082,12 +1082,12 @@ type AsaRequestWebhookEvent struct {
 	EventToken string `json:"event_token" format:"uuid"`
 	// Optional Object containing information if the Card is a part of a Fleet managed
 	// program
-	FleetInfo AsaRequestWebhookEventFleetInfo `json:"fleet_info,nullable"`
+	FleetInfo CardAuthorizationApprovalRequestWebhookEventFleetInfo `json:"fleet_info,nullable"`
 	// The latest Authorization Challenge that was issued to the cardholder for this
 	// merchant.
-	LatestChallenge AsaRequestWebhookEventLatestChallenge `json:"latest_challenge"`
+	LatestChallenge CardAuthorizationApprovalRequestWebhookEventLatestChallenge `json:"latest_challenge"`
 	// Card network of the authorization.
-	Network AsaRequestWebhookEventNetwork `json:"network"`
+	Network CardAuthorizationApprovalRequestWebhookEventNetwork `json:"network"`
 	// Network-provided score assessing risk level associated with a given
 	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
 	// risk and 999 representing the highest risk. For Visa transactions, where the raw
@@ -1100,17 +1100,17 @@ type AsaRequestWebhookEvent struct {
 	// Please consult the official network documentation for more details about these
 	// values and how to use them. This object is only available to certain programs-
 	// contact your Customer Success Manager to discuss enabling access.
-	NetworkSpecificData AsaRequestWebhookEventNetworkSpecificData `json:"network_specific_data,nullable"`
-	Pos                 AsaRequestWebhookEventPos                 `json:"pos"`
-	TokenInfo           TokenInfo                                 `json:"token_info,nullable"`
+	NetworkSpecificData CardAuthorizationApprovalRequestWebhookEventNetworkSpecificData `json:"network_specific_data,nullable"`
+	Pos                 CardAuthorizationApprovalRequestWebhookEventPos                 `json:"pos"`
+	TokenInfo           TokenInfo                                                       `json:"token_info,nullable"`
 	// Deprecated: approximate time-to-live for the authorization.
-	Ttl  time.Time                  `json:"ttl" format:"date-time"`
-	JSON asaRequestWebhookEventJSON `json:"-"`
+	Ttl  time.Time                                        `json:"ttl" format:"date-time"`
+	JSON cardAuthorizationApprovalRequestWebhookEventJSON `json:"-"`
 }
 
-// asaRequestWebhookEventJSON contains the JSON metadata for the struct
-// [AsaRequestWebhookEvent]
-type asaRequestWebhookEventJSON struct {
+// cardAuthorizationApprovalRequestWebhookEventJSON contains the JSON metadata for
+// the struct [CardAuthorizationApprovalRequestWebhookEvent]
+type cardAuthorizationApprovalRequestWebhookEventJSON struct {
 	Token                    apijson.Field
 	AcquirerFee              apijson.Field
 	Amount                   apijson.Field
@@ -1120,6 +1120,7 @@ type asaRequestWebhookEventJSON struct {
 	CardholderCurrency       apijson.Field
 	CashAmount               apijson.Field
 	Created                  apijson.Field
+	EventType                apijson.Field
 	Merchant                 apijson.Field
 	MerchantAmount           apijson.Field
 	MerchantCurrency         apijson.Field
@@ -1143,32 +1144,32 @@ type asaRequestWebhookEventJSON struct {
 	ExtraFields              map[string]apijson.Field
 }
 
-func (r *AsaRequestWebhookEvent) UnmarshalJSON(data []byte) (err error) {
+func (r *CardAuthorizationApprovalRequestWebhookEvent) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r asaRequestWebhookEventJSON) RawJSON() string {
+func (r cardAuthorizationApprovalRequestWebhookEventJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r AsaRequestWebhookEvent) implementsParsedWebhookEvent() {}
+func (r CardAuthorizationApprovalRequestWebhookEvent) implementsParsedWebhookEvent() {}
 
-type AsaRequestWebhookEventAvs struct {
+type CardAuthorizationApprovalRequestWebhookEventAvs struct {
 	// Cardholder address
 	Address string `json:"address,required"`
 	// Lithic's evaluation result comparing the transaction's address data with the
 	// cardholder KYC data if it exists. In the event Lithic does not have any
 	// Cardholder KYC data, or the transaction does not contain any address data,
 	// NOT_PRESENT will be returned
-	AddressOnFileMatch AsaRequestWebhookEventAvsAddressOnFileMatch `json:"address_on_file_match,required"`
+	AddressOnFileMatch CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatch `json:"address_on_file_match,required"`
 	// Cardholder ZIP code
-	Zipcode string                        `json:"zipcode,required"`
-	JSON    asaRequestWebhookEventAvsJSON `json:"-"`
+	Zipcode string                                              `json:"zipcode,required"`
+	JSON    cardAuthorizationApprovalRequestWebhookEventAvsJSON `json:"-"`
 }
 
-// asaRequestWebhookEventAvsJSON contains the JSON metadata for the struct
-// [AsaRequestWebhookEventAvs]
-type asaRequestWebhookEventAvsJSON struct {
+// cardAuthorizationApprovalRequestWebhookEventAvsJSON contains the JSON metadata
+// for the struct [CardAuthorizationApprovalRequestWebhookEventAvs]
+type cardAuthorizationApprovalRequestWebhookEventAvsJSON struct {
 	Address            apijson.Field
 	AddressOnFileMatch apijson.Field
 	Zipcode            apijson.Field
@@ -1176,11 +1177,11 @@ type asaRequestWebhookEventAvsJSON struct {
 	ExtraFields        map[string]apijson.Field
 }
 
-func (r *AsaRequestWebhookEventAvs) UnmarshalJSON(data []byte) (err error) {
+func (r *CardAuthorizationApprovalRequestWebhookEventAvs) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r asaRequestWebhookEventAvsJSON) RawJSON() string {
+func (r cardAuthorizationApprovalRequestWebhookEventAvsJSON) RawJSON() string {
 	return r.raw
 }
 
@@ -1188,26 +1189,26 @@ func (r asaRequestWebhookEventAvsJSON) RawJSON() string {
 // cardholder KYC data if it exists. In the event Lithic does not have any
 // Cardholder KYC data, or the transaction does not contain any address data,
 // NOT_PRESENT will be returned
-type AsaRequestWebhookEventAvsAddressOnFileMatch string
+type CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatch string
 
 const (
-	AsaRequestWebhookEventAvsAddressOnFileMatchMatch            AsaRequestWebhookEventAvsAddressOnFileMatch = "MATCH"
-	AsaRequestWebhookEventAvsAddressOnFileMatchMatchAddressOnly AsaRequestWebhookEventAvsAddressOnFileMatch = "MATCH_ADDRESS_ONLY"
-	AsaRequestWebhookEventAvsAddressOnFileMatchMatchZipOnly     AsaRequestWebhookEventAvsAddressOnFileMatch = "MATCH_ZIP_ONLY"
-	AsaRequestWebhookEventAvsAddressOnFileMatchMismatch         AsaRequestWebhookEventAvsAddressOnFileMatch = "MISMATCH"
-	AsaRequestWebhookEventAvsAddressOnFileMatchNotPresent       AsaRequestWebhookEventAvsAddressOnFileMatch = "NOT_PRESENT"
+	CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatchMatch            CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatch = "MATCH"
+	CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatchMatchAddressOnly CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatch = "MATCH_ADDRESS_ONLY"
+	CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatchMatchZipOnly     CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatch = "MATCH_ZIP_ONLY"
+	CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatchMismatch         CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatch = "MISMATCH"
+	CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatchNotPresent       CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatch = "NOT_PRESENT"
 )
 
-func (r AsaRequestWebhookEventAvsAddressOnFileMatch) IsKnown() bool {
+func (r CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatch) IsKnown() bool {
 	switch r {
-	case AsaRequestWebhookEventAvsAddressOnFileMatchMatch, AsaRequestWebhookEventAvsAddressOnFileMatchMatchAddressOnly, AsaRequestWebhookEventAvsAddressOnFileMatchMatchZipOnly, AsaRequestWebhookEventAvsAddressOnFileMatchMismatch, AsaRequestWebhookEventAvsAddressOnFileMatchNotPresent:
+	case CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatchMatch, CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatchMatchAddressOnly, CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatchMatchZipOnly, CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatchMismatch, CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatchNotPresent:
 		return true
 	}
 	return false
 }
 
 // Card object in ASA
-type AsaRequestWebhookEventCard struct {
+type CardAuthorizationApprovalRequestWebhookEventCard struct {
 	// Globally unique identifier for the card.
 	Token string `json:"token" format:"uuid"`
 	// Hostname of card’s locked merchant (will be empty if not applicable)
@@ -1229,15 +1230,15 @@ type AsaRequestWebhookEventCard struct {
 	// Note that to support recurring monthly payments, which can occur on different
 	// day every month, the time window we consider for MONTHLY velocity starts 6 days
 	// after the current calendar date one month prior.
-	SpendLimitDuration AsaRequestWebhookEventCardSpendLimitDuration `json:"spend_limit_duration"`
-	State              AsaRequestWebhookEventCardState              `json:"state"`
-	Type               AsaRequestWebhookEventCardType               `json:"type"`
-	JSON               asaRequestWebhookEventCardJSON               `json:"-"`
+	SpendLimitDuration CardAuthorizationApprovalRequestWebhookEventCardSpendLimitDuration `json:"spend_limit_duration"`
+	State              CardAuthorizationApprovalRequestWebhookEventCardState              `json:"state"`
+	Type               CardAuthorizationApprovalRequestWebhookEventCardType               `json:"type"`
+	JSON               cardAuthorizationApprovalRequestWebhookEventCardJSON               `json:"-"`
 }
 
-// asaRequestWebhookEventCardJSON contains the JSON metadata for the struct
-// [AsaRequestWebhookEventCard]
-type asaRequestWebhookEventCardJSON struct {
+// cardAuthorizationApprovalRequestWebhookEventCardJSON contains the JSON metadata
+// for the struct [CardAuthorizationApprovalRequestWebhookEventCard]
+type cardAuthorizationApprovalRequestWebhookEventCardJSON struct {
 	Token              apijson.Field
 	Hostname           apijson.Field
 	LastFour           apijson.Field
@@ -1250,66 +1251,80 @@ type asaRequestWebhookEventCardJSON struct {
 	ExtraFields        map[string]apijson.Field
 }
 
-func (r *AsaRequestWebhookEventCard) UnmarshalJSON(data []byte) (err error) {
+func (r *CardAuthorizationApprovalRequestWebhookEventCard) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r asaRequestWebhookEventCardJSON) RawJSON() string {
+func (r cardAuthorizationApprovalRequestWebhookEventCardJSON) RawJSON() string {
 	return r.raw
 }
 
 // Note that to support recurring monthly payments, which can occur on different
 // day every month, the time window we consider for MONTHLY velocity starts 6 days
 // after the current calendar date one month prior.
-type AsaRequestWebhookEventCardSpendLimitDuration string
+type CardAuthorizationApprovalRequestWebhookEventCardSpendLimitDuration string
 
 const (
-	AsaRequestWebhookEventCardSpendLimitDurationAnnually    AsaRequestWebhookEventCardSpendLimitDuration = "ANNUALLY"
-	AsaRequestWebhookEventCardSpendLimitDurationForever     AsaRequestWebhookEventCardSpendLimitDuration = "FOREVER"
-	AsaRequestWebhookEventCardSpendLimitDurationMonthly     AsaRequestWebhookEventCardSpendLimitDuration = "MONTHLY"
-	AsaRequestWebhookEventCardSpendLimitDurationTransaction AsaRequestWebhookEventCardSpendLimitDuration = "TRANSACTION"
+	CardAuthorizationApprovalRequestWebhookEventCardSpendLimitDurationAnnually    CardAuthorizationApprovalRequestWebhookEventCardSpendLimitDuration = "ANNUALLY"
+	CardAuthorizationApprovalRequestWebhookEventCardSpendLimitDurationForever     CardAuthorizationApprovalRequestWebhookEventCardSpendLimitDuration = "FOREVER"
+	CardAuthorizationApprovalRequestWebhookEventCardSpendLimitDurationMonthly     CardAuthorizationApprovalRequestWebhookEventCardSpendLimitDuration = "MONTHLY"
+	CardAuthorizationApprovalRequestWebhookEventCardSpendLimitDurationTransaction CardAuthorizationApprovalRequestWebhookEventCardSpendLimitDuration = "TRANSACTION"
 )
 
-func (r AsaRequestWebhookEventCardSpendLimitDuration) IsKnown() bool {
+func (r CardAuthorizationApprovalRequestWebhookEventCardSpendLimitDuration) IsKnown() bool {
 	switch r {
-	case AsaRequestWebhookEventCardSpendLimitDurationAnnually, AsaRequestWebhookEventCardSpendLimitDurationForever, AsaRequestWebhookEventCardSpendLimitDurationMonthly, AsaRequestWebhookEventCardSpendLimitDurationTransaction:
+	case CardAuthorizationApprovalRequestWebhookEventCardSpendLimitDurationAnnually, CardAuthorizationApprovalRequestWebhookEventCardSpendLimitDurationForever, CardAuthorizationApprovalRequestWebhookEventCardSpendLimitDurationMonthly, CardAuthorizationApprovalRequestWebhookEventCardSpendLimitDurationTransaction:
 		return true
 	}
 	return false
 }
 
-type AsaRequestWebhookEventCardState string
+type CardAuthorizationApprovalRequestWebhookEventCardState string
 
 const (
-	AsaRequestWebhookEventCardStateClosed             AsaRequestWebhookEventCardState = "CLOSED"
-	AsaRequestWebhookEventCardStateOpen               AsaRequestWebhookEventCardState = "OPEN"
-	AsaRequestWebhookEventCardStatePaused             AsaRequestWebhookEventCardState = "PAUSED"
-	AsaRequestWebhookEventCardStatePendingActivation  AsaRequestWebhookEventCardState = "PENDING_ACTIVATION"
-	AsaRequestWebhookEventCardStatePendingFulfillment AsaRequestWebhookEventCardState = "PENDING_FULFILLMENT"
+	CardAuthorizationApprovalRequestWebhookEventCardStateClosed             CardAuthorizationApprovalRequestWebhookEventCardState = "CLOSED"
+	CardAuthorizationApprovalRequestWebhookEventCardStateOpen               CardAuthorizationApprovalRequestWebhookEventCardState = "OPEN"
+	CardAuthorizationApprovalRequestWebhookEventCardStatePaused             CardAuthorizationApprovalRequestWebhookEventCardState = "PAUSED"
+	CardAuthorizationApprovalRequestWebhookEventCardStatePendingActivation  CardAuthorizationApprovalRequestWebhookEventCardState = "PENDING_ACTIVATION"
+	CardAuthorizationApprovalRequestWebhookEventCardStatePendingFulfillment CardAuthorizationApprovalRequestWebhookEventCardState = "PENDING_FULFILLMENT"
 )
 
-func (r AsaRequestWebhookEventCardState) IsKnown() bool {
+func (r CardAuthorizationApprovalRequestWebhookEventCardState) IsKnown() bool {
 	switch r {
-	case AsaRequestWebhookEventCardStateClosed, AsaRequestWebhookEventCardStateOpen, AsaRequestWebhookEventCardStatePaused, AsaRequestWebhookEventCardStatePendingActivation, AsaRequestWebhookEventCardStatePendingFulfillment:
+	case CardAuthorizationApprovalRequestWebhookEventCardStateClosed, CardAuthorizationApprovalRequestWebhookEventCardStateOpen, CardAuthorizationApprovalRequestWebhookEventCardStatePaused, CardAuthorizationApprovalRequestWebhookEventCardStatePendingActivation, CardAuthorizationApprovalRequestWebhookEventCardStatePendingFulfillment:
 		return true
 	}
 	return false
 }
 
-type AsaRequestWebhookEventCardType string
+type CardAuthorizationApprovalRequestWebhookEventCardType string
 
 const (
-	AsaRequestWebhookEventCardTypeSingleUse      AsaRequestWebhookEventCardType = "SINGLE_USE"
-	AsaRequestWebhookEventCardTypeMerchantLocked AsaRequestWebhookEventCardType = "MERCHANT_LOCKED"
-	AsaRequestWebhookEventCardTypeUnlocked       AsaRequestWebhookEventCardType = "UNLOCKED"
-	AsaRequestWebhookEventCardTypePhysical       AsaRequestWebhookEventCardType = "PHYSICAL"
-	AsaRequestWebhookEventCardTypeDigitalWallet  AsaRequestWebhookEventCardType = "DIGITAL_WALLET"
-	AsaRequestWebhookEventCardTypeVirtual        AsaRequestWebhookEventCardType = "VIRTUAL"
+	CardAuthorizationApprovalRequestWebhookEventCardTypeSingleUse      CardAuthorizationApprovalRequestWebhookEventCardType = "SINGLE_USE"
+	CardAuthorizationApprovalRequestWebhookEventCardTypeMerchantLocked CardAuthorizationApprovalRequestWebhookEventCardType = "MERCHANT_LOCKED"
+	CardAuthorizationApprovalRequestWebhookEventCardTypeUnlocked       CardAuthorizationApprovalRequestWebhookEventCardType = "UNLOCKED"
+	CardAuthorizationApprovalRequestWebhookEventCardTypePhysical       CardAuthorizationApprovalRequestWebhookEventCardType = "PHYSICAL"
+	CardAuthorizationApprovalRequestWebhookEventCardTypeDigitalWallet  CardAuthorizationApprovalRequestWebhookEventCardType = "DIGITAL_WALLET"
+	CardAuthorizationApprovalRequestWebhookEventCardTypeVirtual        CardAuthorizationApprovalRequestWebhookEventCardType = "VIRTUAL"
 )
 
-func (r AsaRequestWebhookEventCardType) IsKnown() bool {
+func (r CardAuthorizationApprovalRequestWebhookEventCardType) IsKnown() bool {
 	switch r {
-	case AsaRequestWebhookEventCardTypeSingleUse, AsaRequestWebhookEventCardTypeMerchantLocked, AsaRequestWebhookEventCardTypeUnlocked, AsaRequestWebhookEventCardTypePhysical, AsaRequestWebhookEventCardTypeDigitalWallet, AsaRequestWebhookEventCardTypeVirtual:
+	case CardAuthorizationApprovalRequestWebhookEventCardTypeSingleUse, CardAuthorizationApprovalRequestWebhookEventCardTypeMerchantLocked, CardAuthorizationApprovalRequestWebhookEventCardTypeUnlocked, CardAuthorizationApprovalRequestWebhookEventCardTypePhysical, CardAuthorizationApprovalRequestWebhookEventCardTypeDigitalWallet, CardAuthorizationApprovalRequestWebhookEventCardTypeVirtual:
+		return true
+	}
+	return false
+}
+
+type CardAuthorizationApprovalRequestWebhookEventEventType string
+
+const (
+	CardAuthorizationApprovalRequestWebhookEventEventTypeCardAuthorizationApprovalRequest CardAuthorizationApprovalRequestWebhookEventEventType = "card_authorization.approval_request"
+)
+
+func (r CardAuthorizationApprovalRequestWebhookEventEventType) IsKnown() bool {
+	switch r {
+	case CardAuthorizationApprovalRequestWebhookEventEventTypeCardAuthorizationApprovalRequest:
 		return true
 	}
 	return false
@@ -1318,51 +1333,51 @@ func (r AsaRequestWebhookEventCardType) IsKnown() bool {
 // The type of authorization request that this request is for. Note that
 // `CREDIT_AUTHORIZATION` and `FINANCIAL_CREDIT_AUTHORIZATION` is only available to
 // users with credit decisioning via ASA enabled.
-type AsaRequestWebhookEventStatus string
+type CardAuthorizationApprovalRequestWebhookEventStatus string
 
 const (
-	AsaRequestWebhookEventStatusAuthorization                AsaRequestWebhookEventStatus = "AUTHORIZATION"
-	AsaRequestWebhookEventStatusCreditAuthorization          AsaRequestWebhookEventStatus = "CREDIT_AUTHORIZATION"
-	AsaRequestWebhookEventStatusFinancialAuthorization       AsaRequestWebhookEventStatus = "FINANCIAL_AUTHORIZATION"
-	AsaRequestWebhookEventStatusFinancialCreditAuthorization AsaRequestWebhookEventStatus = "FINANCIAL_CREDIT_AUTHORIZATION"
-	AsaRequestWebhookEventStatusBalanceInquiry               AsaRequestWebhookEventStatus = "BALANCE_INQUIRY"
+	CardAuthorizationApprovalRequestWebhookEventStatusAuthorization                CardAuthorizationApprovalRequestWebhookEventStatus = "AUTHORIZATION"
+	CardAuthorizationApprovalRequestWebhookEventStatusCreditAuthorization          CardAuthorizationApprovalRequestWebhookEventStatus = "CREDIT_AUTHORIZATION"
+	CardAuthorizationApprovalRequestWebhookEventStatusFinancialAuthorization       CardAuthorizationApprovalRequestWebhookEventStatus = "FINANCIAL_AUTHORIZATION"
+	CardAuthorizationApprovalRequestWebhookEventStatusFinancialCreditAuthorization CardAuthorizationApprovalRequestWebhookEventStatus = "FINANCIAL_CREDIT_AUTHORIZATION"
+	CardAuthorizationApprovalRequestWebhookEventStatusBalanceInquiry               CardAuthorizationApprovalRequestWebhookEventStatus = "BALANCE_INQUIRY"
 )
 
-func (r AsaRequestWebhookEventStatus) IsKnown() bool {
+func (r CardAuthorizationApprovalRequestWebhookEventStatus) IsKnown() bool {
 	switch r {
-	case AsaRequestWebhookEventStatusAuthorization, AsaRequestWebhookEventStatusCreditAuthorization, AsaRequestWebhookEventStatusFinancialAuthorization, AsaRequestWebhookEventStatusFinancialCreditAuthorization, AsaRequestWebhookEventStatusBalanceInquiry:
+	case CardAuthorizationApprovalRequestWebhookEventStatusAuthorization, CardAuthorizationApprovalRequestWebhookEventStatusCreditAuthorization, CardAuthorizationApprovalRequestWebhookEventStatusFinancialAuthorization, CardAuthorizationApprovalRequestWebhookEventStatusFinancialCreditAuthorization, CardAuthorizationApprovalRequestWebhookEventStatusBalanceInquiry:
 		return true
 	}
 	return false
 }
 
 // The entity that initiated the transaction.
-type AsaRequestWebhookEventTransactionInitiator string
+type CardAuthorizationApprovalRequestWebhookEventTransactionInitiator string
 
 const (
-	AsaRequestWebhookEventTransactionInitiatorCardholder AsaRequestWebhookEventTransactionInitiator = "CARDHOLDER"
-	AsaRequestWebhookEventTransactionInitiatorMerchant   AsaRequestWebhookEventTransactionInitiator = "MERCHANT"
-	AsaRequestWebhookEventTransactionInitiatorUnknown    AsaRequestWebhookEventTransactionInitiator = "UNKNOWN"
+	CardAuthorizationApprovalRequestWebhookEventTransactionInitiatorCardholder CardAuthorizationApprovalRequestWebhookEventTransactionInitiator = "CARDHOLDER"
+	CardAuthorizationApprovalRequestWebhookEventTransactionInitiatorMerchant   CardAuthorizationApprovalRequestWebhookEventTransactionInitiator = "MERCHANT"
+	CardAuthorizationApprovalRequestWebhookEventTransactionInitiatorUnknown    CardAuthorizationApprovalRequestWebhookEventTransactionInitiator = "UNKNOWN"
 )
 
-func (r AsaRequestWebhookEventTransactionInitiator) IsKnown() bool {
+func (r CardAuthorizationApprovalRequestWebhookEventTransactionInitiator) IsKnown() bool {
 	switch r {
-	case AsaRequestWebhookEventTransactionInitiatorCardholder, AsaRequestWebhookEventTransactionInitiatorMerchant, AsaRequestWebhookEventTransactionInitiatorUnknown:
+	case CardAuthorizationApprovalRequestWebhookEventTransactionInitiatorCardholder, CardAuthorizationApprovalRequestWebhookEventTransactionInitiatorMerchant, CardAuthorizationApprovalRequestWebhookEventTransactionInitiatorUnknown:
 		return true
 	}
 	return false
 }
 
-type AsaRequestWebhookEventAccountType string
+type CardAuthorizationApprovalRequestWebhookEventAccountType string
 
 const (
-	AsaRequestWebhookEventAccountTypeChecking AsaRequestWebhookEventAccountType = "CHECKING"
-	AsaRequestWebhookEventAccountTypeSavings  AsaRequestWebhookEventAccountType = "SAVINGS"
+	CardAuthorizationApprovalRequestWebhookEventAccountTypeChecking CardAuthorizationApprovalRequestWebhookEventAccountType = "CHECKING"
+	CardAuthorizationApprovalRequestWebhookEventAccountTypeSavings  CardAuthorizationApprovalRequestWebhookEventAccountType = "SAVINGS"
 )
 
-func (r AsaRequestWebhookEventAccountType) IsKnown() bool {
+func (r CardAuthorizationApprovalRequestWebhookEventAccountType) IsKnown() bool {
 	switch r {
-	case AsaRequestWebhookEventAccountTypeChecking, AsaRequestWebhookEventAccountTypeSavings:
+	case CardAuthorizationApprovalRequestWebhookEventAccountTypeChecking, CardAuthorizationApprovalRequestWebhookEventAccountTypeSavings:
 		return true
 	}
 	return false
@@ -1370,25 +1385,25 @@ func (r AsaRequestWebhookEventAccountType) IsKnown() bool {
 
 // Optional Object containing information if the Card is a part of a Fleet managed
 // program
-type AsaRequestWebhookEventFleetInfo struct {
+type CardAuthorizationApprovalRequestWebhookEventFleetInfo struct {
 	// Code indicating what the driver was prompted to enter at time of purchase. This
 	// is configured at a program level and is a static configuration, and does not
 	// change on a request to request basis
-	FleetPromptCode AsaRequestWebhookEventFleetInfoFleetPromptCode `json:"fleet_prompt_code,required"`
+	FleetPromptCode CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetPromptCode `json:"fleet_prompt_code,required"`
 	// Code indicating which restrictions, if any, there are on purchase. This is
 	// configured at a program level and is a static configuration, and does not change
 	// on a request to request basis
-	FleetRestrictionCode AsaRequestWebhookEventFleetInfoFleetRestrictionCode `json:"fleet_restriction_code,required"`
+	FleetRestrictionCode CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetRestrictionCode `json:"fleet_restriction_code,required"`
 	// Number representing the driver
 	DriverNumber string `json:"driver_number,nullable"`
 	// Number associated with the vehicle
-	VehicleNumber string                              `json:"vehicle_number,nullable"`
-	JSON          asaRequestWebhookEventFleetInfoJSON `json:"-"`
+	VehicleNumber string                                                    `json:"vehicle_number,nullable"`
+	JSON          cardAuthorizationApprovalRequestWebhookEventFleetInfoJSON `json:"-"`
 }
 
-// asaRequestWebhookEventFleetInfoJSON contains the JSON metadata for the struct
-// [AsaRequestWebhookEventFleetInfo]
-type asaRequestWebhookEventFleetInfoJSON struct {
+// cardAuthorizationApprovalRequestWebhookEventFleetInfoJSON contains the JSON
+// metadata for the struct [CardAuthorizationApprovalRequestWebhookEventFleetInfo]
+type cardAuthorizationApprovalRequestWebhookEventFleetInfoJSON struct {
 	FleetPromptCode      apijson.Field
 	FleetRestrictionCode apijson.Field
 	DriverNumber         apijson.Field
@@ -1397,28 +1412,28 @@ type asaRequestWebhookEventFleetInfoJSON struct {
 	ExtraFields          map[string]apijson.Field
 }
 
-func (r *AsaRequestWebhookEventFleetInfo) UnmarshalJSON(data []byte) (err error) {
+func (r *CardAuthorizationApprovalRequestWebhookEventFleetInfo) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r asaRequestWebhookEventFleetInfoJSON) RawJSON() string {
+func (r cardAuthorizationApprovalRequestWebhookEventFleetInfoJSON) RawJSON() string {
 	return r.raw
 }
 
 // Code indicating what the driver was prompted to enter at time of purchase. This
 // is configured at a program level and is a static configuration, and does not
 // change on a request to request basis
-type AsaRequestWebhookEventFleetInfoFleetPromptCode string
+type CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetPromptCode string
 
 const (
-	AsaRequestWebhookEventFleetInfoFleetPromptCodeNoPrompt      AsaRequestWebhookEventFleetInfoFleetPromptCode = "NO_PROMPT"
-	AsaRequestWebhookEventFleetInfoFleetPromptCodeVehicleNumber AsaRequestWebhookEventFleetInfoFleetPromptCode = "VEHICLE_NUMBER"
-	AsaRequestWebhookEventFleetInfoFleetPromptCodeDriverNumber  AsaRequestWebhookEventFleetInfoFleetPromptCode = "DRIVER_NUMBER"
+	CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetPromptCodeNoPrompt      CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetPromptCode = "NO_PROMPT"
+	CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetPromptCodeVehicleNumber CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetPromptCode = "VEHICLE_NUMBER"
+	CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetPromptCodeDriverNumber  CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetPromptCode = "DRIVER_NUMBER"
 )
 
-func (r AsaRequestWebhookEventFleetInfoFleetPromptCode) IsKnown() bool {
+func (r CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetPromptCode) IsKnown() bool {
 	switch r {
-	case AsaRequestWebhookEventFleetInfoFleetPromptCodeNoPrompt, AsaRequestWebhookEventFleetInfoFleetPromptCodeVehicleNumber, AsaRequestWebhookEventFleetInfoFleetPromptCodeDriverNumber:
+	case CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetPromptCodeNoPrompt, CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetPromptCodeVehicleNumber, CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetPromptCodeDriverNumber:
 		return true
 	}
 	return false
@@ -1427,16 +1442,16 @@ func (r AsaRequestWebhookEventFleetInfoFleetPromptCode) IsKnown() bool {
 // Code indicating which restrictions, if any, there are on purchase. This is
 // configured at a program level and is a static configuration, and does not change
 // on a request to request basis
-type AsaRequestWebhookEventFleetInfoFleetRestrictionCode string
+type CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetRestrictionCode string
 
 const (
-	AsaRequestWebhookEventFleetInfoFleetRestrictionCodeNoRestrictions AsaRequestWebhookEventFleetInfoFleetRestrictionCode = "NO_RESTRICTIONS"
-	AsaRequestWebhookEventFleetInfoFleetRestrictionCodeFuelOnly       AsaRequestWebhookEventFleetInfoFleetRestrictionCode = "FUEL_ONLY"
+	CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetRestrictionCodeNoRestrictions CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetRestrictionCode = "NO_RESTRICTIONS"
+	CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetRestrictionCodeFuelOnly       CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetRestrictionCode = "FUEL_ONLY"
 )
 
-func (r AsaRequestWebhookEventFleetInfoFleetRestrictionCode) IsKnown() bool {
+func (r CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetRestrictionCode) IsKnown() bool {
 	switch r {
-	case AsaRequestWebhookEventFleetInfoFleetRestrictionCodeNoRestrictions, AsaRequestWebhookEventFleetInfoFleetRestrictionCodeFuelOnly:
+	case CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetRestrictionCodeNoRestrictions, CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetRestrictionCodeFuelOnly:
 		return true
 	}
 	return false
@@ -1444,7 +1459,7 @@ func (r AsaRequestWebhookEventFleetInfoFleetRestrictionCode) IsKnown() bool {
 
 // The latest Authorization Challenge that was issued to the cardholder for this
 // merchant.
-type AsaRequestWebhookEventLatestChallenge struct {
+type CardAuthorizationApprovalRequestWebhookEventLatestChallenge struct {
 	// The phone number used for sending Authorization Challenge SMS.
 	PhoneNumber string `json:"phone_number,required"`
 	// The status of the Authorization Challenge
@@ -1453,16 +1468,17 @@ type AsaRequestWebhookEventLatestChallenge struct {
 	// - `PENDING` - Challenge is still open
 	// - `EXPIRED` - Challenge has expired without being completed
 	// - `ERROR` - There was an error processing the challenge
-	Status AsaRequestWebhookEventLatestChallengeStatus `json:"status,required"`
+	Status CardAuthorizationApprovalRequestWebhookEventLatestChallengeStatus `json:"status,required"`
 	// The date and time when the Authorization Challenge was completed in UTC. Present
 	// only if the status is `COMPLETED`.
-	CompletedAt time.Time                                 `json:"completed_at" format:"date-time"`
-	JSON        asaRequestWebhookEventLatestChallengeJSON `json:"-"`
+	CompletedAt time.Time                                                       `json:"completed_at" format:"date-time"`
+	JSON        cardAuthorizationApprovalRequestWebhookEventLatestChallengeJSON `json:"-"`
 }
 
-// asaRequestWebhookEventLatestChallengeJSON contains the JSON metadata for the
-// struct [AsaRequestWebhookEventLatestChallenge]
-type asaRequestWebhookEventLatestChallengeJSON struct {
+// cardAuthorizationApprovalRequestWebhookEventLatestChallengeJSON contains the
+// JSON metadata for the struct
+// [CardAuthorizationApprovalRequestWebhookEventLatestChallenge]
+type cardAuthorizationApprovalRequestWebhookEventLatestChallengeJSON struct {
 	PhoneNumber apijson.Field
 	Status      apijson.Field
 	CompletedAt apijson.Field
@@ -1470,11 +1486,11 @@ type asaRequestWebhookEventLatestChallengeJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *AsaRequestWebhookEventLatestChallenge) UnmarshalJSON(data []byte) (err error) {
+func (r *CardAuthorizationApprovalRequestWebhookEventLatestChallenge) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r asaRequestWebhookEventLatestChallengeJSON) RawJSON() string {
+func (r cardAuthorizationApprovalRequestWebhookEventLatestChallengeJSON) RawJSON() string {
 	return r.raw
 }
 
@@ -1484,38 +1500,38 @@ func (r asaRequestWebhookEventLatestChallengeJSON) RawJSON() string {
 // - `PENDING` - Challenge is still open
 // - `EXPIRED` - Challenge has expired without being completed
 // - `ERROR` - There was an error processing the challenge
-type AsaRequestWebhookEventLatestChallengeStatus string
+type CardAuthorizationApprovalRequestWebhookEventLatestChallengeStatus string
 
 const (
-	AsaRequestWebhookEventLatestChallengeStatusCompleted AsaRequestWebhookEventLatestChallengeStatus = "COMPLETED"
-	AsaRequestWebhookEventLatestChallengeStatusPending   AsaRequestWebhookEventLatestChallengeStatus = "PENDING"
-	AsaRequestWebhookEventLatestChallengeStatusExpired   AsaRequestWebhookEventLatestChallengeStatus = "EXPIRED"
-	AsaRequestWebhookEventLatestChallengeStatusError     AsaRequestWebhookEventLatestChallengeStatus = "ERROR"
+	CardAuthorizationApprovalRequestWebhookEventLatestChallengeStatusCompleted CardAuthorizationApprovalRequestWebhookEventLatestChallengeStatus = "COMPLETED"
+	CardAuthorizationApprovalRequestWebhookEventLatestChallengeStatusPending   CardAuthorizationApprovalRequestWebhookEventLatestChallengeStatus = "PENDING"
+	CardAuthorizationApprovalRequestWebhookEventLatestChallengeStatusExpired   CardAuthorizationApprovalRequestWebhookEventLatestChallengeStatus = "EXPIRED"
+	CardAuthorizationApprovalRequestWebhookEventLatestChallengeStatusError     CardAuthorizationApprovalRequestWebhookEventLatestChallengeStatus = "ERROR"
 )
 
-func (r AsaRequestWebhookEventLatestChallengeStatus) IsKnown() bool {
+func (r CardAuthorizationApprovalRequestWebhookEventLatestChallengeStatus) IsKnown() bool {
 	switch r {
-	case AsaRequestWebhookEventLatestChallengeStatusCompleted, AsaRequestWebhookEventLatestChallengeStatusPending, AsaRequestWebhookEventLatestChallengeStatusExpired, AsaRequestWebhookEventLatestChallengeStatusError:
+	case CardAuthorizationApprovalRequestWebhookEventLatestChallengeStatusCompleted, CardAuthorizationApprovalRequestWebhookEventLatestChallengeStatusPending, CardAuthorizationApprovalRequestWebhookEventLatestChallengeStatusExpired, CardAuthorizationApprovalRequestWebhookEventLatestChallengeStatusError:
 		return true
 	}
 	return false
 }
 
 // Card network of the authorization.
-type AsaRequestWebhookEventNetwork string
+type CardAuthorizationApprovalRequestWebhookEventNetwork string
 
 const (
-	AsaRequestWebhookEventNetworkAmex       AsaRequestWebhookEventNetwork = "AMEX"
-	AsaRequestWebhookEventNetworkInterlink  AsaRequestWebhookEventNetwork = "INTERLINK"
-	AsaRequestWebhookEventNetworkMaestro    AsaRequestWebhookEventNetwork = "MAESTRO"
-	AsaRequestWebhookEventNetworkMastercard AsaRequestWebhookEventNetwork = "MASTERCARD"
-	AsaRequestWebhookEventNetworkUnknown    AsaRequestWebhookEventNetwork = "UNKNOWN"
-	AsaRequestWebhookEventNetworkVisa       AsaRequestWebhookEventNetwork = "VISA"
+	CardAuthorizationApprovalRequestWebhookEventNetworkAmex       CardAuthorizationApprovalRequestWebhookEventNetwork = "AMEX"
+	CardAuthorizationApprovalRequestWebhookEventNetworkInterlink  CardAuthorizationApprovalRequestWebhookEventNetwork = "INTERLINK"
+	CardAuthorizationApprovalRequestWebhookEventNetworkMaestro    CardAuthorizationApprovalRequestWebhookEventNetwork = "MAESTRO"
+	CardAuthorizationApprovalRequestWebhookEventNetworkMastercard CardAuthorizationApprovalRequestWebhookEventNetwork = "MASTERCARD"
+	CardAuthorizationApprovalRequestWebhookEventNetworkUnknown    CardAuthorizationApprovalRequestWebhookEventNetwork = "UNKNOWN"
+	CardAuthorizationApprovalRequestWebhookEventNetworkVisa       CardAuthorizationApprovalRequestWebhookEventNetwork = "VISA"
 )
 
-func (r AsaRequestWebhookEventNetwork) IsKnown() bool {
+func (r CardAuthorizationApprovalRequestWebhookEventNetwork) IsKnown() bool {
 	switch r {
-	case AsaRequestWebhookEventNetworkAmex, AsaRequestWebhookEventNetworkInterlink, AsaRequestWebhookEventNetworkMaestro, AsaRequestWebhookEventNetworkMastercard, AsaRequestWebhookEventNetworkUnknown, AsaRequestWebhookEventNetworkVisa:
+	case CardAuthorizationApprovalRequestWebhookEventNetworkAmex, CardAuthorizationApprovalRequestWebhookEventNetworkInterlink, CardAuthorizationApprovalRequestWebhookEventNetworkMaestro, CardAuthorizationApprovalRequestWebhookEventNetworkMastercard, CardAuthorizationApprovalRequestWebhookEventNetworkUnknown, CardAuthorizationApprovalRequestWebhookEventNetworkVisa:
 		return true
 	}
 	return false
@@ -1527,44 +1543,46 @@ func (r AsaRequestWebhookEventNetwork) IsKnown() bool {
 // Please consult the official network documentation for more details about these
 // values and how to use them. This object is only available to certain programs-
 // contact your Customer Success Manager to discuss enabling access.
-type AsaRequestWebhookEventNetworkSpecificData struct {
-	Mastercard AsaRequestWebhookEventNetworkSpecificDataMastercard `json:"mastercard,nullable"`
-	Visa       AsaRequestWebhookEventNetworkSpecificDataVisa       `json:"visa,nullable"`
-	JSON       asaRequestWebhookEventNetworkSpecificDataJSON       `json:"-"`
+type CardAuthorizationApprovalRequestWebhookEventNetworkSpecificData struct {
+	Mastercard CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercard `json:"mastercard,nullable"`
+	Visa       CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataVisa       `json:"visa,nullable"`
+	JSON       cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataJSON       `json:"-"`
 }
 
-// asaRequestWebhookEventNetworkSpecificDataJSON contains the JSON metadata for the
-// struct [AsaRequestWebhookEventNetworkSpecificData]
-type asaRequestWebhookEventNetworkSpecificDataJSON struct {
+// cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataJSON contains the
+// JSON metadata for the struct
+// [CardAuthorizationApprovalRequestWebhookEventNetworkSpecificData]
+type cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataJSON struct {
 	Mastercard  apijson.Field
 	Visa        apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *AsaRequestWebhookEventNetworkSpecificData) UnmarshalJSON(data []byte) (err error) {
+func (r *CardAuthorizationApprovalRequestWebhookEventNetworkSpecificData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r asaRequestWebhookEventNetworkSpecificDataJSON) RawJSON() string {
+func (r cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataJSON) RawJSON() string {
 	return r.raw
 }
 
-type AsaRequestWebhookEventNetworkSpecificDataMastercard struct {
+type CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercard struct {
 	// Indicates the electronic commerce security level and UCAF collection.
 	EcommerceSecurityLevelIndicator string `json:"ecommerce_security_level_indicator,nullable"`
 	// The On-behalf Service performed on the transaction and the results. Contains all
 	// applicable, on-behalf service results that were performed on a given
 	// transaction.
-	OnBehalfServiceResult []AsaRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResult `json:"on_behalf_service_result,nullable"`
+	OnBehalfServiceResult []CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResult `json:"on_behalf_service_result,nullable"`
 	// Indicates the type of additional transaction purpose.
-	TransactionTypeIdentifier string                                                  `json:"transaction_type_identifier,nullable"`
-	JSON                      asaRequestWebhookEventNetworkSpecificDataMastercardJSON `json:"-"`
+	TransactionTypeIdentifier string                                                                        `json:"transaction_type_identifier,nullable"`
+	JSON                      cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercardJSON `json:"-"`
 }
 
-// asaRequestWebhookEventNetworkSpecificDataMastercardJSON contains the JSON
-// metadata for the struct [AsaRequestWebhookEventNetworkSpecificDataMastercard]
-type asaRequestWebhookEventNetworkSpecificDataMastercardJSON struct {
+// cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercardJSON
+// contains the JSON metadata for the struct
+// [CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercard]
+type cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercardJSON struct {
 	EcommerceSecurityLevelIndicator apijson.Field
 	OnBehalfServiceResult           apijson.Field
 	TransactionTypeIdentifier       apijson.Field
@@ -1572,28 +1590,28 @@ type asaRequestWebhookEventNetworkSpecificDataMastercardJSON struct {
 	ExtraFields                     map[string]apijson.Field
 }
 
-func (r *AsaRequestWebhookEventNetworkSpecificDataMastercard) UnmarshalJSON(data []byte) (err error) {
+func (r *CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercard) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r asaRequestWebhookEventNetworkSpecificDataMastercardJSON) RawJSON() string {
+func (r cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercardJSON) RawJSON() string {
 	return r.raw
 }
 
-type AsaRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResult struct {
+type CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResult struct {
 	// Indicates the results of the service processing.
 	Result1 string `json:"result_1,required"`
 	// Identifies the results of the service processing.
 	Result2 string `json:"result_2,required"`
 	// Indicates the service performed on the transaction.
-	Service string                                                                       `json:"service,required"`
-	JSON    asaRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResultJSON `json:"-"`
+	Service string                                                                                             `json:"service,required"`
+	JSON    cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResultJSON `json:"-"`
 }
 
-// asaRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResultJSON
+// cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResultJSON
 // contains the JSON metadata for the struct
-// [AsaRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResult]
-type asaRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResultJSON struct {
+// [CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResult]
+type cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResultJSON struct {
 	Result1     apijson.Field
 	Result2     apijson.Field
 	Service     apijson.Field
@@ -1601,77 +1619,79 @@ type asaRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResultJSO
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *AsaRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResult) UnmarshalJSON(data []byte) (err error) {
+func (r *CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResult) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r asaRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResultJSON) RawJSON() string {
+func (r cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResultJSON) RawJSON() string {
 	return r.raw
 }
 
-type AsaRequestWebhookEventNetworkSpecificDataVisa struct {
+type CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataVisa struct {
 	// Identifies the purpose or category of a transaction, used to classify and
 	// process transactions according to Visa’s rules.
-	BusinessApplicationIdentifier string                                            `json:"business_application_identifier,nullable"`
-	JSON                          asaRequestWebhookEventNetworkSpecificDataVisaJSON `json:"-"`
+	BusinessApplicationIdentifier string                                                                  `json:"business_application_identifier,nullable"`
+	JSON                          cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataVisaJSON `json:"-"`
 }
 
-// asaRequestWebhookEventNetworkSpecificDataVisaJSON contains the JSON metadata for
-// the struct [AsaRequestWebhookEventNetworkSpecificDataVisa]
-type asaRequestWebhookEventNetworkSpecificDataVisaJSON struct {
+// cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataVisaJSON contains
+// the JSON metadata for the struct
+// [CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataVisa]
+type cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataVisaJSON struct {
 	BusinessApplicationIdentifier apijson.Field
 	raw                           string
 	ExtraFields                   map[string]apijson.Field
 }
 
-func (r *AsaRequestWebhookEventNetworkSpecificDataVisa) UnmarshalJSON(data []byte) (err error) {
+func (r *CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataVisa) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r asaRequestWebhookEventNetworkSpecificDataVisaJSON) RawJSON() string {
+func (r cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataVisaJSON) RawJSON() string {
 	return r.raw
 }
 
-type AsaRequestWebhookEventPos struct {
+type CardAuthorizationApprovalRequestWebhookEventPos struct {
 	// POS > Entry Mode object in ASA
-	EntryMode AsaRequestWebhookEventPosEntryMode `json:"entry_mode"`
-	Terminal  AsaRequestWebhookEventPosTerminal  `json:"terminal"`
-	JSON      asaRequestWebhookEventPosJSON      `json:"-"`
+	EntryMode CardAuthorizationApprovalRequestWebhookEventPosEntryMode `json:"entry_mode"`
+	Terminal  CardAuthorizationApprovalRequestWebhookEventPosTerminal  `json:"terminal"`
+	JSON      cardAuthorizationApprovalRequestWebhookEventPosJSON      `json:"-"`
 }
 
-// asaRequestWebhookEventPosJSON contains the JSON metadata for the struct
-// [AsaRequestWebhookEventPos]
-type asaRequestWebhookEventPosJSON struct {
+// cardAuthorizationApprovalRequestWebhookEventPosJSON contains the JSON metadata
+// for the struct [CardAuthorizationApprovalRequestWebhookEventPos]
+type cardAuthorizationApprovalRequestWebhookEventPosJSON struct {
 	EntryMode   apijson.Field
 	Terminal    apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *AsaRequestWebhookEventPos) UnmarshalJSON(data []byte) (err error) {
+func (r *CardAuthorizationApprovalRequestWebhookEventPos) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r asaRequestWebhookEventPosJSON) RawJSON() string {
+func (r cardAuthorizationApprovalRequestWebhookEventPosJSON) RawJSON() string {
 	return r.raw
 }
 
 // POS > Entry Mode object in ASA
-type AsaRequestWebhookEventPosEntryMode struct {
+type CardAuthorizationApprovalRequestWebhookEventPosEntryMode struct {
 	// Card Presence Indicator
-	Card AsaRequestWebhookEventPosEntryModeCard `json:"card"`
+	Card CardAuthorizationApprovalRequestWebhookEventPosEntryModeCard `json:"card"`
 	// Cardholder Presence Indicator
-	Cardholder AsaRequestWebhookEventPosEntryModeCardholder `json:"cardholder"`
+	Cardholder CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholder `json:"cardholder"`
 	// Method of entry for the PAN
-	Pan AsaRequestWebhookEventPosEntryModePan `json:"pan"`
+	Pan CardAuthorizationApprovalRequestWebhookEventPosEntryModePan `json:"pan"`
 	// Indicates whether the cardholder entered the PIN. True if the PIN was entered.
-	PinEntered bool                                   `json:"pin_entered"`
-	JSON       asaRequestWebhookEventPosEntryModeJSON `json:"-"`
+	PinEntered bool                                                         `json:"pin_entered"`
+	JSON       cardAuthorizationApprovalRequestWebhookEventPosEntryModeJSON `json:"-"`
 }
 
-// asaRequestWebhookEventPosEntryModeJSON contains the JSON metadata for the struct
-// [AsaRequestWebhookEventPosEntryMode]
-type asaRequestWebhookEventPosEntryModeJSON struct {
+// cardAuthorizationApprovalRequestWebhookEventPosEntryModeJSON contains the JSON
+// metadata for the struct
+// [CardAuthorizationApprovalRequestWebhookEventPosEntryMode]
+type cardAuthorizationApprovalRequestWebhookEventPosEntryModeJSON struct {
 	Card        apijson.Field
 	Cardholder  apijson.Field
 	Pan         apijson.Field
@@ -1680,84 +1700,84 @@ type asaRequestWebhookEventPosEntryModeJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *AsaRequestWebhookEventPosEntryMode) UnmarshalJSON(data []byte) (err error) {
+func (r *CardAuthorizationApprovalRequestWebhookEventPosEntryMode) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r asaRequestWebhookEventPosEntryModeJSON) RawJSON() string {
+func (r cardAuthorizationApprovalRequestWebhookEventPosEntryModeJSON) RawJSON() string {
 	return r.raw
 }
 
 // Card Presence Indicator
-type AsaRequestWebhookEventPosEntryModeCard string
+type CardAuthorizationApprovalRequestWebhookEventPosEntryModeCard string
 
 const (
-	AsaRequestWebhookEventPosEntryModeCardPresent    AsaRequestWebhookEventPosEntryModeCard = "PRESENT"
-	AsaRequestWebhookEventPosEntryModeCardNotPresent AsaRequestWebhookEventPosEntryModeCard = "NOT_PRESENT"
-	AsaRequestWebhookEventPosEntryModeCardUnknown    AsaRequestWebhookEventPosEntryModeCard = "UNKNOWN"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardPresent    CardAuthorizationApprovalRequestWebhookEventPosEntryModeCard = "PRESENT"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardNotPresent CardAuthorizationApprovalRequestWebhookEventPosEntryModeCard = "NOT_PRESENT"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardUnknown    CardAuthorizationApprovalRequestWebhookEventPosEntryModeCard = "UNKNOWN"
 )
 
-func (r AsaRequestWebhookEventPosEntryModeCard) IsKnown() bool {
+func (r CardAuthorizationApprovalRequestWebhookEventPosEntryModeCard) IsKnown() bool {
 	switch r {
-	case AsaRequestWebhookEventPosEntryModeCardPresent, AsaRequestWebhookEventPosEntryModeCardNotPresent, AsaRequestWebhookEventPosEntryModeCardUnknown:
+	case CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardPresent, CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardNotPresent, CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardUnknown:
 		return true
 	}
 	return false
 }
 
 // Cardholder Presence Indicator
-type AsaRequestWebhookEventPosEntryModeCardholder string
+type CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholder string
 
 const (
-	AsaRequestWebhookEventPosEntryModeCardholderDeferredBilling AsaRequestWebhookEventPosEntryModeCardholder = "DEFERRED_BILLING"
-	AsaRequestWebhookEventPosEntryModeCardholderElectronicOrder AsaRequestWebhookEventPosEntryModeCardholder = "ELECTRONIC_ORDER"
-	AsaRequestWebhookEventPosEntryModeCardholderInstallment     AsaRequestWebhookEventPosEntryModeCardholder = "INSTALLMENT"
-	AsaRequestWebhookEventPosEntryModeCardholderMailOrder       AsaRequestWebhookEventPosEntryModeCardholder = "MAIL_ORDER"
-	AsaRequestWebhookEventPosEntryModeCardholderNotPresent      AsaRequestWebhookEventPosEntryModeCardholder = "NOT_PRESENT"
-	AsaRequestWebhookEventPosEntryModeCardholderPresent         AsaRequestWebhookEventPosEntryModeCardholder = "PRESENT"
-	AsaRequestWebhookEventPosEntryModeCardholderReoccurring     AsaRequestWebhookEventPosEntryModeCardholder = "REOCCURRING"
-	AsaRequestWebhookEventPosEntryModeCardholderTelephoneOrder  AsaRequestWebhookEventPosEntryModeCardholder = "TELEPHONE_ORDER"
-	AsaRequestWebhookEventPosEntryModeCardholderUnknown         AsaRequestWebhookEventPosEntryModeCardholder = "UNKNOWN"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholderDeferredBilling CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholder = "DEFERRED_BILLING"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholderElectronicOrder CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholder = "ELECTRONIC_ORDER"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholderInstallment     CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholder = "INSTALLMENT"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholderMailOrder       CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholder = "MAIL_ORDER"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholderNotPresent      CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholder = "NOT_PRESENT"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholderPresent         CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholder = "PRESENT"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholderReoccurring     CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholder = "REOCCURRING"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholderTelephoneOrder  CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholder = "TELEPHONE_ORDER"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholderUnknown         CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholder = "UNKNOWN"
 )
 
-func (r AsaRequestWebhookEventPosEntryModeCardholder) IsKnown() bool {
+func (r CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholder) IsKnown() bool {
 	switch r {
-	case AsaRequestWebhookEventPosEntryModeCardholderDeferredBilling, AsaRequestWebhookEventPosEntryModeCardholderElectronicOrder, AsaRequestWebhookEventPosEntryModeCardholderInstallment, AsaRequestWebhookEventPosEntryModeCardholderMailOrder, AsaRequestWebhookEventPosEntryModeCardholderNotPresent, AsaRequestWebhookEventPosEntryModeCardholderPresent, AsaRequestWebhookEventPosEntryModeCardholderReoccurring, AsaRequestWebhookEventPosEntryModeCardholderTelephoneOrder, AsaRequestWebhookEventPosEntryModeCardholderUnknown:
+	case CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholderDeferredBilling, CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholderElectronicOrder, CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholderInstallment, CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholderMailOrder, CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholderNotPresent, CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholderPresent, CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholderReoccurring, CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholderTelephoneOrder, CardAuthorizationApprovalRequestWebhookEventPosEntryModeCardholderUnknown:
 		return true
 	}
 	return false
 }
 
 // Method of entry for the PAN
-type AsaRequestWebhookEventPosEntryModePan string
+type CardAuthorizationApprovalRequestWebhookEventPosEntryModePan string
 
 const (
-	AsaRequestWebhookEventPosEntryModePanAutoEntry           AsaRequestWebhookEventPosEntryModePan = "AUTO_ENTRY"
-	AsaRequestWebhookEventPosEntryModePanBarCode             AsaRequestWebhookEventPosEntryModePan = "BAR_CODE"
-	AsaRequestWebhookEventPosEntryModePanContactless         AsaRequestWebhookEventPosEntryModePan = "CONTACTLESS"
-	AsaRequestWebhookEventPosEntryModePanEcommerce           AsaRequestWebhookEventPosEntryModePan = "ECOMMERCE"
-	AsaRequestWebhookEventPosEntryModePanErrorKeyed          AsaRequestWebhookEventPosEntryModePan = "ERROR_KEYED"
-	AsaRequestWebhookEventPosEntryModePanErrorMagneticStripe AsaRequestWebhookEventPosEntryModePan = "ERROR_MAGNETIC_STRIPE"
-	AsaRequestWebhookEventPosEntryModePanIcc                 AsaRequestWebhookEventPosEntryModePan = "ICC"
-	AsaRequestWebhookEventPosEntryModePanKeyEntered          AsaRequestWebhookEventPosEntryModePan = "KEY_ENTERED"
-	AsaRequestWebhookEventPosEntryModePanMagneticStripe      AsaRequestWebhookEventPosEntryModePan = "MAGNETIC_STRIPE"
-	AsaRequestWebhookEventPosEntryModePanManual              AsaRequestWebhookEventPosEntryModePan = "MANUAL"
-	AsaRequestWebhookEventPosEntryModePanOcr                 AsaRequestWebhookEventPosEntryModePan = "OCR"
-	AsaRequestWebhookEventPosEntryModePanSecureCardless      AsaRequestWebhookEventPosEntryModePan = "SECURE_CARDLESS"
-	AsaRequestWebhookEventPosEntryModePanUnspecified         AsaRequestWebhookEventPosEntryModePan = "UNSPECIFIED"
-	AsaRequestWebhookEventPosEntryModePanUnknown             AsaRequestWebhookEventPosEntryModePan = "UNKNOWN"
-	AsaRequestWebhookEventPosEntryModePanCredentialOnFile    AsaRequestWebhookEventPosEntryModePan = "CREDENTIAL_ON_FILE"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModePanAutoEntry           CardAuthorizationApprovalRequestWebhookEventPosEntryModePan = "AUTO_ENTRY"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModePanBarCode             CardAuthorizationApprovalRequestWebhookEventPosEntryModePan = "BAR_CODE"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModePanContactless         CardAuthorizationApprovalRequestWebhookEventPosEntryModePan = "CONTACTLESS"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModePanEcommerce           CardAuthorizationApprovalRequestWebhookEventPosEntryModePan = "ECOMMERCE"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModePanErrorKeyed          CardAuthorizationApprovalRequestWebhookEventPosEntryModePan = "ERROR_KEYED"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModePanErrorMagneticStripe CardAuthorizationApprovalRequestWebhookEventPosEntryModePan = "ERROR_MAGNETIC_STRIPE"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModePanIcc                 CardAuthorizationApprovalRequestWebhookEventPosEntryModePan = "ICC"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModePanKeyEntered          CardAuthorizationApprovalRequestWebhookEventPosEntryModePan = "KEY_ENTERED"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModePanMagneticStripe      CardAuthorizationApprovalRequestWebhookEventPosEntryModePan = "MAGNETIC_STRIPE"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModePanManual              CardAuthorizationApprovalRequestWebhookEventPosEntryModePan = "MANUAL"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModePanOcr                 CardAuthorizationApprovalRequestWebhookEventPosEntryModePan = "OCR"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModePanSecureCardless      CardAuthorizationApprovalRequestWebhookEventPosEntryModePan = "SECURE_CARDLESS"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModePanUnspecified         CardAuthorizationApprovalRequestWebhookEventPosEntryModePan = "UNSPECIFIED"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModePanUnknown             CardAuthorizationApprovalRequestWebhookEventPosEntryModePan = "UNKNOWN"
+	CardAuthorizationApprovalRequestWebhookEventPosEntryModePanCredentialOnFile    CardAuthorizationApprovalRequestWebhookEventPosEntryModePan = "CREDENTIAL_ON_FILE"
 )
 
-func (r AsaRequestWebhookEventPosEntryModePan) IsKnown() bool {
+func (r CardAuthorizationApprovalRequestWebhookEventPosEntryModePan) IsKnown() bool {
 	switch r {
-	case AsaRequestWebhookEventPosEntryModePanAutoEntry, AsaRequestWebhookEventPosEntryModePanBarCode, AsaRequestWebhookEventPosEntryModePanContactless, AsaRequestWebhookEventPosEntryModePanEcommerce, AsaRequestWebhookEventPosEntryModePanErrorKeyed, AsaRequestWebhookEventPosEntryModePanErrorMagneticStripe, AsaRequestWebhookEventPosEntryModePanIcc, AsaRequestWebhookEventPosEntryModePanKeyEntered, AsaRequestWebhookEventPosEntryModePanMagneticStripe, AsaRequestWebhookEventPosEntryModePanManual, AsaRequestWebhookEventPosEntryModePanOcr, AsaRequestWebhookEventPosEntryModePanSecureCardless, AsaRequestWebhookEventPosEntryModePanUnspecified, AsaRequestWebhookEventPosEntryModePanUnknown, AsaRequestWebhookEventPosEntryModePanCredentialOnFile:
+	case CardAuthorizationApprovalRequestWebhookEventPosEntryModePanAutoEntry, CardAuthorizationApprovalRequestWebhookEventPosEntryModePanBarCode, CardAuthorizationApprovalRequestWebhookEventPosEntryModePanContactless, CardAuthorizationApprovalRequestWebhookEventPosEntryModePanEcommerce, CardAuthorizationApprovalRequestWebhookEventPosEntryModePanErrorKeyed, CardAuthorizationApprovalRequestWebhookEventPosEntryModePanErrorMagneticStripe, CardAuthorizationApprovalRequestWebhookEventPosEntryModePanIcc, CardAuthorizationApprovalRequestWebhookEventPosEntryModePanKeyEntered, CardAuthorizationApprovalRequestWebhookEventPosEntryModePanMagneticStripe, CardAuthorizationApprovalRequestWebhookEventPosEntryModePanManual, CardAuthorizationApprovalRequestWebhookEventPosEntryModePanOcr, CardAuthorizationApprovalRequestWebhookEventPosEntryModePanSecureCardless, CardAuthorizationApprovalRequestWebhookEventPosEntryModePanUnspecified, CardAuthorizationApprovalRequestWebhookEventPosEntryModePanUnknown, CardAuthorizationApprovalRequestWebhookEventPosEntryModePanCredentialOnFile:
 		return true
 	}
 	return false
 }
 
-type AsaRequestWebhookEventPosTerminal struct {
+type CardAuthorizationApprovalRequestWebhookEventPosTerminal struct {
 	// True if a clerk is present at the sale.
 	Attended bool `json:"attended,required"`
 	// True if the terminal is capable of retaining the card.
@@ -1765,7 +1785,7 @@ type AsaRequestWebhookEventPosTerminal struct {
 	// True if the sale was made at the place of business (vs. mobile).
 	OnPremise bool `json:"on_premise,required"`
 	// The person that is designated to swipe the card
-	Operator AsaRequestWebhookEventPosTerminalOperator `json:"operator,required"`
+	Operator CardAuthorizationApprovalRequestWebhookEventPosTerminalOperator `json:"operator,required"`
 	// True if the terminal is capable of partial approval. Partial approval is when
 	// part of a transaction is approved and another payment must be used for the
 	// remainder. Example scenario: A $40 transaction is attempted on a prepaid card
@@ -1773,18 +1793,19 @@ type AsaRequestWebhookEventPosTerminal struct {
 	// which point the POS will prompt the user for an additional payment of $15.
 	PartialApprovalCapable bool `json:"partial_approval_capable,required"`
 	// Status of whether the POS is able to accept PINs
-	PinCapability AsaRequestWebhookEventPosTerminalPinCapability `json:"pin_capability,required"`
+	PinCapability CardAuthorizationApprovalRequestWebhookEventPosTerminalPinCapability `json:"pin_capability,required"`
 	// POS Type
-	Type AsaRequestWebhookEventPosTerminalType `json:"type,required"`
+	Type CardAuthorizationApprovalRequestWebhookEventPosTerminalType `json:"type,required"`
 	// Uniquely identifies a terminal at the card acceptor location of acquiring
 	// institutions or merchant POS Systems. Left justified with trailing spaces.
-	AcceptorTerminalID string                                `json:"acceptor_terminal_id,nullable"`
-	JSON               asaRequestWebhookEventPosTerminalJSON `json:"-"`
+	AcceptorTerminalID string                                                      `json:"acceptor_terminal_id,nullable"`
+	JSON               cardAuthorizationApprovalRequestWebhookEventPosTerminalJSON `json:"-"`
 }
 
-// asaRequestWebhookEventPosTerminalJSON contains the JSON metadata for the struct
-// [AsaRequestWebhookEventPosTerminal]
-type asaRequestWebhookEventPosTerminalJSON struct {
+// cardAuthorizationApprovalRequestWebhookEventPosTerminalJSON contains the JSON
+// metadata for the struct
+// [CardAuthorizationApprovalRequestWebhookEventPosTerminal]
+type cardAuthorizationApprovalRequestWebhookEventPosTerminalJSON struct {
 	Attended               apijson.Field
 	CardRetentionCapable   apijson.Field
 	OnPremise              apijson.Field
@@ -1797,83 +1818,83 @@ type asaRequestWebhookEventPosTerminalJSON struct {
 	ExtraFields            map[string]apijson.Field
 }
 
-func (r *AsaRequestWebhookEventPosTerminal) UnmarshalJSON(data []byte) (err error) {
+func (r *CardAuthorizationApprovalRequestWebhookEventPosTerminal) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r asaRequestWebhookEventPosTerminalJSON) RawJSON() string {
+func (r cardAuthorizationApprovalRequestWebhookEventPosTerminalJSON) RawJSON() string {
 	return r.raw
 }
 
 // The person that is designated to swipe the card
-type AsaRequestWebhookEventPosTerminalOperator string
+type CardAuthorizationApprovalRequestWebhookEventPosTerminalOperator string
 
 const (
-	AsaRequestWebhookEventPosTerminalOperatorAdministrative AsaRequestWebhookEventPosTerminalOperator = "ADMINISTRATIVE"
-	AsaRequestWebhookEventPosTerminalOperatorCardholder     AsaRequestWebhookEventPosTerminalOperator = "CARDHOLDER"
-	AsaRequestWebhookEventPosTerminalOperatorCardAcceptor   AsaRequestWebhookEventPosTerminalOperator = "CARD_ACCEPTOR"
-	AsaRequestWebhookEventPosTerminalOperatorUnknown        AsaRequestWebhookEventPosTerminalOperator = "UNKNOWN"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalOperatorAdministrative CardAuthorizationApprovalRequestWebhookEventPosTerminalOperator = "ADMINISTRATIVE"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalOperatorCardholder     CardAuthorizationApprovalRequestWebhookEventPosTerminalOperator = "CARDHOLDER"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalOperatorCardAcceptor   CardAuthorizationApprovalRequestWebhookEventPosTerminalOperator = "CARD_ACCEPTOR"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalOperatorUnknown        CardAuthorizationApprovalRequestWebhookEventPosTerminalOperator = "UNKNOWN"
 )
 
-func (r AsaRequestWebhookEventPosTerminalOperator) IsKnown() bool {
+func (r CardAuthorizationApprovalRequestWebhookEventPosTerminalOperator) IsKnown() bool {
 	switch r {
-	case AsaRequestWebhookEventPosTerminalOperatorAdministrative, AsaRequestWebhookEventPosTerminalOperatorCardholder, AsaRequestWebhookEventPosTerminalOperatorCardAcceptor, AsaRequestWebhookEventPosTerminalOperatorUnknown:
+	case CardAuthorizationApprovalRequestWebhookEventPosTerminalOperatorAdministrative, CardAuthorizationApprovalRequestWebhookEventPosTerminalOperatorCardholder, CardAuthorizationApprovalRequestWebhookEventPosTerminalOperatorCardAcceptor, CardAuthorizationApprovalRequestWebhookEventPosTerminalOperatorUnknown:
 		return true
 	}
 	return false
 }
 
 // Status of whether the POS is able to accept PINs
-type AsaRequestWebhookEventPosTerminalPinCapability string
+type CardAuthorizationApprovalRequestWebhookEventPosTerminalPinCapability string
 
 const (
-	AsaRequestWebhookEventPosTerminalPinCapabilityCapable     AsaRequestWebhookEventPosTerminalPinCapability = "CAPABLE"
-	AsaRequestWebhookEventPosTerminalPinCapabilityInoperative AsaRequestWebhookEventPosTerminalPinCapability = "INOPERATIVE"
-	AsaRequestWebhookEventPosTerminalPinCapabilityNotCapable  AsaRequestWebhookEventPosTerminalPinCapability = "NOT_CAPABLE"
-	AsaRequestWebhookEventPosTerminalPinCapabilityUnspecified AsaRequestWebhookEventPosTerminalPinCapability = "UNSPECIFIED"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalPinCapabilityCapable     CardAuthorizationApprovalRequestWebhookEventPosTerminalPinCapability = "CAPABLE"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalPinCapabilityInoperative CardAuthorizationApprovalRequestWebhookEventPosTerminalPinCapability = "INOPERATIVE"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalPinCapabilityNotCapable  CardAuthorizationApprovalRequestWebhookEventPosTerminalPinCapability = "NOT_CAPABLE"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalPinCapabilityUnspecified CardAuthorizationApprovalRequestWebhookEventPosTerminalPinCapability = "UNSPECIFIED"
 )
 
-func (r AsaRequestWebhookEventPosTerminalPinCapability) IsKnown() bool {
+func (r CardAuthorizationApprovalRequestWebhookEventPosTerminalPinCapability) IsKnown() bool {
 	switch r {
-	case AsaRequestWebhookEventPosTerminalPinCapabilityCapable, AsaRequestWebhookEventPosTerminalPinCapabilityInoperative, AsaRequestWebhookEventPosTerminalPinCapabilityNotCapable, AsaRequestWebhookEventPosTerminalPinCapabilityUnspecified:
+	case CardAuthorizationApprovalRequestWebhookEventPosTerminalPinCapabilityCapable, CardAuthorizationApprovalRequestWebhookEventPosTerminalPinCapabilityInoperative, CardAuthorizationApprovalRequestWebhookEventPosTerminalPinCapabilityNotCapable, CardAuthorizationApprovalRequestWebhookEventPosTerminalPinCapabilityUnspecified:
 		return true
 	}
 	return false
 }
 
 // POS Type
-type AsaRequestWebhookEventPosTerminalType string
+type CardAuthorizationApprovalRequestWebhookEventPosTerminalType string
 
 const (
-	AsaRequestWebhookEventPosTerminalTypeAdministrative        AsaRequestWebhookEventPosTerminalType = "ADMINISTRATIVE"
-	AsaRequestWebhookEventPosTerminalTypeAtm                   AsaRequestWebhookEventPosTerminalType = "ATM"
-	AsaRequestWebhookEventPosTerminalTypeAuthorization         AsaRequestWebhookEventPosTerminalType = "AUTHORIZATION"
-	AsaRequestWebhookEventPosTerminalTypeCouponMachine         AsaRequestWebhookEventPosTerminalType = "COUPON_MACHINE"
-	AsaRequestWebhookEventPosTerminalTypeDialTerminal          AsaRequestWebhookEventPosTerminalType = "DIAL_TERMINAL"
-	AsaRequestWebhookEventPosTerminalTypeEcommerce             AsaRequestWebhookEventPosTerminalType = "ECOMMERCE"
-	AsaRequestWebhookEventPosTerminalTypeEcr                   AsaRequestWebhookEventPosTerminalType = "ECR"
-	AsaRequestWebhookEventPosTerminalTypeFuelMachine           AsaRequestWebhookEventPosTerminalType = "FUEL_MACHINE"
-	AsaRequestWebhookEventPosTerminalTypeHomeTerminal          AsaRequestWebhookEventPosTerminalType = "HOME_TERMINAL"
-	AsaRequestWebhookEventPosTerminalTypeMicr                  AsaRequestWebhookEventPosTerminalType = "MICR"
-	AsaRequestWebhookEventPosTerminalTypeOffPremise            AsaRequestWebhookEventPosTerminalType = "OFF_PREMISE"
-	AsaRequestWebhookEventPosTerminalTypePayment               AsaRequestWebhookEventPosTerminalType = "PAYMENT"
-	AsaRequestWebhookEventPosTerminalTypePda                   AsaRequestWebhookEventPosTerminalType = "PDA"
-	AsaRequestWebhookEventPosTerminalTypePhone                 AsaRequestWebhookEventPosTerminalType = "PHONE"
-	AsaRequestWebhookEventPosTerminalTypePoint                 AsaRequestWebhookEventPosTerminalType = "POINT"
-	AsaRequestWebhookEventPosTerminalTypePosTerminal           AsaRequestWebhookEventPosTerminalType = "POS_TERMINAL"
-	AsaRequestWebhookEventPosTerminalTypePublicUtility         AsaRequestWebhookEventPosTerminalType = "PUBLIC_UTILITY"
-	AsaRequestWebhookEventPosTerminalTypeSelfService           AsaRequestWebhookEventPosTerminalType = "SELF_SERVICE"
-	AsaRequestWebhookEventPosTerminalTypeTelevision            AsaRequestWebhookEventPosTerminalType = "TELEVISION"
-	AsaRequestWebhookEventPosTerminalTypeTeller                AsaRequestWebhookEventPosTerminalType = "TELLER"
-	AsaRequestWebhookEventPosTerminalTypeTravelersCheckMachine AsaRequestWebhookEventPosTerminalType = "TRAVELERS_CHECK_MACHINE"
-	AsaRequestWebhookEventPosTerminalTypeVending               AsaRequestWebhookEventPosTerminalType = "VENDING"
-	AsaRequestWebhookEventPosTerminalTypeVoice                 AsaRequestWebhookEventPosTerminalType = "VOICE"
-	AsaRequestWebhookEventPosTerminalTypeUnknown               AsaRequestWebhookEventPosTerminalType = "UNKNOWN"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeAdministrative        CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "ADMINISTRATIVE"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeAtm                   CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "ATM"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeAuthorization         CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "AUTHORIZATION"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeCouponMachine         CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "COUPON_MACHINE"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeDialTerminal          CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "DIAL_TERMINAL"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeEcommerce             CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "ECOMMERCE"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeEcr                   CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "ECR"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeFuelMachine           CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "FUEL_MACHINE"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeHomeTerminal          CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "HOME_TERMINAL"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeMicr                  CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "MICR"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeOffPremise            CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "OFF_PREMISE"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypePayment               CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "PAYMENT"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypePda                   CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "PDA"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypePhone                 CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "PHONE"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypePoint                 CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "POINT"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypePosTerminal           CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "POS_TERMINAL"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypePublicUtility         CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "PUBLIC_UTILITY"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeSelfService           CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "SELF_SERVICE"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeTelevision            CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "TELEVISION"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeTeller                CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "TELLER"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeTravelersCheckMachine CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "TRAVELERS_CHECK_MACHINE"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeVending               CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "VENDING"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeVoice                 CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "VOICE"
+	CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeUnknown               CardAuthorizationApprovalRequestWebhookEventPosTerminalType = "UNKNOWN"
 )
 
-func (r AsaRequestWebhookEventPosTerminalType) IsKnown() bool {
+func (r CardAuthorizationApprovalRequestWebhookEventPosTerminalType) IsKnown() bool {
 	switch r {
-	case AsaRequestWebhookEventPosTerminalTypeAdministrative, AsaRequestWebhookEventPosTerminalTypeAtm, AsaRequestWebhookEventPosTerminalTypeAuthorization, AsaRequestWebhookEventPosTerminalTypeCouponMachine, AsaRequestWebhookEventPosTerminalTypeDialTerminal, AsaRequestWebhookEventPosTerminalTypeEcommerce, AsaRequestWebhookEventPosTerminalTypeEcr, AsaRequestWebhookEventPosTerminalTypeFuelMachine, AsaRequestWebhookEventPosTerminalTypeHomeTerminal, AsaRequestWebhookEventPosTerminalTypeMicr, AsaRequestWebhookEventPosTerminalTypeOffPremise, AsaRequestWebhookEventPosTerminalTypePayment, AsaRequestWebhookEventPosTerminalTypePda, AsaRequestWebhookEventPosTerminalTypePhone, AsaRequestWebhookEventPosTerminalTypePoint, AsaRequestWebhookEventPosTerminalTypePosTerminal, AsaRequestWebhookEventPosTerminalTypePublicUtility, AsaRequestWebhookEventPosTerminalTypeSelfService, AsaRequestWebhookEventPosTerminalTypeTelevision, AsaRequestWebhookEventPosTerminalTypeTeller, AsaRequestWebhookEventPosTerminalTypeTravelersCheckMachine, AsaRequestWebhookEventPosTerminalTypeVending, AsaRequestWebhookEventPosTerminalTypeVoice, AsaRequestWebhookEventPosTerminalTypeUnknown:
+	case CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeAdministrative, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeAtm, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeAuthorization, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeCouponMachine, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeDialTerminal, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeEcommerce, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeEcr, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeFuelMachine, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeHomeTerminal, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeMicr, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeOffPremise, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypePayment, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypePda, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypePhone, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypePoint, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypePosTerminal, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypePublicUtility, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeSelfService, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeTelevision, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeTeller, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeTravelersCheckMachine, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeVending, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeVoice, CardAuthorizationApprovalRequestWebhookEventPosTerminalTypeUnknown:
 		return true
 	}
 	return false
@@ -4694,6 +4715,45 @@ func (r TokenizationUpdatedWebhookEventEventType) IsKnown() bool {
 	return false
 }
 
+// Represents a 3DS authentication
+type ThreeDSAuthenticationApprovalRequestWebhookEvent struct {
+	EventType ThreeDSAuthenticationApprovalRequestWebhookEventEventType `json:"event_type,required"`
+	JSON      threeDSAuthenticationApprovalRequestWebhookEventJSON      `json:"-"`
+	ThreeDSAuthentication
+}
+
+// threeDSAuthenticationApprovalRequestWebhookEventJSON contains the JSON metadata
+// for the struct [ThreeDSAuthenticationApprovalRequestWebhookEvent]
+type threeDSAuthenticationApprovalRequestWebhookEventJSON struct {
+	EventType   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ThreeDSAuthenticationApprovalRequestWebhookEvent) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r threeDSAuthenticationApprovalRequestWebhookEventJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ThreeDSAuthenticationApprovalRequestWebhookEvent) implementsParsedWebhookEvent() {}
+
+type ThreeDSAuthenticationApprovalRequestWebhookEventEventType string
+
+const (
+	ThreeDSAuthenticationApprovalRequestWebhookEventEventTypeThreeDSAuthenticationApprovalRequest ThreeDSAuthenticationApprovalRequestWebhookEventEventType = "three_ds_authentication.approval_request"
+)
+
+func (r ThreeDSAuthenticationApprovalRequestWebhookEventEventType) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationApprovalRequestWebhookEventEventTypeThreeDSAuthenticationApprovalRequest:
+		return true
+	}
+	return false
+}
+
 // The Dispute object tracks the progression of a dispute throughout its lifecycle.
 type DisputeTransactionCreatedWebhookEvent struct {
 	// The type of event that occurred.
@@ -4840,8 +4900,8 @@ type ParsedWebhookEvent struct {
 	AuthorizationCode string `json:"authorization_code,nullable"`
 	// Amount of credit available to spend in cents
 	AvailableCredit int64 `json:"available_credit"`
-	// This field can have the runtime type of [AsaRequestWebhookEventAvs],
-	// [TransactionAvs].
+	// This field can have the runtime type of
+	// [CardAuthorizationApprovalRequestWebhookEventAvs], [TransactionAvs].
 	Avs interface{} `json:"avs"`
 	// Auth Rule Backtest Token
 	BacktestToken string `json:"backtest_token" format:"uuid"`
@@ -4854,7 +4914,8 @@ type ParsedWebhookEvent struct {
 	// If applicable, represents the business account token associated with the
 	// account_holder.
 	BusinessAccountToken string `json:"business_account_token,nullable" format:"uuid"`
-	// This field can have the runtime type of [AsaRequestWebhookEventCard].
+	// This field can have the runtime type of
+	// [CardAuthorizationApprovalRequestWebhookEventCard].
 	Card interface{} `json:"card"`
 	// Indicates whether the expiration date provided by the cardholder during checkout
 	// matches Lithic's record of the card's expiration date.
@@ -5012,7 +5073,8 @@ type ParsedWebhookEvent struct {
 	FirstName string `json:"first_name"`
 	// This field can have the runtime type of [[]EnhancedDataFleet].
 	Fleet interface{} `json:"fleet"`
-	// This field can have the runtime type of [AsaRequestWebhookEventFleetInfo].
+	// This field can have the runtime type of
+	// [CardAuthorizationApprovalRequestWebhookEventFleetInfo].
 	FleetInfo interface{} `json:"fleet_info"`
 	// Globally unique identifier for the financial account or card that will send the
 	// funds. Accepted type dependent on the program's use case
@@ -5045,7 +5107,8 @@ type ParsedWebhookEvent struct {
 	LastFour string `json:"last_four"`
 	// If applicable, represents the account_holder's last name.
 	LastName string `json:"last_name"`
-	// This field can have the runtime type of [AsaRequestWebhookEventLatestChallenge].
+	// This field can have the runtime type of
+	// [CardAuthorizationApprovalRequestWebhookEventLatestChallenge].
 	LatestChallenge interface{} `json:"latest_challenge"`
 	// If applicable, represents the account_holder's business name.
 	LegalBusinessName string `json:"legal_business_name"`
@@ -5099,7 +5162,7 @@ type ParsedWebhookEvent struct {
 	// [[]FundingEventNetworkSettlementSummary].
 	NetworkSettlementSummary interface{} `json:"network_settlement_summary"`
 	// This field can have the runtime type of
-	// [AsaRequestWebhookEventNetworkSpecificData].
+	// [CardAuthorizationApprovalRequestWebhookEventNetworkSpecificData].
 	NetworkSpecificData interface{} `json:"network_specific_data"`
 	// Date when the next payment is due
 	NextPaymentDueDate time.Time `json:"next_payment_due_date" format:"date"`
@@ -5117,8 +5180,9 @@ type ParsedWebhookEvent struct {
 	// will appear in statements
 	Owner string `json:"owner"`
 	// Owner Type
-	OwnerType         OwnerType        `json:"owner_type"`
-	PaymentAllocation CategoryBalances `json:"payment_allocation"`
+	OwnerType OwnerType `json:"owner_type"`
+	// This field can have the runtime type of [LoanTapePaymentAllocation].
+	PaymentAllocation interface{} `json:"payment_allocation"`
 	// Date when the payment is due
 	PaymentDueDate time.Time                     `json:"payment_due_date,nullable" format:"date"`
 	PaymentType    ParsedWebhookEventPaymentType `json:"payment_type"`
@@ -5134,8 +5198,8 @@ type ParsedWebhookEvent struct {
 	// If updated, the newly updated phone_number associated with the account_holder
 	// otherwise the existing phone_number is provided.
 	PhoneNumber string `json:"phone_number"`
-	// This field can have the runtime type of [AsaRequestWebhookEventPos],
-	// [TransactionPos].
+	// This field can have the runtime type of
+	// [CardAuthorizationApprovalRequestWebhookEventPos], [TransactionPos].
 	Pos interface{} `json:"pos"`
 	// Date dispute entered pre-arbitration.
 	PrearbitrationDate time.Time `json:"prearbitration_date,nullable" format:"date-time"`
@@ -5331,6 +5395,8 @@ type ParsedWebhookEvent struct {
 	UploadURL string `json:"upload_url"`
 	// User Defined ID
 	UserDefinedID string `json:"user_defined_id,nullable"`
+	// User-defined status for the financial account
+	UserDefinedStatus string `json:"user_defined_status,nullable"`
 	// The number of attempts at verification
 	VerificationAttempts int64 `json:"verification_attempts"`
 	// Optional free text description of the reason for the failed verification. For
@@ -5553,6 +5619,7 @@ type parsedWebhookEventJSON struct {
 	UploadStatus                       apijson.Field
 	UploadURL                          apijson.Field
 	UserDefinedID                      apijson.Field
+	UserDefinedStatus                  apijson.Field
 	VerificationAttempts               apijson.Field
 	VerificationFailedReason           apijson.Field
 	VerificationMethod                 apijson.Field
@@ -5584,7 +5651,8 @@ func (r *ParsedWebhookEvent) UnmarshalJSON(data []byte) (err error) {
 // Possible runtime types of the union are [AccountHolderCreatedWebhookEvent],
 // [ParsedWebhookEventKYBPayload], [ParsedWebhookEventKYCPayload],
 // [ParsedWebhookEventLegacyPayload], [AccountHolderVerificationWebhookEvent],
-// [AccountHolderDocumentUpdatedWebhookEvent], [AsaRequestWebhookEvent],
+// [AccountHolderDocumentUpdatedWebhookEvent],
+// [CardAuthorizationApprovalRequestWebhookEvent],
 // [TokenizationDecisioningRequestWebhookEvent],
 // [AuthRulesBacktestReportCreatedWebhookEvent], [BalanceUpdatedWebhookEvent],
 // [BookTransferTransactionCreatedWebhookEvent],
@@ -5617,7 +5685,8 @@ func (r *ParsedWebhookEvent) UnmarshalJSON(data []byte) (err error) {
 // [TokenizationApprovalRequestWebhookEvent], [TokenizationResultWebhookEvent],
 // [TokenizationTwoFactorAuthenticationCodeWebhookEvent],
 // [TokenizationTwoFactorAuthenticationCodeSentWebhookEvent],
-// [TokenizationUpdatedWebhookEvent], [ThreeDSAuthentication],
+// [TokenizationUpdatedWebhookEvent],
+// [ThreeDSAuthenticationApprovalRequestWebhookEvent],
 // [DisputeTransactionCreatedWebhookEvent],
 // [DisputeTransactionUpdatedWebhookEvent].
 func (r ParsedWebhookEvent) AsUnion() ParsedWebhookEventUnion {
@@ -5629,7 +5698,8 @@ func (r ParsedWebhookEvent) AsUnion() ParsedWebhookEventUnion {
 // Union satisfied by [AccountHolderCreatedWebhookEvent],
 // [ParsedWebhookEventKYBPayload], [ParsedWebhookEventKYCPayload],
 // [ParsedWebhookEventLegacyPayload], [AccountHolderVerificationWebhookEvent],
-// [AccountHolderDocumentUpdatedWebhookEvent], [AsaRequestWebhookEvent],
+// [AccountHolderDocumentUpdatedWebhookEvent],
+// [CardAuthorizationApprovalRequestWebhookEvent],
 // [TokenizationDecisioningRequestWebhookEvent],
 // [AuthRulesBacktestReportCreatedWebhookEvent], [BalanceUpdatedWebhookEvent],
 // [BookTransferTransactionCreatedWebhookEvent],
@@ -5662,7 +5732,8 @@ func (r ParsedWebhookEvent) AsUnion() ParsedWebhookEventUnion {
 // [TokenizationApprovalRequestWebhookEvent], [TokenizationResultWebhookEvent],
 // [TokenizationTwoFactorAuthenticationCodeWebhookEvent],
 // [TokenizationTwoFactorAuthenticationCodeSentWebhookEvent],
-// [TokenizationUpdatedWebhookEvent], [ThreeDSAuthentication],
+// [TokenizationUpdatedWebhookEvent],
+// [ThreeDSAuthenticationApprovalRequestWebhookEvent],
 // [DisputeTransactionCreatedWebhookEvent] or
 // [DisputeTransactionUpdatedWebhookEvent].
 type ParsedWebhookEventUnion interface {
@@ -5699,7 +5770,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AsaRequestWebhookEvent{}),
+			Type:       reflect.TypeOf(CardAuthorizationApprovalRequestWebhookEvent{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -5891,7 +5962,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ThreeDSAuthentication{}),
+			Type:       reflect.TypeOf(ThreeDSAuthenticationApprovalRequestWebhookEvent{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -6674,6 +6745,7 @@ const (
 	ParsedWebhookEventEventTypeAccountHolderUpdated                                     ParsedWebhookEventEventType = "account_holder.updated"
 	ParsedWebhookEventEventTypeAccountHolderVerification                                ParsedWebhookEventEventType = "account_holder.verification"
 	ParsedWebhookEventEventTypeAccountHolderDocumentUpdated                             ParsedWebhookEventEventType = "account_holder_document.updated"
+	ParsedWebhookEventEventTypeCardAuthorizationApprovalRequest                         ParsedWebhookEventEventType = "card_authorization.approval_request"
 	ParsedWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest                 ParsedWebhookEventEventType = "digital_wallet.tokenization_approval_request"
 	ParsedWebhookEventEventTypeAuthRulesBacktestReportCreated                           ParsedWebhookEventEventType = "auth_rules.backtest_report.created"
 	ParsedWebhookEventEventTypeBalanceUpdated                                           ParsedWebhookEventEventType = "balance.updated"
@@ -6720,13 +6792,14 @@ const (
 	ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCode                  ParsedWebhookEventEventType = "tokenization.two_factor_authentication_code"
 	ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCodeSent              ParsedWebhookEventEventType = "tokenization.two_factor_authentication_code_sent"
 	ParsedWebhookEventEventTypeTokenizationUpdated                                      ParsedWebhookEventEventType = "tokenization.updated"
+	ParsedWebhookEventEventTypeThreeDSAuthenticationApprovalRequest                     ParsedWebhookEventEventType = "three_ds_authentication.approval_request"
 	ParsedWebhookEventEventTypeDisputeTransactionCreated                                ParsedWebhookEventEventType = "dispute_transaction.created"
 	ParsedWebhookEventEventTypeDisputeTransactionUpdated                                ParsedWebhookEventEventType = "dispute_transaction.updated"
 )
 
 func (r ParsedWebhookEventEventType) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventEventTypeAccountHolderCreated, ParsedWebhookEventEventTypeAccountHolderUpdated, ParsedWebhookEventEventTypeAccountHolderVerification, ParsedWebhookEventEventTypeAccountHolderDocumentUpdated, ParsedWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest, ParsedWebhookEventEventTypeAuthRulesBacktestReportCreated, ParsedWebhookEventEventTypeBalanceUpdated, ParsedWebhookEventEventTypeBookTransferTransactionCreated, ParsedWebhookEventEventTypeBookTransferTransactionUpdated, ParsedWebhookEventEventTypeCardCreated, ParsedWebhookEventEventTypeCardConverted, ParsedWebhookEventEventTypeCardRenewed, ParsedWebhookEventEventTypeCardReissued, ParsedWebhookEventEventTypeCardShipped, ParsedWebhookEventEventTypeCardTransactionUpdated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataCreated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataUpdated, ParsedWebhookEventEventTypeDigitalWalletTokenizationResult, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeDigitalWalletTokenizationUpdated, ParsedWebhookEventEventTypeDisputeUpdated, ParsedWebhookEventEventTypeDisputeEvidenceUploadFailed, ParsedWebhookEventEventTypeExternalBankAccountCreated, ParsedWebhookEventEventTypeExternalBankAccountUpdated, ParsedWebhookEventEventTypeExternalPaymentCreated, ParsedWebhookEventEventTypeExternalPaymentUpdated, ParsedWebhookEventEventTypeFinancialAccountCreated, ParsedWebhookEventEventTypeFinancialAccountUpdated, ParsedWebhookEventEventTypeFundingEventCreated, ParsedWebhookEventEventTypeLoanTapeCreated, ParsedWebhookEventEventTypeLoanTapeUpdated, ParsedWebhookEventEventTypeManagementOperationCreated, ParsedWebhookEventEventTypeManagementOperationUpdated, ParsedWebhookEventEventTypeInternalTransactionCreated, ParsedWebhookEventEventTypeInternalTransactionUpdated, ParsedWebhookEventEventTypeNetworkTotalCreated, ParsedWebhookEventEventTypeNetworkTotalUpdated, ParsedWebhookEventEventTypePaymentTransactionCreated, ParsedWebhookEventEventTypePaymentTransactionUpdated, ParsedWebhookEventEventTypeSettlementReportUpdated, ParsedWebhookEventEventTypeStatementsCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationChallenge, ParsedWebhookEventEventTypeTokenizationApprovalRequest, ParsedWebhookEventEventTypeTokenizationResult, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeTokenizationUpdated, ParsedWebhookEventEventTypeDisputeTransactionCreated, ParsedWebhookEventEventTypeDisputeTransactionUpdated:
+	case ParsedWebhookEventEventTypeAccountHolderCreated, ParsedWebhookEventEventTypeAccountHolderUpdated, ParsedWebhookEventEventTypeAccountHolderVerification, ParsedWebhookEventEventTypeAccountHolderDocumentUpdated, ParsedWebhookEventEventTypeCardAuthorizationApprovalRequest, ParsedWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest, ParsedWebhookEventEventTypeAuthRulesBacktestReportCreated, ParsedWebhookEventEventTypeBalanceUpdated, ParsedWebhookEventEventTypeBookTransferTransactionCreated, ParsedWebhookEventEventTypeBookTransferTransactionUpdated, ParsedWebhookEventEventTypeCardCreated, ParsedWebhookEventEventTypeCardConverted, ParsedWebhookEventEventTypeCardRenewed, ParsedWebhookEventEventTypeCardReissued, ParsedWebhookEventEventTypeCardShipped, ParsedWebhookEventEventTypeCardTransactionUpdated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataCreated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataUpdated, ParsedWebhookEventEventTypeDigitalWalletTokenizationResult, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeDigitalWalletTokenizationUpdated, ParsedWebhookEventEventTypeDisputeUpdated, ParsedWebhookEventEventTypeDisputeEvidenceUploadFailed, ParsedWebhookEventEventTypeExternalBankAccountCreated, ParsedWebhookEventEventTypeExternalBankAccountUpdated, ParsedWebhookEventEventTypeExternalPaymentCreated, ParsedWebhookEventEventTypeExternalPaymentUpdated, ParsedWebhookEventEventTypeFinancialAccountCreated, ParsedWebhookEventEventTypeFinancialAccountUpdated, ParsedWebhookEventEventTypeFundingEventCreated, ParsedWebhookEventEventTypeLoanTapeCreated, ParsedWebhookEventEventTypeLoanTapeUpdated, ParsedWebhookEventEventTypeManagementOperationCreated, ParsedWebhookEventEventTypeManagementOperationUpdated, ParsedWebhookEventEventTypeInternalTransactionCreated, ParsedWebhookEventEventTypeInternalTransactionUpdated, ParsedWebhookEventEventTypeNetworkTotalCreated, ParsedWebhookEventEventTypeNetworkTotalUpdated, ParsedWebhookEventEventTypePaymentTransactionCreated, ParsedWebhookEventEventTypePaymentTransactionUpdated, ParsedWebhookEventEventTypeSettlementReportUpdated, ParsedWebhookEventEventTypeStatementsCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationChallenge, ParsedWebhookEventEventTypeTokenizationApprovalRequest, ParsedWebhookEventEventTypeTokenizationResult, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeTokenizationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationApprovalRequest, ParsedWebhookEventEventTypeDisputeTransactionCreated, ParsedWebhookEventEventTypeDisputeTransactionUpdated:
 		return true
 	}
 	return false
