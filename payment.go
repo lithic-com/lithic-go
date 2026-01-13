@@ -816,20 +816,20 @@ func (r PaymentStatus) IsKnown() bool {
 type PaymentType string
 
 const (
-	PaymentTypeOriginationCredit   PaymentType = "ORIGINATION_CREDIT"
-	PaymentTypeOriginationDebit    PaymentType = "ORIGINATION_DEBIT"
-	PaymentTypeReceiptCredit       PaymentType = "RECEIPT_CREDIT"
-	PaymentTypeReceiptDebit        PaymentType = "RECEIPT_DEBIT"
-	PaymentTypeWireInboundPayment  PaymentType = "WIRE_INBOUND_PAYMENT"
-	PaymentTypeWireInboundAdmin    PaymentType = "WIRE_INBOUND_ADMIN"
-	PaymentTypeWireOutboundPayment PaymentType = "WIRE_OUTBOUND_PAYMENT"
-	PaymentTypeWireOutboundAdmin   PaymentType = "WIRE_OUTBOUND_ADMIN"
-	PaymentTypeWireDrawdownRequest PaymentType = "WIRE_DRAWDOWN_REQUEST"
+	PaymentTypeOriginationCredit          PaymentType = "ORIGINATION_CREDIT"
+	PaymentTypeOriginationDebit           PaymentType = "ORIGINATION_DEBIT"
+	PaymentTypeReceiptCredit              PaymentType = "RECEIPT_CREDIT"
+	PaymentTypeReceiptDebit               PaymentType = "RECEIPT_DEBIT"
+	PaymentTypeWireInboundPayment         PaymentType = "WIRE_INBOUND_PAYMENT"
+	PaymentTypeWireInboundAdmin           PaymentType = "WIRE_INBOUND_ADMIN"
+	PaymentTypeWireOutboundPayment        PaymentType = "WIRE_OUTBOUND_PAYMENT"
+	PaymentTypeWireOutboundAdmin          PaymentType = "WIRE_OUTBOUND_ADMIN"
+	PaymentTypeWireInboundDrawdownRequest PaymentType = "WIRE_INBOUND_DRAWDOWN_REQUEST"
 )
 
 func (r PaymentType) IsKnown() bool {
 	switch r {
-	case PaymentTypeOriginationCredit, PaymentTypeOriginationDebit, PaymentTypeReceiptCredit, PaymentTypeReceiptDebit, PaymentTypeWireInboundPayment, PaymentTypeWireInboundAdmin, PaymentTypeWireOutboundPayment, PaymentTypeWireOutboundAdmin, PaymentTypeWireDrawdownRequest:
+	case PaymentTypeOriginationCredit, PaymentTypeOriginationDebit, PaymentTypeReceiptCredit, PaymentTypeReceiptDebit, PaymentTypeWireInboundPayment, PaymentTypeWireInboundAdmin, PaymentTypeWireOutboundPayment, PaymentTypeWireOutboundAdmin, PaymentTypeWireInboundDrawdownRequest:
 		return true
 	}
 	return false
