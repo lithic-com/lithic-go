@@ -50,10 +50,13 @@ func NewCardService(opts ...option.RequestOption) (r *CardService) {
 
 // Create a new virtual or physical card. Parameters `shipping_address` and
 // `product_id` only apply to physical cards.
-func (r *CardService) New(ctx context.Context, body CardNewParams, opts ...option.RequestOption) (res *Card, err error) {
+func (r *CardService) New(ctx context.Context, params CardNewParams, opts ...option.RequestOption) (res *Card, err error) {
+	if params.IdempotencyKey.Present {
+		opts = append(opts, option.WithHeader("Idempotency-Key", fmt.Sprintf("%s", params.IdempotencyKey)))
+	}
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/cards"
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, params, &res, opts...)
 	return
 }
 
@@ -1294,7 +1297,8 @@ type CardNewParams struct {
 	//     parameters).
 	//   - `PAUSED` - Card will decline authorizations, but can be resumed at a later
 	//     time.
-	State param.Field[CardNewParamsState] `json:"state"`
+	State          param.Field[CardNewParamsState] `json:"state"`
+	IdempotencyKey param.Field[string]             `header:"Idempotency-Key" format:"uuid"`
 }
 
 func (r CardNewParams) MarshalJSON() (data []byte, err error) {
