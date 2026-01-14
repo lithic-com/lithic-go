@@ -1095,7 +1095,7 @@ func (r PaymentNewParamsMethod) IsKnown() bool {
 type PaymentNewParamsMethodAttributes struct {
 	SecCode param.Field[PaymentNewParamsMethodAttributesSecCode] `json:"sec_code,required"`
 	// Number of days to hold the ACH payment
-	ACHHoldPeriod param.Field[int64]  `json:"ach_hold_period"`
+	ACHHoldPeriod param.Field[int64]  `json:"ach_hold__period"`
 	Addenda       param.Field[string] `json:"addenda"`
 }
 
