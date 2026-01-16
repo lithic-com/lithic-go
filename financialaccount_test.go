@@ -30,7 +30,7 @@ func TestFinancialAccountNewWithOptionalParams(t *testing.T) {
 		Type:           lithic.F(lithic.FinancialAccountNewParamsTypeOperating),
 		AccountToken:   lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		IsForBenefitOf: lithic.F(true),
-		IdempotencyKey: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		IdempotencyKey: lithic.F("65a9dad4-1b60-4686-83fd-65b25078a4b4"),
 	})
 	if err != nil {
 		var apierr *lithic.Error

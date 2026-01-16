@@ -2319,11 +2319,11 @@ func (r RuleStatsExamplesDecision) IsKnown() bool {
 }
 
 type VelocityLimitParams struct {
-	Filters VelocityLimitParamsFilters `json:"filters,required"`
 	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
 	Period VelocityLimitPeriod `json:"period,required"`
 	// The scope the velocity is calculated for
-	Scope VelocityLimitParamsScope `json:"scope,required"`
+	Scope   VelocityLimitParamsScope   `json:"scope,required"`
+	Filters VelocityLimitParamsFilters `json:"filters"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -2340,9 +2340,9 @@ type VelocityLimitParams struct {
 // velocityLimitParamsJSON contains the JSON metadata for the struct
 // [VelocityLimitParams]
 type velocityLimitParamsJSON struct {
-	Filters     apijson.Field
 	Period      apijson.Field
 	Scope       apijson.Field
+	Filters     apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
 	raw         string
@@ -2360,6 +2360,22 @@ func (r velocityLimitParamsJSON) RawJSON() string {
 func (r VelocityLimitParams) implementsAuthRuleCurrentVersionParameters() {}
 
 func (r VelocityLimitParams) implementsAuthRuleDraftVersionParameters() {}
+
+// The scope the velocity is calculated for
+type VelocityLimitParamsScope string
+
+const (
+	VelocityLimitParamsScopeCard    VelocityLimitParamsScope = "CARD"
+	VelocityLimitParamsScopeAccount VelocityLimitParamsScope = "ACCOUNT"
+)
+
+func (r VelocityLimitParamsScope) IsKnown() bool {
+	switch r {
+	case VelocityLimitParamsScopeCard, VelocityLimitParamsScopeAccount:
+		return true
+	}
+	return false
+}
 
 type VelocityLimitParamsFilters struct {
 	// ISO-3166-1 alpha-3 Country Codes to exclude from the velocity calculation.
@@ -2425,22 +2441,6 @@ const (
 func (r VelocityLimitParamsFiltersIncludePanEntryMode) IsKnown() bool {
 	switch r {
 	case VelocityLimitParamsFiltersIncludePanEntryModeAutoEntry, VelocityLimitParamsFiltersIncludePanEntryModeBarCode, VelocityLimitParamsFiltersIncludePanEntryModeContactless, VelocityLimitParamsFiltersIncludePanEntryModeCredentialOnFile, VelocityLimitParamsFiltersIncludePanEntryModeEcommerce, VelocityLimitParamsFiltersIncludePanEntryModeErrorKeyed, VelocityLimitParamsFiltersIncludePanEntryModeErrorMagneticStripe, VelocityLimitParamsFiltersIncludePanEntryModeIcc, VelocityLimitParamsFiltersIncludePanEntryModeKeyEntered, VelocityLimitParamsFiltersIncludePanEntryModeMagneticStripe, VelocityLimitParamsFiltersIncludePanEntryModeManual, VelocityLimitParamsFiltersIncludePanEntryModeOcr, VelocityLimitParamsFiltersIncludePanEntryModeSecureCardless, VelocityLimitParamsFiltersIncludePanEntryModeUnspecified, VelocityLimitParamsFiltersIncludePanEntryModeUnknown:
-		return true
-	}
-	return false
-}
-
-// The scope the velocity is calculated for
-type VelocityLimitParamsScope string
-
-const (
-	VelocityLimitParamsScopeCard    VelocityLimitParamsScope = "CARD"
-	VelocityLimitParamsScopeAccount VelocityLimitParamsScope = "ACCOUNT"
-)
-
-func (r VelocityLimitParamsScope) IsKnown() bool {
-	switch r {
-	case VelocityLimitParamsScopeCard, VelocityLimitParamsScopeAccount:
 		return true
 	}
 	return false

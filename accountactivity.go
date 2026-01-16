@@ -786,20 +786,20 @@ func (r AccountActivityListResponseSource) IsKnown() bool {
 type AccountActivityListResponseType string
 
 const (
-	AccountActivityListResponseTypeOriginationCredit   AccountActivityListResponseType = "ORIGINATION_CREDIT"
-	AccountActivityListResponseTypeOriginationDebit    AccountActivityListResponseType = "ORIGINATION_DEBIT"
-	AccountActivityListResponseTypeReceiptCredit       AccountActivityListResponseType = "RECEIPT_CREDIT"
-	AccountActivityListResponseTypeReceiptDebit        AccountActivityListResponseType = "RECEIPT_DEBIT"
-	AccountActivityListResponseTypeWireInboundPayment  AccountActivityListResponseType = "WIRE_INBOUND_PAYMENT"
-	AccountActivityListResponseTypeWireInboundAdmin    AccountActivityListResponseType = "WIRE_INBOUND_ADMIN"
-	AccountActivityListResponseTypeWireOutboundPayment AccountActivityListResponseType = "WIRE_OUTBOUND_PAYMENT"
-	AccountActivityListResponseTypeWireOutboundAdmin   AccountActivityListResponseType = "WIRE_OUTBOUND_ADMIN"
-	AccountActivityListResponseTypeWireDrawdownRequest AccountActivityListResponseType = "WIRE_DRAWDOWN_REQUEST"
+	AccountActivityListResponseTypeOriginationCredit          AccountActivityListResponseType = "ORIGINATION_CREDIT"
+	AccountActivityListResponseTypeOriginationDebit           AccountActivityListResponseType = "ORIGINATION_DEBIT"
+	AccountActivityListResponseTypeReceiptCredit              AccountActivityListResponseType = "RECEIPT_CREDIT"
+	AccountActivityListResponseTypeReceiptDebit               AccountActivityListResponseType = "RECEIPT_DEBIT"
+	AccountActivityListResponseTypeWireInboundPayment         AccountActivityListResponseType = "WIRE_INBOUND_PAYMENT"
+	AccountActivityListResponseTypeWireInboundAdmin           AccountActivityListResponseType = "WIRE_INBOUND_ADMIN"
+	AccountActivityListResponseTypeWireOutboundPayment        AccountActivityListResponseType = "WIRE_OUTBOUND_PAYMENT"
+	AccountActivityListResponseTypeWireOutboundAdmin          AccountActivityListResponseType = "WIRE_OUTBOUND_ADMIN"
+	AccountActivityListResponseTypeWireInboundDrawdownRequest AccountActivityListResponseType = "WIRE_INBOUND_DRAWDOWN_REQUEST"
 )
 
 func (r AccountActivityListResponseType) IsKnown() bool {
 	switch r {
-	case AccountActivityListResponseTypeOriginationCredit, AccountActivityListResponseTypeOriginationDebit, AccountActivityListResponseTypeReceiptCredit, AccountActivityListResponseTypeReceiptDebit, AccountActivityListResponseTypeWireInboundPayment, AccountActivityListResponseTypeWireInboundAdmin, AccountActivityListResponseTypeWireOutboundPayment, AccountActivityListResponseTypeWireOutboundAdmin, AccountActivityListResponseTypeWireDrawdownRequest:
+	case AccountActivityListResponseTypeOriginationCredit, AccountActivityListResponseTypeOriginationDebit, AccountActivityListResponseTypeReceiptCredit, AccountActivityListResponseTypeReceiptDebit, AccountActivityListResponseTypeWireInboundPayment, AccountActivityListResponseTypeWireInboundAdmin, AccountActivityListResponseTypeWireOutboundPayment, AccountActivityListResponseTypeWireOutboundAdmin, AccountActivityListResponseTypeWireInboundDrawdownRequest:
 		return true
 	}
 	return false
@@ -1487,20 +1487,20 @@ func (r AccountActivityGetTransactionResponseSource) IsKnown() bool {
 type AccountActivityGetTransactionResponseType string
 
 const (
-	AccountActivityGetTransactionResponseTypeOriginationCredit   AccountActivityGetTransactionResponseType = "ORIGINATION_CREDIT"
-	AccountActivityGetTransactionResponseTypeOriginationDebit    AccountActivityGetTransactionResponseType = "ORIGINATION_DEBIT"
-	AccountActivityGetTransactionResponseTypeReceiptCredit       AccountActivityGetTransactionResponseType = "RECEIPT_CREDIT"
-	AccountActivityGetTransactionResponseTypeReceiptDebit        AccountActivityGetTransactionResponseType = "RECEIPT_DEBIT"
-	AccountActivityGetTransactionResponseTypeWireInboundPayment  AccountActivityGetTransactionResponseType = "WIRE_INBOUND_PAYMENT"
-	AccountActivityGetTransactionResponseTypeWireInboundAdmin    AccountActivityGetTransactionResponseType = "WIRE_INBOUND_ADMIN"
-	AccountActivityGetTransactionResponseTypeWireOutboundPayment AccountActivityGetTransactionResponseType = "WIRE_OUTBOUND_PAYMENT"
-	AccountActivityGetTransactionResponseTypeWireOutboundAdmin   AccountActivityGetTransactionResponseType = "WIRE_OUTBOUND_ADMIN"
-	AccountActivityGetTransactionResponseTypeWireDrawdownRequest AccountActivityGetTransactionResponseType = "WIRE_DRAWDOWN_REQUEST"
+	AccountActivityGetTransactionResponseTypeOriginationCredit          AccountActivityGetTransactionResponseType = "ORIGINATION_CREDIT"
+	AccountActivityGetTransactionResponseTypeOriginationDebit           AccountActivityGetTransactionResponseType = "ORIGINATION_DEBIT"
+	AccountActivityGetTransactionResponseTypeReceiptCredit              AccountActivityGetTransactionResponseType = "RECEIPT_CREDIT"
+	AccountActivityGetTransactionResponseTypeReceiptDebit               AccountActivityGetTransactionResponseType = "RECEIPT_DEBIT"
+	AccountActivityGetTransactionResponseTypeWireInboundPayment         AccountActivityGetTransactionResponseType = "WIRE_INBOUND_PAYMENT"
+	AccountActivityGetTransactionResponseTypeWireInboundAdmin           AccountActivityGetTransactionResponseType = "WIRE_INBOUND_ADMIN"
+	AccountActivityGetTransactionResponseTypeWireOutboundPayment        AccountActivityGetTransactionResponseType = "WIRE_OUTBOUND_PAYMENT"
+	AccountActivityGetTransactionResponseTypeWireOutboundAdmin          AccountActivityGetTransactionResponseType = "WIRE_OUTBOUND_ADMIN"
+	AccountActivityGetTransactionResponseTypeWireInboundDrawdownRequest AccountActivityGetTransactionResponseType = "WIRE_INBOUND_DRAWDOWN_REQUEST"
 )
 
 func (r AccountActivityGetTransactionResponseType) IsKnown() bool {
 	switch r {
-	case AccountActivityGetTransactionResponseTypeOriginationCredit, AccountActivityGetTransactionResponseTypeOriginationDebit, AccountActivityGetTransactionResponseTypeReceiptCredit, AccountActivityGetTransactionResponseTypeReceiptDebit, AccountActivityGetTransactionResponseTypeWireInboundPayment, AccountActivityGetTransactionResponseTypeWireInboundAdmin, AccountActivityGetTransactionResponseTypeWireOutboundPayment, AccountActivityGetTransactionResponseTypeWireOutboundAdmin, AccountActivityGetTransactionResponseTypeWireDrawdownRequest:
+	case AccountActivityGetTransactionResponseTypeOriginationCredit, AccountActivityGetTransactionResponseTypeOriginationDebit, AccountActivityGetTransactionResponseTypeReceiptCredit, AccountActivityGetTransactionResponseTypeReceiptDebit, AccountActivityGetTransactionResponseTypeWireInboundPayment, AccountActivityGetTransactionResponseTypeWireInboundAdmin, AccountActivityGetTransactionResponseTypeWireOutboundPayment, AccountActivityGetTransactionResponseTypeWireOutboundAdmin, AccountActivityGetTransactionResponseTypeWireInboundDrawdownRequest:
 		return true
 	}
 	return false
