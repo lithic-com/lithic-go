@@ -1040,9 +1040,9 @@ func init() {
 
 type CardWebProvisionResponseAppleWebPushProvisioningResponse struct {
 	// JWS object required for handoff to Apple's script.
-	Jws CardWebProvisionResponseAppleWebPushProvisioningResponseJws `json:"jws"`
+	Jws CardWebProvisionResponseAppleWebPushProvisioningResponseJws `json:"jws,required"`
 	// A unique identifier for the JWS object.
-	State string                                                       `json:"state"`
+	State string                                                       `json:"state,required"`
 	JSON  cardWebProvisionResponseAppleWebPushProvisioningResponseJSON `json:"-"`
 }
 
