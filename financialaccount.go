@@ -416,8 +416,10 @@ type FinancialTransaction struct {
 	// A list of all financial events that have modified this financial transaction.
 	Events []shared.FinancialEvent `json:"events,required"`
 	// Pending amount of the transaction in the currency's smallest unit (e.g., cents),
-	// including any acquirer fees. The value of this field will go to zero over time
-	// once the financial transaction is settled.
+	// including any acquirer fees.
+	//
+	// The value of this field will go to zero over time once the financial transaction
+	// is settled.
 	PendingAmount int64 `json:"pending_amount,required"`
 	// APPROVED transactions were successful while DECLINED transactions were declined
 	// by user, Lithic, or the network.
