@@ -2429,6 +2429,54 @@ func (r CardShippedWebhookEventShippingMethod) IsKnown() bool {
 	return false
 }
 
+type CardUpdatedWebhookEvent struct {
+	// The token of the card that was updated.
+	Token string `json:"token,required" format:"uuid"`
+	// The type of event that occurred.
+	EventType CardUpdatedWebhookEventEventType `json:"event_type,required"`
+	// The previous values of the fields that were updated.
+	PreviousFields interface{} `json:"previous_fields,required"`
+	// The current state of the card.
+	State string                      `json:"state,required"`
+	JSON  cardUpdatedWebhookEventJSON `json:"-"`
+}
+
+// cardUpdatedWebhookEventJSON contains the JSON metadata for the struct
+// [CardUpdatedWebhookEvent]
+type cardUpdatedWebhookEventJSON struct {
+	Token          apijson.Field
+	EventType      apijson.Field
+	PreviousFields apijson.Field
+	State          apijson.Field
+	raw            string
+	ExtraFields    map[string]apijson.Field
+}
+
+func (r *CardUpdatedWebhookEvent) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardUpdatedWebhookEventJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r CardUpdatedWebhookEvent) implementsParsedWebhookEvent() {}
+
+// The type of event that occurred.
+type CardUpdatedWebhookEventEventType string
+
+const (
+	CardUpdatedWebhookEventEventTypeCardUpdated CardUpdatedWebhookEventEventType = "card.updated"
+)
+
+func (r CardUpdatedWebhookEventEventType) IsKnown() bool {
+	switch r {
+	case CardUpdatedWebhookEventEventTypeCardUpdated:
+		return true
+	}
+	return false
+}
+
 type CardTransactionUpdatedWebhookEvent struct {
 	// The type of event that occurred.
 	EventType CardTransactionUpdatedWebhookEventEventType `json:"event_type,required"`
@@ -5191,6 +5239,8 @@ type ParsedWebhookEvent struct {
 	PreviousExpMonth string `json:"previous_exp_month"`
 	// The previous expiration year of the card.
 	PreviousExpYear string `json:"previous_exp_year"`
+	// This field can have the runtime type of [interface{}].
+	PreviousFields interface{} `json:"previous_fields"`
 	// Time of the previous high watermark
 	PreviousHighWatermark time.Time `json:"previous_high_watermark" format:"date-time"`
 	// This field can have the runtime type of [LoanTapePreviousStatementBalance].
@@ -5286,8 +5336,8 @@ type ParsedWebhookEvent struct {
 	Source ParsedWebhookEventSource `json:"source"`
 	// Balance at the start of the day
 	StartingBalance int64 `json:"starting_balance"`
-	// Account State
-	State ParsedWebhookEventState `json:"state"`
+	// The current state of the card.
+	State string `json:"state"`
 	// Date when the billing period ended
 	StatementEndDate time.Time `json:"statement_end_date" format:"date"`
 	// Date when the billing period began
@@ -5545,6 +5595,7 @@ type parsedWebhookEventJSON struct {
 	PrearbitrationDate                 apijson.Field
 	PreviousExpMonth                   apijson.Field
 	PreviousExpYear                    apijson.Field
+	PreviousFields                     apijson.Field
 	PreviousHighWatermark              apijson.Field
 	PreviousStatementBalance           apijson.Field
 	PrimaryClaimID                     apijson.Field
@@ -5643,7 +5694,7 @@ func (r *ParsedWebhookEvent) UnmarshalJSON(data []byte) (err error) {
 // [BookTransferTransactionUpdatedWebhookEvent], [CardCreatedWebhookEvent],
 // [CardConvertedWebhookEvent], [CardRenewedWebhookEvent],
 // [CardReissuedWebhookEvent], [CardShippedWebhookEvent],
-// [CardTransactionUpdatedWebhookEvent],
+// [CardUpdatedWebhookEvent], [CardTransactionUpdatedWebhookEvent],
 // [CardTransactionEnhancedDataCreatedWebhookEvent],
 // [CardTransactionEnhancedDataUpdatedWebhookEvent],
 // [DigitalWalletTokenizationApprovalRequestWebhookEvent],
@@ -5690,7 +5741,7 @@ func (r ParsedWebhookEvent) AsUnion() ParsedWebhookEventUnion {
 // [BookTransferTransactionUpdatedWebhookEvent], [CardCreatedWebhookEvent],
 // [CardConvertedWebhookEvent], [CardRenewedWebhookEvent],
 // [CardReissuedWebhookEvent], [CardShippedWebhookEvent],
-// [CardTransactionUpdatedWebhookEvent],
+// [CardUpdatedWebhookEvent], [CardTransactionUpdatedWebhookEvent],
 // [CardTransactionEnhancedDataCreatedWebhookEvent],
 // [CardTransactionEnhancedDataUpdatedWebhookEvent],
 // [DigitalWalletTokenizationApprovalRequestWebhookEvent],
@@ -5795,6 +5846,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(CardShippedWebhookEvent{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(CardUpdatedWebhookEvent{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -6740,6 +6795,7 @@ const (
 	ParsedWebhookEventEventTypeCardRenewed                                              ParsedWebhookEventEventType = "card.renewed"
 	ParsedWebhookEventEventTypeCardReissued                                             ParsedWebhookEventEventType = "card.reissued"
 	ParsedWebhookEventEventTypeCardShipped                                              ParsedWebhookEventEventType = "card.shipped"
+	ParsedWebhookEventEventTypeCardUpdated                                              ParsedWebhookEventEventType = "card.updated"
 	ParsedWebhookEventEventTypeCardTransactionUpdated                                   ParsedWebhookEventEventType = "card_transaction.updated"
 	ParsedWebhookEventEventTypeCardTransactionEnhancedDataCreated                       ParsedWebhookEventEventType = "card_transaction.enhanced_data.created"
 	ParsedWebhookEventEventTypeCardTransactionEnhancedDataUpdated                       ParsedWebhookEventEventType = "card_transaction.enhanced_data.updated"
@@ -6783,7 +6839,7 @@ const (
 
 func (r ParsedWebhookEventEventType) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventEventTypeAccountHolderCreated, ParsedWebhookEventEventTypeAccountHolderUpdated, ParsedWebhookEventEventTypeAccountHolderVerification, ParsedWebhookEventEventTypeAccountHolderDocumentUpdated, ParsedWebhookEventEventTypeCardAuthorizationApprovalRequest, ParsedWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest, ParsedWebhookEventEventTypeAuthRulesBacktestReportCreated, ParsedWebhookEventEventTypeBalanceUpdated, ParsedWebhookEventEventTypeBookTransferTransactionCreated, ParsedWebhookEventEventTypeBookTransferTransactionUpdated, ParsedWebhookEventEventTypeCardCreated, ParsedWebhookEventEventTypeCardConverted, ParsedWebhookEventEventTypeCardRenewed, ParsedWebhookEventEventTypeCardReissued, ParsedWebhookEventEventTypeCardShipped, ParsedWebhookEventEventTypeCardTransactionUpdated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataCreated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataUpdated, ParsedWebhookEventEventTypeDigitalWalletTokenizationResult, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeDigitalWalletTokenizationUpdated, ParsedWebhookEventEventTypeDisputeUpdated, ParsedWebhookEventEventTypeDisputeEvidenceUploadFailed, ParsedWebhookEventEventTypeExternalBankAccountCreated, ParsedWebhookEventEventTypeExternalBankAccountUpdated, ParsedWebhookEventEventTypeExternalPaymentCreated, ParsedWebhookEventEventTypeExternalPaymentUpdated, ParsedWebhookEventEventTypeFinancialAccountCreated, ParsedWebhookEventEventTypeFinancialAccountUpdated, ParsedWebhookEventEventTypeFundingEventCreated, ParsedWebhookEventEventTypeLoanTapeCreated, ParsedWebhookEventEventTypeLoanTapeUpdated, ParsedWebhookEventEventTypeManagementOperationCreated, ParsedWebhookEventEventTypeManagementOperationUpdated, ParsedWebhookEventEventTypeInternalTransactionCreated, ParsedWebhookEventEventTypeInternalTransactionUpdated, ParsedWebhookEventEventTypeNetworkTotalCreated, ParsedWebhookEventEventTypeNetworkTotalUpdated, ParsedWebhookEventEventTypePaymentTransactionCreated, ParsedWebhookEventEventTypePaymentTransactionUpdated, ParsedWebhookEventEventTypeSettlementReportUpdated, ParsedWebhookEventEventTypeStatementsCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationChallenge, ParsedWebhookEventEventTypeTokenizationApprovalRequest, ParsedWebhookEventEventTypeTokenizationResult, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeTokenizationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationApprovalRequest, ParsedWebhookEventEventTypeDisputeTransactionCreated, ParsedWebhookEventEventTypeDisputeTransactionUpdated:
+	case ParsedWebhookEventEventTypeAccountHolderCreated, ParsedWebhookEventEventTypeAccountHolderUpdated, ParsedWebhookEventEventTypeAccountHolderVerification, ParsedWebhookEventEventTypeAccountHolderDocumentUpdated, ParsedWebhookEventEventTypeCardAuthorizationApprovalRequest, ParsedWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest, ParsedWebhookEventEventTypeAuthRulesBacktestReportCreated, ParsedWebhookEventEventTypeBalanceUpdated, ParsedWebhookEventEventTypeBookTransferTransactionCreated, ParsedWebhookEventEventTypeBookTransferTransactionUpdated, ParsedWebhookEventEventTypeCardCreated, ParsedWebhookEventEventTypeCardConverted, ParsedWebhookEventEventTypeCardRenewed, ParsedWebhookEventEventTypeCardReissued, ParsedWebhookEventEventTypeCardShipped, ParsedWebhookEventEventTypeCardUpdated, ParsedWebhookEventEventTypeCardTransactionUpdated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataCreated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataUpdated, ParsedWebhookEventEventTypeDigitalWalletTokenizationResult, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeDigitalWalletTokenizationUpdated, ParsedWebhookEventEventTypeDisputeUpdated, ParsedWebhookEventEventTypeDisputeEvidenceUploadFailed, ParsedWebhookEventEventTypeExternalBankAccountCreated, ParsedWebhookEventEventTypeExternalBankAccountUpdated, ParsedWebhookEventEventTypeExternalPaymentCreated, ParsedWebhookEventEventTypeExternalPaymentUpdated, ParsedWebhookEventEventTypeFinancialAccountCreated, ParsedWebhookEventEventTypeFinancialAccountUpdated, ParsedWebhookEventEventTypeFundingEventCreated, ParsedWebhookEventEventTypeLoanTapeCreated, ParsedWebhookEventEventTypeLoanTapeUpdated, ParsedWebhookEventEventTypeManagementOperationCreated, ParsedWebhookEventEventTypeManagementOperationUpdated, ParsedWebhookEventEventTypeInternalTransactionCreated, ParsedWebhookEventEventTypeInternalTransactionUpdated, ParsedWebhookEventEventTypeNetworkTotalCreated, ParsedWebhookEventEventTypeNetworkTotalUpdated, ParsedWebhookEventEventTypePaymentTransactionCreated, ParsedWebhookEventEventTypePaymentTransactionUpdated, ParsedWebhookEventEventTypeSettlementReportUpdated, ParsedWebhookEventEventTypeStatementsCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationChallenge, ParsedWebhookEventEventTypeTokenizationApprovalRequest, ParsedWebhookEventEventTypeTokenizationResult, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeTokenizationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationApprovalRequest, ParsedWebhookEventEventTypeDisputeTransactionCreated, ParsedWebhookEventEventTypeDisputeTransactionUpdated:
 		return true
 	}
 	return false
@@ -7065,23 +7121,6 @@ const (
 func (r ParsedWebhookEventSource) IsKnown() bool {
 	switch r {
 	case ParsedWebhookEventSourceLithic, ParsedWebhookEventSourceExternal, ParsedWebhookEventSourceCustomer:
-		return true
-	}
-	return false
-}
-
-// Account State
-type ParsedWebhookEventState string
-
-const (
-	ParsedWebhookEventStateEnabled ParsedWebhookEventState = "ENABLED"
-	ParsedWebhookEventStateClosed  ParsedWebhookEventState = "CLOSED"
-	ParsedWebhookEventStatePaused  ParsedWebhookEventState = "PAUSED"
-)
-
-func (r ParsedWebhookEventState) IsKnown() bool {
-	switch r {
-	case ParsedWebhookEventStateEnabled, ParsedWebhookEventStateClosed, ParsedWebhookEventStatePaused:
 		return true
 	}
 	return false
