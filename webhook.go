@@ -5351,6 +5351,8 @@ type ParsedWebhookEvent struct {
 	StatusReasons interface{} `json:"status_reasons"`
 	// Substatus for the financial account
 	Substatus ParsedWebhookEventSubstatus `json:"substatus,nullable"`
+	// This field can have the runtime type of [map[string]string].
+	Tags interface{} `json:"tags"`
 	// Indicates whether a challenge is requested for this transaction
 	//
 	//   - `NO_PREFERENCE` - No Preference
@@ -5629,6 +5631,7 @@ type parsedWebhookEventJSON struct {
 	StatusReason                       apijson.Field
 	StatusReasons                      apijson.Field
 	Substatus                          apijson.Field
+	Tags                               apijson.Field
 	ThreeDSRequestorChallengeIndicator apijson.Field
 	ThreeRiRequestType                 apijson.Field
 	Tier                               apijson.Field

@@ -423,7 +423,10 @@ type Transaction struct {
 	// Deprecated: deprecated
 	SettledAmount int64 `json:"settled_amount,required"`
 	// Status of the transaction.
-	Status    TransactionStatus `json:"status,required"`
+	Status TransactionStatus `json:"status,required"`
+	// Key-value pairs for tagging resources. Tags allow you to associate arbitrary
+	// metadata with a resource for your own purposes.
+	Tags      map[string]string `json:"tags,required"`
 	TokenInfo TokenInfo         `json:"token_info,required,nullable"`
 	// Date and time when the transaction last updated. UTC time zone.
 	Updated time.Time          `json:"updated,required" format:"date-time"`
@@ -456,6 +459,7 @@ type transactionJSON struct {
 	Result                      apijson.Field
 	SettledAmount               apijson.Field
 	Status                      apijson.Field
+	Tags                        apijson.Field
 	TokenInfo                   apijson.Field
 	Updated                     apijson.Field
 	Events                      apijson.Field
