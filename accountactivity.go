@@ -220,6 +220,8 @@ type AccountActivityListResponse struct {
 	SettledAmount int64 `json:"settled_amount"`
 	// Transaction source
 	Source AccountActivityListResponseSource `json:"source"`
+	// This field can have the runtime type of [map[string]string].
+	Tags interface{} `json:"tags"`
 	// Globally unique identifier for the financial account or card that will receive
 	// the funds. Accepted type dependent on the program's use case
 	ToFinancialAccountToken string    `json:"to_financial_account_token" format:"uuid"`
@@ -278,6 +280,7 @@ type accountActivityListResponseJSON struct {
 	Result                      apijson.Field
 	SettledAmount               apijson.Field
 	Source                      apijson.Field
+	Tags                        apijson.Field
 	ToFinancialAccountToken     apijson.Field
 	TokenInfo                   apijson.Field
 	TransactionSeries           apijson.Field
@@ -918,6 +921,8 @@ type AccountActivityGetTransactionResponse struct {
 	SettledAmount int64 `json:"settled_amount"`
 	// Transaction source
 	Source AccountActivityGetTransactionResponseSource `json:"source"`
+	// This field can have the runtime type of [map[string]string].
+	Tags interface{} `json:"tags"`
 	// Globally unique identifier for the financial account or card that will receive
 	// the funds. Accepted type dependent on the program's use case
 	ToFinancialAccountToken string    `json:"to_financial_account_token" format:"uuid"`
@@ -976,6 +981,7 @@ type accountActivityGetTransactionResponseJSON struct {
 	Result                      apijson.Field
 	SettledAmount               apijson.Field
 	Source                      apijson.Field
+	Tags                        apijson.Field
 	ToFinancialAccountToken     apijson.Field
 	TokenInfo                   apijson.Field
 	TransactionSeries           apijson.Field
