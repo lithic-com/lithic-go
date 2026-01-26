@@ -2447,7 +2447,7 @@ func (r CardShippedWebhookEventShippingMethod) IsKnown() bool {
 
 type CardUpdatedWebhookEvent struct {
 	// The token of the card that was updated.
-	Token string `json:"token,required" format:"uuid"`
+	CardToken string `json:"card_token,required" format:"uuid"`
 	// The type of event that occurred.
 	EventType CardUpdatedWebhookEventEventType `json:"event_type,required"`
 	// The previous values of the fields that were updated.
@@ -2460,7 +2460,7 @@ type CardUpdatedWebhookEvent struct {
 // cardUpdatedWebhookEventJSON contains the JSON metadata for the struct
 // [CardUpdatedWebhookEvent]
 type cardUpdatedWebhookEventJSON struct {
-	Token          apijson.Field
+	CardToken      apijson.Field
 	EventType      apijson.Field
 	PreviousFields apijson.Field
 	State          apijson.Field
