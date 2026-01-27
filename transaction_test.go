@@ -103,16 +103,19 @@ func TestTransactionSimulateAuthorizationWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Transactions.SimulateAuthorization(context.TODO(), lithic.TransactionSimulateAuthorizationParams{
-		Amount:                 lithic.F(int64(3831)),
-		Descriptor:             lithic.F("COFFEE SHOP"),
-		Pan:                    lithic.F("4111111289144142"),
-		Mcc:                    lithic.F("5812"),
-		MerchantAcceptorID:     lithic.F("OODKZAPJVN4YS7O"),
-		MerchantAmount:         lithic.F(int64(0)),
-		MerchantCurrency:       lithic.F("GBP"),
-		PartialApprovalCapable: lithic.F(true),
-		Pin:                    lithic.F("1234"),
-		Status:                 lithic.F(lithic.TransactionSimulateAuthorizationParamsStatusAuthorization),
+		Amount:                  lithic.F(int64(3831)),
+		Descriptor:              lithic.F("COFFEE SHOP"),
+		Pan:                     lithic.F("4111111289144142"),
+		Mcc:                     lithic.F("5812"),
+		MerchantAcceptorCity:    lithic.F("LOS ANGELES"),
+		MerchantAcceptorCountry: lithic.F("USA"),
+		MerchantAcceptorID:      lithic.F("OODKZAPJVN4YS7O"),
+		MerchantAcceptorState:   lithic.F("CA"),
+		MerchantAmount:          lithic.F(int64(0)),
+		MerchantCurrency:        lithic.F("GBP"),
+		PartialApprovalCapable:  lithic.F(true),
+		Pin:                     lithic.F("1234"),
+		Status:                  lithic.F(lithic.TransactionSimulateAuthorizationParamsStatusAuthorization),
 	})
 	if err != nil {
 		var apierr *lithic.Error
@@ -186,11 +189,14 @@ func TestTransactionSimulateCreditAuthorizationWithOptionalParams(t *testing.T) 
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Transactions.SimulateCreditAuthorization(context.TODO(), lithic.TransactionSimulateCreditAuthorizationParams{
-		Amount:             lithic.F(int64(3831)),
-		Descriptor:         lithic.F("COFFEE SHOP"),
-		Pan:                lithic.F("4111111289144142"),
-		Mcc:                lithic.F("5812"),
-		MerchantAcceptorID: lithic.F("XRKGDPOWEWQRRWU"),
+		Amount:                  lithic.F(int64(3831)),
+		Descriptor:              lithic.F("COFFEE SHOP"),
+		Pan:                     lithic.F("4111111289144142"),
+		Mcc:                     lithic.F("5812"),
+		MerchantAcceptorCity:    lithic.F("SEATTLE"),
+		MerchantAcceptorCountry: lithic.F("USA"),
+		MerchantAcceptorID:      lithic.F("XRKGDPOWEWQRRWU"),
+		MerchantAcceptorState:   lithic.F("WA"),
 	})
 	if err != nil {
 		var apierr *lithic.Error
@@ -214,11 +220,14 @@ func TestTransactionSimulateCreditAuthorizationAdviceWithOptionalParams(t *testi
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Transactions.SimulateCreditAuthorizationAdvice(context.TODO(), lithic.TransactionSimulateCreditAuthorizationAdviceParams{
-		Amount:             lithic.F(int64(3831)),
-		Descriptor:         lithic.F("COFFEE SHOP"),
-		Pan:                lithic.F("4111111289144142"),
-		Mcc:                lithic.F("5812"),
-		MerchantAcceptorID: lithic.F("XRKGDPOWEWQRRWU"),
+		Amount:                  lithic.F(int64(3831)),
+		Descriptor:              lithic.F("COFFEE SHOP"),
+		Pan:                     lithic.F("4111111289144142"),
+		Mcc:                     lithic.F("5812"),
+		MerchantAcceptorCity:    lithic.F("SEATTLE"),
+		MerchantAcceptorCountry: lithic.F("USA"),
+		MerchantAcceptorID:      lithic.F("XRKGDPOWEWQRRWU"),
+		MerchantAcceptorState:   lithic.F("WA"),
 	})
 	if err != nil {
 		var apierr *lithic.Error

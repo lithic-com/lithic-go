@@ -1946,8 +1946,14 @@ type TransactionSimulateAuthorizationParams struct {
 	// listed in ISO 18245. Supported merchant category codes can be found
 	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
 	Mcc param.Field[string] `json:"mcc"`
+	// Merchant acceptor city
+	MerchantAcceptorCity param.Field[string] `json:"merchant_acceptor_city"`
+	// Merchant acceptor country code (ISO 3166-1 alpha-3)
+	MerchantAcceptorCountry param.Field[string] `json:"merchant_acceptor_country"`
 	// Unique identifier to identify the payment card acceptor.
 	MerchantAcceptorID param.Field[string] `json:"merchant_acceptor_id"`
+	// Merchant acceptor state/province (ISO 3166-2 subdivision code)
+	MerchantAcceptorState param.Field[string] `json:"merchant_acceptor_state"`
 	// Amount of the transaction to be simulated in currency specified in
 	// merchant_currency, including any acquirer fees.
 	MerchantAmount param.Field[int64] `json:"merchant_amount"`
@@ -2061,8 +2067,14 @@ type TransactionSimulateCreditAuthorizationParams struct {
 	// listed in ISO 18245. Supported merchant category codes can be found
 	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
 	Mcc param.Field[string] `json:"mcc"`
+	// Merchant acceptor city
+	MerchantAcceptorCity param.Field[string] `json:"merchant_acceptor_city"`
+	// Merchant acceptor country code (ISO 3166-1 alpha-3)
+	MerchantAcceptorCountry param.Field[string] `json:"merchant_acceptor_country"`
 	// Unique identifier to identify the payment card acceptor.
 	MerchantAcceptorID param.Field[string] `json:"merchant_acceptor_id"`
+	// Merchant acceptor state/province (ISO 3166-2 subdivision code)
+	MerchantAcceptorState param.Field[string] `json:"merchant_acceptor_state"`
 }
 
 func (r TransactionSimulateCreditAuthorizationParams) MarshalJSON() (data []byte, err error) {
@@ -2082,8 +2094,14 @@ type TransactionSimulateCreditAuthorizationAdviceParams struct {
 	// listed in ISO 18245. Supported merchant category codes can be found
 	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
 	Mcc param.Field[string] `json:"mcc"`
+	// Merchant acceptor city
+	MerchantAcceptorCity param.Field[string] `json:"merchant_acceptor_city"`
+	// Merchant acceptor country code (ISO 3166-1 alpha-3)
+	MerchantAcceptorCountry param.Field[string] `json:"merchant_acceptor_country"`
 	// Unique identifier to identify the payment card acceptor.
 	MerchantAcceptorID param.Field[string] `json:"merchant_acceptor_id"`
+	// Merchant acceptor state/province (ISO 3166-2 subdivision code)
+	MerchantAcceptorState param.Field[string] `json:"merchant_acceptor_state"`
 }
 
 func (r TransactionSimulateCreditAuthorizationAdviceParams) MarshalJSON() (data []byte, err error) {
