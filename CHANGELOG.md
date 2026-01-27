@@ -1,5 +1,40 @@
 # Changelog
 
+## 0.100.0 (2026-01-27)
+
+Full Changelog: [v0.99.0...v0.100.0](https://github.com/lithic-com/lithic-go/compare/v0.99.0...v0.100.0)
+
+### Features
+
+* **api:** Add card.updated event ([0344a5c](https://github.com/lithic-com/lithic-go/commit/0344a5c11c59656af3cac505a8a473c8089c22a4))
+* **api:** Add idempotency key to cards POST and PATCH endpoints ([c53307f](https://github.com/lithic-com/lithic-go/commit/c53307f891882c0bb333d723ad7d80f3bf4cab8a))
+* **api:** Add merchant location fields to simulator endpoints ([e81f66b](https://github.com/lithic-com/lithic-go/commit/e81f66bc875fad3f5a806c560afa69adb4a4c9da))
+* **api:** Add tags field to card transactions ([527b9b7](https://github.com/lithic-com/lithic-go/commit/527b9b739a83351f66a0f94e6591ac2905582708))
+* **api:** make filter optional for Spend Velocity Auth Rules ([b987bc0](https://github.com/lithic-com/lithic-go/commit/b987bc05fc1a7610e217fbff2fb2118330799a22))
+
+
+### Bug Fixes
+
+* **api:** Correct field name from ach_hold__period to ach_hold_period ([e676940](https://github.com/lithic-com/lithic-go/commit/e67694071f100690aa25b98877250c0ac56be3cc))
+* **api:** mark AppleWebPushProvisioningResponse fields required ([a0fa5cb](https://github.com/lithic-com/lithic-go/commit/a0fa5cb28ab6ce0def37fe2168952d161f44306a))
+* **api:** rename WIRE_DRAWDOWN_REQUEST to WIRE_INBOUND_DRAWDOWN_REQUEST ([b987bc0](https://github.com/lithic-com/lithic-go/commit/b987bc05fc1a7610e217fbff2fb2118330799a22))
+* **client:** invalid URL ([4e7dae0](https://github.com/lithic-com/lithic-go/commit/4e7dae0647db8c92254d85ecdddba84cbe0872e9))
+* **docs:** add missing pointer prefix to api.md return types ([334e295](https://github.com/lithic-com/lithic-go/commit/334e295f64f0e1d650f9755f589f30438934097f))
+
+
+### Chores
+
+* Add spec linter for YAML and folded style multiline strings ([f51040c](https://github.com/lithic-com/lithic-go/commit/f51040c9e25cca47ca7e6d03b4601f02f528514f))
+* configure new SDK language ([06ce143](https://github.com/lithic-com/lithic-go/commit/06ce14305a25ca5b8bf71817824597a2258a8db4))
+* **internal:** codegen related update ([ec93032](https://github.com/lithic-com/lithic-go/commit/ec930327212131338bf3c9dc1ccc7caf4372ddd4))
+* **internal:** update `actions/checkout` version ([29ed18f](https://github.com/lithic-com/lithic-go/commit/29ed18fbc43c2137e92ba04fcf69d3c74bfe6de7))
+* Rework event type generation to support spec splitting ([a9a3198](https://github.com/lithic-com/lithic-go/commit/a9a3198374a71367182b91e1b34dbbd505eddd1c))
+
+
+### Documentation
+
+* Remove deprecated tag from MERCHANT_LOCKED card type ([6ab18f6](https://github.com/lithic-com/lithic-go/commit/6ab18f648377f306a5563c6fec6c3f56c9db36c9))
+
 ## 0.99.0 (2026-01-08)
 
 Full Changelog: [v0.98.1...v0.99.0](https://github.com/lithic-com/lithic-go/compare/v0.98.1...v0.99.0)
