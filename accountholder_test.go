@@ -96,6 +96,7 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 			}}),
 			ExternalID:         lithic.F("external_id"),
 			KYBPassedTimestamp: lithic.F("2022-03-08T08:00:00Z"),
+			NaicsCode:          lithic.F("541512"),
 			WebsiteURL:         lithic.F("https://www.mybusiness.com"),
 		},
 	})
@@ -214,6 +215,7 @@ func TestAccountHolderUpdateWithOptionalParams(t *testing.T) {
 					PhoneNumber:  lithic.F("+15555555555"),
 				}),
 				ExternalID:       lithic.F("external_id"),
+				NaicsCode:        lithic.F("541512"),
 				NatureOfBusiness: lithic.F("Software company selling solutions to the restaurant industry"),
 				WebsiteURL:       lithic.F("https://www.mynewbusiness.com"),
 			},
