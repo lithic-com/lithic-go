@@ -172,6 +172,9 @@ type AccountHolderUpdatedWebhookEvent struct {
 	LastName string `json:"last_name"`
 	// If applicable, represents the account_holder's business name.
 	LegalBusinessName string `json:"legal_business_name"`
+	// 6-digit North American Industry Classification System (NAICS) code for the
+	// business. Only present if naics_code was included in the update request.
+	NaicsCode string `json:"naics_code"`
 	// Short description of the company's line of business (i.e., what does the company
 	// do?).
 	NatureOfBusiness string `json:"nature_of_business"`
@@ -200,6 +203,7 @@ type accountHolderUpdatedWebhookEventJSON struct {
 	FirstName            apijson.Field
 	LastName             apijson.Field
 	LegalBusinessName    apijson.Field
+	NaicsCode            apijson.Field
 	NatureOfBusiness     apijson.Field
 	PhoneNumber          apijson.Field
 	UpdateRequest        apijson.Field
@@ -271,6 +275,9 @@ type AccountHolderUpdatedWebhookEventKYBPayload struct {
 	// A user provided id that can be used to link an account holder with an external
 	// system
 	ExternalID string `json:"external_id"`
+	// 6-digit North American Industry Classification System (NAICS) code for the
+	// business. Only present if naics_code was included in the update request.
+	NaicsCode string `json:"naics_code"`
 	// Short description of the company's line of business (i.e., what does the company
 	// do?).
 	NatureOfBusiness string `json:"nature_of_business"`
@@ -286,6 +293,7 @@ type accountHolderUpdatedWebhookEventKYBPayloadJSON struct {
 	UpdateRequest    apijson.Field
 	EventType        apijson.Field
 	ExternalID       apijson.Field
+	NaicsCode        apijson.Field
 	NatureOfBusiness apijson.Field
 	WebsiteURL       apijson.Field
 	raw              string
@@ -5187,6 +5195,9 @@ type ParsedWebhookEvent struct {
 	MethodAttributes interface{} `json:"method_attributes"`
 	// This field can have the runtime type of [LoanTapeMinimumPaymentBalance].
 	MinimumPaymentBalance interface{} `json:"minimum_payment_balance"`
+	// 6-digit North American Industry Classification System (NAICS) code for the
+	// business. Only present if naics_code was included in the update request.
+	NaicsCode string `json:"naics_code"`
 	// The nickname for this External Bank Account
 	Name string `json:"name,nullable"`
 	// Short description of the company's line of business (i.e., what does the company
@@ -5587,6 +5598,7 @@ type parsedWebhookEventJSON struct {
 	Method                             apijson.Field
 	MethodAttributes                   apijson.Field
 	MinimumPaymentBalance              apijson.Field
+	NaicsCode                          apijson.Field
 	Name                               apijson.Field
 	NatureOfBusiness                   apijson.Field
 	Network                            apijson.Field
@@ -6044,6 +6056,9 @@ type ParsedWebhookEventKYBPayload struct {
 	// A user provided id that can be used to link an account holder with an external
 	// system
 	ExternalID string `json:"external_id"`
+	// 6-digit North American Industry Classification System (NAICS) code for the
+	// business. Only present if naics_code was included in the update request.
+	NaicsCode string `json:"naics_code"`
 	// Short description of the company's line of business (i.e., what does the company
 	// do?).
 	NatureOfBusiness string `json:"nature_of_business"`
@@ -6059,6 +6074,7 @@ type parsedWebhookEventKYBPayloadJSON struct {
 	UpdateRequest    apijson.Field
 	EventType        apijson.Field
 	ExternalID       apijson.Field
+	NaicsCode        apijson.Field
 	NatureOfBusiness apijson.Field
 	WebsiteURL       apijson.Field
 	raw              string
