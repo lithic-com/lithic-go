@@ -1,5 +1,30 @@
 # Changelog
 
+## 0.101.0 (2026-02-06)
+
+Full Changelog: [v0.100.0...v0.101.0](https://github.com/lithic-com/lithic-go/compare/v0.100.0...v0.101.0)
+
+### Features
+
+* **api:** Add naics_code to account holder requests/responses ([2a4cbcc](https://github.com/lithic-com/lithic-go/commit/2a4cbccecab734c25ab1714bf65bfd598614540f))
+
+
+### Bug Fixes
+
+* fix for namespace collisions with client and resource test methods ([be4daa0](https://github.com/lithic-com/lithic-go/commit/be4daa04d07384d828ddf5d2069c67318de49cf8))
+
+
+### Chores
+
+* configure new SDK language ([d5f72b8](https://github.com/lithic-com/lithic-go/commit/d5f72b8c86fd0c0b98f89d7029e53b26363e367c))
+* Enable stainless MCP in config ([ba15022](https://github.com/lithic-com/lithic-go/commit/ba15022d3e0a4093b2c211c0fa7ba1f88e12ad85))
+* **internal:** codegen related update ([761d45e](https://github.com/lithic-com/lithic-go/commit/761d45e74df7db7a91c5432393f212308585897d))
+
+
+### Documentation
+
+* Fix documentation of tokenization channel and tokenization source for tokenization rules ([66b48ff](https://github.com/lithic-com/lithic-go/commit/66b48ffc88ea37075f0689a1736653d65bde2fdb))
+
 ## 0.100.0 (2026-01-27)
 
 Full Changelog: [v0.99.0...v0.100.0](https://github.com/lithic-com/lithic-go/compare/v0.99.0...v0.100.0)
