@@ -135,8 +135,8 @@ func (r *AuthRuleV2Service) Draft(ctx context.Context, authRuleToken string, bod
 // **Limitations:**
 //
 // - Results are available for the past 3 months only
-// - At least one filter (`event_uuid` or `auth_rule_token`) must be provided
-// - When filtering by `event_uuid`, pagination is not supported
+// - At least one filter (`event_token` or `auth_rule_token`) must be provided
+// - When filtering by `event_token`, pagination is not supported
 func (r *AuthRuleV2Service) ListResults(ctx context.Context, query AuthRuleV2ListResultsParams, opts ...option.RequestOption) (res *pagination.CursorPage[AuthRuleV2ListResultsResponse], err error) {
 	var raw *http.Response
 	opts = slices.Concat(r.Options, opts)
@@ -159,8 +159,8 @@ func (r *AuthRuleV2Service) ListResults(ctx context.Context, query AuthRuleV2Lis
 // **Limitations:**
 //
 // - Results are available for the past 3 months only
-// - At least one filter (`event_uuid` or `auth_rule_token`) must be provided
-// - When filtering by `event_uuid`, pagination is not supported
+// - At least one filter (`event_token` or `auth_rule_token`) must be provided
+// - When filtering by `event_token`, pagination is not supported
 func (r *AuthRuleV2Service) ListResultsAutoPaging(ctx context.Context, query AuthRuleV2ListResultsParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[AuthRuleV2ListResultsResponse] {
 	return pagination.NewCursorPageAutoPager(r.ListResults(ctx, query, opts...))
 }
@@ -3008,7 +3008,7 @@ func (r *AuthRuleV2ListResultsResponseAction) UnmarshalJSON(data []byte) (err er
 //
 // Possible runtime types of the union are
 // [AuthRuleV2ListResultsResponseActionsAuthorizationAction],
-// [AuthRuleV2ListResultsResponseActionsThreeDSAction],
+// [AuthRuleV2ListResultsResponseActionsAuthentication3DSAction],
 // [AuthRuleV2ListResultsResponseActionsDeclineAction],
 // [AuthRuleV2ListResultsResponseActionsRequireTfaAction],
 // [AuthRuleV2ListResultsResponseActionsApproveAction],
@@ -3018,7 +3018,7 @@ func (r AuthRuleV2ListResultsResponseAction) AsUnion() AuthRuleV2ListResultsResp
 }
 
 // Union satisfied by [AuthRuleV2ListResultsResponseActionsAuthorizationAction],
-// [AuthRuleV2ListResultsResponseActionsThreeDSAction],
+// [AuthRuleV2ListResultsResponseActionsAuthentication3DSAction],
 // [AuthRuleV2ListResultsResponseActionsDeclineAction],
 // [AuthRuleV2ListResultsResponseActionsRequireTfaAction],
 // [AuthRuleV2ListResultsResponseActionsApproveAction] or
@@ -3037,7 +3037,7 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseActionsThreeDSAction{}),
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseActionsAuthentication3DSAction{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -3084,29 +3084,30 @@ func (r authRuleV2ListResultsResponseActionsAuthorizationActionJSON) RawJSON() s
 func (r AuthRuleV2ListResultsResponseActionsAuthorizationAction) implementsAuthRuleV2ListResultsResponseAction() {
 }
 
-type AuthRuleV2ListResultsResponseActionsThreeDSAction struct {
+type AuthRuleV2ListResultsResponseActionsAuthentication3DSAction struct {
 	// Optional explanation for why this action was taken
-	Explanation string                                                `json:"explanation"`
-	JSON        authRuleV2ListResultsResponseActionsThreeDSActionJSON `json:"-"`
+	Explanation string                                                          `json:"explanation"`
+	JSON        authRuleV2ListResultsResponseActionsAuthentication3DsActionJSON `json:"-"`
 }
 
-// authRuleV2ListResultsResponseActionsThreeDSActionJSON contains the JSON metadata
-// for the struct [AuthRuleV2ListResultsResponseActionsThreeDSAction]
-type authRuleV2ListResultsResponseActionsThreeDSActionJSON struct {
+// authRuleV2ListResultsResponseActionsAuthentication3DsActionJSON contains the
+// JSON metadata for the struct
+// [AuthRuleV2ListResultsResponseActionsAuthentication3DSAction]
+type authRuleV2ListResultsResponseActionsAuthentication3DsActionJSON struct {
 	Explanation apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *AuthRuleV2ListResultsResponseActionsThreeDSAction) UnmarshalJSON(data []byte) (err error) {
+func (r *AuthRuleV2ListResultsResponseActionsAuthentication3DSAction) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r authRuleV2ListResultsResponseActionsThreeDSActionJSON) RawJSON() string {
+func (r authRuleV2ListResultsResponseActionsAuthentication3DsActionJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r AuthRuleV2ListResultsResponseActionsThreeDSAction) implementsAuthRuleV2ListResultsResponseAction() {
+func (r AuthRuleV2ListResultsResponseActionsAuthentication3DSAction) implementsAuthRuleV2ListResultsResponseAction() {
 }
 
 type AuthRuleV2ListResultsResponseActionsDeclineAction struct {
@@ -4517,8 +4518,8 @@ type AuthRuleV2ListResultsParams struct {
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string] `query:"ending_before" format:"uuid"`
-	// Filter by event UUID
-	EventUuid param.Field[string] `query:"event_uuid" format:"uuid"`
+	// Filter by event token
+	EventToken param.Field[string] `query:"event_token" format:"uuid"`
 	// Filter by whether the rule evaluation produced any actions. When not provided,
 	// all results are returned.
 	HasActions param.Field[bool] `query:"has_actions"`
