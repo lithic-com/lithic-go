@@ -2924,14 +2924,18 @@ func (r VelocityLimitPeriodFixedWindowYearParam) implementsVelocityLimitPeriodUn
 type AuthRuleV2ListResultsResponse struct {
 	// Globally unique identifier for the evaluation
 	Token string `json:"token,required" format:"uuid"`
-	// Actions returned by the rule evaluation
-	Actions []AuthRuleV2ListResultsResponseAction `json:"actions,required"`
+	// This field can have the runtime type of
+	// [[]AuthRuleV2ListResultsResponseAuthorizationResultAction],
+	// [[]AuthRuleV2ListResultsResponseAuthentication3DsResultAction],
+	// [[]AuthRuleV2ListResultsResponseTokenizationResultAction],
+	// [[]AuthRuleV2ListResultsResponseACHResultAction].
+	Actions interface{} `json:"actions,required"`
 	// The Auth Rule token
 	AuthRuleToken string `json:"auth_rule_token,required" format:"uuid"`
 	// Timestamp of the rule evaluation
 	EvaluationTime time.Time `json:"evaluation_time,required" format:"date-time"`
 	// The event stream during which the rule was evaluated
-	EventStream EventStream `json:"event_stream,required"`
+	EventStream AuthRuleV2ListResultsResponseEventStream `json:"event_stream,required"`
 	// Token of the event that triggered the evaluation
 	EventToken string `json:"event_token,required" format:"uuid"`
 	// The state of the Auth Rule
@@ -2939,6 +2943,7 @@ type AuthRuleV2ListResultsResponse struct {
 	// Version of the rule that was evaluated
 	RuleVersion int64                             `json:"rule_version,required"`
 	JSON        authRuleV2ListResultsResponseJSON `json:"-"`
+	union       AuthRuleV2ListResultsResponseUnion
 }
 
 // authRuleV2ListResultsResponseJSON contains the JSON metadata for the struct
@@ -2956,46 +2961,12 @@ type authRuleV2ListResultsResponseJSON struct {
 	ExtraFields    map[string]apijson.Field
 }
 
-func (r *AuthRuleV2ListResultsResponse) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
 func (r authRuleV2ListResultsResponseJSON) RawJSON() string {
 	return r.raw
 }
 
-type AuthRuleV2ListResultsResponseAction struct {
-	// NACHA return code to use when returning the transaction. Note that the list of
-	// available return codes is subject to an allowlist configured at the program
-	// level
-	Code AuthRuleV2ListResultsResponseActionsCode `json:"code"`
-	// Optional explanation for why this action was taken
-	Explanation string `json:"explanation"`
-	// Reason code for declining the tokenization request
-	Reason AuthRuleV2ListResultsResponseActionsReason `json:"reason"`
-	// Decline the tokenization request
-	Type  AuthRuleV2ListResultsResponseActionsType `json:"type"`
-	JSON  authRuleV2ListResultsResponseActionJSON  `json:"-"`
-	union AuthRuleV2ListResultsResponseActionsUnion
-}
-
-// authRuleV2ListResultsResponseActionJSON contains the JSON metadata for the
-// struct [AuthRuleV2ListResultsResponseAction]
-type authRuleV2ListResultsResponseActionJSON struct {
-	Code        apijson.Field
-	Explanation apijson.Field
-	Reason      apijson.Field
-	Type        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r authRuleV2ListResultsResponseActionJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r *AuthRuleV2ListResultsResponseAction) UnmarshalJSON(data []byte) (err error) {
-	*r = AuthRuleV2ListResultsResponseAction{}
+func (r *AuthRuleV2ListResultsResponse) UnmarshalJSON(data []byte) (err error) {
+	*r = AuthRuleV2ListResultsResponse{}
 	err = apijson.UnmarshalRoot(data, &r.union)
 	if err != nil {
 		return err
@@ -3003,567 +2974,1072 @@ func (r *AuthRuleV2ListResultsResponseAction) UnmarshalJSON(data []byte) (err er
 	return apijson.Port(r.union, &r)
 }
 
-// AsUnion returns a [AuthRuleV2ListResultsResponseActionsUnion] interface which
-// you can cast to the specific types for more type safety.
+// AsUnion returns a [AuthRuleV2ListResultsResponseUnion] interface which you can
+// cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are
-// [AuthRuleV2ListResultsResponseActionsAuthorizationAction],
-// [AuthRuleV2ListResultsResponseActionsAuthentication3DSAction],
-// [AuthRuleV2ListResultsResponseActionsDeclineAction],
-// [AuthRuleV2ListResultsResponseActionsRequireTfaAction],
-// [AuthRuleV2ListResultsResponseActionsApproveAction],
-// [AuthRuleV2ListResultsResponseActionsReturnAction].
-func (r AuthRuleV2ListResultsResponseAction) AsUnion() AuthRuleV2ListResultsResponseActionsUnion {
+// [AuthRuleV2ListResultsResponseAuthorizationResult],
+// [AuthRuleV2ListResultsResponseAuthentication3DSResult],
+// [AuthRuleV2ListResultsResponseTokenizationResult],
+// [AuthRuleV2ListResultsResponseACHResult].
+func (r AuthRuleV2ListResultsResponse) AsUnion() AuthRuleV2ListResultsResponseUnion {
 	return r.union
 }
 
-// Union satisfied by [AuthRuleV2ListResultsResponseActionsAuthorizationAction],
-// [AuthRuleV2ListResultsResponseActionsAuthentication3DSAction],
-// [AuthRuleV2ListResultsResponseActionsDeclineAction],
-// [AuthRuleV2ListResultsResponseActionsRequireTfaAction],
-// [AuthRuleV2ListResultsResponseActionsApproveAction] or
-// [AuthRuleV2ListResultsResponseActionsReturnAction].
-type AuthRuleV2ListResultsResponseActionsUnion interface {
-	implementsAuthRuleV2ListResultsResponseAction()
+// Result of an Auth Rule evaluation
+//
+// Union satisfied by [AuthRuleV2ListResultsResponseAuthorizationResult],
+// [AuthRuleV2ListResultsResponseAuthentication3DSResult],
+// [AuthRuleV2ListResultsResponseTokenizationResult] or
+// [AuthRuleV2ListResultsResponseACHResult].
+type AuthRuleV2ListResultsResponseUnion interface {
+	implementsAuthRuleV2ListResultsResponse()
 }
 
 func init() {
 	apijson.RegisterUnion(
-		reflect.TypeOf((*AuthRuleV2ListResultsResponseActionsUnion)(nil)).Elem(),
+		reflect.TypeOf((*AuthRuleV2ListResultsResponseUnion)(nil)).Elem(),
 		"",
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseActionsAuthorizationAction{}),
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseAuthorizationResult{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseActionsAuthentication3DSAction{}),
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseAuthentication3DSResult{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseActionsDeclineAction{}),
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseTokenizationResult{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseActionsRequireTfaAction{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseActionsApproveAction{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseActionsReturnAction{}),
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseACHResult{}),
 		},
 	)
 }
 
-type AuthRuleV2ListResultsResponseActionsAuthorizationAction struct {
-	// Optional explanation for why this action was taken
-	Explanation string                                                      `json:"explanation"`
-	JSON        authRuleV2ListResultsResponseActionsAuthorizationActionJSON `json:"-"`
+type AuthRuleV2ListResultsResponseAuthorizationResult struct {
+	// Globally unique identifier for the evaluation
+	Token string `json:"token,required" format:"uuid"`
+	// Actions returned by the rule evaluation
+	Actions []AuthRuleV2ListResultsResponseAuthorizationResultAction `json:"actions,required"`
+	// The Auth Rule token
+	AuthRuleToken string `json:"auth_rule_token,required" format:"uuid"`
+	// Timestamp of the rule evaluation
+	EvaluationTime time.Time `json:"evaluation_time,required" format:"date-time"`
+	// The event stream during which the rule was evaluated
+	EventStream AuthRuleV2ListResultsResponseAuthorizationResultEventStream `json:"event_stream,required"`
+	// Token of the event that triggered the evaluation
+	EventToken string `json:"event_token,required" format:"uuid"`
+	// The state of the Auth Rule
+	Mode AuthRuleV2ListResultsResponseAuthorizationResultMode `json:"mode,required"`
+	// Version of the rule that was evaluated
+	RuleVersion int64                                                `json:"rule_version,required"`
+	JSON        authRuleV2ListResultsResponseAuthorizationResultJSON `json:"-"`
 }
 
-// authRuleV2ListResultsResponseActionsAuthorizationActionJSON contains the JSON
-// metadata for the struct
-// [AuthRuleV2ListResultsResponseActionsAuthorizationAction]
-type authRuleV2ListResultsResponseActionsAuthorizationActionJSON struct {
-	Explanation apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+// authRuleV2ListResultsResponseAuthorizationResultJSON contains the JSON metadata
+// for the struct [AuthRuleV2ListResultsResponseAuthorizationResult]
+type authRuleV2ListResultsResponseAuthorizationResultJSON struct {
+	Token          apijson.Field
+	Actions        apijson.Field
+	AuthRuleToken  apijson.Field
+	EvaluationTime apijson.Field
+	EventStream    apijson.Field
+	EventToken     apijson.Field
+	Mode           apijson.Field
+	RuleVersion    apijson.Field
+	raw            string
+	ExtraFields    map[string]apijson.Field
 }
 
-func (r *AuthRuleV2ListResultsResponseActionsAuthorizationAction) UnmarshalJSON(data []byte) (err error) {
+func (r *AuthRuleV2ListResultsResponseAuthorizationResult) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r authRuleV2ListResultsResponseActionsAuthorizationActionJSON) RawJSON() string {
+func (r authRuleV2ListResultsResponseAuthorizationResultJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r AuthRuleV2ListResultsResponseActionsAuthorizationAction) implementsAuthRuleV2ListResultsResponseAction() {
-}
+func (r AuthRuleV2ListResultsResponseAuthorizationResult) implementsAuthRuleV2ListResultsResponse() {}
 
-type AuthRuleV2ListResultsResponseActionsAuthentication3DSAction struct {
+type AuthRuleV2ListResultsResponseAuthorizationResultAction struct {
+	Type AuthRuleV2ListResultsResponseAuthorizationResultActionsType `json:"type,required"`
 	// Optional explanation for why this action was taken
-	Explanation string                                                          `json:"explanation"`
-	JSON        authRuleV2ListResultsResponseActionsAuthentication3DsActionJSON `json:"-"`
+	Explanation string                                                     `json:"explanation"`
+	JSON        authRuleV2ListResultsResponseAuthorizationResultActionJSON `json:"-"`
 }
 
-// authRuleV2ListResultsResponseActionsAuthentication3DsActionJSON contains the
-// JSON metadata for the struct
-// [AuthRuleV2ListResultsResponseActionsAuthentication3DSAction]
-type authRuleV2ListResultsResponseActionsAuthentication3DsActionJSON struct {
-	Explanation apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2ListResultsResponseActionsAuthentication3DSAction) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2ListResultsResponseActionsAuthentication3DsActionJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r AuthRuleV2ListResultsResponseActionsAuthentication3DSAction) implementsAuthRuleV2ListResultsResponseAction() {
-}
-
-type AuthRuleV2ListResultsResponseActionsDeclineAction struct {
-	// Decline the tokenization request
-	Type AuthRuleV2ListResultsResponseActionsDeclineActionType `json:"type,required"`
-	// Reason code for declining the tokenization request
-	Reason AuthRuleV2ListResultsResponseActionsDeclineActionReason `json:"reason"`
-	JSON   authRuleV2ListResultsResponseActionsDeclineActionJSON   `json:"-"`
-}
-
-// authRuleV2ListResultsResponseActionsDeclineActionJSON contains the JSON metadata
-// for the struct [AuthRuleV2ListResultsResponseActionsDeclineAction]
-type authRuleV2ListResultsResponseActionsDeclineActionJSON struct {
+// authRuleV2ListResultsResponseAuthorizationResultActionJSON contains the JSON
+// metadata for the struct [AuthRuleV2ListResultsResponseAuthorizationResultAction]
+type authRuleV2ListResultsResponseAuthorizationResultActionJSON struct {
 	Type        apijson.Field
+	Explanation apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResultsResponseAuthorizationResultAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResultsResponseAuthorizationResultActionJSON) RawJSON() string {
+	return r.raw
+}
+
+type AuthRuleV2ListResultsResponseAuthorizationResultActionsType string
+
+const (
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsTypeDecline   AuthRuleV2ListResultsResponseAuthorizationResultActionsType = "DECLINE"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsTypeChallenge AuthRuleV2ListResultsResponseAuthorizationResultActionsType = "CHALLENGE"
+)
+
+func (r AuthRuleV2ListResultsResponseAuthorizationResultActionsType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseAuthorizationResultActionsTypeDecline, AuthRuleV2ListResultsResponseAuthorizationResultActionsTypeChallenge:
+		return true
+	}
+	return false
+}
+
+// The event stream during which the rule was evaluated
+type AuthRuleV2ListResultsResponseAuthorizationResultEventStream string
+
+const (
+	AuthRuleV2ListResultsResponseAuthorizationResultEventStreamAuthorization AuthRuleV2ListResultsResponseAuthorizationResultEventStream = "AUTHORIZATION"
+)
+
+func (r AuthRuleV2ListResultsResponseAuthorizationResultEventStream) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseAuthorizationResultEventStreamAuthorization:
+		return true
+	}
+	return false
+}
+
+// The state of the Auth Rule
+type AuthRuleV2ListResultsResponseAuthorizationResultMode string
+
+const (
+	AuthRuleV2ListResultsResponseAuthorizationResultModeActive   AuthRuleV2ListResultsResponseAuthorizationResultMode = "ACTIVE"
+	AuthRuleV2ListResultsResponseAuthorizationResultModeInactive AuthRuleV2ListResultsResponseAuthorizationResultMode = "INACTIVE"
+)
+
+func (r AuthRuleV2ListResultsResponseAuthorizationResultMode) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseAuthorizationResultModeActive, AuthRuleV2ListResultsResponseAuthorizationResultModeInactive:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2ListResultsResponseAuthentication3DSResult struct {
+	// Globally unique identifier for the evaluation
+	Token string `json:"token,required" format:"uuid"`
+	// Actions returned by the rule evaluation
+	Actions []AuthRuleV2ListResultsResponseAuthentication3DsResultAction `json:"actions,required"`
+	// The Auth Rule token
+	AuthRuleToken string `json:"auth_rule_token,required" format:"uuid"`
+	// Timestamp of the rule evaluation
+	EvaluationTime time.Time `json:"evaluation_time,required" format:"date-time"`
+	// The event stream during which the rule was evaluated
+	EventStream AuthRuleV2ListResultsResponseAuthentication3DSResultEventStream `json:"event_stream,required"`
+	// Token of the event that triggered the evaluation
+	EventToken string `json:"event_token,required" format:"uuid"`
+	// The state of the Auth Rule
+	Mode AuthRuleV2ListResultsResponseAuthentication3DSResultMode `json:"mode,required"`
+	// Version of the rule that was evaluated
+	RuleVersion int64                                                    `json:"rule_version,required"`
+	JSON        authRuleV2ListResultsResponseAuthentication3DsResultJSON `json:"-"`
+}
+
+// authRuleV2ListResultsResponseAuthentication3DsResultJSON contains the JSON
+// metadata for the struct [AuthRuleV2ListResultsResponseAuthentication3DSResult]
+type authRuleV2ListResultsResponseAuthentication3DsResultJSON struct {
+	Token          apijson.Field
+	Actions        apijson.Field
+	AuthRuleToken  apijson.Field
+	EvaluationTime apijson.Field
+	EventStream    apijson.Field
+	EventToken     apijson.Field
+	Mode           apijson.Field
+	RuleVersion    apijson.Field
+	raw            string
+	ExtraFields    map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResultsResponseAuthentication3DSResult) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResultsResponseAuthentication3DsResultJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ListResultsResponseAuthentication3DSResult) implementsAuthRuleV2ListResultsResponse() {
+}
+
+type AuthRuleV2ListResultsResponseAuthentication3DsResultAction struct {
+	Type AuthRuleV2ListResultsResponseAuthentication3DSResultActionsType `json:"type,required"`
+	// Optional explanation for why this action was taken
+	Explanation string                                                         `json:"explanation"`
+	JSON        authRuleV2ListResultsResponseAuthentication3DsResultActionJSON `json:"-"`
+}
+
+// authRuleV2ListResultsResponseAuthentication3DsResultActionJSON contains the JSON
+// metadata for the struct
+// [AuthRuleV2ListResultsResponseAuthentication3DsResultAction]
+type authRuleV2ListResultsResponseAuthentication3DsResultActionJSON struct {
+	Type        apijson.Field
+	Explanation apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResultsResponseAuthentication3DsResultAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResultsResponseAuthentication3DsResultActionJSON) RawJSON() string {
+	return r.raw
+}
+
+type AuthRuleV2ListResultsResponseAuthentication3DSResultActionsType string
+
+const (
+	AuthRuleV2ListResultsResponseAuthentication3DSResultActionsTypeDecline   AuthRuleV2ListResultsResponseAuthentication3DSResultActionsType = "DECLINE"
+	AuthRuleV2ListResultsResponseAuthentication3DSResultActionsTypeChallenge AuthRuleV2ListResultsResponseAuthentication3DSResultActionsType = "CHALLENGE"
+)
+
+func (r AuthRuleV2ListResultsResponseAuthentication3DSResultActionsType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseAuthentication3DSResultActionsTypeDecline, AuthRuleV2ListResultsResponseAuthentication3DSResultActionsTypeChallenge:
+		return true
+	}
+	return false
+}
+
+// The event stream during which the rule was evaluated
+type AuthRuleV2ListResultsResponseAuthentication3DSResultEventStream string
+
+const (
+	AuthRuleV2ListResultsResponseAuthentication3DSResultEventStreamThreeDSAuthentication AuthRuleV2ListResultsResponseAuthentication3DSResultEventStream = "THREE_DS_AUTHENTICATION"
+)
+
+func (r AuthRuleV2ListResultsResponseAuthentication3DSResultEventStream) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseAuthentication3DSResultEventStreamThreeDSAuthentication:
+		return true
+	}
+	return false
+}
+
+// The state of the Auth Rule
+type AuthRuleV2ListResultsResponseAuthentication3DSResultMode string
+
+const (
+	AuthRuleV2ListResultsResponseAuthentication3DSResultModeActive   AuthRuleV2ListResultsResponseAuthentication3DSResultMode = "ACTIVE"
+	AuthRuleV2ListResultsResponseAuthentication3DSResultModeInactive AuthRuleV2ListResultsResponseAuthentication3DSResultMode = "INACTIVE"
+)
+
+func (r AuthRuleV2ListResultsResponseAuthentication3DSResultMode) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseAuthentication3DSResultModeActive, AuthRuleV2ListResultsResponseAuthentication3DSResultModeInactive:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2ListResultsResponseTokenizationResult struct {
+	// Globally unique identifier for the evaluation
+	Token string `json:"token,required" format:"uuid"`
+	// Actions returned by the rule evaluation
+	Actions []AuthRuleV2ListResultsResponseTokenizationResultAction `json:"actions,required"`
+	// The Auth Rule token
+	AuthRuleToken string `json:"auth_rule_token,required" format:"uuid"`
+	// Timestamp of the rule evaluation
+	EvaluationTime time.Time `json:"evaluation_time,required" format:"date-time"`
+	// The event stream during which the rule was evaluated
+	EventStream AuthRuleV2ListResultsResponseTokenizationResultEventStream `json:"event_stream,required"`
+	// Token of the event that triggered the evaluation
+	EventToken string `json:"event_token,required" format:"uuid"`
+	// The state of the Auth Rule
+	Mode AuthRuleV2ListResultsResponseTokenizationResultMode `json:"mode,required"`
+	// Version of the rule that was evaluated
+	RuleVersion int64                                               `json:"rule_version,required"`
+	JSON        authRuleV2ListResultsResponseTokenizationResultJSON `json:"-"`
+}
+
+// authRuleV2ListResultsResponseTokenizationResultJSON contains the JSON metadata
+// for the struct [AuthRuleV2ListResultsResponseTokenizationResult]
+type authRuleV2ListResultsResponseTokenizationResultJSON struct {
+	Token          apijson.Field
+	Actions        apijson.Field
+	AuthRuleToken  apijson.Field
+	EvaluationTime apijson.Field
+	EventStream    apijson.Field
+	EventToken     apijson.Field
+	Mode           apijson.Field
+	RuleVersion    apijson.Field
+	raw            string
+	ExtraFields    map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResultsResponseTokenizationResult) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResultsResponseTokenizationResultJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ListResultsResponseTokenizationResult) implementsAuthRuleV2ListResultsResponse() {}
+
+type AuthRuleV2ListResultsResponseTokenizationResultAction struct {
+	// Decline the tokenization request
+	Type AuthRuleV2ListResultsResponseTokenizationResultActionsType `json:"type,required"`
+	// Optional explanation for why this action was taken
+	Explanation string `json:"explanation"`
+	// Reason code for declining the tokenization request
+	Reason AuthRuleV2ListResultsResponseTokenizationResultActionsReason `json:"reason"`
+	JSON   authRuleV2ListResultsResponseTokenizationResultActionJSON    `json:"-"`
+	union  AuthRuleV2ListResultsResponseTokenizationResultActionsUnion
+}
+
+// authRuleV2ListResultsResponseTokenizationResultActionJSON contains the JSON
+// metadata for the struct [AuthRuleV2ListResultsResponseTokenizationResultAction]
+type authRuleV2ListResultsResponseTokenizationResultActionJSON struct {
+	Type        apijson.Field
+	Explanation apijson.Field
 	Reason      apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *AuthRuleV2ListResultsResponseActionsDeclineAction) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2ListResultsResponseActionsDeclineActionJSON) RawJSON() string {
+func (r authRuleV2ListResultsResponseTokenizationResultActionJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r AuthRuleV2ListResultsResponseActionsDeclineAction) implementsAuthRuleV2ListResultsResponseAction() {
+func (r *AuthRuleV2ListResultsResponseTokenizationResultAction) UnmarshalJSON(data []byte) (err error) {
+	*r = AuthRuleV2ListResultsResponseTokenizationResultAction{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a [AuthRuleV2ListResultsResponseTokenizationResultActionsUnion]
+// interface which you can cast to the specific types for more type safety.
+//
+// Possible runtime types of the union are
+// [AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineAction],
+// [AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaAction].
+func (r AuthRuleV2ListResultsResponseTokenizationResultAction) AsUnion() AuthRuleV2ListResultsResponseTokenizationResultActionsUnion {
+	return r.union
+}
+
+// Union satisfied by
+// [AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineAction] or
+// [AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaAction].
+type AuthRuleV2ListResultsResponseTokenizationResultActionsUnion interface {
+	implementsAuthRuleV2ListResultsResponseTokenizationResultAction()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2ListResultsResponseTokenizationResultActionsUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineAction{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaAction{}),
+		},
+	)
+}
+
+type AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineAction struct {
+	// Decline the tokenization request
+	Type AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionType `json:"type,required"`
+	// Optional explanation for why this action was taken
+	Explanation string `json:"explanation"`
+	// Reason code for declining the tokenization request
+	Reason AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason `json:"reason"`
+	JSON   authRuleV2ListResultsResponseTokenizationResultActionsDeclineActionJSON   `json:"-"`
+}
+
+// authRuleV2ListResultsResponseTokenizationResultActionsDeclineActionJSON contains
+// the JSON metadata for the struct
+// [AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineAction]
+type authRuleV2ListResultsResponseTokenizationResultActionsDeclineActionJSON struct {
+	Type        apijson.Field
+	Explanation apijson.Field
+	Reason      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResultsResponseTokenizationResultActionsDeclineActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineAction) implementsAuthRuleV2ListResultsResponseTokenizationResultAction() {
 }
 
 // Decline the tokenization request
-type AuthRuleV2ListResultsResponseActionsDeclineActionType string
+type AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionType string
 
 const (
-	AuthRuleV2ListResultsResponseActionsDeclineActionTypeDecline AuthRuleV2ListResultsResponseActionsDeclineActionType = "DECLINE"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTypeDecline AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionType = "DECLINE"
 )
 
-func (r AuthRuleV2ListResultsResponseActionsDeclineActionType) IsKnown() bool {
+func (r AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResultsResponseActionsDeclineActionTypeDecline:
+	case AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTypeDecline:
 		return true
 	}
 	return false
 }
 
 // Reason code for declining the tokenization request
-type AuthRuleV2ListResultsResponseActionsDeclineActionReason string
+type AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason string
 
 const (
-	AuthRuleV2ListResultsResponseActionsDeclineActionReasonAccountScore1                  AuthRuleV2ListResultsResponseActionsDeclineActionReason = "ACCOUNT_SCORE_1"
-	AuthRuleV2ListResultsResponseActionsDeclineActionReasonDeviceScore1                   AuthRuleV2ListResultsResponseActionsDeclineActionReason = "DEVICE_SCORE_1"
-	AuthRuleV2ListResultsResponseActionsDeclineActionReasonAllWalletDeclineReasonsPresent AuthRuleV2ListResultsResponseActionsDeclineActionReason = "ALL_WALLET_DECLINE_REASONS_PRESENT"
-	AuthRuleV2ListResultsResponseActionsDeclineActionReasonWalletRecommendedDecisionRed   AuthRuleV2ListResultsResponseActionsDeclineActionReason = "WALLET_RECOMMENDED_DECISION_RED"
-	AuthRuleV2ListResultsResponseActionsDeclineActionReasonCvcMismatch                    AuthRuleV2ListResultsResponseActionsDeclineActionReason = "CVC_MISMATCH"
-	AuthRuleV2ListResultsResponseActionsDeclineActionReasonCardExpiryMonthMismatch        AuthRuleV2ListResultsResponseActionsDeclineActionReason = "CARD_EXPIRY_MONTH_MISMATCH"
-	AuthRuleV2ListResultsResponseActionsDeclineActionReasonCardExpiryYearMismatch         AuthRuleV2ListResultsResponseActionsDeclineActionReason = "CARD_EXPIRY_YEAR_MISMATCH"
-	AuthRuleV2ListResultsResponseActionsDeclineActionReasonCardInvalidState               AuthRuleV2ListResultsResponseActionsDeclineActionReason = "CARD_INVALID_STATE"
-	AuthRuleV2ListResultsResponseActionsDeclineActionReasonCustomerRedPath                AuthRuleV2ListResultsResponseActionsDeclineActionReason = "CUSTOMER_RED_PATH"
-	AuthRuleV2ListResultsResponseActionsDeclineActionReasonInvalidCustomerResponse        AuthRuleV2ListResultsResponseActionsDeclineActionReason = "INVALID_CUSTOMER_RESPONSE"
-	AuthRuleV2ListResultsResponseActionsDeclineActionReasonNetworkFailure                 AuthRuleV2ListResultsResponseActionsDeclineActionReason = "NETWORK_FAILURE"
-	AuthRuleV2ListResultsResponseActionsDeclineActionReasonGenericDecline                 AuthRuleV2ListResultsResponseActionsDeclineActionReason = "GENERIC_DECLINE"
-	AuthRuleV2ListResultsResponseActionsDeclineActionReasonDigitalCardArtRequired         AuthRuleV2ListResultsResponseActionsDeclineActionReason = "DIGITAL_CARD_ART_REQUIRED"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonAccountScore1                  AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "ACCOUNT_SCORE_1"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonDeviceScore1                   AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "DEVICE_SCORE_1"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonAllWalletDeclineReasonsPresent AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "ALL_WALLET_DECLINE_REASONS_PRESENT"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonWalletRecommendedDecisionRed   AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "WALLET_RECOMMENDED_DECISION_RED"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCvcMismatch                    AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "CVC_MISMATCH"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCardExpiryMonthMismatch        AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "CARD_EXPIRY_MONTH_MISMATCH"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCardExpiryYearMismatch         AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "CARD_EXPIRY_YEAR_MISMATCH"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCardInvalidState               AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "CARD_INVALID_STATE"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCustomerRedPath                AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "CUSTOMER_RED_PATH"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonInvalidCustomerResponse        AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "INVALID_CUSTOMER_RESPONSE"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonNetworkFailure                 AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "NETWORK_FAILURE"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonGenericDecline                 AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "GENERIC_DECLINE"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonDigitalCardArtRequired         AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "DIGITAL_CARD_ART_REQUIRED"
 )
 
-func (r AuthRuleV2ListResultsResponseActionsDeclineActionReason) IsKnown() bool {
+func (r AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResultsResponseActionsDeclineActionReasonAccountScore1, AuthRuleV2ListResultsResponseActionsDeclineActionReasonDeviceScore1, AuthRuleV2ListResultsResponseActionsDeclineActionReasonAllWalletDeclineReasonsPresent, AuthRuleV2ListResultsResponseActionsDeclineActionReasonWalletRecommendedDecisionRed, AuthRuleV2ListResultsResponseActionsDeclineActionReasonCvcMismatch, AuthRuleV2ListResultsResponseActionsDeclineActionReasonCardExpiryMonthMismatch, AuthRuleV2ListResultsResponseActionsDeclineActionReasonCardExpiryYearMismatch, AuthRuleV2ListResultsResponseActionsDeclineActionReasonCardInvalidState, AuthRuleV2ListResultsResponseActionsDeclineActionReasonCustomerRedPath, AuthRuleV2ListResultsResponseActionsDeclineActionReasonInvalidCustomerResponse, AuthRuleV2ListResultsResponseActionsDeclineActionReasonNetworkFailure, AuthRuleV2ListResultsResponseActionsDeclineActionReasonGenericDecline, AuthRuleV2ListResultsResponseActionsDeclineActionReasonDigitalCardArtRequired:
+	case AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonAccountScore1, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonDeviceScore1, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonAllWalletDeclineReasonsPresent, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonWalletRecommendedDecisionRed, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCvcMismatch, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCardExpiryMonthMismatch, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCardExpiryYearMismatch, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCardInvalidState, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCustomerRedPath, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonInvalidCustomerResponse, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonNetworkFailure, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonGenericDecline, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonDigitalCardArtRequired:
 		return true
 	}
 	return false
 }
 
-type AuthRuleV2ListResultsResponseActionsRequireTfaAction struct {
+type AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaAction struct {
 	// Require two-factor authentication for the tokenization request
-	Type AuthRuleV2ListResultsResponseActionsRequireTfaActionType `json:"type,required"`
+	Type AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionType `json:"type,required"`
+	// Optional explanation for why this action was taken
+	Explanation string `json:"explanation"`
 	// Reason code for requiring two-factor authentication
-	Reason AuthRuleV2ListResultsResponseActionsRequireTfaActionReason `json:"reason"`
-	JSON   authRuleV2ListResultsResponseActionsRequireTfaActionJSON   `json:"-"`
+	Reason AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReason `json:"reason"`
+	JSON   authRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionJSON   `json:"-"`
 }
 
-// authRuleV2ListResultsResponseActionsRequireTfaActionJSON contains the JSON
-// metadata for the struct [AuthRuleV2ListResultsResponseActionsRequireTfaAction]
-type authRuleV2ListResultsResponseActionsRequireTfaActionJSON struct {
+// authRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaAction]
+type authRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionJSON struct {
 	Type        apijson.Field
+	Explanation apijson.Field
 	Reason      apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *AuthRuleV2ListResultsResponseActionsRequireTfaAction) UnmarshalJSON(data []byte) (err error) {
+func (r *AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaAction) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r authRuleV2ListResultsResponseActionsRequireTfaActionJSON) RawJSON() string {
+func (r authRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r AuthRuleV2ListResultsResponseActionsRequireTfaAction) implementsAuthRuleV2ListResultsResponseAction() {
+func (r AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaAction) implementsAuthRuleV2ListResultsResponseTokenizationResultAction() {
 }
 
 // Require two-factor authentication for the tokenization request
-type AuthRuleV2ListResultsResponseActionsRequireTfaActionType string
+type AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionType string
 
 const (
-	AuthRuleV2ListResultsResponseActionsRequireTfaActionTypeRequireTfa AuthRuleV2ListResultsResponseActionsRequireTfaActionType = "REQUIRE_TFA"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionTypeRequireTfa AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionType = "REQUIRE_TFA"
 )
 
-func (r AuthRuleV2ListResultsResponseActionsRequireTfaActionType) IsKnown() bool {
+func (r AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResultsResponseActionsRequireTfaActionTypeRequireTfa:
+	case AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionTypeRequireTfa:
 		return true
 	}
 	return false
 }
 
 // Reason code for requiring two-factor authentication
-type AuthRuleV2ListResultsResponseActionsRequireTfaActionReason string
+type AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReason string
 
 const (
-	AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonWalletRecommendedTfa        AuthRuleV2ListResultsResponseActionsRequireTfaActionReason = "WALLET_RECOMMENDED_TFA"
-	AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonSuspiciousActivity          AuthRuleV2ListResultsResponseActionsRequireTfaActionReason = "SUSPICIOUS_ACTIVITY"
-	AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonDeviceRecentlyLost          AuthRuleV2ListResultsResponseActionsRequireTfaActionReason = "DEVICE_RECENTLY_LOST"
-	AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonTooManyRecentAttempts       AuthRuleV2ListResultsResponseActionsRequireTfaActionReason = "TOO_MANY_RECENT_ATTEMPTS"
-	AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonTooManyRecentTokens         AuthRuleV2ListResultsResponseActionsRequireTfaActionReason = "TOO_MANY_RECENT_TOKENS"
-	AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonTooManyDifferentCardholders AuthRuleV2ListResultsResponseActionsRequireTfaActionReason = "TOO_MANY_DIFFERENT_CARDHOLDERS"
-	AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonOutsideHomeTerritory        AuthRuleV2ListResultsResponseActionsRequireTfaActionReason = "OUTSIDE_HOME_TERRITORY"
-	AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonHasSuspendedTokens          AuthRuleV2ListResultsResponseActionsRequireTfaActionReason = "HAS_SUSPENDED_TOKENS"
-	AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonHighRisk                    AuthRuleV2ListResultsResponseActionsRequireTfaActionReason = "HIGH_RISK"
-	AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonAccountScoreLow             AuthRuleV2ListResultsResponseActionsRequireTfaActionReason = "ACCOUNT_SCORE_LOW"
-	AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonDeviceScoreLow              AuthRuleV2ListResultsResponseActionsRequireTfaActionReason = "DEVICE_SCORE_LOW"
-	AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonCardStateTfa                AuthRuleV2ListResultsResponseActionsRequireTfaActionReason = "CARD_STATE_TFA"
-	AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonHardcodedTfa                AuthRuleV2ListResultsResponseActionsRequireTfaActionReason = "HARDCODED_TFA"
-	AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonCustomerRuleTfa             AuthRuleV2ListResultsResponseActionsRequireTfaActionReason = "CUSTOMER_RULE_TFA"
-	AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonDeviceHostCardEmulation     AuthRuleV2ListResultsResponseActionsRequireTfaActionReason = "DEVICE_HOST_CARD_EMULATION"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonWalletRecommendedTfa        AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReason = "WALLET_RECOMMENDED_TFA"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonSuspiciousActivity          AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReason = "SUSPICIOUS_ACTIVITY"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonDeviceRecentlyLost          AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReason = "DEVICE_RECENTLY_LOST"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonTooManyRecentAttempts       AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReason = "TOO_MANY_RECENT_ATTEMPTS"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonTooManyRecentTokens         AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReason = "TOO_MANY_RECENT_TOKENS"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonTooManyDifferentCardholders AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReason = "TOO_MANY_DIFFERENT_CARDHOLDERS"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonOutsideHomeTerritory        AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReason = "OUTSIDE_HOME_TERRITORY"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonHasSuspendedTokens          AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReason = "HAS_SUSPENDED_TOKENS"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonHighRisk                    AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReason = "HIGH_RISK"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonAccountScoreLow             AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReason = "ACCOUNT_SCORE_LOW"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonDeviceScoreLow              AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReason = "DEVICE_SCORE_LOW"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonCardStateTfa                AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReason = "CARD_STATE_TFA"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonHardcodedTfa                AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReason = "HARDCODED_TFA"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonCustomerRuleTfa             AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReason = "CUSTOMER_RULE_TFA"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonDeviceHostCardEmulation     AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReason = "DEVICE_HOST_CARD_EMULATION"
 )
 
-func (r AuthRuleV2ListResultsResponseActionsRequireTfaActionReason) IsKnown() bool {
+func (r AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReason) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonWalletRecommendedTfa, AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonSuspiciousActivity, AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonDeviceRecentlyLost, AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonTooManyRecentAttempts, AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonTooManyRecentTokens, AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonTooManyDifferentCardholders, AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonOutsideHomeTerritory, AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonHasSuspendedTokens, AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonHighRisk, AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonAccountScoreLow, AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonDeviceScoreLow, AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonCardStateTfa, AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonHardcodedTfa, AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonCustomerRuleTfa, AuthRuleV2ListResultsResponseActionsRequireTfaActionReasonDeviceHostCardEmulation:
-		return true
-	}
-	return false
-}
-
-type AuthRuleV2ListResultsResponseActionsApproveAction struct {
-	// Approve the ACH transaction
-	Type AuthRuleV2ListResultsResponseActionsApproveActionType `json:"type,required"`
-	JSON authRuleV2ListResultsResponseActionsApproveActionJSON `json:"-"`
-}
-
-// authRuleV2ListResultsResponseActionsApproveActionJSON contains the JSON metadata
-// for the struct [AuthRuleV2ListResultsResponseActionsApproveAction]
-type authRuleV2ListResultsResponseActionsApproveActionJSON struct {
-	Type        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2ListResultsResponseActionsApproveAction) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2ListResultsResponseActionsApproveActionJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r AuthRuleV2ListResultsResponseActionsApproveAction) implementsAuthRuleV2ListResultsResponseAction() {
-}
-
-// Approve the ACH transaction
-type AuthRuleV2ListResultsResponseActionsApproveActionType string
-
-const (
-	AuthRuleV2ListResultsResponseActionsApproveActionTypeApprove AuthRuleV2ListResultsResponseActionsApproveActionType = "APPROVE"
-)
-
-func (r AuthRuleV2ListResultsResponseActionsApproveActionType) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ListResultsResponseActionsApproveActionTypeApprove:
-		return true
-	}
-	return false
-}
-
-type AuthRuleV2ListResultsResponseActionsReturnAction struct {
-	// NACHA return code to use when returning the transaction. Note that the list of
-	// available return codes is subject to an allowlist configured at the program
-	// level
-	Code AuthRuleV2ListResultsResponseActionsReturnActionCode `json:"code,required"`
-	// Return the ACH transaction
-	Type AuthRuleV2ListResultsResponseActionsReturnActionType `json:"type,required"`
-	JSON authRuleV2ListResultsResponseActionsReturnActionJSON `json:"-"`
-}
-
-// authRuleV2ListResultsResponseActionsReturnActionJSON contains the JSON metadata
-// for the struct [AuthRuleV2ListResultsResponseActionsReturnAction]
-type authRuleV2ListResultsResponseActionsReturnActionJSON struct {
-	Code        apijson.Field
-	Type        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *AuthRuleV2ListResultsResponseActionsReturnAction) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2ListResultsResponseActionsReturnActionJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r AuthRuleV2ListResultsResponseActionsReturnAction) implementsAuthRuleV2ListResultsResponseAction() {
-}
-
-// NACHA return code to use when returning the transaction. Note that the list of
-// available return codes is subject to an allowlist configured at the program
-// level
-type AuthRuleV2ListResultsResponseActionsReturnActionCode string
-
-const (
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR01 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R01"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR02 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R02"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR03 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R03"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR04 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R04"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR05 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R05"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR06 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R06"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR07 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R07"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR08 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R08"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR09 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R09"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR10 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R10"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR11 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R11"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR12 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R12"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR13 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R13"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR14 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R14"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR15 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R15"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR16 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R16"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR17 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R17"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR18 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R18"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR19 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R19"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR20 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R20"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR21 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R21"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR22 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R22"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR23 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R23"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR24 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R24"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR25 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R25"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR26 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R26"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR27 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R27"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR28 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R28"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR29 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R29"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR30 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R30"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR31 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R31"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR32 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R32"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR33 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R33"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR34 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R34"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR35 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R35"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR36 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R36"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR37 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R37"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR38 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R38"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR39 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R39"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR40 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R40"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR41 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R41"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR42 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R42"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR43 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R43"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR44 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R44"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR45 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R45"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR46 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R46"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR47 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R47"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR50 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R50"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR51 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R51"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR52 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R52"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR53 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R53"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR61 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R61"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR62 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R62"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR67 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R67"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR68 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R68"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR69 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R69"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR70 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R70"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR71 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R71"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR72 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R72"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR73 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R73"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR74 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R74"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR75 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R75"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR76 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R76"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR77 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R77"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR80 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R80"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR81 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R81"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR82 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R82"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR83 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R83"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR84 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R84"
-	AuthRuleV2ListResultsResponseActionsReturnActionCodeR85 AuthRuleV2ListResultsResponseActionsReturnActionCode = "R85"
-)
-
-func (r AuthRuleV2ListResultsResponseActionsReturnActionCode) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ListResultsResponseActionsReturnActionCodeR01, AuthRuleV2ListResultsResponseActionsReturnActionCodeR02, AuthRuleV2ListResultsResponseActionsReturnActionCodeR03, AuthRuleV2ListResultsResponseActionsReturnActionCodeR04, AuthRuleV2ListResultsResponseActionsReturnActionCodeR05, AuthRuleV2ListResultsResponseActionsReturnActionCodeR06, AuthRuleV2ListResultsResponseActionsReturnActionCodeR07, AuthRuleV2ListResultsResponseActionsReturnActionCodeR08, AuthRuleV2ListResultsResponseActionsReturnActionCodeR09, AuthRuleV2ListResultsResponseActionsReturnActionCodeR10, AuthRuleV2ListResultsResponseActionsReturnActionCodeR11, AuthRuleV2ListResultsResponseActionsReturnActionCodeR12, AuthRuleV2ListResultsResponseActionsReturnActionCodeR13, AuthRuleV2ListResultsResponseActionsReturnActionCodeR14, AuthRuleV2ListResultsResponseActionsReturnActionCodeR15, AuthRuleV2ListResultsResponseActionsReturnActionCodeR16, AuthRuleV2ListResultsResponseActionsReturnActionCodeR17, AuthRuleV2ListResultsResponseActionsReturnActionCodeR18, AuthRuleV2ListResultsResponseActionsReturnActionCodeR19, AuthRuleV2ListResultsResponseActionsReturnActionCodeR20, AuthRuleV2ListResultsResponseActionsReturnActionCodeR21, AuthRuleV2ListResultsResponseActionsReturnActionCodeR22, AuthRuleV2ListResultsResponseActionsReturnActionCodeR23, AuthRuleV2ListResultsResponseActionsReturnActionCodeR24, AuthRuleV2ListResultsResponseActionsReturnActionCodeR25, AuthRuleV2ListResultsResponseActionsReturnActionCodeR26, AuthRuleV2ListResultsResponseActionsReturnActionCodeR27, AuthRuleV2ListResultsResponseActionsReturnActionCodeR28, AuthRuleV2ListResultsResponseActionsReturnActionCodeR29, AuthRuleV2ListResultsResponseActionsReturnActionCodeR30, AuthRuleV2ListResultsResponseActionsReturnActionCodeR31, AuthRuleV2ListResultsResponseActionsReturnActionCodeR32, AuthRuleV2ListResultsResponseActionsReturnActionCodeR33, AuthRuleV2ListResultsResponseActionsReturnActionCodeR34, AuthRuleV2ListResultsResponseActionsReturnActionCodeR35, AuthRuleV2ListResultsResponseActionsReturnActionCodeR36, AuthRuleV2ListResultsResponseActionsReturnActionCodeR37, AuthRuleV2ListResultsResponseActionsReturnActionCodeR38, AuthRuleV2ListResultsResponseActionsReturnActionCodeR39, AuthRuleV2ListResultsResponseActionsReturnActionCodeR40, AuthRuleV2ListResultsResponseActionsReturnActionCodeR41, AuthRuleV2ListResultsResponseActionsReturnActionCodeR42, AuthRuleV2ListResultsResponseActionsReturnActionCodeR43, AuthRuleV2ListResultsResponseActionsReturnActionCodeR44, AuthRuleV2ListResultsResponseActionsReturnActionCodeR45, AuthRuleV2ListResultsResponseActionsReturnActionCodeR46, AuthRuleV2ListResultsResponseActionsReturnActionCodeR47, AuthRuleV2ListResultsResponseActionsReturnActionCodeR50, AuthRuleV2ListResultsResponseActionsReturnActionCodeR51, AuthRuleV2ListResultsResponseActionsReturnActionCodeR52, AuthRuleV2ListResultsResponseActionsReturnActionCodeR53, AuthRuleV2ListResultsResponseActionsReturnActionCodeR61, AuthRuleV2ListResultsResponseActionsReturnActionCodeR62, AuthRuleV2ListResultsResponseActionsReturnActionCodeR67, AuthRuleV2ListResultsResponseActionsReturnActionCodeR68, AuthRuleV2ListResultsResponseActionsReturnActionCodeR69, AuthRuleV2ListResultsResponseActionsReturnActionCodeR70, AuthRuleV2ListResultsResponseActionsReturnActionCodeR71, AuthRuleV2ListResultsResponseActionsReturnActionCodeR72, AuthRuleV2ListResultsResponseActionsReturnActionCodeR73, AuthRuleV2ListResultsResponseActionsReturnActionCodeR74, AuthRuleV2ListResultsResponseActionsReturnActionCodeR75, AuthRuleV2ListResultsResponseActionsReturnActionCodeR76, AuthRuleV2ListResultsResponseActionsReturnActionCodeR77, AuthRuleV2ListResultsResponseActionsReturnActionCodeR80, AuthRuleV2ListResultsResponseActionsReturnActionCodeR81, AuthRuleV2ListResultsResponseActionsReturnActionCodeR82, AuthRuleV2ListResultsResponseActionsReturnActionCodeR83, AuthRuleV2ListResultsResponseActionsReturnActionCodeR84, AuthRuleV2ListResultsResponseActionsReturnActionCodeR85:
-		return true
-	}
-	return false
-}
-
-// Return the ACH transaction
-type AuthRuleV2ListResultsResponseActionsReturnActionType string
-
-const (
-	AuthRuleV2ListResultsResponseActionsReturnActionTypeReturn AuthRuleV2ListResultsResponseActionsReturnActionType = "RETURN"
-)
-
-func (r AuthRuleV2ListResultsResponseActionsReturnActionType) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ListResultsResponseActionsReturnActionTypeReturn:
-		return true
-	}
-	return false
-}
-
-// NACHA return code to use when returning the transaction. Note that the list of
-// available return codes is subject to an allowlist configured at the program
-// level
-type AuthRuleV2ListResultsResponseActionsCode string
-
-const (
-	AuthRuleV2ListResultsResponseActionsCodeR01 AuthRuleV2ListResultsResponseActionsCode = "R01"
-	AuthRuleV2ListResultsResponseActionsCodeR02 AuthRuleV2ListResultsResponseActionsCode = "R02"
-	AuthRuleV2ListResultsResponseActionsCodeR03 AuthRuleV2ListResultsResponseActionsCode = "R03"
-	AuthRuleV2ListResultsResponseActionsCodeR04 AuthRuleV2ListResultsResponseActionsCode = "R04"
-	AuthRuleV2ListResultsResponseActionsCodeR05 AuthRuleV2ListResultsResponseActionsCode = "R05"
-	AuthRuleV2ListResultsResponseActionsCodeR06 AuthRuleV2ListResultsResponseActionsCode = "R06"
-	AuthRuleV2ListResultsResponseActionsCodeR07 AuthRuleV2ListResultsResponseActionsCode = "R07"
-	AuthRuleV2ListResultsResponseActionsCodeR08 AuthRuleV2ListResultsResponseActionsCode = "R08"
-	AuthRuleV2ListResultsResponseActionsCodeR09 AuthRuleV2ListResultsResponseActionsCode = "R09"
-	AuthRuleV2ListResultsResponseActionsCodeR10 AuthRuleV2ListResultsResponseActionsCode = "R10"
-	AuthRuleV2ListResultsResponseActionsCodeR11 AuthRuleV2ListResultsResponseActionsCode = "R11"
-	AuthRuleV2ListResultsResponseActionsCodeR12 AuthRuleV2ListResultsResponseActionsCode = "R12"
-	AuthRuleV2ListResultsResponseActionsCodeR13 AuthRuleV2ListResultsResponseActionsCode = "R13"
-	AuthRuleV2ListResultsResponseActionsCodeR14 AuthRuleV2ListResultsResponseActionsCode = "R14"
-	AuthRuleV2ListResultsResponseActionsCodeR15 AuthRuleV2ListResultsResponseActionsCode = "R15"
-	AuthRuleV2ListResultsResponseActionsCodeR16 AuthRuleV2ListResultsResponseActionsCode = "R16"
-	AuthRuleV2ListResultsResponseActionsCodeR17 AuthRuleV2ListResultsResponseActionsCode = "R17"
-	AuthRuleV2ListResultsResponseActionsCodeR18 AuthRuleV2ListResultsResponseActionsCode = "R18"
-	AuthRuleV2ListResultsResponseActionsCodeR19 AuthRuleV2ListResultsResponseActionsCode = "R19"
-	AuthRuleV2ListResultsResponseActionsCodeR20 AuthRuleV2ListResultsResponseActionsCode = "R20"
-	AuthRuleV2ListResultsResponseActionsCodeR21 AuthRuleV2ListResultsResponseActionsCode = "R21"
-	AuthRuleV2ListResultsResponseActionsCodeR22 AuthRuleV2ListResultsResponseActionsCode = "R22"
-	AuthRuleV2ListResultsResponseActionsCodeR23 AuthRuleV2ListResultsResponseActionsCode = "R23"
-	AuthRuleV2ListResultsResponseActionsCodeR24 AuthRuleV2ListResultsResponseActionsCode = "R24"
-	AuthRuleV2ListResultsResponseActionsCodeR25 AuthRuleV2ListResultsResponseActionsCode = "R25"
-	AuthRuleV2ListResultsResponseActionsCodeR26 AuthRuleV2ListResultsResponseActionsCode = "R26"
-	AuthRuleV2ListResultsResponseActionsCodeR27 AuthRuleV2ListResultsResponseActionsCode = "R27"
-	AuthRuleV2ListResultsResponseActionsCodeR28 AuthRuleV2ListResultsResponseActionsCode = "R28"
-	AuthRuleV2ListResultsResponseActionsCodeR29 AuthRuleV2ListResultsResponseActionsCode = "R29"
-	AuthRuleV2ListResultsResponseActionsCodeR30 AuthRuleV2ListResultsResponseActionsCode = "R30"
-	AuthRuleV2ListResultsResponseActionsCodeR31 AuthRuleV2ListResultsResponseActionsCode = "R31"
-	AuthRuleV2ListResultsResponseActionsCodeR32 AuthRuleV2ListResultsResponseActionsCode = "R32"
-	AuthRuleV2ListResultsResponseActionsCodeR33 AuthRuleV2ListResultsResponseActionsCode = "R33"
-	AuthRuleV2ListResultsResponseActionsCodeR34 AuthRuleV2ListResultsResponseActionsCode = "R34"
-	AuthRuleV2ListResultsResponseActionsCodeR35 AuthRuleV2ListResultsResponseActionsCode = "R35"
-	AuthRuleV2ListResultsResponseActionsCodeR36 AuthRuleV2ListResultsResponseActionsCode = "R36"
-	AuthRuleV2ListResultsResponseActionsCodeR37 AuthRuleV2ListResultsResponseActionsCode = "R37"
-	AuthRuleV2ListResultsResponseActionsCodeR38 AuthRuleV2ListResultsResponseActionsCode = "R38"
-	AuthRuleV2ListResultsResponseActionsCodeR39 AuthRuleV2ListResultsResponseActionsCode = "R39"
-	AuthRuleV2ListResultsResponseActionsCodeR40 AuthRuleV2ListResultsResponseActionsCode = "R40"
-	AuthRuleV2ListResultsResponseActionsCodeR41 AuthRuleV2ListResultsResponseActionsCode = "R41"
-	AuthRuleV2ListResultsResponseActionsCodeR42 AuthRuleV2ListResultsResponseActionsCode = "R42"
-	AuthRuleV2ListResultsResponseActionsCodeR43 AuthRuleV2ListResultsResponseActionsCode = "R43"
-	AuthRuleV2ListResultsResponseActionsCodeR44 AuthRuleV2ListResultsResponseActionsCode = "R44"
-	AuthRuleV2ListResultsResponseActionsCodeR45 AuthRuleV2ListResultsResponseActionsCode = "R45"
-	AuthRuleV2ListResultsResponseActionsCodeR46 AuthRuleV2ListResultsResponseActionsCode = "R46"
-	AuthRuleV2ListResultsResponseActionsCodeR47 AuthRuleV2ListResultsResponseActionsCode = "R47"
-	AuthRuleV2ListResultsResponseActionsCodeR50 AuthRuleV2ListResultsResponseActionsCode = "R50"
-	AuthRuleV2ListResultsResponseActionsCodeR51 AuthRuleV2ListResultsResponseActionsCode = "R51"
-	AuthRuleV2ListResultsResponseActionsCodeR52 AuthRuleV2ListResultsResponseActionsCode = "R52"
-	AuthRuleV2ListResultsResponseActionsCodeR53 AuthRuleV2ListResultsResponseActionsCode = "R53"
-	AuthRuleV2ListResultsResponseActionsCodeR61 AuthRuleV2ListResultsResponseActionsCode = "R61"
-	AuthRuleV2ListResultsResponseActionsCodeR62 AuthRuleV2ListResultsResponseActionsCode = "R62"
-	AuthRuleV2ListResultsResponseActionsCodeR67 AuthRuleV2ListResultsResponseActionsCode = "R67"
-	AuthRuleV2ListResultsResponseActionsCodeR68 AuthRuleV2ListResultsResponseActionsCode = "R68"
-	AuthRuleV2ListResultsResponseActionsCodeR69 AuthRuleV2ListResultsResponseActionsCode = "R69"
-	AuthRuleV2ListResultsResponseActionsCodeR70 AuthRuleV2ListResultsResponseActionsCode = "R70"
-	AuthRuleV2ListResultsResponseActionsCodeR71 AuthRuleV2ListResultsResponseActionsCode = "R71"
-	AuthRuleV2ListResultsResponseActionsCodeR72 AuthRuleV2ListResultsResponseActionsCode = "R72"
-	AuthRuleV2ListResultsResponseActionsCodeR73 AuthRuleV2ListResultsResponseActionsCode = "R73"
-	AuthRuleV2ListResultsResponseActionsCodeR74 AuthRuleV2ListResultsResponseActionsCode = "R74"
-	AuthRuleV2ListResultsResponseActionsCodeR75 AuthRuleV2ListResultsResponseActionsCode = "R75"
-	AuthRuleV2ListResultsResponseActionsCodeR76 AuthRuleV2ListResultsResponseActionsCode = "R76"
-	AuthRuleV2ListResultsResponseActionsCodeR77 AuthRuleV2ListResultsResponseActionsCode = "R77"
-	AuthRuleV2ListResultsResponseActionsCodeR80 AuthRuleV2ListResultsResponseActionsCode = "R80"
-	AuthRuleV2ListResultsResponseActionsCodeR81 AuthRuleV2ListResultsResponseActionsCode = "R81"
-	AuthRuleV2ListResultsResponseActionsCodeR82 AuthRuleV2ListResultsResponseActionsCode = "R82"
-	AuthRuleV2ListResultsResponseActionsCodeR83 AuthRuleV2ListResultsResponseActionsCode = "R83"
-	AuthRuleV2ListResultsResponseActionsCodeR84 AuthRuleV2ListResultsResponseActionsCode = "R84"
-	AuthRuleV2ListResultsResponseActionsCodeR85 AuthRuleV2ListResultsResponseActionsCode = "R85"
-)
-
-func (r AuthRuleV2ListResultsResponseActionsCode) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ListResultsResponseActionsCodeR01, AuthRuleV2ListResultsResponseActionsCodeR02, AuthRuleV2ListResultsResponseActionsCodeR03, AuthRuleV2ListResultsResponseActionsCodeR04, AuthRuleV2ListResultsResponseActionsCodeR05, AuthRuleV2ListResultsResponseActionsCodeR06, AuthRuleV2ListResultsResponseActionsCodeR07, AuthRuleV2ListResultsResponseActionsCodeR08, AuthRuleV2ListResultsResponseActionsCodeR09, AuthRuleV2ListResultsResponseActionsCodeR10, AuthRuleV2ListResultsResponseActionsCodeR11, AuthRuleV2ListResultsResponseActionsCodeR12, AuthRuleV2ListResultsResponseActionsCodeR13, AuthRuleV2ListResultsResponseActionsCodeR14, AuthRuleV2ListResultsResponseActionsCodeR15, AuthRuleV2ListResultsResponseActionsCodeR16, AuthRuleV2ListResultsResponseActionsCodeR17, AuthRuleV2ListResultsResponseActionsCodeR18, AuthRuleV2ListResultsResponseActionsCodeR19, AuthRuleV2ListResultsResponseActionsCodeR20, AuthRuleV2ListResultsResponseActionsCodeR21, AuthRuleV2ListResultsResponseActionsCodeR22, AuthRuleV2ListResultsResponseActionsCodeR23, AuthRuleV2ListResultsResponseActionsCodeR24, AuthRuleV2ListResultsResponseActionsCodeR25, AuthRuleV2ListResultsResponseActionsCodeR26, AuthRuleV2ListResultsResponseActionsCodeR27, AuthRuleV2ListResultsResponseActionsCodeR28, AuthRuleV2ListResultsResponseActionsCodeR29, AuthRuleV2ListResultsResponseActionsCodeR30, AuthRuleV2ListResultsResponseActionsCodeR31, AuthRuleV2ListResultsResponseActionsCodeR32, AuthRuleV2ListResultsResponseActionsCodeR33, AuthRuleV2ListResultsResponseActionsCodeR34, AuthRuleV2ListResultsResponseActionsCodeR35, AuthRuleV2ListResultsResponseActionsCodeR36, AuthRuleV2ListResultsResponseActionsCodeR37, AuthRuleV2ListResultsResponseActionsCodeR38, AuthRuleV2ListResultsResponseActionsCodeR39, AuthRuleV2ListResultsResponseActionsCodeR40, AuthRuleV2ListResultsResponseActionsCodeR41, AuthRuleV2ListResultsResponseActionsCodeR42, AuthRuleV2ListResultsResponseActionsCodeR43, AuthRuleV2ListResultsResponseActionsCodeR44, AuthRuleV2ListResultsResponseActionsCodeR45, AuthRuleV2ListResultsResponseActionsCodeR46, AuthRuleV2ListResultsResponseActionsCodeR47, AuthRuleV2ListResultsResponseActionsCodeR50, AuthRuleV2ListResultsResponseActionsCodeR51, AuthRuleV2ListResultsResponseActionsCodeR52, AuthRuleV2ListResultsResponseActionsCodeR53, AuthRuleV2ListResultsResponseActionsCodeR61, AuthRuleV2ListResultsResponseActionsCodeR62, AuthRuleV2ListResultsResponseActionsCodeR67, AuthRuleV2ListResultsResponseActionsCodeR68, AuthRuleV2ListResultsResponseActionsCodeR69, AuthRuleV2ListResultsResponseActionsCodeR70, AuthRuleV2ListResultsResponseActionsCodeR71, AuthRuleV2ListResultsResponseActionsCodeR72, AuthRuleV2ListResultsResponseActionsCodeR73, AuthRuleV2ListResultsResponseActionsCodeR74, AuthRuleV2ListResultsResponseActionsCodeR75, AuthRuleV2ListResultsResponseActionsCodeR76, AuthRuleV2ListResultsResponseActionsCodeR77, AuthRuleV2ListResultsResponseActionsCodeR80, AuthRuleV2ListResultsResponseActionsCodeR81, AuthRuleV2ListResultsResponseActionsCodeR82, AuthRuleV2ListResultsResponseActionsCodeR83, AuthRuleV2ListResultsResponseActionsCodeR84, AuthRuleV2ListResultsResponseActionsCodeR85:
-		return true
-	}
-	return false
-}
-
-// Reason code for declining the tokenization request
-type AuthRuleV2ListResultsResponseActionsReason string
-
-const (
-	AuthRuleV2ListResultsResponseActionsReasonAccountScore1                  AuthRuleV2ListResultsResponseActionsReason = "ACCOUNT_SCORE_1"
-	AuthRuleV2ListResultsResponseActionsReasonDeviceScore1                   AuthRuleV2ListResultsResponseActionsReason = "DEVICE_SCORE_1"
-	AuthRuleV2ListResultsResponseActionsReasonAllWalletDeclineReasonsPresent AuthRuleV2ListResultsResponseActionsReason = "ALL_WALLET_DECLINE_REASONS_PRESENT"
-	AuthRuleV2ListResultsResponseActionsReasonWalletRecommendedDecisionRed   AuthRuleV2ListResultsResponseActionsReason = "WALLET_RECOMMENDED_DECISION_RED"
-	AuthRuleV2ListResultsResponseActionsReasonCvcMismatch                    AuthRuleV2ListResultsResponseActionsReason = "CVC_MISMATCH"
-	AuthRuleV2ListResultsResponseActionsReasonCardExpiryMonthMismatch        AuthRuleV2ListResultsResponseActionsReason = "CARD_EXPIRY_MONTH_MISMATCH"
-	AuthRuleV2ListResultsResponseActionsReasonCardExpiryYearMismatch         AuthRuleV2ListResultsResponseActionsReason = "CARD_EXPIRY_YEAR_MISMATCH"
-	AuthRuleV2ListResultsResponseActionsReasonCardInvalidState               AuthRuleV2ListResultsResponseActionsReason = "CARD_INVALID_STATE"
-	AuthRuleV2ListResultsResponseActionsReasonCustomerRedPath                AuthRuleV2ListResultsResponseActionsReason = "CUSTOMER_RED_PATH"
-	AuthRuleV2ListResultsResponseActionsReasonInvalidCustomerResponse        AuthRuleV2ListResultsResponseActionsReason = "INVALID_CUSTOMER_RESPONSE"
-	AuthRuleV2ListResultsResponseActionsReasonNetworkFailure                 AuthRuleV2ListResultsResponseActionsReason = "NETWORK_FAILURE"
-	AuthRuleV2ListResultsResponseActionsReasonGenericDecline                 AuthRuleV2ListResultsResponseActionsReason = "GENERIC_DECLINE"
-	AuthRuleV2ListResultsResponseActionsReasonDigitalCardArtRequired         AuthRuleV2ListResultsResponseActionsReason = "DIGITAL_CARD_ART_REQUIRED"
-	AuthRuleV2ListResultsResponseActionsReasonWalletRecommendedTfa           AuthRuleV2ListResultsResponseActionsReason = "WALLET_RECOMMENDED_TFA"
-	AuthRuleV2ListResultsResponseActionsReasonSuspiciousActivity             AuthRuleV2ListResultsResponseActionsReason = "SUSPICIOUS_ACTIVITY"
-	AuthRuleV2ListResultsResponseActionsReasonDeviceRecentlyLost             AuthRuleV2ListResultsResponseActionsReason = "DEVICE_RECENTLY_LOST"
-	AuthRuleV2ListResultsResponseActionsReasonTooManyRecentAttempts          AuthRuleV2ListResultsResponseActionsReason = "TOO_MANY_RECENT_ATTEMPTS"
-	AuthRuleV2ListResultsResponseActionsReasonTooManyRecentTokens            AuthRuleV2ListResultsResponseActionsReason = "TOO_MANY_RECENT_TOKENS"
-	AuthRuleV2ListResultsResponseActionsReasonTooManyDifferentCardholders    AuthRuleV2ListResultsResponseActionsReason = "TOO_MANY_DIFFERENT_CARDHOLDERS"
-	AuthRuleV2ListResultsResponseActionsReasonOutsideHomeTerritory           AuthRuleV2ListResultsResponseActionsReason = "OUTSIDE_HOME_TERRITORY"
-	AuthRuleV2ListResultsResponseActionsReasonHasSuspendedTokens             AuthRuleV2ListResultsResponseActionsReason = "HAS_SUSPENDED_TOKENS"
-	AuthRuleV2ListResultsResponseActionsReasonHighRisk                       AuthRuleV2ListResultsResponseActionsReason = "HIGH_RISK"
-	AuthRuleV2ListResultsResponseActionsReasonAccountScoreLow                AuthRuleV2ListResultsResponseActionsReason = "ACCOUNT_SCORE_LOW"
-	AuthRuleV2ListResultsResponseActionsReasonDeviceScoreLow                 AuthRuleV2ListResultsResponseActionsReason = "DEVICE_SCORE_LOW"
-	AuthRuleV2ListResultsResponseActionsReasonCardStateTfa                   AuthRuleV2ListResultsResponseActionsReason = "CARD_STATE_TFA"
-	AuthRuleV2ListResultsResponseActionsReasonHardcodedTfa                   AuthRuleV2ListResultsResponseActionsReason = "HARDCODED_TFA"
-	AuthRuleV2ListResultsResponseActionsReasonCustomerRuleTfa                AuthRuleV2ListResultsResponseActionsReason = "CUSTOMER_RULE_TFA"
-	AuthRuleV2ListResultsResponseActionsReasonDeviceHostCardEmulation        AuthRuleV2ListResultsResponseActionsReason = "DEVICE_HOST_CARD_EMULATION"
-)
-
-func (r AuthRuleV2ListResultsResponseActionsReason) IsKnown() bool {
-	switch r {
-	case AuthRuleV2ListResultsResponseActionsReasonAccountScore1, AuthRuleV2ListResultsResponseActionsReasonDeviceScore1, AuthRuleV2ListResultsResponseActionsReasonAllWalletDeclineReasonsPresent, AuthRuleV2ListResultsResponseActionsReasonWalletRecommendedDecisionRed, AuthRuleV2ListResultsResponseActionsReasonCvcMismatch, AuthRuleV2ListResultsResponseActionsReasonCardExpiryMonthMismatch, AuthRuleV2ListResultsResponseActionsReasonCardExpiryYearMismatch, AuthRuleV2ListResultsResponseActionsReasonCardInvalidState, AuthRuleV2ListResultsResponseActionsReasonCustomerRedPath, AuthRuleV2ListResultsResponseActionsReasonInvalidCustomerResponse, AuthRuleV2ListResultsResponseActionsReasonNetworkFailure, AuthRuleV2ListResultsResponseActionsReasonGenericDecline, AuthRuleV2ListResultsResponseActionsReasonDigitalCardArtRequired, AuthRuleV2ListResultsResponseActionsReasonWalletRecommendedTfa, AuthRuleV2ListResultsResponseActionsReasonSuspiciousActivity, AuthRuleV2ListResultsResponseActionsReasonDeviceRecentlyLost, AuthRuleV2ListResultsResponseActionsReasonTooManyRecentAttempts, AuthRuleV2ListResultsResponseActionsReasonTooManyRecentTokens, AuthRuleV2ListResultsResponseActionsReasonTooManyDifferentCardholders, AuthRuleV2ListResultsResponseActionsReasonOutsideHomeTerritory, AuthRuleV2ListResultsResponseActionsReasonHasSuspendedTokens, AuthRuleV2ListResultsResponseActionsReasonHighRisk, AuthRuleV2ListResultsResponseActionsReasonAccountScoreLow, AuthRuleV2ListResultsResponseActionsReasonDeviceScoreLow, AuthRuleV2ListResultsResponseActionsReasonCardStateTfa, AuthRuleV2ListResultsResponseActionsReasonHardcodedTfa, AuthRuleV2ListResultsResponseActionsReasonCustomerRuleTfa, AuthRuleV2ListResultsResponseActionsReasonDeviceHostCardEmulation:
+	case AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonWalletRecommendedTfa, AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonSuspiciousActivity, AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonDeviceRecentlyLost, AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonTooManyRecentAttempts, AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonTooManyRecentTokens, AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonTooManyDifferentCardholders, AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonOutsideHomeTerritory, AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonHasSuspendedTokens, AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonHighRisk, AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonAccountScoreLow, AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonDeviceScoreLow, AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonCardStateTfa, AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonHardcodedTfa, AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonCustomerRuleTfa, AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionReasonDeviceHostCardEmulation:
 		return true
 	}
 	return false
 }
 
 // Decline the tokenization request
-type AuthRuleV2ListResultsResponseActionsType string
+type AuthRuleV2ListResultsResponseTokenizationResultActionsType string
 
 const (
-	AuthRuleV2ListResultsResponseActionsTypeDecline    AuthRuleV2ListResultsResponseActionsType = "DECLINE"
-	AuthRuleV2ListResultsResponseActionsTypeRequireTfa AuthRuleV2ListResultsResponseActionsType = "REQUIRE_TFA"
-	AuthRuleV2ListResultsResponseActionsTypeApprove    AuthRuleV2ListResultsResponseActionsType = "APPROVE"
-	AuthRuleV2ListResultsResponseActionsTypeReturn     AuthRuleV2ListResultsResponseActionsType = "RETURN"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsTypeDecline    AuthRuleV2ListResultsResponseTokenizationResultActionsType = "DECLINE"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsTypeRequireTfa AuthRuleV2ListResultsResponseTokenizationResultActionsType = "REQUIRE_TFA"
 )
 
-func (r AuthRuleV2ListResultsResponseActionsType) IsKnown() bool {
+func (r AuthRuleV2ListResultsResponseTokenizationResultActionsType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResultsResponseActionsTypeDecline, AuthRuleV2ListResultsResponseActionsTypeRequireTfa, AuthRuleV2ListResultsResponseActionsTypeApprove, AuthRuleV2ListResultsResponseActionsTypeReturn:
+	case AuthRuleV2ListResultsResponseTokenizationResultActionsTypeDecline, AuthRuleV2ListResultsResponseTokenizationResultActionsTypeRequireTfa:
+		return true
+	}
+	return false
+}
+
+// Reason code for declining the tokenization request
+type AuthRuleV2ListResultsResponseTokenizationResultActionsReason string
+
+const (
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonAccountScore1                  AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "ACCOUNT_SCORE_1"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonDeviceScore1                   AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "DEVICE_SCORE_1"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonAllWalletDeclineReasonsPresent AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "ALL_WALLET_DECLINE_REASONS_PRESENT"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonWalletRecommendedDecisionRed   AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "WALLET_RECOMMENDED_DECISION_RED"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonCvcMismatch                    AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "CVC_MISMATCH"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonCardExpiryMonthMismatch        AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "CARD_EXPIRY_MONTH_MISMATCH"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonCardExpiryYearMismatch         AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "CARD_EXPIRY_YEAR_MISMATCH"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonCardInvalidState               AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "CARD_INVALID_STATE"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonCustomerRedPath                AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "CUSTOMER_RED_PATH"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonInvalidCustomerResponse        AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "INVALID_CUSTOMER_RESPONSE"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonNetworkFailure                 AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "NETWORK_FAILURE"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonGenericDecline                 AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "GENERIC_DECLINE"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonDigitalCardArtRequired         AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "DIGITAL_CARD_ART_REQUIRED"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonWalletRecommendedTfa           AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "WALLET_RECOMMENDED_TFA"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonSuspiciousActivity             AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "SUSPICIOUS_ACTIVITY"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonDeviceRecentlyLost             AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "DEVICE_RECENTLY_LOST"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonTooManyRecentAttempts          AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "TOO_MANY_RECENT_ATTEMPTS"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonTooManyRecentTokens            AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "TOO_MANY_RECENT_TOKENS"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonTooManyDifferentCardholders    AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "TOO_MANY_DIFFERENT_CARDHOLDERS"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonOutsideHomeTerritory           AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "OUTSIDE_HOME_TERRITORY"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonHasSuspendedTokens             AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "HAS_SUSPENDED_TOKENS"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonHighRisk                       AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "HIGH_RISK"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonAccountScoreLow                AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "ACCOUNT_SCORE_LOW"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonDeviceScoreLow                 AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "DEVICE_SCORE_LOW"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonCardStateTfa                   AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "CARD_STATE_TFA"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonHardcodedTfa                   AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "HARDCODED_TFA"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonCustomerRuleTfa                AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "CUSTOMER_RULE_TFA"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsReasonDeviceHostCardEmulation        AuthRuleV2ListResultsResponseTokenizationResultActionsReason = "DEVICE_HOST_CARD_EMULATION"
+)
+
+func (r AuthRuleV2ListResultsResponseTokenizationResultActionsReason) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseTokenizationResultActionsReasonAccountScore1, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonDeviceScore1, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonAllWalletDeclineReasonsPresent, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonWalletRecommendedDecisionRed, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonCvcMismatch, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonCardExpiryMonthMismatch, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonCardExpiryYearMismatch, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonCardInvalidState, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonCustomerRedPath, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonInvalidCustomerResponse, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonNetworkFailure, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonGenericDecline, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonDigitalCardArtRequired, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonWalletRecommendedTfa, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonSuspiciousActivity, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonDeviceRecentlyLost, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonTooManyRecentAttempts, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonTooManyRecentTokens, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonTooManyDifferentCardholders, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonOutsideHomeTerritory, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonHasSuspendedTokens, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonHighRisk, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonAccountScoreLow, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonDeviceScoreLow, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonCardStateTfa, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonHardcodedTfa, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonCustomerRuleTfa, AuthRuleV2ListResultsResponseTokenizationResultActionsReasonDeviceHostCardEmulation:
+		return true
+	}
+	return false
+}
+
+// The event stream during which the rule was evaluated
+type AuthRuleV2ListResultsResponseTokenizationResultEventStream string
+
+const (
+	AuthRuleV2ListResultsResponseTokenizationResultEventStreamTokenization AuthRuleV2ListResultsResponseTokenizationResultEventStream = "TOKENIZATION"
+)
+
+func (r AuthRuleV2ListResultsResponseTokenizationResultEventStream) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseTokenizationResultEventStreamTokenization:
+		return true
+	}
+	return false
+}
+
+// The state of the Auth Rule
+type AuthRuleV2ListResultsResponseTokenizationResultMode string
+
+const (
+	AuthRuleV2ListResultsResponseTokenizationResultModeActive   AuthRuleV2ListResultsResponseTokenizationResultMode = "ACTIVE"
+	AuthRuleV2ListResultsResponseTokenizationResultModeInactive AuthRuleV2ListResultsResponseTokenizationResultMode = "INACTIVE"
+)
+
+func (r AuthRuleV2ListResultsResponseTokenizationResultMode) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseTokenizationResultModeActive, AuthRuleV2ListResultsResponseTokenizationResultModeInactive:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2ListResultsResponseACHResult struct {
+	// Globally unique identifier for the evaluation
+	Token string `json:"token,required" format:"uuid"`
+	// Actions returned by the rule evaluation
+	Actions []AuthRuleV2ListResultsResponseACHResultAction `json:"actions,required"`
+	// The Auth Rule token
+	AuthRuleToken string `json:"auth_rule_token,required" format:"uuid"`
+	// Timestamp of the rule evaluation
+	EvaluationTime time.Time `json:"evaluation_time,required" format:"date-time"`
+	// The event stream during which the rule was evaluated
+	EventStream AuthRuleV2ListResultsResponseACHResultEventStream `json:"event_stream,required"`
+	// Token of the event that triggered the evaluation
+	EventToken string `json:"event_token,required" format:"uuid"`
+	// The state of the Auth Rule
+	Mode AuthRuleV2ListResultsResponseACHResultMode `json:"mode,required"`
+	// Version of the rule that was evaluated
+	RuleVersion int64                                      `json:"rule_version,required"`
+	JSON        authRuleV2ListResultsResponseACHResultJSON `json:"-"`
+}
+
+// authRuleV2ListResultsResponseACHResultJSON contains the JSON metadata for the
+// struct [AuthRuleV2ListResultsResponseACHResult]
+type authRuleV2ListResultsResponseACHResultJSON struct {
+	Token          apijson.Field
+	Actions        apijson.Field
+	AuthRuleToken  apijson.Field
+	EvaluationTime apijson.Field
+	EventStream    apijson.Field
+	EventToken     apijson.Field
+	Mode           apijson.Field
+	RuleVersion    apijson.Field
+	raw            string
+	ExtraFields    map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResultsResponseACHResult) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResultsResponseACHResultJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ListResultsResponseACHResult) implementsAuthRuleV2ListResultsResponse() {}
+
+type AuthRuleV2ListResultsResponseACHResultAction struct {
+	// Approve the ACH transaction
+	Type AuthRuleV2ListResultsResponseACHResultActionsType `json:"type,required"`
+	// NACHA return code to use when returning the transaction. Note that the list of
+	// available return codes is subject to an allowlist configured at the program
+	// level
+	Code AuthRuleV2ListResultsResponseACHResultActionsCode `json:"code"`
+	// Optional explanation for why this action was taken
+	Explanation string                                           `json:"explanation"`
+	JSON        authRuleV2ListResultsResponseACHResultActionJSON `json:"-"`
+	union       AuthRuleV2ListResultsResponseACHResultActionsUnion
+}
+
+// authRuleV2ListResultsResponseACHResultActionJSON contains the JSON metadata for
+// the struct [AuthRuleV2ListResultsResponseACHResultAction]
+type authRuleV2ListResultsResponseACHResultActionJSON struct {
+	Type        apijson.Field
+	Code        apijson.Field
+	Explanation apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r authRuleV2ListResultsResponseACHResultActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r *AuthRuleV2ListResultsResponseACHResultAction) UnmarshalJSON(data []byte) (err error) {
+	*r = AuthRuleV2ListResultsResponseACHResultAction{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a [AuthRuleV2ListResultsResponseACHResultActionsUnion] interface
+// which you can cast to the specific types for more type safety.
+//
+// Possible runtime types of the union are
+// [AuthRuleV2ListResultsResponseACHResultActionsApproveAction],
+// [AuthRuleV2ListResultsResponseACHResultActionsReturnAction].
+func (r AuthRuleV2ListResultsResponseACHResultAction) AsUnion() AuthRuleV2ListResultsResponseACHResultActionsUnion {
+	return r.union
+}
+
+// Union satisfied by [AuthRuleV2ListResultsResponseACHResultActionsApproveAction]
+// or [AuthRuleV2ListResultsResponseACHResultActionsReturnAction].
+type AuthRuleV2ListResultsResponseACHResultActionsUnion interface {
+	implementsAuthRuleV2ListResultsResponseACHResultAction()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2ListResultsResponseACHResultActionsUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseACHResultActionsApproveAction{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseACHResultActionsReturnAction{}),
+		},
+	)
+}
+
+type AuthRuleV2ListResultsResponseACHResultActionsApproveAction struct {
+	// Approve the ACH transaction
+	Type AuthRuleV2ListResultsResponseACHResultActionsApproveActionType `json:"type,required"`
+	// Optional explanation for why this action was taken
+	Explanation string                                                         `json:"explanation"`
+	JSON        authRuleV2ListResultsResponseACHResultActionsApproveActionJSON `json:"-"`
+}
+
+// authRuleV2ListResultsResponseACHResultActionsApproveActionJSON contains the JSON
+// metadata for the struct
+// [AuthRuleV2ListResultsResponseACHResultActionsApproveAction]
+type authRuleV2ListResultsResponseACHResultActionsApproveActionJSON struct {
+	Type        apijson.Field
+	Explanation apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResultsResponseACHResultActionsApproveAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResultsResponseACHResultActionsApproveActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ListResultsResponseACHResultActionsApproveAction) implementsAuthRuleV2ListResultsResponseACHResultAction() {
+}
+
+// Approve the ACH transaction
+type AuthRuleV2ListResultsResponseACHResultActionsApproveActionType string
+
+const (
+	AuthRuleV2ListResultsResponseACHResultActionsApproveActionTypeApprove AuthRuleV2ListResultsResponseACHResultActionsApproveActionType = "APPROVE"
+)
+
+func (r AuthRuleV2ListResultsResponseACHResultActionsApproveActionType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseACHResultActionsApproveActionTypeApprove:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2ListResultsResponseACHResultActionsReturnAction struct {
+	// NACHA return code to use when returning the transaction. Note that the list of
+	// available return codes is subject to an allowlist configured at the program
+	// level
+	Code AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode `json:"code,required"`
+	// Return the ACH transaction
+	Type AuthRuleV2ListResultsResponseACHResultActionsReturnActionType `json:"type,required"`
+	// Optional explanation for why this action was taken
+	Explanation string                                                        `json:"explanation"`
+	JSON        authRuleV2ListResultsResponseACHResultActionsReturnActionJSON `json:"-"`
+}
+
+// authRuleV2ListResultsResponseACHResultActionsReturnActionJSON contains the JSON
+// metadata for the struct
+// [AuthRuleV2ListResultsResponseACHResultActionsReturnAction]
+type authRuleV2ListResultsResponseACHResultActionsReturnActionJSON struct {
+	Code        apijson.Field
+	Type        apijson.Field
+	Explanation apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResultsResponseACHResultActionsReturnAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResultsResponseACHResultActionsReturnActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ListResultsResponseACHResultActionsReturnAction) implementsAuthRuleV2ListResultsResponseACHResultAction() {
+}
+
+// NACHA return code to use when returning the transaction. Note that the list of
+// available return codes is subject to an allowlist configured at the program
+// level
+type AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode string
+
+const (
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR01 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R01"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR02 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R02"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR03 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R03"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR04 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R04"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR05 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R05"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR06 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R06"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR07 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R07"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR08 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R08"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR09 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R09"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR10 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R10"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR11 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R11"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR12 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R12"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR13 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R13"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR14 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R14"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR15 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R15"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR16 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R16"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR17 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R17"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR18 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R18"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR19 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R19"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR20 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R20"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR21 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R21"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR22 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R22"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR23 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R23"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR24 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R24"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR25 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R25"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR26 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R26"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR27 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R27"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR28 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R28"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR29 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R29"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR30 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R30"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR31 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R31"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR32 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R32"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR33 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R33"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR34 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R34"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR35 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R35"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR36 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R36"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR37 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R37"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR38 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R38"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR39 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R39"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR40 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R40"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR41 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R41"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR42 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R42"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR43 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R43"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR44 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R44"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR45 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R45"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR46 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R46"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR47 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R47"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR50 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R50"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR51 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R51"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR52 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R52"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR53 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R53"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR61 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R61"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR62 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R62"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR67 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R67"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR68 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R68"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR69 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R69"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR70 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R70"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR71 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R71"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR72 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R72"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR73 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R73"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR74 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R74"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR75 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R75"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR76 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R76"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR77 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R77"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR80 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R80"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR81 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R81"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR82 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R82"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR83 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R83"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR84 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R84"
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR85 AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode = "R85"
+)
+
+func (r AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR01, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR02, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR03, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR04, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR05, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR06, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR07, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR08, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR09, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR10, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR11, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR12, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR13, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR14, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR15, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR16, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR17, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR18, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR19, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR20, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR21, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR22, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR23, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR24, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR25, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR26, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR27, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR28, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR29, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR30, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR31, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR32, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR33, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR34, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR35, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR36, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR37, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR38, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR39, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR40, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR41, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR42, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR43, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR44, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR45, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR46, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR47, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR50, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR51, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR52, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR53, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR61, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR62, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR67, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR68, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR69, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR70, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR71, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR72, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR73, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR74, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR75, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR76, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR77, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR80, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR81, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR82, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR83, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR84, AuthRuleV2ListResultsResponseACHResultActionsReturnActionCodeR85:
+		return true
+	}
+	return false
+}
+
+// Return the ACH transaction
+type AuthRuleV2ListResultsResponseACHResultActionsReturnActionType string
+
+const (
+	AuthRuleV2ListResultsResponseACHResultActionsReturnActionTypeReturn AuthRuleV2ListResultsResponseACHResultActionsReturnActionType = "RETURN"
+)
+
+func (r AuthRuleV2ListResultsResponseACHResultActionsReturnActionType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseACHResultActionsReturnActionTypeReturn:
+		return true
+	}
+	return false
+}
+
+// Approve the ACH transaction
+type AuthRuleV2ListResultsResponseACHResultActionsType string
+
+const (
+	AuthRuleV2ListResultsResponseACHResultActionsTypeApprove AuthRuleV2ListResultsResponseACHResultActionsType = "APPROVE"
+	AuthRuleV2ListResultsResponseACHResultActionsTypeReturn  AuthRuleV2ListResultsResponseACHResultActionsType = "RETURN"
+)
+
+func (r AuthRuleV2ListResultsResponseACHResultActionsType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseACHResultActionsTypeApprove, AuthRuleV2ListResultsResponseACHResultActionsTypeReturn:
+		return true
+	}
+	return false
+}
+
+// NACHA return code to use when returning the transaction. Note that the list of
+// available return codes is subject to an allowlist configured at the program
+// level
+type AuthRuleV2ListResultsResponseACHResultActionsCode string
+
+const (
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR01 AuthRuleV2ListResultsResponseACHResultActionsCode = "R01"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR02 AuthRuleV2ListResultsResponseACHResultActionsCode = "R02"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR03 AuthRuleV2ListResultsResponseACHResultActionsCode = "R03"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR04 AuthRuleV2ListResultsResponseACHResultActionsCode = "R04"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR05 AuthRuleV2ListResultsResponseACHResultActionsCode = "R05"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR06 AuthRuleV2ListResultsResponseACHResultActionsCode = "R06"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR07 AuthRuleV2ListResultsResponseACHResultActionsCode = "R07"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR08 AuthRuleV2ListResultsResponseACHResultActionsCode = "R08"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR09 AuthRuleV2ListResultsResponseACHResultActionsCode = "R09"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR10 AuthRuleV2ListResultsResponseACHResultActionsCode = "R10"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR11 AuthRuleV2ListResultsResponseACHResultActionsCode = "R11"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR12 AuthRuleV2ListResultsResponseACHResultActionsCode = "R12"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR13 AuthRuleV2ListResultsResponseACHResultActionsCode = "R13"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR14 AuthRuleV2ListResultsResponseACHResultActionsCode = "R14"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR15 AuthRuleV2ListResultsResponseACHResultActionsCode = "R15"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR16 AuthRuleV2ListResultsResponseACHResultActionsCode = "R16"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR17 AuthRuleV2ListResultsResponseACHResultActionsCode = "R17"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR18 AuthRuleV2ListResultsResponseACHResultActionsCode = "R18"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR19 AuthRuleV2ListResultsResponseACHResultActionsCode = "R19"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR20 AuthRuleV2ListResultsResponseACHResultActionsCode = "R20"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR21 AuthRuleV2ListResultsResponseACHResultActionsCode = "R21"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR22 AuthRuleV2ListResultsResponseACHResultActionsCode = "R22"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR23 AuthRuleV2ListResultsResponseACHResultActionsCode = "R23"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR24 AuthRuleV2ListResultsResponseACHResultActionsCode = "R24"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR25 AuthRuleV2ListResultsResponseACHResultActionsCode = "R25"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR26 AuthRuleV2ListResultsResponseACHResultActionsCode = "R26"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR27 AuthRuleV2ListResultsResponseACHResultActionsCode = "R27"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR28 AuthRuleV2ListResultsResponseACHResultActionsCode = "R28"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR29 AuthRuleV2ListResultsResponseACHResultActionsCode = "R29"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR30 AuthRuleV2ListResultsResponseACHResultActionsCode = "R30"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR31 AuthRuleV2ListResultsResponseACHResultActionsCode = "R31"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR32 AuthRuleV2ListResultsResponseACHResultActionsCode = "R32"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR33 AuthRuleV2ListResultsResponseACHResultActionsCode = "R33"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR34 AuthRuleV2ListResultsResponseACHResultActionsCode = "R34"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR35 AuthRuleV2ListResultsResponseACHResultActionsCode = "R35"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR36 AuthRuleV2ListResultsResponseACHResultActionsCode = "R36"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR37 AuthRuleV2ListResultsResponseACHResultActionsCode = "R37"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR38 AuthRuleV2ListResultsResponseACHResultActionsCode = "R38"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR39 AuthRuleV2ListResultsResponseACHResultActionsCode = "R39"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR40 AuthRuleV2ListResultsResponseACHResultActionsCode = "R40"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR41 AuthRuleV2ListResultsResponseACHResultActionsCode = "R41"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR42 AuthRuleV2ListResultsResponseACHResultActionsCode = "R42"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR43 AuthRuleV2ListResultsResponseACHResultActionsCode = "R43"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR44 AuthRuleV2ListResultsResponseACHResultActionsCode = "R44"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR45 AuthRuleV2ListResultsResponseACHResultActionsCode = "R45"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR46 AuthRuleV2ListResultsResponseACHResultActionsCode = "R46"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR47 AuthRuleV2ListResultsResponseACHResultActionsCode = "R47"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR50 AuthRuleV2ListResultsResponseACHResultActionsCode = "R50"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR51 AuthRuleV2ListResultsResponseACHResultActionsCode = "R51"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR52 AuthRuleV2ListResultsResponseACHResultActionsCode = "R52"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR53 AuthRuleV2ListResultsResponseACHResultActionsCode = "R53"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR61 AuthRuleV2ListResultsResponseACHResultActionsCode = "R61"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR62 AuthRuleV2ListResultsResponseACHResultActionsCode = "R62"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR67 AuthRuleV2ListResultsResponseACHResultActionsCode = "R67"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR68 AuthRuleV2ListResultsResponseACHResultActionsCode = "R68"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR69 AuthRuleV2ListResultsResponseACHResultActionsCode = "R69"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR70 AuthRuleV2ListResultsResponseACHResultActionsCode = "R70"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR71 AuthRuleV2ListResultsResponseACHResultActionsCode = "R71"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR72 AuthRuleV2ListResultsResponseACHResultActionsCode = "R72"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR73 AuthRuleV2ListResultsResponseACHResultActionsCode = "R73"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR74 AuthRuleV2ListResultsResponseACHResultActionsCode = "R74"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR75 AuthRuleV2ListResultsResponseACHResultActionsCode = "R75"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR76 AuthRuleV2ListResultsResponseACHResultActionsCode = "R76"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR77 AuthRuleV2ListResultsResponseACHResultActionsCode = "R77"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR80 AuthRuleV2ListResultsResponseACHResultActionsCode = "R80"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR81 AuthRuleV2ListResultsResponseACHResultActionsCode = "R81"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR82 AuthRuleV2ListResultsResponseACHResultActionsCode = "R82"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR83 AuthRuleV2ListResultsResponseACHResultActionsCode = "R83"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR84 AuthRuleV2ListResultsResponseACHResultActionsCode = "R84"
+	AuthRuleV2ListResultsResponseACHResultActionsCodeR85 AuthRuleV2ListResultsResponseACHResultActionsCode = "R85"
+)
+
+func (r AuthRuleV2ListResultsResponseACHResultActionsCode) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseACHResultActionsCodeR01, AuthRuleV2ListResultsResponseACHResultActionsCodeR02, AuthRuleV2ListResultsResponseACHResultActionsCodeR03, AuthRuleV2ListResultsResponseACHResultActionsCodeR04, AuthRuleV2ListResultsResponseACHResultActionsCodeR05, AuthRuleV2ListResultsResponseACHResultActionsCodeR06, AuthRuleV2ListResultsResponseACHResultActionsCodeR07, AuthRuleV2ListResultsResponseACHResultActionsCodeR08, AuthRuleV2ListResultsResponseACHResultActionsCodeR09, AuthRuleV2ListResultsResponseACHResultActionsCodeR10, AuthRuleV2ListResultsResponseACHResultActionsCodeR11, AuthRuleV2ListResultsResponseACHResultActionsCodeR12, AuthRuleV2ListResultsResponseACHResultActionsCodeR13, AuthRuleV2ListResultsResponseACHResultActionsCodeR14, AuthRuleV2ListResultsResponseACHResultActionsCodeR15, AuthRuleV2ListResultsResponseACHResultActionsCodeR16, AuthRuleV2ListResultsResponseACHResultActionsCodeR17, AuthRuleV2ListResultsResponseACHResultActionsCodeR18, AuthRuleV2ListResultsResponseACHResultActionsCodeR19, AuthRuleV2ListResultsResponseACHResultActionsCodeR20, AuthRuleV2ListResultsResponseACHResultActionsCodeR21, AuthRuleV2ListResultsResponseACHResultActionsCodeR22, AuthRuleV2ListResultsResponseACHResultActionsCodeR23, AuthRuleV2ListResultsResponseACHResultActionsCodeR24, AuthRuleV2ListResultsResponseACHResultActionsCodeR25, AuthRuleV2ListResultsResponseACHResultActionsCodeR26, AuthRuleV2ListResultsResponseACHResultActionsCodeR27, AuthRuleV2ListResultsResponseACHResultActionsCodeR28, AuthRuleV2ListResultsResponseACHResultActionsCodeR29, AuthRuleV2ListResultsResponseACHResultActionsCodeR30, AuthRuleV2ListResultsResponseACHResultActionsCodeR31, AuthRuleV2ListResultsResponseACHResultActionsCodeR32, AuthRuleV2ListResultsResponseACHResultActionsCodeR33, AuthRuleV2ListResultsResponseACHResultActionsCodeR34, AuthRuleV2ListResultsResponseACHResultActionsCodeR35, AuthRuleV2ListResultsResponseACHResultActionsCodeR36, AuthRuleV2ListResultsResponseACHResultActionsCodeR37, AuthRuleV2ListResultsResponseACHResultActionsCodeR38, AuthRuleV2ListResultsResponseACHResultActionsCodeR39, AuthRuleV2ListResultsResponseACHResultActionsCodeR40, AuthRuleV2ListResultsResponseACHResultActionsCodeR41, AuthRuleV2ListResultsResponseACHResultActionsCodeR42, AuthRuleV2ListResultsResponseACHResultActionsCodeR43, AuthRuleV2ListResultsResponseACHResultActionsCodeR44, AuthRuleV2ListResultsResponseACHResultActionsCodeR45, AuthRuleV2ListResultsResponseACHResultActionsCodeR46, AuthRuleV2ListResultsResponseACHResultActionsCodeR47, AuthRuleV2ListResultsResponseACHResultActionsCodeR50, AuthRuleV2ListResultsResponseACHResultActionsCodeR51, AuthRuleV2ListResultsResponseACHResultActionsCodeR52, AuthRuleV2ListResultsResponseACHResultActionsCodeR53, AuthRuleV2ListResultsResponseACHResultActionsCodeR61, AuthRuleV2ListResultsResponseACHResultActionsCodeR62, AuthRuleV2ListResultsResponseACHResultActionsCodeR67, AuthRuleV2ListResultsResponseACHResultActionsCodeR68, AuthRuleV2ListResultsResponseACHResultActionsCodeR69, AuthRuleV2ListResultsResponseACHResultActionsCodeR70, AuthRuleV2ListResultsResponseACHResultActionsCodeR71, AuthRuleV2ListResultsResponseACHResultActionsCodeR72, AuthRuleV2ListResultsResponseACHResultActionsCodeR73, AuthRuleV2ListResultsResponseACHResultActionsCodeR74, AuthRuleV2ListResultsResponseACHResultActionsCodeR75, AuthRuleV2ListResultsResponseACHResultActionsCodeR76, AuthRuleV2ListResultsResponseACHResultActionsCodeR77, AuthRuleV2ListResultsResponseACHResultActionsCodeR80, AuthRuleV2ListResultsResponseACHResultActionsCodeR81, AuthRuleV2ListResultsResponseACHResultActionsCodeR82, AuthRuleV2ListResultsResponseACHResultActionsCodeR83, AuthRuleV2ListResultsResponseACHResultActionsCodeR84, AuthRuleV2ListResultsResponseACHResultActionsCodeR85:
+		return true
+	}
+	return false
+}
+
+// The event stream during which the rule was evaluated
+type AuthRuleV2ListResultsResponseACHResultEventStream string
+
+const (
+	AuthRuleV2ListResultsResponseACHResultEventStreamACHCreditReceipt AuthRuleV2ListResultsResponseACHResultEventStream = "ACH_CREDIT_RECEIPT"
+	AuthRuleV2ListResultsResponseACHResultEventStreamACHDebitReceipt  AuthRuleV2ListResultsResponseACHResultEventStream = "ACH_DEBIT_RECEIPT"
+)
+
+func (r AuthRuleV2ListResultsResponseACHResultEventStream) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseACHResultEventStreamACHCreditReceipt, AuthRuleV2ListResultsResponseACHResultEventStreamACHDebitReceipt:
+		return true
+	}
+	return false
+}
+
+// The state of the Auth Rule
+type AuthRuleV2ListResultsResponseACHResultMode string
+
+const (
+	AuthRuleV2ListResultsResponseACHResultModeActive   AuthRuleV2ListResultsResponseACHResultMode = "ACTIVE"
+	AuthRuleV2ListResultsResponseACHResultModeInactive AuthRuleV2ListResultsResponseACHResultMode = "INACTIVE"
+)
+
+func (r AuthRuleV2ListResultsResponseACHResultMode) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseACHResultModeActive, AuthRuleV2ListResultsResponseACHResultModeInactive:
+		return true
+	}
+	return false
+}
+
+// The event stream during which the rule was evaluated
+type AuthRuleV2ListResultsResponseEventStream string
+
+const (
+	AuthRuleV2ListResultsResponseEventStreamAuthorization         AuthRuleV2ListResultsResponseEventStream = "AUTHORIZATION"
+	AuthRuleV2ListResultsResponseEventStreamThreeDSAuthentication AuthRuleV2ListResultsResponseEventStream = "THREE_DS_AUTHENTICATION"
+	AuthRuleV2ListResultsResponseEventStreamTokenization          AuthRuleV2ListResultsResponseEventStream = "TOKENIZATION"
+	AuthRuleV2ListResultsResponseEventStreamACHCreditReceipt      AuthRuleV2ListResultsResponseEventStream = "ACH_CREDIT_RECEIPT"
+	AuthRuleV2ListResultsResponseEventStreamACHDebitReceipt       AuthRuleV2ListResultsResponseEventStream = "ACH_DEBIT_RECEIPT"
+)
+
+func (r AuthRuleV2ListResultsResponseEventStream) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseEventStreamAuthorization, AuthRuleV2ListResultsResponseEventStreamThreeDSAuthentication, AuthRuleV2ListResultsResponseEventStreamTokenization, AuthRuleV2ListResultsResponseEventStreamACHCreditReceipt, AuthRuleV2ListResultsResponseEventStreamACHDebitReceipt:
 		return true
 	}
 	return false
