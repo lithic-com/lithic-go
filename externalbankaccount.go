@@ -1261,7 +1261,7 @@ func (r ExternalBankAccountRetryMicroDepositsResponseVerificationState) IsKnown(
 }
 
 type ExternalBankAccountNewParams struct {
-	Body ExternalBankAccountNewParamsBodyUnion `json:"body"`
+	Body ExternalBankAccountNewParamsBodyUnion `json:"body,required"`
 }
 
 func (r ExternalBankAccountNewParams) MarshalJSON() (data []byte, err error) {
