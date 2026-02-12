@@ -3440,13 +3440,14 @@ func (r AccountHolderSimulateEnrollmentReviewParams) MarshalJSON() (data []byte,
 type AccountHolderSimulateEnrollmentReviewParamsStatus string
 
 const (
-	AccountHolderSimulateEnrollmentReviewParamsStatusAccepted AccountHolderSimulateEnrollmentReviewParamsStatus = "ACCEPTED"
-	AccountHolderSimulateEnrollmentReviewParamsStatusRejected AccountHolderSimulateEnrollmentReviewParamsStatus = "REJECTED"
+	AccountHolderSimulateEnrollmentReviewParamsStatusAccepted      AccountHolderSimulateEnrollmentReviewParamsStatus = "ACCEPTED"
+	AccountHolderSimulateEnrollmentReviewParamsStatusRejected      AccountHolderSimulateEnrollmentReviewParamsStatus = "REJECTED"
+	AccountHolderSimulateEnrollmentReviewParamsStatusPendingReview AccountHolderSimulateEnrollmentReviewParamsStatus = "PENDING_REVIEW"
 )
 
 func (r AccountHolderSimulateEnrollmentReviewParamsStatus) IsKnown() bool {
 	switch r {
-	case AccountHolderSimulateEnrollmentReviewParamsStatusAccepted, AccountHolderSimulateEnrollmentReviewParamsStatusRejected:
+	case AccountHolderSimulateEnrollmentReviewParamsStatusAccepted, AccountHolderSimulateEnrollmentReviewParamsStatusRejected, AccountHolderSimulateEnrollmentReviewParamsStatusPendingReview:
 		return true
 	}
 	return false
