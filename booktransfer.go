@@ -428,6 +428,8 @@ type BookTransferNewParams struct {
 	Token param.Field[string] `json:"token" format:"uuid"`
 	// External ID defined by the customer
 	ExternalID param.Field[string] `json:"external_id"`
+	// Token of an existing hold to settle when this transfer is initiated
+	HoldToken param.Field[string] `json:"hold_token" format:"uuid"`
 	// Optional descriptor for the transfer.
 	Memo param.Field[string] `json:"memo"`
 	// What to do if the financial account is closed when posting an operation
