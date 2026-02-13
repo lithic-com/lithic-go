@@ -1,5 +1,38 @@
 # Changelog
 
+## 0.101.0 (2026-02-13)
+
+Full Changelog: [v0.100.0...v0.101.0](https://github.com/lithic-com/lithic-go/compare/v0.100.0...v0.101.0)
+
+### Features
+
+* **api:** Add /v2/auth_rules/results endpoint for listing rule evaluation data ([8514a07](https://github.com/lithic-com/lithic-go/commit/8514a07f988e85e4ab815e3d5545b7be71da4890))
+* **api:** Add amounts object to ASA request ([66f4fe0](https://github.com/lithic-com/lithic-go/commit/66f4fe022bb16dc4f3343663bed94a827de6490b))
+* **api:** Add hold token field to book transfers ([e42a159](https://github.com/lithic-com/lithic-go/commit/e42a159a2e1e164c9f590000e0a9664af34c713e))
+* **api:** Add naics_code to account holder requests/responses ([2a4cbcc](https://github.com/lithic-com/lithic-go/commit/2a4cbccecab734c25ab1714bf65bfd598614540f))
+* **api:** Add network specific wallet recommendation reasons ([53243ce](https://github.com/lithic-com/lithic-go/commit/53243ce1e73fcf4d8dd9c5ad4286584bc439ab2c))
+* **api:** Add PENDING_REVIEW status to KYB enrollment simulation ([40cddec](https://github.com/lithic-com/lithic-go/commit/40cddecf1b08ceef8ce3a762d201a3f0f272fa3e))
+* **api:** Add result schemas for Authorization and Authentication (3DS) actions ([a25aeea](https://github.com/lithic-com/lithic-go/commit/a25aeea44d8ffef7c25c2996d377d1eae81d68fc))
+
+
+### Bug Fixes
+
+* **api:** Update /v2/auth_rules/results endpoint parameter naming and action types ([1e0430a](https://github.com/lithic-com/lithic-go/commit/1e0430a7d634382f64dace2abf9bbbc3fbb70fa7))
+* **client:** mark request body as required ([5a82cc1](https://github.com/lithic-com/lithic-go/commit/5a82cc1a2fefcdbbd422e804a6dd443a659c4f17))
+* fix for namespace collisions with client and resource test methods ([be4daa0](https://github.com/lithic-com/lithic-go/commit/be4daa04d07384d828ddf5d2069c67318de49cf8))
+
+
+### Chores
+
+* configure new SDK language ([d5f72b8](https://github.com/lithic-com/lithic-go/commit/d5f72b8c86fd0c0b98f89d7029e53b26363e367c))
+* Enable stainless MCP in config ([ba15022](https://github.com/lithic-com/lithic-go/commit/ba15022d3e0a4093b2c211c0fa7ba1f88e12ad85))
+* **internal:** codegen related update ([761d45e](https://github.com/lithic-com/lithic-go/commit/761d45e74df7db7a91c5432393f212308585897d))
+
+
+### Documentation
+
+* Fix documentation of tokenization channel and tokenization source for tokenization rules ([66b48ff](https://github.com/lithic-com/lithic-go/commit/66b48ffc88ea37075f0689a1736653d65bde2fdb))
+
 ## 0.100.0 (2026-01-27)
 
 Full Changelog: [v0.99.0...v0.100.0](https://github.com/lithic-com/lithic-go/compare/v0.99.0...v0.100.0)
