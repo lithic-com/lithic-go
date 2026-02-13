@@ -1035,17 +1035,31 @@ type CardAuthorizationApprovalRequestWebhookEvent struct {
 	// zero if no fee is assessed. Rebates may be transmitted as a negative value to
 	// indicate credited fees.
 	AcquirerFee int64 `json:"acquirer_fee,required"`
-	// Authorization amount of the transaction (in cents), including any acquirer fees.
-	// The contents of this field are identical to `authorization_amount`.
+	// Deprecated, use `amounts`. Authorization amount of the transaction (in cents),
+	// including any acquirer fees. The contents of this field are identical to
+	// `authorization_amount`.
+	//
+	// Deprecated: deprecated
 	Amount int64 `json:"amount,required"`
-	// The base transaction amount (in cents) plus the acquirer fee field. This is the
-	// amount the issuer should authorize against unless the issuer is paying the
-	// acquirer fee on behalf of the cardholder.
+	// Structured amounts for this authorization. The `cardholder` and `merchant`
+	// amounts reflect the original network authorization values. For programs with
+	// hold adjustments enabled (e.g., automated fuel dispensers or tipping MCCs), the
+	// `hold` amount may exceed the `cardholder` and `merchant` amounts to account for
+	// anticipated final transaction amounts such as tips or fuel fill-ups
+	Amounts CardAuthorizationApprovalRequestWebhookEventAmounts `json:"amounts,required"`
+	// Deprecated, use `amounts`. The base transaction amount (in cents) plus the
+	// acquirer fee field. This is the amount the issuer should authorize against
+	// unless the issuer is paying the acquirer fee on behalf of the cardholder.
+	//
+	// Deprecated: deprecated
 	AuthorizationAmount int64                                           `json:"authorization_amount,required"`
 	Avs                 CardAuthorizationApprovalRequestWebhookEventAvs `json:"avs,required"`
 	// Card object in ASA
 	Card CardAuthorizationApprovalRequestWebhookEventCard `json:"card,required"`
-	// 3-character alphabetic ISO 4217 code for cardholder's billing currency.
+	// Deprecated, use `amounts`. 3-character alphabetic ISO 4217 code for cardholder's
+	// billing currency.
+	//
+	// Deprecated: deprecated
 	CardholderCurrency string `json:"cardholder_currency,required"`
 	// The portion of the transaction requested as cash back by the cardholder, and
 	// does not include any acquirer fees. The amount field includes the purchase
@@ -1058,16 +1072,22 @@ type CardAuthorizationApprovalRequestWebhookEvent struct {
 	Created   time.Time                                             `json:"created,required" format:"date-time"`
 	EventType CardAuthorizationApprovalRequestWebhookEventEventType `json:"event_type,required"`
 	Merchant  shared.Merchant                                       `json:"merchant,required"`
-	// The amount that the merchant will receive, denominated in `merchant_currency`
-	// and in the smallest currency unit. Note the amount includes `acquirer_fee`,
-	// similar to `authorization_amount`. It will be different from
-	// `authorization_amount` if the merchant is taking payment in a different
-	// currency.
+	// Deprecated, use `amounts`. The amount that the merchant will receive,
+	// denominated in `merchant_currency` and in the smallest currency unit. Note the
+	// amount includes `acquirer_fee`, similar to `authorization_amount`. It will be
+	// different from `authorization_amount` if the merchant is taking payment in a
+	// different currency.
+	//
+	// Deprecated: deprecated
 	MerchantAmount int64 `json:"merchant_amount,required"`
 	// 3-character alphabetic ISO 4217 code for the local currency of the transaction.
+	//
+	// Deprecated: deprecated
 	MerchantCurrency string `json:"merchant_currency,required"`
-	// Amount (in cents) of the transaction that has been settled, including any
-	// acquirer fees
+	// Deprecated, use `amounts`. Amount (in cents) of the transaction that has been
+	// settled, including any acquirer fees.
+	//
+	// Deprecated: deprecated
 	SettledAmount int64 `json:"settled_amount,required"`
 	// The type of authorization request that this request is for. Note that
 	// `CREDIT_AUTHORIZATION` and `FINANCIAL_CREDIT_AUTHORIZATION` is only available to
@@ -1079,11 +1099,13 @@ type CardAuthorizationApprovalRequestWebhookEvent struct {
 	CardholderAuthentication CardholderAuthentication                                         `json:"cardholder_authentication"`
 	// Deprecated, use `cash_amount`.
 	Cashback int64 `json:"cashback"`
-	// If the transaction was requested in a currency other than the settlement
-	// currency, this field will be populated to indicate the rate used to translate
-	// the merchant_amount to the amount (i.e., `merchant_amount` x `conversion_rate` =
-	// `amount`). Note that the `merchant_amount` is in the local currency and the
-	// amount is in the settlement currency.
+	// Deprecated, use `amounts`. If the transaction was requested in a currency other
+	// than the settlement currency, this field will be populated to indicate the rate
+	// used to translate the merchant_amount to the amount (i.e., `merchant_amount` x
+	// `conversion_rate` = `amount`). Note that the `merchant_amount` is in the local
+	// currency and the amount is in the settlement currency.
+	//
+	// Deprecated: deprecated
 	ConversionRate float64 `json:"conversion_rate"`
 	// The event token associated with the authorization. This field is only set for
 	// programs enrolled into the beta.
@@ -1122,6 +1144,7 @@ type cardAuthorizationApprovalRequestWebhookEventJSON struct {
 	Token                    apijson.Field
 	AcquirerFee              apijson.Field
 	Amount                   apijson.Field
+	Amounts                  apijson.Field
 	AuthorizationAmount      apijson.Field
 	Avs                      apijson.Field
 	Card                     apijson.Field
@@ -1161,6 +1184,145 @@ func (r cardAuthorizationApprovalRequestWebhookEventJSON) RawJSON() string {
 }
 
 func (r CardAuthorizationApprovalRequestWebhookEvent) implementsParsedWebhookEvent() {}
+
+// Structured amounts for this authorization. The `cardholder` and `merchant`
+// amounts reflect the original network authorization values. For programs with
+// hold adjustments enabled (e.g., automated fuel dispensers or tipping MCCs), the
+// `hold` amount may exceed the `cardholder` and `merchant` amounts to account for
+// anticipated final transaction amounts such as tips or fuel fill-ups
+type CardAuthorizationApprovalRequestWebhookEventAmounts struct {
+	Cardholder CardAuthorizationApprovalRequestWebhookEventAmountsCardholder `json:"cardholder,required"`
+	Hold       CardAuthorizationApprovalRequestWebhookEventAmountsHold       `json:"hold,required,nullable"`
+	Merchant   CardAuthorizationApprovalRequestWebhookEventAmountsMerchant   `json:"merchant,required"`
+	Settlement CardAuthorizationApprovalRequestWebhookEventAmountsSettlement `json:"settlement,required,nullable"`
+	JSON       cardAuthorizationApprovalRequestWebhookEventAmountsJSON       `json:"-"`
+}
+
+// cardAuthorizationApprovalRequestWebhookEventAmountsJSON contains the JSON
+// metadata for the struct [CardAuthorizationApprovalRequestWebhookEventAmounts]
+type cardAuthorizationApprovalRequestWebhookEventAmountsJSON struct {
+	Cardholder  apijson.Field
+	Hold        apijson.Field
+	Merchant    apijson.Field
+	Settlement  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CardAuthorizationApprovalRequestWebhookEventAmounts) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardAuthorizationApprovalRequestWebhookEventAmountsJSON) RawJSON() string {
+	return r.raw
+}
+
+type CardAuthorizationApprovalRequestWebhookEventAmountsCardholder struct {
+	// Amount in the smallest unit of the applicable currency (e.g., cents)
+	Amount int64 `json:"amount,required"`
+	// Exchange rate used for currency conversion
+	ConversionRate string `json:"conversion_rate,required"`
+	// 3-character alphabetic ISO 4217 currency
+	Currency shared.Currency                                                   `json:"currency,required"`
+	JSON     cardAuthorizationApprovalRequestWebhookEventAmountsCardholderJSON `json:"-"`
+}
+
+// cardAuthorizationApprovalRequestWebhookEventAmountsCardholderJSON contains the
+// JSON metadata for the struct
+// [CardAuthorizationApprovalRequestWebhookEventAmountsCardholder]
+type cardAuthorizationApprovalRequestWebhookEventAmountsCardholderJSON struct {
+	Amount         apijson.Field
+	ConversionRate apijson.Field
+	Currency       apijson.Field
+	raw            string
+	ExtraFields    map[string]apijson.Field
+}
+
+func (r *CardAuthorizationApprovalRequestWebhookEventAmountsCardholder) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardAuthorizationApprovalRequestWebhookEventAmountsCardholderJSON) RawJSON() string {
+	return r.raw
+}
+
+type CardAuthorizationApprovalRequestWebhookEventAmountsHold struct {
+	// Amount in the smallest unit of the applicable currency (e.g., cents)
+	Amount int64 `json:"amount,required"`
+	// 3-character alphabetic ISO 4217 currency
+	Currency shared.Currency                                             `json:"currency,required"`
+	JSON     cardAuthorizationApprovalRequestWebhookEventAmountsHoldJSON `json:"-"`
+}
+
+// cardAuthorizationApprovalRequestWebhookEventAmountsHoldJSON contains the JSON
+// metadata for the struct
+// [CardAuthorizationApprovalRequestWebhookEventAmountsHold]
+type cardAuthorizationApprovalRequestWebhookEventAmountsHoldJSON struct {
+	Amount      apijson.Field
+	Currency    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CardAuthorizationApprovalRequestWebhookEventAmountsHold) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardAuthorizationApprovalRequestWebhookEventAmountsHoldJSON) RawJSON() string {
+	return r.raw
+}
+
+type CardAuthorizationApprovalRequestWebhookEventAmountsMerchant struct {
+	// Amount in the smallest unit of the applicable currency (e.g., cents)
+	Amount int64 `json:"amount,required"`
+	// 3-character alphabetic ISO 4217 currency
+	Currency shared.Currency                                                 `json:"currency,required"`
+	JSON     cardAuthorizationApprovalRequestWebhookEventAmountsMerchantJSON `json:"-"`
+}
+
+// cardAuthorizationApprovalRequestWebhookEventAmountsMerchantJSON contains the
+// JSON metadata for the struct
+// [CardAuthorizationApprovalRequestWebhookEventAmountsMerchant]
+type cardAuthorizationApprovalRequestWebhookEventAmountsMerchantJSON struct {
+	Amount      apijson.Field
+	Currency    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CardAuthorizationApprovalRequestWebhookEventAmountsMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardAuthorizationApprovalRequestWebhookEventAmountsMerchantJSON) RawJSON() string {
+	return r.raw
+}
+
+type CardAuthorizationApprovalRequestWebhookEventAmountsSettlement struct {
+	// Amount in the smallest unit of the applicable currency (e.g., cents)
+	Amount int64 `json:"amount,required"`
+	// 3-character alphabetic ISO 4217 currency
+	Currency shared.Currency                                                   `json:"currency,required"`
+	JSON     cardAuthorizationApprovalRequestWebhookEventAmountsSettlementJSON `json:"-"`
+}
+
+// cardAuthorizationApprovalRequestWebhookEventAmountsSettlementJSON contains the
+// JSON metadata for the struct
+// [CardAuthorizationApprovalRequestWebhookEventAmountsSettlement]
+type cardAuthorizationApprovalRequestWebhookEventAmountsSettlementJSON struct {
+	Amount      apijson.Field
+	Currency    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CardAuthorizationApprovalRequestWebhookEventAmountsSettlement) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardAuthorizationApprovalRequestWebhookEventAmountsSettlementJSON) RawJSON() string {
+	return r.raw
+}
 
 type CardAuthorizationApprovalRequestWebhookEventAvs struct {
 	// Cardholder address
@@ -4925,12 +5087,16 @@ type ParsedWebhookEvent struct {
 	AdditionalData interface{} `json:"additional_data"`
 	// Address
 	Address ExternalBankAccountAddress `json:"address,nullable"`
-	// Authorization amount of the transaction (in cents), including any acquirer fees.
-	// The contents of this field are identical to `authorization_amount`.
+	// Deprecated, use `amounts`. Authorization amount of the transaction (in cents),
+	// including any acquirer fees. The contents of this field are identical to
+	// `authorization_amount`.
+	//
+	// Deprecated: deprecated
 	Amount int64 `json:"amount"`
 	// This field can have the runtime type of [StatementAmountDue].
 	AmountDue interface{} `json:"amount_due"`
-	// This field can have the runtime type of [TransactionAmounts],
+	// This field can have the runtime type of
+	// [CardAuthorizationApprovalRequestWebhookEventAmounts], [TransactionAmounts],
 	// [NetworkTotalAmounts].
 	Amounts interface{} `json:"amounts"`
 	// This field can have the runtime type of [ThreeDSAuthenticationApp].
@@ -4947,9 +5113,11 @@ type ParsedWebhookEvent struct {
 	AuthenticationRequestType ParsedWebhookEventAuthenticationRequestType `json:"authentication_request_type,nullable"`
 	// Indicates the outcome of the 3DS authentication process.
 	AuthenticationResult ParsedWebhookEventAuthenticationResult `json:"authentication_result"`
-	// The base transaction amount (in cents) plus the acquirer fee field. This is the
-	// amount the issuer should authorize against unless the issuer is paying the
-	// acquirer fee on behalf of the cardholder.
+	// Deprecated, use `amounts`. The base transaction amount (in cents) plus the
+	// acquirer fee field. This is the amount the issuer should authorize against
+	// unless the issuer is paying the acquirer fee on behalf of the cardholder.
+	//
+	// Deprecated: deprecated
 	AuthorizationAmount int64 `json:"authorization_amount,nullable"`
 	// A fixed-width 6-digit numeric identifier that can be used to identify a
 	// transaction with networks.
@@ -4981,7 +5149,10 @@ type ParsedWebhookEvent struct {
 	// This field can have the runtime type of [ThreeDSAuthenticationCardholder].
 	Cardholder               interface{}              `json:"cardholder"`
 	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication,nullable"`
-	// 3-character alphabetic ISO 4217 code for cardholder's billing currency.
+	// Deprecated, use `amounts`. 3-character alphabetic ISO 4217 code for cardholder's
+	// billing currency.
+	//
+	// Deprecated: deprecated
 	CardholderCurrency string `json:"cardholder_currency"`
 	// Identifier assigned by the network for this dispute.
 	CaseID string `json:"case_id,nullable"`
@@ -5016,11 +5187,13 @@ type ParsedWebhookEvent struct {
 	Common interface{} `json:"common"`
 	// Optional field that helps identify bank accounts in receipts
 	CompanyID string `json:"company_id,nullable"`
-	// If the transaction was requested in a currency other than the settlement
-	// currency, this field will be populated to indicate the rate used to translate
-	// the merchant_amount to the amount (i.e., `merchant_amount` x `conversion_rate` =
-	// `amount`). Note that the `merchant_amount` is in the local currency and the
-	// amount is in the settlement currency.
+	// Deprecated, use `amounts`. If the transaction was requested in a currency other
+	// than the settlement currency, this field will be populated to indicate the rate
+	// used to translate the merchant_amount to the amount (i.e., `merchant_amount` x
+	// `conversion_rate` = `amount`). Note that the `merchant_amount` is in the local
+	// currency and the amount is in the settlement currency.
+	//
+	// Deprecated: deprecated
 	ConversionRate float64 `json:"conversion_rate"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
 	// accept USA bank accounts e.g., USA
@@ -5173,17 +5346,21 @@ type ParsedWebhookEvent struct {
 	// This field can have the runtime type of [shared.Merchant],
 	// [ThreeDSAuthenticationMerchant].
 	Merchant interface{} `json:"merchant"`
-	// The amount that the merchant will receive, denominated in `merchant_currency`
-	// and in the smallest currency unit. Note the amount includes `acquirer_fee`,
-	// similar to `authorization_amount`. It will be different from
-	// `authorization_amount` if the merchant is taking payment in a different
-	// currency.
+	// Deprecated, use `amounts`. The amount that the merchant will receive,
+	// denominated in `merchant_currency` and in the smallest currency unit. Note the
+	// amount includes `acquirer_fee`, similar to `authorization_amount`. It will be
+	// different from `authorization_amount` if the merchant is taking payment in a
+	// different currency.
+	//
+	// Deprecated: deprecated
 	MerchantAmount int64 `json:"merchant_amount,nullable"`
 	// Analogous to the 'authorization_amount', but in the merchant currency.
 	//
 	// Deprecated: deprecated
 	MerchantAuthorizationAmount int64 `json:"merchant_authorization_amount,nullable"`
 	// 3-character alphabetic ISO 4217 code for the local currency of the transaction.
+	//
+	// Deprecated: deprecated
 	MerchantCurrency string `json:"merchant_currency"`
 	// Either PAYMENT_AUTHENTICATION or NON_PAYMENT_AUTHENTICATION. For
 	// NON_PAYMENT_AUTHENTICATION, additional_data and transaction fields are not
@@ -5339,8 +5516,10 @@ type ParsedWebhookEvent struct {
 	RoutingNumber string `json:"routing_number,nullable"`
 	// This field can have the runtime type of [[]TokenizationRuleResult].
 	RuleResults interface{} `json:"rule_results"`
-	// Amount (in cents) of the transaction that has been settled, including any
-	// acquirer fees
+	// Deprecated, use `amounts`. Amount (in cents) of the transaction that has been
+	// settled, including any acquirer fees.
+	//
+	// Deprecated: deprecated
 	SettledAmount int64 `json:"settled_amount"`
 	// The total net amount of cash moved. (net value of settled_gross_amount,
 	// interchange, fees). (This field is deprecated and will be removed in a future
