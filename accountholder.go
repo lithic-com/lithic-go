@@ -262,6 +262,9 @@ type AccountHolder struct {
 	// Only present when user_type == "INDIVIDUAL". Information about the individual
 	// for which the account is being opened and KYC is being run.
 	Individual AccountHolderIndividual `json:"individual"`
+	// Only present when user_type == "BUSINESS". 6-digit North American Industry
+	// Classification System (NAICS) code for the business.
+	NaicsCode string `json:"naics_code"`
 	// Only present when user_type == "BUSINESS". User-submitted description of the
 	// business.
 	NatureOfBusiness string `json:"nature_of_business"`
@@ -286,8 +289,8 @@ type AccountHolder struct {
 	StatusReasons []AccountHolderStatusReason `json:"status_reasons"`
 	// The type of Account Holder. If the type is "INDIVIDUAL", the "individual"
 	// attribute will be present. If the type is "BUSINESS" then the "business_entity",
-	// "control_person", "beneficial_owner_individuals", "nature_of_business", and
-	// "website_url" attributes will be present.
+	// "control_person", "beneficial_owner_individuals", "naics_code",
+	// "nature_of_business", and "website_url" attributes will be present.
 	UserType AccountHolderUserType `json:"user_type"`
 	// Information about the most recent identity verification attempt
 	VerificationApplication AccountHolderVerificationApplication `json:"verification_application"`
@@ -310,6 +313,7 @@ type accountHolderJSON struct {
 	ExemptionType              apijson.Field
 	ExternalID                 apijson.Field
 	Individual                 apijson.Field
+	NaicsCode                  apijson.Field
 	NatureOfBusiness           apijson.Field
 	PhoneNumber                apijson.Field
 	RequiredDocuments          apijson.Field
@@ -620,8 +624,8 @@ func (r AccountHolderStatusReason) IsKnown() bool {
 
 // The type of Account Holder. If the type is "INDIVIDUAL", the "individual"
 // attribute will be present. If the type is "BUSINESS" then the "business_entity",
-// "control_person", "beneficial_owner_individuals", "nature_of_business", and
-// "website_url" attributes will be present.
+// "control_person", "beneficial_owner_individuals", "naics_code",
+// "nature_of_business", and "website_url" attributes will be present.
 type AccountHolderUserType string
 
 const (
@@ -783,6 +787,9 @@ type KYBParam struct {
 	//
 	// This field is required only if workflow type is `KYB_BYO`.
 	KYBPassedTimestamp param.Field[string] `json:"kyb_passed_timestamp"`
+	// 6-digit North American Industry Classification System (NAICS) code for the
+	// business.
+	NaicsCode param.Field[string] `json:"naics_code"`
 	// Company website URL.
 	WebsiteURL param.Field[string] `json:"website_url"`
 }
@@ -1317,6 +1324,9 @@ type AccountHolderUpdateResponse struct {
 	LastName string `json:"last_name"`
 	// The legal business name for the account holder
 	LegalBusinessName string `json:"legal_business_name"`
+	// Only present when user_type == "BUSINESS". 6-digit North American Industry
+	// Classification System (NAICS) code for the business.
+	NaicsCode string `json:"naics_code"`
 	// Only present when user_type == "BUSINESS". User-submitted description of the
 	// business.
 	NatureOfBusiness string `json:"nature_of_business"`
@@ -1339,8 +1349,8 @@ type AccountHolderUpdateResponse struct {
 	// attribute will be present.
 	//
 	// If the type is "BUSINESS" then the "business_entity", "control_person",
-	// "beneficial_owner_individuals", "nature_of_business", and "website_url"
-	// attributes will be present.
+	// "beneficial_owner_individuals", "naics_code", "nature_of_business", and
+	// "website_url" attributes will be present.
 	UserType AccountHolderUpdateResponseUserType `json:"user_type"`
 	// This field can have the runtime type of
 	// [AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplication].
@@ -1370,6 +1380,7 @@ type accountHolderUpdateResponseJSON struct {
 	Individual                 apijson.Field
 	LastName                   apijson.Field
 	LegalBusinessName          apijson.Field
+	NaicsCode                  apijson.Field
 	NatureOfBusiness           apijson.Field
 	PhoneNumber                apijson.Field
 	RequiredDocuments          apijson.Field
@@ -1474,6 +1485,9 @@ type AccountHolderUpdateResponseKYBKYCPatchResponse struct {
 	// Only present when user_type == "INDIVIDUAL". Information about the individual
 	// for which the account is being opened and KYC is being run.
 	Individual AccountHolderUpdateResponseKYBKYCPatchResponseIndividual `json:"individual"`
+	// Only present when user_type == "BUSINESS". 6-digit North American Industry
+	// Classification System (NAICS) code for the business.
+	NaicsCode string `json:"naics_code"`
 	// Only present when user_type == "BUSINESS". User-submitted description of the
 	// business.
 	NatureOfBusiness string `json:"nature_of_business"`
@@ -1497,8 +1511,8 @@ type AccountHolderUpdateResponseKYBKYCPatchResponse struct {
 	// attribute will be present.
 	//
 	// If the type is "BUSINESS" then the "business_entity", "control_person",
-	// "beneficial_owner_individuals", "nature_of_business", and "website_url"
-	// attributes will be present.
+	// "beneficial_owner_individuals", "naics_code", "nature_of_business", and
+	// "website_url" attributes will be present.
 	UserType AccountHolderUpdateResponseKYBKYCPatchResponseUserType `json:"user_type"`
 	// Information about the most recent identity verification attempt
 	VerificationApplication AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplication `json:"verification_application"`
@@ -1522,6 +1536,7 @@ type accountHolderUpdateResponseKybkycPatchResponseJSON struct {
 	ExemptionType              apijson.Field
 	ExternalID                 apijson.Field
 	Individual                 apijson.Field
+	NaicsCode                  apijson.Field
 	NatureOfBusiness           apijson.Field
 	PhoneNumber                apijson.Field
 	RequiredDocuments          apijson.Field
@@ -1887,8 +1902,8 @@ func (r AccountHolderUpdateResponseKybkycPatchResponseStatusReason) IsKnown() bo
 // attribute will be present.
 //
 // If the type is "BUSINESS" then the "business_entity", "control_person",
-// "beneficial_owner_individuals", "nature_of_business", and "website_url"
-// attributes will be present.
+// "beneficial_owner_individuals", "naics_code", "nature_of_business", and
+// "website_url" attributes will be present.
 type AccountHolderUpdateResponseKYBKYCPatchResponseUserType string
 
 const (
@@ -2132,8 +2147,8 @@ func (r AccountHolderUpdateResponseStatus) IsKnown() bool {
 // attribute will be present.
 //
 // If the type is "BUSINESS" then the "business_entity", "control_person",
-// "beneficial_owner_individuals", "nature_of_business", and "website_url"
-// attributes will be present.
+// "beneficial_owner_individuals", "naics_code", "nature_of_business", and
+// "website_url" attributes will be present.
 type AccountHolderUpdateResponseUserType string
 
 const (
@@ -2218,6 +2233,9 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 	// Only present when user_type == "INDIVIDUAL". Information about the individual
 	// for which the account is being opened and KYC is being run.
 	Individual AccountHolderSimulateEnrollmentReviewResponseIndividual `json:"individual"`
+	// Only present when user_type == "BUSINESS". 6-digit North American Industry
+	// Classification System (NAICS) code for the business.
+	NaicsCode string `json:"naics_code"`
 	// Only present when user_type == "BUSINESS". User-submitted description of the
 	// business.
 	NatureOfBusiness string `json:"nature_of_business"`
@@ -2241,8 +2259,8 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 	// attribute will be present.
 	//
 	// If the type is "BUSINESS" then the "business_entity", "control_person",
-	// "beneficial_owner_individuals", "nature_of_business", and "website_url"
-	// attributes will be present.
+	// "beneficial_owner_individuals", "naics_code", "nature_of_business", and
+	// "website_url" attributes will be present.
 	UserType AccountHolderSimulateEnrollmentReviewResponseUserType `json:"user_type"`
 	// Information about the most recent identity verification attempt
 	VerificationApplication AccountHolderSimulateEnrollmentReviewResponseVerificationApplication `json:"verification_application"`
@@ -2266,6 +2284,7 @@ type accountHolderSimulateEnrollmentReviewResponseJSON struct {
 	ExemptionType              apijson.Field
 	ExternalID                 apijson.Field
 	Individual                 apijson.Field
+	NaicsCode                  apijson.Field
 	NatureOfBusiness           apijson.Field
 	PhoneNumber                apijson.Field
 	RequiredDocuments          apijson.Field
@@ -2629,8 +2648,8 @@ func (r AccountHolderSimulateEnrollmentReviewResponseStatusReason) IsKnown() boo
 // attribute will be present.
 //
 // If the type is "BUSINESS" then the "business_entity", "control_person",
-// "beneficial_owner_individuals", "nature_of_business", and "website_url"
-// attributes will be present.
+// "beneficial_owner_individuals", "naics_code", "nature_of_business", and
+// "website_url" attributes will be present.
 type AccountHolderSimulateEnrollmentReviewResponseUserType string
 
 const (
@@ -2787,6 +2806,9 @@ type AccountHolderNewParamsBody struct {
 	KYCPassedTimestamp param.Field[string] `json:"kyc_passed_timestamp"`
 	// The KYC Exempt user's last name
 	LastName param.Field[string] `json:"last_name"`
+	// 6-digit North American Industry Classification System (NAICS) code for the
+	// business.
+	NaicsCode param.Field[string] `json:"naics_code"`
 	// Short description of the company's line of business (i.e., what does the company
 	// do?).
 	NatureOfBusiness param.Field[string] `json:"nature_of_business"`
@@ -2836,6 +2858,9 @@ type AccountHolderNewParamsBodyKYBDelegated struct {
 	// A user provided id that can be used to link an account holder with an external
 	// system
 	ExternalID param.Field[string] `json:"external_id"`
+	// 6-digit North American Industry Classification System (NAICS) code for the
+	// business.
+	NaicsCode param.Field[string] `json:"naics_code"`
 	// Short description of the company's line of business (i.e., what does the company
 	// do?).
 	NatureOfBusiness param.Field[string] `json:"nature_of_business"`
@@ -3026,6 +3051,9 @@ type AccountHolderUpdateParamsBody struct {
 	LastName param.Field[string] `json:"last_name"`
 	// Allowed for BYO-KYB. Legal business name of the account holder.
 	LegalBusinessName param.Field[string] `json:"legal_business_name"`
+	// 6-digit North American Industry Classification System (NAICS) code for the
+	// business.
+	NaicsCode param.Field[string] `json:"naics_code"`
 	// Short description of the company's line of business (i.e., what does the company
 	// do?).
 	NatureOfBusiness param.Field[string] `json:"nature_of_business"`
@@ -3080,6 +3108,9 @@ type AccountHolderUpdateParamsBodyKYBPatchRequest struct {
 	// A user provided id that can be used to link an account holder with an external
 	// system
 	ExternalID param.Field[string] `json:"external_id"`
+	// 6-digit North American Industry Classification System (NAICS) code for the
+	// business.
+	NaicsCode param.Field[string] `json:"naics_code"`
 	// Short description of the company's line of business (i.e., what does the company
 	// do?).
 	NatureOfBusiness param.Field[string] `json:"nature_of_business"`
@@ -3409,13 +3440,14 @@ func (r AccountHolderSimulateEnrollmentReviewParams) MarshalJSON() (data []byte,
 type AccountHolderSimulateEnrollmentReviewParamsStatus string
 
 const (
-	AccountHolderSimulateEnrollmentReviewParamsStatusAccepted AccountHolderSimulateEnrollmentReviewParamsStatus = "ACCEPTED"
-	AccountHolderSimulateEnrollmentReviewParamsStatusRejected AccountHolderSimulateEnrollmentReviewParamsStatus = "REJECTED"
+	AccountHolderSimulateEnrollmentReviewParamsStatusAccepted      AccountHolderSimulateEnrollmentReviewParamsStatus = "ACCEPTED"
+	AccountHolderSimulateEnrollmentReviewParamsStatusRejected      AccountHolderSimulateEnrollmentReviewParamsStatus = "REJECTED"
+	AccountHolderSimulateEnrollmentReviewParamsStatusPendingReview AccountHolderSimulateEnrollmentReviewParamsStatus = "PENDING_REVIEW"
 )
 
 func (r AccountHolderSimulateEnrollmentReviewParamsStatus) IsKnown() bool {
 	switch r {
-	case AccountHolderSimulateEnrollmentReviewParamsStatusAccepted, AccountHolderSimulateEnrollmentReviewParamsStatusRejected:
+	case AccountHolderSimulateEnrollmentReviewParamsStatusAccepted, AccountHolderSimulateEnrollmentReviewParamsStatusRejected, AccountHolderSimulateEnrollmentReviewParamsStatusPendingReview:
 		return true
 	}
 	return false
