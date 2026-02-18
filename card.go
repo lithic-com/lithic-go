@@ -52,7 +52,7 @@ func NewCardService(opts ...option.RequestOption) (r *CardService) {
 // `product_id` only apply to physical cards.
 func (r *CardService) New(ctx context.Context, params CardNewParams, opts ...option.RequestOption) (res *Card, err error) {
 	if params.IdempotencyKey.Present {
-		opts = append(opts, option.WithHeader("Idempotency-Key", fmt.Sprintf("%s", params.IdempotencyKey)))
+		opts = append(opts, option.WithHeader("Idempotency-Key", fmt.Sprintf("%v", params.IdempotencyKey)))
 	}
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/cards"
