@@ -52,7 +52,7 @@ func NewFinancialAccountService(opts ...option.RequestOption) (r *FinancialAccou
 // Create a new financial account
 func (r *FinancialAccountService) New(ctx context.Context, params FinancialAccountNewParams, opts ...option.RequestOption) (res *FinancialAccount, err error) {
 	if params.IdempotencyKey.Present {
-		opts = append(opts, option.WithHeader("Idempotency-Key", fmt.Sprintf("%s", params.IdempotencyKey)))
+		opts = append(opts, option.WithHeader("Idempotency-Key", fmt.Sprintf("%v", params.IdempotencyKey)))
 	}
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/financial_accounts"
