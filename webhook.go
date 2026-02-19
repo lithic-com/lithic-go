@@ -7385,16 +7385,17 @@ func (r ParsedWebhookEventStatus) IsKnown() bool {
 type ParsedWebhookEventSubstatus string
 
 const (
-	ParsedWebhookEventSubstatusChargedOffDelinquent ParsedWebhookEventSubstatus = "CHARGED_OFF_DELINQUENT"
-	ParsedWebhookEventSubstatusChargedOffFraud      ParsedWebhookEventSubstatus = "CHARGED_OFF_FRAUD"
-	ParsedWebhookEventSubstatusEndUserRequest       ParsedWebhookEventSubstatus = "END_USER_REQUEST"
-	ParsedWebhookEventSubstatusBankRequest          ParsedWebhookEventSubstatus = "BANK_REQUEST"
-	ParsedWebhookEventSubstatusDelinquent           ParsedWebhookEventSubstatus = "DELINQUENT"
+	ParsedWebhookEventSubstatusChargedOffDelinquent  ParsedWebhookEventSubstatus = "CHARGED_OFF_DELINQUENT"
+	ParsedWebhookEventSubstatusChargedOffFraud       ParsedWebhookEventSubstatus = "CHARGED_OFF_FRAUD"
+	ParsedWebhookEventSubstatusEndUserRequest        ParsedWebhookEventSubstatus = "END_USER_REQUEST"
+	ParsedWebhookEventSubstatusBankRequest           ParsedWebhookEventSubstatus = "BANK_REQUEST"
+	ParsedWebhookEventSubstatusDelinquent            ParsedWebhookEventSubstatus = "DELINQUENT"
+	ParsedWebhookEventSubstatusInterestAndFeesPaused ParsedWebhookEventSubstatus = "INTEREST_AND_FEES_PAUSED"
 )
 
 func (r ParsedWebhookEventSubstatus) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventSubstatusChargedOffDelinquent, ParsedWebhookEventSubstatusChargedOffFraud, ParsedWebhookEventSubstatusEndUserRequest, ParsedWebhookEventSubstatusBankRequest, ParsedWebhookEventSubstatusDelinquent:
+	case ParsedWebhookEventSubstatusChargedOffDelinquent, ParsedWebhookEventSubstatusChargedOffFraud, ParsedWebhookEventSubstatusEndUserRequest, ParsedWebhookEventSubstatusBankRequest, ParsedWebhookEventSubstatusDelinquent, ParsedWebhookEventSubstatusInterestAndFeesPaused:
 		return true
 	}
 	return false
