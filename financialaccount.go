@@ -284,16 +284,17 @@ func (r FinancialAccountStatus) IsKnown() bool {
 type FinancialAccountSubstatus string
 
 const (
-	FinancialAccountSubstatusChargedOffDelinquent FinancialAccountSubstatus = "CHARGED_OFF_DELINQUENT"
-	FinancialAccountSubstatusChargedOffFraud      FinancialAccountSubstatus = "CHARGED_OFF_FRAUD"
-	FinancialAccountSubstatusEndUserRequest       FinancialAccountSubstatus = "END_USER_REQUEST"
-	FinancialAccountSubstatusBankRequest          FinancialAccountSubstatus = "BANK_REQUEST"
-	FinancialAccountSubstatusDelinquent           FinancialAccountSubstatus = "DELINQUENT"
+	FinancialAccountSubstatusChargedOffDelinquent  FinancialAccountSubstatus = "CHARGED_OFF_DELINQUENT"
+	FinancialAccountSubstatusChargedOffFraud       FinancialAccountSubstatus = "CHARGED_OFF_FRAUD"
+	FinancialAccountSubstatusEndUserRequest        FinancialAccountSubstatus = "END_USER_REQUEST"
+	FinancialAccountSubstatusBankRequest           FinancialAccountSubstatus = "BANK_REQUEST"
+	FinancialAccountSubstatusDelinquent            FinancialAccountSubstatus = "DELINQUENT"
+	FinancialAccountSubstatusInterestAndFeesPaused FinancialAccountSubstatus = "INTEREST_AND_FEES_PAUSED"
 )
 
 func (r FinancialAccountSubstatus) IsKnown() bool {
 	switch r {
-	case FinancialAccountSubstatusChargedOffDelinquent, FinancialAccountSubstatusChargedOffFraud, FinancialAccountSubstatusEndUserRequest, FinancialAccountSubstatusBankRequest, FinancialAccountSubstatusDelinquent:
+	case FinancialAccountSubstatusChargedOffDelinquent, FinancialAccountSubstatusChargedOffFraud, FinancialAccountSubstatusEndUserRequest, FinancialAccountSubstatusBankRequest, FinancialAccountSubstatusDelinquent, FinancialAccountSubstatusInterestAndFeesPaused:
 		return true
 	}
 	return false
@@ -702,15 +703,16 @@ func (r FinancialAccountUpdateStatusParamsStatus) IsKnown() bool {
 type FinancialAccountUpdateStatusParamsSubstatus string
 
 const (
-	FinancialAccountUpdateStatusParamsSubstatusChargedOffFraud      FinancialAccountUpdateStatusParamsSubstatus = "CHARGED_OFF_FRAUD"
-	FinancialAccountUpdateStatusParamsSubstatusEndUserRequest       FinancialAccountUpdateStatusParamsSubstatus = "END_USER_REQUEST"
-	FinancialAccountUpdateStatusParamsSubstatusBankRequest          FinancialAccountUpdateStatusParamsSubstatus = "BANK_REQUEST"
-	FinancialAccountUpdateStatusParamsSubstatusChargedOffDelinquent FinancialAccountUpdateStatusParamsSubstatus = "CHARGED_OFF_DELINQUENT"
+	FinancialAccountUpdateStatusParamsSubstatusChargedOffFraud       FinancialAccountUpdateStatusParamsSubstatus = "CHARGED_OFF_FRAUD"
+	FinancialAccountUpdateStatusParamsSubstatusEndUserRequest        FinancialAccountUpdateStatusParamsSubstatus = "END_USER_REQUEST"
+	FinancialAccountUpdateStatusParamsSubstatusBankRequest           FinancialAccountUpdateStatusParamsSubstatus = "BANK_REQUEST"
+	FinancialAccountUpdateStatusParamsSubstatusChargedOffDelinquent  FinancialAccountUpdateStatusParamsSubstatus = "CHARGED_OFF_DELINQUENT"
+	FinancialAccountUpdateStatusParamsSubstatusInterestAndFeesPaused FinancialAccountUpdateStatusParamsSubstatus = "INTEREST_AND_FEES_PAUSED"
 )
 
 func (r FinancialAccountUpdateStatusParamsSubstatus) IsKnown() bool {
 	switch r {
-	case FinancialAccountUpdateStatusParamsSubstatusChargedOffFraud, FinancialAccountUpdateStatusParamsSubstatusEndUserRequest, FinancialAccountUpdateStatusParamsSubstatusBankRequest, FinancialAccountUpdateStatusParamsSubstatusChargedOffDelinquent:
+	case FinancialAccountUpdateStatusParamsSubstatusChargedOffFraud, FinancialAccountUpdateStatusParamsSubstatusEndUserRequest, FinancialAccountUpdateStatusParamsSubstatusBankRequest, FinancialAccountUpdateStatusParamsSubstatusChargedOffDelinquent, FinancialAccountUpdateStatusParamsSubstatusInterestAndFeesPaused:
 		return true
 	}
 	return false
