@@ -63,7 +63,7 @@ type ResponderEndpointStatus struct {
 	// True if the instance has an endpoint enrolled.
 	Enrolled bool `json:"enrolled"`
 	// The URL of the currently enrolled endpoint or null.
-	URL  string                      `json:"url,nullable" format:"uri"`
+	URL  string                      `json:"url" api:"nullable" format:"uri"`
 	JSON responderEndpointStatusJSON `json:"-"`
 }
 
@@ -136,7 +136,7 @@ func (r ResponderEndpointNewParamsType) IsKnown() bool {
 
 type ResponderEndpointDeleteParams struct {
 	// The type of the endpoint.
-	Type param.Field[ResponderEndpointDeleteParamsType] `query:"type,required"`
+	Type param.Field[ResponderEndpointDeleteParamsType] `query:"type" api:"required"`
 }
 
 // URLQuery serializes [ResponderEndpointDeleteParams]'s query parameters as
@@ -167,7 +167,7 @@ func (r ResponderEndpointDeleteParamsType) IsKnown() bool {
 
 type ResponderEndpointCheckStatusParams struct {
 	// The type of the endpoint.
-	Type param.Field[ResponderEndpointCheckStatusParamsType] `query:"type,required"`
+	Type param.Field[ResponderEndpointCheckStatusParamsType] `query:"type" api:"required"`
 }
 
 // URLQuery serializes [ResponderEndpointCheckStatusParams]'s query parameters as

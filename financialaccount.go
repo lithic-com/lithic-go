@@ -139,9 +139,9 @@ func (r *FinancialAccountService) UpdateStatus(ctx context.Context, financialAcc
 }
 
 type CategoryDetails struct {
-	BalanceTransfers string              `json:"balance_transfers,required"`
-	CashAdvances     string              `json:"cash_advances,required"`
-	Purchases        string              `json:"purchases,required"`
+	BalanceTransfers string              `json:"balance_transfers" api:"required"`
+	CashAdvances     string              `json:"cash_advances" api:"required"`
+	Purchases        string              `json:"purchases" api:"required"`
 	JSON             categoryDetailsJSON `json:"-"`
 }
 
@@ -164,23 +164,23 @@ func (r categoryDetailsJSON) RawJSON() string {
 
 type FinancialAccount struct {
 	// Globally unique identifier for the account
-	Token               string                              `json:"token,required" format:"uuid"`
-	AccountToken        string                              `json:"account_token,required,nullable" format:"uuid"`
-	Created             time.Time                           `json:"created,required" format:"date-time"`
-	CreditConfiguration FinancialAccountCreditConfiguration `json:"credit_configuration,required,nullable"`
+	Token               string                              `json:"token" api:"required" format:"uuid"`
+	AccountToken        string                              `json:"account_token" api:"required,nullable" format:"uuid"`
+	Created             time.Time                           `json:"created" api:"required" format:"date-time"`
+	CreditConfiguration FinancialAccountCreditConfiguration `json:"credit_configuration" api:"required,nullable"`
 	// Whether financial account is for the benefit of another entity
-	IsForBenefitOf bool   `json:"is_for_benefit_of,required"`
-	Nickname       string `json:"nickname,required,nullable"`
+	IsForBenefitOf bool   `json:"is_for_benefit_of" api:"required"`
+	Nickname       string `json:"nickname" api:"required,nullable"`
 	// Status of the financial account
-	Status FinancialAccountStatus `json:"status,required"`
+	Status FinancialAccountStatus `json:"status" api:"required"`
 	// Substatus for the financial account
-	Substatus FinancialAccountSubstatus `json:"substatus,required,nullable"`
-	Type      FinancialAccountType      `json:"type,required"`
-	Updated   time.Time                 `json:"updated,required" format:"date-time"`
+	Substatus FinancialAccountSubstatus `json:"substatus" api:"required,nullable"`
+	Type      FinancialAccountType      `json:"type" api:"required"`
+	Updated   time.Time                 `json:"updated" api:"required" format:"date-time"`
 	// User-defined status for the financial account
-	UserDefinedStatus string               `json:"user_defined_status,required,nullable"`
-	AccountNumber     string               `json:"account_number,nullable"`
-	RoutingNumber     string               `json:"routing_number,nullable"`
+	UserDefinedStatus string               `json:"user_defined_status" api:"required,nullable"`
+	AccountNumber     string               `json:"account_number" api:"nullable"`
+	RoutingNumber     string               `json:"routing_number" api:"nullable"`
 	JSON              financialAccountJSON `json:"-"`
 }
 
@@ -213,13 +213,13 @@ func (r financialAccountJSON) RawJSON() string {
 }
 
 type FinancialAccountCreditConfiguration struct {
-	AutoCollectionConfiguration FinancialAccountCreditConfigurationAutoCollectionConfiguration `json:"auto_collection_configuration,required,nullable"`
-	CreditLimit                 int64                                                          `json:"credit_limit,required,nullable"`
+	AutoCollectionConfiguration FinancialAccountCreditConfigurationAutoCollectionConfiguration `json:"auto_collection_configuration" api:"required,nullable"`
+	CreditLimit                 int64                                                          `json:"credit_limit" api:"required,nullable"`
 	// Globally unique identifier for the credit product
-	CreditProductToken       string `json:"credit_product_token,required,nullable"`
-	ExternalBankAccountToken string `json:"external_bank_account_token,required,nullable" format:"uuid"`
+	CreditProductToken       string `json:"credit_product_token" api:"required,nullable"`
+	ExternalBankAccountToken string `json:"external_bank_account_token" api:"required,nullable" format:"uuid"`
 	// Tier assigned to the financial account
-	Tier string                                  `json:"tier,required,nullable"`
+	Tier string                                  `json:"tier" api:"required,nullable"`
 	JSON financialAccountCreditConfigurationJSON `json:"-"`
 }
 
@@ -245,7 +245,7 @@ func (r financialAccountCreditConfigurationJSON) RawJSON() string {
 
 type FinancialAccountCreditConfigurationAutoCollectionConfiguration struct {
 	// If auto collection is enabled for this account
-	AutoCollectionEnabled bool                                                               `json:"auto_collection_enabled,required"`
+	AutoCollectionEnabled bool                                                               `json:"auto_collection_enabled" api:"required"`
 	JSON                  financialAccountCreditConfigurationAutoCollectionConfigurationJSON `json:"-"`
 }
 
@@ -330,29 +330,29 @@ func (r FinancialAccountType) IsKnown() bool {
 // Balance of a Financial Account
 type FinancialAccountBalance struct {
 	// Globally unique identifier for the financial account that holds this balance.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Funds available for spend in the currency's smallest unit (e.g., cents for USD)
-	AvailableAmount int64 `json:"available_amount,required"`
+	AvailableAmount int64 `json:"available_amount" api:"required"`
 	// Date and time for when the balance was first created.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// 3-character alphabetic ISO 4217 code for the local currency of the balance.
-	Currency string `json:"currency,required"`
+	Currency string `json:"currency" api:"required"`
 	// Globally unique identifier for the last financial transaction event that
 	// impacted this balance.
-	LastTransactionEventToken string `json:"last_transaction_event_token,required" format:"uuid"`
+	LastTransactionEventToken string `json:"last_transaction_event_token" api:"required" format:"uuid"`
 	// Globally unique identifier for the last financial transaction that impacted this
 	// balance.
-	LastTransactionToken string `json:"last_transaction_token,required" format:"uuid"`
+	LastTransactionToken string `json:"last_transaction_token" api:"required" format:"uuid"`
 	// Funds not available for spend due to card authorizations or pending ACH release.
 	// Shown in the currency's smallest unit (e.g., cents for USD).
-	PendingAmount int64 `json:"pending_amount,required"`
+	PendingAmount int64 `json:"pending_amount" api:"required"`
 	// The sum of available and pending balance in the currency's smallest unit (e.g.,
 	// cents for USD).
-	TotalAmount int64 `json:"total_amount,required"`
+	TotalAmount int64 `json:"total_amount" api:"required"`
 	// Type of financial account.
-	Type FinancialAccountBalanceType `json:"type,required"`
+	Type FinancialAccountBalanceType `json:"type" api:"required"`
 	// Date and time for when the balance was last updated.
-	Updated time.Time                   `json:"updated,required" format:"date-time"`
+	Updated time.Time                   `json:"updated" api:"required" format:"date-time"`
 	JSON    financialAccountBalanceJSON `json:"-"`
 }
 
@@ -401,7 +401,7 @@ func (r FinancialAccountBalanceType) IsKnown() bool {
 
 type FinancialTransaction struct {
 	// Globally unique identifier.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Status types:
 	//
 	//   - `CARD` - Issuing card transaction.
@@ -409,29 +409,29 @@ type FinancialTransaction struct {
 	//   - `INTERNAL` - Transaction for internal adjustment.
 	//   - `TRANSFER` - Internal transfer of funds between financial accounts in your
 	//     program.
-	Category FinancialTransactionCategory `json:"category,required"`
+	Category FinancialTransactionCategory `json:"category" api:"required"`
 	// Date and time when the financial transaction first occurred. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// 3-character alphabetic ISO 4217 code for the settling currency of the
 	// transaction.
-	Currency string `json:"currency,required"`
+	Currency string `json:"currency" api:"required"`
 	// A string that provides a description of the financial transaction; may be useful
 	// to display to users.
-	Descriptor string `json:"descriptor,required"`
+	Descriptor string `json:"descriptor" api:"required"`
 	// A list of all financial events that have modified this financial transaction.
-	Events []shared.FinancialEvent `json:"events,required"`
+	Events []shared.FinancialEvent `json:"events" api:"required"`
 	// Pending amount of the transaction in the currency's smallest unit (e.g., cents),
 	// including any acquirer fees.
 	//
 	// The value of this field will go to zero over time once the financial transaction
 	// is settled.
-	PendingAmount int64 `json:"pending_amount,required"`
+	PendingAmount int64 `json:"pending_amount" api:"required"`
 	// APPROVED transactions were successful while DECLINED transactions were declined
 	// by user, Lithic, or the network.
-	Result FinancialTransactionResult `json:"result,required"`
+	Result FinancialTransactionResult `json:"result" api:"required"`
 	// Amount of the transaction that has been settled in the currency's smallest unit
 	// (e.g., cents), including any acquirer fees. This may change over time.
-	SettledAmount int64 `json:"settled_amount,required"`
+	SettledAmount int64 `json:"settled_amount" api:"required"`
 	// Status types:
 	//
 	//   - `DECLINED` - The transaction was declined.
@@ -441,9 +441,9 @@ type FinancialTransaction struct {
 	//   - `RETURNED` - The transaction has been returned.
 	//   - `SETTLED` - The transaction is completed.
 	//   - `VOIDED` - The transaction was voided. Card transaction only.
-	Status FinancialTransactionStatus `json:"status,required"`
+	Status FinancialTransactionStatus `json:"status" api:"required"`
 	// Date and time when the financial transaction was last updated. UTC time zone.
-	Updated time.Time                `json:"updated,required" format:"date-time"`
+	Updated time.Time                `json:"updated" api:"required" format:"date-time"`
 	JSON    financialTransactionJSON `json:"-"`
 }
 
@@ -544,22 +544,22 @@ func (r FinancialTransactionStatus) IsKnown() bool {
 
 type StatementTotals struct {
 	// Opening balance transferred from previous account in cents
-	BalanceTransfers int64 `json:"balance_transfers,required"`
+	BalanceTransfers int64 `json:"balance_transfers" api:"required"`
 	// ATM and cashback transactions in cents
-	CashAdvances int64 `json:"cash_advances,required"`
+	CashAdvances int64 `json:"cash_advances" api:"required"`
 	// Volume of credit management operation transactions less any balance transfers in
 	// cents
-	Credits int64 `json:"credits,required"`
+	Credits int64 `json:"credits" api:"required"`
 	// Volume of debit management operation transactions less any interest in cents
-	Debits int64 `json:"debits,required"`
+	Debits int64 `json:"debits" api:"required"`
 	// Volume of debit management operation transactions less any interest in cents
-	Fees int64 `json:"fees,required"`
+	Fees int64 `json:"fees" api:"required"`
 	// Interest accrued in cents
-	Interest int64 `json:"interest,required"`
+	Interest int64 `json:"interest" api:"required"`
 	// Any funds transfers which affective the balance in cents
-	Payments int64 `json:"payments,required"`
+	Payments int64 `json:"payments" api:"required"`
 	// Net card transaction volume less any cash advances in cents
-	Purchases int64 `json:"purchases,required"`
+	Purchases int64 `json:"purchases" api:"required"`
 	// Breakdown of credits
 	CreditDetails interface{} `json:"credit_details"`
 	// Breakdown of debits
@@ -595,8 +595,8 @@ func (r statementTotalsJSON) RawJSON() string {
 }
 
 type FinancialAccountNewParams struct {
-	Nickname       param.Field[string]                        `json:"nickname,required"`
-	Type           param.Field[FinancialAccountNewParamsType] `json:"type,required"`
+	Nickname       param.Field[string]                        `json:"nickname" api:"required"`
+	Type           param.Field[FinancialAccountNewParamsType] `json:"type" api:"required"`
 	AccountToken   param.Field[string]                        `json:"account_token" format:"uuid"`
 	IsForBenefitOf param.Field[bool]                          `json:"is_for_benefit_of"`
 	IdempotencyKey param.Field[string]                        `header:"Idempotency-Key" format:"uuid"`
@@ -665,7 +665,7 @@ func (r FinancialAccountListParamsType) IsKnown() bool {
 }
 
 type FinancialAccountRegisterAccountNumberParams struct {
-	AccountNumber param.Field[string] `json:"account_number,required"`
+	AccountNumber param.Field[string] `json:"account_number" api:"required"`
 }
 
 func (r FinancialAccountRegisterAccountNumberParams) MarshalJSON() (data []byte, err error) {
@@ -674,9 +674,9 @@ func (r FinancialAccountRegisterAccountNumberParams) MarshalJSON() (data []byte,
 
 type FinancialAccountUpdateStatusParams struct {
 	// Status of the financial account
-	Status param.Field[FinancialAccountUpdateStatusParamsStatus] `json:"status,required"`
+	Status param.Field[FinancialAccountUpdateStatusParamsStatus] `json:"status" api:"required"`
 	// Substatus for the financial account
-	Substatus param.Field[FinancialAccountUpdateStatusParamsSubstatus] `json:"substatus,required"`
+	Substatus param.Field[FinancialAccountUpdateStatusParamsSubstatus] `json:"substatus" api:"required"`
 	// User-defined status for the financial account
 	UserDefinedStatus param.Field[string] `json:"user_defined_status"`
 }

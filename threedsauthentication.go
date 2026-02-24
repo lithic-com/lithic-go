@@ -95,11 +95,11 @@ func (r threeDSAuthenticationSimulateResponseJSON) RawJSON() string {
 
 type ThreeDSAuthenticationSimulateParams struct {
 	// Merchant information for the simulated transaction
-	Merchant param.Field[ThreeDSAuthenticationSimulateParamsMerchant] `json:"merchant,required"`
+	Merchant param.Field[ThreeDSAuthenticationSimulateParamsMerchant] `json:"merchant" api:"required"`
 	// Sixteen digit card number.
-	Pan param.Field[string] `json:"pan,required"`
+	Pan param.Field[string] `json:"pan" api:"required"`
 	// Transaction details for the simulation
-	Transaction param.Field[ThreeDSAuthenticationSimulateParamsTransaction] `json:"transaction,required"`
+	Transaction param.Field[ThreeDSAuthenticationSimulateParamsTransaction] `json:"transaction" api:"required"`
 	// When set will use the following values as part of the Simulated Authentication.
 	// When not set defaults to MATCH
 	CardExpiryCheck param.Field[ThreeDSAuthenticationSimulateParamsCardExpiryCheck] `json:"card_expiry_check"`
@@ -113,17 +113,17 @@ func (r ThreeDSAuthenticationSimulateParams) MarshalJSON() (data []byte, err err
 type ThreeDSAuthenticationSimulateParamsMerchant struct {
 	// Unique identifier to identify the payment card acceptor. Corresponds to
 	// `merchant_acceptor_id` in authorization.
-	ID param.Field[string] `json:"id,required"`
+	ID param.Field[string] `json:"id" api:"required"`
 	// Country of the address provided by the cardholder in ISO 3166-1 alpha-3 format
 	// (e.g. USA)
-	Country param.Field[string] `json:"country,required"`
+	Country param.Field[string] `json:"country" api:"required"`
 	// Merchant category code for the transaction to be simulated. A four-digit number
 	// listed in ISO 18245. Supported merchant category codes can be found
 	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
-	Mcc param.Field[string] `json:"mcc,required"`
+	Mcc param.Field[string] `json:"mcc" api:"required"`
 	// Merchant descriptor, corresponds to `descriptor` in authorization. If CHALLENGE
 	// keyword is included, Lithic will trigger a challenge.
-	Name param.Field[string] `json:"name,required"`
+	Name param.Field[string] `json:"name" api:"required"`
 }
 
 func (r ThreeDSAuthenticationSimulateParamsMerchant) MarshalJSON() (data []byte, err error) {
@@ -133,9 +133,9 @@ func (r ThreeDSAuthenticationSimulateParamsMerchant) MarshalJSON() (data []byte,
 // Transaction details for the simulation
 type ThreeDSAuthenticationSimulateParamsTransaction struct {
 	// Amount (in cents) to authenticate.
-	Amount param.Field[int64] `json:"amount,required"`
+	Amount param.Field[int64] `json:"amount" api:"required"`
 	// 3-character alphabetic ISO 4217 currency code.
-	Currency param.Field[string] `json:"currency,required"`
+	Currency param.Field[string] `json:"currency" api:"required"`
 }
 
 func (r ThreeDSAuthenticationSimulateParamsTransaction) MarshalJSON() (data []byte, err error) {
@@ -163,9 +163,9 @@ func (r ThreeDSAuthenticationSimulateParamsCardExpiryCheck) IsKnown() bool {
 type ThreeDSAuthenticationSimulateOtpEntryParams struct {
 	// A unique token returned as part of a /v1/three_ds_authentication/simulate call
 	// that resulted in PENDING_CHALLENGE authentication result.
-	Token param.Field[string] `json:"token,required" format:"uuid"`
+	Token param.Field[string] `json:"token" api:"required" format:"uuid"`
 	// The OTP entered by the cardholder
-	Otp param.Field[string] `json:"otp,required"`
+	Otp param.Field[string] `json:"otp" api:"required"`
 }
 
 func (r ThreeDSAuthenticationSimulateOtpEntryParams) MarshalJSON() (data []byte, err error) {

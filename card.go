@@ -378,7 +378,7 @@ func (r cardJSON) RawJSON() string {
 }
 
 type CardSpendLimits struct {
-	AvailableSpendLimit CardSpendLimitsAvailableSpendLimit `json:"available_spend_limit,required"`
+	AvailableSpendLimit CardSpendLimitsAvailableSpendLimit `json:"available_spend_limit" api:"required"`
 	SpendLimit          CardSpendLimitsSpendLimit          `json:"spend_limit"`
 	SpendVelocity       CardSpendLimitsSpendVelocity       `json:"spend_velocity"`
 	JSON                cardSpendLimitsJSON                `json:"-"`
@@ -494,23 +494,23 @@ func (r cardSpendLimitsSpendVelocityJSON) RawJSON() string {
 // Card details without PCI information
 type NonPCICard struct {
 	// Globally unique identifier.
-	Token string `json:"token,required"`
+	Token string `json:"token" api:"required"`
 	// Globally unique identifier for the account to which the card belongs.
-	AccountToken string `json:"account_token,required"`
+	AccountToken string `json:"account_token" api:"required"`
 	// Globally unique identifier for the card program on which the card exists.
-	CardProgramToken string `json:"card_program_token,required"`
+	CardProgramToken string `json:"card_program_token" api:"required"`
 	// An RFC 3339 timestamp for when the card was created. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Deprecated: Funding account for the card.
-	Funding NonPCICardFunding `json:"funding,required"`
+	Funding NonPCICardFunding `json:"funding" api:"required"`
 	// Last four digits of the card number.
-	LastFour string `json:"last_four,required"`
+	LastFour string `json:"last_four" api:"required"`
 	// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
 	// attempts).
-	PinStatus NonPCICardPinStatus `json:"pin_status,required"`
+	PinStatus NonPCICardPinStatus `json:"pin_status" api:"required"`
 	// Amount (in cents) to limit approved authorizations (e.g. 100000 would be a
 	// $1,000 limit). Transaction requests above the spend limit will be declined.
-	SpendLimit int64 `json:"spend_limit,required"`
+	SpendLimit int64 `json:"spend_limit" api:"required"`
 	// Spend limit duration values:
 	//
 	//   - `ANNUALLY` - Card will authorize transactions up to spend limit for the
@@ -523,7 +523,7 @@ type NonPCICard struct {
 	//     starts 6 days after the current calendar date one month prior.
 	//   - `TRANSACTION` - Card will authorize multiple transactions if each individual
 	//     transaction is under the spend limit.
-	SpendLimitDuration SpendLimitDuration `json:"spend_limit_duration,required"`
+	SpendLimitDuration SpendLimitDuration `json:"spend_limit_duration" api:"required"`
 	// Card state values: _ `CLOSED` - Card will no longer approve authorizations.
 	// Closing a card cannot be undone. _ `OPEN` - Card will approve authorizations (if
 	// they match card and account parameters). _ `PAUSED` - Card will decline
@@ -539,7 +539,7 @@ type NonPCICard struct {
 	// card's state to `OPEN` only after the cardholder confirms receipt of the card.
 	// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
 	// manufactured.
-	State NonPCICardState `json:"state,required"`
+	State NonPCICardState `json:"state" api:"required"`
 	// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
 	// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
 	// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
@@ -549,7 +549,7 @@ type NonPCICard struct {
 	// successfully authorizes the card. _ `UNLOCKED` - _[Deprecated]_ Similar behavior
 	// to VIRTUAL cards, please use VIRTUAL instead. _ `DIGITAL_WALLET` -
 	// _[Deprecated]_ Similar behavior to VIRTUAL cards, please use VIRTUAL instead.
-	Type NonPCICardType `json:"type,required"`
+	Type NonPCICardType `json:"type" api:"required"`
 	// List of identifiers for the Auth Rule(s) that are applied on the card. This
 	// field is deprecated and will no longer be populated in the `Card` object. The
 	// key will be removed from the schema in a future release. Use the `/auth_rules`
@@ -559,7 +559,7 @@ type NonPCICard struct {
 	AuthRuleTokens []string `json:"auth_rule_tokens"`
 	// Globally unique identifier for the bulk order associated with this card. Only
 	// applicable to physical cards that are part of a bulk shipment
-	BulkOrderToken string `json:"bulk_order_token,nullable" format:"uuid"`
+	BulkOrderToken string `json:"bulk_order_token" api:"nullable" format:"uuid"`
 	// 3-character alphabetic ISO 4217 code for the currency of the cardholder.
 	CardholderCurrency string `json:"cardholder_currency"`
 	// Additional context or information related to the card.
@@ -579,7 +579,7 @@ type NonPCICard struct {
 	// Globally unique identifier for the card's network program. Null if the card is
 	// not associated with a network program. Currently applicable to Visa cards
 	// participating in Account Level Management only
-	NetworkProgramToken string `json:"network_program_token,nullable"`
+	NetworkProgramToken string `json:"network_program_token" api:"nullable"`
 	// Indicates if there are offline PIN changes pending card interaction with an
 	// offline PIN terminal. Possible commands are: CHANGE_PIN, UNBLOCK_PIN. Applicable
 	// only to cards issued in markets supporting offline PINs.
@@ -590,7 +590,7 @@ type NonPCICard struct {
 	ProductID string `json:"product_id"`
 	// If the card is a replacement for another card, the globally unique identifier
 	// for the card that was replaced.
-	ReplacementFor string `json:"replacement_for,nullable"`
+	ReplacementFor string `json:"replacement_for" api:"nullable"`
 	// Card state substatus values: _ `LOST` - The physical card is no longer in the
 	// cardholder's possession due to being lost or never received by the cardholder. _
 	// `COMPROMISED` - Card information has been exposed, potentially leading to
@@ -657,21 +657,21 @@ func (r nonPCICardJSON) RawJSON() string {
 // Deprecated: Funding account for the card.
 type NonPCICardFunding struct {
 	// A globally unique identifier for this FundingAccount.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// An RFC 3339 string representing when this funding source was added to the Lithic
 	// account. This may be `null`. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// The last 4 digits of the account (e.g. bank account, debit card) associated with
 	// this FundingAccount. This may be null.
-	LastFour string `json:"last_four,required"`
+	LastFour string `json:"last_four" api:"required"`
 	// State of funding source. Funding source states: _ `ENABLED` - The funding
 	// account is available to use for card creation and transactions. _ `PENDING` -
 	// The funding account is still being verified e.g. bank micro-deposits
 	// verification. \* `DELETED` - The founding account has been deleted.
-	State NonPCICardFundingState `json:"state,required"`
+	State NonPCICardFundingState `json:"state" api:"required"`
 	// Types of funding source: _ `DEPOSITORY_CHECKING` - Bank checking account. _
 	// `DEPOSITORY_SAVINGS` - Bank savings account.
-	Type NonPCICardFundingType `json:"type,required"`
+	Type NonPCICardFundingType `json:"type" api:"required"`
 	// Account name identifying the funding source. This may be `null`.
 	AccountName string `json:"account_name"`
 	// The nickname given to the `FundingAccount` or `null` if it has no nickname.
@@ -1038,9 +1038,9 @@ func init() {
 
 type CardWebProvisionResponseAppleWebPushProvisioningResponse struct {
 	// JWS object required for handoff to Apple's script.
-	Jws CardWebProvisionResponseAppleWebPushProvisioningResponseJws `json:"jws,required"`
+	Jws CardWebProvisionResponseAppleWebPushProvisioningResponseJws `json:"jws" api:"required"`
 	// A unique identifier for the JWS object.
-	State string                                                       `json:"state,required"`
+	State string                                                       `json:"state" api:"required"`
 	JSON  cardWebProvisionResponseAppleWebPushProvisioningResponseJSON `json:"-"`
 }
 
@@ -1173,7 +1173,7 @@ type CardNewParams struct {
 	//     VIRTUAL instead.
 	//   - `DIGITAL_WALLET` - _[Deprecated]_ Similar behavior to VIRTUAL cards, please
 	//     use VIRTUAL instead.
-	Type param.Field[CardNewParamsType] `json:"type,required"`
+	Type param.Field[CardNewParamsType] `json:"type" api:"required"`
 	// Globally unique identifier for the account that the card will be associated
 	// with. Required for programs enrolling users using the
 	// [/account_holders endpoint](https://docs.lithic.com/docs/account-holders-kyc).
@@ -1670,7 +1670,7 @@ func (r CardListParamsState) IsKnown() bool {
 
 type CardConvertPhysicalParams struct {
 	// The shipping address this card will be sent to.
-	ShippingAddress param.Field[shared.ShippingAddressParam] `json:"shipping_address,required"`
+	ShippingAddress param.Field[shared.ShippingAddressParam] `json:"shipping_address" api:"required"`
 	// If omitted, the previous carrier will be used.
 	Carrier param.Field[shared.CarrierParam] `json:"carrier"`
 	// Specifies the configuration (e.g. physical card art) that the card should be
@@ -1736,9 +1736,9 @@ func (r CardConvertPhysicalParamsShippingMethod) IsKnown() bool {
 
 type CardEmbedParams struct {
 	// A base64 encoded JSON string of an EmbedRequest to specify which card to load.
-	EmbedRequest param.Field[string] `query:"embed_request,required"`
+	EmbedRequest param.Field[string] `query:"embed_request" api:"required"`
 	// SHA256 HMAC of the embed_request JSON string with base64 digest.
-	Hmac param.Field[string] `query:"hmac,required"`
+	Hmac param.Field[string] `query:"hmac" api:"required"`
 }
 
 // URLQuery serializes [CardEmbedParams]'s query parameters as `url.Values`.
@@ -1918,7 +1918,7 @@ func (r CardReissueParamsShippingMethod) IsKnown() bool {
 
 type CardRenewParams struct {
 	// The shipping address this card will be sent to.
-	ShippingAddress param.Field[shared.ShippingAddressParam] `json:"shipping_address,required"`
+	ShippingAddress param.Field[shared.ShippingAddressParam] `json:"shipping_address" api:"required"`
 	// If omitted, the previous carrier will be used.
 	Carrier param.Field[shared.CarrierParam] `json:"carrier"`
 	// Two digit (MM) expiry month. If neither `exp_month` nor `exp_year` is provided,
@@ -1990,7 +1990,7 @@ func (r CardRenewParamsShippingMethod) IsKnown() bool {
 
 type CardSearchByPanParams struct {
 	// The PAN for the card being retrieved.
-	Pan param.Field[string] `json:"pan,required"`
+	Pan param.Field[string] `json:"pan" api:"required"`
 }
 
 func (r CardSearchByPanParams) MarshalJSON() (data []byte, err error) {

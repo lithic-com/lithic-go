@@ -47,7 +47,7 @@ func (r *TransactionEnhancedCommercialDataService) Get(ctx context.Context, tran
 }
 
 type TransactionEnhancedCommercialDataGetResponse struct {
-	Data []EnhancedData                                   `json:"data,required"`
+	Data []EnhancedData                                   `json:"data" api:"required"`
 	JSON transactionEnhancedCommercialDataGetResponseJSON `json:"-"`
 }
 

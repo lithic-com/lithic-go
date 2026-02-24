@@ -52,57 +52,57 @@ type ExternalBankAccountMicroDepositNewResponse struct {
 	// association. If a program links an external bank account to more than one
 	// end-user or to both the program and the end-user, then Lithic will return each
 	// record of the association
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
 	// accept USA bank accounts e.g., USA
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// An ISO 8601 string representing when this funding source was added to the Lithic
 	// account.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// currency of the external account 3-character alphabetic ISO 4217 code
-	Currency string `json:"currency,required"`
+	Currency string `json:"currency" api:"required"`
 	// The last 4 digits of the bank account. Derived by Lithic from the account number
 	// passed
-	LastFour string `json:"last_four,required"`
+	LastFour string `json:"last_four" api:"required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner string `json:"owner,required"`
+	Owner string `json:"owner" api:"required"`
 	// Owner Type
-	OwnerType ExternalBankAccountMicroDepositNewResponseOwnerType `json:"owner_type,required"`
+	OwnerType ExternalBankAccountMicroDepositNewResponseOwnerType `json:"owner_type" api:"required"`
 	// Routing Number
-	RoutingNumber string `json:"routing_number,required"`
+	RoutingNumber string `json:"routing_number" api:"required"`
 	// Account State
-	State ExternalBankAccountMicroDepositNewResponseState `json:"state,required"`
+	State ExternalBankAccountMicroDepositNewResponseState `json:"state" api:"required"`
 	// Account Type
-	Type ExternalBankAccountMicroDepositNewResponseType `json:"type,required"`
+	Type ExternalBankAccountMicroDepositNewResponseType `json:"type" api:"required"`
 	// The number of attempts at verification
-	VerificationAttempts int64 `json:"verification_attempts,required"`
+	VerificationAttempts int64 `json:"verification_attempts" api:"required"`
 	// Verification Method
-	VerificationMethod ExternalBankAccountMicroDepositNewResponseVerificationMethod `json:"verification_method,required"`
+	VerificationMethod ExternalBankAccountMicroDepositNewResponseVerificationMethod `json:"verification_method" api:"required"`
 	// Verification State
-	VerificationState ExternalBankAccountMicroDepositNewResponseVerificationState `json:"verification_state,required"`
+	VerificationState ExternalBankAccountMicroDepositNewResponseVerificationState `json:"verification_state" api:"required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
-	AccountToken string `json:"account_token,nullable" format:"uuid"`
+	AccountToken string `json:"account_token" api:"nullable" format:"uuid"`
 	// Address
-	Address ExternalBankAccountAddress `json:"address,nullable"`
+	Address ExternalBankAccountAddress `json:"address" api:"nullable"`
 	// Optional field that helps identify bank accounts in receipts
-	CompanyID string `json:"company_id,nullable"`
+	CompanyID string `json:"company_id" api:"nullable"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob time.Time `json:"dob,nullable" format:"date"`
+	Dob time.Time `json:"dob" api:"nullable" format:"date"`
 	// Doing Business As
-	DoingBusinessAs string `json:"doing_business_as,nullable"`
+	DoingBusinessAs string `json:"doing_business_as" api:"nullable"`
 	// The financial account token of the operating account to fund the micro deposits
-	FinancialAccountToken string `json:"financial_account_token,nullable" format:"uuid"`
+	FinancialAccountToken string `json:"financial_account_token" api:"nullable" format:"uuid"`
 	// The nickname for this External Bank Account
-	Name string `json:"name,nullable"`
+	Name string `json:"name" api:"nullable"`
 	// User Defined ID
-	UserDefinedID string `json:"user_defined_id,nullable"`
+	UserDefinedID string `json:"user_defined_id" api:"nullable"`
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
 	// by the ACH network
-	VerificationFailedReason string                                         `json:"verification_failed_reason,nullable"`
+	VerificationFailedReason string                                         `json:"verification_failed_reason" api:"nullable"`
 	JSON                     externalBankAccountMicroDepositNewResponseJSON `json:"-"`
 }
 
@@ -229,7 +229,7 @@ func (r ExternalBankAccountMicroDepositNewResponseVerificationState) IsKnown() b
 }
 
 type ExternalBankAccountMicroDepositNewParams struct {
-	MicroDeposits param.Field[[]int64] `json:"micro_deposits,required"`
+	MicroDeposits param.Field[[]int64] `json:"micro_deposits" api:"required"`
 }
 
 func (r ExternalBankAccountMicroDepositNewParams) MarshalJSON() (data []byte, err error) {

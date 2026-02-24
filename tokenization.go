@@ -206,12 +206,12 @@ func (r *TokenizationService) UpdateDigitalCardArt(ctx context.Context, tokeniza
 type Device struct {
 	// The IMEI number of the device being provisioned. For Amex, this field contains
 	// device ID instead as IMEI is not provided
-	Imei string `json:"imei,required,nullable"`
+	Imei string `json:"imei" api:"required,nullable"`
 	// The IP address of the device initiating the request
-	IPAddress string `json:"ip_address,required,nullable"`
+	IPAddress string `json:"ip_address" api:"required,nullable"`
 	// Latitude and longitude where the device is located during the authorization
 	// attempt
-	Location string     `json:"location,required,nullable"`
+	Location string     `json:"location" api:"required,nullable"`
 	JSON     deviceJSON `json:"-"`
 }
 
@@ -235,12 +235,12 @@ func (r deviceJSON) RawJSON() string {
 // Contains the metadata for the digital wallet being tokenized.
 type DigitalWalletTokenMetadata struct {
 	// Contains the information of the account responsible for the payment.
-	PaymentAccountInfo DigitalWalletTokenMetadataPaymentAccountInfo `json:"payment_account_info,required"`
+	PaymentAccountInfo DigitalWalletTokenMetadataPaymentAccountInfo `json:"payment_account_info" api:"required"`
 	// The current status of the digital wallet token. Pending or declined.
-	Status string `json:"status,required"`
+	Status string `json:"status" api:"required"`
 	// The identifier of the Payment App instance within a device that will be
 	// provisioned with a token
-	PaymentAppInstanceID string `json:"payment_app_instance_id,nullable"`
+	PaymentAppInstanceID string `json:"payment_app_instance_id" api:"nullable"`
 	// The party that requested the digitization
 	TokenRequestorID string `json:"token_requestor_id"`
 	// Human-readable name of the wallet that the token_requestor_id maps to.
@@ -272,14 +272,14 @@ func (r digitalWalletTokenMetadataJSON) RawJSON() string {
 type DigitalWalletTokenMetadataPaymentAccountInfo struct {
 	// Additional information that can be used to identify the account holder, such as
 	// name, address, etc
-	AccountHolderData DigitalWalletTokenMetadataPaymentAccountInfoAccountHolderData `json:"account_holder_data,required"`
+	AccountHolderData DigitalWalletTokenMetadataPaymentAccountInfoAccountHolderData `json:"account_holder_data" api:"required"`
 	// Reference to the PAN that is unique per Wallet Provider
-	PanUniqueReference string `json:"pan_unique_reference,nullable"`
+	PanUniqueReference string `json:"pan_unique_reference" api:"nullable"`
 	// The unique account reference assigned to the PAN
-	PaymentAccountReference string `json:"payment_account_reference,nullable"`
+	PaymentAccountReference string `json:"payment_account_reference" api:"nullable"`
 	// A unique reference assigned following the allocation of a token used to identify
 	// the token for the duration of its lifetime.
-	TokenUniqueReference string                                           `json:"token_unique_reference,nullable"`
+	TokenUniqueReference string                                           `json:"token_unique_reference" api:"nullable"`
 	JSON                 digitalWalletTokenMetadataPaymentAccountInfoJSON `json:"-"`
 }
 
@@ -307,7 +307,7 @@ func (r digitalWalletTokenMetadataPaymentAccountInfoJSON) RawJSON() string {
 type DigitalWalletTokenMetadataPaymentAccountInfoAccountHolderData struct {
 	// The phone number, may contain country code along with phone number when
 	// countryDialInCode is not present
-	PhoneNumber string                                                            `json:"phone_number,nullable"`
+	PhoneNumber string                                                            `json:"phone_number" api:"nullable"`
 	JSON        digitalWalletTokenMetadataPaymentAccountInfoAccountHolderDataJSON `json:"-"`
 }
 
@@ -355,38 +355,38 @@ func (r DigitalWalletTokenMetadataTokenRequestorName) IsKnown() bool {
 
 type Tokenization struct {
 	// Globally unique identifier for a Tokenization
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// The account token associated with the card being tokenized.
-	AccountToken string `json:"account_token,required" format:"uuid"`
+	AccountToken string `json:"account_token" api:"required" format:"uuid"`
 	// The card token associated with the card being tokenized.
-	CardToken string `json:"card_token,required" format:"uuid"`
+	CardToken string `json:"card_token" api:"required" format:"uuid"`
 	// Date and time when the tokenization first occurred. UTC time zone.
-	CreatedAt time.Time `json:"created_at,required" format:"date-time"`
+	CreatedAt time.Time `json:"created_at" api:"required" format:"date-time"`
 	// The dynamic pan assigned to the token by the network.
-	Dpan string `json:"dpan,required,nullable"`
+	Dpan string `json:"dpan" api:"required,nullable"`
 	// The status of the tokenization request
-	Status TokenizationStatus `json:"status,required"`
+	Status TokenizationStatus `json:"status" api:"required"`
 	// The entity that requested the tokenization. For digital wallets, this will be
 	// one of the defined wallet types. For merchant tokenizations, this will be a
 	// free-form merchant name string.
-	TokenRequestorName TokenizationTokenRequestorName `json:"token_requestor_name,required"`
+	TokenRequestorName TokenizationTokenRequestorName `json:"token_requestor_name" api:"required"`
 	// The network's unique reference for the tokenization.
-	TokenUniqueReference string `json:"token_unique_reference,required"`
+	TokenUniqueReference string `json:"token_unique_reference" api:"required"`
 	// The channel through which the tokenization was made.
-	TokenizationChannel TokenizationTokenizationChannel `json:"tokenization_channel,required"`
+	TokenizationChannel TokenizationTokenizationChannel `json:"tokenization_channel" api:"required"`
 	// Latest date and time when the tokenization was updated. UTC time zone.
-	UpdatedAt time.Time `json:"updated_at,required" format:"date-time"`
+	UpdatedAt time.Time `json:"updated_at" api:"required" format:"date-time"`
 	// The device identifier associated with the tokenization.
-	DeviceID string `json:"device_id,nullable"`
+	DeviceID string `json:"device_id" api:"nullable"`
 	// Specifies the digital card art displayed in the user's digital wallet after
 	// tokenization. This will be null if the tokenization was created without an
 	// associated digital card art. See
 	// [Flexible Card Art Guide](https://docs.lithic.com/docs/about-digital-wallets#flexible-card-art).
-	DigitalCardArtToken string `json:"digital_card_art_token,nullable" format:"uuid"`
+	DigitalCardArtToken string `json:"digital_card_art_token" api:"nullable" format:"uuid"`
 	// A list of events related to the tokenization.
 	Events []TokenizationEvent `json:"events"`
 	// The network's unique reference for the card that is tokenized.
-	PaymentAccountReferenceID string           `json:"payment_account_reference_id,nullable"`
+	PaymentAccountReferenceID string           `json:"payment_account_reference_id" api:"nullable"`
 	JSON                      tokenizationJSON `json:"-"`
 }
 
@@ -598,13 +598,13 @@ type TokenizationRuleResult struct {
 	// result was not associated with a customer-configured rule. This may happen in
 	// cases where a tokenization is declined or requires TFA due to a
 	// Lithic-configured security or compliance rule, for example.
-	AuthRuleToken string `json:"auth_rule_token,required,nullable" format:"uuid"`
+	AuthRuleToken string `json:"auth_rule_token" api:"required,nullable" format:"uuid"`
 	// A human-readable explanation outlining the motivation for the rule's result
-	Explanation string `json:"explanation,required,nullable"`
+	Explanation string `json:"explanation" api:"required,nullable"`
 	// The name for the rule, if any was configured
-	Name string `json:"name,required,nullable"`
+	Name string `json:"name" api:"required,nullable"`
 	// The result associated with this rule
-	Result TokenizationRuleResultResult `json:"result,required"`
+	Result TokenizationRuleResultResult `json:"result" api:"required"`
 	JSON   tokenizationRuleResultJSON   `json:"-"`
 }
 
@@ -676,14 +676,14 @@ func (r TokenizationTfaReason) IsKnown() bool {
 
 type WalletDecisioningInfo struct {
 	// Score given to the account by the Wallet Provider
-	AccountScore string `json:"account_score,required,nullable"`
+	AccountScore string `json:"account_score" api:"required,nullable"`
 	// Score given to the device by the Wallet Provider
-	DeviceScore string `json:"device_score,required,nullable"`
+	DeviceScore string `json:"device_score" api:"required,nullable"`
 	// The decision recommended by the Wallet Provider
-	RecommendedDecision string `json:"recommended_decision,required,nullable"`
+	RecommendedDecision string `json:"recommended_decision" api:"required,nullable"`
 	// Reasons provided to the Wallet Provider on how the recommended decision was
 	// reached
-	RecommendationReasons []string                  `json:"recommendation_reasons,nullable"`
+	RecommendationReasons []string                  `json:"recommendation_reasons" api:"nullable"`
 	JSON                  walletDecisioningInfoJSON `json:"-"`
 }
 
@@ -785,13 +785,13 @@ func (r TokenizationResendActivationCodeParamsActivationMethodType) IsKnown() bo
 
 type TokenizationSimulateParams struct {
 	// The three digit cvv for the card.
-	Cvv param.Field[string] `json:"cvv,required"`
+	Cvv param.Field[string] `json:"cvv" api:"required"`
 	// The expiration date of the card in 'MM/YY' format.
-	ExpirationDate param.Field[string] `json:"expiration_date,required"`
+	ExpirationDate param.Field[string] `json:"expiration_date" api:"required"`
 	// The sixteen digit card number.
-	Pan param.Field[string] `json:"pan,required"`
+	Pan param.Field[string] `json:"pan" api:"required"`
 	// The source of the tokenization request.
-	TokenizationSource param.Field[TokenizationSimulateParamsTokenizationSource] `json:"tokenization_source,required"`
+	TokenizationSource param.Field[TokenizationSimulateParamsTokenizationSource] `json:"tokenization_source" api:"required"`
 	// The account score (1-5) that represents how the Digital Wallet's view on how
 	// reputable an end user's account is.
 	AccountScore param.Field[int64] `json:"account_score"`

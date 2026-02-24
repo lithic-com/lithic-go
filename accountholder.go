@@ -220,9 +220,9 @@ func (r *AccountHolderService) UploadDocument(ctx context.Context, accountHolder
 
 type AccountHolder struct {
 	// Globally unique identifier for the account holder.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Timestamp of when the account holder was created.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Globally unique identifier for the account.
 	AccountToken string `json:"account_token" format:"uuid"`
 	// Deprecated.
@@ -337,21 +337,21 @@ func (r accountHolderJSON) RawJSON() string {
 type AccountHolderBeneficialOwnerEntity struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
-	Address shared.Address `json:"address,required"`
+	Address shared.Address `json:"address" api:"required"`
 	// Any name that the business operates under that is not its legal business name
 	// (if applicable).
-	DbaBusinessName string `json:"dba_business_name,required"`
+	DbaBusinessName string `json:"dba_business_name" api:"required"`
 	// Globally unique identifier for the entity.
-	EntityToken string `json:"entity_token,required" format:"uuid"`
+	EntityToken string `json:"entity_token" api:"required" format:"uuid"`
 	// Government-issued identification number. US Federal Employer Identification
 	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
 	// without hyphens.
-	GovernmentID string `json:"government_id,required"`
+	GovernmentID string `json:"government_id" api:"required"`
 	// Legal (formal) business name.
-	LegalBusinessName string `json:"legal_business_name,required"`
+	LegalBusinessName string `json:"legal_business_name" api:"required"`
 	// One or more of the business's phone number(s), entered as a list in E.164
 	// format.
-	PhoneNumbers []string `json:"phone_numbers,required"`
+	PhoneNumbers []string `json:"phone_numbers" api:"required"`
 	// Parent company name (if applicable).
 	ParentCompany string                                 `json:"parent_company"`
 	JSON          accountHolderBeneficialOwnerEntityJSON `json:"-"`
@@ -384,19 +384,19 @@ func (r accountHolderBeneficialOwnerEntityJSON) RawJSON() string {
 // id.
 type AccountHolderBeneficialOwnerIndividual struct {
 	// Individual's current address
-	Address shared.Address `json:"address,required"`
+	Address shared.Address `json:"address" api:"required"`
 	// Individual's date of birth, as an RFC 3339 date.
-	Dob string `json:"dob,required"`
+	Dob string `json:"dob" api:"required"`
 	// Individual's email address.
-	Email string `json:"email,required"`
+	Email string `json:"email" api:"required"`
 	// Globally unique identifier for the entity.
-	EntityToken string `json:"entity_token,required" format:"uuid"`
+	EntityToken string `json:"entity_token" api:"required" format:"uuid"`
 	// Individual's first name, as it appears on government-issued identity documents.
-	FirstName string `json:"first_name,required"`
+	FirstName string `json:"first_name" api:"required"`
 	// Individual's last name, as it appears on government-issued identity documents.
-	LastName string `json:"last_name,required"`
+	LastName string `json:"last_name" api:"required"`
 	// Individual's phone number, entered in E.164 format.
-	PhoneNumber string                                     `json:"phone_number,required"`
+	PhoneNumber string                                     `json:"phone_number" api:"required"`
 	JSON        accountHolderBeneficialOwnerIndividualJSON `json:"-"`
 }
 
@@ -427,21 +427,21 @@ func (r accountHolderBeneficialOwnerIndividualJSON) RawJSON() string {
 type AccountHolderBusinessEntity struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
-	Address shared.Address `json:"address,required"`
+	Address shared.Address `json:"address" api:"required"`
 	// Any name that the business operates under that is not its legal business name
 	// (if applicable).
-	DbaBusinessName string `json:"dba_business_name,required"`
+	DbaBusinessName string `json:"dba_business_name" api:"required"`
 	// Globally unique identifier for the entity.
-	EntityToken string `json:"entity_token,required" format:"uuid"`
+	EntityToken string `json:"entity_token" api:"required" format:"uuid"`
 	// Government-issued identification number. US Federal Employer Identification
 	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
 	// without hyphens.
-	GovernmentID string `json:"government_id,required"`
+	GovernmentID string `json:"government_id" api:"required"`
 	// Legal (formal) business name.
-	LegalBusinessName string `json:"legal_business_name,required"`
+	LegalBusinessName string `json:"legal_business_name" api:"required"`
 	// One or more of the business's phone number(s), entered as a list in E.164
 	// format.
-	PhoneNumbers []string `json:"phone_numbers,required"`
+	PhoneNumbers []string `json:"phone_numbers" api:"required"`
 	// Parent company name (if applicable).
 	ParentCompany string                          `json:"parent_company"`
 	JSON          accountHolderBusinessEntityJSON `json:"-"`
@@ -477,19 +477,19 @@ func (r accountHolderBusinessEntityJSON) RawJSON() string {
 // In some cases, this individual could also be a beneficial owner listed above.
 type AccountHolderControlPerson struct {
 	// Individual's current address
-	Address shared.Address `json:"address,required"`
+	Address shared.Address `json:"address" api:"required"`
 	// Individual's date of birth, as an RFC 3339 date.
-	Dob string `json:"dob,required"`
+	Dob string `json:"dob" api:"required"`
 	// Individual's email address.
-	Email string `json:"email,required"`
+	Email string `json:"email" api:"required"`
 	// Globally unique identifier for the entity.
-	EntityToken string `json:"entity_token,required" format:"uuid"`
+	EntityToken string `json:"entity_token" api:"required" format:"uuid"`
 	// Individual's first name, as it appears on government-issued identity documents.
-	FirstName string `json:"first_name,required"`
+	FirstName string `json:"first_name" api:"required"`
 	// Individual's last name, as it appears on government-issued identity documents.
-	LastName string `json:"last_name,required"`
+	LastName string `json:"last_name" api:"required"`
 	// Individual's phone number, entered in E.164 format.
-	PhoneNumber string                         `json:"phone_number,required"`
+	PhoneNumber string                         `json:"phone_number" api:"required"`
 	JSON        accountHolderControlPersonJSON `json:"-"`
 }
 
@@ -535,19 +535,19 @@ func (r AccountHolderExemptionType) IsKnown() bool {
 // for which the account is being opened and KYC is being run.
 type AccountHolderIndividual struct {
 	// Individual's current address
-	Address shared.Address `json:"address,required"`
+	Address shared.Address `json:"address" api:"required"`
 	// Individual's date of birth, as an RFC 3339 date.
-	Dob string `json:"dob,required"`
+	Dob string `json:"dob" api:"required"`
 	// Individual's email address.
-	Email string `json:"email,required"`
+	Email string `json:"email" api:"required"`
 	// Globally unique identifier for the entity.
-	EntityToken string `json:"entity_token,required" format:"uuid"`
+	EntityToken string `json:"entity_token" api:"required" format:"uuid"`
 	// Individual's first name, as it appears on government-issued identity documents.
-	FirstName string `json:"first_name,required"`
+	FirstName string `json:"first_name" api:"required"`
 	// Individual's last name, as it appears on government-issued identity documents.
-	LastName string `json:"last_name,required"`
+	LastName string `json:"last_name" api:"required"`
 	// Individual's phone number, entered in E.164 format.
-	PhoneNumber string                      `json:"phone_number,required"`
+	PhoneNumber string                      `json:"phone_number" api:"required"`
 	JSON        accountHolderIndividualJSON `json:"-"`
 }
 
@@ -753,10 +753,10 @@ type KYBParam struct {
 	// information. See
 	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
 	// (Section I) for more background on individuals that should be included.
-	BeneficialOwnerIndividuals param.Field[[]KYBBeneficialOwnerIndividualParam] `json:"beneficial_owner_individuals,required"`
+	BeneficialOwnerIndividuals param.Field[[]KYBBeneficialOwnerIndividualParam] `json:"beneficial_owner_individuals" api:"required"`
 	// Information for business for which the account is being opened and KYB is being
 	// run.
-	BusinessEntity param.Field[KYBBusinessEntityParam] `json:"business_entity,required"`
+	BusinessEntity param.Field[KYBBusinessEntityParam] `json:"business_entity" api:"required"`
 	// An individual with significant responsibility for managing the legal entity
 	// (e.g., a Chief Executive Officer, Chief Financial Officer, Chief Operating
 	// Officer, Managing Member, General Partner, President, Vice President, or
@@ -765,16 +765,16 @@ type KYBParam struct {
 	// could also be a beneficial owner listed above. See
 	// [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
 	// (Section II) for more background.
-	ControlPerson param.Field[KYBControlPersonParam] `json:"control_person,required"`
+	ControlPerson param.Field[KYBControlPersonParam] `json:"control_person" api:"required"`
 	// Short description of the company's line of business (i.e., what does the company
 	// do?).
-	NatureOfBusiness param.Field[string] `json:"nature_of_business,required"`
+	NatureOfBusiness param.Field[string] `json:"nature_of_business" api:"required"`
 	// An RFC 3339 timestamp indicating when the account holder accepted the applicable
 	// legal agreements (e.g., cardholder terms) as agreed upon during API customer's
 	// implementation with Lithic.
-	TosTimestamp param.Field[string] `json:"tos_timestamp,required"`
+	TosTimestamp param.Field[string] `json:"tos_timestamp" api:"required"`
 	// Specifies the type of KYB workflow to run.
-	Workflow param.Field[KYBWorkflow] `json:"workflow,required"`
+	Workflow param.Field[KYBWorkflow] `json:"workflow" api:"required"`
 	// Deprecated.
 	//
 	// Deprecated: deprecated
@@ -804,21 +804,21 @@ func (r KYBParam) implementsAccountHolderNewParamsBodyUnion() {}
 type KYBBeneficialOwnerIndividualParam struct {
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
-	Address param.Field[shared.AddressParam] `json:"address,required"`
+	Address param.Field[shared.AddressParam] `json:"address" api:"required"`
 	// Individual's date of birth, as an RFC 3339 date.
-	Dob param.Field[string] `json:"dob,required"`
+	Dob param.Field[string] `json:"dob" api:"required"`
 	// Individual's email address. If utilizing Lithic for chargeback processing, this
 	// customer email address may be used to communicate dispute status and resolution.
-	Email param.Field[string] `json:"email,required"`
+	Email param.Field[string] `json:"email" api:"required"`
 	// Individual's first name, as it appears on government-issued identity documents.
-	FirstName param.Field[string] `json:"first_name,required"`
+	FirstName param.Field[string] `json:"first_name" api:"required"`
 	// Government-issued identification number (required for identity verification and
 	// compliance with banking regulations). Social Security Numbers (SSN) and
 	// Individual Taxpayer Identification Numbers (ITIN) are currently supported,
 	// entered as full nine-digits, with or without hyphens
-	GovernmentID param.Field[string] `json:"government_id,required"`
+	GovernmentID param.Field[string] `json:"government_id" api:"required"`
 	// Individual's last name, as it appears on government-issued identity documents.
-	LastName param.Field[string] `json:"last_name,required"`
+	LastName param.Field[string] `json:"last_name" api:"required"`
 	// Individual's phone number, entered in E.164 format.
 	PhoneNumber param.Field[string] `json:"phone_number"`
 }
@@ -832,16 +832,16 @@ func (r KYBBeneficialOwnerIndividualParam) MarshalJSON() (data []byte, err error
 type KYBBusinessEntityParam struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
-	Address param.Field[shared.AddressParam] `json:"address,required"`
+	Address param.Field[shared.AddressParam] `json:"address" api:"required"`
 	// Government-issued identification number. US Federal Employer Identification
 	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
 	// without hyphens.
-	GovernmentID param.Field[string] `json:"government_id,required"`
+	GovernmentID param.Field[string] `json:"government_id" api:"required"`
 	// Legal (formal) business name.
-	LegalBusinessName param.Field[string] `json:"legal_business_name,required"`
+	LegalBusinessName param.Field[string] `json:"legal_business_name" api:"required"`
 	// One or more of the business's phone number(s), entered as a list in E.164
 	// format.
-	PhoneNumbers param.Field[[]string] `json:"phone_numbers,required"`
+	PhoneNumbers param.Field[[]string] `json:"phone_numbers" api:"required"`
 	// Any name that the business operates under that is not its legal business name
 	// (if applicable).
 	DbaBusinessName param.Field[string] `json:"dba_business_name"`
@@ -864,21 +864,21 @@ func (r KYBBusinessEntityParam) MarshalJSON() (data []byte, err error) {
 type KYBControlPersonParam struct {
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
-	Address param.Field[shared.AddressParam] `json:"address,required"`
+	Address param.Field[shared.AddressParam] `json:"address" api:"required"`
 	// Individual's date of birth, as an RFC 3339 date.
-	Dob param.Field[string] `json:"dob,required"`
+	Dob param.Field[string] `json:"dob" api:"required"`
 	// Individual's email address. If utilizing Lithic for chargeback processing, this
 	// customer email address may be used to communicate dispute status and resolution.
-	Email param.Field[string] `json:"email,required"`
+	Email param.Field[string] `json:"email" api:"required"`
 	// Individual's first name, as it appears on government-issued identity documents.
-	FirstName param.Field[string] `json:"first_name,required"`
+	FirstName param.Field[string] `json:"first_name" api:"required"`
 	// Government-issued identification number (required for identity verification and
 	// compliance with banking regulations). Social Security Numbers (SSN) and
 	// Individual Taxpayer Identification Numbers (ITIN) are currently supported,
 	// entered as full nine-digits, with or without hyphens
-	GovernmentID param.Field[string] `json:"government_id,required"`
+	GovernmentID param.Field[string] `json:"government_id" api:"required"`
 	// Individual's last name, as it appears on government-issued identity documents.
-	LastName param.Field[string] `json:"last_name,required"`
+	LastName param.Field[string] `json:"last_name" api:"required"`
 	// Individual's phone number, entered in E.164 format.
 	PhoneNumber param.Field[string] `json:"phone_number"`
 }
@@ -906,16 +906,16 @@ func (r KYBWorkflow) IsKnown() bool {
 type KYBBeneficialOwnerEntityParam struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
-	Address param.Field[shared.AddressParam] `json:"address,required"`
+	Address param.Field[shared.AddressParam] `json:"address" api:"required"`
 	// Government-issued identification number. US Federal Employer Identification
 	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
 	// without hyphens.
-	GovernmentID param.Field[string] `json:"government_id,required"`
+	GovernmentID param.Field[string] `json:"government_id" api:"required"`
 	// Legal (formal) business name.
-	LegalBusinessName param.Field[string] `json:"legal_business_name,required"`
+	LegalBusinessName param.Field[string] `json:"legal_business_name" api:"required"`
 	// One or more of the business's phone number(s), entered as a list in E.164
 	// format.
-	PhoneNumbers param.Field[[]string] `json:"phone_numbers,required"`
+	PhoneNumbers param.Field[[]string] `json:"phone_numbers" api:"required"`
 	// Any name that the business operates under that is not its legal business name
 	// (if applicable).
 	DbaBusinessName param.Field[string] `json:"dba_business_name"`
@@ -930,16 +930,16 @@ func (r KYBBeneficialOwnerEntityParam) MarshalJSON() (data []byte, err error) {
 type KYBBusinessEntity struct {
 	// Business”s physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
-	Address KYBBusinessEntityAddress `json:"address,required"`
+	Address KYBBusinessEntityAddress `json:"address" api:"required"`
 	// Government-issued identification number. US Federal Employer Identification
 	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
 	// without hyphens.
-	GovernmentID string `json:"government_id,required"`
+	GovernmentID string `json:"government_id" api:"required"`
 	// Legal (formal) business name.
-	LegalBusinessName string `json:"legal_business_name,required"`
+	LegalBusinessName string `json:"legal_business_name" api:"required"`
 	// One or more of the business's phone number(s), entered as a list in E.164
 	// format.
-	PhoneNumbers []string `json:"phone_numbers,required"`
+	PhoneNumbers []string `json:"phone_numbers" api:"required"`
 	// Any name that the business operates under that is not its legal business name
 	// (if applicable).
 	DbaBusinessName string `json:"dba_business_name"`
@@ -973,18 +973,18 @@ func (r kybBusinessEntityJSON) RawJSON() string {
 // acceptable; APO/FPO are acceptable.
 type KYBBusinessEntityAddress struct {
 	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
+	Address1 string `json:"address1" api:"required"`
 	// Name of city.
-	City string `json:"city,required"`
+	City string `json:"city" api:"required"`
 	// Valid country code. Only USA is currently supported, entered in uppercase ISO
 	// 3166-1 alpha-3 three-character format.
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
 	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode string `json:"postal_code,required"`
+	PostalCode string `json:"postal_code" api:"required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state,required"`
+	State string `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
 	Address2 string                       `json:"address2"`
 	JSON     kybBusinessEntityAddressJSON `json:"-"`
@@ -1014,13 +1014,13 @@ func (r kybBusinessEntityAddressJSON) RawJSON() string {
 type KYCParam struct {
 	// Information on individual for whom the account is being opened and KYC is being
 	// run.
-	Individual param.Field[KYCIndividualParam] `json:"individual,required"`
+	Individual param.Field[KYCIndividualParam] `json:"individual" api:"required"`
 	// An RFC 3339 timestamp indicating when the account holder accepted the applicable
 	// legal agreements (e.g., cardholder terms) as agreed upon during API customer's
 	// implementation with Lithic.
-	TosTimestamp param.Field[string] `json:"tos_timestamp,required"`
+	TosTimestamp param.Field[string] `json:"tos_timestamp" api:"required"`
 	// Specifies the type of KYC workflow to run.
-	Workflow param.Field[KYCWorkflow] `json:"workflow,required"`
+	Workflow param.Field[KYCWorkflow] `json:"workflow" api:"required"`
 	// A user provided id that can be used to link an account holder with an external
 	// system
 	ExternalID param.Field[string] `json:"external_id"`
@@ -1042,23 +1042,23 @@ func (r KYCParam) implementsAccountHolderNewParamsBodyUnion() {}
 type KYCIndividualParam struct {
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
-	Address param.Field[shared.AddressParam] `json:"address,required"`
+	Address param.Field[shared.AddressParam] `json:"address" api:"required"`
 	// Individual's date of birth, as an RFC 3339 date.
-	Dob param.Field[string] `json:"dob,required"`
+	Dob param.Field[string] `json:"dob" api:"required"`
 	// Individual's email address. If utilizing Lithic for chargeback processing, this
 	// customer email address may be used to communicate dispute status and resolution.
-	Email param.Field[string] `json:"email,required"`
+	Email param.Field[string] `json:"email" api:"required"`
 	// Individual's first name, as it appears on government-issued identity documents.
-	FirstName param.Field[string] `json:"first_name,required"`
+	FirstName param.Field[string] `json:"first_name" api:"required"`
 	// Government-issued identification number (required for identity verification and
 	// compliance with banking regulations). Social Security Numbers (SSN) and
 	// Individual Taxpayer Identification Numbers (ITIN) are currently supported,
 	// entered as full nine-digits, with or without hyphens
-	GovernmentID param.Field[string] `json:"government_id,required"`
+	GovernmentID param.Field[string] `json:"government_id" api:"required"`
 	// Individual's last name, as it appears on government-issued identity documents.
-	LastName param.Field[string] `json:"last_name,required"`
+	LastName param.Field[string] `json:"last_name" api:"required"`
 	// Individual's phone number, entered in E.164 format.
-	PhoneNumber param.Field[string] `json:"phone_number,required"`
+	PhoneNumber param.Field[string] `json:"phone_number" api:"required"`
 }
 
 func (r KYCIndividualParam) MarshalJSON() (data []byte, err error) {
@@ -1084,19 +1084,19 @@ func (r KYCWorkflow) IsKnown() bool {
 type KYCExemptParam struct {
 	// KYC Exempt user's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
-	Address param.Field[shared.AddressParam] `json:"address,required"`
+	Address param.Field[shared.AddressParam] `json:"address" api:"required"`
 	// The KYC Exempt user's email
-	Email param.Field[string] `json:"email,required"`
+	Email param.Field[string] `json:"email" api:"required"`
 	// The KYC Exempt user's first name
-	FirstName param.Field[string] `json:"first_name,required"`
+	FirstName param.Field[string] `json:"first_name" api:"required"`
 	// Specifies the type of KYC Exempt user
-	KYCExemptionType param.Field[KYCExemptKYCExemptionType] `json:"kyc_exemption_type,required"`
+	KYCExemptionType param.Field[KYCExemptKYCExemptionType] `json:"kyc_exemption_type" api:"required"`
 	// The KYC Exempt user's last name
-	LastName param.Field[string] `json:"last_name,required"`
+	LastName param.Field[string] `json:"last_name" api:"required"`
 	// The KYC Exempt user's phone number, entered in E.164 format.
-	PhoneNumber param.Field[string] `json:"phone_number,required"`
+	PhoneNumber param.Field[string] `json:"phone_number" api:"required"`
 	// Specifies the workflow type. This must be 'KYC_EXEMPT'
-	Workflow param.Field[KYCExemptWorkflow] `json:"workflow,required"`
+	Workflow param.Field[KYCExemptWorkflow] `json:"workflow" api:"required"`
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
 	// users of businesses. Pass the account_token of the enrolled business associated
 	// with the AUTHORIZED_USER in this field.
@@ -1145,13 +1145,13 @@ func (r KYCExemptWorkflow) IsKnown() bool {
 
 type RequiredDocument struct {
 	// Globally unique identifier for an entity.
-	EntityToken string `json:"entity_token,required" format:"uuid"`
+	EntityToken string `json:"entity_token" api:"required" format:"uuid"`
 	// Provides the status reasons that will be satisfied by providing one of the valid
 	// documents.
-	StatusReasons []string `json:"status_reasons,required"`
+	StatusReasons []string `json:"status_reasons" api:"required"`
 	// A list of valid documents that will satisfy the KYC requirements for the
 	// specified entity.
-	ValidDocuments []string             `json:"valid_documents,required"`
+	ValidDocuments []string             `json:"valid_documents" api:"required"`
 	JSON           requiredDocumentJSON `json:"-"`
 }
 
@@ -1175,17 +1175,17 @@ func (r requiredDocumentJSON) RawJSON() string {
 
 type AccountHolderNewResponse struct {
 	// Globally unique identifier for the account holder.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Globally unique identifier for the account.
-	AccountToken string `json:"account_token,required" format:"uuid"`
+	AccountToken string `json:"account_token" api:"required" format:"uuid"`
 	// KYC and KYB evaluation states.
 	//
 	// Note:
 	//
 	// - `PENDING_REVIEW` is only applicable for the `KYB_BASIC` workflow.
-	Status AccountHolderNewResponseStatus `json:"status,required"`
+	Status AccountHolderNewResponseStatus `json:"status" api:"required"`
 	// Reason for the evaluation status.
-	StatusReasons []AccountHolderNewResponseStatusReason `json:"status_reasons,required"`
+	StatusReasons []AccountHolderNewResponseStatusReason `json:"status_reasons" api:"required"`
 	// Timestamp of when the account holder was created.
 	Created time.Time `json:"created" format:"date-time"`
 	// Customer-provided token that indicates a relationship with an object outside of
@@ -1296,7 +1296,7 @@ type AccountHolderUpdateResponse struct {
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
 	// users of businesses. Pass the account_token of the enrolled business associated
 	// with the AUTHORIZED_USER in this field.
-	BusinessAccountToken string `json:"business_account_token,nullable" format:"uuid"`
+	BusinessAccountToken string `json:"business_account_token" api:"nullable" format:"uuid"`
 	// Only present when user_type == "BUSINESS". Information about the business for
 	// which the account is being opened and KYB is being run.
 	BusinessEntity KYBBusinessEntity `json:"business_entity"`
@@ -1454,7 +1454,7 @@ type AccountHolderUpdateResponseKYBKYCPatchResponse struct {
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
 	// users of businesses. Pass the account_token of the enrolled business associated
 	// with the AUTHORIZED_USER in this field.
-	BusinessAccountToken string `json:"business_account_token,nullable" format:"uuid"`
+	BusinessAccountToken string `json:"business_account_token" api:"nullable" format:"uuid"`
 	// Only present when user_type == "BUSINESS". Information about the business for
 	// which the account is being opened and KYB is being run.
 	BusinessEntity KYBBusinessEntity `json:"business_entity"`
@@ -1603,18 +1603,18 @@ func (r accountHolderUpdateResponseKybkycPatchResponseBeneficialOwnerIndividualJ
 // acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 type AccountHolderUpdateResponseKYBKYCPatchResponseBeneficialOwnerIndividualsAddress struct {
 	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
+	Address1 string `json:"address1" api:"required"`
 	// Name of city.
-	City string `json:"city,required"`
+	City string `json:"city" api:"required"`
 	// Valid country code. Only USA is currently supported, entered in uppercase ISO
 	// 3166-1 alpha-3 three-character format.
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
 	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode string `json:"postal_code,required"`
+	PostalCode string `json:"postal_code" api:"required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state,required"`
+	State string `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
 	Address2 string                                                                              `json:"address2"`
 	JSON     accountHolderUpdateResponseKybkycPatchResponseBeneficialOwnerIndividualsAddressJSON `json:"-"`
@@ -1697,18 +1697,18 @@ func (r accountHolderUpdateResponseKybkycPatchResponseControlPersonJSON) RawJSON
 // acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 type AccountHolderUpdateResponseKYBKYCPatchResponseControlPersonAddress struct {
 	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
+	Address1 string `json:"address1" api:"required"`
 	// Name of city.
-	City string `json:"city,required"`
+	City string `json:"city" api:"required"`
 	// Valid country code. Only USA is currently supported, entered in uppercase ISO
 	// 3166-1 alpha-3 three-character format.
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
 	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode string `json:"postal_code,required"`
+	PostalCode string `json:"postal_code" api:"required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state,required"`
+	State string `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
 	Address2 string                                                                 `json:"address2"`
 	JSON     accountHolderUpdateResponseKybkycPatchResponseControlPersonAddressJSON `json:"-"`
@@ -1799,18 +1799,18 @@ func (r accountHolderUpdateResponseKybkycPatchResponseIndividualJSON) RawJSON() 
 // acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 type AccountHolderUpdateResponseKYBKYCPatchResponseIndividualAddress struct {
 	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
+	Address1 string `json:"address1" api:"required"`
 	// Name of city.
-	City string `json:"city,required"`
+	City string `json:"city" api:"required"`
 	// Valid country code. Only USA is currently supported, entered in uppercase ISO
 	// 3166-1 alpha-3 three-character format.
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
 	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode string `json:"postal_code,required"`
+	PostalCode string `json:"postal_code" api:"required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state,required"`
+	State string `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
 	Address2 string                                                              `json:"address2"`
 	JSON     accountHolderUpdateResponseKybkycPatchResponseIndividualAddressJSON `json:"-"`
@@ -1922,16 +1922,16 @@ func (r AccountHolderUpdateResponseKYBKYCPatchResponseUserType) IsKnown() bool {
 // Information about the most recent identity verification attempt
 type AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplication struct {
 	// Timestamp of when the application was created.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// KYC and KYB evaluation states.
 	//
 	// Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
 	// `ADVANCED` workflow.
-	Status AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplicationStatus `json:"status,required"`
+	Status AccountHolderUpdateResponseKYBKYCPatchResponseVerificationApplicationStatus `json:"status" api:"required"`
 	// Reason for the evaluation status.
-	StatusReasons []AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason `json:"status_reasons,required"`
+	StatusReasons []AccountHolderUpdateResponseKybkycPatchResponseVerificationApplicationStatusReason `json:"status_reasons" api:"required"`
 	// Timestamp of when the application was last updated.
-	Updated time.Time `json:"updated,required" format:"date-time"`
+	Updated time.Time `json:"updated" api:"required" format:"date-time"`
 	// Timestamp of when the application passed the verification process. Only present
 	// if `status` is `ACCEPTED`
 	KyPassedAt time.Time                                                                 `json:"ky_passed_at" format:"date-time"`
@@ -2024,7 +2024,7 @@ type AccountHolderUpdateResponsePatchResponse struct {
 	// The address for the account holder
 	Address AccountHolderUpdateResponsePatchResponseAddress `json:"address"`
 	// The token for the business account that the account holder is associated with
-	BusinessAccountToken string `json:"business_account_token,nullable"`
+	BusinessAccountToken string `json:"business_account_token" api:"nullable"`
 	// The email for the account holder
 	Email string `json:"email"`
 	// The first name for the account holder
@@ -2066,18 +2066,18 @@ func (r AccountHolderUpdateResponsePatchResponse) implementsAccountHolderUpdateR
 // The address for the account holder
 type AccountHolderUpdateResponsePatchResponseAddress struct {
 	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
+	Address1 string `json:"address1" api:"required"`
 	// Name of city.
-	City string `json:"city,required"`
+	City string `json:"city" api:"required"`
 	// Valid country code. Only USA is currently supported, entered in uppercase ISO
 	// 3166-1 alpha-3 three-character format.
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
 	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode string `json:"postal_code,required"`
+	PostalCode string `json:"postal_code" api:"required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state,required"`
+	State string `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
 	Address2 string                                              `json:"address2"`
 	JSON     accountHolderUpdateResponsePatchResponseAddressJSON `json:"-"`
@@ -2202,7 +2202,7 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
 	// users of businesses. Pass the account_token of the enrolled business associated
 	// with the AUTHORIZED_USER in this field.
-	BusinessAccountToken string `json:"business_account_token,nullable" format:"uuid"`
+	BusinessAccountToken string `json:"business_account_token" api:"nullable" format:"uuid"`
 	// Only present when user_type == "BUSINESS". Information about the business for
 	// which the account is being opened and KYB is being run.
 	BusinessEntity KYBBusinessEntity `json:"business_entity"`
@@ -2349,18 +2349,18 @@ func (r accountHolderSimulateEnrollmentReviewResponseBeneficialOwnerIndividualJS
 // acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 type AccountHolderSimulateEnrollmentReviewResponseBeneficialOwnerIndividualsAddress struct {
 	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
+	Address1 string `json:"address1" api:"required"`
 	// Name of city.
-	City string `json:"city,required"`
+	City string `json:"city" api:"required"`
 	// Valid country code. Only USA is currently supported, entered in uppercase ISO
 	// 3166-1 alpha-3 three-character format.
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
 	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode string `json:"postal_code,required"`
+	PostalCode string `json:"postal_code" api:"required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state,required"`
+	State string `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
 	Address2 string                                                                             `json:"address2"`
 	JSON     accountHolderSimulateEnrollmentReviewResponseBeneficialOwnerIndividualsAddressJSON `json:"-"`
@@ -2443,18 +2443,18 @@ func (r accountHolderSimulateEnrollmentReviewResponseControlPersonJSON) RawJSON(
 // acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 type AccountHolderSimulateEnrollmentReviewResponseControlPersonAddress struct {
 	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
+	Address1 string `json:"address1" api:"required"`
 	// Name of city.
-	City string `json:"city,required"`
+	City string `json:"city" api:"required"`
 	// Valid country code. Only USA is currently supported, entered in uppercase ISO
 	// 3166-1 alpha-3 three-character format.
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
 	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode string `json:"postal_code,required"`
+	PostalCode string `json:"postal_code" api:"required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state,required"`
+	State string `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
 	Address2 string                                                                `json:"address2"`
 	JSON     accountHolderSimulateEnrollmentReviewResponseControlPersonAddressJSON `json:"-"`
@@ -2545,18 +2545,18 @@ func (r accountHolderSimulateEnrollmentReviewResponseIndividualJSON) RawJSON() s
 // acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 type AccountHolderSimulateEnrollmentReviewResponseIndividualAddress struct {
 	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
+	Address1 string `json:"address1" api:"required"`
 	// Name of city.
-	City string `json:"city,required"`
+	City string `json:"city" api:"required"`
 	// Valid country code. Only USA is currently supported, entered in uppercase ISO
 	// 3166-1 alpha-3 three-character format.
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
 	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode string `json:"postal_code,required"`
+	PostalCode string `json:"postal_code" api:"required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state,required"`
+	State string `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
 	Address2 string                                                             `json:"address2"`
 	JSON     accountHolderSimulateEnrollmentReviewResponseIndividualAddressJSON `json:"-"`
@@ -2668,16 +2668,16 @@ func (r AccountHolderSimulateEnrollmentReviewResponseUserType) IsKnown() bool {
 // Information about the most recent identity verification attempt
 type AccountHolderSimulateEnrollmentReviewResponseVerificationApplication struct {
 	// Timestamp of when the application was created.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// KYC and KYB evaluation states.
 	//
 	// Note: `PENDING_RESUBMIT` and `PENDING_DOCUMENT` are only applicable for the
 	// `ADVANCED` workflow.
-	Status AccountHolderSimulateEnrollmentReviewResponseVerificationApplicationStatus `json:"status,required"`
+	Status AccountHolderSimulateEnrollmentReviewResponseVerificationApplicationStatus `json:"status" api:"required"`
 	// Reason for the evaluation status.
-	StatusReasons []AccountHolderSimulateEnrollmentReviewResponseVerificationApplicationStatusReason `json:"status_reasons,required"`
+	StatusReasons []AccountHolderSimulateEnrollmentReviewResponseVerificationApplicationStatusReason `json:"status_reasons" api:"required"`
 	// Timestamp of when the application was last updated.
-	Updated time.Time `json:"updated,required" format:"date-time"`
+	Updated time.Time `json:"updated" api:"required" format:"date-time"`
 	// Timestamp of when the application passed the verification process. Only present
 	// if `status` is `ACCEPTED`
 	KyPassedAt time.Time                                                                `json:"ky_passed_at" format:"date-time"`
@@ -2765,7 +2765,7 @@ func (r AccountHolderSimulateEnrollmentReviewResponseVerificationApplicationStat
 }
 
 type AccountHolderNewParams struct {
-	Body AccountHolderNewParamsBodyUnion `json:"body,required"`
+	Body AccountHolderNewParamsBodyUnion `json:"body" api:"required"`
 }
 
 func (r AccountHolderNewParams) MarshalJSON() (data []byte, err error) {
@@ -2838,7 +2838,7 @@ type AccountHolderNewParamsBodyUnion interface {
 
 type AccountHolderNewParamsBodyKYBDelegated struct {
 	// Information for business for which the account is being opened.
-	BusinessEntity param.Field[AccountHolderNewParamsBodyKYBDelegatedBusinessEntity] `json:"business_entity,required"`
+	BusinessEntity param.Field[AccountHolderNewParamsBodyKYBDelegatedBusinessEntity] `json:"business_entity" api:"required"`
 	// You can submit a list of all direct and indirect individuals with 25% or more
 	// ownership in the company. A maximum of 4 beneficial owners can be submitted. If
 	// no individual owns 25% of the company you do not need to send beneficial owner
@@ -2884,9 +2884,9 @@ func (r AccountHolderNewParamsBodyKYBDelegated) implementsAccountHolderNewParams
 type AccountHolderNewParamsBodyKYBDelegatedBusinessEntity struct {
 	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
-	Address param.Field[shared.AddressParam] `json:"address,required"`
+	Address param.Field[shared.AddressParam] `json:"address" api:"required"`
 	// Legal (formal) business name.
-	LegalBusinessName param.Field[string] `json:"legal_business_name,required"`
+	LegalBusinessName param.Field[string] `json:"legal_business_name" api:"required"`
 	// Any name that the business operates under that is not its legal business name
 	// (if applicable).
 	DbaBusinessName param.Field[string] `json:"dba_business_name"`
@@ -2909,21 +2909,21 @@ func (r AccountHolderNewParamsBodyKYBDelegatedBusinessEntity) MarshalJSON() (dat
 type AccountHolderNewParamsBodyKYBDelegatedBeneficialOwnerIndividual struct {
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
-	Address param.Field[shared.AddressParam] `json:"address,required"`
+	Address param.Field[shared.AddressParam] `json:"address" api:"required"`
 	// Individual's date of birth, as an RFC 3339 date.
-	Dob param.Field[string] `json:"dob,required"`
+	Dob param.Field[string] `json:"dob" api:"required"`
 	// Individual's email address. If utilizing Lithic for chargeback processing, this
 	// customer email address may be used to communicate dispute status and resolution.
-	Email param.Field[string] `json:"email,required"`
+	Email param.Field[string] `json:"email" api:"required"`
 	// Individual's first name, as it appears on government-issued identity documents.
-	FirstName param.Field[string] `json:"first_name,required"`
+	FirstName param.Field[string] `json:"first_name" api:"required"`
 	// Government-issued identification number (required for identity verification and
 	// compliance with banking regulations). Social Security Numbers (SSN) and
 	// Individual Taxpayer Identification Numbers (ITIN) are currently supported,
 	// entered as full nine-digits, with or without hyphens
-	GovernmentID param.Field[string] `json:"government_id,required"`
+	GovernmentID param.Field[string] `json:"government_id" api:"required"`
 	// Individual's last name, as it appears on government-issued identity documents.
-	LastName param.Field[string] `json:"last_name,required"`
+	LastName param.Field[string] `json:"last_name" api:"required"`
 	// Individual's phone number, entered in E.164 format.
 	PhoneNumber param.Field[string] `json:"phone_number"`
 }
@@ -2943,21 +2943,21 @@ func (r AccountHolderNewParamsBodyKYBDelegatedBeneficialOwnerIndividual) Marshal
 type AccountHolderNewParamsBodyKYBDelegatedControlPerson struct {
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
-	Address param.Field[shared.AddressParam] `json:"address,required"`
+	Address param.Field[shared.AddressParam] `json:"address" api:"required"`
 	// Individual's date of birth, as an RFC 3339 date.
-	Dob param.Field[string] `json:"dob,required"`
+	Dob param.Field[string] `json:"dob" api:"required"`
 	// Individual's email address. If utilizing Lithic for chargeback processing, this
 	// customer email address may be used to communicate dispute status and resolution.
-	Email param.Field[string] `json:"email,required"`
+	Email param.Field[string] `json:"email" api:"required"`
 	// Individual's first name, as it appears on government-issued identity documents.
-	FirstName param.Field[string] `json:"first_name,required"`
+	FirstName param.Field[string] `json:"first_name" api:"required"`
 	// Government-issued identification number (required for identity verification and
 	// compliance with banking regulations). Social Security Numbers (SSN) and
 	// Individual Taxpayer Identification Numbers (ITIN) are currently supported,
 	// entered as full nine-digits, with or without hyphens
-	GovernmentID param.Field[string] `json:"government_id,required"`
+	GovernmentID param.Field[string] `json:"government_id" api:"required"`
 	// Individual's last name, as it appears on government-issued identity documents.
-	LastName param.Field[string] `json:"last_name,required"`
+	LastName param.Field[string] `json:"last_name" api:"required"`
 	// Individual's phone number, entered in E.164 format.
 	PhoneNumber param.Field[string] `json:"phone_number"`
 }
@@ -3019,7 +3019,7 @@ func (r AccountHolderNewParamsBodyWorkflow) IsKnown() bool {
 
 type AccountHolderUpdateParams struct {
 	// The KYB request payload for updating a business.
-	Body AccountHolderUpdateParamsBodyUnion `json:"body,required"`
+	Body AccountHolderUpdateParamsBodyUnion `json:"body" api:"required"`
 }
 
 func (r AccountHolderUpdateParams) MarshalJSON() (data []byte, err error) {
@@ -3127,7 +3127,7 @@ func (r AccountHolderUpdateParamsBodyKYBPatchRequest) implementsAccountHolderUpd
 
 type AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerEntity struct {
 	// Globally unique identifier for an entity.
-	EntityToken param.Field[string] `json:"entity_token,required" format:"uuid"`
+	EntityToken param.Field[string] `json:"entity_token" api:"required" format:"uuid"`
 	// Business”s physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
 	Address param.Field[AddressUpdateParam] `json:"address"`
@@ -3154,7 +3154,7 @@ func (r AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerEntity) Marsh
 // Individuals associated with a KYB application. Phone number is optional.
 type AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerIndividual struct {
 	// Globally unique identifier for an entity.
-	EntityToken param.Field[string] `json:"entity_token,required" format:"uuid"`
+	EntityToken param.Field[string] `json:"entity_token" api:"required" format:"uuid"`
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 	Address param.Field[AddressUpdateParam] `json:"address"`
@@ -3184,7 +3184,7 @@ func (r AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerIndividual) M
 // run.
 type AccountHolderUpdateParamsBodyKYBPatchRequestBusinessEntity struct {
 	// Globally unique identifier for an entity.
-	EntityToken param.Field[string] `json:"entity_token,required" format:"uuid"`
+	EntityToken param.Field[string] `json:"entity_token" api:"required" format:"uuid"`
 	// Business”s physical address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
 	Address param.Field[AddressUpdateParam] `json:"address"`
@@ -3218,7 +3218,7 @@ func (r AccountHolderUpdateParamsBodyKYBPatchRequestBusinessEntity) MarshalJSON(
 // (Section II) for more background.
 type AccountHolderUpdateParamsBodyKYBPatchRequestControlPerson struct {
 	// Globally unique identifier for an entity.
-	EntityToken param.Field[string] `json:"entity_token,required" format:"uuid"`
+	EntityToken param.Field[string] `json:"entity_token" api:"required" format:"uuid"`
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 	Address param.Field[AddressUpdateParam] `json:"address"`
@@ -3265,7 +3265,7 @@ func (r AccountHolderUpdateParamsBodyKYCPatchRequest) implementsAccountHolderUpd
 // being run.
 type AccountHolderUpdateParamsBodyKYCPatchRequestIndividual struct {
 	// Globally unique identifier for an entity.
-	EntityToken param.Field[string] `json:"entity_token,required" format:"uuid"`
+	EntityToken param.Field[string] `json:"entity_token" api:"required" format:"uuid"`
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 	Address param.Field[AddressUpdateParam] `json:"address"`
@@ -3364,9 +3364,9 @@ func (r AccountHolderListParams) URLQuery() (v url.Values) {
 
 type AccountHolderSimulateEnrollmentDocumentReviewParams struct {
 	// The account holder document upload which to perform the simulation upon.
-	DocumentUploadToken param.Field[string] `json:"document_upload_token,required"`
+	DocumentUploadToken param.Field[string] `json:"document_upload_token" api:"required"`
 	// An account holder document's upload status for use within the simulation.
-	Status param.Field[AccountHolderSimulateEnrollmentDocumentReviewParamsStatus] `json:"status,required"`
+	Status param.Field[AccountHolderSimulateEnrollmentDocumentReviewParamsStatus] `json:"status" api:"required"`
 	// A list of status reasons associated with a KYB account holder in PENDING_REVIEW
 	AcceptedEntityStatusReasons param.Field[[]string] `json:"accepted_entity_status_reasons"`
 	// Status reason that will be associated with the simulated account holder status.
@@ -3485,9 +3485,9 @@ func (r AccountHolderSimulateEnrollmentReviewParamsStatusReason) IsKnown() bool 
 
 type AccountHolderUploadDocumentParams struct {
 	// The type of document to upload
-	DocumentType param.Field[AccountHolderUploadDocumentParamsDocumentType] `json:"document_type,required"`
+	DocumentType param.Field[AccountHolderUploadDocumentParamsDocumentType] `json:"document_type" api:"required"`
 	// Globally unique identifier for the entity.
-	EntityToken param.Field[string] `json:"entity_token,required" format:"uuid"`
+	EntityToken param.Field[string] `json:"entity_token" api:"required" format:"uuid"`
 }
 
 func (r AccountHolderUploadDocumentParams) MarshalJSON() (data []byte, err error) {

@@ -106,9 +106,9 @@ func (r *AuthRuleV2BacktestService) Get(ctx context.Context, authRuleToken strin
 
 type BacktestResults struct {
 	// Auth Rule Backtest Token
-	BacktestToken        string                              `json:"backtest_token,required" format:"uuid"`
-	Results              BacktestResultsResults              `json:"results,required"`
-	SimulationParameters BacktestResultsSimulationParameters `json:"simulation_parameters,required"`
+	BacktestToken        string                              `json:"backtest_token" api:"required" format:"uuid"`
+	Results              BacktestResultsResults              `json:"results" api:"required"`
+	SimulationParameters BacktestResultsSimulationParameters `json:"simulation_parameters" api:"required"`
 	JSON                 backtestResultsJSON                 `json:"-"`
 }
 
@@ -130,8 +130,8 @@ func (r backtestResultsJSON) RawJSON() string {
 }
 
 type BacktestResultsResults struct {
-	CurrentVersion RuleStats                  `json:"current_version,nullable"`
-	DraftVersion   RuleStats                  `json:"draft_version,nullable"`
+	CurrentVersion RuleStats                  `json:"current_version" api:"nullable"`
+	DraftVersion   RuleStats                  `json:"draft_version" api:"nullable"`
 	JSON           backtestResultsResultsJSON `json:"-"`
 }
 

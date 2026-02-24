@@ -80,7 +80,7 @@ func (r *WebhookService) ParseUnsafe(payload []byte) (*ParsedWebhookEvent, error
 
 type AccountHolderCreatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType AccountHolderCreatedWebhookEventEventType `json:"event_type,required"`
+	EventType AccountHolderCreatedWebhookEventEventType `json:"event_type" api:"required"`
 	// The token of the account_holder that was created.
 	Token string `json:"token" format:"uuid"`
 	// The token of the account that was created.
@@ -152,10 +152,10 @@ func (r AccountHolderCreatedWebhookEventStatus) IsKnown() bool {
 // KYB payload for an updated account holder.
 type AccountHolderUpdatedWebhookEvent struct {
 	// The token of the account_holder that was created.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// If applicable, represents the business account token associated with the
 	// account_holder.
-	BusinessAccountToken string `json:"business_account_token,nullable" format:"uuid"`
+	BusinessAccountToken string `json:"business_account_token" api:"nullable" format:"uuid"`
 	// When the account_holder updated event was created
 	Created time.Time `json:"created" format:"date-time"`
 	// If updated, the newly updated email associated with the account_holder otherwise
@@ -165,7 +165,7 @@ type AccountHolderUpdatedWebhookEvent struct {
 	EventType AccountHolderUpdatedWebhookEventEventType `json:"event_type"`
 	// A user provided id that can be used to link an account holder with an external
 	// system
-	ExternalID string `json:"external_id,nullable"`
+	ExternalID string `json:"external_id" api:"nullable"`
 	// If applicable, represents the account_holder's first name.
 	FirstName string `json:"first_name"`
 	// If applicable, represents the account_holder's last name.
@@ -267,9 +267,9 @@ func init() {
 // KYB payload for an updated account holder.
 type AccountHolderUpdatedWebhookEventKYBPayload struct {
 	// The token of the account_holder that was created.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Original request to update the account holder.
-	UpdateRequest AccountHolderUpdatedWebhookEventKYBPayloadUpdateRequest `json:"update_request,required"`
+	UpdateRequest AccountHolderUpdatedWebhookEventKYBPayloadUpdateRequest `json:"update_request" api:"required"`
 	// The type of event that occurred.
 	EventType AccountHolderUpdatedWebhookEventKYBPayloadEventType `json:"event_type"`
 	// A user provided id that can be used to link an account holder with an external
@@ -402,18 +402,18 @@ func (r accountHolderUpdatedWebhookEventKYBPayloadUpdateRequestBeneficialOwnerIn
 // acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 type AccountHolderUpdatedWebhookEventKYBPayloadUpdateRequestBeneficialOwnerIndividualsAddress struct {
 	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
+	Address1 string `json:"address1" api:"required"`
 	// Name of city.
-	City string `json:"city,required"`
+	City string `json:"city" api:"required"`
 	// Valid country code. Only USA is currently supported, entered in uppercase ISO
 	// 3166-1 alpha-3 three-character format.
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
 	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode string `json:"postal_code,required"`
+	PostalCode string `json:"postal_code" api:"required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state,required"`
+	State string `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
 	Address2 string                                                                                       `json:"address2"`
 	JSON     accountHolderUpdatedWebhookEventKYBPayloadUpdateRequestBeneficialOwnerIndividualsAddressJSON `json:"-"`
@@ -493,18 +493,18 @@ func (r accountHolderUpdatedWebhookEventKYBPayloadUpdateRequestControlPersonJSON
 // acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 type AccountHolderUpdatedWebhookEventKYBPayloadUpdateRequestControlPersonAddress struct {
 	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
+	Address1 string `json:"address1" api:"required"`
 	// Name of city.
-	City string `json:"city,required"`
+	City string `json:"city" api:"required"`
 	// Valid country code. Only USA is currently supported, entered in uppercase ISO
 	// 3166-1 alpha-3 three-character format.
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
 	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode string `json:"postal_code,required"`
+	PostalCode string `json:"postal_code" api:"required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state,required"`
+	State string `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
 	Address2 string                                                                          `json:"address2"`
 	JSON     accountHolderUpdatedWebhookEventKYBPayloadUpdateRequestControlPersonAddressJSON `json:"-"`
@@ -550,9 +550,9 @@ func (r AccountHolderUpdatedWebhookEventKYBPayloadEventType) IsKnown() bool {
 // KYC payload for an updated account holder.
 type AccountHolderUpdatedWebhookEventKYCPayload struct {
 	// The token of the account_holder that was created.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Original request to update the account holder.
-	UpdateRequest AccountHolderUpdatedWebhookEventKYCPayloadUpdateRequest `json:"update_request,required"`
+	UpdateRequest AccountHolderUpdatedWebhookEventKYCPayloadUpdateRequest `json:"update_request" api:"required"`
 	// The type of event that occurred.
 	EventType AccountHolderUpdatedWebhookEventKYCPayloadEventType `json:"event_type"`
 	// A user provided id that can be used to link an account holder with an external
@@ -653,18 +653,18 @@ func (r accountHolderUpdatedWebhookEventKYCPayloadUpdateRequestIndividualJSON) R
 // acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 type AccountHolderUpdatedWebhookEventKYCPayloadUpdateRequestIndividualAddress struct {
 	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
+	Address1 string `json:"address1" api:"required"`
 	// Name of city.
-	City string `json:"city,required"`
+	City string `json:"city" api:"required"`
 	// Valid country code. Only USA is currently supported, entered in uppercase ISO
 	// 3166-1 alpha-3 three-character format.
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
 	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode string `json:"postal_code,required"`
+	PostalCode string `json:"postal_code" api:"required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state,required"`
+	State string `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
 	Address2 string                                                                       `json:"address2"`
 	JSON     accountHolderUpdatedWebhookEventKYCPayloadUpdateRequestIndividualAddressJSON `json:"-"`
@@ -710,10 +710,10 @@ func (r AccountHolderUpdatedWebhookEventKYCPayloadEventType) IsKnown() bool {
 // Legacy payload for an updated account holder.
 type AccountHolderUpdatedWebhookEventLegacyPayload struct {
 	// The token of the account_holder that was created.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// If applicable, represents the business account token associated with the
 	// account_holder.
-	BusinessAccountToken string `json:"business_account_token,nullable" format:"uuid"`
+	BusinessAccountToken string `json:"business_account_token" api:"nullable" format:"uuid"`
 	// When the account_holder updated event was created
 	Created time.Time `json:"created" format:"date-time"`
 	// If updated, the newly updated email associated with the account_holder otherwise
@@ -722,7 +722,7 @@ type AccountHolderUpdatedWebhookEventLegacyPayload struct {
 	// The type of event that occurred.
 	EventType AccountHolderUpdatedWebhookEventLegacyPayloadEventType `json:"event_type"`
 	// If applicable, represents the external_id associated with the account_holder.
-	ExternalID string `json:"external_id,nullable"`
+	ExternalID string `json:"external_id" api:"nullable"`
 	// If applicable, represents the account_holder's first name.
 	FirstName string `json:"first_name"`
 	// If applicable, represents the account_holder's last name.
@@ -794,7 +794,7 @@ func (r AccountHolderUpdatedWebhookEventEventType) IsKnown() bool {
 
 type AccountHolderVerificationWebhookEvent struct {
 	// The type of event that occurred.
-	EventType AccountHolderVerificationWebhookEventEventType `json:"event_type,required"`
+	EventType AccountHolderVerificationWebhookEventEventType `json:"event_type" api:"required"`
 	// The token of the account_holder being verified.
 	Token string `json:"token" format:"uuid"`
 	// The token of the account being verified.
@@ -864,7 +864,7 @@ func (r AccountHolderVerificationWebhookEventStatus) IsKnown() bool {
 
 type AccountHolderDocumentUpdatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType AccountHolderDocumentUpdatedWebhookEventEventType `json:"event_type,required"`
+	EventType AccountHolderDocumentUpdatedWebhookEventEventType `json:"event_type" api:"required"`
 	// The token of the account holder document
 	Token string `json:"token" format:"uuid"`
 	// The token of the account_holder that the document belongs to
@@ -1030,48 +1030,48 @@ func (r AccountHolderDocumentUpdatedWebhookEventRequiredDocumentUploadsStatus) I
 
 type CardAuthorizationApprovalRequestWebhookEvent struct {
 	// The provisional transaction group uuid associated with the authorization
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Fee (in cents) assessed by the merchant and paid for by the cardholder. Will be
 	// zero if no fee is assessed. Rebates may be transmitted as a negative value to
 	// indicate credited fees.
-	AcquirerFee int64 `json:"acquirer_fee,required"`
+	AcquirerFee int64 `json:"acquirer_fee" api:"required"`
 	// Deprecated, use `amounts`. Authorization amount of the transaction (in cents),
 	// including any acquirer fees. The contents of this field are identical to
 	// `authorization_amount`.
 	//
 	// Deprecated: deprecated
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// Structured amounts for this authorization. The `cardholder` and `merchant`
 	// amounts reflect the original network authorization values. For programs with
 	// hold adjustments enabled (e.g., automated fuel dispensers or tipping MCCs), the
 	// `hold` amount may exceed the `cardholder` and `merchant` amounts to account for
 	// anticipated final transaction amounts such as tips or fuel fill-ups
-	Amounts CardAuthorizationApprovalRequestWebhookEventAmounts `json:"amounts,required"`
+	Amounts CardAuthorizationApprovalRequestWebhookEventAmounts `json:"amounts" api:"required"`
 	// Deprecated, use `amounts`. The base transaction amount (in cents) plus the
 	// acquirer fee field. This is the amount the issuer should authorize against
 	// unless the issuer is paying the acquirer fee on behalf of the cardholder.
 	//
 	// Deprecated: deprecated
-	AuthorizationAmount int64                                           `json:"authorization_amount,required"`
-	Avs                 CardAuthorizationApprovalRequestWebhookEventAvs `json:"avs,required"`
+	AuthorizationAmount int64                                           `json:"authorization_amount" api:"required"`
+	Avs                 CardAuthorizationApprovalRequestWebhookEventAvs `json:"avs" api:"required"`
 	// Card object in ASA
-	Card CardAuthorizationApprovalRequestWebhookEventCard `json:"card,required"`
+	Card CardAuthorizationApprovalRequestWebhookEventCard `json:"card" api:"required"`
 	// Deprecated, use `amounts`. 3-character alphabetic ISO 4217 code for cardholder's
 	// billing currency.
 	//
 	// Deprecated: deprecated
-	CardholderCurrency string `json:"cardholder_currency,required"`
+	CardholderCurrency string `json:"cardholder_currency" api:"required"`
 	// The portion of the transaction requested as cash back by the cardholder, and
 	// does not include any acquirer fees. The amount field includes the purchase
 	// amount, the requested cash back amount, and any acquirer fees.
 	//
 	// If no cash back was requested, the value of this field will be 0, and the field
 	// will always be present.
-	CashAmount int64 `json:"cash_amount,required"`
+	CashAmount int64 `json:"cash_amount" api:"required"`
 	// Date and time when the transaction first occurred in UTC.
-	Created   time.Time                                             `json:"created,required" format:"date-time"`
-	EventType CardAuthorizationApprovalRequestWebhookEventEventType `json:"event_type,required"`
-	Merchant  shared.Merchant                                       `json:"merchant,required"`
+	Created   time.Time                                             `json:"created" api:"required" format:"date-time"`
+	EventType CardAuthorizationApprovalRequestWebhookEventEventType `json:"event_type" api:"required"`
+	Merchant  shared.Merchant                                       `json:"merchant" api:"required"`
 	// Deprecated, use `amounts`. The amount that the merchant will receive,
 	// denominated in `merchant_currency` and in the smallest currency unit. Note the
 	// amount includes `acquirer_fee`, similar to `authorization_amount`. It will be
@@ -1079,22 +1079,22 @@ type CardAuthorizationApprovalRequestWebhookEvent struct {
 	// different currency.
 	//
 	// Deprecated: deprecated
-	MerchantAmount int64 `json:"merchant_amount,required"`
+	MerchantAmount int64 `json:"merchant_amount" api:"required"`
 	// 3-character alphabetic ISO 4217 code for the local currency of the transaction.
 	//
 	// Deprecated: deprecated
-	MerchantCurrency string `json:"merchant_currency,required"`
+	MerchantCurrency string `json:"merchant_currency" api:"required"`
 	// Deprecated, use `amounts`. Amount (in cents) of the transaction that has been
 	// settled, including any acquirer fees.
 	//
 	// Deprecated: deprecated
-	SettledAmount int64 `json:"settled_amount,required"`
+	SettledAmount int64 `json:"settled_amount" api:"required"`
 	// The type of authorization request that this request is for. Note that
 	// `CREDIT_AUTHORIZATION` and `FINANCIAL_CREDIT_AUTHORIZATION` is only available to
 	// users with credit decisioning via ASA enabled.
-	Status CardAuthorizationApprovalRequestWebhookEventStatus `json:"status,required"`
+	Status CardAuthorizationApprovalRequestWebhookEventStatus `json:"status" api:"required"`
 	// The entity that initiated the transaction.
-	TransactionInitiator     CardAuthorizationApprovalRequestWebhookEventTransactionInitiator `json:"transaction_initiator,required"`
+	TransactionInitiator     CardAuthorizationApprovalRequestWebhookEventTransactionInitiator `json:"transaction_initiator" api:"required"`
 	AccountType              CardAuthorizationApprovalRequestWebhookEventAccountType          `json:"account_type"`
 	CardholderAuthentication CardholderAuthentication                                         `json:"cardholder_authentication"`
 	// Deprecated, use `cash_amount`.
@@ -1112,7 +1112,7 @@ type CardAuthorizationApprovalRequestWebhookEvent struct {
 	EventToken string `json:"event_token" format:"uuid"`
 	// Optional Object containing information if the Card is a part of a Fleet managed
 	// program
-	FleetInfo CardAuthorizationApprovalRequestWebhookEventFleetInfo `json:"fleet_info,nullable"`
+	FleetInfo CardAuthorizationApprovalRequestWebhookEventFleetInfo `json:"fleet_info" api:"nullable"`
 	// The latest Authorization Challenge that was issued to the cardholder for this
 	// merchant.
 	LatestChallenge CardAuthorizationApprovalRequestWebhookEventLatestChallenge `json:"latest_challenge"`
@@ -1123,16 +1123,16 @@ type CardAuthorizationApprovalRequestWebhookEvent struct {
 	// risk and 999 representing the highest risk. For Visa transactions, where the raw
 	// score has a range of 0-99, Lithic will normalize the score by multiplying the
 	// raw score by 10x.
-	NetworkRiskScore int64 `json:"network_risk_score,nullable"`
+	NetworkRiskScore int64 `json:"network_risk_score" api:"nullable"`
 	// Contains raw data provided by the card network, including attributes that
 	// provide further context about the authorization. If populated by the network,
 	// data is organized by Lithic and passed through without further modification.
 	// Please consult the official network documentation for more details about these
 	// values and how to use them. This object is only available to certain programs-
 	// contact your Customer Success Manager to discuss enabling access.
-	NetworkSpecificData CardAuthorizationApprovalRequestWebhookEventNetworkSpecificData `json:"network_specific_data,nullable"`
+	NetworkSpecificData CardAuthorizationApprovalRequestWebhookEventNetworkSpecificData `json:"network_specific_data" api:"nullable"`
 	Pos                 CardAuthorizationApprovalRequestWebhookEventPos                 `json:"pos"`
-	TokenInfo           TokenInfo                                                       `json:"token_info,nullable"`
+	TokenInfo           TokenInfo                                                       `json:"token_info" api:"nullable"`
 	// Deprecated: approximate time-to-live for the authorization.
 	Ttl  time.Time                                        `json:"ttl" format:"date-time"`
 	JSON cardAuthorizationApprovalRequestWebhookEventJSON `json:"-"`
@@ -1191,10 +1191,10 @@ func (r CardAuthorizationApprovalRequestWebhookEvent) implementsParsedWebhookEve
 // `hold` amount may exceed the `cardholder` and `merchant` amounts to account for
 // anticipated final transaction amounts such as tips or fuel fill-ups
 type CardAuthorizationApprovalRequestWebhookEventAmounts struct {
-	Cardholder CardAuthorizationApprovalRequestWebhookEventAmountsCardholder `json:"cardholder,required"`
-	Hold       CardAuthorizationApprovalRequestWebhookEventAmountsHold       `json:"hold,required,nullable"`
-	Merchant   CardAuthorizationApprovalRequestWebhookEventAmountsMerchant   `json:"merchant,required"`
-	Settlement CardAuthorizationApprovalRequestWebhookEventAmountsSettlement `json:"settlement,required,nullable"`
+	Cardholder CardAuthorizationApprovalRequestWebhookEventAmountsCardholder `json:"cardholder" api:"required"`
+	Hold       CardAuthorizationApprovalRequestWebhookEventAmountsHold       `json:"hold" api:"required,nullable"`
+	Merchant   CardAuthorizationApprovalRequestWebhookEventAmountsMerchant   `json:"merchant" api:"required"`
+	Settlement CardAuthorizationApprovalRequestWebhookEventAmountsSettlement `json:"settlement" api:"required,nullable"`
 	JSON       cardAuthorizationApprovalRequestWebhookEventAmountsJSON       `json:"-"`
 }
 
@@ -1219,11 +1219,11 @@ func (r cardAuthorizationApprovalRequestWebhookEventAmountsJSON) RawJSON() strin
 
 type CardAuthorizationApprovalRequestWebhookEventAmountsCardholder struct {
 	// Amount in the smallest unit of the applicable currency (e.g., cents)
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// Exchange rate used for currency conversion
-	ConversionRate string `json:"conversion_rate,required"`
+	ConversionRate string `json:"conversion_rate" api:"required"`
 	// 3-character alphabetic ISO 4217 currency
-	Currency shared.Currency                                                   `json:"currency,required"`
+	Currency shared.Currency                                                   `json:"currency" api:"required"`
 	JSON     cardAuthorizationApprovalRequestWebhookEventAmountsCardholderJSON `json:"-"`
 }
 
@@ -1248,9 +1248,9 @@ func (r cardAuthorizationApprovalRequestWebhookEventAmountsCardholderJSON) RawJS
 
 type CardAuthorizationApprovalRequestWebhookEventAmountsHold struct {
 	// Amount in the smallest unit of the applicable currency (e.g., cents)
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// 3-character alphabetic ISO 4217 currency
-	Currency shared.Currency                                             `json:"currency,required"`
+	Currency shared.Currency                                             `json:"currency" api:"required"`
 	JSON     cardAuthorizationApprovalRequestWebhookEventAmountsHoldJSON `json:"-"`
 }
 
@@ -1274,9 +1274,9 @@ func (r cardAuthorizationApprovalRequestWebhookEventAmountsHoldJSON) RawJSON() s
 
 type CardAuthorizationApprovalRequestWebhookEventAmountsMerchant struct {
 	// Amount in the smallest unit of the applicable currency (e.g., cents)
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// 3-character alphabetic ISO 4217 currency
-	Currency shared.Currency                                                 `json:"currency,required"`
+	Currency shared.Currency                                                 `json:"currency" api:"required"`
 	JSON     cardAuthorizationApprovalRequestWebhookEventAmountsMerchantJSON `json:"-"`
 }
 
@@ -1300,9 +1300,9 @@ func (r cardAuthorizationApprovalRequestWebhookEventAmountsMerchantJSON) RawJSON
 
 type CardAuthorizationApprovalRequestWebhookEventAmountsSettlement struct {
 	// Amount in the smallest unit of the applicable currency (e.g., cents)
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// 3-character alphabetic ISO 4217 currency
-	Currency shared.Currency                                                   `json:"currency,required"`
+	Currency shared.Currency                                                   `json:"currency" api:"required"`
 	JSON     cardAuthorizationApprovalRequestWebhookEventAmountsSettlementJSON `json:"-"`
 }
 
@@ -1326,14 +1326,14 @@ func (r cardAuthorizationApprovalRequestWebhookEventAmountsSettlementJSON) RawJS
 
 type CardAuthorizationApprovalRequestWebhookEventAvs struct {
 	// Cardholder address
-	Address string `json:"address,required"`
+	Address string `json:"address" api:"required"`
 	// Lithic's evaluation result comparing the transaction's address data with the
 	// cardholder KYC data if it exists. In the event Lithic does not have any
 	// Cardholder KYC data, or the transaction does not contain any address data,
 	// NOT_PRESENT will be returned
-	AddressOnFileMatch CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatch `json:"address_on_file_match,required"`
+	AddressOnFileMatch CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatch `json:"address_on_file_match" api:"required"`
 	// Cardholder ZIP code
-	Zipcode string                                              `json:"zipcode,required"`
+	Zipcode string                                              `json:"zipcode" api:"required"`
 	JSON    cardAuthorizationApprovalRequestWebhookEventAvsJSON `json:"-"`
 }
 
@@ -1559,15 +1559,15 @@ type CardAuthorizationApprovalRequestWebhookEventFleetInfo struct {
 	// Code indicating what the driver was prompted to enter at time of purchase. This
 	// is configured at a program level and is a static configuration, and does not
 	// change on a request to request basis
-	FleetPromptCode CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetPromptCode `json:"fleet_prompt_code,required"`
+	FleetPromptCode CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetPromptCode `json:"fleet_prompt_code" api:"required"`
 	// Code indicating which restrictions, if any, there are on purchase. This is
 	// configured at a program level and is a static configuration, and does not change
 	// on a request to request basis
-	FleetRestrictionCode CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetRestrictionCode `json:"fleet_restriction_code,required"`
+	FleetRestrictionCode CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetRestrictionCode `json:"fleet_restriction_code" api:"required"`
 	// Number representing the driver
-	DriverNumber string `json:"driver_number,nullable"`
+	DriverNumber string `json:"driver_number" api:"nullable"`
 	// Number associated with the vehicle
-	VehicleNumber string                                                    `json:"vehicle_number,nullable"`
+	VehicleNumber string                                                    `json:"vehicle_number" api:"nullable"`
 	JSON          cardAuthorizationApprovalRequestWebhookEventFleetInfoJSON `json:"-"`
 }
 
@@ -1631,14 +1631,14 @@ func (r CardAuthorizationApprovalRequestWebhookEventFleetInfoFleetRestrictionCod
 // merchant.
 type CardAuthorizationApprovalRequestWebhookEventLatestChallenge struct {
 	// The phone number used for sending Authorization Challenge SMS.
-	PhoneNumber string `json:"phone_number,required"`
+	PhoneNumber string `json:"phone_number" api:"required"`
 	// The status of the Authorization Challenge
 	//
 	// - `COMPLETED` - Challenge was successfully completed by the cardholder
 	// - `PENDING` - Challenge is still open
 	// - `EXPIRED` - Challenge has expired without being completed
 	// - `ERROR` - There was an error processing the challenge
-	Status CardAuthorizationApprovalRequestWebhookEventLatestChallengeStatus `json:"status,required"`
+	Status CardAuthorizationApprovalRequestWebhookEventLatestChallengeStatus `json:"status" api:"required"`
 	// The date and time when the Authorization Challenge was completed in UTC. Present
 	// only if the status is `COMPLETED`.
 	CompletedAt time.Time                                                       `json:"completed_at" format:"date-time"`
@@ -1714,8 +1714,8 @@ func (r CardAuthorizationApprovalRequestWebhookEventNetwork) IsKnown() bool {
 // values and how to use them. This object is only available to certain programs-
 // contact your Customer Success Manager to discuss enabling access.
 type CardAuthorizationApprovalRequestWebhookEventNetworkSpecificData struct {
-	Mastercard CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercard `json:"mastercard,nullable"`
-	Visa       CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataVisa       `json:"visa,nullable"`
+	Mastercard CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercard `json:"mastercard" api:"nullable"`
+	Visa       CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataVisa       `json:"visa" api:"nullable"`
 	JSON       cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataJSON       `json:"-"`
 }
 
@@ -1739,13 +1739,13 @@ func (r cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataJSON) Raw
 
 type CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercard struct {
 	// Indicates the electronic commerce security level and UCAF collection.
-	EcommerceSecurityLevelIndicator string `json:"ecommerce_security_level_indicator,nullable"`
+	EcommerceSecurityLevelIndicator string `json:"ecommerce_security_level_indicator" api:"nullable"`
 	// The On-behalf Service performed on the transaction and the results. Contains all
 	// applicable, on-behalf service results that were performed on a given
 	// transaction.
-	OnBehalfServiceResult []CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResult `json:"on_behalf_service_result,nullable"`
+	OnBehalfServiceResult []CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResult `json:"on_behalf_service_result" api:"nullable"`
 	// Indicates the type of additional transaction purpose.
-	TransactionTypeIdentifier string                                                                        `json:"transaction_type_identifier,nullable"`
+	TransactionTypeIdentifier string                                                                        `json:"transaction_type_identifier" api:"nullable"`
 	JSON                      cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercardJSON `json:"-"`
 }
 
@@ -1770,11 +1770,11 @@ func (r cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercar
 
 type CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResult struct {
 	// Indicates the results of the service processing.
-	Result1 string `json:"result_1,required"`
+	Result1 string `json:"result_1" api:"required"`
 	// Identifies the results of the service processing.
-	Result2 string `json:"result_2,required"`
+	Result2 string `json:"result_2" api:"required"`
 	// Indicates the service performed on the transaction.
-	Service string                                                                                             `json:"service,required"`
+	Service string                                                                                             `json:"service" api:"required"`
 	JSON    cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercardOnBehalfServiceResultJSON `json:"-"`
 }
 
@@ -1800,7 +1800,7 @@ func (r cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataMastercar
 type CardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataVisa struct {
 	// Identifies the purpose or category of a transaction, used to classify and
 	// process transactions according to Visa’s rules.
-	BusinessApplicationIdentifier string                                                                  `json:"business_application_identifier,nullable"`
+	BusinessApplicationIdentifier string                                                                  `json:"business_application_identifier" api:"nullable"`
 	JSON                          cardAuthorizationApprovalRequestWebhookEventNetworkSpecificDataVisaJSON `json:"-"`
 }
 
@@ -1949,26 +1949,26 @@ func (r CardAuthorizationApprovalRequestWebhookEventPosEntryModePan) IsKnown() b
 
 type CardAuthorizationApprovalRequestWebhookEventPosTerminal struct {
 	// True if a clerk is present at the sale.
-	Attended bool `json:"attended,required"`
+	Attended bool `json:"attended" api:"required"`
 	// True if the terminal is capable of retaining the card.
-	CardRetentionCapable bool `json:"card_retention_capable,required"`
+	CardRetentionCapable bool `json:"card_retention_capable" api:"required"`
 	// True if the sale was made at the place of business (vs. mobile).
-	OnPremise bool `json:"on_premise,required"`
+	OnPremise bool `json:"on_premise" api:"required"`
 	// The person that is designated to swipe the card
-	Operator CardAuthorizationApprovalRequestWebhookEventPosTerminalOperator `json:"operator,required"`
+	Operator CardAuthorizationApprovalRequestWebhookEventPosTerminalOperator `json:"operator" api:"required"`
 	// True if the terminal is capable of partial approval. Partial approval is when
 	// part of a transaction is approved and another payment must be used for the
 	// remainder. Example scenario: A $40 transaction is attempted on a prepaid card
 	// with a $25 balance. If partial approval is enabled, $25 can be authorized, at
 	// which point the POS will prompt the user for an additional payment of $15.
-	PartialApprovalCapable bool `json:"partial_approval_capable,required"`
+	PartialApprovalCapable bool `json:"partial_approval_capable" api:"required"`
 	// Status of whether the POS is able to accept PINs
-	PinCapability CardAuthorizationApprovalRequestWebhookEventPosTerminalPinCapability `json:"pin_capability,required"`
+	PinCapability CardAuthorizationApprovalRequestWebhookEventPosTerminalPinCapability `json:"pin_capability" api:"required"`
 	// POS Type
-	Type CardAuthorizationApprovalRequestWebhookEventPosTerminalType `json:"type,required"`
+	Type CardAuthorizationApprovalRequestWebhookEventPosTerminalType `json:"type" api:"required"`
 	// Uniquely identifies a terminal at the card acceptor location of acquiring
 	// institutions or merchant POS Systems. Left justified with trailing spaces.
-	AcceptorTerminalID string                                                      `json:"acceptor_terminal_id,nullable"`
+	AcceptorTerminalID string                                                      `json:"acceptor_terminal_id" api:"nullable"`
 	JSON               cardAuthorizationApprovalRequestWebhookEventPosTerminalJSON `json:"-"`
 }
 
@@ -2073,21 +2073,21 @@ func (r CardAuthorizationApprovalRequestWebhookEventPosTerminalType) IsKnown() b
 // A webhook for tokenization decisioning sent to the customer's responder endpoint
 type TokenizationDecisioningRequestWebhookEvent struct {
 	// Unique identifier for the user tokenizing a card
-	AccountToken string `json:"account_token,required"`
+	AccountToken string `json:"account_token" api:"required"`
 	// Unique identifier for the card being tokenized
-	CardToken string `json:"card_token,required"`
+	CardToken string `json:"card_token" api:"required"`
 	// Indicate when the request was received from Mastercard or Visa
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// The name of this event
-	EventType TokenizationDecisioningRequestWebhookEventEventType `json:"event_type,required"`
+	EventType TokenizationDecisioningRequestWebhookEventEventType `json:"event_type" api:"required"`
 	// Whether Lithic decisioned on the token, and if so, what the decision was.
 	// APPROVED/VERIFICATION_REQUIRED/DENIED.
-	IssuerDecision TokenizationDecisioningRequestWebhookEventIssuerDecision `json:"issuer_decision,required"`
+	IssuerDecision TokenizationDecisioningRequestWebhookEventIssuerDecision `json:"issuer_decision" api:"required"`
 	// The channel through which the tokenization was made.
-	TokenizationChannel TokenizationDecisioningRequestWebhookEventTokenizationChannel `json:"tokenization_channel,required"`
+	TokenizationChannel TokenizationDecisioningRequestWebhookEventTokenizationChannel `json:"tokenization_channel" api:"required"`
 	// Unique identifier for the digital wallet token attempt
-	TokenizationToken     string                `json:"tokenization_token,required"`
-	WalletDecisioningInfo WalletDecisioningInfo `json:"wallet_decisioning_info,required"`
+	TokenizationToken     string                `json:"tokenization_token" api:"required"`
+	WalletDecisioningInfo WalletDecisioningInfo `json:"wallet_decisioning_info" api:"required"`
 	Device                Device                `json:"device"`
 	// Contains the metadata for the digital wallet being tokenized.
 	DigitalWalletTokenMetadata DigitalWalletTokenMetadata `json:"digital_wallet_token_metadata"`
@@ -2195,7 +2195,7 @@ func (r TokenizationDecisioningRequestWebhookEventTokenizationSource) IsKnown() 
 
 type AuthRulesBacktestReportCreatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType AuthRulesBacktestReportCreatedWebhookEventEventType `json:"event_type,required"`
+	EventType AuthRulesBacktestReportCreatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      authRulesBacktestReportCreatedWebhookEventJSON      `json:"-"`
 	BacktestResults
 }
@@ -2234,9 +2234,9 @@ func (r AuthRulesBacktestReportCreatedWebhookEventEventType) IsKnown() bool {
 }
 
 type BalanceUpdatedWebhookEvent struct {
-	Data []FinancialAccountBalance `json:"data,required"`
+	Data []FinancialAccountBalance `json:"data" api:"required"`
 	// The type of event that occurred.
-	EventType BalanceUpdatedWebhookEventEventType `json:"event_type,required"`
+	EventType BalanceUpdatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      balanceUpdatedWebhookEventJSON      `json:"-"`
 }
 
@@ -2277,7 +2277,7 @@ func (r BalanceUpdatedWebhookEventEventType) IsKnown() bool {
 // Book transfer transaction
 type BookTransferTransactionCreatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType BookTransferTransactionCreatedWebhookEventEventType `json:"event_type,required"`
+	EventType BookTransferTransactionCreatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      bookTransferTransactionCreatedWebhookEventJSON      `json:"-"`
 	BookTransferResponse
 }
@@ -2318,7 +2318,7 @@ func (r BookTransferTransactionCreatedWebhookEventEventType) IsKnown() bool {
 // Book transfer transaction
 type BookTransferTransactionUpdatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType BookTransferTransactionUpdatedWebhookEventEventType `json:"event_type,required"`
+	EventType BookTransferTransactionUpdatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      bookTransferTransactionUpdatedWebhookEventJSON      `json:"-"`
 	BookTransferResponse
 }
@@ -2358,11 +2358,11 @@ func (r BookTransferTransactionUpdatedWebhookEventEventType) IsKnown() bool {
 
 type CardCreatedWebhookEvent struct {
 	// The token of the card that was created.
-	CardToken string `json:"card_token,required" format:"uuid"`
+	CardToken string `json:"card_token" api:"required" format:"uuid"`
 	// The type of event that occurred.
-	EventType CardCreatedWebhookEventEventType `json:"event_type,required"`
+	EventType CardCreatedWebhookEventEventType `json:"event_type" api:"required"`
 	// The token of the card that was replaced, if the new card is a replacement card.
-	ReplacementFor string                      `json:"replacement_for,nullable" format:"uuid"`
+	ReplacementFor string                      `json:"replacement_for" api:"nullable" format:"uuid"`
 	JSON           cardCreatedWebhookEventJSON `json:"-"`
 }
 
@@ -2403,9 +2403,9 @@ func (r CardCreatedWebhookEventEventType) IsKnown() bool {
 
 type CardConvertedWebhookEvent struct {
 	// The token of the card that was created.
-	CardToken string `json:"card_token,required" format:"uuid"`
+	CardToken string `json:"card_token" api:"required" format:"uuid"`
 	// The type of event that occurred.
-	EventType CardConvertedWebhookEventEventType `json:"event_type,required"`
+	EventType CardConvertedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      cardConvertedWebhookEventJSON      `json:"-"`
 }
 
@@ -2445,7 +2445,7 @@ func (r CardConvertedWebhookEventEventType) IsKnown() bool {
 
 type CardRenewedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType CardRenewedWebhookEventEventType `json:"event_type,required"`
+	EventType CardRenewedWebhookEventEventType `json:"event_type" api:"required"`
 	// The token of the card that was renewed.
 	CardToken string `json:"card_token" format:"uuid"`
 	// The new expiration month of the card.
@@ -2499,7 +2499,7 @@ func (r CardRenewedWebhookEventEventType) IsKnown() bool {
 
 type CardReissuedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType CardReissuedWebhookEventEventType `json:"event_type,required"`
+	EventType CardReissuedWebhookEventEventType `json:"event_type" api:"required"`
 	// The token of the card that was reissued.
 	CardToken string                       `json:"card_token" format:"uuid"`
 	JSON      cardReissuedWebhookEventJSON `json:"-"`
@@ -2541,15 +2541,15 @@ func (r CardReissuedWebhookEventEventType) IsKnown() bool {
 
 type CardShippedWebhookEvent struct {
 	// The token of the bulk order associated with this card shipment, if applicable.
-	BulkOrderToken string `json:"bulk_order_token,required,nullable" format:"uuid"`
+	BulkOrderToken string `json:"bulk_order_token" api:"required,nullable" format:"uuid"`
 	// The token of the card that was shipped.
-	CardToken string `json:"card_token,required" format:"uuid"`
+	CardToken string `json:"card_token" api:"required" format:"uuid"`
 	// The type of event that occurred.
-	EventType CardShippedWebhookEventEventType `json:"event_type,required"`
+	EventType CardShippedWebhookEventEventType `json:"event_type" api:"required"`
 	// The specific shipping method used to ship the card.
-	ShippingMethod CardShippedWebhookEventShippingMethod `json:"shipping_method,required"`
+	ShippingMethod CardShippedWebhookEventShippingMethod `json:"shipping_method" api:"required"`
 	// The tracking number of the shipment.
-	TrackingNumber string                      `json:"tracking_number,required,nullable"`
+	TrackingNumber string                      `json:"tracking_number" api:"required,nullable"`
 	JSON           cardShippedWebhookEventJSON `json:"-"`
 }
 
@@ -2617,13 +2617,13 @@ func (r CardShippedWebhookEventShippingMethod) IsKnown() bool {
 
 type CardUpdatedWebhookEvent struct {
 	// The token of the card that was updated.
-	CardToken string `json:"card_token,required" format:"uuid"`
+	CardToken string `json:"card_token" api:"required" format:"uuid"`
 	// The type of event that occurred.
-	EventType CardUpdatedWebhookEventEventType `json:"event_type,required"`
+	EventType CardUpdatedWebhookEventEventType `json:"event_type" api:"required"`
 	// The previous values of the fields that were updated.
-	PreviousFields interface{} `json:"previous_fields,required"`
+	PreviousFields interface{} `json:"previous_fields" api:"required"`
 	// The current state of the card.
-	State string                      `json:"state,required"`
+	State string                      `json:"state" api:"required"`
 	JSON  cardUpdatedWebhookEventJSON `json:"-"`
 }
 
@@ -2665,7 +2665,7 @@ func (r CardUpdatedWebhookEventEventType) IsKnown() bool {
 
 type CardTransactionUpdatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType CardTransactionUpdatedWebhookEventEventType `json:"event_type,required"`
+	EventType CardTransactionUpdatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      cardTransactionUpdatedWebhookEventJSON      `json:"-"`
 	Transaction
 }
@@ -2705,7 +2705,7 @@ func (r CardTransactionUpdatedWebhookEventEventType) IsKnown() bool {
 
 type CardTransactionEnhancedDataCreatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType CardTransactionEnhancedDataCreatedWebhookEventEventType `json:"event_type,required"`
+	EventType CardTransactionEnhancedDataCreatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      cardTransactionEnhancedDataCreatedWebhookEventJSON      `json:"-"`
 	EnhancedData
 }
@@ -2745,7 +2745,7 @@ func (r CardTransactionEnhancedDataCreatedWebhookEventEventType) IsKnown() bool 
 
 type CardTransactionEnhancedDataUpdatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType CardTransactionEnhancedDataUpdatedWebhookEventEventType `json:"event_type,required"`
+	EventType CardTransactionEnhancedDataUpdatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      cardTransactionEnhancedDataUpdatedWebhookEventJSON      `json:"-"`
 	EnhancedData
 }
@@ -2785,23 +2785,23 @@ func (r CardTransactionEnhancedDataUpdatedWebhookEventEventType) IsKnown() bool 
 
 type DigitalWalletTokenizationApprovalRequestWebhookEvent struct {
 	// Unique identifier for the user tokenizing a card
-	AccountToken string `json:"account_token,required"`
+	AccountToken string `json:"account_token" api:"required"`
 	// Unique identifier for the card being tokenized
-	CardToken string `json:"card_token,required"`
+	CardToken string `json:"card_token" api:"required"`
 	// Indicate when the request was received from Mastercard or Visa
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Contains the metadata for the customer tokenization decision.
-	CustomerTokenizationDecision DigitalWalletTokenizationApprovalRequestWebhookEventCustomerTokenizationDecision `json:"customer_tokenization_decision,required,nullable"`
+	CustomerTokenizationDecision DigitalWalletTokenizationApprovalRequestWebhookEventCustomerTokenizationDecision `json:"customer_tokenization_decision" api:"required,nullable"`
 	// The name of this event
-	EventType DigitalWalletTokenizationApprovalRequestWebhookEventEventType `json:"event_type,required"`
+	EventType DigitalWalletTokenizationApprovalRequestWebhookEventEventType `json:"event_type" api:"required"`
 	// Whether Lithic decisioned on the token, and if so, what the decision was.
 	// APPROVED/VERIFICATION_REQUIRED/DENIED.
-	IssuerDecision DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecision `json:"issuer_decision,required"`
+	IssuerDecision DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecision `json:"issuer_decision" api:"required"`
 	// The channel through which the tokenization was made.
-	TokenizationChannel DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationChannel `json:"tokenization_channel,required"`
+	TokenizationChannel DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationChannel `json:"tokenization_channel" api:"required"`
 	// Unique identifier for the digital wallet token attempt
-	TokenizationToken     string                `json:"tokenization_token,required"`
-	WalletDecisioningInfo WalletDecisioningInfo `json:"wallet_decisioning_info,required"`
+	TokenizationToken     string                `json:"tokenization_token" api:"required"`
+	WalletDecisioningInfo WalletDecisioningInfo `json:"wallet_decisioning_info" api:"required"`
 	Device                Device                `json:"device"`
 	// Contains the metadata for the digital wallet being tokenized.
 	DigitalWalletTokenMetadata DigitalWalletTokenMetadata `json:"digital_wallet_token_metadata"`
@@ -2851,9 +2851,9 @@ func (r DigitalWalletTokenizationApprovalRequestWebhookEvent) implementsParsedWe
 // Contains the metadata for the customer tokenization decision.
 type DigitalWalletTokenizationApprovalRequestWebhookEventCustomerTokenizationDecision struct {
 	// The outcome of the customer's decision
-	Outcome DigitalWalletTokenizationApprovalRequestWebhookEventCustomerTokenizationDecisionOutcome `json:"outcome,required"`
+	Outcome DigitalWalletTokenizationApprovalRequestWebhookEventCustomerTokenizationDecisionOutcome `json:"outcome" api:"required"`
 	// The customer's subscribed URL
-	ResponderURL string `json:"responder_url,required"`
+	ResponderURL string `json:"responder_url" api:"required"`
 	// Time in ms it took for the customer's URL to respond
 	Latency string `json:"latency"`
 	// The response code that the customer provided
@@ -2972,17 +2972,17 @@ func (r DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationSource) 
 
 type DigitalWalletTokenizationResultWebhookEvent struct {
 	// Account token
-	AccountToken string `json:"account_token,required"`
+	AccountToken string `json:"account_token" api:"required"`
 	// Card token
-	CardToken string `json:"card_token,required"`
+	CardToken string `json:"card_token" api:"required"`
 	// Created date
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// The type of event that occurred.
-	EventType DigitalWalletTokenizationResultWebhookEventEventType `json:"event_type,required"`
+	EventType DigitalWalletTokenizationResultWebhookEventEventType `json:"event_type" api:"required"`
 	// The result of the tokenization request.
-	TokenizationResultDetails DigitalWalletTokenizationResultWebhookEventTokenizationResultDetails `json:"tokenization_result_details,required"`
+	TokenizationResultDetails DigitalWalletTokenizationResultWebhookEventTokenizationResultDetails `json:"tokenization_result_details" api:"required"`
 	// Tokenization token
-	TokenizationToken string                                          `json:"tokenization_token,required"`
+	TokenizationToken string                                          `json:"tokenization_token" api:"required"`
 	JSON              digitalWalletTokenizationResultWebhookEventJSON `json:"-"`
 }
 
@@ -3027,19 +3027,19 @@ func (r DigitalWalletTokenizationResultWebhookEventEventType) IsKnown() bool {
 // The result of the tokenization request.
 type DigitalWalletTokenizationResultWebhookEventTokenizationResultDetails struct {
 	// Lithic's tokenization decision.
-	IssuerDecision string `json:"issuer_decision,required"`
+	IssuerDecision string `json:"issuer_decision" api:"required"`
 	// List of reasons why the tokenization was declined
-	TokenizationDeclineReasons []DigitalWalletTokenizationResultWebhookEventTokenizationResultDetailsTokenizationDeclineReason `json:"tokenization_decline_reasons,required"`
+	TokenizationDeclineReasons []DigitalWalletTokenizationResultWebhookEventTokenizationResultDetailsTokenizationDeclineReason `json:"tokenization_decline_reasons" api:"required"`
 	// The customer's tokenization decision if applicable.
-	CustomerDecision string `json:"customer_decision,nullable"`
+	CustomerDecision string `json:"customer_decision" api:"nullable"`
 	// Results from rules that were evaluated for this tokenization
 	RuleResults []TokenizationRuleResult `json:"rule_results"`
 	// An RFC 3339 timestamp indicating when the tokenization succeeded.
-	TokenActivatedDateTime time.Time `json:"token_activated_date_time,nullable" format:"date-time"`
+	TokenActivatedDateTime time.Time `json:"token_activated_date_time" api:"nullable" format:"date-time"`
 	// List of reasons why two-factor authentication was required
 	TokenizationTfaReasons []TokenizationTfaReason `json:"tokenization_tfa_reasons"`
 	// The wallet's recommended decision.
-	WalletDecision string                                                                   `json:"wallet_decision,nullable"`
+	WalletDecision string                                                                   `json:"wallet_decision" api:"nullable"`
 	JSON           digitalWalletTokenizationResultWebhookEventTokenizationResultDetailsJSON `json:"-"`
 }
 
@@ -3093,18 +3093,18 @@ func (r DigitalWalletTokenizationResultWebhookEventTokenizationResultDetailsToke
 
 type DigitalWalletTokenizationTwoFactorAuthenticationCodeWebhookEvent struct {
 	// Unique identifier for the user tokenizing a card
-	AccountToken     string                                                                           `json:"account_token,required"`
-	ActivationMethod DigitalWalletTokenizationTwoFactorAuthenticationCodeWebhookEventActivationMethod `json:"activation_method,required"`
+	AccountToken     string                                                                           `json:"account_token" api:"required"`
+	ActivationMethod DigitalWalletTokenizationTwoFactorAuthenticationCodeWebhookEventActivationMethod `json:"activation_method" api:"required"`
 	// Authentication code to provide to the user tokenizing a card.
-	AuthenticationCode string `json:"authentication_code,required"`
+	AuthenticationCode string `json:"authentication_code" api:"required"`
 	// Unique identifier for the card being tokenized
-	CardToken string `json:"card_token,required"`
+	CardToken string `json:"card_token" api:"required"`
 	// Indicate when the request was received from Mastercard or Visa
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// The type of event that occurred.
-	EventType DigitalWalletTokenizationTwoFactorAuthenticationCodeWebhookEventEventType `json:"event_type,required"`
+	EventType DigitalWalletTokenizationTwoFactorAuthenticationCodeWebhookEventEventType `json:"event_type" api:"required"`
 	// Unique identifier for the tokenization
-	TokenizationToken string                                                               `json:"tokenization_token,required"`
+	TokenizationToken string                                                               `json:"tokenization_token" api:"required"`
 	JSON              digitalWalletTokenizationTwoFactorAuthenticationCodeWebhookEventJSON `json:"-"`
 }
 
@@ -3138,11 +3138,11 @@ type DigitalWalletTokenizationTwoFactorAuthenticationCodeWebhookEventActivationM
 	// The communication method that the user has selected to use to receive the
 	// authentication code. Supported Values: Sms = "TEXT_TO_CARDHOLDER_NUMBER". Email
 	// = "EMAIL_TO_CARDHOLDER_ADDRESS"
-	Type DigitalWalletTokenizationTwoFactorAuthenticationCodeWebhookEventActivationMethodType `json:"type,required"`
+	Type DigitalWalletTokenizationTwoFactorAuthenticationCodeWebhookEventActivationMethodType `json:"type" api:"required"`
 	// The location where the user wants to receive the authentication code. The format
 	// depends on the ActivationMethod.Type field. If Type is Email, the Value will be
 	// the email address. If the Type is Sms, the Value will be the phone number.
-	Value string                                                                               `json:"value,required"`
+	Value string                                                                               `json:"value" api:"required"`
 	JSON  digitalWalletTokenizationTwoFactorAuthenticationCodeWebhookEventActivationMethodJSON `json:"-"`
 }
 
@@ -3199,16 +3199,16 @@ func (r DigitalWalletTokenizationTwoFactorAuthenticationCodeWebhookEventEventTyp
 
 type DigitalWalletTokenizationTwoFactorAuthenticationCodeSentWebhookEvent struct {
 	// Unique identifier for the user tokenizing a card
-	AccountToken     string                                                                               `json:"account_token,required"`
-	ActivationMethod DigitalWalletTokenizationTwoFactorAuthenticationCodeSentWebhookEventActivationMethod `json:"activation_method,required"`
+	AccountToken     string                                                                               `json:"account_token" api:"required"`
+	ActivationMethod DigitalWalletTokenizationTwoFactorAuthenticationCodeSentWebhookEventActivationMethod `json:"activation_method" api:"required"`
 	// Unique identifier for the card being tokenized
-	CardToken string `json:"card_token,required"`
+	CardToken string `json:"card_token" api:"required"`
 	// Indicate when the request was received from Mastercard or Visa
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// The type of event that occurred.
-	EventType DigitalWalletTokenizationTwoFactorAuthenticationCodeSentWebhookEventEventType `json:"event_type,required"`
+	EventType DigitalWalletTokenizationTwoFactorAuthenticationCodeSentWebhookEventEventType `json:"event_type" api:"required"`
 	// Unique identifier for the tokenization
-	TokenizationToken string                                                                   `json:"tokenization_token,required"`
+	TokenizationToken string                                                                   `json:"tokenization_token" api:"required"`
 	JSON              digitalWalletTokenizationTwoFactorAuthenticationCodeSentWebhookEventJSON `json:"-"`
 }
 
@@ -3241,11 +3241,11 @@ type DigitalWalletTokenizationTwoFactorAuthenticationCodeSentWebhookEventActivat
 	// The communication method that the user has selected to use to receive the
 	// authentication code. Supported Values: Sms = "TEXT_TO_CARDHOLDER_NUMBER". Email
 	// = "EMAIL_TO_CARDHOLDER_ADDRESS"
-	Type DigitalWalletTokenizationTwoFactorAuthenticationCodeSentWebhookEventActivationMethodType `json:"type,required"`
+	Type DigitalWalletTokenizationTwoFactorAuthenticationCodeSentWebhookEventActivationMethodType `json:"type" api:"required"`
 	// The location to which the authentication code was sent. The format depends on
 	// the ActivationMethod.Type field. If Type is Email, the Value will be the email
 	// address. If the Type is Sms, the Value will be the phone number.
-	Value string                                                                                   `json:"value,required"`
+	Value string                                                                                   `json:"value" api:"required"`
 	JSON  digitalWalletTokenizationTwoFactorAuthenticationCodeSentWebhookEventActivationMethodJSON `json:"-"`
 }
 
@@ -3302,14 +3302,14 @@ func (r DigitalWalletTokenizationTwoFactorAuthenticationCodeSentWebhookEventEven
 
 type DigitalWalletTokenizationUpdatedWebhookEvent struct {
 	// Account token
-	AccountToken string `json:"account_token,required"`
+	AccountToken string `json:"account_token" api:"required"`
 	// Card token
-	CardToken string `json:"card_token,required"`
+	CardToken string `json:"card_token" api:"required"`
 	// Created date
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// The type of event that occurred.
-	EventType    DigitalWalletTokenizationUpdatedWebhookEventEventType `json:"event_type,required"`
-	Tokenization Tokenization                                          `json:"tokenization,required"`
+	EventType    DigitalWalletTokenizationUpdatedWebhookEventEventType `json:"event_type" api:"required"`
+	Tokenization Tokenization                                          `json:"tokenization" api:"required"`
 	JSON         digitalWalletTokenizationUpdatedWebhookEventJSON      `json:"-"`
 }
 
@@ -3353,7 +3353,7 @@ func (r DigitalWalletTokenizationUpdatedWebhookEventEventType) IsKnown() bool {
 // Dispute.
 type DisputeUpdatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType DisputeUpdatedWebhookEventEventType `json:"event_type,required"`
+	EventType DisputeUpdatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      disputeUpdatedWebhookEventJSON      `json:"-"`
 	Dispute
 }
@@ -3394,7 +3394,7 @@ func (r DisputeUpdatedWebhookEventEventType) IsKnown() bool {
 // Dispute evidence.
 type DisputeEvidenceUploadFailedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType DisputeEvidenceUploadFailedWebhookEventEventType `json:"event_type,required"`
+	EventType DisputeEvidenceUploadFailedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      disputeEvidenceUploadFailedWebhookEventJSON      `json:"-"`
 	DisputeEvidence
 }
@@ -3434,7 +3434,7 @@ func (r DisputeEvidenceUploadFailedWebhookEventEventType) IsKnown() bool {
 
 type ExternalBankAccountCreatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType ExternalBankAccountCreatedWebhookEventEventType `json:"event_type,required"`
+	EventType ExternalBankAccountCreatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      externalBankAccountCreatedWebhookEventJSON      `json:"-"`
 	ExternalBankAccount
 }
@@ -3474,7 +3474,7 @@ func (r ExternalBankAccountCreatedWebhookEventEventType) IsKnown() bool {
 
 type ExternalBankAccountUpdatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType ExternalBankAccountUpdatedWebhookEventEventType `json:"event_type,required"`
+	EventType ExternalBankAccountUpdatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      externalBankAccountUpdatedWebhookEventJSON      `json:"-"`
 	ExternalBankAccount
 }
@@ -3514,7 +3514,7 @@ func (r ExternalBankAccountUpdatedWebhookEventEventType) IsKnown() bool {
 
 type ExternalPaymentCreatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType ExternalPaymentCreatedWebhookEventEventType `json:"event_type,required"`
+	EventType ExternalPaymentCreatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      externalPaymentCreatedWebhookEventJSON      `json:"-"`
 	ExternalPayment
 }
@@ -3554,7 +3554,7 @@ func (r ExternalPaymentCreatedWebhookEventEventType) IsKnown() bool {
 
 type ExternalPaymentUpdatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType ExternalPaymentUpdatedWebhookEventEventType `json:"event_type,required"`
+	EventType ExternalPaymentUpdatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      externalPaymentUpdatedWebhookEventJSON      `json:"-"`
 	ExternalPayment
 }
@@ -3594,7 +3594,7 @@ func (r ExternalPaymentUpdatedWebhookEventEventType) IsKnown() bool {
 
 type FinancialAccountCreatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType FinancialAccountCreatedWebhookEventEventType `json:"event_type,required"`
+	EventType FinancialAccountCreatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      financialAccountCreatedWebhookEventJSON      `json:"-"`
 	FinancialAccount
 }
@@ -3634,7 +3634,7 @@ func (r FinancialAccountCreatedWebhookEventEventType) IsKnown() bool {
 
 type FinancialAccountUpdatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType FinancialAccountUpdatedWebhookEventEventType `json:"event_type,required"`
+	EventType FinancialAccountUpdatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      financialAccountUpdatedWebhookEventJSON      `json:"-"`
 	FinancialAccount
 }
@@ -3674,7 +3674,7 @@ func (r FinancialAccountUpdatedWebhookEventEventType) IsKnown() bool {
 
 type FundingEventCreatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType FundingEventCreatedWebhookEventEventType `json:"event_type,required"`
+	EventType FundingEventCreatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      fundingEventCreatedWebhookEventJSON      `json:"-"`
 	FundingEvent
 }
@@ -3714,7 +3714,7 @@ func (r FundingEventCreatedWebhookEventEventType) IsKnown() bool {
 
 type LoanTapeCreatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType LoanTapeCreatedWebhookEventEventType `json:"event_type,required"`
+	EventType LoanTapeCreatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      loanTapeCreatedWebhookEventJSON      `json:"-"`
 	LoanTape
 }
@@ -3754,7 +3754,7 @@ func (r LoanTapeCreatedWebhookEventEventType) IsKnown() bool {
 
 type LoanTapeUpdatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType LoanTapeUpdatedWebhookEventEventType `json:"event_type,required"`
+	EventType LoanTapeUpdatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      loanTapeUpdatedWebhookEventJSON      `json:"-"`
 	LoanTape
 }
@@ -3794,7 +3794,7 @@ func (r LoanTapeUpdatedWebhookEventEventType) IsKnown() bool {
 
 type ManagementOperationCreatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType ManagementOperationCreatedWebhookEventEventType `json:"event_type,required"`
+	EventType ManagementOperationCreatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      managementOperationCreatedWebhookEventJSON      `json:"-"`
 	ManagementOperationTransaction
 }
@@ -3834,7 +3834,7 @@ func (r ManagementOperationCreatedWebhookEventEventType) IsKnown() bool {
 
 type ManagementOperationUpdatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType ManagementOperationUpdatedWebhookEventEventType `json:"event_type,required"`
+	EventType ManagementOperationUpdatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      managementOperationUpdatedWebhookEventJSON      `json:"-"`
 	ManagementOperationTransaction
 }
@@ -3874,7 +3874,7 @@ func (r ManagementOperationUpdatedWebhookEventEventType) IsKnown() bool {
 
 type InternalTransactionCreatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType InternalTransactionCreatedWebhookEventEventType `json:"event_type,required"`
+	EventType InternalTransactionCreatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      internalTransactionCreatedWebhookEventJSON      `json:"-"`
 	InternalTransaction
 }
@@ -3914,7 +3914,7 @@ func (r InternalTransactionCreatedWebhookEventEventType) IsKnown() bool {
 
 type InternalTransactionUpdatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType InternalTransactionUpdatedWebhookEventEventType `json:"event_type,required"`
+	EventType InternalTransactionUpdatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      internalTransactionUpdatedWebhookEventJSON      `json:"-"`
 	InternalTransaction
 }
@@ -3954,7 +3954,7 @@ func (r InternalTransactionUpdatedWebhookEventEventType) IsKnown() bool {
 
 type NetworkTotalCreatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType NetworkTotalCreatedWebhookEventEventType `json:"event_type,required"`
+	EventType NetworkTotalCreatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      networkTotalCreatedWebhookEventJSON      `json:"-"`
 	NetworkTotal
 }
@@ -3994,7 +3994,7 @@ func (r NetworkTotalCreatedWebhookEventEventType) IsKnown() bool {
 
 type NetworkTotalUpdatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType NetworkTotalUpdatedWebhookEventEventType `json:"event_type,required"`
+	EventType NetworkTotalUpdatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      networkTotalUpdatedWebhookEventJSON      `json:"-"`
 	NetworkTotal
 }
@@ -4035,7 +4035,7 @@ func (r NetworkTotalUpdatedWebhookEventEventType) IsKnown() bool {
 // Payment transaction
 type PaymentTransactionCreatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType PaymentTransactionCreatedWebhookEventEventType `json:"event_type,required"`
+	EventType PaymentTransactionCreatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      paymentTransactionCreatedWebhookEventJSON      `json:"-"`
 	Payment
 }
@@ -4076,7 +4076,7 @@ func (r PaymentTransactionCreatedWebhookEventEventType) IsKnown() bool {
 // Payment transaction
 type PaymentTransactionUpdatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType PaymentTransactionUpdatedWebhookEventEventType `json:"event_type,required"`
+	EventType PaymentTransactionUpdatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      paymentTransactionUpdatedWebhookEventJSON      `json:"-"`
 	Payment
 }
@@ -4116,7 +4116,7 @@ func (r PaymentTransactionUpdatedWebhookEventEventType) IsKnown() bool {
 
 type SettlementReportUpdatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType SettlementReportUpdatedWebhookEventEventType `json:"event_type,required"`
+	EventType SettlementReportUpdatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      settlementReportUpdatedWebhookEventJSON      `json:"-"`
 	SettlementReport
 }
@@ -4156,7 +4156,7 @@ func (r SettlementReportUpdatedWebhookEventEventType) IsKnown() bool {
 
 type StatementsCreatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType StatementsCreatedWebhookEventEventType `json:"event_type,required"`
+	EventType StatementsCreatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      statementsCreatedWebhookEventJSON      `json:"-"`
 	Statement
 }
@@ -4197,7 +4197,7 @@ func (r StatementsCreatedWebhookEventEventType) IsKnown() bool {
 // Represents a 3DS authentication
 type ThreeDSAuthenticationCreatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType ThreeDSAuthenticationCreatedWebhookEventEventType `json:"event_type,required"`
+	EventType ThreeDSAuthenticationCreatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      threeDSAuthenticationCreatedWebhookEventJSON      `json:"-"`
 	ThreeDSAuthentication
 }
@@ -4238,7 +4238,7 @@ func (r ThreeDSAuthenticationCreatedWebhookEventEventType) IsKnown() bool {
 // Represents a 3DS authentication
 type ThreeDSAuthenticationUpdatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType ThreeDSAuthenticationUpdatedWebhookEventEventType `json:"event_type,required"`
+	EventType ThreeDSAuthenticationUpdatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      threeDSAuthenticationUpdatedWebhookEventJSON      `json:"-"`
 	ThreeDSAuthentication
 }
@@ -4278,10 +4278,10 @@ func (r ThreeDSAuthenticationUpdatedWebhookEventEventType) IsKnown() bool {
 
 type ThreeDSAuthenticationChallengeWebhookEvent struct {
 	// Represents a 3DS authentication
-	AuthenticationObject ThreeDSAuthentication `json:"authentication_object,required"`
+	AuthenticationObject ThreeDSAuthentication `json:"authentication_object" api:"required"`
 	// Represents a challenge object for 3DS authentication
-	Challenge ThreeDSAuthenticationChallengeWebhookEventChallenge `json:"challenge,required"`
-	EventType ThreeDSAuthenticationChallengeWebhookEventEventType `json:"event_type,required"`
+	Challenge ThreeDSAuthenticationChallengeWebhookEventChallenge `json:"challenge" api:"required"`
+	EventType ThreeDSAuthenticationChallengeWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      threeDSAuthenticationChallengeWebhookEventJSON      `json:"-"`
 }
 
@@ -4308,16 +4308,16 @@ func (r ThreeDSAuthenticationChallengeWebhookEvent) implementsParsedWebhookEvent
 // Represents a challenge object for 3DS authentication
 type ThreeDSAuthenticationChallengeWebhookEventChallenge struct {
 	// The type of challenge method issued to the cardholder
-	ChallengeMethodType ThreeDSAuthenticationChallengeWebhookEventChallengeChallengeMethodType `json:"challenge_method_type,required"`
+	ChallengeMethodType ThreeDSAuthenticationChallengeWebhookEventChallengeChallengeMethodType `json:"challenge_method_type" api:"required"`
 	// ISO-8601 time at which the challenge expires
-	ExpiryTime time.Time `json:"expiry_time,required" format:"date-time"`
+	ExpiryTime time.Time `json:"expiry_time" api:"required" format:"date-time"`
 	// ISO-8601 time at which the challenge has started
-	StartTime time.Time `json:"start_time,required" format:"date-time"`
+	StartTime time.Time `json:"start_time" api:"required" format:"date-time"`
 	// Fully qualified app URL of the merchant app. This should be used to redirect the
 	// cardholder back to the merchant app after completing an app-based challenge.
 	// This URL will only be populated if the 3DS Requestor App is provided to the 3DS
 	// SDK.
-	AppRequestorURL string                                                  `json:"app_requestor_url,nullable" format:"uri"`
+	AppRequestorURL string                                                  `json:"app_requestor_url" api:"nullable" format:"uri"`
 	JSON            threeDSAuthenticationChallengeWebhookEventChallengeJSON `json:"-"`
 }
 
@@ -4371,23 +4371,23 @@ func (r ThreeDSAuthenticationChallengeWebhookEventEventType) IsKnown() bool {
 
 type TokenizationApprovalRequestWebhookEvent struct {
 	// Unique identifier for the user tokenizing a card
-	AccountToken string `json:"account_token,required"`
+	AccountToken string `json:"account_token" api:"required"`
 	// Unique identifier for the card being tokenized
-	CardToken string `json:"card_token,required"`
+	CardToken string `json:"card_token" api:"required"`
 	// Indicate when the request was received from Mastercard or Visa
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Contains the metadata for the customer tokenization decision.
-	CustomerTokenizationDecision TokenizationApprovalRequestWebhookEventCustomerTokenizationDecision `json:"customer_tokenization_decision,required,nullable"`
+	CustomerTokenizationDecision TokenizationApprovalRequestWebhookEventCustomerTokenizationDecision `json:"customer_tokenization_decision" api:"required,nullable"`
 	// The name of this event
-	EventType TokenizationApprovalRequestWebhookEventEventType `json:"event_type,required"`
+	EventType TokenizationApprovalRequestWebhookEventEventType `json:"event_type" api:"required"`
 	// Whether Lithic decisioned on the token, and if so, what the decision was.
 	// APPROVED/VERIFICATION_REQUIRED/DENIED.
-	IssuerDecision TokenizationApprovalRequestWebhookEventIssuerDecision `json:"issuer_decision,required"`
+	IssuerDecision TokenizationApprovalRequestWebhookEventIssuerDecision `json:"issuer_decision" api:"required"`
 	// The channel through which the tokenization was made.
-	TokenizationChannel TokenizationApprovalRequestWebhookEventTokenizationChannel `json:"tokenization_channel,required"`
+	TokenizationChannel TokenizationApprovalRequestWebhookEventTokenizationChannel `json:"tokenization_channel" api:"required"`
 	// Unique identifier for the digital wallet token attempt
-	TokenizationToken     string                `json:"tokenization_token,required"`
-	WalletDecisioningInfo WalletDecisioningInfo `json:"wallet_decisioning_info,required"`
+	TokenizationToken     string                `json:"tokenization_token" api:"required"`
+	WalletDecisioningInfo WalletDecisioningInfo `json:"wallet_decisioning_info" api:"required"`
 	Device                Device                `json:"device"`
 	// Contains the metadata for the digital wallet being tokenized.
 	DigitalWalletTokenMetadata DigitalWalletTokenMetadata `json:"digital_wallet_token_metadata"`
@@ -4437,9 +4437,9 @@ func (r TokenizationApprovalRequestWebhookEvent) implementsParsedWebhookEvent() 
 // Contains the metadata for the customer tokenization decision.
 type TokenizationApprovalRequestWebhookEventCustomerTokenizationDecision struct {
 	// The outcome of the customer's decision
-	Outcome TokenizationApprovalRequestWebhookEventCustomerTokenizationDecisionOutcome `json:"outcome,required"`
+	Outcome TokenizationApprovalRequestWebhookEventCustomerTokenizationDecisionOutcome `json:"outcome" api:"required"`
 	// The customer's subscribed URL
-	ResponderURL string `json:"responder_url,required"`
+	ResponderURL string `json:"responder_url" api:"required"`
 	// Time in ms it took for the customer's URL to respond
 	Latency string `json:"latency"`
 	// The response code that the customer provided
@@ -4558,17 +4558,17 @@ func (r TokenizationApprovalRequestWebhookEventTokenizationSource) IsKnown() boo
 
 type TokenizationResultWebhookEvent struct {
 	// Account token
-	AccountToken string `json:"account_token,required"`
+	AccountToken string `json:"account_token" api:"required"`
 	// Card token
-	CardToken string `json:"card_token,required"`
+	CardToken string `json:"card_token" api:"required"`
 	// Created date
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// The type of event that occurred.
-	EventType TokenizationResultWebhookEventEventType `json:"event_type,required"`
+	EventType TokenizationResultWebhookEventEventType `json:"event_type" api:"required"`
 	// The result of the tokenization request.
-	TokenizationResultDetails TokenizationResultWebhookEventTokenizationResultDetails `json:"tokenization_result_details,required"`
+	TokenizationResultDetails TokenizationResultWebhookEventTokenizationResultDetails `json:"tokenization_result_details" api:"required"`
 	// Tokenization token
-	TokenizationToken string                             `json:"tokenization_token,required"`
+	TokenizationToken string                             `json:"tokenization_token" api:"required"`
 	JSON              tokenizationResultWebhookEventJSON `json:"-"`
 }
 
@@ -4613,19 +4613,19 @@ func (r TokenizationResultWebhookEventEventType) IsKnown() bool {
 // The result of the tokenization request.
 type TokenizationResultWebhookEventTokenizationResultDetails struct {
 	// Lithic's tokenization decision.
-	IssuerDecision string `json:"issuer_decision,required"`
+	IssuerDecision string `json:"issuer_decision" api:"required"`
 	// List of reasons why the tokenization was declined
-	TokenizationDeclineReasons []TokenizationResultWebhookEventTokenizationResultDetailsTokenizationDeclineReason `json:"tokenization_decline_reasons,required"`
+	TokenizationDeclineReasons []TokenizationResultWebhookEventTokenizationResultDetailsTokenizationDeclineReason `json:"tokenization_decline_reasons" api:"required"`
 	// The customer's tokenization decision if applicable.
-	CustomerDecision string `json:"customer_decision,nullable"`
+	CustomerDecision string `json:"customer_decision" api:"nullable"`
 	// Results from rules that were evaluated for this tokenization
 	RuleResults []TokenizationRuleResult `json:"rule_results"`
 	// An RFC 3339 timestamp indicating when the tokenization succeeded.
-	TokenActivatedDateTime time.Time `json:"token_activated_date_time,nullable" format:"date-time"`
+	TokenActivatedDateTime time.Time `json:"token_activated_date_time" api:"nullable" format:"date-time"`
 	// List of reasons why two-factor authentication was required
 	TokenizationTfaReasons []TokenizationTfaReason `json:"tokenization_tfa_reasons"`
 	// The wallet's recommended decision.
-	WalletDecision string                                                      `json:"wallet_decision,nullable"`
+	WalletDecision string                                                      `json:"wallet_decision" api:"nullable"`
 	JSON           tokenizationResultWebhookEventTokenizationResultDetailsJSON `json:"-"`
 }
 
@@ -4679,18 +4679,18 @@ func (r TokenizationResultWebhookEventTokenizationResultDetailsTokenizationDecli
 
 type TokenizationTwoFactorAuthenticationCodeWebhookEvent struct {
 	// Unique identifier for the user tokenizing a card
-	AccountToken     string                                                              `json:"account_token,required"`
-	ActivationMethod TokenizationTwoFactorAuthenticationCodeWebhookEventActivationMethod `json:"activation_method,required"`
+	AccountToken     string                                                              `json:"account_token" api:"required"`
+	ActivationMethod TokenizationTwoFactorAuthenticationCodeWebhookEventActivationMethod `json:"activation_method" api:"required"`
 	// Authentication code to provide to the user tokenizing a card.
-	AuthenticationCode string `json:"authentication_code,required"`
+	AuthenticationCode string `json:"authentication_code" api:"required"`
 	// Unique identifier for the card being tokenized
-	CardToken string `json:"card_token,required"`
+	CardToken string `json:"card_token" api:"required"`
 	// Indicate when the request was received from Mastercard or Visa
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// The type of event that occurred.
-	EventType TokenizationTwoFactorAuthenticationCodeWebhookEventEventType `json:"event_type,required"`
+	EventType TokenizationTwoFactorAuthenticationCodeWebhookEventEventType `json:"event_type" api:"required"`
 	// Unique identifier for the tokenization
-	TokenizationToken string                                                  `json:"tokenization_token,required"`
+	TokenizationToken string                                                  `json:"tokenization_token" api:"required"`
 	JSON              tokenizationTwoFactorAuthenticationCodeWebhookEventJSON `json:"-"`
 }
 
@@ -4722,11 +4722,11 @@ type TokenizationTwoFactorAuthenticationCodeWebhookEventActivationMethod struct 
 	// The communication method that the user has selected to use to receive the
 	// authentication code. Supported Values: Sms = "TEXT_TO_CARDHOLDER_NUMBER". Email
 	// = "EMAIL_TO_CARDHOLDER_ADDRESS"
-	Type TokenizationTwoFactorAuthenticationCodeWebhookEventActivationMethodType `json:"type,required"`
+	Type TokenizationTwoFactorAuthenticationCodeWebhookEventActivationMethodType `json:"type" api:"required"`
 	// The location where the user wants to receive the authentication code. The format
 	// depends on the ActivationMethod.Type field. If Type is Email, the Value will be
 	// the email address. If the Type is Sms, the Value will be the phone number.
-	Value string                                                                  `json:"value,required"`
+	Value string                                                                  `json:"value" api:"required"`
 	JSON  tokenizationTwoFactorAuthenticationCodeWebhookEventActivationMethodJSON `json:"-"`
 }
 
@@ -4783,16 +4783,16 @@ func (r TokenizationTwoFactorAuthenticationCodeWebhookEventEventType) IsKnown() 
 
 type TokenizationTwoFactorAuthenticationCodeSentWebhookEvent struct {
 	// Unique identifier for the user tokenizing a card
-	AccountToken     string                                                                  `json:"account_token,required"`
-	ActivationMethod TokenizationTwoFactorAuthenticationCodeSentWebhookEventActivationMethod `json:"activation_method,required"`
+	AccountToken     string                                                                  `json:"account_token" api:"required"`
+	ActivationMethod TokenizationTwoFactorAuthenticationCodeSentWebhookEventActivationMethod `json:"activation_method" api:"required"`
 	// Unique identifier for the card being tokenized
-	CardToken string `json:"card_token,required"`
+	CardToken string `json:"card_token" api:"required"`
 	// Indicate when the request was received from Mastercard or Visa
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// The type of event that occurred.
-	EventType TokenizationTwoFactorAuthenticationCodeSentWebhookEventEventType `json:"event_type,required"`
+	EventType TokenizationTwoFactorAuthenticationCodeSentWebhookEventEventType `json:"event_type" api:"required"`
 	// Unique identifier for the tokenization
-	TokenizationToken string                                                      `json:"tokenization_token,required"`
+	TokenizationToken string                                                      `json:"tokenization_token" api:"required"`
 	JSON              tokenizationTwoFactorAuthenticationCodeSentWebhookEventJSON `json:"-"`
 }
 
@@ -4824,11 +4824,11 @@ type TokenizationTwoFactorAuthenticationCodeSentWebhookEventActivationMethod str
 	// The communication method that the user has selected to use to receive the
 	// authentication code. Supported Values: Sms = "TEXT_TO_CARDHOLDER_NUMBER". Email
 	// = "EMAIL_TO_CARDHOLDER_ADDRESS"
-	Type TokenizationTwoFactorAuthenticationCodeSentWebhookEventActivationMethodType `json:"type,required"`
+	Type TokenizationTwoFactorAuthenticationCodeSentWebhookEventActivationMethodType `json:"type" api:"required"`
 	// The location to which the authentication code was sent. The format depends on
 	// the ActivationMethod.Type field. If Type is Email, the Value will be the email
 	// address. If the Type is Sms, the Value will be the phone number.
-	Value string                                                                      `json:"value,required"`
+	Value string                                                                      `json:"value" api:"required"`
 	JSON  tokenizationTwoFactorAuthenticationCodeSentWebhookEventActivationMethodJSON `json:"-"`
 }
 
@@ -4885,14 +4885,14 @@ func (r TokenizationTwoFactorAuthenticationCodeSentWebhookEventEventType) IsKnow
 
 type TokenizationUpdatedWebhookEvent struct {
 	// Account token
-	AccountToken string `json:"account_token,required"`
+	AccountToken string `json:"account_token" api:"required"`
 	// Card token
-	CardToken string `json:"card_token,required"`
+	CardToken string `json:"card_token" api:"required"`
 	// Created date
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// The type of event that occurred.
-	EventType    TokenizationUpdatedWebhookEventEventType `json:"event_type,required"`
-	Tokenization Tokenization                             `json:"tokenization,required"`
+	EventType    TokenizationUpdatedWebhookEventEventType `json:"event_type" api:"required"`
+	Tokenization Tokenization                             `json:"tokenization" api:"required"`
 	JSON         tokenizationUpdatedWebhookEventJSON      `json:"-"`
 }
 
@@ -4935,7 +4935,7 @@ func (r TokenizationUpdatedWebhookEventEventType) IsKnown() bool {
 
 // Represents a 3DS authentication
 type ThreeDSAuthenticationApprovalRequestWebhookEvent struct {
-	EventType ThreeDSAuthenticationApprovalRequestWebhookEventEventType `json:"event_type,required"`
+	EventType ThreeDSAuthenticationApprovalRequestWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      threeDSAuthenticationApprovalRequestWebhookEventJSON      `json:"-"`
 	ThreeDSAuthentication
 }
@@ -4975,7 +4975,7 @@ func (r ThreeDSAuthenticationApprovalRequestWebhookEventEventType) IsKnown() boo
 // The Dispute object tracks the progression of a dispute throughout its lifecycle.
 type DisputeTransactionCreatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType DisputeTransactionCreatedWebhookEventEventType `json:"event_type,required"`
+	EventType DisputeTransactionCreatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      disputeTransactionCreatedWebhookEventJSON      `json:"-"`
 	DisputeV2
 }
@@ -5016,7 +5016,7 @@ func (r DisputeTransactionCreatedWebhookEventEventType) IsKnown() bool {
 // The Dispute object tracks the progression of a dispute throughout its lifecycle.
 type DisputeTransactionUpdatedWebhookEvent struct {
 	// The type of event that occurred.
-	EventType DisputeTransactionUpdatedWebhookEventEventType `json:"event_type,required"`
+	EventType DisputeTransactionUpdatedWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      disputeTransactionUpdatedWebhookEventJSON      `json:"-"`
 	DisputeV2
 }
@@ -5060,23 +5060,23 @@ type ParsedWebhookEvent struct {
 	Token string `json:"token" format:"uuid"`
 	// The token of the account_holder that the document belongs to
 	AccountHolderToken string `json:"account_holder_token" format:"uuid"`
-	AccountNumber      string `json:"account_number,nullable"`
+	AccountNumber      string `json:"account_number" api:"nullable"`
 	// This field can have the runtime type of [LoanTapeAccountStanding],
 	// [StatementAccountStanding].
 	AccountStanding interface{} `json:"account_standing"`
 	// The token of the account that was created.
-	AccountToken string                        `json:"account_token,nullable" format:"uuid"`
-	AccountType  ParsedWebhookEventAccountType `json:"account_type,nullable"`
+	AccountToken string                        `json:"account_token" api:"nullable" format:"uuid"`
+	AccountType  ParsedWebhookEventAccountType `json:"account_type" api:"nullable"`
 	// Fee (in cents) assessed by the merchant and paid for by the cardholder. Will be
 	// zero if no fee is assessed. Rebates may be transmitted as a negative value to
 	// indicate credited fees.
-	AcquirerFee int64 `json:"acquirer_fee,nullable"`
+	AcquirerFee int64 `json:"acquirer_fee" api:"nullable"`
 	// Unique identifier assigned to a transaction by the acquirer that can be used in
 	// dispute and chargeback filing. This field has been deprecated in favor of the
 	// `acquirer_reference_number` that resides in the event-level `network_info`.
 	//
 	// Deprecated: deprecated
-	AcquirerReferenceNumber string `json:"acquirer_reference_number,nullable"`
+	AcquirerReferenceNumber string `json:"acquirer_reference_number" api:"nullable"`
 	// This field can have the runtime type of
 	// [DigitalWalletTokenizationTwoFactorAuthenticationCodeWebhookEventActivationMethod],
 	// [DigitalWalletTokenizationTwoFactorAuthenticationCodeSentWebhookEventActivationMethod],
@@ -5086,7 +5086,7 @@ type ParsedWebhookEvent struct {
 	// This field can have the runtime type of [ThreeDSAuthenticationAdditionalData].
 	AdditionalData interface{} `json:"additional_data"`
 	// Address
-	Address ExternalBankAccountAddress `json:"address,nullable"`
+	Address ExternalBankAccountAddress `json:"address" api:"nullable"`
 	// Deprecated, use `amounts`. Authorization amount of the transaction (in cents),
 	// including any acquirer fees. The contents of this field are identical to
 	// `authorization_amount`.
@@ -5102,7 +5102,7 @@ type ParsedWebhookEvent struct {
 	// This field can have the runtime type of [ThreeDSAuthenticationApp].
 	App interface{} `json:"app"`
 	// Date dispute entered arbitration.
-	ArbitrationDate time.Time `json:"arbitration_date,nullable" format:"date-time"`
+	ArbitrationDate time.Time `json:"arbitration_date" api:"nullable" format:"date-time"`
 	// Authentication code to provide to the user tokenizing a card.
 	AuthenticationCode string `json:"authentication_code"`
 	// Represents a 3DS authentication
@@ -5110,7 +5110,7 @@ type ParsedWebhookEvent struct {
 	// Type of authentication request - i.e., the type of transaction or interaction is
 	// causing the merchant to request an authentication. Maps to EMV 3DS field
 	// `threeDSRequestorAuthenticationInd`.
-	AuthenticationRequestType ParsedWebhookEventAuthenticationRequestType `json:"authentication_request_type,nullable"`
+	AuthenticationRequestType ParsedWebhookEventAuthenticationRequestType `json:"authentication_request_type" api:"nullable"`
 	// Indicates the outcome of the 3DS authentication process.
 	AuthenticationResult ParsedWebhookEventAuthenticationResult `json:"authentication_result"`
 	// Deprecated, use `amounts`. The base transaction amount (in cents) plus the
@@ -5118,10 +5118,10 @@ type ParsedWebhookEvent struct {
 	// unless the issuer is paying the acquirer fee on behalf of the cardholder.
 	//
 	// Deprecated: deprecated
-	AuthorizationAmount int64 `json:"authorization_amount,nullable"`
+	AuthorizationAmount int64 `json:"authorization_amount" api:"nullable"`
 	// A fixed-width 6-digit numeric identifier that can be used to identify a
 	// transaction with networks.
-	AuthorizationCode string `json:"authorization_code,nullable"`
+	AuthorizationCode string `json:"authorization_code" api:"nullable"`
 	// Amount of credit available to spend in cents
 	AvailableCredit int64 `json:"available_credit"`
 	// This field can have the runtime type of
@@ -5134,10 +5134,10 @@ type ParsedWebhookEvent struct {
 	// This field can have the runtime type of [ThreeDSAuthenticationBrowser].
 	Browser interface{} `json:"browser"`
 	// The token of the bulk order associated with this card shipment, if applicable.
-	BulkOrderToken string `json:"bulk_order_token,nullable" format:"uuid"`
+	BulkOrderToken string `json:"bulk_order_token" api:"nullable" format:"uuid"`
 	// If applicable, represents the business account token associated with the
 	// account_holder.
-	BusinessAccountToken string `json:"business_account_token,nullable" format:"uuid"`
+	BusinessAccountToken string `json:"business_account_token" api:"nullable" format:"uuid"`
 	// This field can have the runtime type of
 	// [CardAuthorizationApprovalRequestWebhookEventCard].
 	Card interface{} `json:"card"`
@@ -5148,14 +5148,14 @@ type ParsedWebhookEvent struct {
 	CardToken string `json:"card_token"`
 	// This field can have the runtime type of [ThreeDSAuthenticationCardholder].
 	Cardholder               interface{}              `json:"cardholder"`
-	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication,nullable"`
+	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication" api:"nullable"`
 	// Deprecated, use `amounts`. 3-character alphabetic ISO 4217 code for cardholder's
 	// billing currency.
 	//
 	// Deprecated: deprecated
 	CardholderCurrency string `json:"cardholder_currency"`
 	// Identifier assigned by the network for this dispute.
-	CaseID string `json:"case_id,nullable"`
+	CaseID string `json:"case_id" api:"nullable"`
 	// The portion of the transaction requested as cash back by the cardholder, and
 	// does not include any acquirer fees. The amount field includes the purchase
 	// amount, the requested cash back amount, and any acquirer fees.
@@ -5175,7 +5175,7 @@ type ParsedWebhookEvent struct {
 	// Entity that orchestrates the challenge. This won't be set for authentications
 	// for which a decision has not yet been made (e.g. in-flight customer decisioning
 	// request).
-	ChallengeOrchestratedBy ParsedWebhookEventChallengeOrchestratedBy `json:"challenge_orchestrated_by,nullable"`
+	ChallengeOrchestratedBy ParsedWebhookEventChallengeOrchestratedBy `json:"challenge_orchestrated_by" api:"nullable"`
 	// Channel in which the authentication occurs. Maps to EMV 3DS field
 	// `deviceChannel`.
 	Channel ParsedWebhookEventChannel `json:"channel"`
@@ -5186,7 +5186,7 @@ type ParsedWebhookEvent struct {
 	// This field can have the runtime type of [EnhancedDataCommon].
 	Common interface{} `json:"common"`
 	// Optional field that helps identify bank accounts in receipts
-	CompanyID string `json:"company_id,nullable"`
+	CompanyID string `json:"company_id" api:"nullable"`
 	// Deprecated, use `amounts`. If the transaction was requested in a currency other
 	// than the settlement currency, this field will be populated to indicate the rate
 	// used to translate the merchant_amount to the amount (i.e., `merchant_amount` x
@@ -5212,9 +5212,9 @@ type ParsedWebhookEvent struct {
 	// transaction
 	Currency string `json:"currency"`
 	// Date that the dispute was filed by the customer making the dispute.
-	CustomerFiledDate time.Time `json:"customer_filed_date,nullable" format:"date-time"`
+	CustomerFiledDate time.Time `json:"customer_filed_date" api:"nullable" format:"date-time"`
 	// End customer description of the reason for the dispute.
-	CustomerNote string `json:"customer_note,nullable"`
+	CustomerNote string `json:"customer_note" api:"nullable"`
 	// This field can have the runtime type of
 	// [DigitalWalletTokenizationApprovalRequestWebhookEventCustomerTokenizationDecision],
 	// [TokenizationApprovalRequestWebhookEventCustomerTokenizationDecision].
@@ -5231,7 +5231,7 @@ type ParsedWebhookEvent struct {
 	// Entity that made the authentication decision. This won't be set for
 	// authentications for which a decision has not yet been made (e.g. in-flight
 	// customer decisioning request).
-	DecisionMadeBy ParsedWebhookEventDecisionMadeBy `json:"decision_made_by,nullable"`
+	DecisionMadeBy ParsedWebhookEventDecisionMadeBy `json:"decision_made_by" api:"nullable"`
 	Descriptor     string                           `json:"descriptor"`
 	// This field can have the runtime type of [[]SettlementSummaryDetails].
 	Details interface{} `json:"details"`
@@ -5240,7 +5240,7 @@ type ParsedWebhookEvent struct {
 	DigitalWalletTokenMetadata DigitalWalletTokenMetadata  `json:"digital_wallet_token_metadata"`
 	Direction                  ParsedWebhookEventDirection `json:"direction"`
 	// Dispute resolution outcome
-	Disposition ParsedWebhookEventDisposition `json:"disposition,nullable"`
+	Disposition ParsedWebhookEventDisposition `json:"disposition" api:"nullable"`
 	// Dispute token evidence is attached to.
 	DisputeToken string `json:"dispute_token" format:"uuid"`
 	// The total gross amount of disputes settlements. (This field is deprecated and
@@ -5251,11 +5251,11 @@ type ParsedWebhookEvent struct {
 	// Deprecated: deprecated
 	DisputesGrossAmount int64 `json:"disputes_gross_amount"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob time.Time `json:"dob,nullable" format:"date"`
+	Dob time.Time `json:"dob" api:"nullable" format:"date"`
 	// Type of documentation to be submitted for verification of an account holder
 	DocumentType ParsedWebhookEventDocumentType `json:"document_type"`
 	// Doing Business As
-	DoingBusinessAs string `json:"doing_business_as,nullable"`
+	DoingBusinessAs string `json:"doing_business_as" api:"nullable"`
 	// URL to download evidence. Only shown when `upload_status` is `UPLOADED`.
 	DownloadURL string `json:"download_url"`
 	// If updated, the newly updated email associated with the account_holder otherwise
@@ -5284,20 +5284,20 @@ type ParsedWebhookEvent struct {
 	// The new expiration year of the card.
 	ExpYear string `json:"exp_year"`
 	// Expected release date for the transaction
-	ExpectedReleaseDate time.Time `json:"expected_release_date,nullable" format:"date"`
+	ExpectedReleaseDate time.Time `json:"expected_release_date" api:"nullable" format:"date"`
 	// External bank account token
-	ExternalBankAccountToken string `json:"external_bank_account_token,nullable" format:"uuid"`
+	ExternalBankAccountToken string `json:"external_bank_account_token" api:"nullable" format:"uuid"`
 	// A user provided id that can be used to link an account holder with an external
 	// system
-	ExternalID string `json:"external_id,nullable"`
+	ExternalID string `json:"external_id" api:"nullable"`
 	// External resource associated with the management operation
-	ExternalResource ExternalResource `json:"external_resource,nullable"`
+	ExternalResource ExternalResource `json:"external_resource" api:"nullable"`
 	// TRANSFER - Book Transfer Transaction
 	Family ParsedWebhookEventFamily `json:"family"`
 	// File name of evidence. Recommended to give the dispute evidence a human-readable
 	// identifier.
 	Filename              string `json:"filename"`
-	FinancialAccountToken string `json:"financial_account_token,nullable" format:"uuid"`
+	FinancialAccountToken string `json:"financial_account_token" api:"nullable" format:"uuid"`
 	// If applicable, represents the account_holder's first name.
 	FirstName string `json:"first_name"`
 	// This field can have the runtime type of [[]EnhancedDataFleet].
@@ -5353,11 +5353,11 @@ type ParsedWebhookEvent struct {
 	// different currency.
 	//
 	// Deprecated: deprecated
-	MerchantAmount int64 `json:"merchant_amount,nullable"`
+	MerchantAmount int64 `json:"merchant_amount" api:"nullable"`
 	// Analogous to the 'authorization_amount', but in the merchant currency.
 	//
 	// Deprecated: deprecated
-	MerchantAuthorizationAmount int64 `json:"merchant_authorization_amount,nullable"`
+	MerchantAuthorizationAmount int64 `json:"merchant_authorization_amount" api:"nullable"`
 	// 3-character alphabetic ISO 4217 code for the local currency of the transaction.
 	//
 	// Deprecated: deprecated
@@ -5376,24 +5376,24 @@ type ParsedWebhookEvent struct {
 	// business. Only present if naics_code was included in the update request.
 	NaicsCode string `json:"naics_code"`
 	// The nickname for this External Bank Account
-	Name string `json:"name,nullable"`
+	Name string `json:"name" api:"nullable"`
 	// Short description of the company's line of business (i.e., what does the company
 	// do?).
 	NatureOfBusiness string `json:"nature_of_business"`
 	// Card network of the authorization.
-	Network ParsedWebhookEventNetwork `json:"network,nullable"`
+	Network ParsedWebhookEventNetwork `json:"network" api:"nullable"`
 	// This field can have the runtime type of [[]string].
 	NetworkClaimIDs interface{} `json:"network_claim_ids"`
 	// Date that the dispute was submitted to the network.
-	NetworkFiledDate time.Time `json:"network_filed_date,nullable" format:"date-time"`
+	NetworkFiledDate time.Time `json:"network_filed_date" api:"nullable" format:"date-time"`
 	// Network reason code used to file the dispute.
-	NetworkReasonCode string `json:"network_reason_code,nullable"`
+	NetworkReasonCode string `json:"network_reason_code" api:"nullable"`
 	// Network-provided score assessing risk level associated with a given
 	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
 	// risk and 999 representing the highest risk. For Visa transactions, where the raw
 	// score has a range of 0-99, Lithic will normalize the score by multiplying the
 	// raw score by 10x.
-	NetworkRiskScore int64 `json:"network_risk_score,nullable"`
+	NetworkRiskScore int64 `json:"network_risk_score" api:"nullable"`
 	// This field can have the runtime type of
 	// [[]FundingEventNetworkSettlementSummary].
 	NetworkSettlementSummary interface{} `json:"network_settlement_summary"`
@@ -5404,7 +5404,7 @@ type ParsedWebhookEvent struct {
 	NextPaymentDueDate time.Time `json:"next_payment_due_date" format:"date"`
 	// Date when the next billing period will end
 	NextStatementEndDate time.Time `json:"next_statement_end_date" format:"date"`
-	Nickname             string    `json:"nickname,nullable"`
+	Nickname             string    `json:"nickname" api:"nullable"`
 	// Total amount of gross other fees outside of interchange. (This field is
 	// deprecated and will be removed in a future version of the API. To compute total
 	// amounts, Lithic recommends that customers sum the relevant settlement amounts
@@ -5420,7 +5420,7 @@ type ParsedWebhookEvent struct {
 	// This field can have the runtime type of [LoanTapePaymentAllocation].
 	PaymentAllocation interface{} `json:"payment_allocation"`
 	// Date when the payment is due
-	PaymentDueDate time.Time                     `json:"payment_due_date,nullable" format:"date"`
+	PaymentDueDate time.Time                     `json:"payment_due_date" api:"nullable" format:"date"`
 	PaymentType    ParsedWebhookEventPaymentType `json:"payment_type"`
 	// This field can have the runtime type of [StatementPayoffDetails].
 	PayoffDetails interface{} `json:"payoff_details"`
@@ -5438,7 +5438,7 @@ type ParsedWebhookEvent struct {
 	// [CardAuthorizationApprovalRequestWebhookEventPos], [TransactionPos].
 	Pos interface{} `json:"pos"`
 	// Date dispute entered pre-arbitration.
-	PrearbitrationDate time.Time `json:"prearbitration_date,nullable" format:"date-time"`
+	PrearbitrationDate time.Time `json:"prearbitration_date" api:"nullable" format:"date-time"`
 	// The previous expiration month of the card.
 	PreviousExpMonth string `json:"previous_exp_month"`
 	// The previous expiration year of the card.
@@ -5451,7 +5451,7 @@ type ParsedWebhookEvent struct {
 	PreviousStatementBalance interface{} `json:"previous_statement_balance"`
 	// Unique identifier for the dispute from the network. If there are multiple, this
 	// will be the first claim id set by the network
-	PrimaryClaimID string `json:"primary_claim_id,nullable"`
+	PrimaryClaimID string `json:"primary_claim_id" api:"nullable"`
 	// Dispute reason:
 	//
 	//   - `ATM_CASH_MISDISPENSE`: ATM cash misdispense.
@@ -5475,20 +5475,20 @@ type ParsedWebhookEvent struct {
 	// This field can have the runtime type of [PaymentRelatedAccountTokens].
 	RelatedAccountTokens interface{} `json:"related_account_tokens"`
 	// The token of the card that was replaced, if the new card is a replacement card.
-	ReplacementFor string `json:"replacement_for,nullable" format:"uuid"`
+	ReplacementFor string `json:"replacement_for" api:"nullable" format:"uuid"`
 	// This field can have the runtime type of [time.Time], [string].
 	ReportDate interface{} `json:"report_date"`
 	// Date the representment was received.
-	RepresentmentDate time.Time `json:"representment_date,nullable" format:"date-time"`
+	RepresentmentDate time.Time `json:"representment_date" api:"nullable" format:"date-time"`
 	// This field can have the runtime type of
 	// [[]AccountHolderDocumentUpdatedWebhookEventRequiredDocumentUpload].
 	RequiredDocumentUploads interface{} `json:"required_document_uploads"`
 	// This field can have the runtime type of [[]RequiredDocument].
 	RequiredDocuments interface{} `json:"required_documents"`
 	// Date that the dispute was resolved.
-	ResolutionDate time.Time `json:"resolution_date,nullable" format:"date-time"`
+	ResolutionDate time.Time `json:"resolution_date" api:"nullable" format:"date-time"`
 	// Note by Dispute team on the case resolution.
-	ResolutionNote string `json:"resolution_note,nullable"`
+	ResolutionNote string `json:"resolution_note" api:"nullable"`
 	// Reason for the dispute resolution:
 	//
 	// - `CASE_LOST`: This case was lost at final arbitration.
@@ -5508,12 +5508,12 @@ type ParsedWebhookEvent struct {
 	// - `WON_ARBITRATION`: Won arbitration.
 	// - `WON_FIRST_CHARGEBACK`: Won first chargeback.
 	// - `WON_PREARBITRATION`: Won prearbitration.
-	ResolutionReason ParsedWebhookEventResolutionReason `json:"resolution_reason,nullable"`
+	ResolutionReason ParsedWebhookEventResolutionReason `json:"resolution_reason" api:"nullable"`
 	Result           ParsedWebhookEventResult           `json:"result"`
 	// This field can have the runtime type of [BacktestResultsResults].
 	Results interface{} `json:"results"`
 	// Routing Number
-	RoutingNumber string `json:"routing_number,nullable"`
+	RoutingNumber string `json:"routing_number" api:"nullable"`
 	// This field can have the runtime type of [[]TokenizationRuleResult].
 	RuleResults interface{} `json:"rule_results"`
 	// Deprecated, use `amounts`. Amount (in cents) of the transaction that has been
@@ -5550,13 +5550,13 @@ type ParsedWebhookEvent struct {
 	StatementStartDate time.Time                       `json:"statement_start_date" format:"date"`
 	StatementType      ParsedWebhookEventStatementType `json:"statement_type"`
 	// The status of the account_holder that was created.
-	Status ParsedWebhookEventStatus `json:"status,nullable"`
+	Status ParsedWebhookEventStatus `json:"status" api:"nullable"`
 	// This field can have the runtime type of [[]string].
 	StatusReason interface{} `json:"status_reason"`
 	// This field can have the runtime type of [[]string].
 	StatusReasons interface{} `json:"status_reasons"`
 	// Substatus for the financial account
-	Substatus ParsedWebhookEventSubstatus `json:"substatus,nullable"`
+	Substatus ParsedWebhookEventSubstatus `json:"substatus" api:"nullable"`
 	// This field can have the runtime type of [map[string]string].
 	Tags interface{} `json:"tags"`
 	// Indicates whether a challenge is requested for this transaction
@@ -5575,13 +5575,13 @@ type ParsedWebhookEvent struct {
 	// most common example of this is where a merchant is authenticating before billing
 	// for a recurring transaction such as a pay TV subscription or a utility bill.
 	// Maps to EMV 3DS field `threeRIInd`.
-	ThreeRiRequestType ParsedWebhookEventThreeRiRequestType `json:"three_ri_request_type,nullable"`
+	ThreeRiRequestType ParsedWebhookEventThreeRiRequestType `json:"three_ri_request_type" api:"nullable"`
 	// Interest tier to which this account belongs to
-	Tier string `json:"tier,nullable"`
+	Tier string `json:"tier" api:"nullable"`
 	// Globally unique identifier for the financial account or card that will receive
 	// the funds. Accepted type dependent on the program's use case
 	ToFinancialAccountToken string       `json:"to_financial_account_token" format:"uuid"`
-	TokenInfo               TokenInfo    `json:"token_info,nullable"`
+	TokenInfo               TokenInfo    `json:"token_info" api:"nullable"`
 	Tokenization            Tokenization `json:"tokenization"`
 	// The channel through which the tokenization was made.
 	TokenizationChannel ParsedWebhookEventTokenizationChannel `json:"tokenization_channel"`
@@ -5598,7 +5598,7 @@ type ParsedWebhookEvent struct {
 	// Unique identifier for the digital wallet token attempt
 	TokenizationToken string `json:"tokenization_token"`
 	// The tracking number of the shipment.
-	TrackingNumber string `json:"tracking_number,nullable"`
+	TrackingNumber string `json:"tracking_number" api:"nullable"`
 	// This field can have the runtime type of [ThreeDSAuthenticationTransaction].
 	Transaction interface{} `json:"transaction"`
 	// The entity that initiated the transaction.
@@ -5636,15 +5636,15 @@ type ParsedWebhookEvent struct {
 	// URL to upload evidence. Only shown when `upload_status` is `PENDING`.
 	UploadURL string `json:"upload_url"`
 	// User Defined ID
-	UserDefinedID string `json:"user_defined_id,nullable"`
+	UserDefinedID string `json:"user_defined_id" api:"nullable"`
 	// User-defined status for the financial account
-	UserDefinedStatus string `json:"user_defined_status,nullable"`
+	UserDefinedStatus string `json:"user_defined_status" api:"nullable"`
 	// The number of attempts at verification
 	VerificationAttempts int64 `json:"verification_attempts"`
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
 	// by the ACH network
-	VerificationFailedReason string `json:"verification_failed_reason,nullable"`
+	VerificationFailedReason string `json:"verification_failed_reason" api:"nullable"`
 	// Verification Method
 	VerificationMethod VerificationMethod `json:"verification_method"`
 	// Verification State
@@ -6227,9 +6227,9 @@ func init() {
 // KYB payload for an updated account holder.
 type ParsedWebhookEventKYBPayload struct {
 	// The token of the account_holder that was created.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Original request to update the account holder.
-	UpdateRequest ParsedWebhookEventKYBPayloadUpdateRequest `json:"update_request,required"`
+	UpdateRequest ParsedWebhookEventKYBPayloadUpdateRequest `json:"update_request" api:"required"`
 	// The type of event that occurred.
 	EventType ParsedWebhookEventKYBPayloadEventType `json:"event_type"`
 	// A user provided id that can be used to link an account holder with an external
@@ -6361,18 +6361,18 @@ func (r parsedWebhookEventKYBPayloadUpdateRequestBeneficialOwnerIndividualJSON) 
 // acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 type ParsedWebhookEventKYBPayloadUpdateRequestBeneficialOwnerIndividualsAddress struct {
 	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
+	Address1 string `json:"address1" api:"required"`
 	// Name of city.
-	City string `json:"city,required"`
+	City string `json:"city" api:"required"`
 	// Valid country code. Only USA is currently supported, entered in uppercase ISO
 	// 3166-1 alpha-3 three-character format.
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
 	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode string `json:"postal_code,required"`
+	PostalCode string `json:"postal_code" api:"required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state,required"`
+	State string `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
 	Address2 string                                                                         `json:"address2"`
 	JSON     parsedWebhookEventKYBPayloadUpdateRequestBeneficialOwnerIndividualsAddressJSON `json:"-"`
@@ -6451,18 +6451,18 @@ func (r parsedWebhookEventKYBPayloadUpdateRequestControlPersonJSON) RawJSON() st
 // acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 type ParsedWebhookEventKYBPayloadUpdateRequestControlPersonAddress struct {
 	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
+	Address1 string `json:"address1" api:"required"`
 	// Name of city.
-	City string `json:"city,required"`
+	City string `json:"city" api:"required"`
 	// Valid country code. Only USA is currently supported, entered in uppercase ISO
 	// 3166-1 alpha-3 three-character format.
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
 	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode string `json:"postal_code,required"`
+	PostalCode string `json:"postal_code" api:"required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state,required"`
+	State string `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
 	Address2 string                                                            `json:"address2"`
 	JSON     parsedWebhookEventKYBPayloadUpdateRequestControlPersonAddressJSON `json:"-"`
@@ -6508,9 +6508,9 @@ func (r ParsedWebhookEventKYBPayloadEventType) IsKnown() bool {
 // KYC payload for an updated account holder.
 type ParsedWebhookEventKYCPayload struct {
 	// The token of the account_holder that was created.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Original request to update the account holder.
-	UpdateRequest ParsedWebhookEventKYCPayloadUpdateRequest `json:"update_request,required"`
+	UpdateRequest ParsedWebhookEventKYCPayloadUpdateRequest `json:"update_request" api:"required"`
 	// The type of event that occurred.
 	EventType ParsedWebhookEventKYCPayloadEventType `json:"event_type"`
 	// A user provided id that can be used to link an account holder with an external
@@ -6609,18 +6609,18 @@ func (r parsedWebhookEventKYCPayloadUpdateRequestIndividualJSON) RawJSON() strin
 // acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
 type ParsedWebhookEventKYCPayloadUpdateRequestIndividualAddress struct {
 	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
+	Address1 string `json:"address1" api:"required"`
 	// Name of city.
-	City string `json:"city,required"`
+	City string `json:"city" api:"required"`
 	// Valid country code. Only USA is currently supported, entered in uppercase ISO
 	// 3166-1 alpha-3 three-character format.
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
 	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode string `json:"postal_code,required"`
+	PostalCode string `json:"postal_code" api:"required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state,required"`
+	State string `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
 	Address2 string                                                         `json:"address2"`
 	JSON     parsedWebhookEventKYCPayloadUpdateRequestIndividualAddressJSON `json:"-"`
@@ -6666,10 +6666,10 @@ func (r ParsedWebhookEventKYCPayloadEventType) IsKnown() bool {
 // Legacy payload for an updated account holder.
 type ParsedWebhookEventLegacyPayload struct {
 	// The token of the account_holder that was created.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// If applicable, represents the business account token associated with the
 	// account_holder.
-	BusinessAccountToken string `json:"business_account_token,nullable" format:"uuid"`
+	BusinessAccountToken string `json:"business_account_token" api:"nullable" format:"uuid"`
 	// When the account_holder updated event was created
 	Created time.Time `json:"created" format:"date-time"`
 	// If updated, the newly updated email associated with the account_holder otherwise
@@ -6678,7 +6678,7 @@ type ParsedWebhookEventLegacyPayload struct {
 	// The type of event that occurred.
 	EventType ParsedWebhookEventLegacyPayloadEventType `json:"event_type"`
 	// If applicable, represents the external_id associated with the account_holder.
-	ExternalID string `json:"external_id,nullable"`
+	ExternalID string `json:"external_id" api:"nullable"`
 	// If applicable, represents the account_holder's first name.
 	FirstName string `json:"first_name"`
 	// If applicable, represents the account_holder's last name.

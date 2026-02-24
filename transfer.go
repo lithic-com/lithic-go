@@ -180,13 +180,13 @@ func (r TransferStatus) IsKnown() bool {
 type TransferNewParams struct {
 	// Amount to be transferred in the currency’s smallest unit (e.g., cents for USD).
 	// This should always be a positive value.
-	Amount param.Field[int64] `json:"amount,required"`
+	Amount param.Field[int64] `json:"amount" api:"required"`
 	// Globally unique identifier for the financial account or card that will send the
 	// funds. Accepted type dependent on the program's use case.
-	From param.Field[string] `json:"from,required" format:"uuid"`
+	From param.Field[string] `json:"from" api:"required" format:"uuid"`
 	// Globally unique identifier for the financial account or card that will receive
 	// the funds. Accepted type dependent on the program's use case.
-	To param.Field[string] `json:"to,required" format:"uuid"`
+	To param.Field[string] `json:"to" api:"required" format:"uuid"`
 	// Customer-provided token that will serve as an idempotency token. This token will
 	// become the transaction token.
 	Token param.Field[string] `json:"token" format:"uuid"`
