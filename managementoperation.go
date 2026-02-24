@@ -96,9 +96,9 @@ func (r *ManagementOperationService) Reverse(ctx context.Context, managementOper
 // External resource associated with the management operation
 type ExternalResource struct {
 	// Token identifying the external resource
-	ExternalResourceToken string `json:"external_resource_token,required"`
+	ExternalResourceToken string `json:"external_resource_token" api:"required"`
 	// Type of external resource associated with the management operation
-	ExternalResourceType ExternalResourceType `json:"external_resource_type,required"`
+	ExternalResourceType ExternalResourceType `json:"external_resource_type" api:"required"`
 	// Token identifying the external resource sub-resource
 	ExternalResourceSubToken string               `json:"external_resource_sub_token"`
 	JSON                     externalResourceJSON `json:"-"`
@@ -142,27 +142,27 @@ func (r ExternalResourceType) IsKnown() bool {
 
 type ManagementOperationTransaction struct {
 	// Unique identifier for the transaction
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// ISO 8601 timestamp of when the transaction was created
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// The status of the transaction
-	Status ManagementOperationTransactionStatus `json:"status,required"`
+	Status ManagementOperationTransactionStatus `json:"status" api:"required"`
 	// ISO 8601 timestamp of when the transaction was last updated
-	Updated   time.Time                               `json:"updated,required" format:"date-time"`
+	Updated   time.Time                               `json:"updated" api:"required" format:"date-time"`
 	Category  ManagementOperationTransactionCategory  `json:"category"`
 	Currency  string                                  `json:"currency"`
 	Direction ManagementOperationTransactionDirection `json:"direction"`
 	Events    []ManagementOperationTransactionEvent   `json:"events"`
 	// External resource associated with the management operation
-	ExternalResource ExternalResource `json:"external_resource,nullable"`
+	ExternalResource ExternalResource `json:"external_resource" api:"nullable"`
 	// MANAGEMENT_OPERATION - Management Operation Transaction
 	Family                ManagementOperationTransactionFamily            `json:"family"`
 	FinancialAccountToken string                                          `json:"financial_account_token" format:"uuid"`
 	PendingAmount         int64                                           `json:"pending_amount"`
 	Result                ManagementOperationTransactionResult            `json:"result"`
 	SettledAmount         int64                                           `json:"settled_amount"`
-	TransactionSeries     ManagementOperationTransactionTransactionSeries `json:"transaction_series,nullable"`
-	UserDefinedID         string                                          `json:"user_defined_id,nullable"`
+	TransactionSeries     ManagementOperationTransactionTransactionSeries `json:"transaction_series" api:"nullable"`
+	UserDefinedID         string                                          `json:"user_defined_id" api:"nullable"`
 	JSON                  managementOperationTransactionJSON              `json:"-"`
 }
 
@@ -255,15 +255,15 @@ func (r ManagementOperationTransactionDirection) IsKnown() bool {
 }
 
 type ManagementOperationTransactionEvent struct {
-	Token           string                                               `json:"token,required" format:"uuid"`
-	Amount          int64                                                `json:"amount,required"`
-	Created         time.Time                                            `json:"created,required" format:"date-time"`
-	DetailedResults []ManagementOperationTransactionEventsDetailedResult `json:"detailed_results,required"`
-	EffectiveDate   time.Time                                            `json:"effective_date,required" format:"date"`
-	Memo            string                                               `json:"memo,required"`
-	Result          ManagementOperationTransactionEventsResult           `json:"result,required"`
-	Type            ManagementOperationTransactionEventsType             `json:"type,required"`
-	Subtype         string                                               `json:"subtype,nullable"`
+	Token           string                                               `json:"token" api:"required" format:"uuid"`
+	Amount          int64                                                `json:"amount" api:"required"`
+	Created         time.Time                                            `json:"created" api:"required" format:"date-time"`
+	DetailedResults []ManagementOperationTransactionEventsDetailedResult `json:"detailed_results" api:"required"`
+	EffectiveDate   time.Time                                            `json:"effective_date" api:"required" format:"date"`
+	Memo            string                                               `json:"memo" api:"required"`
+	Result          ManagementOperationTransactionEventsResult           `json:"result" api:"required"`
+	Type            ManagementOperationTransactionEventsType             `json:"type" api:"required"`
+	Subtype         string                                               `json:"subtype" api:"nullable"`
 	JSON            managementOperationTransactionEventJSON              `json:"-"`
 }
 
@@ -390,9 +390,9 @@ func (r ManagementOperationTransactionResult) IsKnown() bool {
 }
 
 type ManagementOperationTransactionTransactionSeries struct {
-	RelatedTransactionEventToken string                                              `json:"related_transaction_event_token,required,nullable" format:"uuid"`
-	RelatedTransactionToken      string                                              `json:"related_transaction_token,required,nullable" format:"uuid"`
-	Type                         string                                              `json:"type,required"`
+	RelatedTransactionEventToken string                                              `json:"related_transaction_event_token" api:"required,nullable" format:"uuid"`
+	RelatedTransactionToken      string                                              `json:"related_transaction_token" api:"required,nullable" format:"uuid"`
+	Type                         string                                              `json:"type" api:"required"`
 	JSON                         managementOperationTransactionTransactionSeriesJSON `json:"-"`
 }
 
@@ -415,12 +415,12 @@ func (r managementOperationTransactionTransactionSeriesJSON) RawJSON() string {
 }
 
 type ManagementOperationNewParams struct {
-	Amount                param.Field[int64]                                 `json:"amount,required"`
-	Category              param.Field[ManagementOperationNewParamsCategory]  `json:"category,required"`
-	Direction             param.Field[ManagementOperationNewParamsDirection] `json:"direction,required"`
-	EffectiveDate         param.Field[time.Time]                             `json:"effective_date,required" format:"date"`
-	EventType             param.Field[ManagementOperationNewParamsEventType] `json:"event_type,required"`
-	FinancialAccountToken param.Field[string]                                `json:"financial_account_token,required" format:"uuid"`
+	Amount                param.Field[int64]                                 `json:"amount" api:"required"`
+	Category              param.Field[ManagementOperationNewParamsCategory]  `json:"category" api:"required"`
+	Direction             param.Field[ManagementOperationNewParamsDirection] `json:"direction" api:"required"`
+	EffectiveDate         param.Field[time.Time]                             `json:"effective_date" api:"required" format:"date"`
+	EventType             param.Field[ManagementOperationNewParamsEventType] `json:"event_type" api:"required"`
+	FinancialAccountToken param.Field[string]                                `json:"financial_account_token" api:"required" format:"uuid"`
 	// Customer-provided token that will serve as an idempotency token. This token will
 	// become the transaction token.
 	Token param.Field[string] `json:"token" format:"uuid"`
@@ -596,7 +596,7 @@ func (r ManagementOperationListParamsStatus) IsKnown() bool {
 }
 
 type ManagementOperationReverseParams struct {
-	EffectiveDate param.Field[time.Time] `json:"effective_date,required" format:"date"`
+	EffectiveDate param.Field[time.Time] `json:"effective_date" api:"required" format:"date"`
 	Memo          param.Field[string]    `json:"memo"`
 }
 

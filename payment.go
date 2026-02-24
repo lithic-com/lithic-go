@@ -159,48 +159,48 @@ func (r *PaymentService) SimulateReturn(ctx context.Context, body PaymentSimulat
 // Payment transaction
 type Payment struct {
 	// Unique identifier for the transaction
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Transaction category
-	Category PaymentCategory `json:"category,required"`
+	Category PaymentCategory `json:"category" api:"required"`
 	// ISO 8601 timestamp of when the transaction was created
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Transaction descriptor
-	Descriptor string `json:"descriptor,required"`
+	Descriptor string `json:"descriptor" api:"required"`
 	// Transfer direction
-	Direction PaymentDirection `json:"direction,required"`
+	Direction PaymentDirection `json:"direction" api:"required"`
 	// List of transaction events
-	Events []PaymentEvent `json:"events,required"`
+	Events []PaymentEvent `json:"events" api:"required"`
 	// PAYMENT - Payment Transaction
-	Family PaymentFamily `json:"family,required"`
+	Family PaymentFamily `json:"family" api:"required"`
 	// Financial account token
-	FinancialAccountToken string `json:"financial_account_token,required" format:"uuid"`
+	FinancialAccountToken string `json:"financial_account_token" api:"required" format:"uuid"`
 	// Transfer method
-	Method PaymentMethod `json:"method,required"`
+	Method PaymentMethod `json:"method" api:"required"`
 	// Method-specific attributes
-	MethodAttributes PaymentMethodAttributes `json:"method_attributes,required"`
+	MethodAttributes PaymentMethodAttributes `json:"method_attributes" api:"required"`
 	// Pending amount in cents
-	PendingAmount int64 `json:"pending_amount,required"`
+	PendingAmount int64 `json:"pending_amount" api:"required"`
 	// Account tokens related to a payment transaction
-	RelatedAccountTokens PaymentRelatedAccountTokens `json:"related_account_tokens,required,nullable"`
+	RelatedAccountTokens PaymentRelatedAccountTokens `json:"related_account_tokens" api:"required,nullable"`
 	// Transaction result
-	Result PaymentResult `json:"result,required"`
+	Result PaymentResult `json:"result" api:"required"`
 	// Settled amount in cents
-	SettledAmount int64 `json:"settled_amount,required"`
+	SettledAmount int64 `json:"settled_amount" api:"required"`
 	// Transaction source
-	Source PaymentSource `json:"source,required"`
+	Source PaymentSource `json:"source" api:"required"`
 	// The status of the transaction
-	Status PaymentStatus `json:"status,required"`
+	Status PaymentStatus `json:"status" api:"required"`
 	// ISO 8601 timestamp of when the transaction was last updated
-	Updated time.Time `json:"updated,required" format:"date-time"`
+	Updated time.Time `json:"updated" api:"required" format:"date-time"`
 	// Currency of the transaction in ISO 4217 format
 	Currency string `json:"currency"`
 	// Expected release date for the transaction
-	ExpectedReleaseDate time.Time `json:"expected_release_date,nullable" format:"date"`
+	ExpectedReleaseDate time.Time `json:"expected_release_date" api:"nullable" format:"date"`
 	// External bank account token
-	ExternalBankAccountToken string      `json:"external_bank_account_token,nullable" format:"uuid"`
+	ExternalBankAccountToken string      `json:"external_bank_account_token" api:"nullable" format:"uuid"`
 	Type                     PaymentType `json:"type"`
 	// User-defined identifier
-	UserDefinedID string      `json:"user_defined_id,nullable"`
+	UserDefinedID string      `json:"user_defined_id" api:"nullable"`
 	JSON          paymentJSON `json:"-"`
 }
 
@@ -297,15 +297,15 @@ func (r PaymentDirection) IsKnown() bool {
 // Payment Event
 type PaymentEvent struct {
 	// Globally unique identifier.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Amount of the financial event that has been settled in the currency's smallest
 	// unit (e.g., cents).
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// Date and time when the financial event occurred. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// APPROVED financial events were successful while DECLINED financial events were
 	// declined by user, Lithic, or the network.
-	Result PaymentEventsResult `json:"result,required"`
+	Result PaymentEventsResult `json:"result" api:"required"`
 	// Event types:
 	//
 	//   - `ACH_ORIGINATION_INITIATED` - ACH origination received and pending
@@ -330,11 +330,11 @@ type PaymentEvent struct {
 	//     Financial Institution.
 	//   - `ACH_RETURN_REJECTED` - ACH return was rejected by the Receiving Depository
 	//     Financial Institution.
-	Type PaymentEventsType `json:"type,required"`
+	Type PaymentEventsType `json:"type" api:"required"`
 	// More detailed reasons for the event
 	DetailedResults []PaymentEventsDetailedResult `json:"detailed_results"`
 	// Payment event external ID, for example, ACH trace number.
-	ExternalID string           `json:"external_id,nullable"`
+	ExternalID string           `json:"external_id" api:"nullable"`
 	JSON       paymentEventJSON `json:"-"`
 }
 
@@ -482,30 +482,30 @@ func (r PaymentMethod) IsKnown() bool {
 // Method-specific attributes
 type PaymentMethodAttributes struct {
 	// Number of days the ACH transaction is on hold
-	ACHHoldPeriod int64 `json:"ach_hold_period,nullable"`
+	ACHHoldPeriod int64 `json:"ach_hold_period" api:"nullable"`
 	// Addenda information
-	Addenda string `json:"addenda,nullable"`
+	Addenda string `json:"addenda" api:"nullable"`
 	// Company ID for the ACH transaction
-	CompanyID string           `json:"company_id,nullable"`
+	CompanyID string           `json:"company_id" api:"nullable"`
 	Creditor  WirePartyDetails `json:"creditor"`
 	Debtor    WirePartyDetails `json:"debtor"`
 	// Point to point reference identifier, as assigned by the instructing party, used
 	// for tracking the message through the Fedwire system
-	MessageID string `json:"message_id,nullable"`
+	MessageID string `json:"message_id" api:"nullable"`
 	// Receipt routing number
-	ReceiptRoutingNumber string `json:"receipt_routing_number,nullable"`
+	ReceiptRoutingNumber string `json:"receipt_routing_number" api:"nullable"`
 	// Payment details or invoice reference
-	RemittanceInformation string `json:"remittance_information,nullable"`
+	RemittanceInformation string `json:"remittance_information" api:"nullable"`
 	// Number of retries attempted
-	Retries int64 `json:"retries,nullable"`
+	Retries int64 `json:"retries" api:"nullable"`
 	// Return reason code if the transaction was returned
-	ReturnReasonCode string `json:"return_reason_code,nullable"`
+	ReturnReasonCode string `json:"return_reason_code" api:"nullable"`
 	// SEC code for ACH transaction
 	SecCode PaymentMethodAttributesSecCode `json:"sec_code"`
 	// This field can have the runtime type of [[]string].
 	TraceNumbers interface{} `json:"trace_numbers"`
 	// Type of wire message
-	WireMessageType string `json:"wire_message_type,nullable"`
+	WireMessageType string `json:"wire_message_type" api:"nullable"`
 	// Type of wire transfer
 	WireNetwork PaymentMethodAttributesWireNetwork `json:"wire_network"`
 	JSON        paymentMethodAttributesJSON        `json:"-"`
@@ -581,19 +581,19 @@ func init() {
 
 type PaymentMethodAttributesACHMethodAttributes struct {
 	// SEC code for ACH transaction
-	SecCode PaymentMethodAttributesACHMethodAttributesSecCode `json:"sec_code,required"`
+	SecCode PaymentMethodAttributesACHMethodAttributesSecCode `json:"sec_code" api:"required"`
 	// Number of days the ACH transaction is on hold
-	ACHHoldPeriod int64 `json:"ach_hold_period,nullable"`
+	ACHHoldPeriod int64 `json:"ach_hold_period" api:"nullable"`
 	// Addenda information
-	Addenda string `json:"addenda,nullable"`
+	Addenda string `json:"addenda" api:"nullable"`
 	// Company ID for the ACH transaction
-	CompanyID string `json:"company_id,nullable"`
+	CompanyID string `json:"company_id" api:"nullable"`
 	// Receipt routing number
-	ReceiptRoutingNumber string `json:"receipt_routing_number,nullable"`
+	ReceiptRoutingNumber string `json:"receipt_routing_number" api:"nullable"`
 	// Number of retries attempted
-	Retries int64 `json:"retries,nullable"`
+	Retries int64 `json:"retries" api:"nullable"`
 	// Return reason code if the transaction was returned
-	ReturnReasonCode string `json:"return_reason_code,nullable"`
+	ReturnReasonCode string `json:"return_reason_code" api:"nullable"`
 	// Trace numbers for the ACH transaction
 	TraceNumbers []string                                       `json:"trace_numbers"`
 	JSON         paymentMethodAttributesACHMethodAttributesJSON `json:"-"`
@@ -646,16 +646,16 @@ func (r PaymentMethodAttributesACHMethodAttributesSecCode) IsKnown() bool {
 
 type PaymentMethodAttributesWireMethodAttributes struct {
 	// Type of wire message
-	WireMessageType string `json:"wire_message_type,required,nullable"`
+	WireMessageType string `json:"wire_message_type" api:"required,nullable"`
 	// Type of wire transfer
-	WireNetwork PaymentMethodAttributesWireMethodAttributesWireNetwork `json:"wire_network,required"`
+	WireNetwork PaymentMethodAttributesWireMethodAttributesWireNetwork `json:"wire_network" api:"required"`
 	Creditor    WirePartyDetails                                       `json:"creditor"`
 	Debtor      WirePartyDetails                                       `json:"debtor"`
 	// Point to point reference identifier, as assigned by the instructing party, used
 	// for tracking the message through the Fedwire system
-	MessageID string `json:"message_id,nullable"`
+	MessageID string `json:"message_id" api:"nullable"`
 	// Payment details or invoice reference
-	RemittanceInformation string                                          `json:"remittance_information,nullable"`
+	RemittanceInformation string                                          `json:"remittance_information" api:"nullable"`
 	JSON                  paymentMethodAttributesWireMethodAttributesJSON `json:"-"`
 }
 
@@ -737,9 +737,9 @@ func (r PaymentMethodAttributesWireNetwork) IsKnown() bool {
 // Account tokens related to a payment transaction
 type PaymentRelatedAccountTokens struct {
 	// Globally unique identifier for the account
-	AccountToken string `json:"account_token,required,nullable" format:"uuid"`
+	AccountToken string `json:"account_token" api:"required,nullable" format:"uuid"`
 	// Globally unique identifier for the business account
-	BusinessAccountToken string                          `json:"business_account_token,required,nullable" format:"uuid"`
+	BusinessAccountToken string                          `json:"business_account_token" api:"required,nullable" format:"uuid"`
 	JSON                 paymentRelatedAccountTokensJSON `json:"-"`
 }
 
@@ -885,11 +885,11 @@ func (r paymentRetryResponseJSON) RawJSON() string {
 
 type PaymentSimulateActionResponse struct {
 	// Debugging Request Id
-	DebuggingRequestID string `json:"debugging_request_id,required" format:"uuid"`
+	DebuggingRequestID string `json:"debugging_request_id" api:"required" format:"uuid"`
 	// Request Result
-	Result PaymentSimulateActionResponseResult `json:"result,required"`
+	Result PaymentSimulateActionResponseResult `json:"result" api:"required"`
 	// Transaction Event Token
-	TransactionEventToken string                            `json:"transaction_event_token,required" format:"uuid"`
+	TransactionEventToken string                            `json:"transaction_event_token" api:"required" format:"uuid"`
 	JSON                  paymentSimulateActionResponseJSON `json:"-"`
 }
 
@@ -929,11 +929,11 @@ func (r PaymentSimulateActionResponseResult) IsKnown() bool {
 
 type PaymentSimulateReceiptResponse struct {
 	// Debugging Request Id
-	DebuggingRequestID string `json:"debugging_request_id,required" format:"uuid"`
+	DebuggingRequestID string `json:"debugging_request_id" api:"required" format:"uuid"`
 	// Request Result
-	Result PaymentSimulateReceiptResponseResult `json:"result,required"`
+	Result PaymentSimulateReceiptResponseResult `json:"result" api:"required"`
 	// Transaction Event Token
-	TransactionEventToken string                             `json:"transaction_event_token,required" format:"uuid"`
+	TransactionEventToken string                             `json:"transaction_event_token" api:"required" format:"uuid"`
 	JSON                  paymentSimulateReceiptResponseJSON `json:"-"`
 }
 
@@ -973,11 +973,11 @@ func (r PaymentSimulateReceiptResponseResult) IsKnown() bool {
 
 type PaymentSimulateReleaseResponse struct {
 	// Debugging Request Id
-	DebuggingRequestID string `json:"debugging_request_id,required" format:"uuid"`
+	DebuggingRequestID string `json:"debugging_request_id" api:"required" format:"uuid"`
 	// Request Result
-	Result PaymentSimulateReleaseResponseResult `json:"result,required"`
+	Result PaymentSimulateReleaseResponseResult `json:"result" api:"required"`
 	// Transaction Event Token
-	TransactionEventToken string                             `json:"transaction_event_token,required" format:"uuid"`
+	TransactionEventToken string                             `json:"transaction_event_token" api:"required" format:"uuid"`
 	JSON                  paymentSimulateReleaseResponseJSON `json:"-"`
 }
 
@@ -1017,11 +1017,11 @@ func (r PaymentSimulateReleaseResponseResult) IsKnown() bool {
 
 type PaymentSimulateReturnResponse struct {
 	// Debugging Request Id
-	DebuggingRequestID string `json:"debugging_request_id,required" format:"uuid"`
+	DebuggingRequestID string `json:"debugging_request_id" api:"required" format:"uuid"`
 	// Request Result
-	Result PaymentSimulateReturnResponseResult `json:"result,required"`
+	Result PaymentSimulateReturnResponseResult `json:"result" api:"required"`
 	// Transaction Event Token
-	TransactionEventToken string                            `json:"transaction_event_token,required" format:"uuid"`
+	TransactionEventToken string                            `json:"transaction_event_token" api:"required" format:"uuid"`
 	JSON                  paymentSimulateReturnResponseJSON `json:"-"`
 }
 
@@ -1060,12 +1060,12 @@ func (r PaymentSimulateReturnResponseResult) IsKnown() bool {
 }
 
 type PaymentNewParams struct {
-	Amount                   param.Field[int64]                            `json:"amount,required"`
-	ExternalBankAccountToken param.Field[string]                           `json:"external_bank_account_token,required" format:"uuid"`
-	FinancialAccountToken    param.Field[string]                           `json:"financial_account_token,required" format:"uuid"`
-	Method                   param.Field[PaymentNewParamsMethod]           `json:"method,required"`
-	MethodAttributes         param.Field[PaymentNewParamsMethodAttributes] `json:"method_attributes,required"`
-	Type                     param.Field[PaymentNewParamsType]             `json:"type,required"`
+	Amount                   param.Field[int64]                            `json:"amount" api:"required"`
+	ExternalBankAccountToken param.Field[string]                           `json:"external_bank_account_token" api:"required" format:"uuid"`
+	FinancialAccountToken    param.Field[string]                           `json:"financial_account_token" api:"required" format:"uuid"`
+	Method                   param.Field[PaymentNewParamsMethod]           `json:"method" api:"required"`
+	MethodAttributes         param.Field[PaymentNewParamsMethodAttributes] `json:"method_attributes" api:"required"`
+	Type                     param.Field[PaymentNewParamsType]             `json:"type" api:"required"`
 	// Customer-provided token that will serve as an idempotency token. This token will
 	// become the transaction token.
 	Token         param.Field[string] `json:"token" format:"uuid"`
@@ -1093,7 +1093,7 @@ func (r PaymentNewParamsMethod) IsKnown() bool {
 }
 
 type PaymentNewParamsMethodAttributes struct {
-	SecCode param.Field[PaymentNewParamsMethodAttributesSecCode] `json:"sec_code,required"`
+	SecCode param.Field[PaymentNewParamsMethodAttributesSecCode] `json:"sec_code" api:"required"`
 	// Number of days to hold the ACH payment
 	ACHHoldPeriod param.Field[int64]  `json:"ach_hold_period"`
 	Addenda       param.Field[string] `json:"addenda"`
@@ -1213,12 +1213,12 @@ func (r PaymentListParamsStatus) IsKnown() bool {
 
 type PaymentReturnParams struct {
 	// Globally unique identifier for the financial account
-	FinancialAccountToken param.Field[string] `json:"financial_account_token,required" format:"uuid"`
+	FinancialAccountToken param.Field[string] `json:"financial_account_token" api:"required" format:"uuid"`
 	// ACH return reason code indicating the reason for returning the payment.
 	// Supported codes include R01-R53 and R80-R85. For a complete list of return codes
 	// and their meanings, see
 	// [ACH Return Reasons](https://docs.lithic.com/docs/ach-overview#ach-return-reasons)
-	ReturnReasonCode param.Field[string] `json:"return_reason_code,required"`
+	ReturnReasonCode param.Field[string] `json:"return_reason_code" api:"required"`
 	// Optional additional information about the return. Limited to 44 characters
 	Addenda param.Field[string] `json:"addenda"`
 	// Date of death in YYYY-MM-DD format. Required when using return codes **R14**
@@ -1235,7 +1235,7 @@ func (r PaymentReturnParams) MarshalJSON() (data []byte, err error) {
 
 type PaymentSimulateActionParams struct {
 	// Event Type
-	EventType param.Field[PaymentSimulateActionParamsEventType] `json:"event_type,required"`
+	EventType param.Field[PaymentSimulateActionParamsEventType] `json:"event_type" api:"required"`
 	// Date of Death for ACH Return
 	DateOfDeath param.Field[time.Time] `json:"date_of_death" format:"date"`
 	// Decline reason
@@ -1292,13 +1292,13 @@ func (r PaymentSimulateActionParamsDeclineReason) IsKnown() bool {
 
 type PaymentSimulateReceiptParams struct {
 	// Customer-generated payment token used to uniquely identify the simulated payment
-	Token param.Field[string] `json:"token,required" format:"uuid"`
+	Token param.Field[string] `json:"token" api:"required" format:"uuid"`
 	// Amount
-	Amount param.Field[int64] `json:"amount,required"`
+	Amount param.Field[int64] `json:"amount" api:"required"`
 	// Financial Account Token
-	FinancialAccountToken param.Field[string] `json:"financial_account_token,required" format:"uuid"`
+	FinancialAccountToken param.Field[string] `json:"financial_account_token" api:"required" format:"uuid"`
 	// Receipt Type
-	ReceiptType param.Field[PaymentSimulateReceiptParamsReceiptType] `json:"receipt_type,required"`
+	ReceiptType param.Field[PaymentSimulateReceiptParamsReceiptType] `json:"receipt_type" api:"required"`
 	// Memo
 	Memo param.Field[string] `json:"memo"`
 }
@@ -1325,7 +1325,7 @@ func (r PaymentSimulateReceiptParamsReceiptType) IsKnown() bool {
 
 type PaymentSimulateReleaseParams struct {
 	// Payment Token
-	PaymentToken param.Field[string] `json:"payment_token,required" format:"uuid"`
+	PaymentToken param.Field[string] `json:"payment_token" api:"required" format:"uuid"`
 }
 
 func (r PaymentSimulateReleaseParams) MarshalJSON() (data []byte, err error) {
@@ -1334,7 +1334,7 @@ func (r PaymentSimulateReleaseParams) MarshalJSON() (data []byte, err error) {
 
 type PaymentSimulateReturnParams struct {
 	// Payment Token
-	PaymentToken param.Field[string] `json:"payment_token,required" format:"uuid"`
+	PaymentToken param.Field[string] `json:"payment_token" api:"required" format:"uuid"`
 	// Return Reason Code
 	ReturnReasonCode param.Field[string] `json:"return_reason_code"`
 }

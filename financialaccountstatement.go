@@ -85,44 +85,44 @@ func (r *FinancialAccountStatementService) ListAutoPaging(ctx context.Context, f
 
 type Statement struct {
 	// Globally unique identifier for a statement
-	Token           string                   `json:"token,required"`
-	AccountStanding StatementAccountStanding `json:"account_standing,required"`
-	AmountDue       StatementAmountDue       `json:"amount_due,required"`
+	Token           string                   `json:"token" api:"required"`
+	AccountStanding StatementAccountStanding `json:"account_standing" api:"required"`
+	AmountDue       StatementAmountDue       `json:"amount_due" api:"required"`
 	// Amount of credit available to spend in cents
-	AvailableCredit int64 `json:"available_credit,required"`
+	AvailableCredit int64 `json:"available_credit" api:"required"`
 	// Timestamp of when the statement was created
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// This is the maximum credit balance extended by the lender in cents
-	CreditLimit int64 `json:"credit_limit,required"`
+	CreditLimit int64 `json:"credit_limit" api:"required"`
 	// Globally unique identifier for a credit product
-	CreditProductToken string `json:"credit_product_token,required"`
+	CreditProductToken string `json:"credit_product_token" api:"required"`
 	// Number of days in the billing cycle
-	DaysInBillingCycle int64 `json:"days_in_billing_cycle,required"`
+	DaysInBillingCycle int64 `json:"days_in_billing_cycle" api:"required"`
 	// Balance at the end of the billing period. For charge cards, this should be the
 	// same at the statement amount due in cents
-	EndingBalance int64 `json:"ending_balance,required"`
+	EndingBalance int64 `json:"ending_balance" api:"required"`
 	// Globally unique identifier for a financial account
-	FinancialAccountToken string `json:"financial_account_token,required" format:"uuid"`
+	FinancialAccountToken string `json:"financial_account_token" api:"required" format:"uuid"`
 	// Date when the payment is due
-	PaymentDueDate time.Time       `json:"payment_due_date,required,nullable" format:"date"`
-	PeriodTotals   StatementTotals `json:"period_totals,required"`
+	PaymentDueDate time.Time       `json:"payment_due_date" api:"required,nullable" format:"date"`
+	PeriodTotals   StatementTotals `json:"period_totals" api:"required"`
 	// Balance at the start of the billing period
-	StartingBalance int64 `json:"starting_balance,required"`
+	StartingBalance int64 `json:"starting_balance" api:"required"`
 	// Date when the billing period ended
-	StatementEndDate time.Time `json:"statement_end_date,required" format:"date"`
+	StatementEndDate time.Time `json:"statement_end_date" api:"required" format:"date"`
 	// Date when the billing period began
-	StatementStartDate time.Time              `json:"statement_start_date,required" format:"date"`
-	StatementType      StatementStatementType `json:"statement_type,required"`
+	StatementStartDate time.Time              `json:"statement_start_date" api:"required" format:"date"`
+	StatementType      StatementStatementType `json:"statement_type" api:"required"`
 	// Timestamp of when the statement was updated
-	Updated         time.Time                `json:"updated,required" format:"date-time"`
-	YtdTotals       StatementTotals          `json:"ytd_totals,required"`
-	InterestDetails StatementInterestDetails `json:"interest_details,nullable"`
+	Updated         time.Time                `json:"updated" api:"required" format:"date-time"`
+	YtdTotals       StatementTotals          `json:"ytd_totals" api:"required"`
+	InterestDetails StatementInterestDetails `json:"interest_details" api:"nullable"`
 	// Date when the next payment is due
 	NextPaymentDueDate time.Time `json:"next_payment_due_date" format:"date"`
 	// Date when the next billing period will end
 	NextStatementEndDate time.Time `json:"next_statement_end_date" format:"date"`
 	// Details on number and size of payments to pay off balance
-	PayoffDetails StatementPayoffDetails `json:"payoff_details,nullable"`
+	PayoffDetails StatementPayoffDetails `json:"payoff_details" api:"nullable"`
 	JSON          statementJSON          `json:"-"`
 }
 
@@ -164,20 +164,20 @@ func (r statementJSON) RawJSON() string {
 
 type StatementAccountStanding struct {
 	// Number of consecutive full payments made
-	ConsecutiveFullPaymentsMade int64 `json:"consecutive_full_payments_made,required"`
+	ConsecutiveFullPaymentsMade int64 `json:"consecutive_full_payments_made" api:"required"`
 	// Number of consecutive minimum payments made
-	ConsecutiveMinimumPaymentsMade int64 `json:"consecutive_minimum_payments_made,required"`
+	ConsecutiveMinimumPaymentsMade int64 `json:"consecutive_minimum_payments_made" api:"required"`
 	// Number of consecutive minimum payments missed
-	ConsecutiveMinimumPaymentsMissed int64 `json:"consecutive_minimum_payments_missed,required"`
+	ConsecutiveMinimumPaymentsMissed int64 `json:"consecutive_minimum_payments_missed" api:"required"`
 	// Number of days past due
-	DaysPastDue int64 `json:"days_past_due,required"`
+	DaysPastDue int64 `json:"days_past_due" api:"required"`
 	// Information about the financial account state
-	FinancialAccountState StatementAccountStandingFinancialAccountState `json:"financial_account_state,required"`
+	FinancialAccountState StatementAccountStandingFinancialAccountState `json:"financial_account_state" api:"required"`
 	// Whether the account currently has grace or not
-	HasGrace bool `json:"has_grace,required"`
+	HasGrace bool `json:"has_grace" api:"required"`
 	// Current overall period number
-	PeriodNumber int64                               `json:"period_number,required"`
-	PeriodState  StatementAccountStandingPeriodState `json:"period_state,required"`
+	PeriodNumber int64                               `json:"period_number" api:"required"`
+	PeriodState  StatementAccountStandingPeriodState `json:"period_state" api:"required"`
 	JSON         statementAccountStandingJSON        `json:"-"`
 }
 
@@ -207,9 +207,9 @@ func (r statementAccountStandingJSON) RawJSON() string {
 // Information about the financial account state
 type StatementAccountStandingFinancialAccountState struct {
 	// Status of the financial account
-	Status StatementAccountStandingFinancialAccountStateStatus `json:"status,required"`
+	Status StatementAccountStandingFinancialAccountStateStatus `json:"status" api:"required"`
 	// Substatus for the financial account
-	Substatus StatementAccountStandingFinancialAccountStateSubstatus `json:"substatus,nullable"`
+	Substatus StatementAccountStandingFinancialAccountStateSubstatus `json:"substatus" api:"nullable"`
 	JSON      statementAccountStandingFinancialAccountStateJSON      `json:"-"`
 }
 
@@ -289,9 +289,9 @@ type StatementAmountDue struct {
 	// something is owed. If the amount owed is positive there was a net credit. If
 	// auto-collections are enabled this is the amount that will be requested on the
 	// payment due date
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// Amount past due for statement in cents
-	PastDue int64                  `json:"past_due,required"`
+	PastDue int64                  `json:"past_due" api:"required"`
 	JSON    statementAmountDueJSON `json:"-"`
 }
 
@@ -329,13 +329,13 @@ func (r StatementStatementType) IsKnown() bool {
 }
 
 type StatementInterestDetails struct {
-	ActualInterestCharged     int64                                             `json:"actual_interest_charged,required,nullable"`
-	DailyBalanceAmounts       CategoryDetails                                   `json:"daily_balance_amounts,required"`
-	EffectiveApr              CategoryDetails                                   `json:"effective_apr,required"`
-	InterestCalculationMethod StatementInterestDetailsInterestCalculationMethod `json:"interest_calculation_method,required"`
-	InterestForPeriod         CategoryDetails                                   `json:"interest_for_period,required"`
-	PrimeRate                 string                                            `json:"prime_rate,required,nullable"`
-	MinimumInterestCharged    int64                                             `json:"minimum_interest_charged,nullable"`
+	ActualInterestCharged     int64                                             `json:"actual_interest_charged" api:"required,nullable"`
+	DailyBalanceAmounts       CategoryDetails                                   `json:"daily_balance_amounts" api:"required"`
+	EffectiveApr              CategoryDetails                                   `json:"effective_apr" api:"required"`
+	InterestCalculationMethod StatementInterestDetailsInterestCalculationMethod `json:"interest_calculation_method" api:"required"`
+	InterestForPeriod         CategoryDetails                                   `json:"interest_for_period" api:"required"`
+	PrimeRate                 string                                            `json:"prime_rate" api:"required,nullable"`
+	MinimumInterestCharged    int64                                             `json:"minimum_interest_charged" api:"nullable"`
 	JSON                      statementInterestDetailsJSON                      `json:"-"`
 }
 
@@ -380,18 +380,18 @@ func (r StatementInterestDetailsInterestCalculationMethod) IsKnown() bool {
 type StatementPayoffDetails struct {
 	// The number of months it would take to pay off the balance in full by only paying
 	// the minimum payment. "NA" will signal negative or zero amortization
-	MinimumPaymentMonths string `json:"minimum_payment_months,required"`
+	MinimumPaymentMonths string `json:"minimum_payment_months" api:"required"`
 	// The sum of all interest and principal paid, in cents, when only paying minimum
 	// monthly payment. "NA" will signal negative or zero amortization
-	MinimumPaymentTotal string `json:"minimum_payment_total,required"`
+	MinimumPaymentTotal string `json:"minimum_payment_total" api:"required"`
 	// Number of months to full pay off
-	PayoffPeriodLengthMonths int64 `json:"payoff_period_length_months,required,nullable"`
+	PayoffPeriodLengthMonths int64 `json:"payoff_period_length_months" api:"required,nullable"`
 	// The amount needed to be paid, in cents, each month in order to pay off current
 	// balance in the payoff period
-	PayoffPeriodMonthlyPaymentAmount int64 `json:"payoff_period_monthly_payment_amount,required,nullable"`
+	PayoffPeriodMonthlyPaymentAmount int64 `json:"payoff_period_monthly_payment_amount" api:"required,nullable"`
 	// The sum of all interest and principal paid, in cents, when paying off in the
 	// payoff period
-	PayoffPeriodPaymentTotal int64                      `json:"payoff_period_payment_total,required,nullable"`
+	PayoffPeriodPaymentTotal int64                      `json:"payoff_period_payment_total" api:"required,nullable"`
 	JSON                     statementPayoffDetailsJSON `json:"-"`
 }
 
@@ -416,8 +416,8 @@ func (r statementPayoffDetailsJSON) RawJSON() string {
 }
 
 type Statements struct {
-	Data    []Statement    `json:"data,required"`
-	HasMore bool           `json:"has_more,required"`
+	Data    []Statement    `json:"data" api:"required"`
+	HasMore bool           `json:"has_more" api:"required"`
 	JSON    statementsJSON `json:"-"`
 }
 

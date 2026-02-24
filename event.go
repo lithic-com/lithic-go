@@ -107,11 +107,11 @@ func (r *EventService) ListAttemptsAutoPaging(ctx context.Context, eventToken st
 // A single event that affects the transaction state and lifecycle.
 type Event struct {
 	// Globally unique identifier.
-	Token string `json:"token,required"`
+	Token string `json:"token" api:"required"`
 	// An RFC 3339 timestamp for when the event was created. UTC time zone.
 	//
 	// If no timezone is specified, UTC will be used.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// The type of event that occurred. Possible values:
 	//
 	//   - account_holder_document.updated: Occurs when an account holder's document
@@ -213,8 +213,8 @@ type Event struct {
 	//   - tokenization.two_factor_authentication_code_sent: Occurs when a tokenization
 	//     request 2FA code is sent to our downstream messaging providers for delivery.
 	//   - tokenization.updated: Occurs when a tokenization's status has changed.
-	EventType EventEventType         `json:"event_type,required"`
-	Payload   map[string]interface{} `json:"payload,required"`
+	EventType EventEventType         `json:"event_type" api:"required"`
+	Payload   map[string]interface{} `json:"payload" api:"required"`
 	JSON      eventJSON              `json:"-"`
 }
 
@@ -406,13 +406,13 @@ func (r EventEventType) IsKnown() bool {
 // A subscription to specific event types.
 type EventSubscription struct {
 	// Globally unique identifier.
-	Token string `json:"token,required"`
+	Token string `json:"token" api:"required"`
 	// A description of the subscription.
-	Description string `json:"description,required"`
+	Description string `json:"description" api:"required"`
 	// Whether the subscription is disabled.
-	Disabled   bool                         `json:"disabled,required"`
-	URL        string                       `json:"url,required" format:"uri"`
-	EventTypes []EventSubscriptionEventType `json:"event_types,nullable"`
+	Disabled   bool                         `json:"disabled" api:"required"`
+	URL        string                       `json:"url" api:"required" format:"uri"`
+	EventTypes []EventSubscriptionEventType `json:"event_types" api:"nullable"`
 	JSON       eventSubscriptionJSON        `json:"-"`
 }
 
@@ -606,22 +606,22 @@ func (r EventSubscriptionEventType) IsKnown() bool {
 // A subscription to specific event types.
 type MessageAttempt struct {
 	// Globally unique identifier.
-	Token string `json:"token,required"`
+	Token string `json:"token" api:"required"`
 	// An RFC 3339 timestamp for when the event was created. UTC time zone.
 	//
 	// If no timezone is specified, UTC will be used.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Globally unique identifier.
-	EventSubscriptionToken string `json:"event_subscription_token,required"`
+	EventSubscriptionToken string `json:"event_subscription_token" api:"required"`
 	// Globally unique identifier.
-	EventToken string `json:"event_token,required"`
+	EventToken string `json:"event_token" api:"required"`
 	// The response body from the event subscription's URL.
-	Response string `json:"response,required"`
+	Response string `json:"response" api:"required"`
 	// The response status code from the event subscription's URL.
-	ResponseStatusCode int64 `json:"response_status_code,required"`
+	ResponseStatusCode int64 `json:"response_status_code" api:"required"`
 	// The status of the event attempt.
-	Status MessageAttemptStatus `json:"status,required"`
-	URL    string               `json:"url,required" format:"uri"`
+	Status MessageAttemptStatus `json:"status" api:"required"`
+	URL    string               `json:"url" api:"required" format:"uri"`
 	JSON   messageAttemptJSON   `json:"-"`
 }
 

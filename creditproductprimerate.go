@@ -64,9 +64,9 @@ func (r *CreditProductPrimeRateService) Get(ctx context.Context, creditProductTo
 
 type CreditProductPrimeRateGetResponse struct {
 	// List of prime rates
-	Data []CreditProductPrimeRateGetResponseData `json:"data,required"`
+	Data []CreditProductPrimeRateGetResponseData `json:"data" api:"required"`
 	// Whether there are more prime rates
-	HasMore bool                                  `json:"has_more,required"`
+	HasMore bool                                  `json:"has_more" api:"required"`
 	JSON    creditProductPrimeRateGetResponseJSON `json:"-"`
 }
 
@@ -89,9 +89,9 @@ func (r creditProductPrimeRateGetResponseJSON) RawJSON() string {
 
 type CreditProductPrimeRateGetResponseData struct {
 	// Date the rate goes into effect
-	EffectiveDate time.Time `json:"effective_date,required" format:"date"`
+	EffectiveDate time.Time `json:"effective_date" api:"required" format:"date"`
 	// The rate in decimal format
-	Rate string                                    `json:"rate,required"`
+	Rate string                                    `json:"rate" api:"required"`
 	JSON creditProductPrimeRateGetResponseDataJSON `json:"-"`
 }
 
@@ -114,9 +114,9 @@ func (r creditProductPrimeRateGetResponseDataJSON) RawJSON() string {
 
 type CreditProductPrimeRateNewParams struct {
 	// Date the rate goes into effect
-	EffectiveDate param.Field[time.Time] `json:"effective_date,required" format:"date"`
+	EffectiveDate param.Field[time.Time] `json:"effective_date" api:"required" format:"date"`
 	// The rate in decimal format
-	Rate param.Field[string] `json:"rate,required"`
+	Rate param.Field[string] `json:"rate" api:"required"`
 }
 
 func (r CreditProductPrimeRateNewParams) MarshalJSON() (data []byte, err error) {

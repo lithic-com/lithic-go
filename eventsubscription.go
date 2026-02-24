@@ -226,7 +226,7 @@ func (r eventSubscriptionGetSecretResponseJSON) RawJSON() string {
 
 type EventSubscriptionNewParams struct {
 	// URL to which event webhooks will be sent. URL must be a valid HTTPS address.
-	URL param.Field[string] `json:"url,required" format:"uri"`
+	URL param.Field[string] `json:"url" api:"required" format:"uri"`
 	// Event subscription description.
 	Description param.Field[string] `json:"description"`
 	// Whether the event subscription is active (false) or inactive (true).
@@ -409,7 +409,7 @@ func (r EventSubscriptionNewParamsEventType) IsKnown() bool {
 
 type EventSubscriptionUpdateParams struct {
 	// URL to which event webhooks will be sent. URL must be a valid HTTPS address.
-	URL param.Field[string] `json:"url,required" format:"uri"`
+	URL param.Field[string] `json:"url" api:"required" format:"uri"`
 	// Event subscription description.
 	Description param.Field[string] `json:"description"`
 	// Whether the event subscription is active (false) or inactive (true).

@@ -29,17 +29,17 @@ func NewInternalTransactionService(opts ...option.RequestOption) (r *InternalTra
 }
 
 type InternalTransaction struct {
-	Token         string                      `json:"token,required" format:"uuid"`
-	Category      InternalTransactionCategory `json:"category,required"`
-	Created       time.Time                   `json:"created,required" format:"date-time"`
-	Currency      string                      `json:"currency,required"`
-	Descriptor    string                      `json:"descriptor,required"`
-	Events        []InternalTransactionEvent  `json:"events,required"`
-	PendingAmount int64                       `json:"pending_amount,required"`
-	Result        InternalTransactionResult   `json:"result,required"`
-	SettledAmount int64                       `json:"settled_amount,required"`
-	Status        InternalTransactionStatus   `json:"status,required"`
-	Updated       time.Time                   `json:"updated,required" format:"date-time"`
+	Token         string                      `json:"token" api:"required" format:"uuid"`
+	Category      InternalTransactionCategory `json:"category" api:"required"`
+	Created       time.Time                   `json:"created" api:"required" format:"date-time"`
+	Currency      string                      `json:"currency" api:"required"`
+	Descriptor    string                      `json:"descriptor" api:"required"`
+	Events        []InternalTransactionEvent  `json:"events" api:"required"`
+	PendingAmount int64                       `json:"pending_amount" api:"required"`
+	Result        InternalTransactionResult   `json:"result" api:"required"`
+	SettledAmount int64                       `json:"settled_amount" api:"required"`
+	Status        InternalTransactionStatus   `json:"status" api:"required"`
+	Updated       time.Time                   `json:"updated" api:"required" format:"date-time"`
 	JSON          internalTransactionJSON     `json:"-"`
 }
 
@@ -84,11 +84,11 @@ func (r InternalTransactionCategory) IsKnown() bool {
 }
 
 type InternalTransactionEvent struct {
-	Token   string                          `json:"token,required" format:"uuid"`
-	Amount  int64                           `json:"amount,required"`
-	Created time.Time                       `json:"created,required" format:"date-time"`
-	Result  InternalTransactionEventsResult `json:"result,required"`
-	Type    InternalTransactionEventsType   `json:"type,required"`
+	Token   string                          `json:"token" api:"required" format:"uuid"`
+	Amount  int64                           `json:"amount" api:"required"`
+	Created time.Time                       `json:"created" api:"required" format:"date-time"`
+	Result  InternalTransactionEventsResult `json:"result" api:"required"`
+	Type    InternalTransactionEventsType   `json:"type" api:"required"`
 	JSON    internalTransactionEventJSON    `json:"-"`
 }
 

@@ -102,23 +102,23 @@ func (r *CardBulkOrderService) ListAutoPaging(ctx context.Context, query CardBul
 // Represents a bulk order for physical card shipments
 type CardBulkOrder struct {
 	// Globally unique identifier for the bulk order
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// List of card tokens associated with this bulk order
-	CardTokens []string `json:"card_tokens,required" format:"uuid"`
+	CardTokens []string `json:"card_tokens" api:"required" format:"uuid"`
 	// An RFC 3339 timestamp for when the bulk order was created. UTC time zone
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Customer-specified product configuration for physical card manufacturing. This
 	// must be configured with Lithic before use
-	CustomerProductID string `json:"customer_product_id,required,nullable"`
+	CustomerProductID string `json:"customer_product_id" api:"required,nullable"`
 	// Shipping address for all cards in this bulk order
-	ShippingAddress interface{} `json:"shipping_address,required"`
+	ShippingAddress interface{} `json:"shipping_address" api:"required"`
 	// Shipping method for all cards in this bulk order
-	ShippingMethod CardBulkOrderShippingMethod `json:"shipping_method,required"`
+	ShippingMethod CardBulkOrderShippingMethod `json:"shipping_method" api:"required"`
 	// Status of the bulk order. OPEN indicates the order is accepting cards. LOCKED
 	// indicates the order is finalized and no more cards can be added
-	Status CardBulkOrderStatus `json:"status,required"`
+	Status CardBulkOrderStatus `json:"status" api:"required"`
 	// An RFC 3339 timestamp for when the bulk order was last updated. UTC time zone
-	Updated time.Time         `json:"updated,required" format:"date-time"`
+	Updated time.Time         `json:"updated" api:"required" format:"date-time"`
 	JSON    cardBulkOrderJSON `json:"-"`
 }
 
@@ -179,11 +179,11 @@ func (r CardBulkOrderStatus) IsKnown() bool {
 type CardBulkOrderNewParams struct {
 	// Customer-specified product configuration for physical card manufacturing. This
 	// must be configured with Lithic before use
-	CustomerProductID param.Field[string] `json:"customer_product_id,required"`
+	CustomerProductID param.Field[string] `json:"customer_product_id" api:"required"`
 	// Shipping address for all cards in this bulk order
-	ShippingAddress param.Field[interface{}] `json:"shipping_address,required"`
+	ShippingAddress param.Field[interface{}] `json:"shipping_address" api:"required"`
 	// Shipping method for all cards in this bulk order
-	ShippingMethod param.Field[CardBulkOrderNewParamsShippingMethod] `json:"shipping_method,required"`
+	ShippingMethod param.Field[CardBulkOrderNewParamsShippingMethod] `json:"shipping_method" api:"required"`
 }
 
 func (r CardBulkOrderNewParams) MarshalJSON() (data []byte, err error) {
@@ -207,7 +207,7 @@ func (r CardBulkOrderNewParamsShippingMethod) IsKnown() bool {
 
 type CardBulkOrderUpdateParams struct {
 	// Status to update the bulk order to. Use LOCKED to finalize the order
-	Status param.Field[CardBulkOrderUpdateParamsStatus] `json:"status,required"`
+	Status param.Field[CardBulkOrderUpdateParamsStatus] `json:"status" api:"required"`
 }
 
 func (r CardBulkOrderUpdateParams) MarshalJSON() (data []byte, err error) {

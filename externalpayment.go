@@ -131,13 +131,13 @@ func (r *ExternalPaymentService) Settle(ctx context.Context, externalPaymentToke
 
 type ExternalPayment struct {
 	// Unique identifier for the transaction
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// ISO 8601 timestamp of when the transaction was created
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// The status of the transaction
-	Status ExternalPaymentStatus `json:"status,required"`
+	Status ExternalPaymentStatus `json:"status" api:"required"`
 	// ISO 8601 timestamp of when the transaction was last updated
-	Updated  time.Time               `json:"updated,required" format:"date-time"`
+	Updated  time.Time               `json:"updated" api:"required" format:"date-time"`
 	Category ExternalPaymentCategory `json:"category"`
 	Currency string                  `json:"currency"`
 	Events   []ExternalPaymentEvent  `json:"events"`
@@ -148,7 +148,7 @@ type ExternalPayment struct {
 	PendingAmount         int64                      `json:"pending_amount"`
 	Result                ExternalPaymentResult      `json:"result"`
 	SettledAmount         int64                      `json:"settled_amount"`
-	UserDefinedID         string                     `json:"user_defined_id,nullable"`
+	UserDefinedID         string                     `json:"user_defined_id" api:"nullable"`
 	JSON                  externalPaymentJSON        `json:"-"`
 }
 
@@ -224,14 +224,14 @@ func (r ExternalPaymentCategory) IsKnown() bool {
 }
 
 type ExternalPaymentEvent struct {
-	Token           string                                `json:"token,required" format:"uuid"`
-	Amount          int64                                 `json:"amount,required"`
-	Created         time.Time                             `json:"created,required" format:"date-time"`
-	DetailedResults []ExternalPaymentEventsDetailedResult `json:"detailed_results,required"`
-	EffectiveDate   time.Time                             `json:"effective_date,required" format:"date"`
-	Memo            string                                `json:"memo,required"`
-	Result          ExternalPaymentEventsResult           `json:"result,required"`
-	Type            ExternalPaymentEventsType             `json:"type,required"`
+	Token           string                                `json:"token" api:"required" format:"uuid"`
+	Amount          int64                                 `json:"amount" api:"required"`
+	Created         time.Time                             `json:"created" api:"required" format:"date-time"`
+	DetailedResults []ExternalPaymentEventsDetailedResult `json:"detailed_results" api:"required"`
+	EffectiveDate   time.Time                             `json:"effective_date" api:"required" format:"date"`
+	Memo            string                                `json:"memo" api:"required"`
+	Result          ExternalPaymentEventsResult           `json:"result" api:"required"`
+	Type            ExternalPaymentEventsType             `json:"type" api:"required"`
 	JSON            externalPaymentEventJSON              `json:"-"`
 }
 
@@ -377,11 +377,11 @@ func (r ExternalPaymentResult) IsKnown() bool {
 }
 
 type ExternalPaymentNewParams struct {
-	Amount                param.Field[int64]                               `json:"amount,required"`
-	Category              param.Field[ExternalPaymentNewParamsCategory]    `json:"category,required"`
-	EffectiveDate         param.Field[time.Time]                           `json:"effective_date,required" format:"date"`
-	FinancialAccountToken param.Field[string]                              `json:"financial_account_token,required" format:"uuid"`
-	PaymentType           param.Field[ExternalPaymentNewParamsPaymentType] `json:"payment_type,required"`
+	Amount                param.Field[int64]                               `json:"amount" api:"required"`
+	Category              param.Field[ExternalPaymentNewParamsCategory]    `json:"category" api:"required"`
+	EffectiveDate         param.Field[time.Time]                           `json:"effective_date" api:"required" format:"date"`
+	FinancialAccountToken param.Field[string]                              `json:"financial_account_token" api:"required" format:"uuid"`
+	PaymentType           param.Field[ExternalPaymentNewParamsPaymentType] `json:"payment_type" api:"required"`
 	// Customer-provided token that will serve as an idempotency token. This token will
 	// become the transaction token.
 	Token         param.Field[string]                             `json:"token" format:"uuid"`
@@ -536,7 +536,7 @@ func (r ExternalPaymentListParamsStatus) IsKnown() bool {
 }
 
 type ExternalPaymentCancelParams struct {
-	EffectiveDate param.Field[time.Time] `json:"effective_date,required" format:"date"`
+	EffectiveDate param.Field[time.Time] `json:"effective_date" api:"required" format:"date"`
 	Memo          param.Field[string]    `json:"memo"`
 }
 
@@ -545,7 +545,7 @@ func (r ExternalPaymentCancelParams) MarshalJSON() (data []byte, err error) {
 }
 
 type ExternalPaymentReleaseParams struct {
-	EffectiveDate param.Field[time.Time] `json:"effective_date,required" format:"date"`
+	EffectiveDate param.Field[time.Time] `json:"effective_date" api:"required" format:"date"`
 	Memo          param.Field[string]    `json:"memo"`
 }
 
@@ -554,7 +554,7 @@ func (r ExternalPaymentReleaseParams) MarshalJSON() (data []byte, err error) {
 }
 
 type ExternalPaymentReverseParams struct {
-	EffectiveDate param.Field[time.Time] `json:"effective_date,required" format:"date"`
+	EffectiveDate param.Field[time.Time] `json:"effective_date" api:"required" format:"date"`
 	Memo          param.Field[string]    `json:"memo"`
 }
 
@@ -563,7 +563,7 @@ func (r ExternalPaymentReverseParams) MarshalJSON() (data []byte, err error) {
 }
 
 type ExternalPaymentSettleParams struct {
-	EffectiveDate param.Field[time.Time]                             `json:"effective_date,required" format:"date"`
+	EffectiveDate param.Field[time.Time]                             `json:"effective_date" api:"required" format:"date"`
 	Memo          param.Field[string]                                `json:"memo"`
 	ProgressTo    param.Field[ExternalPaymentSettleParamsProgressTo] `json:"progress_to"`
 }

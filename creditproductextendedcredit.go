@@ -46,7 +46,7 @@ func (r *CreditProductExtendedCreditService) Get(ctx context.Context, creditProd
 }
 
 type ExtendedCredit struct {
-	CreditExtended int64              `json:"credit_extended,required"`
+	CreditExtended int64              `json:"credit_extended" api:"required"`
 	JSON           extendedCreditJSON `json:"-"`
 }
 

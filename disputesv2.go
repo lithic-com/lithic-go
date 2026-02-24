@@ -79,33 +79,33 @@ func (r *DisputesV2Service) ListAutoPaging(ctx context.Context, query DisputesV2
 // The Dispute object tracks the progression of a dispute throughout its lifecycle.
 type DisputeV2 struct {
 	// Token assigned by Lithic for the dispute, in UUID format.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Token for the account associated with the dispute, in UUID format.
-	AccountToken string `json:"account_token,required" format:"uuid"`
+	AccountToken string `json:"account_token" api:"required" format:"uuid"`
 	// Token for the card used in the dispute, in UUID format.
-	CardToken string `json:"card_token,required" format:"uuid"`
+	CardToken string `json:"card_token" api:"required" format:"uuid"`
 	// Identifier assigned by the network for this dispute.
-	CaseID string `json:"case_id,required,nullable"`
+	CaseID string `json:"case_id" api:"required,nullable"`
 	// When the dispute was created.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Three-letter ISO 4217 currency code.
-	Currency string `json:"currency,required"`
+	Currency string `json:"currency" api:"required"`
 	// Dispute resolution outcome
-	Disposition DisputeV2Disposition `json:"disposition,required,nullable"`
+	Disposition DisputeV2Disposition `json:"disposition" api:"required,nullable"`
 	// Chronological list of events that have occurred in the dispute lifecycle
-	Events []DisputeV2Event `json:"events,required"`
+	Events []DisputeV2Event `json:"events" api:"required"`
 	// Current breakdown of how liability is allocated for the disputed amount
-	LiabilityAllocation DisputeV2LiabilityAllocation `json:"liability_allocation,required"`
-	Merchant            shared.Merchant              `json:"merchant,required"`
+	LiabilityAllocation DisputeV2LiabilityAllocation `json:"liability_allocation" api:"required"`
+	Merchant            shared.Merchant              `json:"merchant" api:"required"`
 	// Card network handling the dispute.
-	Network DisputeV2Network `json:"network,required"`
+	Network DisputeV2Network `json:"network" api:"required"`
 	// Current status of the dispute.
-	Status DisputeV2Status `json:"status,required,nullable"`
+	Status DisputeV2Status `json:"status" api:"required,nullable"`
 	// Contains identifiers for the transaction and specific event within being
 	// disputed; null if no transaction can be identified
-	TransactionSeries DisputeV2TransactionSeries `json:"transaction_series,required,nullable"`
+	TransactionSeries DisputeV2TransactionSeries `json:"transaction_series" api:"required,nullable"`
 	// When the dispute was last updated.
-	Updated time.Time     `json:"updated,required" format:"date-time"`
+	Updated time.Time     `json:"updated" api:"required" format:"date-time"`
 	JSON    disputeV2JSON `json:"-"`
 }
 
@@ -159,13 +159,13 @@ func (r DisputeV2Disposition) IsKnown() bool {
 // Event that occurred in the dispute lifecycle
 type DisputeV2Event struct {
 	// Unique identifier for the event, in UUID format
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// When the event occurred
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Details specific to the event type
-	Data DisputeV2EventsData `json:"data,required"`
+	Data DisputeV2EventsData `json:"data" api:"required"`
 	// Type of event
-	Type DisputeV2EventsType `json:"type,required"`
+	Type DisputeV2EventsType `json:"type" api:"required"`
 	JSON disputeV2EventJSON  `json:"-"`
 }
 
@@ -190,17 +190,17 @@ func (r disputeV2EventJSON) RawJSON() string {
 // Details specific to the event type
 type DisputeV2EventsData struct {
 	// Amount in minor units
-	Amount int64 `json:"amount,required,nullable"`
+	Amount int64 `json:"amount" api:"required,nullable"`
 	// Event type discriminator
-	Type DisputeV2EventsDataType `json:"type,required"`
+	Type DisputeV2EventsDataType `json:"type" api:"required"`
 	// Action taken in this stage
 	Action DisputeV2EventsDataAction `json:"action"`
 	// Dispute resolution outcome
-	Disposition DisputeV2EventsDataDisposition `json:"disposition,nullable"`
+	Disposition DisputeV2EventsDataDisposition `json:"disposition" api:"nullable"`
 	// Direction of funds flow
 	Polarity DisputeV2EventsDataPolarity `json:"polarity"`
 	// Reason for the action
-	Reason string `json:"reason,nullable"`
+	Reason string `json:"reason" api:"nullable"`
 	// Current stage of the dispute workflow
 	Stage DisputeV2EventsDataStage `json:"stage"`
 	JSON  disputeV2EventsDataJSON  `json:"-"`
@@ -276,17 +276,17 @@ func init() {
 // Details specific to workflow events
 type DisputeV2EventsDataWorkflow struct {
 	// Action taken in this stage
-	Action DisputeV2EventsDataWorkflowAction `json:"action,required"`
+	Action DisputeV2EventsDataWorkflowAction `json:"action" api:"required"`
 	// Amount in minor units
-	Amount int64 `json:"amount,required,nullable"`
+	Amount int64 `json:"amount" api:"required,nullable"`
 	// Dispute resolution outcome
-	Disposition DisputeV2EventsDataWorkflowDisposition `json:"disposition,required,nullable"`
+	Disposition DisputeV2EventsDataWorkflowDisposition `json:"disposition" api:"required,nullable"`
 	// Reason for the action
-	Reason string `json:"reason,required,nullable"`
+	Reason string `json:"reason" api:"required,nullable"`
 	// Current stage of the dispute workflow
-	Stage DisputeV2EventsDataWorkflowStage `json:"stage,required"`
+	Stage DisputeV2EventsDataWorkflowStage `json:"stage" api:"required"`
 	// Event type discriminator
-	Type DisputeV2EventsDataWorkflowType `json:"type,required"`
+	Type DisputeV2EventsDataWorkflowType `json:"type" api:"required"`
 	JSON disputeV2EventsDataWorkflowJSON `json:"-"`
 }
 
@@ -382,13 +382,13 @@ func (r DisputeV2EventsDataWorkflowType) IsKnown() bool {
 // Details specific to financial events
 type DisputeV2EventsDataFinancial struct {
 	// Amount in minor units
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// Direction of funds flow
-	Polarity DisputeV2EventsDataFinancialPolarity `json:"polarity,required"`
+	Polarity DisputeV2EventsDataFinancialPolarity `json:"polarity" api:"required"`
 	// Stage at which the financial event occurred
-	Stage DisputeV2EventsDataFinancialStage `json:"stage,required"`
+	Stage DisputeV2EventsDataFinancialStage `json:"stage" api:"required"`
 	// Event type discriminator
-	Type DisputeV2EventsDataFinancialType `json:"type,required"`
+	Type DisputeV2EventsDataFinancialType `json:"type" api:"required"`
 	JSON disputeV2EventsDataFinancialJSON `json:"-"`
 }
 
@@ -466,13 +466,13 @@ func (r DisputeV2EventsDataFinancialType) IsKnown() bool {
 // Details specific to cardholder liability events
 type DisputeV2EventsDataCardholderLiability struct {
 	// Action taken regarding cardholder liability
-	Action DisputeV2EventsDataCardholderLiabilityAction `json:"action,required"`
+	Action DisputeV2EventsDataCardholderLiabilityAction `json:"action" api:"required"`
 	// Amount in minor units
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// Reason for the action
-	Reason string `json:"reason,required"`
+	Reason string `json:"reason" api:"required"`
 	// Event type discriminator
-	Type DisputeV2EventsDataCardholderLiabilityType `json:"type,required"`
+	Type DisputeV2EventsDataCardholderLiabilityType `json:"type" api:"required"`
 	JSON disputeV2EventsDataCardholderLiabilityJSON `json:"-"`
 }
 
@@ -641,16 +641,16 @@ func (r DisputeV2EventsType) IsKnown() bool {
 // Current breakdown of how liability is allocated for the disputed amount
 type DisputeV2LiabilityAllocation struct {
 	// The amount that has been denied to the cardholder
-	DeniedAmount int64 `json:"denied_amount,required"`
+	DeniedAmount int64 `json:"denied_amount" api:"required"`
 	// The initial amount disputed
-	OriginalAmount int64 `json:"original_amount,required"`
+	OriginalAmount int64 `json:"original_amount" api:"required"`
 	// The amount that has been recovered from the merchant through the dispute process
-	RecoveredAmount int64 `json:"recovered_amount,required"`
+	RecoveredAmount int64 `json:"recovered_amount" api:"required"`
 	// Any disputed amount that is still outstanding, i.e. has not been recovered,
 	// written off, or denied
-	RemainingAmount int64 `json:"remaining_amount,required"`
+	RemainingAmount int64 `json:"remaining_amount" api:"required"`
 	// The amount the issuer has chosen to write off
-	WrittenOffAmount int64                            `json:"written_off_amount,required"`
+	WrittenOffAmount int64                            `json:"written_off_amount" api:"required"`
 	JSON             disputeV2LiabilityAllocationJSON `json:"-"`
 }
 
@@ -711,12 +711,12 @@ func (r DisputeV2Status) IsKnown() bool {
 type DisputeV2TransactionSeries struct {
 	// Token of the specific event in the original transaction being disputed, in UUID
 	// format; null if no event can be identified
-	RelatedTransactionEventToken string `json:"related_transaction_event_token,required,nullable" format:"uuid"`
+	RelatedTransactionEventToken string `json:"related_transaction_event_token" api:"required,nullable" format:"uuid"`
 	// Token of the original transaction being disputed, in UUID format
-	RelatedTransactionToken string `json:"related_transaction_token,required" format:"uuid"`
+	RelatedTransactionToken string `json:"related_transaction_token" api:"required" format:"uuid"`
 	// The type of transaction series associating the dispute and the original
 	// transaction. Always set to DISPUTE
-	Type DisputeV2TransactionSeriesType `json:"type,required"`
+	Type DisputeV2TransactionSeriesType `json:"type" api:"required"`
 	JSON disputeV2TransactionSeriesJSON `json:"-"`
 }
 

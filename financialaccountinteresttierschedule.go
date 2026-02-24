@@ -151,9 +151,9 @@ func (r *FinancialAccountInterestTierScheduleService) Delete(ctx context.Context
 // Entry in the Tier Schedule of an account
 type InterestTierSchedule struct {
 	// Globally unique identifier for a credit product
-	CreditProductToken string `json:"credit_product_token,required"`
+	CreditProductToken string `json:"credit_product_token" api:"required"`
 	// Date the tier should be effective in YYYY-MM-DD format
-	EffectiveDate time.Time `json:"effective_date,required" format:"date"`
+	EffectiveDate time.Time `json:"effective_date" api:"required" format:"date"`
 	// Name of a tier contained in the credit product. Mutually exclusive with
 	// tier_rates
 	TierName string `json:"tier_name"`
@@ -184,9 +184,9 @@ func (r interestTierScheduleJSON) RawJSON() string {
 // Entry in the Tier Schedule of an account
 type InterestTierScheduleParam struct {
 	// Globally unique identifier for a credit product
-	CreditProductToken param.Field[string] `json:"credit_product_token,required"`
+	CreditProductToken param.Field[string] `json:"credit_product_token" api:"required"`
 	// Date the tier should be effective in YYYY-MM-DD format
-	EffectiveDate param.Field[time.Time] `json:"effective_date,required" format:"date"`
+	EffectiveDate param.Field[time.Time] `json:"effective_date" api:"required" format:"date"`
 	// Name of a tier contained in the credit product. Mutually exclusive with
 	// tier_rates
 	TierName param.Field[string] `json:"tier_name"`
@@ -200,7 +200,7 @@ func (r InterestTierScheduleParam) MarshalJSON() (data []byte, err error) {
 
 type FinancialAccountInterestTierScheduleNewParams struct {
 	// Entry in the Tier Schedule of an account
-	InterestTierSchedule InterestTierScheduleParam `json:"interest_tier_schedule,required"`
+	InterestTierSchedule InterestTierScheduleParam `json:"interest_tier_schedule" api:"required"`
 }
 
 func (r FinancialAccountInterestTierScheduleNewParams) MarshalJSON() (data []byte, err error) {

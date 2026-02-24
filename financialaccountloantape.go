@@ -82,9 +82,9 @@ func (r *FinancialAccountLoanTapeService) ListAutoPaging(ctx context.Context, fi
 }
 
 type CategoryBalances struct {
-	Fees      int64                `json:"fees,required"`
-	Interest  int64                `json:"interest,required"`
-	Principal int64                `json:"principal,required"`
+	Fees      int64                `json:"fees" api:"required"`
+	Interest  int64                `json:"interest" api:"required"`
+	Principal int64                `json:"principal" api:"required"`
 	JSON      categoryBalancesJSON `json:"-"`
 }
 
@@ -108,44 +108,44 @@ func (r categoryBalancesJSON) RawJSON() string {
 
 type LoanTape struct {
 	// Globally unique identifier for a loan tape
-	Token           string                  `json:"token,required"`
-	AccountStanding LoanTapeAccountStanding `json:"account_standing,required"`
+	Token           string                  `json:"token" api:"required"`
+	AccountStanding LoanTapeAccountStanding `json:"account_standing" api:"required"`
 	// Amount of credit available to spend in cents
-	AvailableCredit int64            `json:"available_credit,required"`
-	Balances        LoanTapeBalances `json:"balances,required"`
+	AvailableCredit int64            `json:"available_credit" api:"required"`
+	Balances        LoanTapeBalances `json:"balances" api:"required"`
 	// Timestamp of when the loan tape was created
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// For prepay accounts, this is the minimum prepay balance that must be maintained.
 	// For charge card accounts, this is the maximum credit balance extended by a
 	// lender
-	CreditLimit int64 `json:"credit_limit,required"`
+	CreditLimit int64 `json:"credit_limit" api:"required"`
 	// Globally unique identifier for a credit product
-	CreditProductToken string `json:"credit_product_token,required"`
+	CreditProductToken string `json:"credit_product_token" api:"required"`
 	// Date of transactions that this loan tape covers
-	Date      time.Time       `json:"date,required" format:"date"`
-	DayTotals StatementTotals `json:"day_totals,required"`
+	Date      time.Time       `json:"date" api:"required" format:"date"`
+	DayTotals StatementTotals `json:"day_totals" api:"required"`
 	// Balance at the end of the day
-	EndingBalance int64 `json:"ending_balance,required"`
+	EndingBalance int64 `json:"ending_balance" api:"required"`
 	// Excess credits in the form of provisional credits, payments, or purchase
 	// refunds. If positive, the account is in net credit state with no outstanding
 	// balances. An overpayment could land an account in this state
-	ExcessCredits int64 `json:"excess_credits,required"`
+	ExcessCredits int64 `json:"excess_credits" api:"required"`
 	// Globally unique identifier for a financial account
-	FinancialAccountToken    string                           `json:"financial_account_token,required" format:"uuid"`
-	InterestDetails          LoanTapeInterestDetails          `json:"interest_details,required,nullable"`
-	MinimumPaymentBalance    LoanTapeMinimumPaymentBalance    `json:"minimum_payment_balance,required"`
-	PaymentAllocation        LoanTapePaymentAllocation        `json:"payment_allocation,required"`
-	PeriodTotals             StatementTotals                  `json:"period_totals,required"`
-	PreviousStatementBalance LoanTapePreviousStatementBalance `json:"previous_statement_balance,required"`
+	FinancialAccountToken    string                           `json:"financial_account_token" api:"required" format:"uuid"`
+	InterestDetails          LoanTapeInterestDetails          `json:"interest_details" api:"required,nullable"`
+	MinimumPaymentBalance    LoanTapeMinimumPaymentBalance    `json:"minimum_payment_balance" api:"required"`
+	PaymentAllocation        LoanTapePaymentAllocation        `json:"payment_allocation" api:"required"`
+	PeriodTotals             StatementTotals                  `json:"period_totals" api:"required"`
+	PreviousStatementBalance LoanTapePreviousStatementBalance `json:"previous_statement_balance" api:"required"`
 	// Balance at the start of the day
-	StartingBalance int64 `json:"starting_balance,required"`
+	StartingBalance int64 `json:"starting_balance" api:"required"`
 	// Timestamp of when the loan tape was updated
-	Updated time.Time `json:"updated,required" format:"date-time"`
+	Updated time.Time `json:"updated" api:"required" format:"date-time"`
 	// Version number of the loan tape. This starts at 1
-	Version   int64           `json:"version,required"`
-	YtdTotals StatementTotals `json:"ytd_totals,required"`
+	Version   int64           `json:"version" api:"required"`
+	YtdTotals StatementTotals `json:"ytd_totals" api:"required"`
 	// Interest tier to which this account belongs to
-	Tier string       `json:"tier,nullable"`
+	Tier string       `json:"tier" api:"nullable"`
 	JSON loanTapeJSON `json:"-"`
 }
 
@@ -187,20 +187,20 @@ func (r loanTapeJSON) RawJSON() string {
 
 type LoanTapeAccountStanding struct {
 	// Number of consecutive full payments made
-	ConsecutiveFullPaymentsMade int64 `json:"consecutive_full_payments_made,required"`
+	ConsecutiveFullPaymentsMade int64 `json:"consecutive_full_payments_made" api:"required"`
 	// Number of consecutive minimum payments made
-	ConsecutiveMinimumPaymentsMade int64 `json:"consecutive_minimum_payments_made,required"`
+	ConsecutiveMinimumPaymentsMade int64 `json:"consecutive_minimum_payments_made" api:"required"`
 	// Number of consecutive minimum payments missed
-	ConsecutiveMinimumPaymentsMissed int64 `json:"consecutive_minimum_payments_missed,required"`
+	ConsecutiveMinimumPaymentsMissed int64 `json:"consecutive_minimum_payments_missed" api:"required"`
 	// Number of days past due
-	DaysPastDue int64 `json:"days_past_due,required"`
+	DaysPastDue int64 `json:"days_past_due" api:"required"`
 	// Information about the financial account state
-	FinancialAccountState LoanTapeAccountStandingFinancialAccountState `json:"financial_account_state,required"`
+	FinancialAccountState LoanTapeAccountStandingFinancialAccountState `json:"financial_account_state" api:"required"`
 	// Whether the account currently has grace or not
-	HasGrace bool `json:"has_grace,required"`
+	HasGrace bool `json:"has_grace" api:"required"`
 	// Current overall period number
-	PeriodNumber int64                              `json:"period_number,required"`
-	PeriodState  LoanTapeAccountStandingPeriodState `json:"period_state,required"`
+	PeriodNumber int64                              `json:"period_number" api:"required"`
+	PeriodState  LoanTapeAccountStandingPeriodState `json:"period_state" api:"required"`
 	JSON         loanTapeAccountStandingJSON        `json:"-"`
 }
 
@@ -230,9 +230,9 @@ func (r loanTapeAccountStandingJSON) RawJSON() string {
 // Information about the financial account state
 type LoanTapeAccountStandingFinancialAccountState struct {
 	// Status of the financial account
-	Status LoanTapeAccountStandingFinancialAccountStateStatus `json:"status,required"`
+	Status LoanTapeAccountStandingFinancialAccountStateStatus `json:"status" api:"required"`
 	// Substatus for the financial account
-	Substatus LoanTapeAccountStandingFinancialAccountStateSubstatus `json:"substatus,nullable"`
+	Substatus LoanTapeAccountStandingFinancialAccountStateSubstatus `json:"substatus" api:"nullable"`
 	JSON      loanTapeAccountStandingFinancialAccountStateJSON      `json:"-"`
 }
 
@@ -310,15 +310,15 @@ func (r LoanTapeAccountStandingPeriodState) IsKnown() bool {
 type LoanTapeBalances struct {
 	// Amount due for the prior billing cycle. Any amounts not fully paid off on this
 	// due date will be considered past due the next day
-	Due CategoryBalances `json:"due,required"`
+	Due CategoryBalances `json:"due" api:"required"`
 	// Amount due for the current billing cycle. Any amounts not paid off by early
 	// payments or credits will be considered due at the end of the current billing
 	// period
-	NextStatementDue CategoryBalances `json:"next_statement_due,required"`
+	NextStatementDue CategoryBalances `json:"next_statement_due" api:"required"`
 	// Amount not paid off on previous due dates
-	PastDue CategoryBalances `json:"past_due,required"`
+	PastDue CategoryBalances `json:"past_due" api:"required"`
 	// Amount due for the past billing cycles.
-	PastStatementsDue CategoryBalances     `json:"past_statements_due,required"`
+	PastStatementsDue CategoryBalances     `json:"past_statements_due" api:"required"`
 	JSON              loanTapeBalancesJSON `json:"-"`
 }
 
@@ -342,13 +342,13 @@ func (r loanTapeBalancesJSON) RawJSON() string {
 }
 
 type LoanTapeInterestDetails struct {
-	ActualInterestCharged     int64                                            `json:"actual_interest_charged,required,nullable"`
-	DailyBalanceAmounts       CategoryDetails                                  `json:"daily_balance_amounts,required"`
-	EffectiveApr              CategoryDetails                                  `json:"effective_apr,required"`
-	InterestCalculationMethod LoanTapeInterestDetailsInterestCalculationMethod `json:"interest_calculation_method,required"`
-	InterestForPeriod         CategoryDetails                                  `json:"interest_for_period,required"`
-	PrimeRate                 string                                           `json:"prime_rate,required,nullable"`
-	MinimumInterestCharged    int64                                            `json:"minimum_interest_charged,nullable"`
+	ActualInterestCharged     int64                                            `json:"actual_interest_charged" api:"required,nullable"`
+	DailyBalanceAmounts       CategoryDetails                                  `json:"daily_balance_amounts" api:"required"`
+	EffectiveApr              CategoryDetails                                  `json:"effective_apr" api:"required"`
+	InterestCalculationMethod LoanTapeInterestDetailsInterestCalculationMethod `json:"interest_calculation_method" api:"required"`
+	InterestForPeriod         CategoryDetails                                  `json:"interest_for_period" api:"required"`
+	PrimeRate                 string                                           `json:"prime_rate" api:"required,nullable"`
+	MinimumInterestCharged    int64                                            `json:"minimum_interest_charged" api:"nullable"`
 	JSON                      loanTapeInterestDetailsJSON                      `json:"-"`
 }
 
@@ -390,8 +390,8 @@ func (r LoanTapeInterestDetailsInterestCalculationMethod) IsKnown() bool {
 }
 
 type LoanTapeMinimumPaymentBalance struct {
-	Amount    int64                             `json:"amount,required"`
-	Remaining int64                             `json:"remaining,required"`
+	Amount    int64                             `json:"amount" api:"required"`
+	Remaining int64                             `json:"remaining" api:"required"`
 	JSON      loanTapeMinimumPaymentBalanceJSON `json:"-"`
 }
 
@@ -413,15 +413,15 @@ func (r loanTapeMinimumPaymentBalanceJSON) RawJSON() string {
 }
 
 type LoanTapePaymentAllocation struct {
-	FeeDetails CategoryDetails `json:"fee_details,required,nullable"`
+	FeeDetails CategoryDetails `json:"fee_details" api:"required,nullable"`
 	// Amount allocated to fees in cents
-	Fees int64 `json:"fees,required"`
+	Fees int64 `json:"fees" api:"required"`
 	// Amount allocated to interest in cents
-	Interest        int64           `json:"interest,required"`
-	InterestDetails CategoryDetails `json:"interest_details,required,nullable"`
+	Interest        int64           `json:"interest" api:"required"`
+	InterestDetails CategoryDetails `json:"interest_details" api:"required,nullable"`
 	// Amount allocated to principal in cents
-	Principal        int64                         `json:"principal,required"`
-	PrincipalDetails CategoryDetails               `json:"principal_details,required,nullable"`
+	Principal        int64                         `json:"principal" api:"required"`
+	PrincipalDetails CategoryDetails               `json:"principal_details" api:"required,nullable"`
 	JSON             loanTapePaymentAllocationJSON `json:"-"`
 }
 
@@ -447,8 +447,8 @@ func (r loanTapePaymentAllocationJSON) RawJSON() string {
 }
 
 type LoanTapePreviousStatementBalance struct {
-	Amount    int64                                `json:"amount,required"`
-	Remaining int64                                `json:"remaining,required"`
+	Amount    int64                                `json:"amount" api:"required"`
+	Remaining int64                                `json:"remaining" api:"required"`
 	JSON      loanTapePreviousStatementBalanceJSON `json:"-"`
 }
 

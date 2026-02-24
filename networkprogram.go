@@ -75,13 +75,13 @@ func (r *NetworkProgramService) ListAutoPaging(ctx context.Context, query Networ
 
 type NetworkProgram struct {
 	// Lithic-generated unique identifier for the program
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Network product ID associated with this program.
-	DefaultProductCode string `json:"default_product_code,required"`
+	DefaultProductCode string `json:"default_product_code" api:"required"`
 	// The name of the network program.
-	Name string `json:"name,required"`
+	Name string `json:"name" api:"required"`
 	// RPIN value assigned by the network.
-	RegisteredProgramIdentificationNumber string             `json:"registered_program_identification_number,required"`
+	RegisteredProgramIdentificationNumber string             `json:"registered_program_identification_number" api:"required"`
 	JSON                                  networkProgramJSON `json:"-"`
 }
 

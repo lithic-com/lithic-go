@@ -75,9 +75,9 @@ func (r *ThreeDSDecisioningService) RotateSecret(ctx context.Context, opts ...op
 type ChallengeResponseParam struct {
 	// Globally unique identifier for 3DS Authentication that resulted in
 	// PENDING_CHALLENGE authentication result.
-	Token param.Field[string] `json:"token,required" format:"uuid"`
+	Token param.Field[string] `json:"token" api:"required" format:"uuid"`
 	// Whether the Cardholder has approved or declined the issued Challenge
-	ChallengeResponse param.Field[ChallengeResult] `json:"challenge_response,required"`
+	ChallengeResponse param.Field[ChallengeResult] `json:"challenge_response" api:"required"`
 }
 
 func (r ChallengeResponseParam) MarshalJSON() (data []byte, err error) {
@@ -124,7 +124,7 @@ func (r threeDSDecisioningGetSecretResponseJSON) RawJSON() string {
 
 type ThreeDSDecisioningChallengeResponseParams struct {
 	// Response from Card Program to a 3DS Authentication challenge
-	ChallengeResponse ChallengeResponseParam `json:"challenge_response,required"`
+	ChallengeResponse ChallengeResponseParam `json:"challenge_response" api:"required"`
 }
 
 func (r ThreeDSDecisioningChallengeResponseParams) MarshalJSON() (data []byte, err error) {

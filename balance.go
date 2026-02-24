@@ -62,29 +62,29 @@ func (r *BalanceService) ListAutoPaging(ctx context.Context, query BalanceListPa
 // Balance
 type Balance struct {
 	// Funds available for spend in the currency's smallest unit (e.g., cents for USD)
-	AvailableAmount int64 `json:"available_amount,required"`
+	AvailableAmount int64 `json:"available_amount" api:"required"`
 	// Date and time for when the balance was first created.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// 3-character alphabetic ISO 4217 code for the local currency of the balance.
-	Currency string `json:"currency,required"`
+	Currency string `json:"currency" api:"required"`
 	// Globally unique identifier for the financial account that holds this balance.
-	FinancialAccountToken string `json:"financial_account_token,required" format:"uuid"`
+	FinancialAccountToken string `json:"financial_account_token" api:"required" format:"uuid"`
 	// Type of financial account.
-	FinancialAccountType BalanceFinancialAccountType `json:"financial_account_type,required"`
+	FinancialAccountType BalanceFinancialAccountType `json:"financial_account_type" api:"required"`
 	// Globally unique identifier for the last financial transaction event that
 	// impacted this balance.
-	LastTransactionEventToken string `json:"last_transaction_event_token,required" format:"uuid"`
+	LastTransactionEventToken string `json:"last_transaction_event_token" api:"required" format:"uuid"`
 	// Globally unique identifier for the last financial transaction that impacted this
 	// balance.
-	LastTransactionToken string `json:"last_transaction_token,required" format:"uuid"`
+	LastTransactionToken string `json:"last_transaction_token" api:"required" format:"uuid"`
 	// Funds not available for spend due to card authorizations or pending ACH release.
 	// Shown in the currency's smallest unit (e.g., cents for USD).
-	PendingAmount int64 `json:"pending_amount,required"`
+	PendingAmount int64 `json:"pending_amount" api:"required"`
 	// The sum of available and pending balance in the currency's smallest unit (e.g.,
 	// cents for USD).
-	TotalAmount int64 `json:"total_amount,required"`
+	TotalAmount int64 `json:"total_amount" api:"required"`
 	// Date and time for when the balance was last updated.
-	Updated time.Time   `json:"updated,required" format:"date-time"`
+	Updated time.Time   `json:"updated" api:"required" format:"date-time"`
 	JSON    balanceJSON `json:"-"`
 }
 
