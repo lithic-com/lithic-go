@@ -136,57 +136,57 @@ type ExternalBankAccount struct {
 	// association. If a program links an external bank account to more than one
 	// end-user or to both the program and the end-user, then Lithic will return each
 	// record of the association
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
 	// accept USA bank accounts e.g., USA
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// An ISO 8601 string representing when this funding source was added to the Lithic
 	// account.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// currency of the external account 3-character alphabetic ISO 4217 code
-	Currency string `json:"currency,required"`
+	Currency string `json:"currency" api:"required"`
 	// The last 4 digits of the bank account. Derived by Lithic from the account number
 	// passed
-	LastFour string `json:"last_four,required"`
+	LastFour string `json:"last_four" api:"required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner string `json:"owner,required"`
+	Owner string `json:"owner" api:"required"`
 	// Owner Type
-	OwnerType OwnerType `json:"owner_type,required"`
+	OwnerType OwnerType `json:"owner_type" api:"required"`
 	// Routing Number
-	RoutingNumber string `json:"routing_number,required"`
+	RoutingNumber string `json:"routing_number" api:"required"`
 	// Account State
-	State ExternalBankAccountState `json:"state,required"`
+	State ExternalBankAccountState `json:"state" api:"required"`
 	// Account Type
-	Type ExternalBankAccountType `json:"type,required"`
+	Type ExternalBankAccountType `json:"type" api:"required"`
 	// The number of attempts at verification
-	VerificationAttempts int64 `json:"verification_attempts,required"`
+	VerificationAttempts int64 `json:"verification_attempts" api:"required"`
 	// Verification Method
-	VerificationMethod VerificationMethod `json:"verification_method,required"`
+	VerificationMethod VerificationMethod `json:"verification_method" api:"required"`
 	// Verification State
-	VerificationState ExternalBankAccountVerificationState `json:"verification_state,required"`
+	VerificationState ExternalBankAccountVerificationState `json:"verification_state" api:"required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
-	AccountToken string `json:"account_token,nullable" format:"uuid"`
+	AccountToken string `json:"account_token" api:"nullable" format:"uuid"`
 	// Address
-	Address ExternalBankAccountAddress `json:"address,nullable"`
+	Address ExternalBankAccountAddress `json:"address" api:"nullable"`
 	// Optional field that helps identify bank accounts in receipts
-	CompanyID string `json:"company_id,nullable"`
+	CompanyID string `json:"company_id" api:"nullable"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob time.Time `json:"dob,nullable" format:"date"`
+	Dob time.Time `json:"dob" api:"nullable" format:"date"`
 	// Doing Business As
-	DoingBusinessAs string `json:"doing_business_as,nullable"`
+	DoingBusinessAs string `json:"doing_business_as" api:"nullable"`
 	// The financial account token of the operating account to fund the micro deposits
-	FinancialAccountToken string `json:"financial_account_token,nullable" format:"uuid"`
+	FinancialAccountToken string `json:"financial_account_token" api:"nullable" format:"uuid"`
 	// The nickname for this External Bank Account
-	Name string `json:"name,nullable"`
+	Name string `json:"name" api:"nullable"`
 	// User Defined ID
-	UserDefinedID string `json:"user_defined_id,nullable"`
+	UserDefinedID string `json:"user_defined_id" api:"nullable"`
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
 	// by the ACH network
-	VerificationFailedReason string                  `json:"verification_failed_reason,nullable"`
+	VerificationFailedReason string                  `json:"verification_failed_reason" api:"nullable"`
 	JSON                     externalBankAccountJSON `json:"-"`
 }
 
@@ -279,12 +279,12 @@ func (r ExternalBankAccountVerificationState) IsKnown() bool {
 }
 
 type ExternalBankAccountAddress struct {
-	Address1   string                         `json:"address1,required"`
-	City       string                         `json:"city,required"`
-	Country    string                         `json:"country,required"`
-	PostalCode string                         `json:"postal_code,required"`
-	State      string                         `json:"state,required"`
-	Address2   string                         `json:"address2,nullable"`
+	Address1   string                         `json:"address1" api:"required"`
+	City       string                         `json:"city" api:"required"`
+	Country    string                         `json:"country" api:"required"`
+	PostalCode string                         `json:"postal_code" api:"required"`
+	State      string                         `json:"state" api:"required"`
+	Address2   string                         `json:"address2" api:"nullable"`
 	JSON       externalBankAccountAddressJSON `json:"-"`
 }
 
@@ -310,11 +310,11 @@ func (r externalBankAccountAddressJSON) RawJSON() string {
 }
 
 type ExternalBankAccountAddressParam struct {
-	Address1   param.Field[string] `json:"address1,required"`
-	City       param.Field[string] `json:"city,required"`
-	Country    param.Field[string] `json:"country,required"`
-	PostalCode param.Field[string] `json:"postal_code,required"`
-	State      param.Field[string] `json:"state,required"`
+	Address1   param.Field[string] `json:"address1" api:"required"`
+	City       param.Field[string] `json:"city" api:"required"`
+	Country    param.Field[string] `json:"country" api:"required"`
+	PostalCode param.Field[string] `json:"postal_code" api:"required"`
+	State      param.Field[string] `json:"state" api:"required"`
 	Address2   param.Field[string] `json:"address2"`
 }
 
@@ -360,57 +360,57 @@ type ExternalBankAccountNewResponse struct {
 	// association. If a program links an external bank account to more than one
 	// end-user or to both the program and the end-user, then Lithic will return each
 	// record of the association
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
 	// accept USA bank accounts e.g., USA
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// An ISO 8601 string representing when this funding source was added to the Lithic
 	// account.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// currency of the external account 3-character alphabetic ISO 4217 code
-	Currency string `json:"currency,required"`
+	Currency string `json:"currency" api:"required"`
 	// The last 4 digits of the bank account. Derived by Lithic from the account number
 	// passed
-	LastFour string `json:"last_four,required"`
+	LastFour string `json:"last_four" api:"required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner string `json:"owner,required"`
+	Owner string `json:"owner" api:"required"`
 	// Owner Type
-	OwnerType ExternalBankAccountNewResponseOwnerType `json:"owner_type,required"`
+	OwnerType ExternalBankAccountNewResponseOwnerType `json:"owner_type" api:"required"`
 	// Routing Number
-	RoutingNumber string `json:"routing_number,required"`
+	RoutingNumber string `json:"routing_number" api:"required"`
 	// Account State
-	State ExternalBankAccountNewResponseState `json:"state,required"`
+	State ExternalBankAccountNewResponseState `json:"state" api:"required"`
 	// Account Type
-	Type ExternalBankAccountNewResponseType `json:"type,required"`
+	Type ExternalBankAccountNewResponseType `json:"type" api:"required"`
 	// The number of attempts at verification
-	VerificationAttempts int64 `json:"verification_attempts,required"`
+	VerificationAttempts int64 `json:"verification_attempts" api:"required"`
 	// Verification Method
-	VerificationMethod ExternalBankAccountNewResponseVerificationMethod `json:"verification_method,required"`
+	VerificationMethod ExternalBankAccountNewResponseVerificationMethod `json:"verification_method" api:"required"`
 	// Verification State
-	VerificationState ExternalBankAccountNewResponseVerificationState `json:"verification_state,required"`
+	VerificationState ExternalBankAccountNewResponseVerificationState `json:"verification_state" api:"required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
-	AccountToken string `json:"account_token,nullable" format:"uuid"`
+	AccountToken string `json:"account_token" api:"nullable" format:"uuid"`
 	// Address
-	Address ExternalBankAccountAddress `json:"address,nullable"`
+	Address ExternalBankAccountAddress `json:"address" api:"nullable"`
 	// Optional field that helps identify bank accounts in receipts
-	CompanyID string `json:"company_id,nullable"`
+	CompanyID string `json:"company_id" api:"nullable"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob time.Time `json:"dob,nullable" format:"date"`
+	Dob time.Time `json:"dob" api:"nullable" format:"date"`
 	// Doing Business As
-	DoingBusinessAs string `json:"doing_business_as,nullable"`
+	DoingBusinessAs string `json:"doing_business_as" api:"nullable"`
 	// The financial account token of the operating account to fund the micro deposits
-	FinancialAccountToken string `json:"financial_account_token,nullable" format:"uuid"`
+	FinancialAccountToken string `json:"financial_account_token" api:"nullable" format:"uuid"`
 	// The nickname for this External Bank Account
-	Name string `json:"name,nullable"`
+	Name string `json:"name" api:"nullable"`
 	// User Defined ID
-	UserDefinedID string `json:"user_defined_id,nullable"`
+	UserDefinedID string `json:"user_defined_id" api:"nullable"`
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
 	// by the ACH network
-	VerificationFailedReason string                             `json:"verification_failed_reason,nullable"`
+	VerificationFailedReason string                             `json:"verification_failed_reason" api:"nullable"`
 	JSON                     externalBankAccountNewResponseJSON `json:"-"`
 }
 
@@ -541,57 +541,57 @@ type ExternalBankAccountGetResponse struct {
 	// association. If a program links an external bank account to more than one
 	// end-user or to both the program and the end-user, then Lithic will return each
 	// record of the association
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
 	// accept USA bank accounts e.g., USA
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// An ISO 8601 string representing when this funding source was added to the Lithic
 	// account.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// currency of the external account 3-character alphabetic ISO 4217 code
-	Currency string `json:"currency,required"`
+	Currency string `json:"currency" api:"required"`
 	// The last 4 digits of the bank account. Derived by Lithic from the account number
 	// passed
-	LastFour string `json:"last_four,required"`
+	LastFour string `json:"last_four" api:"required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner string `json:"owner,required"`
+	Owner string `json:"owner" api:"required"`
 	// Owner Type
-	OwnerType ExternalBankAccountGetResponseOwnerType `json:"owner_type,required"`
+	OwnerType ExternalBankAccountGetResponseOwnerType `json:"owner_type" api:"required"`
 	// Routing Number
-	RoutingNumber string `json:"routing_number,required"`
+	RoutingNumber string `json:"routing_number" api:"required"`
 	// Account State
-	State ExternalBankAccountGetResponseState `json:"state,required"`
+	State ExternalBankAccountGetResponseState `json:"state" api:"required"`
 	// Account Type
-	Type ExternalBankAccountGetResponseType `json:"type,required"`
+	Type ExternalBankAccountGetResponseType `json:"type" api:"required"`
 	// The number of attempts at verification
-	VerificationAttempts int64 `json:"verification_attempts,required"`
+	VerificationAttempts int64 `json:"verification_attempts" api:"required"`
 	// Verification Method
-	VerificationMethod ExternalBankAccountGetResponseVerificationMethod `json:"verification_method,required"`
+	VerificationMethod ExternalBankAccountGetResponseVerificationMethod `json:"verification_method" api:"required"`
 	// Verification State
-	VerificationState ExternalBankAccountGetResponseVerificationState `json:"verification_state,required"`
+	VerificationState ExternalBankAccountGetResponseVerificationState `json:"verification_state" api:"required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
-	AccountToken string `json:"account_token,nullable" format:"uuid"`
+	AccountToken string `json:"account_token" api:"nullable" format:"uuid"`
 	// Address
-	Address ExternalBankAccountAddress `json:"address,nullable"`
+	Address ExternalBankAccountAddress `json:"address" api:"nullable"`
 	// Optional field that helps identify bank accounts in receipts
-	CompanyID string `json:"company_id,nullable"`
+	CompanyID string `json:"company_id" api:"nullable"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob time.Time `json:"dob,nullable" format:"date"`
+	Dob time.Time `json:"dob" api:"nullable" format:"date"`
 	// Doing Business As
-	DoingBusinessAs string `json:"doing_business_as,nullable"`
+	DoingBusinessAs string `json:"doing_business_as" api:"nullable"`
 	// The financial account token of the operating account to fund the micro deposits
-	FinancialAccountToken string `json:"financial_account_token,nullable" format:"uuid"`
+	FinancialAccountToken string `json:"financial_account_token" api:"nullable" format:"uuid"`
 	// The nickname for this External Bank Account
-	Name string `json:"name,nullable"`
+	Name string `json:"name" api:"nullable"`
 	// User Defined ID
-	UserDefinedID string `json:"user_defined_id,nullable"`
+	UserDefinedID string `json:"user_defined_id" api:"nullable"`
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
 	// by the ACH network
-	VerificationFailedReason string                             `json:"verification_failed_reason,nullable"`
+	VerificationFailedReason string                             `json:"verification_failed_reason" api:"nullable"`
 	JSON                     externalBankAccountGetResponseJSON `json:"-"`
 }
 
@@ -722,57 +722,57 @@ type ExternalBankAccountUpdateResponse struct {
 	// association. If a program links an external bank account to more than one
 	// end-user or to both the program and the end-user, then Lithic will return each
 	// record of the association
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
 	// accept USA bank accounts e.g., USA
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// An ISO 8601 string representing when this funding source was added to the Lithic
 	// account.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// currency of the external account 3-character alphabetic ISO 4217 code
-	Currency string `json:"currency,required"`
+	Currency string `json:"currency" api:"required"`
 	// The last 4 digits of the bank account. Derived by Lithic from the account number
 	// passed
-	LastFour string `json:"last_four,required"`
+	LastFour string `json:"last_four" api:"required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner string `json:"owner,required"`
+	Owner string `json:"owner" api:"required"`
 	// Owner Type
-	OwnerType ExternalBankAccountUpdateResponseOwnerType `json:"owner_type,required"`
+	OwnerType ExternalBankAccountUpdateResponseOwnerType `json:"owner_type" api:"required"`
 	// Routing Number
-	RoutingNumber string `json:"routing_number,required"`
+	RoutingNumber string `json:"routing_number" api:"required"`
 	// Account State
-	State ExternalBankAccountUpdateResponseState `json:"state,required"`
+	State ExternalBankAccountUpdateResponseState `json:"state" api:"required"`
 	// Account Type
-	Type ExternalBankAccountUpdateResponseType `json:"type,required"`
+	Type ExternalBankAccountUpdateResponseType `json:"type" api:"required"`
 	// The number of attempts at verification
-	VerificationAttempts int64 `json:"verification_attempts,required"`
+	VerificationAttempts int64 `json:"verification_attempts" api:"required"`
 	// Verification Method
-	VerificationMethod ExternalBankAccountUpdateResponseVerificationMethod `json:"verification_method,required"`
+	VerificationMethod ExternalBankAccountUpdateResponseVerificationMethod `json:"verification_method" api:"required"`
 	// Verification State
-	VerificationState ExternalBankAccountUpdateResponseVerificationState `json:"verification_state,required"`
+	VerificationState ExternalBankAccountUpdateResponseVerificationState `json:"verification_state" api:"required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
-	AccountToken string `json:"account_token,nullable" format:"uuid"`
+	AccountToken string `json:"account_token" api:"nullable" format:"uuid"`
 	// Address
-	Address ExternalBankAccountAddress `json:"address,nullable"`
+	Address ExternalBankAccountAddress `json:"address" api:"nullable"`
 	// Optional field that helps identify bank accounts in receipts
-	CompanyID string `json:"company_id,nullable"`
+	CompanyID string `json:"company_id" api:"nullable"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob time.Time `json:"dob,nullable" format:"date"`
+	Dob time.Time `json:"dob" api:"nullable" format:"date"`
 	// Doing Business As
-	DoingBusinessAs string `json:"doing_business_as,nullable"`
+	DoingBusinessAs string `json:"doing_business_as" api:"nullable"`
 	// The financial account token of the operating account to fund the micro deposits
-	FinancialAccountToken string `json:"financial_account_token,nullable" format:"uuid"`
+	FinancialAccountToken string `json:"financial_account_token" api:"nullable" format:"uuid"`
 	// The nickname for this External Bank Account
-	Name string `json:"name,nullable"`
+	Name string `json:"name" api:"nullable"`
 	// User Defined ID
-	UserDefinedID string `json:"user_defined_id,nullable"`
+	UserDefinedID string `json:"user_defined_id" api:"nullable"`
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
 	// by the ACH network
-	VerificationFailedReason string                                `json:"verification_failed_reason,nullable"`
+	VerificationFailedReason string                                `json:"verification_failed_reason" api:"nullable"`
 	JSON                     externalBankAccountUpdateResponseJSON `json:"-"`
 }
 
@@ -903,57 +903,57 @@ type ExternalBankAccountListResponse struct {
 	// association. If a program links an external bank account to more than one
 	// end-user or to both the program and the end-user, then Lithic will return each
 	// record of the association
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
 	// accept USA bank accounts e.g., USA
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// An ISO 8601 string representing when this funding source was added to the Lithic
 	// account.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// currency of the external account 3-character alphabetic ISO 4217 code
-	Currency string `json:"currency,required"`
+	Currency string `json:"currency" api:"required"`
 	// The last 4 digits of the bank account. Derived by Lithic from the account number
 	// passed
-	LastFour string `json:"last_four,required"`
+	LastFour string `json:"last_four" api:"required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner string `json:"owner,required"`
+	Owner string `json:"owner" api:"required"`
 	// Owner Type
-	OwnerType ExternalBankAccountListResponseOwnerType `json:"owner_type,required"`
+	OwnerType ExternalBankAccountListResponseOwnerType `json:"owner_type" api:"required"`
 	// Routing Number
-	RoutingNumber string `json:"routing_number,required"`
+	RoutingNumber string `json:"routing_number" api:"required"`
 	// Account State
-	State ExternalBankAccountListResponseState `json:"state,required"`
+	State ExternalBankAccountListResponseState `json:"state" api:"required"`
 	// Account Type
-	Type ExternalBankAccountListResponseType `json:"type,required"`
+	Type ExternalBankAccountListResponseType `json:"type" api:"required"`
 	// The number of attempts at verification
-	VerificationAttempts int64 `json:"verification_attempts,required"`
+	VerificationAttempts int64 `json:"verification_attempts" api:"required"`
 	// Verification Method
-	VerificationMethod ExternalBankAccountListResponseVerificationMethod `json:"verification_method,required"`
+	VerificationMethod ExternalBankAccountListResponseVerificationMethod `json:"verification_method" api:"required"`
 	// Verification State
-	VerificationState ExternalBankAccountListResponseVerificationState `json:"verification_state,required"`
+	VerificationState ExternalBankAccountListResponseVerificationState `json:"verification_state" api:"required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
-	AccountToken string `json:"account_token,nullable" format:"uuid"`
+	AccountToken string `json:"account_token" api:"nullable" format:"uuid"`
 	// Address
-	Address ExternalBankAccountAddress `json:"address,nullable"`
+	Address ExternalBankAccountAddress `json:"address" api:"nullable"`
 	// Optional field that helps identify bank accounts in receipts
-	CompanyID string `json:"company_id,nullable"`
+	CompanyID string `json:"company_id" api:"nullable"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob time.Time `json:"dob,nullable" format:"date"`
+	Dob time.Time `json:"dob" api:"nullable" format:"date"`
 	// Doing Business As
-	DoingBusinessAs string `json:"doing_business_as,nullable"`
+	DoingBusinessAs string `json:"doing_business_as" api:"nullable"`
 	// The financial account token of the operating account to fund the micro deposits
-	FinancialAccountToken string `json:"financial_account_token,nullable" format:"uuid"`
+	FinancialAccountToken string `json:"financial_account_token" api:"nullable" format:"uuid"`
 	// The nickname for this External Bank Account
-	Name string `json:"name,nullable"`
+	Name string `json:"name" api:"nullable"`
 	// User Defined ID
-	UserDefinedID string `json:"user_defined_id,nullable"`
+	UserDefinedID string `json:"user_defined_id" api:"nullable"`
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
 	// by the ACH network
-	VerificationFailedReason string                              `json:"verification_failed_reason,nullable"`
+	VerificationFailedReason string                              `json:"verification_failed_reason" api:"nullable"`
 	JSON                     externalBankAccountListResponseJSON `json:"-"`
 }
 
@@ -1084,57 +1084,57 @@ type ExternalBankAccountRetryMicroDepositsResponse struct {
 	// association. If a program links an external bank account to more than one
 	// end-user or to both the program and the end-user, then Lithic will return each
 	// record of the association
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
 	// accept USA bank accounts e.g., USA
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// An ISO 8601 string representing when this funding source was added to the Lithic
 	// account.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// currency of the external account 3-character alphabetic ISO 4217 code
-	Currency string `json:"currency,required"`
+	Currency string `json:"currency" api:"required"`
 	// The last 4 digits of the bank account. Derived by Lithic from the account number
 	// passed
-	LastFour string `json:"last_four,required"`
+	LastFour string `json:"last_four" api:"required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner string `json:"owner,required"`
+	Owner string `json:"owner" api:"required"`
 	// Owner Type
-	OwnerType ExternalBankAccountRetryMicroDepositsResponseOwnerType `json:"owner_type,required"`
+	OwnerType ExternalBankAccountRetryMicroDepositsResponseOwnerType `json:"owner_type" api:"required"`
 	// Routing Number
-	RoutingNumber string `json:"routing_number,required"`
+	RoutingNumber string `json:"routing_number" api:"required"`
 	// Account State
-	State ExternalBankAccountRetryMicroDepositsResponseState `json:"state,required"`
+	State ExternalBankAccountRetryMicroDepositsResponseState `json:"state" api:"required"`
 	// Account Type
-	Type ExternalBankAccountRetryMicroDepositsResponseType `json:"type,required"`
+	Type ExternalBankAccountRetryMicroDepositsResponseType `json:"type" api:"required"`
 	// The number of attempts at verification
-	VerificationAttempts int64 `json:"verification_attempts,required"`
+	VerificationAttempts int64 `json:"verification_attempts" api:"required"`
 	// Verification Method
-	VerificationMethod ExternalBankAccountRetryMicroDepositsResponseVerificationMethod `json:"verification_method,required"`
+	VerificationMethod ExternalBankAccountRetryMicroDepositsResponseVerificationMethod `json:"verification_method" api:"required"`
 	// Verification State
-	VerificationState ExternalBankAccountRetryMicroDepositsResponseVerificationState `json:"verification_state,required"`
+	VerificationState ExternalBankAccountRetryMicroDepositsResponseVerificationState `json:"verification_state" api:"required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
-	AccountToken string `json:"account_token,nullable" format:"uuid"`
+	AccountToken string `json:"account_token" api:"nullable" format:"uuid"`
 	// Address
-	Address ExternalBankAccountAddress `json:"address,nullable"`
+	Address ExternalBankAccountAddress `json:"address" api:"nullable"`
 	// Optional field that helps identify bank accounts in receipts
-	CompanyID string `json:"company_id,nullable"`
+	CompanyID string `json:"company_id" api:"nullable"`
 	// Date of Birth of the Individual that owns the external bank account
-	Dob time.Time `json:"dob,nullable" format:"date"`
+	Dob time.Time `json:"dob" api:"nullable" format:"date"`
 	// Doing Business As
-	DoingBusinessAs string `json:"doing_business_as,nullable"`
+	DoingBusinessAs string `json:"doing_business_as" api:"nullable"`
 	// The financial account token of the operating account to fund the micro deposits
-	FinancialAccountToken string `json:"financial_account_token,nullable" format:"uuid"`
+	FinancialAccountToken string `json:"financial_account_token" api:"nullable" format:"uuid"`
 	// The nickname for this External Bank Account
-	Name string `json:"name,nullable"`
+	Name string `json:"name" api:"nullable"`
 	// User Defined ID
-	UserDefinedID string `json:"user_defined_id,nullable"`
+	UserDefinedID string `json:"user_defined_id" api:"nullable"`
 	// Optional free text description of the reason for the failed verification. For
 	// ACH micro-deposits returned, this field will display the reason return code sent
 	// by the ACH network
-	VerificationFailedReason string                                            `json:"verification_failed_reason,nullable"`
+	VerificationFailedReason string                                            `json:"verification_failed_reason" api:"nullable"`
 	JSON                     externalBankAccountRetryMicroDepositsResponseJSON `json:"-"`
 }
 
@@ -1261,7 +1261,7 @@ func (r ExternalBankAccountRetryMicroDepositsResponseVerificationState) IsKnown(
 }
 
 type ExternalBankAccountNewParams struct {
-	Body ExternalBankAccountNewParamsBodyUnion `json:"body,required"`
+	Body ExternalBankAccountNewParamsBodyUnion `json:"body" api:"required"`
 }
 
 func (r ExternalBankAccountNewParams) MarshalJSON() (data []byte, err error) {
@@ -1270,23 +1270,23 @@ func (r ExternalBankAccountNewParams) MarshalJSON() (data []byte, err error) {
 
 type ExternalBankAccountNewParamsBody struct {
 	// Account Number
-	AccountNumber param.Field[string] `json:"account_number,required"`
+	AccountNumber param.Field[string] `json:"account_number" api:"required"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
 	// accept USA bank accounts e.g., USA
-	Country param.Field[string] `json:"country,required"`
+	Country param.Field[string] `json:"country" api:"required"`
 	// currency of the external account 3-character alphabetic ISO 4217 code
-	Currency param.Field[string] `json:"currency,required"`
+	Currency param.Field[string] `json:"currency" api:"required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner param.Field[string] `json:"owner,required"`
+	Owner param.Field[string] `json:"owner" api:"required"`
 	// Owner Type
-	OwnerType param.Field[OwnerType] `json:"owner_type,required"`
+	OwnerType param.Field[OwnerType] `json:"owner_type" api:"required"`
 	// Routing Number
-	RoutingNumber param.Field[string] `json:"routing_number,required"`
+	RoutingNumber param.Field[string] `json:"routing_number" api:"required"`
 	// Account Type
-	Type param.Field[ExternalBankAccountNewParamsBodyType] `json:"type,required"`
+	Type param.Field[ExternalBankAccountNewParamsBodyType] `json:"type" api:"required"`
 	// Verification Method
-	VerificationMethod param.Field[VerificationMethod] `json:"verification_method,required"`
+	VerificationMethod param.Field[VerificationMethod] `json:"verification_method" api:"required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
@@ -1325,25 +1325,25 @@ type ExternalBankAccountNewParamsBodyUnion interface {
 
 type ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequest struct {
 	// Account Number
-	AccountNumber param.Field[string] `json:"account_number,required"`
+	AccountNumber param.Field[string] `json:"account_number" api:"required"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
 	// accept USA bank accounts e.g., USA
-	Country param.Field[string] `json:"country,required"`
+	Country param.Field[string] `json:"country" api:"required"`
 	// currency of the external account 3-character alphabetic ISO 4217 code
-	Currency param.Field[string] `json:"currency,required"`
+	Currency param.Field[string] `json:"currency" api:"required"`
 	// The financial account token of the operating account to fund the micro deposits
-	FinancialAccountToken param.Field[string] `json:"financial_account_token,required" format:"uuid"`
+	FinancialAccountToken param.Field[string] `json:"financial_account_token" api:"required" format:"uuid"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner param.Field[string] `json:"owner,required"`
+	Owner param.Field[string] `json:"owner" api:"required"`
 	// Owner Type
-	OwnerType param.Field[OwnerType] `json:"owner_type,required"`
+	OwnerType param.Field[OwnerType] `json:"owner_type" api:"required"`
 	// Routing Number
-	RoutingNumber param.Field[string] `json:"routing_number,required"`
+	RoutingNumber param.Field[string] `json:"routing_number" api:"required"`
 	// Account Type
-	Type param.Field[ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestType] `json:"type,required"`
+	Type param.Field[ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestType] `json:"type" api:"required"`
 	// Verification Method
-	VerificationMethod param.Field[VerificationMethod] `json:"verification_method,required"`
+	VerificationMethod param.Field[VerificationMethod] `json:"verification_method" api:"required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
@@ -1388,23 +1388,23 @@ func (r ExternalBankAccountNewParamsBodyBankVerifiedCreateBankAccountAPIRequestT
 
 type ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequest struct {
 	// Account Number
-	AccountNumber param.Field[string] `json:"account_number,required"`
+	AccountNumber param.Field[string] `json:"account_number" api:"required"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
 	// accept USA bank accounts e.g., USA
-	Country param.Field[string] `json:"country,required"`
+	Country param.Field[string] `json:"country" api:"required"`
 	// currency of the external account 3-character alphabetic ISO 4217 code
-	Currency param.Field[string] `json:"currency,required"`
+	Currency param.Field[string] `json:"currency" api:"required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner param.Field[string] `json:"owner,required"`
+	Owner param.Field[string] `json:"owner" api:"required"`
 	// Owner Type
-	OwnerType param.Field[OwnerType] `json:"owner_type,required"`
+	OwnerType param.Field[OwnerType] `json:"owner_type" api:"required"`
 	// Routing Number
-	RoutingNumber param.Field[string] `json:"routing_number,required"`
+	RoutingNumber param.Field[string] `json:"routing_number" api:"required"`
 	// Account Type
-	Type param.Field[ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestType] `json:"type,required"`
+	Type param.Field[ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestType] `json:"type" api:"required"`
 	// Verification Method
-	VerificationMethod param.Field[ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestVerificationMethod] `json:"verification_method,required"`
+	VerificationMethod param.Field[ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRequestVerificationMethod] `json:"verification_method" api:"required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null
@@ -1463,23 +1463,23 @@ func (r ExternalBankAccountNewParamsBodyExternallyVerifiedCreateBankAccountAPIRe
 
 type ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequest struct {
 	// Account Number
-	AccountNumber param.Field[string] `json:"account_number,required"`
+	AccountNumber param.Field[string] `json:"account_number" api:"required"`
 	// The country that the bank account is located in using ISO 3166-1. We will only
 	// accept USA bank accounts e.g., USA
-	Country param.Field[string] `json:"country,required"`
+	Country param.Field[string] `json:"country" api:"required"`
 	// currency of the external account 3-character alphabetic ISO 4217 code
-	Currency param.Field[string] `json:"currency,required"`
+	Currency param.Field[string] `json:"currency" api:"required"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
-	Owner param.Field[string] `json:"owner,required"`
+	Owner param.Field[string] `json:"owner" api:"required"`
 	// Owner Type
-	OwnerType param.Field[OwnerType] `json:"owner_type,required"`
+	OwnerType param.Field[OwnerType] `json:"owner_type" api:"required"`
 	// Routing Number
-	RoutingNumber param.Field[string] `json:"routing_number,required"`
+	RoutingNumber param.Field[string] `json:"routing_number" api:"required"`
 	// Account Type
-	Type param.Field[ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestType] `json:"type,required"`
+	Type param.Field[ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestType] `json:"type" api:"required"`
 	// Verification Method
-	VerificationMethod param.Field[ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestVerificationMethod] `json:"verification_method,required"`
+	VerificationMethod param.Field[ExternalBankAccountNewParamsBodyUnverifiedCreateBankAccountAPIRequestVerificationMethod] `json:"verification_method" api:"required"`
 	// Indicates which Lithic account the external account is associated with. For
 	// external accounts that are associated with the program, account_token field
 	// returned will be null

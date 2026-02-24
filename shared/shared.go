@@ -11,20 +11,20 @@ import (
 
 type Address struct {
 	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
+	Address1 string `json:"address1" api:"required"`
 	// Name of city.
-	City string `json:"city,required"`
+	City string `json:"city" api:"required"`
 	// Valid country code, entered in uppercase ISO 3166-1 alpha-3 three-character
 	// format. Only USA is currently supported for all workflows. KYC_EXEMPT supports
 	// CAN additionally.
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// Valid postal code. USA postal codes (ZIP codes) are supported, entered as a
 	// five-digit postal code or nine-digit postal code (ZIP+4) using the format
 	// 12345-1234. KYC_EXEMPT supports Canadian postal codes.
-	PostalCode string `json:"postal_code,required"`
+	PostalCode string `json:"postal_code" api:"required"`
 	// Valid state code. USA state codes are supported, entered in uppercase ISO 3166-2
 	// two-character format. KYC_EXEMPT supports Canadian province codes.
-	State string `json:"state,required"`
+	State string `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
 	Address2 string      `json:"address2"`
 	JSON     addressJSON `json:"-"`
@@ -52,20 +52,20 @@ func (r addressJSON) RawJSON() string {
 
 type AddressParam struct {
 	// Valid deliverable address (no PO boxes).
-	Address1 param.Field[string] `json:"address1,required"`
+	Address1 param.Field[string] `json:"address1" api:"required"`
 	// Name of city.
-	City param.Field[string] `json:"city,required"`
+	City param.Field[string] `json:"city" api:"required"`
 	// Valid country code, entered in uppercase ISO 3166-1 alpha-3 three-character
 	// format. Only USA is currently supported for all workflows. KYC_EXEMPT supports
 	// CAN additionally.
-	Country param.Field[string] `json:"country,required"`
+	Country param.Field[string] `json:"country" api:"required"`
 	// Valid postal code. USA postal codes (ZIP codes) are supported, entered as a
 	// five-digit postal code or nine-digit postal code (ZIP+4) using the format
 	// 12345-1234. KYC_EXEMPT supports Canadian postal codes.
-	PostalCode param.Field[string] `json:"postal_code,required"`
+	PostalCode param.Field[string] `json:"postal_code" api:"required"`
 	// Valid state code. USA state codes are supported, entered in uppercase ISO 3166-2
 	// two-character format. KYC_EXEMPT supports Canadian province codes.
-	State param.Field[string] `json:"state,required"`
+	State param.Field[string] `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
 	Address2 param.Field[string] `json:"address2"`
 }
@@ -89,15 +89,15 @@ type Currency = string
 // re-run KYC
 type Document struct {
 	// Globally unique identifier for the document.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Globally unique identifier for the account holder.
-	AccountHolderToken string `json:"account_holder_token,required" format:"uuid"`
+	AccountHolderToken string `json:"account_holder_token" api:"required" format:"uuid"`
 	// Type of documentation to be submitted for verification of an account holder
-	DocumentType DocumentDocumentType `json:"document_type,required"`
+	DocumentType DocumentDocumentType `json:"document_type" api:"required"`
 	// Globally unique identifier for an entity.
-	EntityToken string `json:"entity_token,required" format:"uuid"`
+	EntityToken string `json:"entity_token" api:"required" format:"uuid"`
 	// Represents a single image of the document to upload.
-	RequiredDocumentUploads []DocumentRequiredDocumentUpload `json:"required_document_uploads,required"`
+	RequiredDocumentUploads []DocumentRequiredDocumentUpload `json:"required_document_uploads" api:"required"`
 	JSON                    documentJSON                     `json:"-"`
 }
 
@@ -156,29 +156,29 @@ func (r DocumentDocumentType) IsKnown() bool {
 // Represents a single image of the document to upload.
 type DocumentRequiredDocumentUpload struct {
 	// Globally unique identifier for the document upload.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// A list of status reasons associated with a KYB account holder that have been
 	// satisfied by the document upload
-	AcceptedEntityStatusReasons []string `json:"accepted_entity_status_reasons,required"`
+	AcceptedEntityStatusReasons []string `json:"accepted_entity_status_reasons" api:"required"`
 	// When the document upload was created
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Type of image to upload.
-	ImageType DocumentRequiredDocumentUploadsImageType `json:"image_type,required"`
+	ImageType DocumentRequiredDocumentUploadsImageType `json:"image_type" api:"required"`
 	// A list of status reasons associated with a KYB account holder that have not been
 	// satisfied by the document upload
-	RejectedEntityStatusReasons []string `json:"rejected_entity_status_reasons,required"`
+	RejectedEntityStatusReasons []string `json:"rejected_entity_status_reasons" api:"required"`
 	// Status of an account holder's document upload.
-	Status DocumentRequiredDocumentUploadsStatus `json:"status,required"`
+	Status DocumentRequiredDocumentUploadsStatus `json:"status" api:"required"`
 	// Reasons for document image upload status.
-	StatusReasons []DocumentRequiredDocumentUploadsStatusReason `json:"status_reasons,required"`
+	StatusReasons []DocumentRequiredDocumentUploadsStatusReason `json:"status_reasons" api:"required"`
 	// When the document upload was last updated
-	Updated time.Time `json:"updated,required" format:"date-time"`
+	Updated time.Time `json:"updated" api:"required" format:"date-time"`
 	// URL to upload document image to.
 	//
 	// Note that the upload URLs expire after 7 days. If an upload URL expires, you can
 	// refresh the URLs by retrieving the document upload from
 	// `GET /account_holders/{account_holder_token}/documents`.
-	UploadURL string                             `json:"upload_url,required"`
+	UploadURL string                             `json:"upload_url" api:"required"`
 	JSON      documentRequiredDocumentUploadJSON `json:"-"`
 }
 
@@ -420,22 +420,22 @@ func (r FinancialEventType) IsKnown() bool {
 
 type Merchant struct {
 	// Unique alphanumeric identifier for the payment card acceptor (merchant).
-	AcceptorID string `json:"acceptor_id,required"`
+	AcceptorID string `json:"acceptor_id" api:"required"`
 	// Unique numeric identifier of the acquiring institution.
-	AcquiringInstitutionID string `json:"acquiring_institution_id,required"`
+	AcquiringInstitutionID string `json:"acquiring_institution_id" api:"required"`
 	// City of card acceptor. Note that in many cases, particularly in card-not-present
 	// transactions, merchants may send through a phone number or URL in this field.
-	City string `json:"city,required"`
+	City string `json:"city" api:"required"`
 	// Country or entity of card acceptor. Possible values are: (1) all ISO 3166-1
 	// alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for Netherlands Antilles.
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// Short description of card acceptor.
-	Descriptor string `json:"descriptor,required"`
+	Descriptor string `json:"descriptor" api:"required"`
 	// Merchant category code (MCC). A four-digit number listed in ISO 18245. An MCC is
 	// used to classify a business by the types of goods or services it provides.
-	Mcc string `json:"mcc,required"`
+	Mcc string `json:"mcc" api:"required"`
 	// Geographic state of card acceptor.
-	State string       `json:"state,required"`
+	State string       `json:"state" api:"required"`
 	JSON  merchantJSON `json:"-"`
 }
 
@@ -462,25 +462,25 @@ func (r merchantJSON) RawJSON() string {
 
 type ShippingAddressParam struct {
 	// Valid USPS routable address.
-	Address1 param.Field[string] `json:"address1,required"`
+	Address1 param.Field[string] `json:"address1" api:"required"`
 	// City
-	City param.Field[string] `json:"city,required"`
+	City param.Field[string] `json:"city" api:"required"`
 	// Uppercase ISO 3166-1 alpha-3 three character abbreviation.
-	Country param.Field[string] `json:"country,required"`
+	Country param.Field[string] `json:"country" api:"required"`
 	// Customer's first name. This will be the first name printed on the physical card.
 	// The combined length of `first_name` and `last_name` may not exceed 25
 	// characters.
-	FirstName param.Field[string] `json:"first_name,required"`
+	FirstName param.Field[string] `json:"first_name" api:"required"`
 	// Customer's surname (family name). This will be the last name printed on the
 	// physical card. The combined length of `first_name` and `last_name` may not
 	// exceed 25 characters.
-	LastName param.Field[string] `json:"last_name,required"`
+	LastName param.Field[string] `json:"last_name" api:"required"`
 	// Postal code (formerly zipcode). For US addresses, either five-digit postal code
 	// or nine-digit postal code (ZIP+4) using the format 12345-1234.
-	PostalCode param.Field[string] `json:"postal_code,required"`
+	PostalCode param.Field[string] `json:"postal_code" api:"required"`
 	// Uppercase ISO 3166-2 two character abbreviation for US and CA. Optional with a
 	// limit of 24 characters for other countries.
-	State param.Field[string] `json:"state,required"`
+	State param.Field[string] `json:"state" api:"required"`
 	// Unit number (if applicable).
 	Address2 param.Field[string] `json:"address2"`
 	// Email address to be contacted for expedited shipping process purposes. Required

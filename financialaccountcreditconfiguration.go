@@ -61,14 +61,14 @@ func (r *FinancialAccountCreditConfigurationService) Update(ctx context.Context,
 
 type FinancialAccountCreditConfig struct {
 	// Globally unique identifier for the account
-	AccountToken                string                                                  `json:"account_token,required" format:"uuid"`
-	AutoCollectionConfiguration FinancialAccountCreditConfigAutoCollectionConfiguration `json:"auto_collection_configuration,required"`
-	CreditLimit                 int64                                                   `json:"credit_limit,required,nullable"`
+	AccountToken                string                                                  `json:"account_token" api:"required" format:"uuid"`
+	AutoCollectionConfiguration FinancialAccountCreditConfigAutoCollectionConfiguration `json:"auto_collection_configuration" api:"required"`
+	CreditLimit                 int64                                                   `json:"credit_limit" api:"required,nullable"`
 	// Globally unique identifier for the credit product
-	CreditProductToken       string `json:"credit_product_token,required,nullable"`
-	ExternalBankAccountToken string `json:"external_bank_account_token,required,nullable" format:"uuid"`
+	CreditProductToken       string `json:"credit_product_token" api:"required,nullable"`
+	ExternalBankAccountToken string `json:"external_bank_account_token" api:"required,nullable" format:"uuid"`
 	// Tier assigned to the financial account
-	Tier string                           `json:"tier,required,nullable"`
+	Tier string                           `json:"tier" api:"required,nullable"`
 	JSON financialAccountCreditConfigJSON `json:"-"`
 }
 
@@ -95,7 +95,7 @@ func (r financialAccountCreditConfigJSON) RawJSON() string {
 
 type FinancialAccountCreditConfigAutoCollectionConfiguration struct {
 	// If auto collection is enabled for this account
-	AutoCollectionEnabled bool                                                        `json:"auto_collection_enabled,required"`
+	AutoCollectionEnabled bool                                                        `json:"auto_collection_enabled" api:"required"`
 	JSON                  financialAccountCreditConfigAutoCollectionConfigurationJSON `json:"-"`
 }
 

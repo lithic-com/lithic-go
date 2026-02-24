@@ -49,10 +49,10 @@ func (r *FinancialAccountLoanTapeConfigurationService) Get(ctx context.Context, 
 
 // Configuration for loan tapes
 type LoanTapeConfiguration struct {
-	CreatedAt             time.Time `json:"created_at,required" format:"date-time"`
-	FinancialAccountToken string    `json:"financial_account_token,required" format:"uuid"`
-	InstanceToken         string    `json:"instance_token,required" format:"uuid"`
-	UpdatedAt             time.Time `json:"updated_at,required" format:"date-time"`
+	CreatedAt             time.Time `json:"created_at" api:"required" format:"date-time"`
+	FinancialAccountToken string    `json:"financial_account_token" api:"required" format:"uuid"`
+	InstanceToken         string    `json:"instance_token" api:"required" format:"uuid"`
+	UpdatedAt             time.Time `json:"updated_at" api:"required" format:"date-time"`
 	CreditProductToken    string    `json:"credit_product_token"`
 	// Configuration for building loan tapes
 	LoanTapeRebuildConfiguration LoanTapeRebuildConfiguration `json:"loan_tape_rebuild_configuration"`
@@ -85,7 +85,7 @@ func (r loanTapeConfigurationJSON) RawJSON() string {
 // Configuration for building loan tapes
 type LoanTapeRebuildConfiguration struct {
 	// Whether the account's loan tapes need to be rebuilt or not
-	RebuildNeeded bool `json:"rebuild_needed,required"`
+	RebuildNeeded bool `json:"rebuild_needed" api:"required"`
 	// The date for which the account's loan tapes were last rebuilt
 	LastRebuild time.Time `json:"last_rebuild" format:"date"`
 	// Date from which to start rebuilding from if the account requires a rebuild

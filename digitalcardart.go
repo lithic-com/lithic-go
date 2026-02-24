@@ -75,17 +75,17 @@ func (r *DigitalCardArtService) ListAutoPaging(ctx context.Context, query Digita
 
 type DigitalCardArt struct {
 	// Globally unique identifier for the card art.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Globally unique identifier for the card program.
-	CardProgramToken string `json:"card_program_token,required" format:"uuid"`
+	CardProgramToken string `json:"card_program_token" api:"required" format:"uuid"`
 	// Timestamp of when card art was created.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Description of the card art.
-	Description string `json:"description,required"`
+	Description string `json:"description" api:"required"`
 	// Whether the card art is enabled.
-	IsEnabled bool `json:"is_enabled,required"`
+	IsEnabled bool `json:"is_enabled" api:"required"`
 	// Card network.
-	Network DigitalCardArtNetwork `json:"network,required"`
+	Network DigitalCardArtNetwork `json:"network" api:"required"`
 	// Whether the card art is the default card art to be added upon tokenization.
 	IsCardProgramDefault bool               `json:"is_card_program_default"`
 	JSON                 digitalCardArtJSON `json:"-"`

@@ -70,8 +70,8 @@ func (r *FinancialAccountStatementLineItemService) ListAutoPaging(ctx context.Co
 }
 
 type StatementLineItems struct {
-	Data    []StatementLineItemsData `json:"data,required"`
-	HasMore bool                     `json:"has_more,required"`
+	Data    []StatementLineItemsData `json:"data" api:"required"`
+	HasMore bool                     `json:"has_more" api:"required"`
 	JSON    statementLineItemsJSON   `json:"-"`
 }
 
@@ -94,24 +94,24 @@ func (r statementLineItemsJSON) RawJSON() string {
 
 type StatementLineItemsData struct {
 	// Globally unique identifier for a Statement Line Item
-	Token string `json:"token,required"`
+	Token string `json:"token" api:"required"`
 	// Transaction amount in cents
-	Amount   int64                          `json:"amount,required"`
-	Category StatementLineItemsDataCategory `json:"category,required"`
+	Amount   int64                          `json:"amount" api:"required"`
+	Category StatementLineItemsDataCategory `json:"category" api:"required"`
 	// Timestamp of when the line item was generated
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// 3-character alphabetic ISO 4217 code for the settling currency of the
 	// transaction
-	Currency string `json:"currency,required"`
+	Currency string `json:"currency" api:"required"`
 	// Date that the transaction effected the account balance
-	EffectiveDate time.Time                       `json:"effective_date,required" format:"date"`
-	EventType     StatementLineItemsDataEventType `json:"event_type,required"`
+	EffectiveDate time.Time                       `json:"effective_date" api:"required" format:"date"`
+	EventType     StatementLineItemsDataEventType `json:"event_type" api:"required"`
 	// Globally unique identifier for a financial account
-	FinancialAccountToken string `json:"financial_account_token,required" format:"uuid"`
+	FinancialAccountToken string `json:"financial_account_token" api:"required" format:"uuid"`
 	// Globally unique identifier for a financial transaction event
-	FinancialTransactionEventToken string `json:"financial_transaction_event_token,required" format:"uuid"`
+	FinancialTransactionEventToken string `json:"financial_transaction_event_token" api:"required" format:"uuid"`
 	// Globally unique identifier for a financial transaction
-	FinancialTransactionToken string `json:"financial_transaction_token,required" format:"uuid"`
+	FinancialTransactionToken string `json:"financial_transaction_token" api:"required" format:"uuid"`
 	// Globally unique identifier for a card
 	CardToken  string                     `json:"card_token" format:"uuid"`
 	Descriptor string                     `json:"descriptor"`

@@ -185,11 +185,11 @@ func (r *TransactionService) SimulateVoid(ctx context.Context, body TransactionS
 
 type CardholderAuthentication struct {
 	// Indicates the method used to authenticate the cardholder.
-	AuthenticationMethod CardholderAuthenticationAuthenticationMethod `json:"authentication_method,required"`
+	AuthenticationMethod CardholderAuthenticationAuthenticationMethod `json:"authentication_method" api:"required"`
 	// Indicates the outcome of the 3DS authentication process.
-	AuthenticationResult CardholderAuthenticationAuthenticationResult `json:"authentication_result,required"`
+	AuthenticationResult CardholderAuthenticationAuthenticationResult `json:"authentication_result" api:"required"`
 	// Indicates which party made the 3DS authentication decision.
-	DecisionMadeBy CardholderAuthenticationDecisionMadeBy `json:"decision_made_by,required"`
+	DecisionMadeBy CardholderAuthenticationDecisionMadeBy `json:"decision_made_by" api:"required"`
 	// Indicates whether chargeback liability shift applies to the transaction.
 	// Possible enum values:
 	//
@@ -200,12 +200,12 @@ type CardholderAuthentication struct {
 	//   - `TOKEN_AUTHENTICATED`: The transaction was a tokenized payment with validated
 	//     cryptography, possibly recurring. Chargeback liability shift to the issuer
 	//     applies.
-	LiabilityShift CardholderAuthenticationLiabilityShift `json:"liability_shift,required"`
+	LiabilityShift CardholderAuthenticationLiabilityShift `json:"liability_shift" api:"required"`
 	// Unique identifier you can use to match a given 3DS authentication (available via
 	// the three_ds_authentication.created event webhook) and the transaction. Note
 	// that in cases where liability shift does not occur, this token is matched to the
 	// transaction on a best-effort basis.
-	ThreeDSAuthenticationToken string                       `json:"three_ds_authentication_token,required,nullable" format:"uuid"`
+	ThreeDSAuthenticationToken string                       `json:"three_ds_authentication_token" api:"required,nullable" format:"uuid"`
 	JSON                       cardholderAuthenticationJSON `json:"-"`
 }
 
@@ -315,7 +315,7 @@ type TokenInfo struct {
 	// sources include digital wallets (Apple, Google, or Samsung Pay), merchant
 	// tokenization, and “other” sources like in-flight commerce. Masterpass is not
 	// currently supported and is included for future use.
-	WalletType TokenInfoWalletType `json:"wallet_type,required"`
+	WalletType TokenInfoWalletType `json:"wallet_type" api:"required"`
 	JSON       tokenInfoJSON       `json:"-"`
 }
 
@@ -359,77 +359,77 @@ func (r TokenInfoWalletType) IsKnown() bool {
 
 type Transaction struct {
 	// Globally unique identifier.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// The token for the account associated with this transaction.
-	AccountToken string `json:"account_token,required" format:"uuid"`
+	AccountToken string `json:"account_token" api:"required" format:"uuid"`
 	// Fee assessed by the merchant and paid for by the cardholder in the smallest unit
 	// of the currency. Will be zero if no fee is assessed. Rebates may be transmitted
 	// as a negative value to indicate credited fees.
-	AcquirerFee int64 `json:"acquirer_fee,required,nullable"`
+	AcquirerFee int64 `json:"acquirer_fee" api:"required,nullable"`
 	// Unique identifier assigned to a transaction by the acquirer that can be used in
 	// dispute and chargeback filing. This field has been deprecated in favor of the
 	// `acquirer_reference_number` that resides in the event-level `network_info`.
 	//
 	// Deprecated: deprecated
-	AcquirerReferenceNumber string `json:"acquirer_reference_number,required,nullable"`
+	AcquirerReferenceNumber string `json:"acquirer_reference_number" api:"required,nullable"`
 	// When the transaction is pending, this represents the authorization amount of the
 	// transaction in the anticipated settlement currency. Once the transaction has
 	// settled, this field represents the settled amount in the settlement currency.
 	//
 	// Deprecated: deprecated
-	Amount  int64              `json:"amount,required"`
-	Amounts TransactionAmounts `json:"amounts,required"`
+	Amount  int64              `json:"amount" api:"required"`
+	Amounts TransactionAmounts `json:"amounts" api:"required"`
 	// The authorization amount of the transaction in the anticipated settlement
 	// currency.
 	//
 	// Deprecated: deprecated
-	AuthorizationAmount int64 `json:"authorization_amount,required,nullable"`
+	AuthorizationAmount int64 `json:"authorization_amount" api:"required,nullable"`
 	// A fixed-width 6-digit numeric identifier that can be used to identify a
 	// transaction with networks.
-	AuthorizationCode string         `json:"authorization_code,required,nullable"`
-	Avs               TransactionAvs `json:"avs,required,nullable"`
+	AuthorizationCode string         `json:"authorization_code" api:"required,nullable"`
+	Avs               TransactionAvs `json:"avs" api:"required,nullable"`
 	// Token for the card used in this transaction.
-	CardToken                string                   `json:"card_token,required" format:"uuid"`
-	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication,required,nullable"`
+	CardToken                string                   `json:"card_token" api:"required" format:"uuid"`
+	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication" api:"required,nullable"`
 	// Date and time when the transaction first occurred. UTC time zone.
-	Created               time.Time       `json:"created,required" format:"date-time"`
-	FinancialAccountToken string          `json:"financial_account_token,required,nullable" format:"uuid"`
-	Merchant              shared.Merchant `json:"merchant,required"`
+	Created               time.Time       `json:"created" api:"required" format:"date-time"`
+	FinancialAccountToken string          `json:"financial_account_token" api:"required,nullable" format:"uuid"`
+	Merchant              shared.Merchant `json:"merchant" api:"required"`
 	// Analogous to the 'amount', but in the merchant currency.
 	//
 	// Deprecated: deprecated
-	MerchantAmount int64 `json:"merchant_amount,required,nullable"`
+	MerchantAmount int64 `json:"merchant_amount" api:"required,nullable"`
 	// Analogous to the 'authorization_amount', but in the merchant currency.
 	//
 	// Deprecated: deprecated
-	MerchantAuthorizationAmount int64 `json:"merchant_authorization_amount,required,nullable"`
+	MerchantAuthorizationAmount int64 `json:"merchant_authorization_amount" api:"required,nullable"`
 	// 3-character alphabetic ISO 4217 code for the local currency of the transaction.
 	//
 	// Deprecated: deprecated
-	MerchantCurrency string `json:"merchant_currency,required"`
+	MerchantCurrency string `json:"merchant_currency" api:"required"`
 	// Card network of the authorization. Value is `UNKNOWN` when Lithic cannot
 	// determine the network code from the upstream provider.
-	Network TransactionNetwork `json:"network,required,nullable"`
+	Network TransactionNetwork `json:"network" api:"required,nullable"`
 	// Network-provided score assessing risk level associated with a given
 	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
 	// risk and 999 representing the highest risk. For Visa transactions, where the raw
 	// score has a range of 0-99, Lithic will normalize the score by multiplying the
 	// raw score by 10x.
-	NetworkRiskScore int64             `json:"network_risk_score,required,nullable"`
-	Pos              TransactionPos    `json:"pos,required"`
-	Result           TransactionResult `json:"result,required"`
+	NetworkRiskScore int64             `json:"network_risk_score" api:"required,nullable"`
+	Pos              TransactionPos    `json:"pos" api:"required"`
+	Result           TransactionResult `json:"result" api:"required"`
 	// The settled amount of the transaction in the settlement currency.
 	//
 	// Deprecated: deprecated
-	SettledAmount int64 `json:"settled_amount,required"`
+	SettledAmount int64 `json:"settled_amount" api:"required"`
 	// Status of the transaction.
-	Status TransactionStatus `json:"status,required"`
+	Status TransactionStatus `json:"status" api:"required"`
 	// Key-value pairs for tagging resources. Tags allow you to associate arbitrary
 	// metadata with a resource for your own purposes.
-	Tags      map[string]string `json:"tags,required"`
-	TokenInfo TokenInfo         `json:"token_info,required,nullable"`
+	Tags      map[string]string `json:"tags" api:"required"`
+	TokenInfo TokenInfo         `json:"token_info" api:"required,nullable"`
 	// Date and time when the transaction last updated. UTC time zone.
-	Updated time.Time          `json:"updated,required" format:"date-time"`
+	Updated time.Time          `json:"updated" api:"required" format:"date-time"`
 	Events  []TransactionEvent `json:"events"`
 	JSON    transactionJSON    `json:"-"`
 }
@@ -476,10 +476,10 @@ func (r transactionJSON) RawJSON() string {
 }
 
 type TransactionAmounts struct {
-	Cardholder TransactionAmountsCardholder `json:"cardholder,required"`
-	Hold       TransactionAmountsHold       `json:"hold,required"`
-	Merchant   TransactionAmountsMerchant   `json:"merchant,required"`
-	Settlement TransactionAmountsSettlement `json:"settlement,required"`
+	Cardholder TransactionAmountsCardholder `json:"cardholder" api:"required"`
+	Hold       TransactionAmountsHold       `json:"hold" api:"required"`
+	Merchant   TransactionAmountsMerchant   `json:"merchant" api:"required"`
+	Settlement TransactionAmountsSettlement `json:"settlement" api:"required"`
 	JSON       transactionAmountsJSON       `json:"-"`
 }
 
@@ -505,12 +505,12 @@ func (r transactionAmountsJSON) RawJSON() string {
 type TransactionAmountsCardholder struct {
 	// The estimated settled amount of the transaction in the cardholder billing
 	// currency.
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// The exchange rate used to convert the merchant amount to the cardholder billing
 	// amount.
-	ConversionRate string `json:"conversion_rate,required"`
+	ConversionRate string `json:"conversion_rate" api:"required"`
 	// 3-character alphabetic ISO 4217 currency
-	Currency shared.Currency                  `json:"currency,required"`
+	Currency shared.Currency                  `json:"currency" api:"required"`
 	JSON     transactionAmountsCardholderJSON `json:"-"`
 }
 
@@ -534,9 +534,9 @@ func (r transactionAmountsCardholderJSON) RawJSON() string {
 
 type TransactionAmountsHold struct {
 	// The pending amount of the transaction in the anticipated settlement currency.
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// 3-character alphabetic ISO 4217 currency
-	Currency shared.Currency            `json:"currency,required"`
+	Currency shared.Currency            `json:"currency" api:"required"`
 	JSON     transactionAmountsHoldJSON `json:"-"`
 }
 
@@ -559,9 +559,9 @@ func (r transactionAmountsHoldJSON) RawJSON() string {
 
 type TransactionAmountsMerchant struct {
 	// The settled amount of the transaction in the merchant currency.
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// 3-character alphabetic ISO 4217 currency
-	Currency shared.Currency                `json:"currency,required"`
+	Currency shared.Currency                `json:"currency" api:"required"`
 	JSON     transactionAmountsMerchantJSON `json:"-"`
 }
 
@@ -584,9 +584,9 @@ func (r transactionAmountsMerchantJSON) RawJSON() string {
 
 type TransactionAmountsSettlement struct {
 	// The settled amount of the transaction in the settlement currency.
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// 3-character alphabetic ISO 4217 currency
-	Currency shared.Currency                  `json:"currency,required"`
+	Currency shared.Currency                  `json:"currency" api:"required"`
 	JSON     transactionAmountsSettlementJSON `json:"-"`
 }
 
@@ -609,9 +609,9 @@ func (r transactionAmountsSettlementJSON) RawJSON() string {
 
 type TransactionAvs struct {
 	// Cardholder address
-	Address string `json:"address,required"`
+	Address string `json:"address" api:"required"`
 	// Cardholder ZIP code
-	Zipcode string             `json:"zipcode,required"`
+	Zipcode string             `json:"zipcode" api:"required"`
 	JSON    transactionAvsJSON `json:"-"`
 }
 
@@ -653,8 +653,8 @@ func (r TransactionNetwork) IsKnown() bool {
 }
 
 type TransactionPos struct {
-	EntryMode TransactionPosEntryMode `json:"entry_mode,required"`
-	Terminal  TransactionPosTerminal  `json:"terminal,required"`
+	EntryMode TransactionPosEntryMode `json:"entry_mode" api:"required"`
+	Terminal  TransactionPosTerminal  `json:"terminal" api:"required"`
 	JSON      transactionPosJSON      `json:"-"`
 }
 
@@ -676,13 +676,13 @@ func (r transactionPosJSON) RawJSON() string {
 
 type TransactionPosEntryMode struct {
 	// Card presence indicator
-	Card TransactionPosEntryModeCard `json:"card,required"`
+	Card TransactionPosEntryModeCard `json:"card" api:"required"`
 	// Cardholder presence indicator
-	Cardholder TransactionPosEntryModeCardholder `json:"cardholder,required"`
+	Cardholder TransactionPosEntryModeCardholder `json:"cardholder" api:"required"`
 	// Method of entry for the PAN
-	Pan TransactionPosEntryModePan `json:"pan,required"`
+	Pan TransactionPosEntryModePan `json:"pan" api:"required"`
 	// Indicates whether the cardholder entered the PIN. True if the PIN was entered.
-	PinEntered bool                        `json:"pin_entered,required"`
+	PinEntered bool                        `json:"pin_entered" api:"required"`
 	JSON       transactionPosEntryModeJSON `json:"-"`
 }
 
@@ -778,26 +778,26 @@ func (r TransactionPosEntryModePan) IsKnown() bool {
 
 type TransactionPosTerminal struct {
 	// True if a clerk is present at the sale.
-	Attended bool `json:"attended,required"`
+	Attended bool `json:"attended" api:"required"`
 	// True if the terminal is capable of retaining the card.
-	CardRetentionCapable bool `json:"card_retention_capable,required"`
+	CardRetentionCapable bool `json:"card_retention_capable" api:"required"`
 	// True if the sale was made at the place of business (vs. mobile).
-	OnPremise bool `json:"on_premise,required"`
+	OnPremise bool `json:"on_premise" api:"required"`
 	// The person that is designated to swipe the card
-	Operator TransactionPosTerminalOperator `json:"operator,required"`
+	Operator TransactionPosTerminalOperator `json:"operator" api:"required"`
 	// True if the terminal is capable of partial approval. Partial approval is when
 	// part of a transaction is approved and another payment must be used for the
 	// remainder. Example scenario: A $40 transaction is attempted on a prepaid card
 	// with a $25 balance. If partial approval is enabled, $25 can be authorized, at
 	// which point the POS will prompt the user for an additional payment of $15.
-	PartialApprovalCapable bool `json:"partial_approval_capable,required"`
+	PartialApprovalCapable bool `json:"partial_approval_capable" api:"required"`
 	// Status of whether the POS is able to accept PINs
-	PinCapability TransactionPosTerminalPinCapability `json:"pin_capability,required"`
+	PinCapability TransactionPosTerminalPinCapability `json:"pin_capability" api:"required"`
 	// POS Type
-	Type TransactionPosTerminalType `json:"type,required"`
+	Type TransactionPosTerminalType `json:"type" api:"required"`
 	// Uniquely identifies a terminal at the card acceptor location of acquiring
 	// institutions or merchant POS Systems
-	AcceptorTerminalID string                     `json:"acceptor_terminal_id,nullable"`
+	AcceptorTerminalID string                     `json:"acceptor_terminal_id" api:"nullable"`
 	JSON               transactionPosTerminalJSON `json:"-"`
 }
 
@@ -957,17 +957,17 @@ func (r TransactionStatus) IsKnown() bool {
 
 type TransactionEvent struct {
 	// Transaction event identifier.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Amount of the event in the settlement currency.
 	//
 	// Deprecated: deprecated
-	Amount  int64                    `json:"amount,required"`
-	Amounts TransactionEventsAmounts `json:"amounts,required"`
+	Amount  int64                    `json:"amount" api:"required"`
+	Amounts TransactionEventsAmounts `json:"amounts" api:"required"`
 	// RFC 3339 date and time this event entered the system. UTC time zone.
-	Created         time.Time                         `json:"created,required" format:"date-time"`
-	DetailedResults []TransactionEventsDetailedResult `json:"detailed_results,required"`
+	Created         time.Time                         `json:"created" api:"required" format:"date-time"`
+	DetailedResults []TransactionEventsDetailedResult `json:"detailed_results" api:"required"`
 	// Indicates whether the transaction event is a credit or debit to the account.
-	EffectivePolarity TransactionEventsEffectivePolarity `json:"effective_polarity,required"`
+	EffectivePolarity TransactionEventsEffectivePolarity `json:"effective_polarity" api:"required"`
 	// Information provided by the card network in each event. This includes common
 	// identifiers shared between you, Lithic, the card network and in some cases the
 	// acquirer. These identifiers often link together events within the same
@@ -977,11 +977,11 @@ type TransactionEvent struct {
 	// type. If the field is populated by the network, we will pass it through as is
 	// unless otherwise specified. Please consult the official network documentation
 	// for more details about these fields and how to use them.
-	NetworkInfo TransactionEventsNetworkInfo  `json:"network_info,required,nullable"`
-	Result      TransactionEventsResult       `json:"result,required"`
-	RuleResults []TransactionEventsRuleResult `json:"rule_results,required"`
+	NetworkInfo TransactionEventsNetworkInfo  `json:"network_info" api:"required,nullable"`
+	Result      TransactionEventsResult       `json:"result" api:"required"`
+	RuleResults []TransactionEventsRuleResult `json:"rule_results" api:"required"`
 	// Type of transaction event
-	Type                TransactionEventsType                `json:"type,required"`
+	Type                TransactionEventsType                `json:"type" api:"required"`
 	AccountType         TransactionEventsAccountType         `json:"account_type"`
 	NetworkSpecificData TransactionEventsNetworkSpecificData `json:"network_specific_data"`
 	JSON                transactionEventJSON                 `json:"-"`
@@ -1015,9 +1015,9 @@ func (r transactionEventJSON) RawJSON() string {
 }
 
 type TransactionEventsAmounts struct {
-	Cardholder TransactionEventsAmountsCardholder `json:"cardholder,required"`
-	Merchant   TransactionEventsAmountsMerchant   `json:"merchant,required"`
-	Settlement TransactionEventsAmountsSettlement `json:"settlement,required,nullable"`
+	Cardholder TransactionEventsAmountsCardholder `json:"cardholder" api:"required"`
+	Merchant   TransactionEventsAmountsMerchant   `json:"merchant" api:"required"`
+	Settlement TransactionEventsAmountsSettlement `json:"settlement" api:"required,nullable"`
 	JSON       transactionEventsAmountsJSON       `json:"-"`
 }
 
@@ -1041,12 +1041,12 @@ func (r transactionEventsAmountsJSON) RawJSON() string {
 
 type TransactionEventsAmountsCardholder struct {
 	// Amount of the event in the cardholder billing currency.
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// Exchange rate used to convert the merchant amount to the cardholder billing
 	// amount.
-	ConversionRate string `json:"conversion_rate,required"`
+	ConversionRate string `json:"conversion_rate" api:"required"`
 	// 3-character alphabetic ISO 4217 currency
-	Currency shared.Currency                        `json:"currency,required"`
+	Currency shared.Currency                        `json:"currency" api:"required"`
 	JSON     transactionEventsAmountsCardholderJSON `json:"-"`
 }
 
@@ -1070,9 +1070,9 @@ func (r transactionEventsAmountsCardholderJSON) RawJSON() string {
 
 type TransactionEventsAmountsMerchant struct {
 	// Amount of the event in the merchant currency.
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// 3-character alphabetic ISO 4217 currency
-	Currency shared.Currency                      `json:"currency,required"`
+	Currency shared.Currency                      `json:"currency" api:"required"`
 	JSON     transactionEventsAmountsMerchantJSON `json:"-"`
 }
 
@@ -1096,11 +1096,11 @@ func (r transactionEventsAmountsMerchantJSON) RawJSON() string {
 type TransactionEventsAmountsSettlement struct {
 	// Amount of the event, if it is financial, in the settlement currency.
 	// Non-financial events do not contain this amount because they do not move funds.
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// Exchange rate used to convert the merchant amount to the settlement amount.
-	ConversionRate string `json:"conversion_rate,required"`
+	ConversionRate string `json:"conversion_rate" api:"required"`
 	// 3-character alphabetic ISO 4217 currency
-	Currency shared.Currency                        `json:"currency,required"`
+	Currency shared.Currency                        `json:"currency" api:"required"`
 	JSON     transactionEventsAmountsSettlementJSON `json:"-"`
 }
 
@@ -1218,10 +1218,10 @@ func (r TransactionEventsEffectivePolarity) IsKnown() bool {
 // unless otherwise specified. Please consult the official network documentation
 // for more details about these fields and how to use them.
 type TransactionEventsNetworkInfo struct {
-	Acquirer   TransactionEventsNetworkInfoAcquirer   `json:"acquirer,required,nullable"`
-	Amex       TransactionEventsNetworkInfoAmex       `json:"amex,required,nullable"`
-	Mastercard TransactionEventsNetworkInfoMastercard `json:"mastercard,required,nullable"`
-	Visa       TransactionEventsNetworkInfoVisa       `json:"visa,required,nullable"`
+	Acquirer   TransactionEventsNetworkInfoAcquirer   `json:"acquirer" api:"required,nullable"`
+	Amex       TransactionEventsNetworkInfoAmex       `json:"amex" api:"required,nullable"`
+	Mastercard TransactionEventsNetworkInfoMastercard `json:"mastercard" api:"required,nullable"`
+	Visa       TransactionEventsNetworkInfoVisa       `json:"visa" api:"required,nullable"`
 	JSON       transactionEventsNetworkInfoJSON       `json:"-"`
 }
 
@@ -1250,9 +1250,9 @@ type TransactionEventsNetworkInfoAcquirer struct {
 	// has been cleared, and it is not available in all transactions (such as automated
 	// fuel dispenser transactions). A single transaction can contain multiple ARNs if
 	// the merchant sends multiple clearings.
-	AcquirerReferenceNumber string `json:"acquirer_reference_number,required,nullable"`
+	AcquirerReferenceNumber string `json:"acquirer_reference_number" api:"required,nullable"`
 	// Identifier assigned by the acquirer.
-	RetrievalReferenceNumber string                                   `json:"retrieval_reference_number,required,nullable"`
+	RetrievalReferenceNumber string                                   `json:"retrieval_reference_number" api:"required,nullable"`
 	JSON                     transactionEventsNetworkInfoAcquirerJSON `json:"-"`
 }
 
@@ -1278,11 +1278,11 @@ type TransactionEventsNetworkInfoAmex struct {
 	// related event. May be populated in incremental authorizations (authorization
 	// requests that augment a previously authorized amount), authorization advices,
 	// financial authorizations, and clearings.
-	OriginalTransactionID string `json:"original_transaction_id,required,nullable"`
+	OriginalTransactionID string `json:"original_transaction_id" api:"required,nullable"`
 	// Identifier assigned by American Express to link original messages to subsequent
 	// messages. Guaranteed by American Express to be unique for each original
 	// authorization and financial authorization.
-	TransactionID string                               `json:"transaction_id,required,nullable"`
+	TransactionID string                               `json:"transaction_id" api:"required,nullable"`
 	JSON          transactionEventsNetworkInfoAmexJSON `json:"-"`
 }
 
@@ -1306,7 +1306,7 @@ func (r transactionEventsNetworkInfoAmexJSON) RawJSON() string {
 type TransactionEventsNetworkInfoMastercard struct {
 	// Identifier assigned by Mastercard. Guaranteed by Mastercard to be unique for any
 	// transaction within a specific financial network on any processing day.
-	BanknetReferenceNumber string `json:"banknet_reference_number,required,nullable"`
+	BanknetReferenceNumber string `json:"banknet_reference_number" api:"required,nullable"`
 	// Identifier assigned by Mastercard. Matches the `banknet_reference_number` of a
 	// prior related event. May be populated in authorization reversals, incremental
 	// authorizations (authorization requests that augment a previously authorized
@@ -1318,14 +1318,14 @@ type TransactionEventsNetworkInfoMastercard struct {
 	// original banknet reference number in the resulting financial authorization with
 	// the banknet reference number of the initial authorization, which Lithic does not
 	// receive.
-	OriginalBanknetReferenceNumber string `json:"original_banknet_reference_number,required,nullable"`
+	OriginalBanknetReferenceNumber string `json:"original_banknet_reference_number" api:"required,nullable"`
 	// Identifier assigned by Mastercard. Matches the `switch_serial_number` of a prior
 	// related event. May be populated in returns and return reversals. Applicable to
 	// single-message transactions only.
-	OriginalSwitchSerialNumber string `json:"original_switch_serial_number,required,nullable"`
+	OriginalSwitchSerialNumber string `json:"original_switch_serial_number" api:"required,nullable"`
 	// Identifier assigned by Mastercard, applicable to single-message transactions
 	// only.
-	SwitchSerialNumber string                                     `json:"switch_serial_number,required,nullable"`
+	SwitchSerialNumber string                                     `json:"switch_serial_number" api:"required,nullable"`
 	JSON               transactionEventsNetworkInfoMastercardJSON `json:"-"`
 }
 
@@ -1353,11 +1353,11 @@ type TransactionEventsNetworkInfoVisa struct {
 	// event. May be populated in incremental authorizations (authorization requests
 	// that augment a previously authorized amount), authorization advices, financial
 	// authorizations, and clearings.
-	OriginalTransactionID string `json:"original_transaction_id,required,nullable"`
+	OriginalTransactionID string `json:"original_transaction_id" api:"required,nullable"`
 	// Identifier assigned by Visa to link original messages to subsequent messages.
 	// Guaranteed by Visa to be unique for each original authorization and financial
 	// authorization.
-	TransactionID string                               `json:"transaction_id,required,nullable"`
+	TransactionID string                               `json:"transaction_id" api:"required,nullable"`
 	JSON          transactionEventsNetworkInfoVisaJSON `json:"-"`
 }
 
@@ -1421,13 +1421,13 @@ type TransactionEventsRuleResult struct {
 	// If this is set to null, then the decline was not associated with a
 	// customer-configured Auth Rule. This may happen in cases where a transaction is
 	// declined due to a Lithic-configured security or compliance rule, for example.
-	AuthRuleToken string `json:"auth_rule_token,required,nullable" format:"uuid"`
+	AuthRuleToken string `json:"auth_rule_token" api:"required,nullable" format:"uuid"`
 	// A human-readable explanation outlining the motivation for the rule's decline.
-	Explanation string `json:"explanation,required,nullable"`
+	Explanation string `json:"explanation" api:"required,nullable"`
 	// The name for the rule, if any was configured.
-	Name string `json:"name,required,nullable"`
+	Name string `json:"name" api:"required,nullable"`
 	// The detailed_result associated with this rule's decline.
-	Result TransactionEventsRuleResultsResult `json:"result,required"`
+	Result TransactionEventsRuleResultsResult `json:"result" api:"required"`
 	JSON   transactionEventsRuleResultJSON    `json:"-"`
 }
 
@@ -1565,8 +1565,8 @@ func (r TransactionEventsAccountType) IsKnown() bool {
 }
 
 type TransactionEventsNetworkSpecificData struct {
-	Mastercard TransactionEventsNetworkSpecificDataMastercard `json:"mastercard,required"`
-	Visa       TransactionEventsNetworkSpecificDataVisa       `json:"visa,required"`
+	Mastercard TransactionEventsNetworkSpecificDataMastercard `json:"mastercard" api:"required"`
+	Visa       TransactionEventsNetworkSpecificDataVisa       `json:"visa" api:"required"`
 	JSON       transactionEventsNetworkSpecificDataJSON       `json:"-"`
 }
 
@@ -1589,13 +1589,13 @@ func (r transactionEventsNetworkSpecificDataJSON) RawJSON() string {
 
 type TransactionEventsNetworkSpecificDataMastercard struct {
 	// Indicates the electronic commerce security level and UCAF collection.
-	EcommerceSecurityLevelIndicator string `json:"ecommerce_security_level_indicator,required,nullable"`
+	EcommerceSecurityLevelIndicator string `json:"ecommerce_security_level_indicator" api:"required,nullable"`
 	// The On-behalf Service performed on the transaction and the results. Contains all
 	// applicable, on-behalf service results that were performed on a given
 	// transaction.
-	OnBehalfServiceResult []TransactionEventsNetworkSpecificDataMastercardOnBehalfServiceResult `json:"on_behalf_service_result,required,nullable"`
+	OnBehalfServiceResult []TransactionEventsNetworkSpecificDataMastercardOnBehalfServiceResult `json:"on_behalf_service_result" api:"required,nullable"`
 	// Indicates the type of additional transaction purpose.
-	TransactionTypeIdentifier string                                             `json:"transaction_type_identifier,required,nullable"`
+	TransactionTypeIdentifier string                                             `json:"transaction_type_identifier" api:"required,nullable"`
 	JSON                      transactionEventsNetworkSpecificDataMastercardJSON `json:"-"`
 }
 
@@ -1619,11 +1619,11 @@ func (r transactionEventsNetworkSpecificDataMastercardJSON) RawJSON() string {
 
 type TransactionEventsNetworkSpecificDataMastercardOnBehalfServiceResult struct {
 	// Indicates the results of the service processing.
-	Result1 string `json:"result_1,required"`
+	Result1 string `json:"result_1" api:"required"`
 	// Identifies the results of the service processing.
-	Result2 string `json:"result_2,required"`
+	Result2 string `json:"result_2" api:"required"`
 	// Indicates the service performed on the transaction.
-	Service string                                                                  `json:"service,required"`
+	Service string                                                                  `json:"service" api:"required"`
 	JSON    transactionEventsNetworkSpecificDataMastercardOnBehalfServiceResultJSON `json:"-"`
 }
 
@@ -1649,7 +1649,7 @@ func (r transactionEventsNetworkSpecificDataMastercardOnBehalfServiceResultJSON)
 type TransactionEventsNetworkSpecificDataVisa struct {
 	// Identifies the purpose or category of a transaction, used to classify and
 	// process transactions according to Visa’s rules.
-	BusinessApplicationIdentifier string                                       `json:"business_application_identifier,required,nullable"`
+	BusinessApplicationIdentifier string                                       `json:"business_application_identifier" api:"required,nullable"`
 	JSON                          transactionEventsNetworkSpecificDataVisaJSON `json:"-"`
 }
 
@@ -1937,11 +1937,11 @@ type TransactionSimulateAuthorizationParams struct {
 	// the simulated transaction. For example, entering 100 in this field will result
 	// in a -100 amount in the transaction. For balance inquiries, this field must be
 	// set to 0.
-	Amount param.Field[int64] `json:"amount,required"`
+	Amount param.Field[int64] `json:"amount" api:"required"`
 	// Merchant descriptor.
-	Descriptor param.Field[string] `json:"descriptor,required"`
+	Descriptor param.Field[string] `json:"descriptor" api:"required"`
 	// Sixteen digit card number.
-	Pan param.Field[string] `json:"pan,required"`
+	Pan param.Field[string] `json:"pan" api:"required"`
 	// Merchant category code for the transaction to be simulated. A four-digit number
 	// listed in ISO 18245. Supported merchant category codes can be found
 	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
@@ -2025,10 +2025,10 @@ func (r TransactionSimulateAuthorizationParamsStatus) IsKnown() bool {
 
 type TransactionSimulateAuthorizationAdviceParams struct {
 	// The transaction token returned from the /v1/simulate/authorize. response.
-	Token param.Field[string] `json:"token,required" format:"uuid"`
+	Token param.Field[string] `json:"token" api:"required" format:"uuid"`
 	// Amount (in cents) to authorize. This amount will override the transaction's
 	// amount that was originally set by /v1/simulate/authorize.
-	Amount param.Field[int64] `json:"amount,required"`
+	Amount param.Field[int64] `json:"amount" api:"required"`
 }
 
 func (r TransactionSimulateAuthorizationAdviceParams) MarshalJSON() (data []byte, err error) {
@@ -2037,7 +2037,7 @@ func (r TransactionSimulateAuthorizationAdviceParams) MarshalJSON() (data []byte
 
 type TransactionSimulateClearingParams struct {
 	// The transaction token returned from the /v1/simulate/authorize response.
-	Token param.Field[string] `json:"token,required" format:"uuid"`
+	Token param.Field[string] `json:"token" api:"required" format:"uuid"`
 	// Amount (in cents) to clear. Typically this will match the amount in the original
 	// authorization, but can be higher or lower. The sign of this amount will
 	// automatically match the sign of the original authorization's amount. For
@@ -2058,11 +2058,11 @@ type TransactionSimulateCreditAuthorizationParams struct {
 	// Amount (in cents). Any value entered will be converted into a negative amount in
 	// the simulated transaction. For example, entering 100 in this field will appear
 	// as a -100 amount in the transaction.
-	Amount param.Field[int64] `json:"amount,required"`
+	Amount param.Field[int64] `json:"amount" api:"required"`
 	// Merchant descriptor.
-	Descriptor param.Field[string] `json:"descriptor,required"`
+	Descriptor param.Field[string] `json:"descriptor" api:"required"`
 	// Sixteen digit card number.
-	Pan param.Field[string] `json:"pan,required"`
+	Pan param.Field[string] `json:"pan" api:"required"`
 	// Merchant category code for the transaction to be simulated. A four-digit number
 	// listed in ISO 18245. Supported merchant category codes can be found
 	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
@@ -2085,11 +2085,11 @@ type TransactionSimulateCreditAuthorizationAdviceParams struct {
 	// Amount (in cents). Any value entered will be converted into a negative amount in
 	// the simulated transaction. For example, entering 100 in this field will appear
 	// as a -100 amount in the transaction.
-	Amount param.Field[int64] `json:"amount,required"`
+	Amount param.Field[int64] `json:"amount" api:"required"`
 	// Merchant descriptor.
-	Descriptor param.Field[string] `json:"descriptor,required"`
+	Descriptor param.Field[string] `json:"descriptor" api:"required"`
 	// Sixteen digit card number.
-	Pan param.Field[string] `json:"pan,required"`
+	Pan param.Field[string] `json:"pan" api:"required"`
 	// Merchant category code for the transaction to be simulated. A four-digit number
 	// listed in ISO 18245. Supported merchant category codes can be found
 	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
@@ -2110,11 +2110,11 @@ func (r TransactionSimulateCreditAuthorizationAdviceParams) MarshalJSON() (data 
 
 type TransactionSimulateReturnParams struct {
 	// Amount (in cents) to authorize.
-	Amount param.Field[int64] `json:"amount,required"`
+	Amount param.Field[int64] `json:"amount" api:"required"`
 	// Merchant descriptor.
-	Descriptor param.Field[string] `json:"descriptor,required"`
+	Descriptor param.Field[string] `json:"descriptor" api:"required"`
 	// Sixteen digit card number.
-	Pan param.Field[string] `json:"pan,required"`
+	Pan param.Field[string] `json:"pan" api:"required"`
 }
 
 func (r TransactionSimulateReturnParams) MarshalJSON() (data []byte, err error) {
@@ -2123,7 +2123,7 @@ func (r TransactionSimulateReturnParams) MarshalJSON() (data []byte, err error) 
 
 type TransactionSimulateReturnReversalParams struct {
 	// The transaction token returned from the /v1/simulate/authorize response.
-	Token param.Field[string] `json:"token,required" format:"uuid"`
+	Token param.Field[string] `json:"token" api:"required" format:"uuid"`
 }
 
 func (r TransactionSimulateReturnReversalParams) MarshalJSON() (data []byte, err error) {
@@ -2132,7 +2132,7 @@ func (r TransactionSimulateReturnReversalParams) MarshalJSON() (data []byte, err
 
 type TransactionSimulateVoidParams struct {
 	// The transaction token returned from the /v1/simulate/authorize response.
-	Token param.Field[string] `json:"token,required" format:"uuid"`
+	Token param.Field[string] `json:"token" api:"required" format:"uuid"`
 	// Amount (in cents) to void. Typically this will match the amount in the original
 	// authorization, but can be less. Applies to authorization reversals only. An
 	// authorization expiry will always apply to the full pending amount.

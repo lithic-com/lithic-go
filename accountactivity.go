@@ -78,13 +78,13 @@ func (r *AccountActivityService) GetTransaction(ctx context.Context, transaction
 
 type WirePartyDetails struct {
 	// Account number
-	AccountNumber string `json:"account_number,nullable"`
+	AccountNumber string `json:"account_number" api:"nullable"`
 	// Routing number or BIC of the financial institution
-	AgentID string `json:"agent_id,nullable"`
+	AgentID string `json:"agent_id" api:"nullable"`
 	// Name of the financial institution
-	AgentName string `json:"agent_name,nullable"`
+	AgentName string `json:"agent_name" api:"nullable"`
 	// Name of the person or company
-	Name string               `json:"name,nullable"`
+	Name string               `json:"name" api:"nullable"`
 	JSON wirePartyDetailsJSON `json:"-"`
 }
 
@@ -114,25 +114,25 @@ func (r wirePartyDetailsJSON) RawJSON() string {
 // and MANAGEMENT_OPERATION returns ManagementOperationTransaction
 type AccountActivityListResponse struct {
 	// Unique identifier for the transaction
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// ISO 8601 timestamp of when the transaction was created
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// The status of the transaction
-	Status AccountActivityListResponseStatus `json:"status,required"`
+	Status AccountActivityListResponseStatus `json:"status" api:"required"`
 	// ISO 8601 timestamp of when the transaction was last updated
-	Updated time.Time `json:"updated,required" format:"date-time"`
+	Updated time.Time `json:"updated" api:"required" format:"date-time"`
 	// The token for the account associated with this transaction.
 	AccountToken string `json:"account_token" format:"uuid"`
 	// Fee assessed by the merchant and paid for by the cardholder in the smallest unit
 	// of the currency. Will be zero if no fee is assessed. Rebates may be transmitted
 	// as a negative value to indicate credited fees.
-	AcquirerFee int64 `json:"acquirer_fee,nullable"`
+	AcquirerFee int64 `json:"acquirer_fee" api:"nullable"`
 	// Unique identifier assigned to a transaction by the acquirer that can be used in
 	// dispute and chargeback filing. This field has been deprecated in favor of the
 	// `acquirer_reference_number` that resides in the event-level `network_info`.
 	//
 	// Deprecated: deprecated
-	AcquirerReferenceNumber string `json:"acquirer_reference_number,nullable"`
+	AcquirerReferenceNumber string `json:"acquirer_reference_number" api:"nullable"`
 	// When the transaction is pending, this represents the authorization amount of the
 	// transaction in the anticipated settlement currency. Once the transaction has
 	// settled, this field represents the settled amount in the settlement currency.
@@ -145,15 +145,15 @@ type AccountActivityListResponse struct {
 	// currency.
 	//
 	// Deprecated: deprecated
-	AuthorizationAmount int64 `json:"authorization_amount,nullable"`
+	AuthorizationAmount int64 `json:"authorization_amount" api:"nullable"`
 	// A fixed-width 6-digit numeric identifier that can be used to identify a
 	// transaction with networks.
-	AuthorizationCode string `json:"authorization_code,nullable"`
+	AuthorizationCode string `json:"authorization_code" api:"nullable"`
 	// This field can have the runtime type of [TransactionAvs].
 	Avs interface{} `json:"avs"`
 	// Token for the card used in this transaction.
 	CardToken                string                   `json:"card_token" format:"uuid"`
-	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication,nullable"`
+	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication" api:"nullable"`
 	// Transaction category
 	Category AccountActivityListResponseCategory `json:"category"`
 	// Currency of the transaction, represented in ISO 4217 format
@@ -167,17 +167,17 @@ type AccountActivityListResponse struct {
 	// [[]ExternalPaymentEvent], [[]ManagementOperationTransactionEvent].
 	Events interface{} `json:"events"`
 	// Expected release date for the transaction
-	ExpectedReleaseDate time.Time `json:"expected_release_date,nullable" format:"date"`
+	ExpectedReleaseDate time.Time `json:"expected_release_date" api:"nullable" format:"date"`
 	// External bank account token
-	ExternalBankAccountToken string `json:"external_bank_account_token,nullable" format:"uuid"`
+	ExternalBankAccountToken string `json:"external_bank_account_token" api:"nullable" format:"uuid"`
 	// External ID defined by the customer
-	ExternalID string `json:"external_id,nullable"`
+	ExternalID string `json:"external_id" api:"nullable"`
 	// External resource associated with the management operation
-	ExternalResource ExternalResource `json:"external_resource,nullable"`
+	ExternalResource ExternalResource `json:"external_resource" api:"nullable"`
 	// INTERNAL - Financial Transaction
 	Family AccountActivityListResponseFamily `json:"family"`
 	// Financial account token associated with the transaction
-	FinancialAccountToken string `json:"financial_account_token,nullable" format:"uuid"`
+	FinancialAccountToken string `json:"financial_account_token" api:"nullable" format:"uuid"`
 	// Globally unique identifier for the financial account or card that will send the
 	// funds. Accepted type dependent on the program's use case
 	FromFinancialAccountToken string          `json:"from_financial_account_token" format:"uuid"`
@@ -185,11 +185,11 @@ type AccountActivityListResponse struct {
 	// Analogous to the 'amount', but in the merchant currency.
 	//
 	// Deprecated: deprecated
-	MerchantAmount int64 `json:"merchant_amount,nullable"`
+	MerchantAmount int64 `json:"merchant_amount" api:"nullable"`
 	// Analogous to the 'authorization_amount', but in the merchant currency.
 	//
 	// Deprecated: deprecated
-	MerchantAuthorizationAmount int64 `json:"merchant_authorization_amount,nullable"`
+	MerchantAuthorizationAmount int64 `json:"merchant_authorization_amount" api:"nullable"`
 	// 3-character alphabetic ISO 4217 code for the local currency of the transaction.
 	//
 	// Deprecated: deprecated
@@ -200,13 +200,13 @@ type AccountActivityListResponse struct {
 	MethodAttributes interface{} `json:"method_attributes"`
 	// Card network of the authorization. Value is `UNKNOWN` when Lithic cannot
 	// determine the network code from the upstream provider.
-	Network AccountActivityListResponseNetwork `json:"network,nullable"`
+	Network AccountActivityListResponseNetwork `json:"network" api:"nullable"`
 	// Network-provided score assessing risk level associated with a given
 	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
 	// risk and 999 representing the highest risk. For Visa transactions, where the raw
 	// score has a range of 0-99, Lithic will normalize the score by multiplying the
 	// raw score by 10x.
-	NetworkRiskScore int64                                  `json:"network_risk_score,nullable"`
+	NetworkRiskScore int64                                  `json:"network_risk_score" api:"nullable"`
 	PaymentType      AccountActivityListResponsePaymentType `json:"payment_type"`
 	// Pending amount in cents
 	PendingAmount int64 `json:"pending_amount"`
@@ -225,13 +225,13 @@ type AccountActivityListResponse struct {
 	// Globally unique identifier for the financial account or card that will receive
 	// the funds. Accepted type dependent on the program's use case
 	ToFinancialAccountToken string    `json:"to_financial_account_token" format:"uuid"`
-	TokenInfo               TokenInfo `json:"token_info,nullable"`
+	TokenInfo               TokenInfo `json:"token_info" api:"nullable"`
 	// This field can have the runtime type of [BookTransferResponseTransactionSeries],
 	// [ManagementOperationTransactionTransactionSeries].
 	TransactionSeries interface{}                     `json:"transaction_series"`
 	Type              AccountActivityListResponseType `json:"type"`
 	// User-defined identifier
-	UserDefinedID string                          `json:"user_defined_id,nullable"`
+	UserDefinedID string                          `json:"user_defined_id" api:"nullable"`
 	JSON          accountActivityListResponseJSON `json:"-"`
 	union         AccountActivityListResponseUnion
 }
@@ -367,31 +367,31 @@ func init() {
 // Financial transaction with inheritance from unified base transaction
 type AccountActivityListResponseFinancialTransaction struct {
 	// Unique identifier for the transaction
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Transaction category
-	Category AccountActivityListResponseFinancialTransactionCategory `json:"category,required"`
+	Category AccountActivityListResponseFinancialTransactionCategory `json:"category" api:"required"`
 	// ISO 8601 timestamp of when the transaction was created
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Currency of the transaction, represented in ISO 4217 format
-	Currency string `json:"currency,required"`
+	Currency string `json:"currency" api:"required"`
 	// Transaction descriptor
-	Descriptor string `json:"descriptor,required"`
+	Descriptor string `json:"descriptor" api:"required"`
 	// List of transaction events
-	Events []shared.FinancialEvent `json:"events,required"`
+	Events []shared.FinancialEvent `json:"events" api:"required"`
 	// INTERNAL - Financial Transaction
-	Family AccountActivityListResponseFinancialTransactionFamily `json:"family,required"`
+	Family AccountActivityListResponseFinancialTransactionFamily `json:"family" api:"required"`
 	// Financial account token associated with the transaction
-	FinancialAccountToken string `json:"financial_account_token,required" format:"uuid"`
+	FinancialAccountToken string `json:"financial_account_token" api:"required" format:"uuid"`
 	// Pending amount in cents
-	PendingAmount int64 `json:"pending_amount,required"`
+	PendingAmount int64 `json:"pending_amount" api:"required"`
 	// Transaction result
-	Result AccountActivityListResponseFinancialTransactionResult `json:"result,required"`
+	Result AccountActivityListResponseFinancialTransactionResult `json:"result" api:"required"`
 	// Settled amount in cents
-	SettledAmount int64 `json:"settled_amount,required"`
+	SettledAmount int64 `json:"settled_amount" api:"required"`
 	// The status of the transaction
-	Status AccountActivityListResponseFinancialTransactionStatus `json:"status,required"`
+	Status AccountActivityListResponseFinancialTransactionStatus `json:"status" api:"required"`
 	// ISO 8601 timestamp of when the transaction was last updated
-	Updated time.Time                                           `json:"updated,required" format:"date-time"`
+	Updated time.Time                                           `json:"updated" api:"required" format:"date-time"`
 	JSON    accountActivityListResponseFinancialTransactionJSON `json:"-"`
 }
 
@@ -513,15 +513,15 @@ func (r AccountActivityListResponseFinancialTransactionStatus) IsKnown() bool {
 // Card transaction with ledger base properties
 type AccountActivityListResponseCardTransaction struct {
 	// Unique identifier for the transaction
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// ISO 8601 timestamp of when the transaction was created
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// CARD - Card Transaction
-	Family AccountActivityListResponseCardTransactionFamily `json:"family,required"`
+	Family AccountActivityListResponseCardTransactionFamily `json:"family" api:"required"`
 	// The status of the transaction
-	Status AccountActivityListResponseCardTransactionStatus `json:"status,required"`
+	Status AccountActivityListResponseCardTransactionStatus `json:"status" api:"required"`
 	// ISO 8601 timestamp of when the transaction was last updated
-	Updated time.Time                                      `json:"updated,required" format:"date-time"`
+	Updated time.Time                                      `json:"updated" api:"required" format:"date-time"`
 	JSON    accountActivityListResponseCardTransactionJSON `json:"-"`
 	Transaction
 }
@@ -815,25 +815,25 @@ func (r AccountActivityListResponseType) IsKnown() bool {
 // and MANAGEMENT_OPERATION returns ManagementOperationTransaction
 type AccountActivityGetTransactionResponse struct {
 	// Unique identifier for the transaction
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// ISO 8601 timestamp of when the transaction was created
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// The status of the transaction
-	Status AccountActivityGetTransactionResponseStatus `json:"status,required"`
+	Status AccountActivityGetTransactionResponseStatus `json:"status" api:"required"`
 	// ISO 8601 timestamp of when the transaction was last updated
-	Updated time.Time `json:"updated,required" format:"date-time"`
+	Updated time.Time `json:"updated" api:"required" format:"date-time"`
 	// The token for the account associated with this transaction.
 	AccountToken string `json:"account_token" format:"uuid"`
 	// Fee assessed by the merchant and paid for by the cardholder in the smallest unit
 	// of the currency. Will be zero if no fee is assessed. Rebates may be transmitted
 	// as a negative value to indicate credited fees.
-	AcquirerFee int64 `json:"acquirer_fee,nullable"`
+	AcquirerFee int64 `json:"acquirer_fee" api:"nullable"`
 	// Unique identifier assigned to a transaction by the acquirer that can be used in
 	// dispute and chargeback filing. This field has been deprecated in favor of the
 	// `acquirer_reference_number` that resides in the event-level `network_info`.
 	//
 	// Deprecated: deprecated
-	AcquirerReferenceNumber string `json:"acquirer_reference_number,nullable"`
+	AcquirerReferenceNumber string `json:"acquirer_reference_number" api:"nullable"`
 	// When the transaction is pending, this represents the authorization amount of the
 	// transaction in the anticipated settlement currency. Once the transaction has
 	// settled, this field represents the settled amount in the settlement currency.
@@ -846,15 +846,15 @@ type AccountActivityGetTransactionResponse struct {
 	// currency.
 	//
 	// Deprecated: deprecated
-	AuthorizationAmount int64 `json:"authorization_amount,nullable"`
+	AuthorizationAmount int64 `json:"authorization_amount" api:"nullable"`
 	// A fixed-width 6-digit numeric identifier that can be used to identify a
 	// transaction with networks.
-	AuthorizationCode string `json:"authorization_code,nullable"`
+	AuthorizationCode string `json:"authorization_code" api:"nullable"`
 	// This field can have the runtime type of [TransactionAvs].
 	Avs interface{} `json:"avs"`
 	// Token for the card used in this transaction.
 	CardToken                string                   `json:"card_token" format:"uuid"`
-	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication,nullable"`
+	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication" api:"nullable"`
 	// Transaction category
 	Category AccountActivityGetTransactionResponseCategory `json:"category"`
 	// Currency of the transaction, represented in ISO 4217 format
@@ -868,17 +868,17 @@ type AccountActivityGetTransactionResponse struct {
 	// [[]ExternalPaymentEvent], [[]ManagementOperationTransactionEvent].
 	Events interface{} `json:"events"`
 	// Expected release date for the transaction
-	ExpectedReleaseDate time.Time `json:"expected_release_date,nullable" format:"date"`
+	ExpectedReleaseDate time.Time `json:"expected_release_date" api:"nullable" format:"date"`
 	// External bank account token
-	ExternalBankAccountToken string `json:"external_bank_account_token,nullable" format:"uuid"`
+	ExternalBankAccountToken string `json:"external_bank_account_token" api:"nullable" format:"uuid"`
 	// External ID defined by the customer
-	ExternalID string `json:"external_id,nullable"`
+	ExternalID string `json:"external_id" api:"nullable"`
 	// External resource associated with the management operation
-	ExternalResource ExternalResource `json:"external_resource,nullable"`
+	ExternalResource ExternalResource `json:"external_resource" api:"nullable"`
 	// INTERNAL - Financial Transaction
 	Family AccountActivityGetTransactionResponseFamily `json:"family"`
 	// Financial account token associated with the transaction
-	FinancialAccountToken string `json:"financial_account_token,nullable" format:"uuid"`
+	FinancialAccountToken string `json:"financial_account_token" api:"nullable" format:"uuid"`
 	// Globally unique identifier for the financial account or card that will send the
 	// funds. Accepted type dependent on the program's use case
 	FromFinancialAccountToken string          `json:"from_financial_account_token" format:"uuid"`
@@ -886,11 +886,11 @@ type AccountActivityGetTransactionResponse struct {
 	// Analogous to the 'amount', but in the merchant currency.
 	//
 	// Deprecated: deprecated
-	MerchantAmount int64 `json:"merchant_amount,nullable"`
+	MerchantAmount int64 `json:"merchant_amount" api:"nullable"`
 	// Analogous to the 'authorization_amount', but in the merchant currency.
 	//
 	// Deprecated: deprecated
-	MerchantAuthorizationAmount int64 `json:"merchant_authorization_amount,nullable"`
+	MerchantAuthorizationAmount int64 `json:"merchant_authorization_amount" api:"nullable"`
 	// 3-character alphabetic ISO 4217 code for the local currency of the transaction.
 	//
 	// Deprecated: deprecated
@@ -901,13 +901,13 @@ type AccountActivityGetTransactionResponse struct {
 	MethodAttributes interface{} `json:"method_attributes"`
 	// Card network of the authorization. Value is `UNKNOWN` when Lithic cannot
 	// determine the network code from the upstream provider.
-	Network AccountActivityGetTransactionResponseNetwork `json:"network,nullable"`
+	Network AccountActivityGetTransactionResponseNetwork `json:"network" api:"nullable"`
 	// Network-provided score assessing risk level associated with a given
 	// authorization. Scores are on a range of 0-999, with 0 representing the lowest
 	// risk and 999 representing the highest risk. For Visa transactions, where the raw
 	// score has a range of 0-99, Lithic will normalize the score by multiplying the
 	// raw score by 10x.
-	NetworkRiskScore int64                                            `json:"network_risk_score,nullable"`
+	NetworkRiskScore int64                                            `json:"network_risk_score" api:"nullable"`
 	PaymentType      AccountActivityGetTransactionResponsePaymentType `json:"payment_type"`
 	// Pending amount in cents
 	PendingAmount int64 `json:"pending_amount"`
@@ -926,13 +926,13 @@ type AccountActivityGetTransactionResponse struct {
 	// Globally unique identifier for the financial account or card that will receive
 	// the funds. Accepted type dependent on the program's use case
 	ToFinancialAccountToken string    `json:"to_financial_account_token" format:"uuid"`
-	TokenInfo               TokenInfo `json:"token_info,nullable"`
+	TokenInfo               TokenInfo `json:"token_info" api:"nullable"`
 	// This field can have the runtime type of [BookTransferResponseTransactionSeries],
 	// [ManagementOperationTransactionTransactionSeries].
 	TransactionSeries interface{}                               `json:"transaction_series"`
 	Type              AccountActivityGetTransactionResponseType `json:"type"`
 	// User-defined identifier
-	UserDefinedID string                                    `json:"user_defined_id,nullable"`
+	UserDefinedID string                                    `json:"user_defined_id" api:"nullable"`
 	JSON          accountActivityGetTransactionResponseJSON `json:"-"`
 	union         AccountActivityGetTransactionResponseUnion
 }
@@ -1068,31 +1068,31 @@ func init() {
 // Financial transaction with inheritance from unified base transaction
 type AccountActivityGetTransactionResponseFinancialTransaction struct {
 	// Unique identifier for the transaction
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Transaction category
-	Category AccountActivityGetTransactionResponseFinancialTransactionCategory `json:"category,required"`
+	Category AccountActivityGetTransactionResponseFinancialTransactionCategory `json:"category" api:"required"`
 	// ISO 8601 timestamp of when the transaction was created
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Currency of the transaction, represented in ISO 4217 format
-	Currency string `json:"currency,required"`
+	Currency string `json:"currency" api:"required"`
 	// Transaction descriptor
-	Descriptor string `json:"descriptor,required"`
+	Descriptor string `json:"descriptor" api:"required"`
 	// List of transaction events
-	Events []shared.FinancialEvent `json:"events,required"`
+	Events []shared.FinancialEvent `json:"events" api:"required"`
 	// INTERNAL - Financial Transaction
-	Family AccountActivityGetTransactionResponseFinancialTransactionFamily `json:"family,required"`
+	Family AccountActivityGetTransactionResponseFinancialTransactionFamily `json:"family" api:"required"`
 	// Financial account token associated with the transaction
-	FinancialAccountToken string `json:"financial_account_token,required" format:"uuid"`
+	FinancialAccountToken string `json:"financial_account_token" api:"required" format:"uuid"`
 	// Pending amount in cents
-	PendingAmount int64 `json:"pending_amount,required"`
+	PendingAmount int64 `json:"pending_amount" api:"required"`
 	// Transaction result
-	Result AccountActivityGetTransactionResponseFinancialTransactionResult `json:"result,required"`
+	Result AccountActivityGetTransactionResponseFinancialTransactionResult `json:"result" api:"required"`
 	// Settled amount in cents
-	SettledAmount int64 `json:"settled_amount,required"`
+	SettledAmount int64 `json:"settled_amount" api:"required"`
 	// The status of the transaction
-	Status AccountActivityGetTransactionResponseFinancialTransactionStatus `json:"status,required"`
+	Status AccountActivityGetTransactionResponseFinancialTransactionStatus `json:"status" api:"required"`
 	// ISO 8601 timestamp of when the transaction was last updated
-	Updated time.Time                                                     `json:"updated,required" format:"date-time"`
+	Updated time.Time                                                     `json:"updated" api:"required" format:"date-time"`
 	JSON    accountActivityGetTransactionResponseFinancialTransactionJSON `json:"-"`
 }
 
@@ -1216,15 +1216,15 @@ func (r AccountActivityGetTransactionResponseFinancialTransactionStatus) IsKnown
 // Card transaction with ledger base properties
 type AccountActivityGetTransactionResponseCardTransaction struct {
 	// Unique identifier for the transaction
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// ISO 8601 timestamp of when the transaction was created
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// CARD - Card Transaction
-	Family AccountActivityGetTransactionResponseCardTransactionFamily `json:"family,required"`
+	Family AccountActivityGetTransactionResponseCardTransactionFamily `json:"family" api:"required"`
 	// The status of the transaction
-	Status AccountActivityGetTransactionResponseCardTransactionStatus `json:"status,required"`
+	Status AccountActivityGetTransactionResponseCardTransactionStatus `json:"status" api:"required"`
 	// ISO 8601 timestamp of when the transaction was last updated
-	Updated time.Time                                                `json:"updated,required" format:"date-time"`
+	Updated time.Time                                                `json:"updated" api:"required" format:"date-time"`
 	JSON    accountActivityGetTransactionResponseCardTransactionJSON `json:"-"`
 	Transaction
 }

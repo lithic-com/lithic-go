@@ -32,32 +32,32 @@ func NewReportService(opts ...option.RequestOption) (r *ReportService) {
 
 type NetworkTotal struct {
 	// Globally unique identifier.
-	Token   string              `json:"token,required" format:"uuid"`
-	Amounts NetworkTotalAmounts `json:"amounts,required"`
+	Token   string              `json:"token" api:"required" format:"uuid"`
+	Amounts NetworkTotalAmounts `json:"amounts" api:"required"`
 	// RFC 3339 timestamp for when the record was created. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// 3-character alphabetic ISO 4217 code.
-	Currency string `json:"currency,required"`
+	Currency string `json:"currency" api:"required"`
 	// The institution that activity occurred on. For Mastercard: ICA (Interbank Card
 	// Association). For Maestro: institution ID. For Visa: lowest level SRE
 	// (Settlement Reporting Entity).
-	InstitutionID string `json:"institution_id,required"`
+	InstitutionID string `json:"institution_id" api:"required"`
 	// Indicates that all settlement records related to this Network Total are
 	// available in the details endpoint.
-	IsComplete bool `json:"is_complete,required"`
+	IsComplete bool `json:"is_complete" api:"required"`
 	// Card network where the transaction took place. AMEX, VISA, MASTERCARD, MAESTRO,
 	// or INTERLINK.
-	Network NetworkTotalNetwork `json:"network,required"`
+	Network NetworkTotalNetwork `json:"network" api:"required"`
 	// Date that the network total record applies to. YYYY-MM-DD format.
-	ReportDate time.Time `json:"report_date,required" format:"date"`
+	ReportDate time.Time `json:"report_date" api:"required" format:"date"`
 	// The institution responsible for settlement. For Mastercard: same as
 	// `institution_id`. For Maestro: billing ICA. For Visa: Funds Transfer SRE
 	// (FTSRE).
-	SettlementInstitutionID string `json:"settlement_institution_id,required"`
+	SettlementInstitutionID string `json:"settlement_institution_id" api:"required"`
 	// Settlement service.
-	SettlementService string `json:"settlement_service,required"`
+	SettlementService string `json:"settlement_service" api:"required"`
 	// RFC 3339 timestamp for when the record was last updated. UTC time zone.
-	Updated time.Time `json:"updated,required" format:"date-time"`
+	Updated time.Time `json:"updated" api:"required" format:"date-time"`
 	// The clearing cycle that the network total record applies to. Mastercard only.
 	Cycle int64            `json:"cycle"`
 	JSON  networkTotalJSON `json:"-"`
@@ -91,12 +91,12 @@ func (r networkTotalJSON) RawJSON() string {
 
 type NetworkTotalAmounts struct {
 	// Total settlement amount excluding interchange, in currency's smallest unit.
-	GrossSettlement int64 `json:"gross_settlement,required"`
+	GrossSettlement int64 `json:"gross_settlement" api:"required"`
 	// Interchange amount, in currency's smallest unit.
-	InterchangeFees int64 `json:"interchange_fees,required"`
+	InterchangeFees int64 `json:"interchange_fees" api:"required"`
 	// `gross_settlement` net of `interchange_fees` and `visa_charges` (if applicable),
 	// in currency's smallest unit.
-	NetSettlement int64 `json:"net_settlement,required"`
+	NetSettlement int64 `json:"net_settlement" api:"required"`
 	// Charges specific to Visa/Interlink, in currency's smallest unit.
 	VisaCharges int64                   `json:"visa_charges"`
 	JSON        networkTotalAmountsJSON `json:"-"`
@@ -143,52 +143,52 @@ func (r NetworkTotalNetwork) IsKnown() bool {
 
 type SettlementDetail struct {
 	// Globally unique identifier denoting the Settlement Detail.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Globally unique identifier denoting the account that the associated transaction
 	// occurred on.
-	AccountToken string `json:"account_token,required" format:"uuid"`
+	AccountToken string `json:"account_token" api:"required" format:"uuid"`
 	// Globally unique identifier denoting the card program that the associated
 	// transaction occurred on.
-	CardProgramToken string `json:"card_program_token,required" format:"uuid"`
+	CardProgramToken string `json:"card_program_token" api:"required" format:"uuid"`
 	// Globally unique identifier denoting the card that the associated transaction
 	// occurred on.
-	CardToken string `json:"card_token,required" format:"uuid"`
+	CardToken string `json:"card_token" api:"required" format:"uuid"`
 	// Date and time when the transaction first occurred. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Three-character alphabetic ISO 4217 code.
-	Currency string `json:"currency,required"`
+	Currency string `json:"currency" api:"required"`
 	// The total gross amount of disputes settlements.
-	DisputesGrossAmount int64 `json:"disputes_gross_amount,required"`
+	DisputesGrossAmount int64 `json:"disputes_gross_amount" api:"required"`
 	// Globally unique identifiers denoting the Events associated with this settlement.
-	EventTokens []string `json:"event_tokens,required"`
+	EventTokens []string `json:"event_tokens" api:"required"`
 	// The most granular ID the network settles with (e.g., ICA for Mastercard, FTSRE
 	// for Visa).
-	Institution string `json:"institution,required"`
+	Institution string `json:"institution" api:"required"`
 	// The total amount of interchange in six-digit extended precision.
-	InterchangeFeeExtendedPrecision int64 `json:"interchange_fee_extended_precision,required"`
+	InterchangeFeeExtendedPrecision int64 `json:"interchange_fee_extended_precision" api:"required"`
 	// The total amount of interchange.
-	InterchangeGrossAmount int64 `json:"interchange_gross_amount,required"`
+	InterchangeGrossAmount int64 `json:"interchange_gross_amount" api:"required"`
 	// Card network where the transaction took place.
-	Network SettlementDetailNetwork `json:"network,required"`
+	Network SettlementDetailNetwork `json:"network" api:"required"`
 	// The total gross amount of other fees by type.
-	OtherFeesDetails SettlementDetailOtherFeesDetails `json:"other_fees_details,required"`
+	OtherFeesDetails SettlementDetailOtherFeesDetails `json:"other_fees_details" api:"required"`
 	// Total amount of gross other fees outside of interchange.
-	OtherFeesGrossAmount int64 `json:"other_fees_gross_amount,required"`
+	OtherFeesGrossAmount int64 `json:"other_fees_gross_amount" api:"required"`
 	// Date of when the report was first generated.
-	ReportDate string `json:"report_date,required"`
+	ReportDate string `json:"report_date" api:"required"`
 	// Date of when money movement is triggered for the transaction. One exception
 	// applies - for Mastercard dual message settlement, this is the settlement
 	// advisement date, which is distinct from the date of money movement.
-	SettlementDate string `json:"settlement_date,required"`
+	SettlementDate string `json:"settlement_date" api:"required"`
 	// Globally unique identifier denoting the associated Transaction object.
-	TransactionToken string `json:"transaction_token,required" format:"uuid"`
+	TransactionToken string `json:"transaction_token" api:"required" format:"uuid"`
 	// The total amount of settlement impacting transactions (excluding interchange,
 	// fees, and disputes).
-	TransactionsGrossAmount int64 `json:"transactions_gross_amount,required"`
+	TransactionsGrossAmount int64 `json:"transactions_gross_amount" api:"required"`
 	// The type of settlement record.
-	Type SettlementDetailType `json:"type,required"`
+	Type SettlementDetailType `json:"type" api:"required"`
 	// Date and time when the transaction first occurred. UTC time zone.
-	Updated time.Time `json:"updated,required" format:"date-time"`
+	Updated time.Time `json:"updated" api:"required" format:"date-time"`
 	// Network's description of a fee, only present on records with type `FEE`.
 	FeeDescription string               `json:"fee_description"`
 	JSON           settlementDetailJSON `json:"-"`
@@ -297,53 +297,53 @@ func (r SettlementDetailType) IsKnown() bool {
 
 type SettlementReport struct {
 	// Date and time when the transaction first occurred. UTC time zone.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// 3-character alphabetic ISO 4217 code. (This field is deprecated and will be
 	// removed in a future version of the API.)
 	//
 	// Deprecated: deprecated
-	Currency string                     `json:"currency,required"`
-	Details  []SettlementSummaryDetails `json:"details,required"`
+	Currency string                     `json:"currency" api:"required"`
+	Details  []SettlementSummaryDetails `json:"details" api:"required"`
 	// The total gross amount of disputes settlements. (This field is deprecated and
 	// will be removed in a future version of the API. To compute total amounts, Lithic
 	// recommends that customers sum the relevant settlement amounts found within
 	// `details`.)
 	//
 	// Deprecated: deprecated
-	DisputesGrossAmount int64 `json:"disputes_gross_amount,required"`
+	DisputesGrossAmount int64 `json:"disputes_gross_amount" api:"required"`
 	// The total amount of interchange. (This field is deprecated and will be removed
 	// in a future version of the API. To compute total amounts, Lithic recommends that
 	// customers sum the relevant settlement amounts found within `details`.)
 	//
 	// Deprecated: deprecated
-	InterchangeGrossAmount int64 `json:"interchange_gross_amount,required"`
+	InterchangeGrossAmount int64 `json:"interchange_gross_amount" api:"required"`
 	// Indicates that all data expected on the given report date is available.
-	IsComplete bool `json:"is_complete,required"`
+	IsComplete bool `json:"is_complete" api:"required"`
 	// Total amount of gross other fees outside of interchange. (This field is
 	// deprecated and will be removed in a future version of the API. To compute total
 	// amounts, Lithic recommends that customers sum the relevant settlement amounts
 	// found within `details`.)
 	//
 	// Deprecated: deprecated
-	OtherFeesGrossAmount int64 `json:"other_fees_gross_amount,required"`
+	OtherFeesGrossAmount int64 `json:"other_fees_gross_amount" api:"required"`
 	// Date of when the report was first generated.
-	ReportDate string `json:"report_date,required"`
+	ReportDate string `json:"report_date" api:"required"`
 	// The total net amount of cash moved. (net value of settled_gross_amount,
 	// interchange, fees). (This field is deprecated and will be removed in a future
 	// version of the API. To compute total amounts, Lithic recommends that customers
 	// sum the relevant settlement amounts found within `details`.)
 	//
 	// Deprecated: deprecated
-	SettledNetAmount int64 `json:"settled_net_amount,required"`
+	SettledNetAmount int64 `json:"settled_net_amount" api:"required"`
 	// The total amount of settlement impacting transactions (excluding interchange,
 	// fees, and disputes). (This field is deprecated and will be removed in a future
 	// version of the API. To compute total amounts, Lithic recommends that customers
 	// sum the relevant settlement amounts found within `details`.)
 	//
 	// Deprecated: deprecated
-	TransactionsGrossAmount int64 `json:"transactions_gross_amount,required"`
+	TransactionsGrossAmount int64 `json:"transactions_gross_amount" api:"required"`
 	// Date and time when the transaction first occurred. UTC time zone.
-	Updated time.Time            `json:"updated,required" format:"date-time"`
+	Updated time.Time            `json:"updated" api:"required" format:"date-time"`
 	JSON    settlementReportJSON `json:"-"`
 }
 

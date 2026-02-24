@@ -109,43 +109,43 @@ func (r *BookTransferService) Reverse(ctx context.Context, bookTransferToken str
 // Book transfer transaction
 type BookTransferResponse struct {
 	// Unique identifier for the transaction
-	Token    string                       `json:"token,required" format:"uuid"`
-	Category BookTransferResponseCategory `json:"category,required"`
+	Token    string                       `json:"token" api:"required" format:"uuid"`
+	Category BookTransferResponseCategory `json:"category" api:"required"`
 	// ISO 8601 timestamp of when the transaction was created
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// 3-character alphabetic ISO 4217 code for the settling currency of the
 	// transaction
-	Currency string `json:"currency,required"`
+	Currency string `json:"currency" api:"required"`
 	// A list of all financial events that have modified this transfer
-	Events []BookTransferResponseEvent `json:"events,required"`
+	Events []BookTransferResponseEvent `json:"events" api:"required"`
 	// TRANSFER - Book Transfer Transaction
-	Family BookTransferResponseFamily `json:"family,required"`
+	Family BookTransferResponseFamily `json:"family" api:"required"`
 	// Globally unique identifier for the financial account or card that will send the
 	// funds. Accepted type dependent on the program's use case
-	FromFinancialAccountToken string `json:"from_financial_account_token,required" format:"uuid"`
+	FromFinancialAccountToken string `json:"from_financial_account_token" api:"required" format:"uuid"`
 	// Pending amount of the transaction in the currency's smallest unit (e.g., cents),
 	// including any acquirer fees.
 	//
 	// The value of this field will go to zero over time once the financial transaction
 	// is settled.
-	PendingAmount int64                      `json:"pending_amount,required"`
-	Result        BookTransferResponseResult `json:"result,required"`
+	PendingAmount int64                      `json:"pending_amount" api:"required"`
+	Result        BookTransferResponseResult `json:"result" api:"required"`
 	// Amount of the transaction that has been settled in the currency's smallest unit
 	// (e.g., cents)
-	SettledAmount int64 `json:"settled_amount,required"`
+	SettledAmount int64 `json:"settled_amount" api:"required"`
 	// The status of the transaction
-	Status BookTransferResponseStatus `json:"status,required"`
+	Status BookTransferResponseStatus `json:"status" api:"required"`
 	// Globally unique identifier for the financial account or card that will receive
 	// the funds. Accepted type dependent on the program's use case
-	ToFinancialAccountToken string `json:"to_financial_account_token,required" format:"uuid"`
+	ToFinancialAccountToken string `json:"to_financial_account_token" api:"required" format:"uuid"`
 	// ISO 8601 timestamp of when the transaction was last updated
-	Updated time.Time `json:"updated,required" format:"date-time"`
+	Updated time.Time `json:"updated" api:"required" format:"date-time"`
 	// External ID defined by the customer
-	ExternalID string `json:"external_id,nullable"`
+	ExternalID string `json:"external_id" api:"nullable"`
 	// External resource associated with the management operation
-	ExternalResource ExternalResource `json:"external_resource,nullable"`
+	ExternalResource ExternalResource `json:"external_resource" api:"nullable"`
 	// A series of transactions that are grouped together
-	TransactionSeries BookTransferResponseTransactionSeries `json:"transaction_series,nullable"`
+	TransactionSeries BookTransferResponseTransactionSeries `json:"transaction_series" api:"nullable"`
 	JSON              bookTransferResponseJSON              `json:"-"`
 }
 
@@ -209,22 +209,22 @@ func (r BookTransferResponseCategory) IsKnown() bool {
 // Book transfer Event
 type BookTransferResponseEvent struct {
 	// Globally unique identifier.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Amount of the financial event that has been settled in the currency's smallest
 	// unit (e.g., cents).
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// Date and time when the financial event occurred. UTC time zone.
-	Created         time.Time                                  `json:"created,required" format:"date-time"`
-	DetailedResults []BookTransferResponseEventsDetailedResult `json:"detailed_results,required"`
+	Created         time.Time                                  `json:"created" api:"required" format:"date-time"`
+	DetailedResults []BookTransferResponseEventsDetailedResult `json:"detailed_results" api:"required"`
 	// Memo for the transfer.
-	Memo string `json:"memo,required"`
+	Memo string `json:"memo" api:"required"`
 	// APPROVED financial events were successful while DECLINED financial events were
 	// declined by user, Lithic, or the network.
-	Result BookTransferResponseEventsResult `json:"result,required"`
+	Result BookTransferResponseEventsResult `json:"result" api:"required"`
 	// The program specific subtype code for the specified category/type.
-	Subtype string `json:"subtype,required"`
+	Subtype string `json:"subtype" api:"required"`
 	// Type of the book transfer
-	Type BookTransferResponseEventsType `json:"type,required"`
+	Type BookTransferResponseEventsType `json:"type" api:"required"`
 	JSON bookTransferResponseEventJSON  `json:"-"`
 }
 
@@ -384,9 +384,9 @@ func (r BookTransferResponseStatus) IsKnown() bool {
 
 // A series of transactions that are grouped together
 type BookTransferResponseTransactionSeries struct {
-	RelatedTransactionEventToken string                                    `json:"related_transaction_event_token,required,nullable" format:"uuid"`
-	RelatedTransactionToken      string                                    `json:"related_transaction_token,required,nullable" format:"uuid"`
-	Type                         string                                    `json:"type,required"`
+	RelatedTransactionEventToken string                                    `json:"related_transaction_event_token" api:"required,nullable" format:"uuid"`
+	RelatedTransactionToken      string                                    `json:"related_transaction_token" api:"required,nullable" format:"uuid"`
+	Type                         string                                    `json:"type" api:"required"`
 	JSON                         bookTransferResponseTransactionSeriesJSON `json:"-"`
 }
 
@@ -411,18 +411,18 @@ func (r bookTransferResponseTransactionSeriesJSON) RawJSON() string {
 type BookTransferNewParams struct {
 	// Amount to be transferred in the currency's smallest unit (e.g., cents for USD).
 	// This should always be a positive value.
-	Amount   param.Field[int64]                         `json:"amount,required"`
-	Category param.Field[BookTransferNewParamsCategory] `json:"category,required"`
+	Amount   param.Field[int64]                         `json:"amount" api:"required"`
+	Category param.Field[BookTransferNewParamsCategory] `json:"category" api:"required"`
 	// Globally unique identifier for the financial account or card that will send the
 	// funds. Accepted type dependent on the program's use case.
-	FromFinancialAccountToken param.Field[string] `json:"from_financial_account_token,required" format:"uuid"`
+	FromFinancialAccountToken param.Field[string] `json:"from_financial_account_token" api:"required" format:"uuid"`
 	// The program specific subtype code for the specified category/type.
-	Subtype param.Field[string] `json:"subtype,required"`
+	Subtype param.Field[string] `json:"subtype" api:"required"`
 	// Globally unique identifier for the financial account or card that will receive
 	// the funds. Accepted type dependent on the program's use case.
-	ToFinancialAccountToken param.Field[string] `json:"to_financial_account_token,required" format:"uuid"`
+	ToFinancialAccountToken param.Field[string] `json:"to_financial_account_token" api:"required" format:"uuid"`
 	// Type of the book transfer
-	Type param.Field[BookTransferNewParamsType] `json:"type,required"`
+	Type param.Field[BookTransferNewParamsType] `json:"type" api:"required"`
 	// Customer-provided token that will serve as an idempotency token. This token will
 	// become the transaction token.
 	Token param.Field[string] `json:"token" format:"uuid"`
@@ -621,7 +621,7 @@ func (r BookTransferListParamsStatus) IsKnown() bool {
 type BookTransferRetryParams struct {
 	// Customer-provided token that will serve as an idempotency token. This token will
 	// become the transaction token.
-	RetryToken param.Field[string] `json:"retry_token,required" format:"uuid"`
+	RetryToken param.Field[string] `json:"retry_token" api:"required" format:"uuid"`
 }
 
 func (r BookTransferRetryParams) MarshalJSON() (data []byte, err error) {

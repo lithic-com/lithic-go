@@ -76,10 +76,10 @@ type FraudTransactionGetResponse struct {
 	//   - `NO_REPORTED_FRAUD`: Indicates that no fraud report exists for the
 	//     transaction. It is the default state for transactions that have not been
 	//     analyzed or associated with any known fraudulent activity.
-	FraudStatus FraudTransactionGetResponseFraudStatus `json:"fraud_status,required"`
+	FraudStatus FraudTransactionGetResponseFraudStatus `json:"fraud_status" api:"required"`
 	// The universally unique identifier (UUID) associated with the transaction being
 	// reported.
-	TransactionToken string `json:"transaction_token,required" format:"uuid"`
+	TransactionToken string `json:"transaction_token" api:"required" format:"uuid"`
 	// Provides additional context or details about the fraud report.
 	Comment string `json:"comment"`
 	// Timestamp representing when the fraud report was created.
@@ -217,10 +217,10 @@ type FraudTransactionReportResponse struct {
 	//   - `NO_REPORTED_FRAUD`: Indicates that no fraud report exists for the
 	//     transaction. It is the default state for transactions that have not been
 	//     analyzed or associated with any known fraudulent activity.
-	FraudStatus FraudTransactionReportResponseFraudStatus `json:"fraud_status,required"`
+	FraudStatus FraudTransactionReportResponseFraudStatus `json:"fraud_status" api:"required"`
 	// The universally unique identifier (UUID) associated with the transaction being
 	// reported.
-	TransactionToken string `json:"transaction_token,required" format:"uuid"`
+	TransactionToken string `json:"transaction_token" api:"required" format:"uuid"`
 	// Provides additional context or details about the fraud report.
 	Comment string `json:"comment"`
 	// Timestamp representing when the fraud report was created.
@@ -355,7 +355,7 @@ type FraudTransactionReportParams struct {
 	//   - `NOT_FRAUDULENT`: The transaction is (explicitly) marked as not fraudulent. A
 	//     transaction may immediately be moved into this state, or be graduated into
 	//     this state from the `SUSPECTED_FRAUD` state.
-	FraudStatus param.Field[FraudTransactionReportParamsFraudStatus] `json:"fraud_status,required"`
+	FraudStatus param.Field[FraudTransactionReportParamsFraudStatus] `json:"fraud_status" api:"required"`
 	// Optional field providing additional information or context about why the
 	// transaction is considered fraudulent.
 	Comment param.Field[string] `json:"comment"`

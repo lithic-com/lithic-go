@@ -61,9 +61,9 @@ func (r *TransferLimitService) ListAutoPaging(ctx context.Context, query Transfe
 
 type TransferLimitsResponse struct {
 	// List of transfer limits
-	Data []TransferLimitsResponseData `json:"data,required"`
+	Data []TransferLimitsResponseData `json:"data" api:"required"`
 	// Whether there are more transfer limits
-	HasMore bool                       `json:"has_more,required"`
+	HasMore bool                       `json:"has_more" api:"required"`
 	JSON    transferLimitsResponseJSON `json:"-"`
 }
 
@@ -86,17 +86,17 @@ func (r transferLimitsResponseJSON) RawJSON() string {
 
 type TransferLimitsResponseData struct {
 	// Company ID
-	CompanyID string `json:"company_id,required"`
+	CompanyID string `json:"company_id" api:"required"`
 	// Daily limits with progress
-	DailyLimit TransferLimitsResponseDataDailyLimit `json:"daily_limit,required"`
+	DailyLimit TransferLimitsResponseDataDailyLimit `json:"daily_limit" api:"required"`
 	// The date for the limit view (ISO format)
-	Date time.Time `json:"date,required" format:"date"`
+	Date time.Time `json:"date" api:"required" format:"date"`
 	// Whether the company is a FBO; based on the company ID prefix
-	IsFbo bool `json:"is_fbo,required"`
+	IsFbo bool `json:"is_fbo" api:"required"`
 	// Monthly limits with progress
-	MonthlyLimit TransferLimitsResponseDataMonthlyLimit `json:"monthly_limit,required"`
+	MonthlyLimit TransferLimitsResponseDataMonthlyLimit `json:"monthly_limit" api:"required"`
 	// Program transaction limits
-	ProgramLimitPerTransaction TransferLimitsResponseDataProgramLimitPerTransaction `json:"program_limit_per_transaction,required"`
+	ProgramLimitPerTransaction TransferLimitsResponseDataProgramLimitPerTransaction `json:"program_limit_per_transaction" api:"required"`
 	JSON                       transferLimitsResponseDataJSON                       `json:"-"`
 }
 
@@ -124,9 +124,9 @@ func (r transferLimitsResponseDataJSON) RawJSON() string {
 // Daily limits with progress
 type TransferLimitsResponseDataDailyLimit struct {
 	// Credit limits
-	Credit TransferLimitsResponseDataDailyLimitCredit `json:"credit,required"`
+	Credit TransferLimitsResponseDataDailyLimitCredit `json:"credit" api:"required"`
 	// Debit limits
-	Debit TransferLimitsResponseDataDailyLimitDebit `json:"debit,required"`
+	Debit TransferLimitsResponseDataDailyLimitDebit `json:"debit" api:"required"`
 	JSON  transferLimitsResponseDataDailyLimitJSON  `json:"-"`
 }
 
@@ -150,7 +150,7 @@ func (r transferLimitsResponseDataDailyLimitJSON) RawJSON() string {
 // Credit limits
 type TransferLimitsResponseDataDailyLimitCredit struct {
 	// The limit amount
-	Limit int64 `json:"limit,required"`
+	Limit int64 `json:"limit" api:"required"`
 	// Amount originated towards limit
 	AmountOriginated int64                                          `json:"amount_originated"`
 	JSON             transferLimitsResponseDataDailyLimitCreditJSON `json:"-"`
@@ -176,7 +176,7 @@ func (r transferLimitsResponseDataDailyLimitCreditJSON) RawJSON() string {
 // Debit limits
 type TransferLimitsResponseDataDailyLimitDebit struct {
 	// The limit amount
-	Limit int64 `json:"limit,required"`
+	Limit int64 `json:"limit" api:"required"`
 	// Amount originated towards limit
 	AmountOriginated int64                                         `json:"amount_originated"`
 	JSON             transferLimitsResponseDataDailyLimitDebitJSON `json:"-"`
@@ -202,9 +202,9 @@ func (r transferLimitsResponseDataDailyLimitDebitJSON) RawJSON() string {
 // Monthly limits with progress
 type TransferLimitsResponseDataMonthlyLimit struct {
 	// Credit limits
-	Credit TransferLimitsResponseDataMonthlyLimitCredit `json:"credit,required"`
+	Credit TransferLimitsResponseDataMonthlyLimitCredit `json:"credit" api:"required"`
 	// Debit limits
-	Debit TransferLimitsResponseDataMonthlyLimitDebit `json:"debit,required"`
+	Debit TransferLimitsResponseDataMonthlyLimitDebit `json:"debit" api:"required"`
 	JSON  transferLimitsResponseDataMonthlyLimitJSON  `json:"-"`
 }
 
@@ -228,7 +228,7 @@ func (r transferLimitsResponseDataMonthlyLimitJSON) RawJSON() string {
 // Credit limits
 type TransferLimitsResponseDataMonthlyLimitCredit struct {
 	// The limit amount
-	Limit int64 `json:"limit,required"`
+	Limit int64 `json:"limit" api:"required"`
 	// Amount originated towards limit
 	AmountOriginated int64                                            `json:"amount_originated"`
 	JSON             transferLimitsResponseDataMonthlyLimitCreditJSON `json:"-"`
@@ -254,7 +254,7 @@ func (r transferLimitsResponseDataMonthlyLimitCreditJSON) RawJSON() string {
 // Debit limits
 type TransferLimitsResponseDataMonthlyLimitDebit struct {
 	// The limit amount
-	Limit int64 `json:"limit,required"`
+	Limit int64 `json:"limit" api:"required"`
 	// Amount originated towards limit
 	AmountOriginated int64                                           `json:"amount_originated"`
 	JSON             transferLimitsResponseDataMonthlyLimitDebitJSON `json:"-"`
@@ -280,9 +280,9 @@ func (r transferLimitsResponseDataMonthlyLimitDebitJSON) RawJSON() string {
 // Program transaction limits
 type TransferLimitsResponseDataProgramLimitPerTransaction struct {
 	// Credit limits
-	Credit TransferLimitsResponseDataProgramLimitPerTransactionCredit `json:"credit,required"`
+	Credit TransferLimitsResponseDataProgramLimitPerTransactionCredit `json:"credit" api:"required"`
 	// Debit limits
-	Debit TransferLimitsResponseDataProgramLimitPerTransactionDebit `json:"debit,required"`
+	Debit TransferLimitsResponseDataProgramLimitPerTransactionDebit `json:"debit" api:"required"`
 	JSON  transferLimitsResponseDataProgramLimitPerTransactionJSON  `json:"-"`
 }
 
@@ -306,7 +306,7 @@ func (r transferLimitsResponseDataProgramLimitPerTransactionJSON) RawJSON() stri
 // Credit limits
 type TransferLimitsResponseDataProgramLimitPerTransactionCredit struct {
 	// The limit amount
-	Limit int64 `json:"limit,required"`
+	Limit int64 `json:"limit" api:"required"`
 	// Amount originated towards limit
 	AmountOriginated int64                                                          `json:"amount_originated"`
 	JSON             transferLimitsResponseDataProgramLimitPerTransactionCreditJSON `json:"-"`
@@ -333,7 +333,7 @@ func (r transferLimitsResponseDataProgramLimitPerTransactionCreditJSON) RawJSON(
 // Debit limits
 type TransferLimitsResponseDataProgramLimitPerTransactionDebit struct {
 	// The limit amount
-	Limit int64 `json:"limit,required"`
+	Limit int64 `json:"limit" api:"required"`
 	// Amount originated towards limit
 	AmountOriginated int64                                                         `json:"amount_originated"`
 	JSON             transferLimitsResponseDataProgramLimitPerTransactionDebitJSON `json:"-"`

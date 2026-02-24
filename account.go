@@ -107,15 +107,15 @@ type Account struct {
 	// Globally unique identifier for the account. This is the same as the
 	// account_token returned by the enroll endpoint. If using this parameter, do not
 	// include pagination.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Timestamp of when the account was created.
-	Created time.Time `json:"created,required,nullable" format:"date-time"`
+	Created time.Time `json:"created" api:"required,nullable" format:"date-time"`
 	// Spend limit information for the user containing the daily, monthly, and lifetime
 	// spend limit of the account. Any charges to a card owned by this account will be
 	// declined once their transaction volume has surpassed the value in the applicable
 	// time limit (rolling). A lifetime limit of 0 indicates that the lifetime limit
 	// feature is disabled.
-	SpendLimit AccountSpendLimit `json:"spend_limit,required"`
+	SpendLimit AccountSpendLimit `json:"spend_limit" api:"required"`
 	// Account state:
 	//
 	//   - `ACTIVE` - Account is able to transact and create new cards.
@@ -127,7 +127,7 @@ type Account struct {
 	//     failure to pass KYB/KYC or for risk/compliance reasons. Please contact
 	//     [support@lithic.com](mailto:support@lithic.com) if you believe this was done
 	//     by mistake.
-	State         AccountState         `json:"state,required"`
+	State         AccountState         `json:"state" api:"required"`
 	AccountHolder AccountAccountHolder `json:"account_holder"`
 	// List of identifiers for the Auth Rule(s) that are applied on the account. This
 	// field is deprecated and will no longer be populated in the `account_holder`
@@ -204,11 +204,11 @@ func (r accountJSON) RawJSON() string {
 // feature is disabled.
 type AccountSpendLimit struct {
 	// Daily spend limit (in cents).
-	Daily int64 `json:"daily,required"`
+	Daily int64 `json:"daily" api:"required"`
 	// Total spend limit over account lifetime (in cents).
-	Lifetime int64 `json:"lifetime,required"`
+	Lifetime int64 `json:"lifetime" api:"required"`
 	// Monthly spend limit (in cents).
-	Monthly int64                 `json:"monthly,required"`
+	Monthly int64                 `json:"monthly" api:"required"`
 	JSON    accountSpendLimitJSON `json:"-"`
 }
 
@@ -259,15 +259,15 @@ func (r AccountState) IsKnown() bool {
 
 type AccountAccountHolder struct {
 	// Globally unique identifier for the account holder.
-	Token string `json:"token,required"`
+	Token string `json:"token" api:"required"`
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
 	// users of businesses. Account_token of the enrolled business associated with an
 	// enrolled AUTHORIZED_USER individual.
-	BusinessAccountToken string `json:"business_account_token,required"`
+	BusinessAccountToken string `json:"business_account_token" api:"required"`
 	// Email address.
-	Email string `json:"email,required"`
+	Email string `json:"email" api:"required"`
 	// Phone number of the individual.
-	PhoneNumber string                   `json:"phone_number,required"`
+	PhoneNumber string                   `json:"phone_number" api:"required"`
 	JSON        accountAccountHolderJSON `json:"-"`
 }
 
@@ -341,18 +341,18 @@ func (r AccountSubstatus) IsKnown() bool {
 // Deprecated: deprecated
 type AccountVerificationAddress struct {
 	// Valid deliverable address (no PO boxes).
-	Address1 string `json:"address1,required"`
+	Address1 string `json:"address1" api:"required"`
 	// City name.
-	City string `json:"city,required"`
+	City string `json:"city" api:"required"`
 	// Country name. Only USA is currently supported.
-	Country string `json:"country,required"`
+	Country string `json:"country" api:"required"`
 	// Valid postal code. Only USA postal codes (ZIP codes) are currently supported,
 	// entered as a five-digit postal code or nine-digit postal code (ZIP+4) using the
 	// format 12345-1234.
-	PostalCode string `json:"postal_code,required"`
+	PostalCode string `json:"postal_code" api:"required"`
 	// Valid state code. Only USA state codes are currently supported, entered in
 	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state,required"`
+	State string `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
 	Address2 string                         `json:"address2"`
 	JSON     accountVerificationAddressJSON `json:"-"`
@@ -380,7 +380,7 @@ func (r accountVerificationAddressJSON) RawJSON() string {
 }
 
 type AccountSpendLimits struct {
-	AvailableSpendLimit AccountSpendLimitsAvailableSpendLimit `json:"available_spend_limit,required"`
+	AvailableSpendLimit AccountSpendLimitsAvailableSpendLimit `json:"available_spend_limit" api:"required"`
 	SpendLimit          AccountSpendLimitsSpendLimit          `json:"spend_limit"`
 	SpendVelocity       AccountSpendLimitsSpendVelocity       `json:"spend_velocity"`
 	JSON                accountSpendLimitsJSON                `json:"-"`

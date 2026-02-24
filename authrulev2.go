@@ -224,26 +224,26 @@ func (r *AuthRuleV2Service) GetReport(ctx context.Context, authRuleToken string,
 
 type AuthRule struct {
 	// Auth Rule Token
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Account tokens to which the Auth Rule applies.
-	AccountTokens []string `json:"account_tokens,required" format:"uuid"`
+	AccountTokens []string `json:"account_tokens" api:"required" format:"uuid"`
 	// Business Account tokens to which the Auth Rule applies.
-	BusinessAccountTokens []string `json:"business_account_tokens,required" format:"uuid"`
+	BusinessAccountTokens []string `json:"business_account_tokens" api:"required" format:"uuid"`
 	// Card tokens to which the Auth Rule applies.
-	CardTokens     []string               `json:"card_tokens,required" format:"uuid"`
-	CurrentVersion AuthRuleCurrentVersion `json:"current_version,required,nullable"`
-	DraftVersion   AuthRuleDraftVersion   `json:"draft_version,required,nullable"`
+	CardTokens     []string               `json:"card_tokens" api:"required" format:"uuid"`
+	CurrentVersion AuthRuleCurrentVersion `json:"current_version" api:"required,nullable"`
+	DraftVersion   AuthRuleDraftVersion   `json:"draft_version" api:"required,nullable"`
 	// The event stream during which the rule will be evaluated.
-	EventStream EventStream `json:"event_stream,required"`
+	EventStream EventStream `json:"event_stream" api:"required"`
 	// Indicates whether this auth rule is managed by Lithic. If true, the rule cannot
 	// be modified or deleted by the user
-	LithicManaged bool `json:"lithic_managed,required"`
+	LithicManaged bool `json:"lithic_managed" api:"required"`
 	// Auth Rule Name
-	Name string `json:"name,required,nullable"`
+	Name string `json:"name" api:"required,nullable"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
-	ProgramLevel bool `json:"program_level,required"`
+	ProgramLevel bool `json:"program_level" api:"required"`
 	// The state of the Auth Rule
-	State AuthRuleState `json:"state,required"`
+	State AuthRuleState `json:"state" api:"required"`
 	// The type of Auth Rule. For certain rule types, this determines the event stream
 	// during which it will be evaluated. For rules that can be applied to one of
 	// several event streams, the effective one is defined by the separate
@@ -254,7 +254,7 @@ type AuthRule struct {
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
-	Type AuthRuleType `json:"type,required"`
+	Type AuthRuleType `json:"type" api:"required"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens []string     `json:"excluded_card_tokens" format:"uuid"`
 	JSON               authRuleJSON `json:"-"`
@@ -289,10 +289,10 @@ func (r authRuleJSON) RawJSON() string {
 
 type AuthRuleCurrentVersion struct {
 	// Parameters for the Auth Rule
-	Parameters AuthRuleCurrentVersionParameters `json:"parameters,required"`
+	Parameters AuthRuleCurrentVersionParameters `json:"parameters" api:"required"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
-	Version int64                      `json:"version,required"`
+	Version int64                      `json:"version" api:"required"`
 	JSON    authRuleCurrentVersionJSON `json:"-"`
 }
 
@@ -331,13 +331,13 @@ type AuthRuleCurrentVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount int64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount" api:"nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount int64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count" api:"nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
 	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
@@ -450,10 +450,10 @@ func (r AuthRuleCurrentVersionParametersScope) IsKnown() bool {
 
 type AuthRuleDraftVersion struct {
 	// Parameters for the Auth Rule
-	Parameters AuthRuleDraftVersionParameters `json:"parameters,required"`
+	Parameters AuthRuleDraftVersionParameters `json:"parameters" api:"required"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
-	Version int64                    `json:"version,required"`
+	Version int64                    `json:"version" api:"required"`
 	JSON    authRuleDraftVersionJSON `json:"-"`
 }
 
@@ -492,13 +492,13 @@ type AuthRuleDraftVersionParameters struct {
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount int64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount" api:"nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount int64 `json:"limit_count,nullable"`
+	LimitCount int64 `json:"limit_count" api:"nullable"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
 	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
@@ -703,11 +703,11 @@ type AuthRuleCondition struct {
 	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
 	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
 	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
-	Attribute ConditionalAttribute `json:"attribute,required"`
+	Attribute ConditionalAttribute `json:"attribute" api:"required"`
 	// The operation to apply to the attribute
-	Operation ConditionalOperation `json:"operation,required"`
+	Operation ConditionalOperation `json:"operation" api:"required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value ConditionalValueUnion `json:"value,required" format:"date-time"`
+	Value ConditionalValueUnion `json:"value" api:"required" format:"date-time"`
 	JSON  authRuleConditionJSON `json:"-"`
 }
 
@@ -780,11 +780,11 @@ type AuthRuleConditionParam struct {
 	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
 	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
 	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
-	Attribute param.Field[ConditionalAttribute] `json:"attribute,required"`
+	Attribute param.Field[ConditionalAttribute] `json:"attribute" api:"required"`
 	// The operation to apply to the attribute
-	Operation param.Field[ConditionalOperation] `json:"operation,required"`
+	Operation param.Field[ConditionalOperation] `json:"operation" api:"required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value param.Field[ConditionalValueUnionParam] `json:"value,required" format:"date-time"`
+	Value param.Field[ConditionalValueUnionParam] `json:"value" api:"required" format:"date-time"`
 }
 
 func (r AuthRuleConditionParam) MarshalJSON() (data []byte, err error) {
@@ -793,8 +793,8 @@ func (r AuthRuleConditionParam) MarshalJSON() (data []byte, err error) {
 
 type Conditional3DSActionParameters struct {
 	// The action to take if the conditions are met.
-	Action     Conditional3DSActionParametersAction      `json:"action,required"`
-	Conditions []Conditional3DsActionParametersCondition `json:"conditions,required"`
+	Action     Conditional3DSActionParametersAction      `json:"action" api:"required"`
+	Conditions []Conditional3DsActionParametersCondition `json:"conditions" api:"required"`
 	JSON       conditional3DsActionParametersJSON        `json:"-"`
 }
 
@@ -860,11 +860,11 @@ type Conditional3DsActionParametersCondition struct {
 	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
 	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
 	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
-	Attribute Conditional3DSActionParametersConditionsAttribute `json:"attribute,required"`
+	Attribute Conditional3DSActionParametersConditionsAttribute `json:"attribute" api:"required"`
 	// The operation to apply to the attribute
-	Operation ConditionalOperation `json:"operation,required"`
+	Operation ConditionalOperation `json:"operation" api:"required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value ConditionalValueUnion                       `json:"value,required" format:"date-time"`
+	Value ConditionalValueUnion                       `json:"value" api:"required" format:"date-time"`
 	JSON  conditional3DsActionParametersConditionJSON `json:"-"`
 }
 
@@ -934,8 +934,8 @@ func (r Conditional3DSActionParametersConditionsAttribute) IsKnown() bool {
 
 type ConditionalACHActionParameters struct {
 	// The action to take if the conditions are met.
-	Action     ConditionalACHActionParametersAction      `json:"action,required"`
-	Conditions []ConditionalACHActionParametersCondition `json:"conditions,required"`
+	Action     ConditionalACHActionParametersAction      `json:"action" api:"required"`
+	Conditions []ConditionalACHActionParametersCondition `json:"conditions" api:"required"`
 	JSON       conditionalACHActionParametersJSON        `json:"-"`
 }
 
@@ -963,7 +963,7 @@ func (r ConditionalACHActionParameters) implementsAuthRuleDraftVersionParameters
 // The action to take if the conditions are met.
 type ConditionalACHActionParametersAction struct {
 	// Approve the ACH transaction
-	Type ConditionalACHActionParametersActionType `json:"type,required"`
+	Type ConditionalACHActionParametersActionType `json:"type" api:"required"`
 	// NACHA return code to use when returning the transaction. Note that the list of
 	// available return codes is subject to an allowlist configured at the program
 	// level
@@ -1029,7 +1029,7 @@ func init() {
 
 type ConditionalACHActionParametersActionApproveAction struct {
 	// Approve the ACH transaction
-	Type ConditionalACHActionParametersActionApproveActionType `json:"type,required"`
+	Type ConditionalACHActionParametersActionApproveActionType `json:"type" api:"required"`
 	JSON conditionalACHActionParametersActionApproveActionJSON `json:"-"`
 }
 
@@ -1071,9 +1071,9 @@ type ConditionalACHActionParametersActionReturnAction struct {
 	// NACHA return code to use when returning the transaction. Note that the list of
 	// available return codes is subject to an allowlist configured at the program
 	// level
-	Code ConditionalACHActionParametersActionReturnActionCode `json:"code,required"`
+	Code ConditionalACHActionParametersActionReturnActionCode `json:"code" api:"required"`
 	// Return the ACH transaction
-	Type ConditionalACHActionParametersActionReturnActionType `json:"type,required"`
+	Type ConditionalACHActionParametersActionReturnActionType `json:"type" api:"required"`
 	JSON conditionalACHActionParametersActionReturnActionJSON `json:"-"`
 }
 
@@ -1316,11 +1316,11 @@ type ConditionalACHActionParametersCondition struct {
 	//     (Corporate Credit or Debit Entry), WEB (Internet-Initiated/Mobile Entry), TEL
 	//     (Telephone-Initiated Entry), and others.
 	//   - `MEMO`: Optional memo or description field included with the ACH transaction.
-	Attribute ConditionalACHActionParametersConditionsAttribute `json:"attribute,required"`
+	Attribute ConditionalACHActionParametersConditionsAttribute `json:"attribute" api:"required"`
 	// The operation to apply to the attribute
-	Operation ConditionalOperation `json:"operation,required"`
+	Operation ConditionalOperation `json:"operation" api:"required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value ConditionalValueUnion                       `json:"value,required" format:"date-time"`
+	Value ConditionalValueUnion                       `json:"value" api:"required" format:"date-time"`
 	JSON  conditionalACHActionParametersConditionJSON `json:"-"`
 }
 
@@ -1458,8 +1458,8 @@ func (r ConditionalAttribute) IsKnown() bool {
 
 type ConditionalAuthorizationActionParameters struct {
 	// The action to take if the conditions are met.
-	Action     ConditionalAuthorizationActionParametersAction      `json:"action,required"`
-	Conditions []ConditionalAuthorizationActionParametersCondition `json:"conditions,required"`
+	Action     ConditionalAuthorizationActionParametersAction      `json:"action" api:"required"`
+	Conditions []ConditionalAuthorizationActionParametersCondition `json:"conditions" api:"required"`
 	JSON       conditionalAuthorizationActionParametersJSON        `json:"-"`
 }
 
@@ -1555,11 +1555,11 @@ type ConditionalAuthorizationActionParametersCondition struct {
 	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
 	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
 	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
-	Attribute ConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute,required"`
+	Attribute ConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute" api:"required"`
 	// The operation to apply to the attribute
-	Operation ConditionalOperation `json:"operation,required"`
+	Operation ConditionalOperation `json:"operation" api:"required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value ConditionalValueUnion                                 `json:"value,required" format:"date-time"`
+	Value ConditionalValueUnion                                 `json:"value" api:"required" format:"date-time"`
 	JSON  conditionalAuthorizationActionParametersConditionJSON `json:"-"`
 }
 
@@ -1668,7 +1668,7 @@ func (r ConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() b
 }
 
 type ConditionalBlockParameters struct {
-	Conditions []AuthRuleCondition            `json:"conditions,required"`
+	Conditions []AuthRuleCondition            `json:"conditions" api:"required"`
 	JSON       conditionalBlockParametersJSON `json:"-"`
 }
 
@@ -1723,8 +1723,8 @@ func (r ConditionalOperation) IsKnown() bool {
 
 type ConditionalTokenizationActionParameters struct {
 	// The action to take if the conditions are met.
-	Action     ConditionalTokenizationActionParametersAction      `json:"action,required"`
-	Conditions []ConditionalTokenizationActionParametersCondition `json:"conditions,required"`
+	Action     ConditionalTokenizationActionParametersAction      `json:"action" api:"required"`
+	Conditions []ConditionalTokenizationActionParametersCondition `json:"conditions" api:"required"`
 	JSON       conditionalTokenizationActionParametersJSON        `json:"-"`
 }
 
@@ -1752,7 +1752,7 @@ func (r ConditionalTokenizationActionParameters) implementsAuthRuleDraftVersionP
 // The action to take if the conditions are met.
 type ConditionalTokenizationActionParametersAction struct {
 	// Decline the tokenization request
-	Type ConditionalTokenizationActionParametersActionType `json:"type,required"`
+	Type ConditionalTokenizationActionParametersActionType `json:"type" api:"required"`
 	// Reason code for declining the tokenization request
 	Reason ConditionalTokenizationActionParametersActionReason `json:"reason"`
 	JSON   conditionalTokenizationActionParametersActionJSON   `json:"-"`
@@ -1816,7 +1816,7 @@ func init() {
 
 type ConditionalTokenizationActionParametersActionDeclineAction struct {
 	// Decline the tokenization request
-	Type ConditionalTokenizationActionParametersActionDeclineActionType `json:"type,required"`
+	Type ConditionalTokenizationActionParametersActionDeclineActionType `json:"type" api:"required"`
 	// Reason code for declining the tokenization request
 	Reason ConditionalTokenizationActionParametersActionDeclineActionReason `json:"reason"`
 	JSON   conditionalTokenizationActionParametersActionDeclineActionJSON   `json:"-"`
@@ -1887,7 +1887,7 @@ func (r ConditionalTokenizationActionParametersActionDeclineActionReason) IsKnow
 
 type ConditionalTokenizationActionParametersActionRequireTfaAction struct {
 	// Require two-factor authentication for the tokenization request
-	Type ConditionalTokenizationActionParametersActionRequireTfaActionType `json:"type,required"`
+	Type ConditionalTokenizationActionParametersActionRequireTfaActionType `json:"type" api:"required"`
 	// Reason code for requiring two-factor authentication
 	Reason ConditionalTokenizationActionParametersActionRequireTfaActionReason `json:"reason"`
 	JSON   conditionalTokenizationActionParametersActionRequireTfaActionJSON   `json:"-"`
@@ -2064,11 +2064,11 @@ type ConditionalTokenizationActionParametersCondition struct {
 	//   - `WALLET_TOKEN_STATUS`: The current status of the wallet token.
 	//   - `CARD_STATE`: The state of the card being tokenized. Valid values are
 	//     `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`, `PENDING_FULFILLMENT`.
-	Attribute ConditionalTokenizationActionParametersConditionsAttribute `json:"attribute,required"`
+	Attribute ConditionalTokenizationActionParametersConditionsAttribute `json:"attribute" api:"required"`
 	// The operation to apply to the attribute
-	Operation ConditionalOperation `json:"operation,required"`
+	Operation ConditionalOperation `json:"operation" api:"required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value ConditionalValueUnion                                `json:"value,required" format:"date-time"`
+	Value ConditionalValueUnion                                `json:"value" api:"required" format:"date-time"`
 	JSON  conditionalTokenizationActionParametersConditionJSON `json:"-"`
 }
 
@@ -2230,7 +2230,7 @@ func (r EventStream) IsKnown() bool {
 type MerchantLockParameters struct {
 	// A list of merchant locks defining specific merchants or groups of merchants
 	// (based on descriptors or IDs) that the lock applies to.
-	Merchants []MerchantLockParametersMerchant `json:"merchants,required"`
+	Merchants []MerchantLockParametersMerchant `json:"merchants" api:"required"`
 	JSON      merchantLockParametersJSON       `json:"-"`
 }
 
@@ -2381,20 +2381,20 @@ func (r RuleStatsExamplesDecision) IsKnown() bool {
 
 type VelocityLimitParams struct {
 	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
-	Period VelocityLimitPeriod `json:"period,required"`
+	Period VelocityLimitPeriod `json:"period" api:"required"`
 	// The scope the velocity is calculated for
-	Scope   VelocityLimitParamsScope   `json:"scope,required"`
+	Scope   VelocityLimitParamsScope   `json:"scope" api:"required"`
 	Filters VelocityLimitParamsFilters `json:"filters"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
-	LimitAmount int64 `json:"limit_amount,nullable"`
+	LimitAmount int64 `json:"limit_amount" api:"nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
-	LimitCount int64                   `json:"limit_count,nullable"`
+	LimitCount int64                   `json:"limit_count" api:"nullable"`
 	JSON       velocityLimitParamsJSON `json:"-"`
 }
 
@@ -2442,20 +2442,20 @@ type VelocityLimitParamsFilters struct {
 	// ISO-3166-1 alpha-3 Country Codes to exclude from the velocity calculation.
 	// Transactions matching any of the provided will be excluded from the calculated
 	// velocity.
-	ExcludeCountries []string `json:"exclude_countries,nullable"`
+	ExcludeCountries []string `json:"exclude_countries" api:"nullable"`
 	// Merchant Category Codes to exclude from the velocity calculation. Transactions
 	// matching this MCC will be excluded from the calculated velocity.
-	ExcludeMccs []string `json:"exclude_mccs,nullable"`
+	ExcludeMccs []string `json:"exclude_mccs" api:"nullable"`
 	// ISO-3166-1 alpha-3 Country Codes to include in the velocity calculation.
 	// Transactions not matching any of the provided will not be included in the
 	// calculated velocity.
-	IncludeCountries []string `json:"include_countries,nullable"`
+	IncludeCountries []string `json:"include_countries" api:"nullable"`
 	// Merchant Category Codes to include in the velocity calculation. Transactions not
 	// matching this MCC will not be included in the calculated velocity.
-	IncludeMccs []string `json:"include_mccs,nullable"`
+	IncludeMccs []string `json:"include_mccs" api:"nullable"`
 	// PAN entry modes to include in the velocity calculation. Transactions not
 	// matching any of the provided will not be included in the calculated velocity.
-	IncludePanEntryModes []VelocityLimitParamsFiltersIncludePanEntryMode `json:"include_pan_entry_modes,nullable"`
+	IncludePanEntryModes []VelocityLimitParamsFiltersIncludePanEntryMode `json:"include_pan_entry_modes" api:"nullable"`
 	JSON                 velocityLimitParamsFiltersJSON                  `json:"-"`
 }
 
@@ -2509,7 +2509,7 @@ func (r VelocityLimitParamsFiltersIncludePanEntryMode) IsKnown() bool {
 
 // Velocity over the current day since 00:00 / 12 AM in Eastern Time
 type VelocityLimitPeriod struct {
-	Type VelocityLimitPeriodType `json:"type,required"`
+	Type VelocityLimitPeriodType `json:"type" api:"required"`
 	// The day of the month to start from. Accepts values from 1 to 31, and will reset
 	// at the end of the month if the day exceeds the number of days in the month.
 	// Defaults to the 1st of the month if not specified.
@@ -2602,8 +2602,8 @@ func init() {
 type VelocityLimitPeriodTrailingWindowObject struct {
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Duration int64                                       `json:"duration,required"`
-	Type     VelocityLimitPeriodTrailingWindowObjectType `json:"type,required"`
+	Duration int64                                       `json:"duration" api:"required"`
+	Type     VelocityLimitPeriodTrailingWindowObjectType `json:"type" api:"required"`
 	JSON     velocityLimitPeriodTrailingWindowObjectJSON `json:"-"`
 }
 
@@ -2642,7 +2642,7 @@ func (r VelocityLimitPeriodTrailingWindowObjectType) IsKnown() bool {
 
 // Velocity over the current day since 00:00 / 12 AM in Eastern Time
 type VelocityLimitPeriodFixedWindowDay struct {
-	Type VelocityLimitPeriodFixedWindowDayType `json:"type,required"`
+	Type VelocityLimitPeriodFixedWindowDayType `json:"type" api:"required"`
 	JSON velocityLimitPeriodFixedWindowDayJSON `json:"-"`
 }
 
@@ -2681,7 +2681,7 @@ func (r VelocityLimitPeriodFixedWindowDayType) IsKnown() bool {
 // Velocity over the current week since 00:00 / 12 AM in Eastern Time on specified
 // `day_of_week`
 type VelocityLimitPeriodFixedWindowWeek struct {
-	Type VelocityLimitPeriodFixedWindowWeekType `json:"type,required"`
+	Type VelocityLimitPeriodFixedWindowWeekType `json:"type" api:"required"`
 	// The day of the week to start the week from. Following ISO-8601, 1 is Monday and
 	// 7 is Sunday. Defaults to Monday if not specified.
 	DayOfWeek int64                                  `json:"day_of_week"`
@@ -2724,7 +2724,7 @@ func (r VelocityLimitPeriodFixedWindowWeekType) IsKnown() bool {
 // Velocity over the current month since 00:00 / 12 AM in Eastern Time on specified
 // `day_of_month`.
 type VelocityLimitPeriodFixedWindowMonth struct {
-	Type VelocityLimitPeriodFixedWindowMonthType `json:"type,required"`
+	Type VelocityLimitPeriodFixedWindowMonthType `json:"type" api:"required"`
 	// The day of the month to start from. Accepts values from 1 to 31, and will reset
 	// at the end of the month if the day exceeds the number of days in the month.
 	// Defaults to the 1st of the month if not specified.
@@ -2770,7 +2770,7 @@ func (r VelocityLimitPeriodFixedWindowMonthType) IsKnown() bool {
 // start from is a real date. In the event that February 29th is selected, in
 // non-leap years, the window will start from February 28th.
 type VelocityLimitPeriodFixedWindowYear struct {
-	Type VelocityLimitPeriodFixedWindowYearType `json:"type,required"`
+	Type VelocityLimitPeriodFixedWindowYearType `json:"type" api:"required"`
 	// The day of the month to start from. Defaults to the 1st of the month if not
 	// specified.
 	DayOfMonth int64 `json:"day_of_month"`
@@ -2834,7 +2834,7 @@ func (r VelocityLimitPeriodType) IsKnown() bool {
 
 // Velocity over the current day since 00:00 / 12 AM in Eastern Time
 type VelocityLimitPeriodParam struct {
-	Type param.Field[VelocityLimitPeriodType] `json:"type,required"`
+	Type param.Field[VelocityLimitPeriodType] `json:"type" api:"required"`
 	// The day of the month to start from. Accepts values from 1 to 31, and will reset
 	// at the end of the month if the day exceeds the number of days in the month.
 	// Defaults to the 1st of the month if not specified.
@@ -2870,8 +2870,8 @@ type VelocityLimitPeriodUnionParam interface {
 type VelocityLimitPeriodTrailingWindowObjectParam struct {
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
 	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
-	Duration param.Field[int64]                                       `json:"duration,required"`
-	Type     param.Field[VelocityLimitPeriodTrailingWindowObjectType] `json:"type,required"`
+	Duration param.Field[int64]                                       `json:"duration" api:"required"`
+	Type     param.Field[VelocityLimitPeriodTrailingWindowObjectType] `json:"type" api:"required"`
 }
 
 func (r VelocityLimitPeriodTrailingWindowObjectParam) MarshalJSON() (data []byte, err error) {
@@ -2882,7 +2882,7 @@ func (r VelocityLimitPeriodTrailingWindowObjectParam) implementsVelocityLimitPer
 
 // Velocity over the current day since 00:00 / 12 AM in Eastern Time
 type VelocityLimitPeriodFixedWindowDayParam struct {
-	Type param.Field[VelocityLimitPeriodFixedWindowDayType] `json:"type,required"`
+	Type param.Field[VelocityLimitPeriodFixedWindowDayType] `json:"type" api:"required"`
 }
 
 func (r VelocityLimitPeriodFixedWindowDayParam) MarshalJSON() (data []byte, err error) {
@@ -2894,7 +2894,7 @@ func (r VelocityLimitPeriodFixedWindowDayParam) implementsVelocityLimitPeriodUni
 // Velocity over the current week since 00:00 / 12 AM in Eastern Time on specified
 // `day_of_week`
 type VelocityLimitPeriodFixedWindowWeekParam struct {
-	Type param.Field[VelocityLimitPeriodFixedWindowWeekType] `json:"type,required"`
+	Type param.Field[VelocityLimitPeriodFixedWindowWeekType] `json:"type" api:"required"`
 	// The day of the week to start the week from. Following ISO-8601, 1 is Monday and
 	// 7 is Sunday. Defaults to Monday if not specified.
 	DayOfWeek param.Field[int64] `json:"day_of_week"`
@@ -2909,7 +2909,7 @@ func (r VelocityLimitPeriodFixedWindowWeekParam) implementsVelocityLimitPeriodUn
 // Velocity over the current month since 00:00 / 12 AM in Eastern Time on specified
 // `day_of_month`.
 type VelocityLimitPeriodFixedWindowMonthParam struct {
-	Type param.Field[VelocityLimitPeriodFixedWindowMonthType] `json:"type,required"`
+	Type param.Field[VelocityLimitPeriodFixedWindowMonthType] `json:"type" api:"required"`
 	// The day of the month to start from. Accepts values from 1 to 31, and will reset
 	// at the end of the month if the day exceeds the number of days in the month.
 	// Defaults to the 1st of the month if not specified.
@@ -2927,7 +2927,7 @@ func (r VelocityLimitPeriodFixedWindowMonthParam) implementsVelocityLimitPeriodU
 // start from is a real date. In the event that February 29th is selected, in
 // non-leap years, the window will start from February 28th.
 type VelocityLimitPeriodFixedWindowYearParam struct {
-	Type param.Field[VelocityLimitPeriodFixedWindowYearType] `json:"type,required"`
+	Type param.Field[VelocityLimitPeriodFixedWindowYearType] `json:"type" api:"required"`
 	// The day of the month to start from. Defaults to the 1st of the month if not
 	// specified.
 	DayOfMonth param.Field[int64] `json:"day_of_month"`
@@ -2945,25 +2945,25 @@ func (r VelocityLimitPeriodFixedWindowYearParam) implementsVelocityLimitPeriodUn
 // Result of an Auth Rule evaluation
 type AuthRuleV2ListResultsResponse struct {
 	// Globally unique identifier for the evaluation
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// This field can have the runtime type of
 	// [[]AuthRuleV2ListResultsResponseAuthorizationResultAction],
 	// [[]AuthRuleV2ListResultsResponseAuthentication3DsResultAction],
 	// [[]AuthRuleV2ListResultsResponseTokenizationResultAction],
 	// [[]AuthRuleV2ListResultsResponseACHResultAction].
-	Actions interface{} `json:"actions,required"`
+	Actions interface{} `json:"actions" api:"required"`
 	// The Auth Rule token
-	AuthRuleToken string `json:"auth_rule_token,required" format:"uuid"`
+	AuthRuleToken string `json:"auth_rule_token" api:"required" format:"uuid"`
 	// Timestamp of the rule evaluation
-	EvaluationTime time.Time `json:"evaluation_time,required" format:"date-time"`
+	EvaluationTime time.Time `json:"evaluation_time" api:"required" format:"date-time"`
 	// The event stream during which the rule was evaluated
-	EventStream AuthRuleV2ListResultsResponseEventStream `json:"event_stream,required"`
+	EventStream AuthRuleV2ListResultsResponseEventStream `json:"event_stream" api:"required"`
 	// Token of the event that triggered the evaluation
-	EventToken string `json:"event_token,required" format:"uuid"`
+	EventToken string `json:"event_token" api:"required" format:"uuid"`
 	// The state of the Auth Rule
-	Mode AuthRuleV2ListResultsResponseMode `json:"mode,required"`
+	Mode AuthRuleV2ListResultsResponseMode `json:"mode" api:"required"`
 	// Version of the rule that was evaluated
-	RuleVersion int64                             `json:"rule_version,required"`
+	RuleVersion int64                             `json:"rule_version" api:"required"`
 	JSON        authRuleV2ListResultsResponseJSON `json:"-"`
 	union       AuthRuleV2ListResultsResponseUnion
 }
@@ -3043,21 +3043,21 @@ func init() {
 
 type AuthRuleV2ListResultsResponseAuthorizationResult struct {
 	// Globally unique identifier for the evaluation
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Actions returned by the rule evaluation
-	Actions []AuthRuleV2ListResultsResponseAuthorizationResultAction `json:"actions,required"`
+	Actions []AuthRuleV2ListResultsResponseAuthorizationResultAction `json:"actions" api:"required"`
 	// The Auth Rule token
-	AuthRuleToken string `json:"auth_rule_token,required" format:"uuid"`
+	AuthRuleToken string `json:"auth_rule_token" api:"required" format:"uuid"`
 	// Timestamp of the rule evaluation
-	EvaluationTime time.Time `json:"evaluation_time,required" format:"date-time"`
+	EvaluationTime time.Time `json:"evaluation_time" api:"required" format:"date-time"`
 	// The event stream during which the rule was evaluated
-	EventStream AuthRuleV2ListResultsResponseAuthorizationResultEventStream `json:"event_stream,required"`
+	EventStream AuthRuleV2ListResultsResponseAuthorizationResultEventStream `json:"event_stream" api:"required"`
 	// Token of the event that triggered the evaluation
-	EventToken string `json:"event_token,required" format:"uuid"`
+	EventToken string `json:"event_token" api:"required" format:"uuid"`
 	// The state of the Auth Rule
-	Mode AuthRuleV2ListResultsResponseAuthorizationResultMode `json:"mode,required"`
+	Mode AuthRuleV2ListResultsResponseAuthorizationResultMode `json:"mode" api:"required"`
 	// Version of the rule that was evaluated
-	RuleVersion int64                                                `json:"rule_version,required"`
+	RuleVersion int64                                                `json:"rule_version" api:"required"`
 	JSON        authRuleV2ListResultsResponseAuthorizationResultJSON `json:"-"`
 }
 
@@ -3087,7 +3087,7 @@ func (r authRuleV2ListResultsResponseAuthorizationResultJSON) RawJSON() string {
 func (r AuthRuleV2ListResultsResponseAuthorizationResult) implementsAuthRuleV2ListResultsResponse() {}
 
 type AuthRuleV2ListResultsResponseAuthorizationResultAction struct {
-	Type AuthRuleV2ListResultsResponseAuthorizationResultActionsType `json:"type,required"`
+	Type AuthRuleV2ListResultsResponseAuthorizationResultActionsType `json:"type" api:"required"`
 	// Optional explanation for why this action was taken
 	Explanation string                                                     `json:"explanation"`
 	JSON        authRuleV2ListResultsResponseAuthorizationResultActionJSON `json:"-"`
@@ -3158,21 +3158,21 @@ func (r AuthRuleV2ListResultsResponseAuthorizationResultMode) IsKnown() bool {
 
 type AuthRuleV2ListResultsResponseAuthentication3DSResult struct {
 	// Globally unique identifier for the evaluation
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Actions returned by the rule evaluation
-	Actions []AuthRuleV2ListResultsResponseAuthentication3DsResultAction `json:"actions,required"`
+	Actions []AuthRuleV2ListResultsResponseAuthentication3DsResultAction `json:"actions" api:"required"`
 	// The Auth Rule token
-	AuthRuleToken string `json:"auth_rule_token,required" format:"uuid"`
+	AuthRuleToken string `json:"auth_rule_token" api:"required" format:"uuid"`
 	// Timestamp of the rule evaluation
-	EvaluationTime time.Time `json:"evaluation_time,required" format:"date-time"`
+	EvaluationTime time.Time `json:"evaluation_time" api:"required" format:"date-time"`
 	// The event stream during which the rule was evaluated
-	EventStream AuthRuleV2ListResultsResponseAuthentication3DSResultEventStream `json:"event_stream,required"`
+	EventStream AuthRuleV2ListResultsResponseAuthentication3DSResultEventStream `json:"event_stream" api:"required"`
 	// Token of the event that triggered the evaluation
-	EventToken string `json:"event_token,required" format:"uuid"`
+	EventToken string `json:"event_token" api:"required" format:"uuid"`
 	// The state of the Auth Rule
-	Mode AuthRuleV2ListResultsResponseAuthentication3DSResultMode `json:"mode,required"`
+	Mode AuthRuleV2ListResultsResponseAuthentication3DSResultMode `json:"mode" api:"required"`
 	// Version of the rule that was evaluated
-	RuleVersion int64                                                    `json:"rule_version,required"`
+	RuleVersion int64                                                    `json:"rule_version" api:"required"`
 	JSON        authRuleV2ListResultsResponseAuthentication3DsResultJSON `json:"-"`
 }
 
@@ -3203,7 +3203,7 @@ func (r AuthRuleV2ListResultsResponseAuthentication3DSResult) implementsAuthRule
 }
 
 type AuthRuleV2ListResultsResponseAuthentication3DsResultAction struct {
-	Type AuthRuleV2ListResultsResponseAuthentication3DSResultActionsType `json:"type,required"`
+	Type AuthRuleV2ListResultsResponseAuthentication3DSResultActionsType `json:"type" api:"required"`
 	// Optional explanation for why this action was taken
 	Explanation string                                                         `json:"explanation"`
 	JSON        authRuleV2ListResultsResponseAuthentication3DsResultActionJSON `json:"-"`
@@ -3275,21 +3275,21 @@ func (r AuthRuleV2ListResultsResponseAuthentication3DSResultMode) IsKnown() bool
 
 type AuthRuleV2ListResultsResponseTokenizationResult struct {
 	// Globally unique identifier for the evaluation
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Actions returned by the rule evaluation
-	Actions []AuthRuleV2ListResultsResponseTokenizationResultAction `json:"actions,required"`
+	Actions []AuthRuleV2ListResultsResponseTokenizationResultAction `json:"actions" api:"required"`
 	// The Auth Rule token
-	AuthRuleToken string `json:"auth_rule_token,required" format:"uuid"`
+	AuthRuleToken string `json:"auth_rule_token" api:"required" format:"uuid"`
 	// Timestamp of the rule evaluation
-	EvaluationTime time.Time `json:"evaluation_time,required" format:"date-time"`
+	EvaluationTime time.Time `json:"evaluation_time" api:"required" format:"date-time"`
 	// The event stream during which the rule was evaluated
-	EventStream AuthRuleV2ListResultsResponseTokenizationResultEventStream `json:"event_stream,required"`
+	EventStream AuthRuleV2ListResultsResponseTokenizationResultEventStream `json:"event_stream" api:"required"`
 	// Token of the event that triggered the evaluation
-	EventToken string `json:"event_token,required" format:"uuid"`
+	EventToken string `json:"event_token" api:"required" format:"uuid"`
 	// The state of the Auth Rule
-	Mode AuthRuleV2ListResultsResponseTokenizationResultMode `json:"mode,required"`
+	Mode AuthRuleV2ListResultsResponseTokenizationResultMode `json:"mode" api:"required"`
 	// Version of the rule that was evaluated
-	RuleVersion int64                                               `json:"rule_version,required"`
+	RuleVersion int64                                               `json:"rule_version" api:"required"`
 	JSON        authRuleV2ListResultsResponseTokenizationResultJSON `json:"-"`
 }
 
@@ -3320,7 +3320,7 @@ func (r AuthRuleV2ListResultsResponseTokenizationResult) implementsAuthRuleV2Lis
 
 type AuthRuleV2ListResultsResponseTokenizationResultAction struct {
 	// Decline the tokenization request
-	Type AuthRuleV2ListResultsResponseTokenizationResultActionsType `json:"type,required"`
+	Type AuthRuleV2ListResultsResponseTokenizationResultActionsType `json:"type" api:"required"`
 	// Optional explanation for why this action was taken
 	Explanation string `json:"explanation"`
 	// Reason code for declining the tokenization request
@@ -3386,7 +3386,7 @@ func init() {
 
 type AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineAction struct {
 	// Decline the tokenization request
-	Type AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionType `json:"type,required"`
+	Type AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionType `json:"type" api:"required"`
 	// Optional explanation for why this action was taken
 	Explanation string `json:"explanation"`
 	// Reason code for declining the tokenization request
@@ -3460,7 +3460,7 @@ func (r AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReaso
 
 type AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaAction struct {
 	// Require two-factor authentication for the tokenization request
-	Type AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionType `json:"type,required"`
+	Type AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaActionType `json:"type" api:"required"`
 	// Optional explanation for why this action was taken
 	Explanation string `json:"explanation"`
 	// Reason code for requiring two-factor authentication
@@ -3625,21 +3625,21 @@ func (r AuthRuleV2ListResultsResponseTokenizationResultMode) IsKnown() bool {
 
 type AuthRuleV2ListResultsResponseACHResult struct {
 	// Globally unique identifier for the evaluation
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Actions returned by the rule evaluation
-	Actions []AuthRuleV2ListResultsResponseACHResultAction `json:"actions,required"`
+	Actions []AuthRuleV2ListResultsResponseACHResultAction `json:"actions" api:"required"`
 	// The Auth Rule token
-	AuthRuleToken string `json:"auth_rule_token,required" format:"uuid"`
+	AuthRuleToken string `json:"auth_rule_token" api:"required" format:"uuid"`
 	// Timestamp of the rule evaluation
-	EvaluationTime time.Time `json:"evaluation_time,required" format:"date-time"`
+	EvaluationTime time.Time `json:"evaluation_time" api:"required" format:"date-time"`
 	// The event stream during which the rule was evaluated
-	EventStream AuthRuleV2ListResultsResponseACHResultEventStream `json:"event_stream,required"`
+	EventStream AuthRuleV2ListResultsResponseACHResultEventStream `json:"event_stream" api:"required"`
 	// Token of the event that triggered the evaluation
-	EventToken string `json:"event_token,required" format:"uuid"`
+	EventToken string `json:"event_token" api:"required" format:"uuid"`
 	// The state of the Auth Rule
-	Mode AuthRuleV2ListResultsResponseACHResultMode `json:"mode,required"`
+	Mode AuthRuleV2ListResultsResponseACHResultMode `json:"mode" api:"required"`
 	// Version of the rule that was evaluated
-	RuleVersion int64                                      `json:"rule_version,required"`
+	RuleVersion int64                                      `json:"rule_version" api:"required"`
 	JSON        authRuleV2ListResultsResponseACHResultJSON `json:"-"`
 }
 
@@ -3670,7 +3670,7 @@ func (r AuthRuleV2ListResultsResponseACHResult) implementsAuthRuleV2ListResultsR
 
 type AuthRuleV2ListResultsResponseACHResultAction struct {
 	// Approve the ACH transaction
-	Type AuthRuleV2ListResultsResponseACHResultActionsType `json:"type,required"`
+	Type AuthRuleV2ListResultsResponseACHResultActionsType `json:"type" api:"required"`
 	// NACHA return code to use when returning the transaction. Note that the list of
 	// available return codes is subject to an allowlist configured at the program
 	// level
@@ -3737,7 +3737,7 @@ func init() {
 
 type AuthRuleV2ListResultsResponseACHResultActionsApproveAction struct {
 	// Approve the ACH transaction
-	Type AuthRuleV2ListResultsResponseACHResultActionsApproveActionType `json:"type,required"`
+	Type AuthRuleV2ListResultsResponseACHResultActionsApproveActionType `json:"type" api:"required"`
 	// Optional explanation for why this action was taken
 	Explanation string                                                         `json:"explanation"`
 	JSON        authRuleV2ListResultsResponseACHResultActionsApproveActionJSON `json:"-"`
@@ -3783,9 +3783,9 @@ type AuthRuleV2ListResultsResponseACHResultActionsReturnAction struct {
 	// NACHA return code to use when returning the transaction. Note that the list of
 	// available return codes is subject to an allowlist configured at the program
 	// level
-	Code AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode `json:"code,required"`
+	Code AuthRuleV2ListResultsResponseACHResultActionsReturnActionCode `json:"code" api:"required"`
 	// Return the ACH transaction
-	Type AuthRuleV2ListResultsResponseACHResultActionsReturnActionType `json:"type,required"`
+	Type AuthRuleV2ListResultsResponseACHResultActionsReturnActionType `json:"type" api:"required"`
 	// Optional explanation for why this action was taken
 	Explanation string                                                        `json:"explanation"`
 	JSON        authRuleV2ListResultsResponseACHResultActionsReturnActionJSON `json:"-"`
@@ -4085,9 +4085,9 @@ func (r AuthRuleV2ListResultsResponseMode) IsKnown() bool {
 
 type AuthRuleV2GetFeaturesResponse struct {
 	// Timestamp at which the Features were evaluated
-	Evaluated time.Time `json:"evaluated,required" format:"date-time"`
+	Evaluated time.Time `json:"evaluated" api:"required" format:"date-time"`
 	// Calculated Features used for evaluation of the provided Auth Rule
-	Features []AuthRuleV2GetFeaturesResponseFeature `json:"features,required"`
+	Features []AuthRuleV2GetFeaturesResponseFeature `json:"features" api:"required"`
 	JSON     authRuleV2GetFeaturesResponseJSON      `json:"-"`
 }
 
@@ -4109,12 +4109,12 @@ func (r authRuleV2GetFeaturesResponseJSON) RawJSON() string {
 }
 
 type AuthRuleV2GetFeaturesResponseFeature struct {
-	Filters AuthRuleV2GetFeaturesResponseFeaturesFilters `json:"filters,required"`
+	Filters AuthRuleV2GetFeaturesResponseFeaturesFilters `json:"filters" api:"required"`
 	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
-	Period VelocityLimitPeriod `json:"period,required"`
+	Period VelocityLimitPeriod `json:"period" api:"required"`
 	// The scope the velocity is calculated for
-	Scope AuthRuleV2GetFeaturesResponseFeaturesScope `json:"scope,required"`
-	Value AuthRuleV2GetFeaturesResponseFeaturesValue `json:"value,required"`
+	Scope AuthRuleV2GetFeaturesResponseFeaturesScope `json:"scope" api:"required"`
+	Value AuthRuleV2GetFeaturesResponseFeaturesValue `json:"value" api:"required"`
 	JSON  authRuleV2GetFeaturesResponseFeatureJSON   `json:"-"`
 }
 
@@ -4141,20 +4141,20 @@ type AuthRuleV2GetFeaturesResponseFeaturesFilters struct {
 	// ISO-3166-1 alpha-3 Country Codes to exclude from the velocity calculation.
 	// Transactions matching any of the provided will be excluded from the calculated
 	// velocity.
-	ExcludeCountries []string `json:"exclude_countries,nullable"`
+	ExcludeCountries []string `json:"exclude_countries" api:"nullable"`
 	// Merchant Category Codes to exclude from the velocity calculation. Transactions
 	// matching this MCC will be excluded from the calculated velocity.
-	ExcludeMccs []string `json:"exclude_mccs,nullable"`
+	ExcludeMccs []string `json:"exclude_mccs" api:"nullable"`
 	// ISO-3166-1 alpha-3 Country Codes to include in the velocity calculation.
 	// Transactions not matching any of the provided will not be included in the
 	// calculated velocity.
-	IncludeCountries []string `json:"include_countries,nullable"`
+	IncludeCountries []string `json:"include_countries" api:"nullable"`
 	// Merchant Category Codes to include in the velocity calculation. Transactions not
 	// matching this MCC will not be included in the calculated velocity.
-	IncludeMccs []string `json:"include_mccs,nullable"`
+	IncludeMccs []string `json:"include_mccs" api:"nullable"`
 	// PAN entry modes to include in the velocity calculation. Transactions not
 	// matching any of the provided will not be included in the calculated velocity.
-	IncludePanEntryModes []AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode `json:"include_pan_entry_modes,nullable"`
+	IncludePanEntryModes []AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode `json:"include_pan_entry_modes" api:"nullable"`
 	JSON                 authRuleV2GetFeaturesResponseFeaturesFiltersJSON                  `json:"-"`
 }
 
@@ -4226,10 +4226,10 @@ type AuthRuleV2GetFeaturesResponseFeaturesValue struct {
 	// Amount (in cents) for the given Auth Rule that is used as input for calculating
 	// the rule. For Velocity Limit rules this would be the calculated Velocity. For
 	// Conditional Rules using CARD*TRANSACTION_COUNT*\* this will be 0
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// Number of velocity impacting transactions matching the given scope, period and
 	// filters
-	Count int64                                          `json:"count,required"`
+	Count int64                                          `json:"count" api:"required"`
 	JSON  authRuleV2GetFeaturesResponseFeaturesValueJSON `json:"-"`
 }
 
@@ -4252,13 +4252,13 @@ func (r authRuleV2GetFeaturesResponseFeaturesValueJSON) RawJSON() string {
 
 type AuthRuleV2GetReportResponse struct {
 	// Auth Rule Token
-	AuthRuleToken string `json:"auth_rule_token,required" format:"uuid"`
+	AuthRuleToken string `json:"auth_rule_token" api:"required" format:"uuid"`
 	// The start date (UTC) of the report.
-	Begin time.Time `json:"begin,required" format:"date"`
+	Begin time.Time `json:"begin" api:"required" format:"date"`
 	// Daily evaluation statistics for the Auth Rule.
-	DailyStatistics []AuthRuleV2GetReportResponseDailyStatistic `json:"daily_statistics,required"`
+	DailyStatistics []AuthRuleV2GetReportResponseDailyStatistic `json:"daily_statistics" api:"required"`
 	// The end date (UTC) of the report.
-	End  time.Time                       `json:"end,required" format:"date"`
+	End  time.Time                       `json:"end" api:"required" format:"date"`
 	JSON authRuleV2GetReportResponseJSON `json:"-"`
 }
 
@@ -4283,11 +4283,11 @@ func (r authRuleV2GetReportResponseJSON) RawJSON() string {
 
 type AuthRuleV2GetReportResponseDailyStatistic struct {
 	// Detailed statistics for the current version of the rule.
-	CurrentVersionStatistics RuleStats `json:"current_version_statistics,required,nullable"`
+	CurrentVersionStatistics RuleStats `json:"current_version_statistics" api:"required,nullable"`
 	// The date (UTC) for which the statistics are reported.
-	Date time.Time `json:"date,required" format:"date"`
+	Date time.Time `json:"date" api:"required" format:"date"`
 	// Detailed statistics for the draft version of the rule.
-	DraftVersionStatistics RuleStats                                     `json:"draft_version_statistics,required,nullable"`
+	DraftVersionStatistics RuleStats                                     `json:"draft_version_statistics" api:"required,nullable"`
 	JSON                   authRuleV2GetReportResponseDailyStatisticJSON `json:"-"`
 }
 
@@ -4310,7 +4310,7 @@ func (r authRuleV2GetReportResponseDailyStatisticJSON) RawJSON() string {
 }
 
 type AuthRuleV2NewParams struct {
-	Body AuthRuleV2NewParamsBodyUnion `json:"body,required"`
+	Body AuthRuleV2NewParamsBodyUnion `json:"body" api:"required"`
 }
 
 func (r AuthRuleV2NewParams) MarshalJSON() (data []byte, err error) {
@@ -4318,7 +4318,7 @@ func (r AuthRuleV2NewParams) MarshalJSON() (data []byte, err error) {
 }
 
 type AuthRuleV2NewParamsBody struct {
-	Parameters param.Field[interface{}] `json:"parameters,required"`
+	Parameters param.Field[interface{}] `json:"parameters" api:"required"`
 	// The type of Auth Rule. For certain rule types, this determines the event stream
 	// during which it will be evaluated. For rules that can be applied to one of
 	// several event streams, the effective one is defined by the separate
@@ -4329,7 +4329,7 @@ type AuthRuleV2NewParamsBody struct {
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
-	Type                  param.Field[AuthRuleV2NewParamsBodyType] `json:"type,required"`
+	Type                  param.Field[AuthRuleV2NewParamsBodyType] `json:"type" api:"required"`
 	AccountTokens         param.Field[interface{}]                 `json:"account_tokens"`
 	BusinessAccountTokens param.Field[interface{}]                 `json:"business_account_tokens"`
 	CardTokens            param.Field[interface{}]                 `json:"card_tokens"`
@@ -4357,7 +4357,7 @@ type AuthRuleV2NewParamsBodyUnion interface {
 
 type AuthRuleV2NewParamsBodyAccountLevelRule struct {
 	// Parameters for the Auth Rule
-	Parameters param.Field[AuthRuleV2NewParamsBodyAccountLevelRuleParametersUnion] `json:"parameters,required"`
+	Parameters param.Field[AuthRuleV2NewParamsBodyAccountLevelRuleParametersUnion] `json:"parameters" api:"required"`
 	// The type of Auth Rule. For certain rule types, this determines the event stream
 	// during which it will be evaluated. For rules that can be applied to one of
 	// several event streams, the effective one is defined by the separate
@@ -4368,7 +4368,7 @@ type AuthRuleV2NewParamsBodyAccountLevelRule struct {
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
-	Type param.Field[AuthRuleV2NewParamsBodyAccountLevelRuleType] `json:"type,required"`
+	Type param.Field[AuthRuleV2NewParamsBodyAccountLevelRuleType] `json:"type" api:"required"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens param.Field[[]string] `json:"account_tokens" format:"uuid"`
 	// Business Account tokens to which the Auth Rule applies.
@@ -4470,9 +4470,9 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRuleType) IsKnown() bool {
 
 type AuthRuleV2NewParamsBodyCardLevelRule struct {
 	// Card tokens to which the Auth Rule applies.
-	CardTokens param.Field[[]string] `json:"card_tokens,required" format:"uuid"`
+	CardTokens param.Field[[]string] `json:"card_tokens" api:"required" format:"uuid"`
 	// Parameters for the Auth Rule
-	Parameters param.Field[AuthRuleV2NewParamsBodyCardLevelRuleParametersUnion] `json:"parameters,required"`
+	Parameters param.Field[AuthRuleV2NewParamsBodyCardLevelRuleParametersUnion] `json:"parameters" api:"required"`
 	// The type of Auth Rule. For certain rule types, this determines the event stream
 	// during which it will be evaluated. For rules that can be applied to one of
 	// several event streams, the effective one is defined by the separate
@@ -4483,7 +4483,7 @@ type AuthRuleV2NewParamsBodyCardLevelRule struct {
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
-	Type param.Field[AuthRuleV2NewParamsBodyCardLevelRuleType] `json:"type,required"`
+	Type param.Field[AuthRuleV2NewParamsBodyCardLevelRuleType] `json:"type" api:"required"`
 	// The event stream during which the rule will be evaluated.
 	EventStream param.Field[EventStream] `json:"event_stream"`
 	// Auth Rule Name
@@ -4581,9 +4581,9 @@ func (r AuthRuleV2NewParamsBodyCardLevelRuleType) IsKnown() bool {
 
 type AuthRuleV2NewParamsBodyProgramLevelRule struct {
 	// Parameters for the Auth Rule
-	Parameters param.Field[AuthRuleV2NewParamsBodyProgramLevelRuleParametersUnion] `json:"parameters,required"`
+	Parameters param.Field[AuthRuleV2NewParamsBodyProgramLevelRuleParametersUnion] `json:"parameters" api:"required"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
-	ProgramLevel param.Field[bool] `json:"program_level,required"`
+	ProgramLevel param.Field[bool] `json:"program_level" api:"required"`
 	// The type of Auth Rule. For certain rule types, this determines the event stream
 	// during which it will be evaluated. For rules that can be applied to one of
 	// several event streams, the effective one is defined by the separate
@@ -4594,7 +4594,7 @@ type AuthRuleV2NewParamsBodyProgramLevelRule struct {
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
-	Type param.Field[AuthRuleV2NewParamsBodyProgramLevelRuleType] `json:"type,required"`
+	Type param.Field[AuthRuleV2NewParamsBodyProgramLevelRuleType] `json:"type" api:"required"`
 	// The event stream during which the rule will be evaluated.
 	EventStream param.Field[EventStream] `json:"event_stream"`
 	// Card tokens to which the Auth Rule does not apply.
@@ -4720,7 +4720,7 @@ func (r AuthRuleV2NewParamsBodyType) IsKnown() bool {
 }
 
 type AuthRuleV2UpdateParams struct {
-	Body AuthRuleV2UpdateParamsBodyUnion `json:"body,required"`
+	Body AuthRuleV2UpdateParamsBodyUnion `json:"body" api:"required"`
 }
 
 func (r AuthRuleV2UpdateParams) MarshalJSON() (data []byte, err error) {
@@ -5053,9 +5053,9 @@ func (r AuthRuleV2GetFeaturesParams) URLQuery() (v url.Values) {
 
 type AuthRuleV2GetReportParams struct {
 	// Start date for the report
-	Begin param.Field[time.Time] `query:"begin,required" format:"date"`
+	Begin param.Field[time.Time] `query:"begin" api:"required" format:"date"`
 	// End date for the report
-	End param.Field[time.Time] `query:"end,required" format:"date"`
+	End param.Field[time.Time] `query:"end" api:"required" format:"date"`
 }
 
 // URLQuery serializes [AuthRuleV2GetReportParams]'s query parameters as

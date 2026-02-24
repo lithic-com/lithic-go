@@ -50,13 +50,13 @@ func (r *TransactionEventEnhancedCommercialDataService) Get(ctx context.Context,
 
 type EnhancedData struct {
 	// A unique identifier for the enhanced commercial data.
-	Token  string             `json:"token,required" format:"uuid"`
-	Common EnhancedDataCommon `json:"common,required"`
+	Token  string             `json:"token" api:"required" format:"uuid"`
+	Common EnhancedDataCommon `json:"common" api:"required"`
 	// The token of the event that the enhanced data is associated with.
-	EventToken string              `json:"event_token,required" format:"uuid"`
-	Fleet      []EnhancedDataFleet `json:"fleet,required"`
+	EventToken string              `json:"event_token" api:"required" format:"uuid"`
+	Fleet      []EnhancedDataFleet `json:"fleet" api:"required"`
 	// The token of the transaction that the enhanced data is associated with.
-	TransactionToken string           `json:"transaction_token,required" format:"uuid"`
+	TransactionToken string           `json:"transaction_token" api:"required" format:"uuid"`
 	JSON             enhancedDataJSON `json:"-"`
 }
 
@@ -80,14 +80,14 @@ func (r enhancedDataJSON) RawJSON() string {
 }
 
 type EnhancedDataCommon struct {
-	LineItems []EnhancedDataCommonLineItem `json:"line_items,required"`
-	Tax       EnhancedDataCommonTax        `json:"tax,required"`
+	LineItems []EnhancedDataCommonLineItem `json:"line_items" api:"required"`
+	Tax       EnhancedDataCommonTax        `json:"tax" api:"required"`
 	// A customer identifier.
-	CustomerReferenceNumber string `json:"customer_reference_number,nullable"`
+	CustomerReferenceNumber string `json:"customer_reference_number" api:"nullable"`
 	// A merchant identifier.
-	MerchantReferenceNumber string `json:"merchant_reference_number,nullable"`
+	MerchantReferenceNumber string `json:"merchant_reference_number" api:"nullable"`
 	// The date of the order.
-	OrderDate time.Time              `json:"order_date,nullable" format:"date"`
+	OrderDate time.Time              `json:"order_date" api:"nullable" format:"date"`
 	JSON      enhancedDataCommonJSON `json:"-"`
 }
 
@@ -114,13 +114,13 @@ func (r enhancedDataCommonJSON) RawJSON() string {
 // An L2/L3 enhanced commercial data line item.
 type EnhancedDataCommonLineItem struct {
 	// The price of the item purchased in merchant currency.
-	Amount string `json:"amount,nullable"`
+	Amount string `json:"amount" api:"nullable"`
 	// A human-readable description of the item.
-	Description string `json:"description,nullable"`
+	Description string `json:"description" api:"nullable"`
 	// An identifier for the item purchased.
-	ProductCode string `json:"product_code,nullable"`
+	ProductCode string `json:"product_code" api:"nullable"`
 	// The quantity of the item purchased.
-	Quantity string                         `json:"quantity,nullable"`
+	Quantity string                         `json:"quantity" api:"nullable"`
 	JSON     enhancedDataCommonLineItemJSON `json:"-"`
 }
 
@@ -145,11 +145,11 @@ func (r enhancedDataCommonLineItemJSON) RawJSON() string {
 
 type EnhancedDataCommonTax struct {
 	// The amount of tax collected.
-	Amount int64 `json:"amount,nullable"`
+	Amount int64 `json:"amount" api:"nullable"`
 	// A flag indicating whether the transaction is tax exempt or not.
-	Exempt EnhancedDataCommonTaxExempt `json:"exempt,nullable"`
+	Exempt EnhancedDataCommonTaxExempt `json:"exempt" api:"nullable"`
 	// The tax ID of the merchant.
-	MerchantTaxID string                    `json:"merchant_tax_id,nullable"`
+	MerchantTaxID string                    `json:"merchant_tax_id" api:"nullable"`
 	JSON          enhancedDataCommonTaxJSON `json:"-"`
 }
 
@@ -189,18 +189,18 @@ func (r EnhancedDataCommonTaxExempt) IsKnown() bool {
 }
 
 type EnhancedDataFleet struct {
-	AmountTotals EnhancedDataFleetAmountTotals `json:"amount_totals,required"`
-	Fuel         EnhancedDataFleetFuel         `json:"fuel,required"`
+	AmountTotals EnhancedDataFleetAmountTotals `json:"amount_totals" api:"required"`
+	Fuel         EnhancedDataFleetFuel         `json:"fuel" api:"required"`
 	// The driver number entered into the terminal at the time of sale, with leading
 	// zeros stripped.
-	DriverNumber string `json:"driver_number,nullable"`
+	DriverNumber string `json:"driver_number" api:"nullable"`
 	// The odometer reading entered into the terminal at the time of sale.
-	Odometer int64 `json:"odometer,nullable"`
+	Odometer int64 `json:"odometer" api:"nullable"`
 	// The type of fuel service.
 	ServiceType EnhancedDataFleetServiceType `json:"service_type"`
 	// The vehicle number entered into the terminal at the time of sale, with leading
 	// zeros stripped.
-	VehicleNumber string                `json:"vehicle_number,nullable"`
+	VehicleNumber string                `json:"vehicle_number" api:"nullable"`
 	JSON          enhancedDataFleetJSON `json:"-"`
 }
 
@@ -227,11 +227,11 @@ func (r enhancedDataFleetJSON) RawJSON() string {
 
 type EnhancedDataFleetAmountTotals struct {
 	// The discount applied to the gross sale amount.
-	Discount int64 `json:"discount,nullable"`
+	Discount int64 `json:"discount" api:"nullable"`
 	// The gross sale amount.
-	GrossSale int64 `json:"gross_sale,nullable"`
+	GrossSale int64 `json:"gross_sale" api:"nullable"`
 	// The amount after discount.
-	NetSale int64                             `json:"net_sale,nullable"`
+	NetSale int64                             `json:"net_sale" api:"nullable"`
 	JSON    enhancedDataFleetAmountTotalsJSON `json:"-"`
 }
 
@@ -255,13 +255,13 @@ func (r enhancedDataFleetAmountTotalsJSON) RawJSON() string {
 
 type EnhancedDataFleetFuel struct {
 	// The quantity of fuel purchased.
-	Quantity string `json:"quantity,nullable"`
+	Quantity string `json:"quantity" api:"nullable"`
 	// The type of fuel purchased.
-	Type EnhancedDataFleetFuelType `json:"type,nullable"`
+	Type EnhancedDataFleetFuelType `json:"type" api:"nullable"`
 	// Unit of measure for fuel disbursement.
-	UnitOfMeasure EnhancedDataFleetFuelUnitOfMeasure `json:"unit_of_measure,nullable"`
+	UnitOfMeasure EnhancedDataFleetFuelUnitOfMeasure `json:"unit_of_measure" api:"nullable"`
 	// The price per unit of fuel.
-	UnitPrice int64                     `json:"unit_price,nullable"`
+	UnitPrice int64                     `json:"unit_price" api:"nullable"`
 	JSON      enhancedDataFleetFuelJSON `json:"-"`
 }
 

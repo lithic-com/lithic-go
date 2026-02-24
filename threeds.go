@@ -36,33 +36,33 @@ func NewThreeDSService(opts ...option.RequestOption) (r *ThreeDSService) {
 type ThreeDSAuthentication struct {
 	// Globally unique identifier for the 3DS authentication. Permitted values:
 	// 36-digit version 4 UUID (including hyphens).
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Type of account/card that is being used for the transaction. Maps to EMV 3DS
 	// field `acctType`.
-	AccountType ThreeDSAuthenticationAccountType `json:"account_type,required,nullable"`
+	AccountType ThreeDSAuthenticationAccountType `json:"account_type" api:"required,nullable"`
 	// Indicates the outcome of the 3DS authentication process.
-	AuthenticationResult ThreeDSAuthenticationAuthenticationResult `json:"authentication_result,required"`
+	AuthenticationResult ThreeDSAuthenticationAuthenticationResult `json:"authentication_result" api:"required"`
 	// Indicates whether the expiration date provided by the cardholder during checkout
 	// matches Lithic's record of the card's expiration date.
-	CardExpiryCheck ThreeDSAuthenticationCardExpiryCheck `json:"card_expiry_check,required"`
+	CardExpiryCheck ThreeDSAuthenticationCardExpiryCheck `json:"card_expiry_check" api:"required"`
 	// Globally unique identifier for the card on which the 3DS authentication has
 	// occurred. Permitted values: 36-digit version 4 UUID (including hyphens).
-	CardToken string `json:"card_token,required" format:"uuid"`
+	CardToken string `json:"card_token" api:"required" format:"uuid"`
 	// Object containing data about the cardholder provided during the transaction.
-	Cardholder ThreeDSAuthenticationCardholder `json:"cardholder,required"`
+	Cardholder ThreeDSAuthenticationCardholder `json:"cardholder" api:"required"`
 	// Channel in which the authentication occurs. Maps to EMV 3DS field
 	// `deviceChannel`.
-	Channel ThreeDSAuthenticationChannel `json:"channel,required"`
+	Channel ThreeDSAuthenticationChannel `json:"channel" api:"required"`
 	// Date and time when the authentication was created in Lithic's system. Permitted
 	// values: Date string in the ISO 8601 format yyyy-MM-dd'T'hh:mm:ssZ.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Object containing data about the merchant involved in the e-commerce
 	// transaction.
-	Merchant ThreeDSAuthenticationMerchant `json:"merchant,required"`
+	Merchant ThreeDSAuthenticationMerchant `json:"merchant" api:"required"`
 	// Either PAYMENT_AUTHENTICATION or NON_PAYMENT_AUTHENTICATION. For
 	// NON_PAYMENT_AUTHENTICATION, additional_data and transaction fields are not
 	// populated.
-	MessageCategory ThreeDSAuthenticationMessageCategory `json:"message_category,required"`
+	MessageCategory ThreeDSAuthenticationMessageCategory `json:"message_category" api:"required"`
 	// Indicates whether a challenge is requested for this transaction
 	//
 	//   - `NO_PREFERENCE` - No Preference
@@ -73,41 +73,41 @@ type ThreeDSAuthentication struct {
 	//     risk analysis is already performed)
 	//   - `DATA_SHARE_ONLY` - No Challenge requested (Data Share Only)
 	//   - `OTHER` - Other indicators not captured by above. These are rarely used
-	ThreeDSRequestorChallengeIndicator ThreeDSAuthenticationThreeDSRequestorChallengeIndicator `json:"three_ds_requestor_challenge_indicator,required"`
+	ThreeDSRequestorChallengeIndicator ThreeDSAuthenticationThreeDSRequestorChallengeIndicator `json:"three_ds_requestor_challenge_indicator" api:"required"`
 	// Object containing additional data about the 3DS request that is beyond the EMV
 	// 3DS standard spec (e.g., specific fields that only certain card networks send
 	// but are not required across all 3DS requests).
-	AdditionalData ThreeDSAuthenticationAdditionalData `json:"additional_data,nullable"`
+	AdditionalData ThreeDSAuthenticationAdditionalData `json:"additional_data" api:"nullable"`
 	// Object containing data about the app used in the e-commerce transaction. Present
 	// if the channel is 'APP_BASED'.
-	App ThreeDSAuthenticationApp `json:"app,nullable"`
+	App ThreeDSAuthenticationApp `json:"app" api:"nullable"`
 	// Type of authentication request - i.e., the type of transaction or interaction is
 	// causing the merchant to request an authentication. Maps to EMV 3DS field
 	// `threeDSRequestorAuthenticationInd`.
-	AuthenticationRequestType ThreeDSAuthenticationAuthenticationRequestType `json:"authentication_request_type,nullable"`
+	AuthenticationRequestType ThreeDSAuthenticationAuthenticationRequestType `json:"authentication_request_type" api:"nullable"`
 	// Object containing data about the browser used in the e-commerce transaction.
 	// Present if the channel is 'BROWSER'.
-	Browser ThreeDSAuthenticationBrowser `json:"browser,nullable"`
+	Browser ThreeDSAuthenticationBrowser `json:"browser" api:"nullable"`
 	// Metadata about the challenge method and delivery. Only present when a challenge
 	// is triggered.
-	ChallengeMetadata ThreeDSAuthenticationChallengeMetadata `json:"challenge_metadata,nullable"`
+	ChallengeMetadata ThreeDSAuthenticationChallengeMetadata `json:"challenge_metadata" api:"nullable"`
 	// Entity that orchestrates the challenge. This won't be set for authentications
 	// for which a decision has not yet been made (e.g. in-flight customer decisioning
 	// request).
-	ChallengeOrchestratedBy ThreeDSAuthenticationChallengeOrchestratedBy `json:"challenge_orchestrated_by,nullable"`
+	ChallengeOrchestratedBy ThreeDSAuthenticationChallengeOrchestratedBy `json:"challenge_orchestrated_by" api:"nullable"`
 	// Entity that made the authentication decision. This won't be set for
 	// authentications for which a decision has not yet been made (e.g. in-flight
 	// customer decisioning request).
-	DecisionMadeBy ThreeDSAuthenticationDecisionMadeBy `json:"decision_made_by,nullable"`
+	DecisionMadeBy ThreeDSAuthenticationDecisionMadeBy `json:"decision_made_by" api:"nullable"`
 	// Type of 3DS Requestor Initiated (3RI) request — i.e., a 3DS authentication that
 	// takes place at the initiation of the merchant rather than the cardholder. The
 	// most common example of this is where a merchant is authenticating before billing
 	// for a recurring transaction such as a pay TV subscription or a utility bill.
 	// Maps to EMV 3DS field `threeRIInd`.
-	ThreeRiRequestType ThreeDSAuthenticationThreeRiRequestType `json:"three_ri_request_type,nullable"`
+	ThreeRiRequestType ThreeDSAuthenticationThreeRiRequestType `json:"three_ri_request_type" api:"nullable"`
 	// Object containing data about the e-commerce transaction for which the merchant
 	// is requesting authentication.
-	Transaction ThreeDSAuthenticationTransaction `json:"transaction,nullable"`
+	Transaction ThreeDSAuthenticationTransaction `json:"transaction" api:"nullable"`
 	JSON        threeDSAuthenticationJSON        `json:"-"`
 }
 
@@ -206,7 +206,7 @@ type ThreeDSAuthenticationCardholder struct {
 	// cardholder are the same. This value - and assessment of whether the addresses
 	// match - is provided directly in the 3DS request and is not determined by Lithic.
 	// Maps to EMV 3DS field `addrMatch`.
-	AddressMatch bool `json:"address_match,nullable"`
+	AddressMatch bool `json:"address_match" api:"nullable"`
 	// Lithic's evaluation result comparing the transaction's address data with the
 	// cardholder KYC data if it exists. In the event Lithic does not have any
 	// Cardholder KYC data, or the transaction does not contain any address data,
@@ -216,18 +216,18 @@ type ThreeDSAuthenticationCardholder struct {
 	BillingAddress ThreeDSAuthenticationCardholderBillingAddress `json:"billing_address"`
 	// Email address that is either provided by the cardholder or is on file with the
 	// merchant in a 3RI request. Maps to EMV 3DS field `email`.
-	Email string `json:"email,nullable"`
+	Email string `json:"email" api:"nullable"`
 	// Name of the cardholder. Maps to EMV 3DS field `cardholderName`.
-	Name string `json:"name,nullable"`
+	Name string `json:"name" api:"nullable"`
 	// Home phone number in E.164 format provided by the cardholder. Maps to EMV 3DS
 	// fields `homePhone.cc` and `homePhone.subscriber`.
-	PhoneNumberHome string `json:"phone_number_home,nullable"`
+	PhoneNumberHome string `json:"phone_number_home" api:"nullable"`
 	// Mobile/cell phone number in E.164 format provided by the cardholder. Maps to EMV
 	// 3DS fields `mobilePhone.cc` and `mobilePhone.subscriber`.
-	PhoneNumberMobile string `json:"phone_number_mobile,nullable"`
+	PhoneNumberMobile string `json:"phone_number_mobile" api:"nullable"`
 	// Work phone number in E.164 format provided by the cardholder. Maps to EMV 3DS
 	// fields `workPhone.cc` and `workPhone.subscriber`.
-	PhoneNumberWork string `json:"phone_number_work,nullable"`
+	PhoneNumberWork string `json:"phone_number_work" api:"nullable"`
 	// Object containing data on the shipping address provided during the transaction.
 	ShippingAddress ThreeDSAuthenticationCardholderShippingAddress `json:"shipping_address"`
 	JSON            threeDSAuthenticationCardholderJSON            `json:"-"`
@@ -282,18 +282,18 @@ func (r ThreeDSAuthenticationCardholderAddressOnFileMatch) IsKnown() bool {
 // Object containing data on the billing address provided during the transaction.
 type ThreeDSAuthenticationCardholderBillingAddress struct {
 	// First line of the street address provided by the cardholder.
-	Address1 string `json:"address1,nullable"`
+	Address1 string `json:"address1" api:"nullable"`
 	// Second line of the street address provided by the cardholder.
-	Address2 string `json:"address2,nullable"`
+	Address2 string `json:"address2" api:"nullable"`
 	// Third line of the street address provided by the cardholder.
-	Address3 string `json:"address3,nullable"`
+	Address3 string `json:"address3" api:"nullable"`
 	// City of the address provided by the cardholder.
-	City string `json:"city,nullable"`
+	City string `json:"city" api:"nullable"`
 	// Country of the address provided by the cardholder in ISO 3166-1 alpha-3 format
 	// (e.g. USA)
-	Country string `json:"country,nullable"`
+	Country string `json:"country" api:"nullable"`
 	// Postal code (e.g., ZIP code) of the address provided by the cardholder
-	PostalCode string                                            `json:"postal_code,nullable"`
+	PostalCode string                                            `json:"postal_code" api:"nullable"`
 	JSON       threeDSAuthenticationCardholderBillingAddressJSON `json:"-"`
 }
 
@@ -321,18 +321,18 @@ func (r threeDSAuthenticationCardholderBillingAddressJSON) RawJSON() string {
 // Object containing data on the shipping address provided during the transaction.
 type ThreeDSAuthenticationCardholderShippingAddress struct {
 	// First line of the street address provided by the cardholder.
-	Address1 string `json:"address1,nullable"`
+	Address1 string `json:"address1" api:"nullable"`
 	// Second line of the street address provided by the cardholder.
-	Address2 string `json:"address2,nullable"`
+	Address2 string `json:"address2" api:"nullable"`
 	// Third line of the street address provided by the cardholder.
-	Address3 string `json:"address3,nullable"`
+	Address3 string `json:"address3" api:"nullable"`
 	// City of the address provided by the cardholder.
-	City string `json:"city,nullable"`
+	City string `json:"city" api:"nullable"`
 	// Country of the address provided by the cardholder in ISO 3166-1 alpha-3 format
 	// (e.g. USA)
-	Country string `json:"country,nullable"`
+	Country string `json:"country" api:"nullable"`
 	// Postal code (e.g., ZIP code) of the address provided by the cardholder
-	PostalCode string                                             `json:"postal_code,nullable"`
+	PostalCode string                                             `json:"postal_code" api:"nullable"`
 	JSON       threeDSAuthenticationCardholderShippingAddressJSON `json:"-"`
 }
 
@@ -380,21 +380,21 @@ func (r ThreeDSAuthenticationChannel) IsKnown() bool {
 type ThreeDSAuthenticationMerchant struct {
 	// Object containing additional data indicating additional risk factors related to
 	// the e-commerce transaction.
-	RiskIndicator ThreeDSAuthenticationMerchantRiskIndicator `json:"risk_indicator,required"`
+	RiskIndicator ThreeDSAuthenticationMerchantRiskIndicator `json:"risk_indicator" api:"required"`
 	// Merchant identifier as assigned by the acquirer. Maps to EMV 3DS field
 	// `acquirerMerchantId`. May not be present for non-payment authentications.
-	ID string `json:"id,nullable"`
+	ID string `json:"id" api:"nullable"`
 	// Country code of the merchant requesting 3DS authentication. Maps to EMV 3DS
 	// field `merchantCountryCode`. Permitted values: ISO 3166-1 alpha-3 country code
 	// (e.g., USA). May not be present for non-payment authentications.
-	Country string `json:"country,nullable"`
+	Country string `json:"country" api:"nullable"`
 	// Merchant category code assigned to the merchant that describes its business
 	// activity type. Maps to EMV 3DS field `mcc`. May not be present for non-payment
 	// authentications.
-	Mcc string `json:"mcc,nullable"`
+	Mcc string `json:"mcc" api:"nullable"`
 	// Name of the merchant. Maps to EMV 3DS field `merchantName`. May not be present
 	// for non-payment authentications.
-	Name string                            `json:"name,nullable"`
+	Name string                            `json:"name" api:"nullable"`
 	JSON threeDSAuthenticationMerchantJSON `json:"-"`
 }
 
@@ -423,36 +423,36 @@ func (r threeDSAuthenticationMerchantJSON) RawJSON() string {
 type ThreeDSAuthenticationMerchantRiskIndicator struct {
 	// In transactions with electronic delivery, email address to which merchandise is
 	// delivered. Maps to EMV 3DS field `deliveryEmailAddress`.
-	DeliveryEmailAddress string `json:"delivery_email_address,nullable"`
+	DeliveryEmailAddress string `json:"delivery_email_address" api:"nullable"`
 	// The delivery time frame for the merchandise. Maps to EMV 3DS field
 	// `deliveryTimeframe`.
-	DeliveryTimeFrame ThreeDSAuthenticationMerchantRiskIndicatorDeliveryTimeFrame `json:"delivery_time_frame,nullable"`
+	DeliveryTimeFrame ThreeDSAuthenticationMerchantRiskIndicatorDeliveryTimeFrame `json:"delivery_time_frame" api:"nullable"`
 	// In prepaid or gift card purchase transactions, purchase amount total in major
 	// units (e.g., a purchase of USD $205.10 would be 205). Maps to EMV 3DS field
 	// `giftCardAmount`.
-	GiftCardAmount int64 `json:"gift_card_amount,nullable"`
+	GiftCardAmount int64 `json:"gift_card_amount" api:"nullable"`
 	// In prepaid or gift card purchase transactions, count of individual prepaid or
 	// gift cards/codes purchased. Maps to EMV 3DS field `giftCardCount`.
-	GiftCardCount int64 `json:"gift_card_count,nullable"`
+	GiftCardCount int64 `json:"gift_card_count" api:"nullable"`
 	// In prepaid or gift card purchase transactions, currency code of the gift card.
 	// Maps to EMV 3DS field `giftCardCurr`. Permitted values: ISO 4217 three-character
 	// currency code (e.g., USD).
-	GiftCardCurrency string `json:"gift_card_currency,nullable"`
+	GiftCardCurrency string `json:"gift_card_currency" api:"nullable"`
 	// Indicates whether the purchase is for merchandise that is available now or at a
 	// future date. Maps to EMV 3DS field `preOrderPurchaseInd`.
-	OrderAvailability ThreeDSAuthenticationMerchantRiskIndicatorOrderAvailability `json:"order_availability,nullable"`
+	OrderAvailability ThreeDSAuthenticationMerchantRiskIndicatorOrderAvailability `json:"order_availability" api:"nullable"`
 	// In pre-order purchase transactions, the expected date that the merchandise will
 	// be available. Maps to EMV 3DS field `preOrderDate`. Permitted values: Date
 	// string in the ISO 8601 format yyyy-MM-dd'T'hh:mm:ssZ
-	PreOrderAvailableDate time.Time `json:"pre_order_available_date,nullable" format:"date-time"`
+	PreOrderAvailableDate time.Time `json:"pre_order_available_date" api:"nullable" format:"date-time"`
 	// Indicates whether the cardholder is reordering previously purchased merchandise.
 	// Maps to EMV 3DS field `reorderItemsInd`.
-	ReorderItems ThreeDSAuthenticationMerchantRiskIndicatorReorderItems `json:"reorder_items,nullable"`
+	ReorderItems ThreeDSAuthenticationMerchantRiskIndicatorReorderItems `json:"reorder_items" api:"nullable"`
 	// Shipping method that the cardholder chose for the transaction. If purchase
 	// includes one or more item, this indicator is used for the physical goods; if the
 	// purchase only includes digital goods, this indicator is used to describe the
 	// most expensive item purchased. Maps to EMV 3DS field `shipIndicator`.
-	ShippingMethod ThreeDSAuthenticationMerchantRiskIndicatorShippingMethod `json:"shipping_method,nullable"`
+	ShippingMethod ThreeDSAuthenticationMerchantRiskIndicatorShippingMethod `json:"shipping_method" api:"nullable"`
 	JSON           threeDSAuthenticationMerchantRiskIndicatorJSON           `json:"-"`
 }
 
@@ -613,11 +613,11 @@ func (r ThreeDSAuthenticationThreeDSRequestorChallengeIndicator) IsKnown() bool 
 type ThreeDSAuthenticationAdditionalData struct {
 	// Mastercard only: Indicates whether the network would have considered the
 	// authentication request to be low risk or not.
-	NetworkDecision ThreeDSAuthenticationAdditionalDataNetworkDecision `json:"network_decision,nullable"`
+	NetworkDecision ThreeDSAuthenticationAdditionalDataNetworkDecision `json:"network_decision" api:"nullable"`
 	// Mastercard only: Assessment by the network of the authentication risk level,
 	// with a higher value indicating a higher amount of risk. Permitted values:
 	// Integer between 0-950, in increments of 50.
-	NetworkRiskScore int64                                   `json:"network_risk_score,nullable"`
+	NetworkRiskScore int64                                   `json:"network_risk_score" api:"nullable"`
 	JSON             threeDSAuthenticationAdditionalDataJSON `json:"-"`
 }
 
@@ -659,28 +659,28 @@ func (r ThreeDSAuthenticationAdditionalDataNetworkDecision) IsKnown() bool {
 // if the channel is 'APP_BASED'.
 type ThreeDSAuthenticationApp struct {
 	// Device model: e.g. "Apple iPhone 16".
-	Device string `json:"device,nullable"`
+	Device string `json:"device" api:"nullable"`
 	// Raw device information - base64-encoded JSON object. Maps to EMV 3DS field
 	// `deviceInfo`.
-	DeviceInfo string `json:"device_info,nullable"`
+	DeviceInfo string `json:"device_info" api:"nullable"`
 	// IP address of the device.
 	Ip string `json:"ip"`
 	// Latitude coordinate of current device location.
-	Latitude float64 `json:"latitude,nullable"`
+	Latitude float64 `json:"latitude" api:"nullable"`
 	// Device locale: e.g. "en-US".
-	Locale string `json:"locale,nullable"`
+	Locale string `json:"locale" api:"nullable"`
 	// Longitude coordinate of current device location.
-	Longitude float64 `json:"longitude,nullable"`
+	Longitude float64 `json:"longitude" api:"nullable"`
 	// Operating System: e.g. "Android 12", "iOS 17.1".
-	Os string `json:"os,nullable"`
+	Os string `json:"os" api:"nullable"`
 	// Device platform: Android, iOS, Windows, etc.
-	Platform string `json:"platform,nullable"`
+	Platform string `json:"platform" api:"nullable"`
 	// Screen height in pixels.
-	ScreenHeight int64 `json:"screen_height,nullable"`
+	ScreenHeight int64 `json:"screen_height" api:"nullable"`
 	// Screen width in pixels.
-	ScreenWidth int64 `json:"screen_width,nullable"`
+	ScreenWidth int64 `json:"screen_width" api:"nullable"`
 	// Time zone offset in minutes between UTC and device local time.
-	TimeZone string                       `json:"time_zone,nullable"`
+	TimeZone string                       `json:"time_zone" api:"nullable"`
 	JSON     threeDSAuthenticationAppJSON `json:"-"`
 }
 
@@ -741,24 +741,24 @@ func (r ThreeDSAuthenticationAuthenticationRequestType) IsKnown() bool {
 type ThreeDSAuthenticationBrowser struct {
 	// Content of the HTTP accept headers as sent from the cardholder's browser to the
 	// 3DS requestor (e.g., merchant or digital wallet).
-	AcceptHeader string `json:"accept_header,nullable"`
+	AcceptHeader string `json:"accept_header" api:"nullable"`
 	// IP address of the browser as returned by the HTTP headers to the 3DS requestor
 	// (e.g., merchant or digital wallet). Maps to EMV 3DS field `browserIP`.
-	Ip string `json:"ip,nullable"`
+	Ip string `json:"ip" api:"nullable"`
 	// Indicates whether the cardholder's browser has the ability to execute Java. Maps
 	// to EMV 3DS field `browserJavaEnabled`.
-	JavaEnabled bool `json:"java_enabled,nullable"`
+	JavaEnabled bool `json:"java_enabled" api:"nullable"`
 	// Indicates whether the cardholder's browser has the ability to execute
 	// JavaScript. Maps to EMV 3DS field `browserJavascriptEnabled`.
-	JavascriptEnabled bool `json:"javascript_enabled,nullable"`
+	JavascriptEnabled bool `json:"javascript_enabled" api:"nullable"`
 	// Language of the cardholder's browser as defined in IETF BCP47. Maps to EMV 3DS
 	// field `browserLanguage`.
-	Language string `json:"language,nullable"`
+	Language string `json:"language" api:"nullable"`
 	// Time zone offset in minutes between UTC and browser local time. Maps to EMV 3DS
 	// field `browserTz`.
-	TimeZone string `json:"time_zone,nullable"`
+	TimeZone string `json:"time_zone" api:"nullable"`
 	// Content of the HTTP user-agent header. Maps to EMV 3DS field `browserUserAgent`.
-	UserAgent string                           `json:"user_agent,nullable"`
+	UserAgent string                           `json:"user_agent" api:"nullable"`
 	JSON      threeDSAuthenticationBrowserJSON `json:"-"`
 }
 
@@ -788,7 +788,7 @@ func (r threeDSAuthenticationBrowserJSON) RawJSON() string {
 // is triggered.
 type ThreeDSAuthenticationChallengeMetadata struct {
 	// The type of challenge method used for authentication.
-	MethodType ThreeDSAuthenticationChallengeMetadataMethodType `json:"method_type,required"`
+	MethodType ThreeDSAuthenticationChallengeMetadataMethodType `json:"method_type" api:"required"`
 	// Indicates the status of the challenge
 	//
 	//   - SUCCESS - Cardholder completed the challenge successfully
@@ -805,9 +805,9 @@ type ThreeDSAuthenticationChallengeMetadata struct {
 	//     more than the allowed number of times
 	//   - ABORTED - Merchant aborted authentication after a challenge was requested
 	//   - ERROR - The challenge failed for a reason different than those documented
-	Status ThreeDSAuthenticationChallengeMetadataStatus `json:"status,required"`
+	Status ThreeDSAuthenticationChallengeMetadataStatus `json:"status" api:"required"`
 	// The phone number used for delivering the OTP. Relevant only for SMS_OTP method.
-	PhoneNumber string                                     `json:"phone_number,nullable"`
+	PhoneNumber string                                     `json:"phone_number" api:"nullable"`
 	JSON        threeDSAuthenticationChallengeMetadataJSON `json:"-"`
 }
 
@@ -963,23 +963,23 @@ func (r ThreeDSAuthenticationThreeRiRequestType) IsKnown() bool {
 type ThreeDSAuthenticationTransaction struct {
 	// Amount of the purchase in minor units of currency with all punctuation removed.
 	// Maps to EMV 3DS field `purchaseAmount`.
-	Amount float64 `json:"amount,required"`
+	Amount float64 `json:"amount" api:"required"`
 	// Approximate amount of the purchase in minor units of cardholder currency.
 	// Derived from `amount` using a daily conversion rate.
-	CardholderAmount float64 `json:"cardholder_amount,required,nullable"`
+	CardholderAmount float64 `json:"cardholder_amount" api:"required,nullable"`
 	// Currency of the purchase. Maps to EMV 3DS field `purchaseCurrency`. Permitted
 	// values: ISO 4217 three-character currency code (e.g., USD).
-	Currency string `json:"currency,required"`
+	Currency string `json:"currency" api:"required"`
 	// Minor units of currency, as specified in ISO 4217 currency exponent. Maps to EMV
 	// 3DS field `purchaseExponent`.
-	CurrencyExponent float64 `json:"currency_exponent,required"`
+	CurrencyExponent float64 `json:"currency_exponent" api:"required"`
 	// Date and time when the authentication was generated by the merchant/acquirer's
 	// 3DS server. Maps to EMV 3DS field `purchaseDate`. Permitted values: Date string
 	// in the ISO 8601 format yyyy-MM-dd'T'hh:mm:ssZ.
-	DateTime time.Time `json:"date_time,required" format:"date-time"`
+	DateTime time.Time `json:"date_time" api:"required" format:"date-time"`
 	// Type of the transaction for which a 3DS authentication request is occurring.
 	// Maps to EMV 3DS field `transType`.
-	Type ThreeDSAuthenticationTransactionType `json:"type,required,nullable"`
+	Type ThreeDSAuthenticationTransactionType `json:"type" api:"required,nullable"`
 	JSON threeDSAuthenticationTransactionJSON `json:"-"`
 }
 

@@ -87,22 +87,22 @@ func (r *FundingEventService) GetDetails(ctx context.Context, fundingEventToken 
 
 type FundingEvent struct {
 	// Unique token ID
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Collection resource type
-	CollectionResourceType FundingEventCollectionResourceType `json:"collection_resource_type,required"`
+	CollectionResourceType FundingEventCollectionResourceType `json:"collection_resource_type" api:"required"`
 	// IDs of collections, further information can be gathered from the appropriate
 	// collection API based on collection_resource_type
-	CollectionTokens []string `json:"collection_tokens,required" format:"uuid"`
+	CollectionTokens []string `json:"collection_tokens" api:"required" format:"uuid"`
 	// Time of the creation
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Time of the high watermark
-	HighWatermark time.Time `json:"high_watermark,required" format:"date-time"`
+	HighWatermark time.Time `json:"high_watermark" api:"required" format:"date-time"`
 	// Network settlement summary breakdown by network settlement date
-	NetworkSettlementSummary []FundingEventNetworkSettlementSummary `json:"network_settlement_summary,required"`
+	NetworkSettlementSummary []FundingEventNetworkSettlementSummary `json:"network_settlement_summary" api:"required"`
 	// Time of the previous high watermark
-	PreviousHighWatermark time.Time `json:"previous_high_watermark,required" format:"date-time"`
+	PreviousHighWatermark time.Time `json:"previous_high_watermark" api:"required" format:"date-time"`
 	// Time of the update
-	Updated time.Time        `json:"updated,required" format:"date-time"`
+	Updated time.Time        `json:"updated" api:"required" format:"date-time"`
 	JSON    fundingEventJSON `json:"-"`
 }
 
@@ -145,8 +145,8 @@ func (r FundingEventCollectionResourceType) IsKnown() bool {
 }
 
 type FundingEventNetworkSettlementSummary struct {
-	NetworkSettlementDate time.Time                                `json:"network_settlement_date,required" format:"date"`
-	SettledGrossAmount    int64                                    `json:"settled_gross_amount,required"`
+	NetworkSettlementDate time.Time                                `json:"network_settlement_date" api:"required" format:"date"`
+	SettledGrossAmount    int64                                    `json:"settled_gross_amount" api:"required"`
 	JSON                  fundingEventNetworkSettlementSummaryJSON `json:"-"`
 }
 
@@ -169,11 +169,11 @@ func (r fundingEventNetworkSettlementSummaryJSON) RawJSON() string {
 
 type FundingEventGetDetailsResponse struct {
 	// Unique token ID
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// URL of the settlement details
-	SettlementDetailsURL string `json:"settlement_details_url,required" format:"uri"`
+	SettlementDetailsURL string `json:"settlement_details_url" api:"required" format:"uri"`
 	// URL of the settlement summary
-	SettlementSummaryURL string                             `json:"settlement_summary_url,required" format:"uri"`
+	SettlementSummaryURL string                             `json:"settlement_summary_url" api:"required" format:"uri"`
 	JSON                 fundingEventGetDetailsResponseJSON `json:"-"`
 }
 

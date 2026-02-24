@@ -75,18 +75,18 @@ func (r *CardProgramService) ListAutoPaging(ctx context.Context, query CardProgr
 
 type CardProgram struct {
 	// Globally unique identifier.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Whether the card program is participating in Account Level Management. Currently
 	// applicable to Visa card programs only.
-	AccountLevelManagementEnabled bool `json:"account_level_management_enabled,required"`
+	AccountLevelManagementEnabled bool `json:"account_level_management_enabled" api:"required"`
 	// Timestamp of when the card program was created.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// The name of the card program.
-	Name string `json:"name,required"`
+	Name string `json:"name" api:"required"`
 	// The first digits of the card number that this card program ends with.
-	PanRangeEnd string `json:"pan_range_end,required"`
+	PanRangeEnd string `json:"pan_range_end" api:"required"`
 	// The first digits of the card number that this card program starts with.
-	PanRangeStart string `json:"pan_range_start,required"`
+	PanRangeStart string `json:"pan_range_start" api:"required"`
 	// 3-character alphabetic ISO 4217 code for the currency of the cardholder.
 	CardholderCurrency string `json:"cardholder_currency"`
 	// List of 3-character alphabetic ISO 4217 codes for the currencies that the card

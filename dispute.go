@@ -184,28 +184,28 @@ func (r *DisputeService) GetEvidence(ctx context.Context, disputeToken string, e
 // Dispute.
 type Dispute struct {
 	// Globally unique identifier.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Amount under dispute. May be different from the original transaction amount.
-	Amount int64 `json:"amount,required"`
+	Amount int64 `json:"amount" api:"required"`
 	// Date dispute entered arbitration.
-	ArbitrationDate time.Time `json:"arbitration_date,required,nullable" format:"date-time"`
+	ArbitrationDate time.Time `json:"arbitration_date" api:"required,nullable" format:"date-time"`
 	// Timestamp of when first Dispute was reported.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Date that the dispute was filed by the customer making the dispute.
-	CustomerFiledDate time.Time `json:"customer_filed_date,required,nullable" format:"date-time"`
+	CustomerFiledDate time.Time `json:"customer_filed_date" api:"required,nullable" format:"date-time"`
 	// End customer description of the reason for the dispute.
-	CustomerNote string `json:"customer_note,required,nullable"`
+	CustomerNote string `json:"customer_note" api:"required,nullable"`
 	// Unique identifiers for the dispute from the network.
-	NetworkClaimIDs []string `json:"network_claim_ids,required,nullable"`
+	NetworkClaimIDs []string `json:"network_claim_ids" api:"required,nullable"`
 	// Date that the dispute was submitted to the network.
-	NetworkFiledDate time.Time `json:"network_filed_date,required,nullable" format:"date-time"`
+	NetworkFiledDate time.Time `json:"network_filed_date" api:"required,nullable" format:"date-time"`
 	// Network reason code used to file the dispute.
-	NetworkReasonCode string `json:"network_reason_code,required,nullable"`
+	NetworkReasonCode string `json:"network_reason_code" api:"required,nullable"`
 	// Date dispute entered pre-arbitration.
-	PrearbitrationDate time.Time `json:"prearbitration_date,required,nullable" format:"date-time"`
+	PrearbitrationDate time.Time `json:"prearbitration_date" api:"required,nullable" format:"date-time"`
 	// Unique identifier for the dispute from the network. If there are multiple, this
 	// will be the first claim id set by the network
-	PrimaryClaimID string `json:"primary_claim_id,required,nullable"`
+	PrimaryClaimID string `json:"primary_claim_id" api:"required,nullable"`
 	// Dispute reason:
 	//
 	//   - `ATM_CASH_MISDISPENSE`: ATM cash misdispense.
@@ -225,13 +225,13 @@ type Dispute struct {
 	//   - `REFUND_NOT_PROCESSED`: The refund was not processed.
 	//   - `RECURRING_TRANSACTION_NOT_CANCELLED`: The recurring transaction was not
 	//     cancelled.
-	Reason DisputeReason `json:"reason,required"`
+	Reason DisputeReason `json:"reason" api:"required"`
 	// Date the representment was received.
-	RepresentmentDate time.Time `json:"representment_date,required,nullable" format:"date-time"`
+	RepresentmentDate time.Time `json:"representment_date" api:"required,nullable" format:"date-time"`
 	// Date that the dispute was resolved.
-	ResolutionDate time.Time `json:"resolution_date,required,nullable" format:"date-time"`
+	ResolutionDate time.Time `json:"resolution_date" api:"required,nullable" format:"date-time"`
 	// Note by Dispute team on the case resolution.
-	ResolutionNote string `json:"resolution_note,required,nullable"`
+	ResolutionNote string `json:"resolution_note" api:"required,nullable"`
 	// Reason for the dispute resolution:
 	//
 	// - `CASE_LOST`: This case was lost at final arbitration.
@@ -251,7 +251,7 @@ type Dispute struct {
 	// - `WON_ARBITRATION`: Won arbitration.
 	// - `WON_FIRST_CHARGEBACK`: Won first chargeback.
 	// - `WON_PREARBITRATION`: Won prearbitration.
-	ResolutionReason DisputeResolutionReason `json:"resolution_reason,required,nullable"`
+	ResolutionReason DisputeResolutionReason `json:"resolution_reason" api:"required,nullable"`
 	// Status types:
 	//
 	//   - `NEW` - New dispute case is opened.
@@ -263,10 +263,10 @@ type Dispute struct {
 	//   - `ARBITRATION` - Case has entered arbitration.
 	//   - `CASE_WON` - Case was won and credit will be issued.
 	//   - `CASE_CLOSED` - Case was lost or withdrawn.
-	Status DisputeStatus `json:"status,required"`
+	Status DisputeStatus `json:"status" api:"required"`
 	// The transaction that is being disputed. A transaction can only be disputed once
 	// but may have multiple dispute cases.
-	TransactionToken string      `json:"transaction_token,required" format:"uuid"`
+	TransactionToken string      `json:"transaction_token" api:"required" format:"uuid"`
 	JSON             disputeJSON `json:"-"`
 }
 
@@ -432,11 +432,11 @@ func (r DisputeStatus) IsKnown() bool {
 // Dispute evidence.
 type DisputeEvidence struct {
 	// Globally unique identifier.
-	Token string `json:"token,required" format:"uuid"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Timestamp of when dispute evidence was created.
-	Created time.Time `json:"created,required" format:"date-time"`
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Dispute token evidence is attached to.
-	DisputeToken string `json:"dispute_token,required" format:"uuid"`
+	DisputeToken string `json:"dispute_token" api:"required" format:"uuid"`
 	// Upload status types:
 	//
 	// - `DELETED` - Evidence was deleted.
@@ -444,7 +444,7 @@ type DisputeEvidence struct {
 	// - `PENDING` - Evidence is pending upload.
 	// - `REJECTED` - Evidence was rejected.
 	// - `UPLOADED` - Evidence was uploaded.
-	UploadStatus DisputeEvidenceUploadStatus `json:"upload_status,required"`
+	UploadStatus DisputeEvidenceUploadStatus `json:"upload_status" api:"required"`
 	// URL to download evidence. Only shown when `upload_status` is `UPLOADED`.
 	DownloadURL string `json:"download_url"`
 	// File name of evidence. Recommended to give the dispute evidence a human-readable
@@ -503,11 +503,11 @@ func (r DisputeEvidenceUploadStatus) IsKnown() bool {
 
 type DisputeNewParams struct {
 	// Amount to dispute
-	Amount param.Field[int64] `json:"amount,required"`
+	Amount param.Field[int64] `json:"amount" api:"required"`
 	// Reason for dispute
-	Reason param.Field[DisputeNewParamsReason] `json:"reason,required"`
+	Reason param.Field[DisputeNewParamsReason] `json:"reason" api:"required"`
 	// Transaction to dispute
-	TransactionToken param.Field[string] `json:"transaction_token,required" format:"uuid"`
+	TransactionToken param.Field[string] `json:"transaction_token" api:"required" format:"uuid"`
 	// Date the customer filed the dispute
 	CustomerFiledDate param.Field[time.Time] `json:"customer_filed_date" format:"date-time"`
 	// Customer description of dispute
