@@ -29,7 +29,8 @@ import (
 // automatically. You should not instantiate this service directly, and instead use
 // the [NewAccountHolderService] method instead.
 type AccountHolderService struct {
-	Options []option.RequestOption
+	Options  []option.RequestOption
+	Entities *AccountHolderEntityService
 }
 
 // NewAccountHolderService generates a new service that applies the given options
@@ -38,6 +39,7 @@ type AccountHolderService struct {
 func NewAccountHolderService(opts ...option.RequestOption) (r *AccountHolderService) {
 	r = &AccountHolderService{}
 	r.Options = opts
+	r.Entities = NewAccountHolderEntityService(opts...)
 	return
 }
 
