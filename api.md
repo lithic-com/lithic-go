@@ -67,6 +67,18 @@ Methods:
 - <code title="post /v1/simulate/account_holders/enrollment_review">client.AccountHolders.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderService.SimulateEnrollmentReview">SimulateEnrollmentReview</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderSimulateEnrollmentReviewParams">AccountHolderSimulateEnrollmentReviewParams</a>) (\*<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderSimulateEnrollmentReviewResponse">AccountHolderSimulateEnrollmentReviewResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 - <code title="post /v1/account_holders/{account_holder_token}/documents">client.AccountHolders.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderService.UploadDocument">UploadDocument</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, accountHolderToken <a href="https://pkg.go.dev/builtin#string">string</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderUploadDocumentParams">AccountHolderUploadDocumentParams</a>) (\*<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#Document">Document</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 
+## Entities
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderEntity">AccountHolderEntity</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderEntityNewResponse">AccountHolderEntityNewResponse</a>
+
+Methods:
+
+- <code title="post /v1/account_holders/{account_holder_token}/entities">client.AccountHolders.Entities.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderEntityService.New">New</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, accountHolderToken <a href="https://pkg.go.dev/builtin#string">string</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderEntityNewParams">AccountHolderEntityNewParams</a>) (\*<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderEntityNewResponse">AccountHolderEntityNewResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="delete /v1/account_holders/{account_holder_token}/entities/{entity_token}">client.AccountHolders.Entities.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderEntityService.Delete">Delete</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, accountHolderToken <a href="https://pkg.go.dev/builtin#string">string</a>, entityToken <a href="https://pkg.go.dev/builtin#string">string</a>) (\*<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderEntity">AccountHolderEntity</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
 # AuthRules
 
 ## V2
