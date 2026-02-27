@@ -2078,6 +2078,8 @@ type TokenizationDecisioningRequestWebhookEvent struct {
 	CardToken string `json:"card_token" api:"required"`
 	// Indicate when the request was received from Mastercard or Visa
 	Created time.Time `json:"created" api:"required" format:"date-time"`
+	// Contains the metadata for the digital wallet being tokenized.
+	DigitalWalletTokenMetadata TokenMetadata `json:"digital_wallet_token_metadata" api:"required"`
 	// The name of this event
 	EventType TokenizationDecisioningRequestWebhookEventEventType `json:"event_type" api:"required"`
 	// Whether Lithic decisioned on the token, and if so, what the decision was.
@@ -2089,8 +2091,6 @@ type TokenizationDecisioningRequestWebhookEvent struct {
 	TokenizationToken     string                `json:"tokenization_token" api:"required"`
 	WalletDecisioningInfo WalletDecisioningInfo `json:"wallet_decisioning_info" api:"required"`
 	Device                Device                `json:"device"`
-	// Contains the metadata for the digital wallet being tokenized.
-	DigitalWalletTokenMetadata DigitalWalletTokenMetadata `json:"digital_wallet_token_metadata"`
 	// The source of the tokenization.
 	TokenizationSource TokenizationDecisioningRequestWebhookEventTokenizationSource `json:"tokenization_source"`
 	JSON               tokenizationDecisioningRequestWebhookEventJSON               `json:"-"`
@@ -2102,13 +2102,13 @@ type tokenizationDecisioningRequestWebhookEventJSON struct {
 	AccountToken               apijson.Field
 	CardToken                  apijson.Field
 	Created                    apijson.Field
+	DigitalWalletTokenMetadata apijson.Field
 	EventType                  apijson.Field
 	IssuerDecision             apijson.Field
 	TokenizationChannel        apijson.Field
 	TokenizationToken          apijson.Field
 	WalletDecisioningInfo      apijson.Field
 	Device                     apijson.Field
-	DigitalWalletTokenMetadata apijson.Field
 	TokenizationSource         apijson.Field
 	raw                        string
 	ExtraFields                map[string]apijson.Field
@@ -2792,6 +2792,8 @@ type DigitalWalletTokenizationApprovalRequestWebhookEvent struct {
 	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Contains the metadata for the customer tokenization decision.
 	CustomerTokenizationDecision DigitalWalletTokenizationApprovalRequestWebhookEventCustomerTokenizationDecision `json:"customer_tokenization_decision" api:"required,nullable"`
+	// Contains the metadata for the digital wallet being tokenized.
+	DigitalWalletTokenMetadata TokenMetadata `json:"digital_wallet_token_metadata" api:"required"`
 	// The name of this event
 	EventType DigitalWalletTokenizationApprovalRequestWebhookEventEventType `json:"event_type" api:"required"`
 	// Whether Lithic decisioned on the token, and if so, what the decision was.
@@ -2803,8 +2805,6 @@ type DigitalWalletTokenizationApprovalRequestWebhookEvent struct {
 	TokenizationToken     string                `json:"tokenization_token" api:"required"`
 	WalletDecisioningInfo WalletDecisioningInfo `json:"wallet_decisioning_info" api:"required"`
 	Device                Device                `json:"device"`
-	// Contains the metadata for the digital wallet being tokenized.
-	DigitalWalletTokenMetadata DigitalWalletTokenMetadata `json:"digital_wallet_token_metadata"`
 	// Results from rules that were evaluated for this tokenization
 	RuleResults []TokenizationRuleResult `json:"rule_results"`
 	// List of reasons why the tokenization was declined
@@ -2823,13 +2823,13 @@ type digitalWalletTokenizationApprovalRequestWebhookEventJSON struct {
 	CardToken                    apijson.Field
 	Created                      apijson.Field
 	CustomerTokenizationDecision apijson.Field
+	DigitalWalletTokenMetadata   apijson.Field
 	EventType                    apijson.Field
 	IssuerDecision               apijson.Field
 	TokenizationChannel          apijson.Field
 	TokenizationToken            apijson.Field
 	WalletDecisioningInfo        apijson.Field
 	Device                       apijson.Field
-	DigitalWalletTokenMetadata   apijson.Field
 	RuleResults                  apijson.Field
 	TokenizationDeclineReasons   apijson.Field
 	TokenizationSource           apijson.Field
@@ -4383,14 +4383,14 @@ type TokenizationApprovalRequestWebhookEvent struct {
 	// Whether Lithic decisioned on the token, and if so, what the decision was.
 	// APPROVED/VERIFICATION_REQUIRED/DENIED.
 	IssuerDecision TokenizationApprovalRequestWebhookEventIssuerDecision `json:"issuer_decision" api:"required"`
+	// Contains the metadata for the digital wallet being tokenized.
+	TokenMetadata TokenMetadata `json:"token_metadata" api:"required"`
 	// The channel through which the tokenization was made.
 	TokenizationChannel TokenizationApprovalRequestWebhookEventTokenizationChannel `json:"tokenization_channel" api:"required"`
 	// Unique identifier for the digital wallet token attempt
 	TokenizationToken     string                `json:"tokenization_token" api:"required"`
 	WalletDecisioningInfo WalletDecisioningInfo `json:"wallet_decisioning_info" api:"required"`
 	Device                Device                `json:"device"`
-	// Contains the metadata for the digital wallet being tokenized.
-	DigitalWalletTokenMetadata DigitalWalletTokenMetadata `json:"digital_wallet_token_metadata"`
 	// Results from rules that were evaluated for this tokenization
 	RuleResults []TokenizationRuleResult `json:"rule_results"`
 	// List of reasons why the tokenization was declined
@@ -4411,11 +4411,11 @@ type tokenizationApprovalRequestWebhookEventJSON struct {
 	CustomerTokenizationDecision apijson.Field
 	EventType                    apijson.Field
 	IssuerDecision               apijson.Field
+	TokenMetadata                apijson.Field
 	TokenizationChannel          apijson.Field
 	TokenizationToken            apijson.Field
 	WalletDecisioningInfo        apijson.Field
 	Device                       apijson.Field
-	DigitalWalletTokenMetadata   apijson.Field
 	RuleResults                  apijson.Field
 	TokenizationDeclineReasons   apijson.Field
 	TokenizationSource           apijson.Field
@@ -5237,7 +5237,7 @@ type ParsedWebhookEvent struct {
 	Details interface{} `json:"details"`
 	Device  Device      `json:"device"`
 	// Contains the metadata for the digital wallet being tokenized.
-	DigitalWalletTokenMetadata DigitalWalletTokenMetadata  `json:"digital_wallet_token_metadata"`
+	DigitalWalletTokenMetadata TokenMetadata               `json:"digital_wallet_token_metadata"`
 	Direction                  ParsedWebhookEventDirection `json:"direction"`
 	// Dispute resolution outcome
 	Disposition ParsedWebhookEventDisposition `json:"disposition" api:"nullable"`
@@ -5580,9 +5580,11 @@ type ParsedWebhookEvent struct {
 	Tier string `json:"tier" api:"nullable"`
 	// Globally unique identifier for the financial account or card that will receive
 	// the funds. Accepted type dependent on the program's use case
-	ToFinancialAccountToken string       `json:"to_financial_account_token" format:"uuid"`
-	TokenInfo               TokenInfo    `json:"token_info" api:"nullable"`
-	Tokenization            Tokenization `json:"tokenization"`
+	ToFinancialAccountToken string    `json:"to_financial_account_token" format:"uuid"`
+	TokenInfo               TokenInfo `json:"token_info" api:"nullable"`
+	// Contains the metadata for the digital wallet being tokenized.
+	TokenMetadata TokenMetadata `json:"token_metadata"`
+	Tokenization  Tokenization  `json:"tokenization"`
 	// The channel through which the tokenization was made.
 	TokenizationChannel ParsedWebhookEventTokenizationChannel `json:"tokenization_channel"`
 	// This field can have the runtime type of [[]TokenizationDeclineReason].
@@ -5844,6 +5846,7 @@ type parsedWebhookEventJSON struct {
 	Tier                               apijson.Field
 	ToFinancialAccountToken            apijson.Field
 	TokenInfo                          apijson.Field
+	TokenMetadata                      apijson.Field
 	Tokenization                       apijson.Field
 	TokenizationChannel                apijson.Field
 	TokenizationDeclineReasons         apijson.Field
