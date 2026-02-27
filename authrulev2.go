@@ -249,7 +249,8 @@ type AuthRule struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
+	//     AUTHORIZATION event stream.
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -630,7 +631,8 @@ func (r AuthRuleState) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
+//     AUTHORIZATION event stream.
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -1667,6 +1669,9 @@ func (r ConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() b
 	return false
 }
 
+// Deprecated: Use CONDITIONAL_ACTION instead.
+//
+// Deprecated: deprecated
 type ConditionalBlockParameters struct {
 	Conditions []AuthRuleCondition            `json:"conditions" api:"required"`
 	JSON       conditionalBlockParametersJSON `json:"-"`
@@ -4324,7 +4329,8 @@ type AuthRuleV2NewParamsBody struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
+	//     AUTHORIZATION event stream.
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -4363,7 +4369,8 @@ type AuthRuleV2NewParamsBodyAccountLevelRule struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
+	//     AUTHORIZATION event stream.
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -4446,7 +4453,8 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRuleParametersScope) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
+//     AUTHORIZATION event stream.
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -4478,7 +4486,8 @@ type AuthRuleV2NewParamsBodyCardLevelRule struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
+	//     AUTHORIZATION event stream.
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -4557,7 +4566,8 @@ func (r AuthRuleV2NewParamsBodyCardLevelRuleParametersScope) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
+//     AUTHORIZATION event stream.
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -4589,7 +4599,8 @@ type AuthRuleV2NewParamsBodyProgramLevelRule struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+	//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
+	//     AUTHORIZATION event stream.
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -4670,7 +4681,8 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleParametersScope) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
+//     AUTHORIZATION event stream.
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -4697,7 +4709,8 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleType) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-//   - `CONDITIONAL_BLOCK`: AUTHORIZATION event stream.
+//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
+//     AUTHORIZATION event stream.
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
