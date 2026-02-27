@@ -233,9 +233,9 @@ func (r deviceJSON) RawJSON() string {
 }
 
 // Contains the metadata for the digital wallet being tokenized.
-type DigitalWalletTokenMetadata struct {
+type TokenMetadata struct {
 	// Contains the information of the account responsible for the payment.
-	PaymentAccountInfo DigitalWalletTokenMetadataPaymentAccountInfo `json:"payment_account_info" api:"required"`
+	PaymentAccountInfo TokenMetadataPaymentAccountInfo `json:"payment_account_info" api:"required"`
 	// The current status of the digital wallet token. Pending or declined.
 	Status string `json:"status" api:"required"`
 	// The identifier of the Payment App instance within a device that will be
@@ -244,13 +244,12 @@ type DigitalWalletTokenMetadata struct {
 	// The party that requested the digitization
 	TokenRequestorID string `json:"token_requestor_id"`
 	// Human-readable name of the wallet that the token_requestor_id maps to.
-	TokenRequestorName DigitalWalletTokenMetadataTokenRequestorName `json:"token_requestor_name"`
-	JSON               digitalWalletTokenMetadataJSON               `json:"-"`
+	TokenRequestorName TokenMetadataTokenRequestorName `json:"token_requestor_name"`
+	JSON               tokenMetadataJSON               `json:"-"`
 }
 
-// digitalWalletTokenMetadataJSON contains the JSON metadata for the struct
-// [DigitalWalletTokenMetadata]
-type digitalWalletTokenMetadataJSON struct {
+// tokenMetadataJSON contains the JSON metadata for the struct [TokenMetadata]
+type tokenMetadataJSON struct {
 	PaymentAccountInfo   apijson.Field
 	Status               apijson.Field
 	PaymentAppInstanceID apijson.Field
@@ -260,32 +259,32 @@ type digitalWalletTokenMetadataJSON struct {
 	ExtraFields          map[string]apijson.Field
 }
 
-func (r *DigitalWalletTokenMetadata) UnmarshalJSON(data []byte) (err error) {
+func (r *TokenMetadata) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r digitalWalletTokenMetadataJSON) RawJSON() string {
+func (r tokenMetadataJSON) RawJSON() string {
 	return r.raw
 }
 
 // Contains the information of the account responsible for the payment.
-type DigitalWalletTokenMetadataPaymentAccountInfo struct {
+type TokenMetadataPaymentAccountInfo struct {
 	// Additional information that can be used to identify the account holder, such as
 	// name, address, etc
-	AccountHolderData DigitalWalletTokenMetadataPaymentAccountInfoAccountHolderData `json:"account_holder_data" api:"required"`
+	AccountHolderData TokenMetadataPaymentAccountInfoAccountHolderData `json:"account_holder_data" api:"required"`
 	// Reference to the PAN that is unique per Wallet Provider
 	PanUniqueReference string `json:"pan_unique_reference" api:"nullable"`
 	// The unique account reference assigned to the PAN
 	PaymentAccountReference string `json:"payment_account_reference" api:"nullable"`
 	// A unique reference assigned following the allocation of a token used to identify
 	// the token for the duration of its lifetime.
-	TokenUniqueReference string                                           `json:"token_unique_reference" api:"nullable"`
-	JSON                 digitalWalletTokenMetadataPaymentAccountInfoJSON `json:"-"`
+	TokenUniqueReference string                              `json:"token_unique_reference" api:"nullable"`
+	JSON                 tokenMetadataPaymentAccountInfoJSON `json:"-"`
 }
 
-// digitalWalletTokenMetadataPaymentAccountInfoJSON contains the JSON metadata for
-// the struct [DigitalWalletTokenMetadataPaymentAccountInfo]
-type digitalWalletTokenMetadataPaymentAccountInfoJSON struct {
+// tokenMetadataPaymentAccountInfoJSON contains the JSON metadata for the struct
+// [TokenMetadataPaymentAccountInfo]
+type tokenMetadataPaymentAccountInfoJSON struct {
 	AccountHolderData       apijson.Field
 	PanUniqueReference      apijson.Field
 	PaymentAccountReference apijson.Field
@@ -294,60 +293,60 @@ type digitalWalletTokenMetadataPaymentAccountInfoJSON struct {
 	ExtraFields             map[string]apijson.Field
 }
 
-func (r *DigitalWalletTokenMetadataPaymentAccountInfo) UnmarshalJSON(data []byte) (err error) {
+func (r *TokenMetadataPaymentAccountInfo) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r digitalWalletTokenMetadataPaymentAccountInfoJSON) RawJSON() string {
+func (r tokenMetadataPaymentAccountInfoJSON) RawJSON() string {
 	return r.raw
 }
 
 // Additional information that can be used to identify the account holder, such as
 // name, address, etc
-type DigitalWalletTokenMetadataPaymentAccountInfoAccountHolderData struct {
+type TokenMetadataPaymentAccountInfoAccountHolderData struct {
 	// The phone number, may contain country code along with phone number when
 	// countryDialInCode is not present
-	PhoneNumber string                                                            `json:"phone_number" api:"nullable"`
-	JSON        digitalWalletTokenMetadataPaymentAccountInfoAccountHolderDataJSON `json:"-"`
+	PhoneNumber string                                               `json:"phone_number" api:"nullable"`
+	JSON        tokenMetadataPaymentAccountInfoAccountHolderDataJSON `json:"-"`
 }
 
-// digitalWalletTokenMetadataPaymentAccountInfoAccountHolderDataJSON contains the
-// JSON metadata for the struct
-// [DigitalWalletTokenMetadataPaymentAccountInfoAccountHolderData]
-type digitalWalletTokenMetadataPaymentAccountInfoAccountHolderDataJSON struct {
+// tokenMetadataPaymentAccountInfoAccountHolderDataJSON contains the JSON metadata
+// for the struct [TokenMetadataPaymentAccountInfoAccountHolderData]
+type tokenMetadataPaymentAccountInfoAccountHolderDataJSON struct {
 	PhoneNumber apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *DigitalWalletTokenMetadataPaymentAccountInfoAccountHolderData) UnmarshalJSON(data []byte) (err error) {
+func (r *TokenMetadataPaymentAccountInfoAccountHolderData) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r digitalWalletTokenMetadataPaymentAccountInfoAccountHolderDataJSON) RawJSON() string {
+func (r tokenMetadataPaymentAccountInfoAccountHolderDataJSON) RawJSON() string {
 	return r.raw
 }
 
 // Human-readable name of the wallet that the token_requestor_id maps to.
-type DigitalWalletTokenMetadataTokenRequestorName string
+type TokenMetadataTokenRequestorName string
 
 const (
-	DigitalWalletTokenMetadataTokenRequestorNameAmazonOne    DigitalWalletTokenMetadataTokenRequestorName = "AMAZON_ONE"
-	DigitalWalletTokenMetadataTokenRequestorNameAndroidPay   DigitalWalletTokenMetadataTokenRequestorName = "ANDROID_PAY"
-	DigitalWalletTokenMetadataTokenRequestorNameApplePay     DigitalWalletTokenMetadataTokenRequestorName = "APPLE_PAY"
-	DigitalWalletTokenMetadataTokenRequestorNameFacebook     DigitalWalletTokenMetadataTokenRequestorName = "FACEBOOK"
-	DigitalWalletTokenMetadataTokenRequestorNameFitbitPay    DigitalWalletTokenMetadataTokenRequestorName = "FITBIT_PAY"
-	DigitalWalletTokenMetadataTokenRequestorNameGarminPay    DigitalWalletTokenMetadataTokenRequestorName = "GARMIN_PAY"
-	DigitalWalletTokenMetadataTokenRequestorNameMicrosoftPay DigitalWalletTokenMetadataTokenRequestorName = "MICROSOFT_PAY"
-	DigitalWalletTokenMetadataTokenRequestorNameNetflix      DigitalWalletTokenMetadataTokenRequestorName = "NETFLIX"
-	DigitalWalletTokenMetadataTokenRequestorNameSamsungPay   DigitalWalletTokenMetadataTokenRequestorName = "SAMSUNG_PAY"
-	DigitalWalletTokenMetadataTokenRequestorNameUnknown      DigitalWalletTokenMetadataTokenRequestorName = "UNKNOWN"
-	DigitalWalletTokenMetadataTokenRequestorNameVisaCheckout DigitalWalletTokenMetadataTokenRequestorName = "VISA_CHECKOUT"
+	TokenMetadataTokenRequestorNameAmazonOne    TokenMetadataTokenRequestorName = "AMAZON_ONE"
+	TokenMetadataTokenRequestorNameAndroidPay   TokenMetadataTokenRequestorName = "ANDROID_PAY"
+	TokenMetadataTokenRequestorNameApplePay     TokenMetadataTokenRequestorName = "APPLE_PAY"
+	TokenMetadataTokenRequestorNameFacebook     TokenMetadataTokenRequestorName = "FACEBOOK"
+	TokenMetadataTokenRequestorNameFitbitPay    TokenMetadataTokenRequestorName = "FITBIT_PAY"
+	TokenMetadataTokenRequestorNameGarminPay    TokenMetadataTokenRequestorName = "GARMIN_PAY"
+	TokenMetadataTokenRequestorNameGooglePay    TokenMetadataTokenRequestorName = "GOOGLE_PAY"
+	TokenMetadataTokenRequestorNameMicrosoftPay TokenMetadataTokenRequestorName = "MICROSOFT_PAY"
+	TokenMetadataTokenRequestorNameNetflix      TokenMetadataTokenRequestorName = "NETFLIX"
+	TokenMetadataTokenRequestorNameSamsungPay   TokenMetadataTokenRequestorName = "SAMSUNG_PAY"
+	TokenMetadataTokenRequestorNameUnknown      TokenMetadataTokenRequestorName = "UNKNOWN"
+	TokenMetadataTokenRequestorNameVisaCheckout TokenMetadataTokenRequestorName = "VISA_CHECKOUT"
 )
 
-func (r DigitalWalletTokenMetadataTokenRequestorName) IsKnown() bool {
+func (r TokenMetadataTokenRequestorName) IsKnown() bool {
 	switch r {
-	case DigitalWalletTokenMetadataTokenRequestorNameAmazonOne, DigitalWalletTokenMetadataTokenRequestorNameAndroidPay, DigitalWalletTokenMetadataTokenRequestorNameApplePay, DigitalWalletTokenMetadataTokenRequestorNameFacebook, DigitalWalletTokenMetadataTokenRequestorNameFitbitPay, DigitalWalletTokenMetadataTokenRequestorNameGarminPay, DigitalWalletTokenMetadataTokenRequestorNameMicrosoftPay, DigitalWalletTokenMetadataTokenRequestorNameNetflix, DigitalWalletTokenMetadataTokenRequestorNameSamsungPay, DigitalWalletTokenMetadataTokenRequestorNameUnknown, DigitalWalletTokenMetadataTokenRequestorNameVisaCheckout:
+	case TokenMetadataTokenRequestorNameAmazonOne, TokenMetadataTokenRequestorNameAndroidPay, TokenMetadataTokenRequestorNameApplePay, TokenMetadataTokenRequestorNameFacebook, TokenMetadataTokenRequestorNameFitbitPay, TokenMetadataTokenRequestorNameGarminPay, TokenMetadataTokenRequestorNameGooglePay, TokenMetadataTokenRequestorNameMicrosoftPay, TokenMetadataTokenRequestorNameNetflix, TokenMetadataTokenRequestorNameSamsungPay, TokenMetadataTokenRequestorNameUnknown, TokenMetadataTokenRequestorNameVisaCheckout:
 		return true
 	}
 	return false
