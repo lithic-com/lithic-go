@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.102.0 (2026-02-27)
+
+Full Changelog: [v0.101.0...v0.102.0](https://github.com/lithic-com/lithic-go/compare/v0.101.0...v0.102.0)
+
+### Features
+
+* **api:** Add account holder entity endpoints ([43c3d59](https://github.com/lithic-com/lithic-go/commit/43c3d594f43a5e87349e6f8665e5d362e4d11765))
+* **api:** Add INTEREST_AND_FEES_PAUSED substatus to financial account ([70c7dc8](https://github.com/lithic-com/lithic-go/commit/70c7dc8bb49e001f8794e0aee6f622fddbfd4ee8))
+* **api:** Expose MIL interest schedules and loan tape configuration endpoints ([54ff6be](https://github.com/lithic-com/lithic-go/commit/54ff6be18033f493337483802b79acca9bb645b7))
+
+
+### Bug Fixes
+
+* allow canceling a request while it is waiting to retry ([43c5488](https://github.com/lithic-com/lithic-go/commit/43c548833bade683398375bc566dceb51503564a))
+* **api:** Correct token_metadata field name in tokenization.approval_request schema ([04d1ff9](https://github.com/lithic-com/lithic-go/commit/04d1ff9b22452947ef5ed284f2c88b5d654a3342))
+
+
+### Chores
+
+* **internal:** move custom custom `json` tags to `api` ([9f7193b](https://github.com/lithic-com/lithic-go/commit/9f7193b39d1b62246b1431db84cb68fea9873cc2))
+* update mock server docs ([1308e26](https://github.com/lithic-com/lithic-go/commit/1308e266f3b1170fe3dcf48fe1b9466a87c60c32))
+
+
+### Documentation
+
+* Remove CONDITIONAL_BLOCK from docs ([3560e08](https://github.com/lithic-com/lithic-go/commit/3560e08cc02151034ddd099652a4e58a78a98283))
+
 ## 0.101.0 (2026-02-18)
 
 Full Changelog: [v0.100.0...v0.101.0](https://github.com/lithic-com/lithic-go/compare/v0.100.0...v0.101.0)
