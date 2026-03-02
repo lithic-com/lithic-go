@@ -1068,9 +1068,11 @@ type PaymentNewParams struct {
 	Type                     param.Field[PaymentNewParamsType]             `json:"type" api:"required"`
 	// Customer-provided token that will serve as an idempotency token. This token will
 	// become the transaction token.
-	Token         param.Field[string] `json:"token" format:"uuid"`
-	Memo          param.Field[string] `json:"memo"`
-	UserDefinedID param.Field[string] `json:"user_defined_id"`
+	Token param.Field[string] `json:"token" format:"uuid"`
+	// Optional hold to settle when this payment is initiated.
+	Hold          param.Field[PaymentNewParamsHold] `json:"hold"`
+	Memo          param.Field[string]               `json:"memo"`
+	UserDefinedID param.Field[string]               `json:"user_defined_id"`
 }
 
 func (r PaymentNewParams) MarshalJSON() (data []byte, err error) {
@@ -1132,6 +1134,16 @@ func (r PaymentNewParamsType) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+// Optional hold to settle when this payment is initiated.
+type PaymentNewParamsHold struct {
+	// Token of the hold to settle when this payment is initiated.
+	Token param.Field[string] `json:"token" api:"required" format:"uuid"`
+}
+
+func (r PaymentNewParamsHold) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }
 
 type PaymentListParams struct {
