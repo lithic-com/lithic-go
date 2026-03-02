@@ -793,6 +793,92 @@ func (r AuthRuleConditionParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
+type BacktestStats struct {
+	// The total number of historical transactions approved by this rule during the
+	// backtest period, or the number of transactions that would have been approved if
+	// the rule was evaluated in shadow mode.
+	Approved int64 `json:"approved"`
+	// The total number of historical transactions challenged by this rule during the
+	// backtest period, or the number of transactions that would have been challenged
+	// if the rule was evaluated in shadow mode. Currently applicable only for 3DS Auth
+	// Rules.
+	Challenged int64 `json:"challenged"`
+	// The total number of historical transactions declined by this rule during the
+	// backtest period, or the number of transactions that would have been declined if
+	// the rule was evaluated in shadow mode.
+	Declined int64 `json:"declined"`
+	// Example events and their outcomes.
+	Examples []BacktestStatsExample `json:"examples"`
+	// The version of the rule, this is incremented whenever the rule's parameters
+	// change.
+	Version int64             `json:"version"`
+	JSON    backtestStatsJSON `json:"-"`
+}
+
+// backtestStatsJSON contains the JSON metadata for the struct [BacktestStats]
+type backtestStatsJSON struct {
+	Approved    apijson.Field
+	Challenged  apijson.Field
+	Declined    apijson.Field
+	Examples    apijson.Field
+	Version     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *BacktestStats) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r backtestStatsJSON) RawJSON() string {
+	return r.raw
+}
+
+type BacktestStatsExample struct {
+	// The decision made by the rule for this event.
+	Decision BacktestStatsExamplesDecision `json:"decision"`
+	// The event token.
+	EventToken string `json:"event_token" format:"uuid"`
+	// The timestamp of the event.
+	Timestamp time.Time                `json:"timestamp" format:"date-time"`
+	JSON      backtestStatsExampleJSON `json:"-"`
+}
+
+// backtestStatsExampleJSON contains the JSON metadata for the struct
+// [BacktestStatsExample]
+type backtestStatsExampleJSON struct {
+	Decision    apijson.Field
+	EventToken  apijson.Field
+	Timestamp   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *BacktestStatsExample) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r backtestStatsExampleJSON) RawJSON() string {
+	return r.raw
+}
+
+// The decision made by the rule for this event.
+type BacktestStatsExamplesDecision string
+
+const (
+	BacktestStatsExamplesDecisionApproved   BacktestStatsExamplesDecision = "APPROVED"
+	BacktestStatsExamplesDecisionDeclined   BacktestStatsExamplesDecision = "DECLINED"
+	BacktestStatsExamplesDecisionChallenged BacktestStatsExamplesDecision = "CHALLENGED"
+)
+
+func (r BacktestStatsExamplesDecision) IsKnown() bool {
+	switch r {
+	case BacktestStatsExamplesDecisionApproved, BacktestStatsExamplesDecisionDeclined, BacktestStatsExamplesDecisionChallenged:
+		return true
+	}
+	return false
+}
+
 type Conditional3DSActionParameters struct {
 	// The action to take if the conditions are met.
 	Action     Conditional3DSActionParametersAction      `json:"action" api:"required"`
@@ -1000,7 +1086,7 @@ func (r *ConditionalACHActionParametersAction) UnmarshalJSON(data []byte) (err e
 // you can cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are
-// [ConditionalACHActionParametersActionApproveAction],
+// [ConditionalACHActionParametersActionApproveActionACH],
 // [ConditionalACHActionParametersActionReturnAction].
 func (r ConditionalACHActionParametersAction) AsUnion() ConditionalACHActionParametersActionUnion {
 	return r.union
@@ -1008,7 +1094,7 @@ func (r ConditionalACHActionParametersAction) AsUnion() ConditionalACHActionPara
 
 // The action to take if the conditions are met.
 //
-// Union satisfied by [ConditionalACHActionParametersActionApproveAction] or
+// Union satisfied by [ConditionalACHActionParametersActionApproveActionACH] or
 // [ConditionalACHActionParametersActionReturnAction].
 type ConditionalACHActionParametersActionUnion interface {
 	implementsConditionalACHActionParametersAction()
@@ -1020,7 +1106,7 @@ func init() {
 		"",
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalACHActionParametersActionApproveAction{}),
+			Type:       reflect.TypeOf(ConditionalACHActionParametersActionApproveActionACH{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -1029,41 +1115,41 @@ func init() {
 	)
 }
 
-type ConditionalACHActionParametersActionApproveAction struct {
+type ConditionalACHActionParametersActionApproveActionACH struct {
 	// Approve the ACH transaction
-	Type ConditionalACHActionParametersActionApproveActionType `json:"type" api:"required"`
-	JSON conditionalACHActionParametersActionApproveActionJSON `json:"-"`
+	Type ConditionalACHActionParametersActionApproveActionACHType `json:"type" api:"required"`
+	JSON conditionalACHActionParametersActionApproveActionACHJSON `json:"-"`
 }
 
-// conditionalACHActionParametersActionApproveActionJSON contains the JSON metadata
-// for the struct [ConditionalACHActionParametersActionApproveAction]
-type conditionalACHActionParametersActionApproveActionJSON struct {
+// conditionalACHActionParametersActionApproveActionACHJSON contains the JSON
+// metadata for the struct [ConditionalACHActionParametersActionApproveActionACH]
+type conditionalACHActionParametersActionApproveActionACHJSON struct {
 	Type        apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *ConditionalACHActionParametersActionApproveAction) UnmarshalJSON(data []byte) (err error) {
+func (r *ConditionalACHActionParametersActionApproveActionACH) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r conditionalACHActionParametersActionApproveActionJSON) RawJSON() string {
+func (r conditionalACHActionParametersActionApproveActionACHJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r ConditionalACHActionParametersActionApproveAction) implementsConditionalACHActionParametersAction() {
+func (r ConditionalACHActionParametersActionApproveActionACH) implementsConditionalACHActionParametersAction() {
 }
 
 // Approve the ACH transaction
-type ConditionalACHActionParametersActionApproveActionType string
+type ConditionalACHActionParametersActionApproveActionACHType string
 
 const (
-	ConditionalACHActionParametersActionApproveActionTypeApprove ConditionalACHActionParametersActionApproveActionType = "APPROVE"
+	ConditionalACHActionParametersActionApproveActionACHTypeApprove ConditionalACHActionParametersActionApproveActionACHType = "APPROVE"
 )
 
-func (r ConditionalACHActionParametersActionApproveActionType) IsKnown() bool {
+func (r ConditionalACHActionParametersActionApproveActionACHType) IsKnown() bool {
 	switch r {
-	case ConditionalACHActionParametersActionApproveActionTypeApprove:
+	case ConditionalACHActionParametersActionApproveActionACHTypeApprove:
 		return true
 	}
 	return false
@@ -1790,7 +1876,7 @@ func (r *ConditionalTokenizationActionParametersAction) UnmarshalJSON(data []byt
 // which you can cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are
-// [ConditionalTokenizationActionParametersActionDeclineAction],
+// [ConditionalTokenizationActionParametersActionDeclineActionTokenization],
 // [ConditionalTokenizationActionParametersActionRequireTfaAction].
 func (r ConditionalTokenizationActionParametersAction) AsUnion() ConditionalTokenizationActionParametersActionUnion {
 	return r.union
@@ -1798,8 +1884,9 @@ func (r ConditionalTokenizationActionParametersAction) AsUnion() ConditionalToke
 
 // The action to take if the conditions are met.
 //
-// Union satisfied by [ConditionalTokenizationActionParametersActionDeclineAction]
-// or [ConditionalTokenizationActionParametersActionRequireTfaAction].
+// Union satisfied by
+// [ConditionalTokenizationActionParametersActionDeclineActionTokenization] or
+// [ConditionalTokenizationActionParametersActionRequireTfaAction].
 type ConditionalTokenizationActionParametersActionUnion interface {
 	implementsConditionalTokenizationActionParametersAction()
 }
@@ -1810,7 +1897,7 @@ func init() {
 		"",
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalTokenizationActionParametersActionDeclineAction{}),
+			Type:       reflect.TypeOf(ConditionalTokenizationActionParametersActionDeclineActionTokenization{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -1819,72 +1906,72 @@ func init() {
 	)
 }
 
-type ConditionalTokenizationActionParametersActionDeclineAction struct {
+type ConditionalTokenizationActionParametersActionDeclineActionTokenization struct {
 	// Decline the tokenization request
-	Type ConditionalTokenizationActionParametersActionDeclineActionType `json:"type" api:"required"`
+	Type ConditionalTokenizationActionParametersActionDeclineActionTokenizationType `json:"type" api:"required"`
 	// Reason code for declining the tokenization request
-	Reason ConditionalTokenizationActionParametersActionDeclineActionReason `json:"reason"`
-	JSON   conditionalTokenizationActionParametersActionDeclineActionJSON   `json:"-"`
+	Reason ConditionalTokenizationActionParametersActionDeclineActionTokenizationReason `json:"reason"`
+	JSON   conditionalTokenizationActionParametersActionDeclineActionTokenizationJSON   `json:"-"`
 }
 
-// conditionalTokenizationActionParametersActionDeclineActionJSON contains the JSON
-// metadata for the struct
-// [ConditionalTokenizationActionParametersActionDeclineAction]
-type conditionalTokenizationActionParametersActionDeclineActionJSON struct {
+// conditionalTokenizationActionParametersActionDeclineActionTokenizationJSON
+// contains the JSON metadata for the struct
+// [ConditionalTokenizationActionParametersActionDeclineActionTokenization]
+type conditionalTokenizationActionParametersActionDeclineActionTokenizationJSON struct {
 	Type        apijson.Field
 	Reason      apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *ConditionalTokenizationActionParametersActionDeclineAction) UnmarshalJSON(data []byte) (err error) {
+func (r *ConditionalTokenizationActionParametersActionDeclineActionTokenization) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r conditionalTokenizationActionParametersActionDeclineActionJSON) RawJSON() string {
+func (r conditionalTokenizationActionParametersActionDeclineActionTokenizationJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r ConditionalTokenizationActionParametersActionDeclineAction) implementsConditionalTokenizationActionParametersAction() {
+func (r ConditionalTokenizationActionParametersActionDeclineActionTokenization) implementsConditionalTokenizationActionParametersAction() {
 }
 
 // Decline the tokenization request
-type ConditionalTokenizationActionParametersActionDeclineActionType string
+type ConditionalTokenizationActionParametersActionDeclineActionTokenizationType string
 
 const (
-	ConditionalTokenizationActionParametersActionDeclineActionTypeDecline ConditionalTokenizationActionParametersActionDeclineActionType = "DECLINE"
+	ConditionalTokenizationActionParametersActionDeclineActionTokenizationTypeDecline ConditionalTokenizationActionParametersActionDeclineActionTokenizationType = "DECLINE"
 )
 
-func (r ConditionalTokenizationActionParametersActionDeclineActionType) IsKnown() bool {
+func (r ConditionalTokenizationActionParametersActionDeclineActionTokenizationType) IsKnown() bool {
 	switch r {
-	case ConditionalTokenizationActionParametersActionDeclineActionTypeDecline:
+	case ConditionalTokenizationActionParametersActionDeclineActionTokenizationTypeDecline:
 		return true
 	}
 	return false
 }
 
 // Reason code for declining the tokenization request
-type ConditionalTokenizationActionParametersActionDeclineActionReason string
+type ConditionalTokenizationActionParametersActionDeclineActionTokenizationReason string
 
 const (
-	ConditionalTokenizationActionParametersActionDeclineActionReasonAccountScore1                  ConditionalTokenizationActionParametersActionDeclineActionReason = "ACCOUNT_SCORE_1"
-	ConditionalTokenizationActionParametersActionDeclineActionReasonDeviceScore1                   ConditionalTokenizationActionParametersActionDeclineActionReason = "DEVICE_SCORE_1"
-	ConditionalTokenizationActionParametersActionDeclineActionReasonAllWalletDeclineReasonsPresent ConditionalTokenizationActionParametersActionDeclineActionReason = "ALL_WALLET_DECLINE_REASONS_PRESENT"
-	ConditionalTokenizationActionParametersActionDeclineActionReasonWalletRecommendedDecisionRed   ConditionalTokenizationActionParametersActionDeclineActionReason = "WALLET_RECOMMENDED_DECISION_RED"
-	ConditionalTokenizationActionParametersActionDeclineActionReasonCvcMismatch                    ConditionalTokenizationActionParametersActionDeclineActionReason = "CVC_MISMATCH"
-	ConditionalTokenizationActionParametersActionDeclineActionReasonCardExpiryMonthMismatch        ConditionalTokenizationActionParametersActionDeclineActionReason = "CARD_EXPIRY_MONTH_MISMATCH"
-	ConditionalTokenizationActionParametersActionDeclineActionReasonCardExpiryYearMismatch         ConditionalTokenizationActionParametersActionDeclineActionReason = "CARD_EXPIRY_YEAR_MISMATCH"
-	ConditionalTokenizationActionParametersActionDeclineActionReasonCardInvalidState               ConditionalTokenizationActionParametersActionDeclineActionReason = "CARD_INVALID_STATE"
-	ConditionalTokenizationActionParametersActionDeclineActionReasonCustomerRedPath                ConditionalTokenizationActionParametersActionDeclineActionReason = "CUSTOMER_RED_PATH"
-	ConditionalTokenizationActionParametersActionDeclineActionReasonInvalidCustomerResponse        ConditionalTokenizationActionParametersActionDeclineActionReason = "INVALID_CUSTOMER_RESPONSE"
-	ConditionalTokenizationActionParametersActionDeclineActionReasonNetworkFailure                 ConditionalTokenizationActionParametersActionDeclineActionReason = "NETWORK_FAILURE"
-	ConditionalTokenizationActionParametersActionDeclineActionReasonGenericDecline                 ConditionalTokenizationActionParametersActionDeclineActionReason = "GENERIC_DECLINE"
-	ConditionalTokenizationActionParametersActionDeclineActionReasonDigitalCardArtRequired         ConditionalTokenizationActionParametersActionDeclineActionReason = "DIGITAL_CARD_ART_REQUIRED"
+	ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonAccountScore1                  ConditionalTokenizationActionParametersActionDeclineActionTokenizationReason = "ACCOUNT_SCORE_1"
+	ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonDeviceScore1                   ConditionalTokenizationActionParametersActionDeclineActionTokenizationReason = "DEVICE_SCORE_1"
+	ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonAllWalletDeclineReasonsPresent ConditionalTokenizationActionParametersActionDeclineActionTokenizationReason = "ALL_WALLET_DECLINE_REASONS_PRESENT"
+	ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonWalletRecommendedDecisionRed   ConditionalTokenizationActionParametersActionDeclineActionTokenizationReason = "WALLET_RECOMMENDED_DECISION_RED"
+	ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonCvcMismatch                    ConditionalTokenizationActionParametersActionDeclineActionTokenizationReason = "CVC_MISMATCH"
+	ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonCardExpiryMonthMismatch        ConditionalTokenizationActionParametersActionDeclineActionTokenizationReason = "CARD_EXPIRY_MONTH_MISMATCH"
+	ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonCardExpiryYearMismatch         ConditionalTokenizationActionParametersActionDeclineActionTokenizationReason = "CARD_EXPIRY_YEAR_MISMATCH"
+	ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonCardInvalidState               ConditionalTokenizationActionParametersActionDeclineActionTokenizationReason = "CARD_INVALID_STATE"
+	ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonCustomerRedPath                ConditionalTokenizationActionParametersActionDeclineActionTokenizationReason = "CUSTOMER_RED_PATH"
+	ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonInvalidCustomerResponse        ConditionalTokenizationActionParametersActionDeclineActionTokenizationReason = "INVALID_CUSTOMER_RESPONSE"
+	ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonNetworkFailure                 ConditionalTokenizationActionParametersActionDeclineActionTokenizationReason = "NETWORK_FAILURE"
+	ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonGenericDecline                 ConditionalTokenizationActionParametersActionDeclineActionTokenizationReason = "GENERIC_DECLINE"
+	ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonDigitalCardArtRequired         ConditionalTokenizationActionParametersActionDeclineActionTokenizationReason = "DIGITAL_CARD_ART_REQUIRED"
 )
 
-func (r ConditionalTokenizationActionParametersActionDeclineActionReason) IsKnown() bool {
+func (r ConditionalTokenizationActionParametersActionDeclineActionTokenizationReason) IsKnown() bool {
 	switch r {
-	case ConditionalTokenizationActionParametersActionDeclineActionReasonAccountScore1, ConditionalTokenizationActionParametersActionDeclineActionReasonDeviceScore1, ConditionalTokenizationActionParametersActionDeclineActionReasonAllWalletDeclineReasonsPresent, ConditionalTokenizationActionParametersActionDeclineActionReasonWalletRecommendedDecisionRed, ConditionalTokenizationActionParametersActionDeclineActionReasonCvcMismatch, ConditionalTokenizationActionParametersActionDeclineActionReasonCardExpiryMonthMismatch, ConditionalTokenizationActionParametersActionDeclineActionReasonCardExpiryYearMismatch, ConditionalTokenizationActionParametersActionDeclineActionReasonCardInvalidState, ConditionalTokenizationActionParametersActionDeclineActionReasonCustomerRedPath, ConditionalTokenizationActionParametersActionDeclineActionReasonInvalidCustomerResponse, ConditionalTokenizationActionParametersActionDeclineActionReasonNetworkFailure, ConditionalTokenizationActionParametersActionDeclineActionReasonGenericDecline, ConditionalTokenizationActionParametersActionDeclineActionReasonDigitalCardArtRequired:
+	case ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonAccountScore1, ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonDeviceScore1, ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonAllWalletDeclineReasonsPresent, ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonWalletRecommendedDecisionRed, ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonCvcMismatch, ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonCardExpiryMonthMismatch, ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonCardExpiryYearMismatch, ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonCardInvalidState, ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonCustomerRedPath, ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonInvalidCustomerResponse, ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonNetworkFailure, ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonGenericDecline, ConditionalTokenizationActionParametersActionDeclineActionTokenizationReasonDigitalCardArtRequired:
 		return true
 	}
 	return false
@@ -2295,62 +2382,77 @@ func (r merchantLockParametersMerchantJSON) RawJSON() string {
 	return r.raw
 }
 
-type RuleStats struct {
+type ReportStats struct {
+	// A mapping of action types to the number of times that action was returned by
+	// this rule during the relevant period. Actions are the possible outcomes of a
+	// rule evaluation, such as DECLINE, CHALLENGE, REQUIRE_TFA, etc. In case rule
+	// didn't trigger any action, it's counted under NO_ACTION key.
+	ActionCounts map[string]int64 `json:"action_counts"`
 	// The total number of historical transactions approved by this rule during the
 	// relevant period, or the number of transactions that would have been approved if
 	// the rule was evaluated in shadow mode.
+	//
+	// Deprecated: deprecated
 	Approved int64 `json:"approved"`
 	// The total number of historical transactions challenged by this rule during the
 	// relevant period, or the number of transactions that would have been challenged
 	// if the rule was evaluated in shadow mode. Currently applicable only for 3DS Auth
 	// Rules.
+	//
+	// Deprecated: deprecated
 	Challenged int64 `json:"challenged"`
 	// The total number of historical transactions declined by this rule during the
 	// relevant period, or the number of transactions that would have been declined if
 	// the rule was evaluated in shadow mode.
+	//
+	// Deprecated: deprecated
 	Declined int64 `json:"declined"`
 	// Example events and their outcomes.
-	Examples []RuleStatsExample `json:"examples"`
-	// The version of the rule, this is incremented whenever the rule's parameters
-	// change.
-	Version int64         `json:"version"`
-	JSON    ruleStatsJSON `json:"-"`
+	Examples []ReportStatsExample `json:"examples"`
+	JSON     reportStatsJSON      `json:"-"`
 }
 
-// ruleStatsJSON contains the JSON metadata for the struct [RuleStats]
-type ruleStatsJSON struct {
-	Approved    apijson.Field
-	Challenged  apijson.Field
-	Declined    apijson.Field
-	Examples    apijson.Field
-	Version     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+// reportStatsJSON contains the JSON metadata for the struct [ReportStats]
+type reportStatsJSON struct {
+	ActionCounts apijson.Field
+	Approved     apijson.Field
+	Challenged   apijson.Field
+	Declined     apijson.Field
+	Examples     apijson.Field
+	raw          string
+	ExtraFields  map[string]apijson.Field
 }
 
-func (r *RuleStats) UnmarshalJSON(data []byte) (err error) {
+func (r *ReportStats) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r ruleStatsJSON) RawJSON() string {
+func (r reportStatsJSON) RawJSON() string {
 	return r.raw
 }
 
-type RuleStatsExample struct {
+type ReportStatsExample struct {
+	// The actions taken by the rule for this event.
+	Actions []ReportStatsExamplesAction `json:"actions"`
 	// Whether the rule would have approved the request.
+	//
+	// Deprecated: deprecated
 	Approved bool `json:"approved"`
 	// The decision made by the rule for this event.
-	Decision RuleStatsExamplesDecision `json:"decision"`
+	//
+	// Deprecated: deprecated
+	Decision ReportStatsExamplesDecision `json:"decision"`
 	// The event token.
 	EventToken string `json:"event_token" format:"uuid"`
 	// The timestamp of the event.
-	Timestamp time.Time            `json:"timestamp" format:"date-time"`
-	JSON      ruleStatsExampleJSON `json:"-"`
+	Timestamp time.Time              `json:"timestamp" format:"date-time"`
+	JSON      reportStatsExampleJSON `json:"-"`
 }
 
-// ruleStatsExampleJSON contains the JSON metadata for the struct
-// [RuleStatsExample]
-type ruleStatsExampleJSON struct {
+// reportStatsExampleJSON contains the JSON metadata for the struct
+// [ReportStatsExample]
+type reportStatsExampleJSON struct {
+	Actions     apijson.Field
 	Approved    apijson.Field
 	Decision    apijson.Field
 	EventToken  apijson.Field
@@ -2359,26 +2461,819 @@ type ruleStatsExampleJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *RuleStatsExample) UnmarshalJSON(data []byte) (err error) {
+func (r *ReportStatsExample) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r ruleStatsExampleJSON) RawJSON() string {
+func (r reportStatsExampleJSON) RawJSON() string {
 	return r.raw
 }
 
-// The decision made by the rule for this event.
-type RuleStatsExamplesDecision string
+type ReportStatsExamplesAction struct {
+	Type ReportStatsExamplesActionsType `json:"type" api:"required"`
+	// The detailed result code explaining the specific reason for the decline
+	Code ReportStatsExamplesActionsCode `json:"code"`
+	// Reason code for declining the tokenization request
+	Reason ReportStatsExamplesActionsReason `json:"reason"`
+	JSON   reportStatsExamplesActionJSON    `json:"-"`
+	union  ReportStatsExamplesActionsUnion
+}
+
+// reportStatsExamplesActionJSON contains the JSON metadata for the struct
+// [ReportStatsExamplesAction]
+type reportStatsExamplesActionJSON struct {
+	Type        apijson.Field
+	Code        apijson.Field
+	Reason      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r reportStatsExamplesActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r *ReportStatsExamplesAction) UnmarshalJSON(data []byte) (err error) {
+	*r = ReportStatsExamplesAction{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a [ReportStatsExamplesActionsUnion] interface which you can cast
+// to the specific types for more type safety.
+//
+// Possible runtime types of the union are
+// [ReportStatsExamplesActionsDeclineActionAuthorization],
+// [ReportStatsExamplesActionsChallengeActionAuthorization],
+// [ReportStatsExamplesActionsResultAuthentication3DSAction],
+// [ReportStatsExamplesActionsDeclineActionTokenization],
+// [ReportStatsExamplesActionsRequireTfaAction],
+// [ReportStatsExamplesActionsApproveActionACH],
+// [ReportStatsExamplesActionsReturnAction].
+func (r ReportStatsExamplesAction) AsUnion() ReportStatsExamplesActionsUnion {
+	return r.union
+}
+
+// Union satisfied by [ReportStatsExamplesActionsDeclineActionAuthorization],
+// [ReportStatsExamplesActionsChallengeActionAuthorization],
+// [ReportStatsExamplesActionsResultAuthentication3DSAction],
+// [ReportStatsExamplesActionsDeclineActionTokenization],
+// [ReportStatsExamplesActionsRequireTfaAction],
+// [ReportStatsExamplesActionsApproveActionACH] or
+// [ReportStatsExamplesActionsReturnAction].
+type ReportStatsExamplesActionsUnion interface {
+	implementsReportStatsExamplesAction()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*ReportStatsExamplesActionsUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ReportStatsExamplesActionsDeclineActionAuthorization{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ReportStatsExamplesActionsChallengeActionAuthorization{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ReportStatsExamplesActionsResultAuthentication3DSAction{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ReportStatsExamplesActionsDeclineActionTokenization{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ReportStatsExamplesActionsRequireTfaAction{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ReportStatsExamplesActionsApproveActionACH{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ReportStatsExamplesActionsReturnAction{}),
+		},
+	)
+}
+
+type ReportStatsExamplesActionsDeclineActionAuthorization struct {
+	// The detailed result code explaining the specific reason for the decline
+	Code ReportStatsExamplesActionsDeclineActionAuthorizationCode `json:"code" api:"required"`
+	Type ReportStatsExamplesActionsDeclineActionAuthorizationType `json:"type" api:"required"`
+	JSON reportStatsExamplesActionsDeclineActionAuthorizationJSON `json:"-"`
+}
+
+// reportStatsExamplesActionsDeclineActionAuthorizationJSON contains the JSON
+// metadata for the struct [ReportStatsExamplesActionsDeclineActionAuthorization]
+type reportStatsExamplesActionsDeclineActionAuthorizationJSON struct {
+	Code        apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ReportStatsExamplesActionsDeclineActionAuthorization) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r reportStatsExamplesActionsDeclineActionAuthorizationJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ReportStatsExamplesActionsDeclineActionAuthorization) implementsReportStatsExamplesAction() {}
+
+// The detailed result code explaining the specific reason for the decline
+type ReportStatsExamplesActionsDeclineActionAuthorizationCode string
 
 const (
-	RuleStatsExamplesDecisionApproved   RuleStatsExamplesDecision = "APPROVED"
-	RuleStatsExamplesDecisionDeclined   RuleStatsExamplesDecision = "DECLINED"
-	RuleStatsExamplesDecisionChallenged RuleStatsExamplesDecision = "CHALLENGED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeAccountDailySpendLimitExceeded              ReportStatsExamplesActionsDeclineActionAuthorizationCode = "ACCOUNT_DAILY_SPEND_LIMIT_EXCEEDED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeAccountDelinquent                           ReportStatsExamplesActionsDeclineActionAuthorizationCode = "ACCOUNT_DELINQUENT"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeAccountInactive                             ReportStatsExamplesActionsDeclineActionAuthorizationCode = "ACCOUNT_INACTIVE"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeAccountLifetimeSpendLimitExceeded           ReportStatsExamplesActionsDeclineActionAuthorizationCode = "ACCOUNT_LIFETIME_SPEND_LIMIT_EXCEEDED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeAccountMonthlySpendLimitExceeded            ReportStatsExamplesActionsDeclineActionAuthorizationCode = "ACCOUNT_MONTHLY_SPEND_LIMIT_EXCEEDED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeAccountPaused                               ReportStatsExamplesActionsDeclineActionAuthorizationCode = "ACCOUNT_PAUSED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeAccountUnderReview                          ReportStatsExamplesActionsDeclineActionAuthorizationCode = "ACCOUNT_UNDER_REVIEW"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeAddressIncorrect                            ReportStatsExamplesActionsDeclineActionAuthorizationCode = "ADDRESS_INCORRECT"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeApproved                                    ReportStatsExamplesActionsDeclineActionAuthorizationCode = "APPROVED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeAuthRuleAllowedCountry                      ReportStatsExamplesActionsDeclineActionAuthorizationCode = "AUTH_RULE_ALLOWED_COUNTRY"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeAuthRuleAllowedMcc                          ReportStatsExamplesActionsDeclineActionAuthorizationCode = "AUTH_RULE_ALLOWED_MCC"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeAuthRuleBlockedCountry                      ReportStatsExamplesActionsDeclineActionAuthorizationCode = "AUTH_RULE_BLOCKED_COUNTRY"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeAuthRuleBlockedMcc                          ReportStatsExamplesActionsDeclineActionAuthorizationCode = "AUTH_RULE_BLOCKED_MCC"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeAuthRule                                    ReportStatsExamplesActionsDeclineActionAuthorizationCode = "AUTH_RULE"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardClosed                                  ReportStatsExamplesActionsDeclineActionAuthorizationCode = "CARD_CLOSED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardCryptogramValidationFailure             ReportStatsExamplesActionsDeclineActionAuthorizationCode = "CARD_CRYPTOGRAM_VALIDATION_FAILURE"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardExpired                                 ReportStatsExamplesActionsDeclineActionAuthorizationCode = "CARD_EXPIRED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardExpiryDateIncorrect                     ReportStatsExamplesActionsDeclineActionAuthorizationCode = "CARD_EXPIRY_DATE_INCORRECT"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardInvalid                                 ReportStatsExamplesActionsDeclineActionAuthorizationCode = "CARD_INVALID"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardNotActivated                            ReportStatsExamplesActionsDeclineActionAuthorizationCode = "CARD_NOT_ACTIVATED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardPaused                                  ReportStatsExamplesActionsDeclineActionAuthorizationCode = "CARD_PAUSED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardPinIncorrect                            ReportStatsExamplesActionsDeclineActionAuthorizationCode = "CARD_PIN_INCORRECT"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardRestricted                              ReportStatsExamplesActionsDeclineActionAuthorizationCode = "CARD_RESTRICTED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardSecurityCodeIncorrect                   ReportStatsExamplesActionsDeclineActionAuthorizationCode = "CARD_SECURITY_CODE_INCORRECT"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardSpendLimitExceeded                      ReportStatsExamplesActionsDeclineActionAuthorizationCode = "CARD_SPEND_LIMIT_EXCEEDED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeContactCardIssuer                           ReportStatsExamplesActionsDeclineActionAuthorizationCode = "CONTACT_CARD_ISSUER"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeCustomerAsaTimeout                          ReportStatsExamplesActionsDeclineActionAuthorizationCode = "CUSTOMER_ASA_TIMEOUT"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeCustomAsaResult                             ReportStatsExamplesActionsDeclineActionAuthorizationCode = "CUSTOM_ASA_RESULT"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeDeclined                                    ReportStatsExamplesActionsDeclineActionAuthorizationCode = "DECLINED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeDoNotHonor                                  ReportStatsExamplesActionsDeclineActionAuthorizationCode = "DO_NOT_HONOR"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeDriverNumberInvalid                         ReportStatsExamplesActionsDeclineActionAuthorizationCode = "DRIVER_NUMBER_INVALID"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeFormatError                                 ReportStatsExamplesActionsDeclineActionAuthorizationCode = "FORMAT_ERROR"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeInsufficientFundingSourceBalance            ReportStatsExamplesActionsDeclineActionAuthorizationCode = "INSUFFICIENT_FUNDING_SOURCE_BALANCE"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeInsufficientFunds                           ReportStatsExamplesActionsDeclineActionAuthorizationCode = "INSUFFICIENT_FUNDS"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeLithicSystemError                           ReportStatsExamplesActionsDeclineActionAuthorizationCode = "LITHIC_SYSTEM_ERROR"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeLithicSystemRateLimit                       ReportStatsExamplesActionsDeclineActionAuthorizationCode = "LITHIC_SYSTEM_RATE_LIMIT"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeMalformedAsaResponse                        ReportStatsExamplesActionsDeclineActionAuthorizationCode = "MALFORMED_ASA_RESPONSE"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeMerchantInvalid                             ReportStatsExamplesActionsDeclineActionAuthorizationCode = "MERCHANT_INVALID"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeMerchantLockedCardAttemptedElsewhere        ReportStatsExamplesActionsDeclineActionAuthorizationCode = "MERCHANT_LOCKED_CARD_ATTEMPTED_ELSEWHERE"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeMerchantNotPermitted                        ReportStatsExamplesActionsDeclineActionAuthorizationCode = "MERCHANT_NOT_PERMITTED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeOverReversalAttempted                       ReportStatsExamplesActionsDeclineActionAuthorizationCode = "OVER_REVERSAL_ATTEMPTED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodePinBlocked                                  ReportStatsExamplesActionsDeclineActionAuthorizationCode = "PIN_BLOCKED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeProgramCardSpendLimitExceeded               ReportStatsExamplesActionsDeclineActionAuthorizationCode = "PROGRAM_CARD_SPEND_LIMIT_EXCEEDED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeProgramSuspended                            ReportStatsExamplesActionsDeclineActionAuthorizationCode = "PROGRAM_SUSPENDED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeProgramUsageRestriction                     ReportStatsExamplesActionsDeclineActionAuthorizationCode = "PROGRAM_USAGE_RESTRICTION"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeReversalUnmatched                           ReportStatsExamplesActionsDeclineActionAuthorizationCode = "REVERSAL_UNMATCHED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeSecurityViolation                           ReportStatsExamplesActionsDeclineActionAuthorizationCode = "SECURITY_VIOLATION"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeSingleUseCardReattempted                    ReportStatsExamplesActionsDeclineActionAuthorizationCode = "SINGLE_USE_CARD_REATTEMPTED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeSuspectedFraud                              ReportStatsExamplesActionsDeclineActionAuthorizationCode = "SUSPECTED_FRAUD"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeTransactionInvalid                          ReportStatsExamplesActionsDeclineActionAuthorizationCode = "TRANSACTION_INVALID"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeTransactionNotPermittedToAcquirerOrTerminal ReportStatsExamplesActionsDeclineActionAuthorizationCode = "TRANSACTION_NOT_PERMITTED_TO_ACQUIRER_OR_TERMINAL"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeTransactionNotPermittedToIssuerOrCardholder ReportStatsExamplesActionsDeclineActionAuthorizationCode = "TRANSACTION_NOT_PERMITTED_TO_ISSUER_OR_CARDHOLDER"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeTransactionPreviouslyCompleted              ReportStatsExamplesActionsDeclineActionAuthorizationCode = "TRANSACTION_PREVIOUSLY_COMPLETED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeUnauthorizedMerchant                        ReportStatsExamplesActionsDeclineActionAuthorizationCode = "UNAUTHORIZED_MERCHANT"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeVehicleNumberInvalid                        ReportStatsExamplesActionsDeclineActionAuthorizationCode = "VEHICLE_NUMBER_INVALID"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardholderChallenged                        ReportStatsExamplesActionsDeclineActionAuthorizationCode = "CARDHOLDER_CHALLENGED"
+	ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardholderChallengeFailed                   ReportStatsExamplesActionsDeclineActionAuthorizationCode = "CARDHOLDER_CHALLENGE_FAILED"
 )
 
-func (r RuleStatsExamplesDecision) IsKnown() bool {
+func (r ReportStatsExamplesActionsDeclineActionAuthorizationCode) IsKnown() bool {
 	switch r {
-	case RuleStatsExamplesDecisionApproved, RuleStatsExamplesDecisionDeclined, RuleStatsExamplesDecisionChallenged:
+	case ReportStatsExamplesActionsDeclineActionAuthorizationCodeAccountDailySpendLimitExceeded, ReportStatsExamplesActionsDeclineActionAuthorizationCodeAccountDelinquent, ReportStatsExamplesActionsDeclineActionAuthorizationCodeAccountInactive, ReportStatsExamplesActionsDeclineActionAuthorizationCodeAccountLifetimeSpendLimitExceeded, ReportStatsExamplesActionsDeclineActionAuthorizationCodeAccountMonthlySpendLimitExceeded, ReportStatsExamplesActionsDeclineActionAuthorizationCodeAccountPaused, ReportStatsExamplesActionsDeclineActionAuthorizationCodeAccountUnderReview, ReportStatsExamplesActionsDeclineActionAuthorizationCodeAddressIncorrect, ReportStatsExamplesActionsDeclineActionAuthorizationCodeApproved, ReportStatsExamplesActionsDeclineActionAuthorizationCodeAuthRuleAllowedCountry, ReportStatsExamplesActionsDeclineActionAuthorizationCodeAuthRuleAllowedMcc, ReportStatsExamplesActionsDeclineActionAuthorizationCodeAuthRuleBlockedCountry, ReportStatsExamplesActionsDeclineActionAuthorizationCodeAuthRuleBlockedMcc, ReportStatsExamplesActionsDeclineActionAuthorizationCodeAuthRule, ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardClosed, ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardCryptogramValidationFailure, ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardExpired, ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardExpiryDateIncorrect, ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardInvalid, ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardNotActivated, ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardPaused, ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardPinIncorrect, ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardRestricted, ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardSecurityCodeIncorrect, ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardSpendLimitExceeded, ReportStatsExamplesActionsDeclineActionAuthorizationCodeContactCardIssuer, ReportStatsExamplesActionsDeclineActionAuthorizationCodeCustomerAsaTimeout, ReportStatsExamplesActionsDeclineActionAuthorizationCodeCustomAsaResult, ReportStatsExamplesActionsDeclineActionAuthorizationCodeDeclined, ReportStatsExamplesActionsDeclineActionAuthorizationCodeDoNotHonor, ReportStatsExamplesActionsDeclineActionAuthorizationCodeDriverNumberInvalid, ReportStatsExamplesActionsDeclineActionAuthorizationCodeFormatError, ReportStatsExamplesActionsDeclineActionAuthorizationCodeInsufficientFundingSourceBalance, ReportStatsExamplesActionsDeclineActionAuthorizationCodeInsufficientFunds, ReportStatsExamplesActionsDeclineActionAuthorizationCodeLithicSystemError, ReportStatsExamplesActionsDeclineActionAuthorizationCodeLithicSystemRateLimit, ReportStatsExamplesActionsDeclineActionAuthorizationCodeMalformedAsaResponse, ReportStatsExamplesActionsDeclineActionAuthorizationCodeMerchantInvalid, ReportStatsExamplesActionsDeclineActionAuthorizationCodeMerchantLockedCardAttemptedElsewhere, ReportStatsExamplesActionsDeclineActionAuthorizationCodeMerchantNotPermitted, ReportStatsExamplesActionsDeclineActionAuthorizationCodeOverReversalAttempted, ReportStatsExamplesActionsDeclineActionAuthorizationCodePinBlocked, ReportStatsExamplesActionsDeclineActionAuthorizationCodeProgramCardSpendLimitExceeded, ReportStatsExamplesActionsDeclineActionAuthorizationCodeProgramSuspended, ReportStatsExamplesActionsDeclineActionAuthorizationCodeProgramUsageRestriction, ReportStatsExamplesActionsDeclineActionAuthorizationCodeReversalUnmatched, ReportStatsExamplesActionsDeclineActionAuthorizationCodeSecurityViolation, ReportStatsExamplesActionsDeclineActionAuthorizationCodeSingleUseCardReattempted, ReportStatsExamplesActionsDeclineActionAuthorizationCodeSuspectedFraud, ReportStatsExamplesActionsDeclineActionAuthorizationCodeTransactionInvalid, ReportStatsExamplesActionsDeclineActionAuthorizationCodeTransactionNotPermittedToAcquirerOrTerminal, ReportStatsExamplesActionsDeclineActionAuthorizationCodeTransactionNotPermittedToIssuerOrCardholder, ReportStatsExamplesActionsDeclineActionAuthorizationCodeTransactionPreviouslyCompleted, ReportStatsExamplesActionsDeclineActionAuthorizationCodeUnauthorizedMerchant, ReportStatsExamplesActionsDeclineActionAuthorizationCodeVehicleNumberInvalid, ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardholderChallenged, ReportStatsExamplesActionsDeclineActionAuthorizationCodeCardholderChallengeFailed:
+		return true
+	}
+	return false
+}
+
+type ReportStatsExamplesActionsDeclineActionAuthorizationType string
+
+const (
+	ReportStatsExamplesActionsDeclineActionAuthorizationTypeDecline ReportStatsExamplesActionsDeclineActionAuthorizationType = "DECLINE"
+)
+
+func (r ReportStatsExamplesActionsDeclineActionAuthorizationType) IsKnown() bool {
+	switch r {
+	case ReportStatsExamplesActionsDeclineActionAuthorizationTypeDecline:
+		return true
+	}
+	return false
+}
+
+type ReportStatsExamplesActionsChallengeActionAuthorization struct {
+	Type ReportStatsExamplesActionsChallengeActionAuthorizationType `json:"type" api:"required"`
+	JSON reportStatsExamplesActionsChallengeActionAuthorizationJSON `json:"-"`
+}
+
+// reportStatsExamplesActionsChallengeActionAuthorizationJSON contains the JSON
+// metadata for the struct [ReportStatsExamplesActionsChallengeActionAuthorization]
+type reportStatsExamplesActionsChallengeActionAuthorizationJSON struct {
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ReportStatsExamplesActionsChallengeActionAuthorization) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r reportStatsExamplesActionsChallengeActionAuthorizationJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ReportStatsExamplesActionsChallengeActionAuthorization) implementsReportStatsExamplesAction() {
+}
+
+type ReportStatsExamplesActionsChallengeActionAuthorizationType string
+
+const (
+	ReportStatsExamplesActionsChallengeActionAuthorizationTypeChallenge ReportStatsExamplesActionsChallengeActionAuthorizationType = "CHALLENGE"
+)
+
+func (r ReportStatsExamplesActionsChallengeActionAuthorizationType) IsKnown() bool {
+	switch r {
+	case ReportStatsExamplesActionsChallengeActionAuthorizationTypeChallenge:
+		return true
+	}
+	return false
+}
+
+type ReportStatsExamplesActionsResultAuthentication3DSAction struct {
+	Type ReportStatsExamplesActionsResultAuthentication3DSActionType `json:"type" api:"required"`
+	JSON reportStatsExamplesActionsResultAuthentication3DsActionJSON `json:"-"`
+}
+
+// reportStatsExamplesActionsResultAuthentication3DsActionJSON contains the JSON
+// metadata for the struct
+// [ReportStatsExamplesActionsResultAuthentication3DSAction]
+type reportStatsExamplesActionsResultAuthentication3DsActionJSON struct {
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ReportStatsExamplesActionsResultAuthentication3DSAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r reportStatsExamplesActionsResultAuthentication3DsActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ReportStatsExamplesActionsResultAuthentication3DSAction) implementsReportStatsExamplesAction() {
+}
+
+type ReportStatsExamplesActionsResultAuthentication3DSActionType string
+
+const (
+	ReportStatsExamplesActionsResultAuthentication3DSActionTypeDecline   ReportStatsExamplesActionsResultAuthentication3DSActionType = "DECLINE"
+	ReportStatsExamplesActionsResultAuthentication3DSActionTypeChallenge ReportStatsExamplesActionsResultAuthentication3DSActionType = "CHALLENGE"
+)
+
+func (r ReportStatsExamplesActionsResultAuthentication3DSActionType) IsKnown() bool {
+	switch r {
+	case ReportStatsExamplesActionsResultAuthentication3DSActionTypeDecline, ReportStatsExamplesActionsResultAuthentication3DSActionTypeChallenge:
+		return true
+	}
+	return false
+}
+
+type ReportStatsExamplesActionsDeclineActionTokenization struct {
+	// Decline the tokenization request
+	Type ReportStatsExamplesActionsDeclineActionTokenizationType `json:"type" api:"required"`
+	// Reason code for declining the tokenization request
+	Reason ReportStatsExamplesActionsDeclineActionTokenizationReason `json:"reason"`
+	JSON   reportStatsExamplesActionsDeclineActionTokenizationJSON   `json:"-"`
+}
+
+// reportStatsExamplesActionsDeclineActionTokenizationJSON contains the JSON
+// metadata for the struct [ReportStatsExamplesActionsDeclineActionTokenization]
+type reportStatsExamplesActionsDeclineActionTokenizationJSON struct {
+	Type        apijson.Field
+	Reason      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ReportStatsExamplesActionsDeclineActionTokenization) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r reportStatsExamplesActionsDeclineActionTokenizationJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ReportStatsExamplesActionsDeclineActionTokenization) implementsReportStatsExamplesAction() {}
+
+// Decline the tokenization request
+type ReportStatsExamplesActionsDeclineActionTokenizationType string
+
+const (
+	ReportStatsExamplesActionsDeclineActionTokenizationTypeDecline ReportStatsExamplesActionsDeclineActionTokenizationType = "DECLINE"
+)
+
+func (r ReportStatsExamplesActionsDeclineActionTokenizationType) IsKnown() bool {
+	switch r {
+	case ReportStatsExamplesActionsDeclineActionTokenizationTypeDecline:
+		return true
+	}
+	return false
+}
+
+// Reason code for declining the tokenization request
+type ReportStatsExamplesActionsDeclineActionTokenizationReason string
+
+const (
+	ReportStatsExamplesActionsDeclineActionTokenizationReasonAccountScore1                  ReportStatsExamplesActionsDeclineActionTokenizationReason = "ACCOUNT_SCORE_1"
+	ReportStatsExamplesActionsDeclineActionTokenizationReasonDeviceScore1                   ReportStatsExamplesActionsDeclineActionTokenizationReason = "DEVICE_SCORE_1"
+	ReportStatsExamplesActionsDeclineActionTokenizationReasonAllWalletDeclineReasonsPresent ReportStatsExamplesActionsDeclineActionTokenizationReason = "ALL_WALLET_DECLINE_REASONS_PRESENT"
+	ReportStatsExamplesActionsDeclineActionTokenizationReasonWalletRecommendedDecisionRed   ReportStatsExamplesActionsDeclineActionTokenizationReason = "WALLET_RECOMMENDED_DECISION_RED"
+	ReportStatsExamplesActionsDeclineActionTokenizationReasonCvcMismatch                    ReportStatsExamplesActionsDeclineActionTokenizationReason = "CVC_MISMATCH"
+	ReportStatsExamplesActionsDeclineActionTokenizationReasonCardExpiryMonthMismatch        ReportStatsExamplesActionsDeclineActionTokenizationReason = "CARD_EXPIRY_MONTH_MISMATCH"
+	ReportStatsExamplesActionsDeclineActionTokenizationReasonCardExpiryYearMismatch         ReportStatsExamplesActionsDeclineActionTokenizationReason = "CARD_EXPIRY_YEAR_MISMATCH"
+	ReportStatsExamplesActionsDeclineActionTokenizationReasonCardInvalidState               ReportStatsExamplesActionsDeclineActionTokenizationReason = "CARD_INVALID_STATE"
+	ReportStatsExamplesActionsDeclineActionTokenizationReasonCustomerRedPath                ReportStatsExamplesActionsDeclineActionTokenizationReason = "CUSTOMER_RED_PATH"
+	ReportStatsExamplesActionsDeclineActionTokenizationReasonInvalidCustomerResponse        ReportStatsExamplesActionsDeclineActionTokenizationReason = "INVALID_CUSTOMER_RESPONSE"
+	ReportStatsExamplesActionsDeclineActionTokenizationReasonNetworkFailure                 ReportStatsExamplesActionsDeclineActionTokenizationReason = "NETWORK_FAILURE"
+	ReportStatsExamplesActionsDeclineActionTokenizationReasonGenericDecline                 ReportStatsExamplesActionsDeclineActionTokenizationReason = "GENERIC_DECLINE"
+	ReportStatsExamplesActionsDeclineActionTokenizationReasonDigitalCardArtRequired         ReportStatsExamplesActionsDeclineActionTokenizationReason = "DIGITAL_CARD_ART_REQUIRED"
+)
+
+func (r ReportStatsExamplesActionsDeclineActionTokenizationReason) IsKnown() bool {
+	switch r {
+	case ReportStatsExamplesActionsDeclineActionTokenizationReasonAccountScore1, ReportStatsExamplesActionsDeclineActionTokenizationReasonDeviceScore1, ReportStatsExamplesActionsDeclineActionTokenizationReasonAllWalletDeclineReasonsPresent, ReportStatsExamplesActionsDeclineActionTokenizationReasonWalletRecommendedDecisionRed, ReportStatsExamplesActionsDeclineActionTokenizationReasonCvcMismatch, ReportStatsExamplesActionsDeclineActionTokenizationReasonCardExpiryMonthMismatch, ReportStatsExamplesActionsDeclineActionTokenizationReasonCardExpiryYearMismatch, ReportStatsExamplesActionsDeclineActionTokenizationReasonCardInvalidState, ReportStatsExamplesActionsDeclineActionTokenizationReasonCustomerRedPath, ReportStatsExamplesActionsDeclineActionTokenizationReasonInvalidCustomerResponse, ReportStatsExamplesActionsDeclineActionTokenizationReasonNetworkFailure, ReportStatsExamplesActionsDeclineActionTokenizationReasonGenericDecline, ReportStatsExamplesActionsDeclineActionTokenizationReasonDigitalCardArtRequired:
+		return true
+	}
+	return false
+}
+
+type ReportStatsExamplesActionsRequireTfaAction struct {
+	// Require two-factor authentication for the tokenization request
+	Type ReportStatsExamplesActionsRequireTfaActionType `json:"type" api:"required"`
+	// Reason code for requiring two-factor authentication
+	Reason ReportStatsExamplesActionsRequireTfaActionReason `json:"reason"`
+	JSON   reportStatsExamplesActionsRequireTfaActionJSON   `json:"-"`
+}
+
+// reportStatsExamplesActionsRequireTfaActionJSON contains the JSON metadata for
+// the struct [ReportStatsExamplesActionsRequireTfaAction]
+type reportStatsExamplesActionsRequireTfaActionJSON struct {
+	Type        apijson.Field
+	Reason      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ReportStatsExamplesActionsRequireTfaAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r reportStatsExamplesActionsRequireTfaActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ReportStatsExamplesActionsRequireTfaAction) implementsReportStatsExamplesAction() {}
+
+// Require two-factor authentication for the tokenization request
+type ReportStatsExamplesActionsRequireTfaActionType string
+
+const (
+	ReportStatsExamplesActionsRequireTfaActionTypeRequireTfa ReportStatsExamplesActionsRequireTfaActionType = "REQUIRE_TFA"
+)
+
+func (r ReportStatsExamplesActionsRequireTfaActionType) IsKnown() bool {
+	switch r {
+	case ReportStatsExamplesActionsRequireTfaActionTypeRequireTfa:
+		return true
+	}
+	return false
+}
+
+// Reason code for requiring two-factor authentication
+type ReportStatsExamplesActionsRequireTfaActionReason string
+
+const (
+	ReportStatsExamplesActionsRequireTfaActionReasonWalletRecommendedTfa        ReportStatsExamplesActionsRequireTfaActionReason = "WALLET_RECOMMENDED_TFA"
+	ReportStatsExamplesActionsRequireTfaActionReasonSuspiciousActivity          ReportStatsExamplesActionsRequireTfaActionReason = "SUSPICIOUS_ACTIVITY"
+	ReportStatsExamplesActionsRequireTfaActionReasonDeviceRecentlyLost          ReportStatsExamplesActionsRequireTfaActionReason = "DEVICE_RECENTLY_LOST"
+	ReportStatsExamplesActionsRequireTfaActionReasonTooManyRecentAttempts       ReportStatsExamplesActionsRequireTfaActionReason = "TOO_MANY_RECENT_ATTEMPTS"
+	ReportStatsExamplesActionsRequireTfaActionReasonTooManyRecentTokens         ReportStatsExamplesActionsRequireTfaActionReason = "TOO_MANY_RECENT_TOKENS"
+	ReportStatsExamplesActionsRequireTfaActionReasonTooManyDifferentCardholders ReportStatsExamplesActionsRequireTfaActionReason = "TOO_MANY_DIFFERENT_CARDHOLDERS"
+	ReportStatsExamplesActionsRequireTfaActionReasonOutsideHomeTerritory        ReportStatsExamplesActionsRequireTfaActionReason = "OUTSIDE_HOME_TERRITORY"
+	ReportStatsExamplesActionsRequireTfaActionReasonHasSuspendedTokens          ReportStatsExamplesActionsRequireTfaActionReason = "HAS_SUSPENDED_TOKENS"
+	ReportStatsExamplesActionsRequireTfaActionReasonHighRisk                    ReportStatsExamplesActionsRequireTfaActionReason = "HIGH_RISK"
+	ReportStatsExamplesActionsRequireTfaActionReasonAccountScoreLow             ReportStatsExamplesActionsRequireTfaActionReason = "ACCOUNT_SCORE_LOW"
+	ReportStatsExamplesActionsRequireTfaActionReasonDeviceScoreLow              ReportStatsExamplesActionsRequireTfaActionReason = "DEVICE_SCORE_LOW"
+	ReportStatsExamplesActionsRequireTfaActionReasonCardStateTfa                ReportStatsExamplesActionsRequireTfaActionReason = "CARD_STATE_TFA"
+	ReportStatsExamplesActionsRequireTfaActionReasonHardcodedTfa                ReportStatsExamplesActionsRequireTfaActionReason = "HARDCODED_TFA"
+	ReportStatsExamplesActionsRequireTfaActionReasonCustomerRuleTfa             ReportStatsExamplesActionsRequireTfaActionReason = "CUSTOMER_RULE_TFA"
+	ReportStatsExamplesActionsRequireTfaActionReasonDeviceHostCardEmulation     ReportStatsExamplesActionsRequireTfaActionReason = "DEVICE_HOST_CARD_EMULATION"
+)
+
+func (r ReportStatsExamplesActionsRequireTfaActionReason) IsKnown() bool {
+	switch r {
+	case ReportStatsExamplesActionsRequireTfaActionReasonWalletRecommendedTfa, ReportStatsExamplesActionsRequireTfaActionReasonSuspiciousActivity, ReportStatsExamplesActionsRequireTfaActionReasonDeviceRecentlyLost, ReportStatsExamplesActionsRequireTfaActionReasonTooManyRecentAttempts, ReportStatsExamplesActionsRequireTfaActionReasonTooManyRecentTokens, ReportStatsExamplesActionsRequireTfaActionReasonTooManyDifferentCardholders, ReportStatsExamplesActionsRequireTfaActionReasonOutsideHomeTerritory, ReportStatsExamplesActionsRequireTfaActionReasonHasSuspendedTokens, ReportStatsExamplesActionsRequireTfaActionReasonHighRisk, ReportStatsExamplesActionsRequireTfaActionReasonAccountScoreLow, ReportStatsExamplesActionsRequireTfaActionReasonDeviceScoreLow, ReportStatsExamplesActionsRequireTfaActionReasonCardStateTfa, ReportStatsExamplesActionsRequireTfaActionReasonHardcodedTfa, ReportStatsExamplesActionsRequireTfaActionReasonCustomerRuleTfa, ReportStatsExamplesActionsRequireTfaActionReasonDeviceHostCardEmulation:
+		return true
+	}
+	return false
+}
+
+type ReportStatsExamplesActionsApproveActionACH struct {
+	// Approve the ACH transaction
+	Type ReportStatsExamplesActionsApproveActionACHType `json:"type" api:"required"`
+	JSON reportStatsExamplesActionsApproveActionACHJSON `json:"-"`
+}
+
+// reportStatsExamplesActionsApproveActionACHJSON contains the JSON metadata for
+// the struct [ReportStatsExamplesActionsApproveActionACH]
+type reportStatsExamplesActionsApproveActionACHJSON struct {
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ReportStatsExamplesActionsApproveActionACH) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r reportStatsExamplesActionsApproveActionACHJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ReportStatsExamplesActionsApproveActionACH) implementsReportStatsExamplesAction() {}
+
+// Approve the ACH transaction
+type ReportStatsExamplesActionsApproveActionACHType string
+
+const (
+	ReportStatsExamplesActionsApproveActionACHTypeApprove ReportStatsExamplesActionsApproveActionACHType = "APPROVE"
+)
+
+func (r ReportStatsExamplesActionsApproveActionACHType) IsKnown() bool {
+	switch r {
+	case ReportStatsExamplesActionsApproveActionACHTypeApprove:
+		return true
+	}
+	return false
+}
+
+type ReportStatsExamplesActionsReturnAction struct {
+	// NACHA return code to use when returning the transaction. Note that the list of
+	// available return codes is subject to an allowlist configured at the program
+	// level
+	Code ReportStatsExamplesActionsReturnActionCode `json:"code" api:"required"`
+	// Return the ACH transaction
+	Type ReportStatsExamplesActionsReturnActionType `json:"type" api:"required"`
+	JSON reportStatsExamplesActionsReturnActionJSON `json:"-"`
+}
+
+// reportStatsExamplesActionsReturnActionJSON contains the JSON metadata for the
+// struct [ReportStatsExamplesActionsReturnAction]
+type reportStatsExamplesActionsReturnActionJSON struct {
+	Code        apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ReportStatsExamplesActionsReturnAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r reportStatsExamplesActionsReturnActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ReportStatsExamplesActionsReturnAction) implementsReportStatsExamplesAction() {}
+
+// NACHA return code to use when returning the transaction. Note that the list of
+// available return codes is subject to an allowlist configured at the program
+// level
+type ReportStatsExamplesActionsReturnActionCode string
+
+const (
+	ReportStatsExamplesActionsReturnActionCodeR01 ReportStatsExamplesActionsReturnActionCode = "R01"
+	ReportStatsExamplesActionsReturnActionCodeR02 ReportStatsExamplesActionsReturnActionCode = "R02"
+	ReportStatsExamplesActionsReturnActionCodeR03 ReportStatsExamplesActionsReturnActionCode = "R03"
+	ReportStatsExamplesActionsReturnActionCodeR04 ReportStatsExamplesActionsReturnActionCode = "R04"
+	ReportStatsExamplesActionsReturnActionCodeR05 ReportStatsExamplesActionsReturnActionCode = "R05"
+	ReportStatsExamplesActionsReturnActionCodeR06 ReportStatsExamplesActionsReturnActionCode = "R06"
+	ReportStatsExamplesActionsReturnActionCodeR07 ReportStatsExamplesActionsReturnActionCode = "R07"
+	ReportStatsExamplesActionsReturnActionCodeR08 ReportStatsExamplesActionsReturnActionCode = "R08"
+	ReportStatsExamplesActionsReturnActionCodeR09 ReportStatsExamplesActionsReturnActionCode = "R09"
+	ReportStatsExamplesActionsReturnActionCodeR10 ReportStatsExamplesActionsReturnActionCode = "R10"
+	ReportStatsExamplesActionsReturnActionCodeR11 ReportStatsExamplesActionsReturnActionCode = "R11"
+	ReportStatsExamplesActionsReturnActionCodeR12 ReportStatsExamplesActionsReturnActionCode = "R12"
+	ReportStatsExamplesActionsReturnActionCodeR13 ReportStatsExamplesActionsReturnActionCode = "R13"
+	ReportStatsExamplesActionsReturnActionCodeR14 ReportStatsExamplesActionsReturnActionCode = "R14"
+	ReportStatsExamplesActionsReturnActionCodeR15 ReportStatsExamplesActionsReturnActionCode = "R15"
+	ReportStatsExamplesActionsReturnActionCodeR16 ReportStatsExamplesActionsReturnActionCode = "R16"
+	ReportStatsExamplesActionsReturnActionCodeR17 ReportStatsExamplesActionsReturnActionCode = "R17"
+	ReportStatsExamplesActionsReturnActionCodeR18 ReportStatsExamplesActionsReturnActionCode = "R18"
+	ReportStatsExamplesActionsReturnActionCodeR19 ReportStatsExamplesActionsReturnActionCode = "R19"
+	ReportStatsExamplesActionsReturnActionCodeR20 ReportStatsExamplesActionsReturnActionCode = "R20"
+	ReportStatsExamplesActionsReturnActionCodeR21 ReportStatsExamplesActionsReturnActionCode = "R21"
+	ReportStatsExamplesActionsReturnActionCodeR22 ReportStatsExamplesActionsReturnActionCode = "R22"
+	ReportStatsExamplesActionsReturnActionCodeR23 ReportStatsExamplesActionsReturnActionCode = "R23"
+	ReportStatsExamplesActionsReturnActionCodeR24 ReportStatsExamplesActionsReturnActionCode = "R24"
+	ReportStatsExamplesActionsReturnActionCodeR25 ReportStatsExamplesActionsReturnActionCode = "R25"
+	ReportStatsExamplesActionsReturnActionCodeR26 ReportStatsExamplesActionsReturnActionCode = "R26"
+	ReportStatsExamplesActionsReturnActionCodeR27 ReportStatsExamplesActionsReturnActionCode = "R27"
+	ReportStatsExamplesActionsReturnActionCodeR28 ReportStatsExamplesActionsReturnActionCode = "R28"
+	ReportStatsExamplesActionsReturnActionCodeR29 ReportStatsExamplesActionsReturnActionCode = "R29"
+	ReportStatsExamplesActionsReturnActionCodeR30 ReportStatsExamplesActionsReturnActionCode = "R30"
+	ReportStatsExamplesActionsReturnActionCodeR31 ReportStatsExamplesActionsReturnActionCode = "R31"
+	ReportStatsExamplesActionsReturnActionCodeR32 ReportStatsExamplesActionsReturnActionCode = "R32"
+	ReportStatsExamplesActionsReturnActionCodeR33 ReportStatsExamplesActionsReturnActionCode = "R33"
+	ReportStatsExamplesActionsReturnActionCodeR34 ReportStatsExamplesActionsReturnActionCode = "R34"
+	ReportStatsExamplesActionsReturnActionCodeR35 ReportStatsExamplesActionsReturnActionCode = "R35"
+	ReportStatsExamplesActionsReturnActionCodeR36 ReportStatsExamplesActionsReturnActionCode = "R36"
+	ReportStatsExamplesActionsReturnActionCodeR37 ReportStatsExamplesActionsReturnActionCode = "R37"
+	ReportStatsExamplesActionsReturnActionCodeR38 ReportStatsExamplesActionsReturnActionCode = "R38"
+	ReportStatsExamplesActionsReturnActionCodeR39 ReportStatsExamplesActionsReturnActionCode = "R39"
+	ReportStatsExamplesActionsReturnActionCodeR40 ReportStatsExamplesActionsReturnActionCode = "R40"
+	ReportStatsExamplesActionsReturnActionCodeR41 ReportStatsExamplesActionsReturnActionCode = "R41"
+	ReportStatsExamplesActionsReturnActionCodeR42 ReportStatsExamplesActionsReturnActionCode = "R42"
+	ReportStatsExamplesActionsReturnActionCodeR43 ReportStatsExamplesActionsReturnActionCode = "R43"
+	ReportStatsExamplesActionsReturnActionCodeR44 ReportStatsExamplesActionsReturnActionCode = "R44"
+	ReportStatsExamplesActionsReturnActionCodeR45 ReportStatsExamplesActionsReturnActionCode = "R45"
+	ReportStatsExamplesActionsReturnActionCodeR46 ReportStatsExamplesActionsReturnActionCode = "R46"
+	ReportStatsExamplesActionsReturnActionCodeR47 ReportStatsExamplesActionsReturnActionCode = "R47"
+	ReportStatsExamplesActionsReturnActionCodeR50 ReportStatsExamplesActionsReturnActionCode = "R50"
+	ReportStatsExamplesActionsReturnActionCodeR51 ReportStatsExamplesActionsReturnActionCode = "R51"
+	ReportStatsExamplesActionsReturnActionCodeR52 ReportStatsExamplesActionsReturnActionCode = "R52"
+	ReportStatsExamplesActionsReturnActionCodeR53 ReportStatsExamplesActionsReturnActionCode = "R53"
+	ReportStatsExamplesActionsReturnActionCodeR61 ReportStatsExamplesActionsReturnActionCode = "R61"
+	ReportStatsExamplesActionsReturnActionCodeR62 ReportStatsExamplesActionsReturnActionCode = "R62"
+	ReportStatsExamplesActionsReturnActionCodeR67 ReportStatsExamplesActionsReturnActionCode = "R67"
+	ReportStatsExamplesActionsReturnActionCodeR68 ReportStatsExamplesActionsReturnActionCode = "R68"
+	ReportStatsExamplesActionsReturnActionCodeR69 ReportStatsExamplesActionsReturnActionCode = "R69"
+	ReportStatsExamplesActionsReturnActionCodeR70 ReportStatsExamplesActionsReturnActionCode = "R70"
+	ReportStatsExamplesActionsReturnActionCodeR71 ReportStatsExamplesActionsReturnActionCode = "R71"
+	ReportStatsExamplesActionsReturnActionCodeR72 ReportStatsExamplesActionsReturnActionCode = "R72"
+	ReportStatsExamplesActionsReturnActionCodeR73 ReportStatsExamplesActionsReturnActionCode = "R73"
+	ReportStatsExamplesActionsReturnActionCodeR74 ReportStatsExamplesActionsReturnActionCode = "R74"
+	ReportStatsExamplesActionsReturnActionCodeR75 ReportStatsExamplesActionsReturnActionCode = "R75"
+	ReportStatsExamplesActionsReturnActionCodeR76 ReportStatsExamplesActionsReturnActionCode = "R76"
+	ReportStatsExamplesActionsReturnActionCodeR77 ReportStatsExamplesActionsReturnActionCode = "R77"
+	ReportStatsExamplesActionsReturnActionCodeR80 ReportStatsExamplesActionsReturnActionCode = "R80"
+	ReportStatsExamplesActionsReturnActionCodeR81 ReportStatsExamplesActionsReturnActionCode = "R81"
+	ReportStatsExamplesActionsReturnActionCodeR82 ReportStatsExamplesActionsReturnActionCode = "R82"
+	ReportStatsExamplesActionsReturnActionCodeR83 ReportStatsExamplesActionsReturnActionCode = "R83"
+	ReportStatsExamplesActionsReturnActionCodeR84 ReportStatsExamplesActionsReturnActionCode = "R84"
+	ReportStatsExamplesActionsReturnActionCodeR85 ReportStatsExamplesActionsReturnActionCode = "R85"
+)
+
+func (r ReportStatsExamplesActionsReturnActionCode) IsKnown() bool {
+	switch r {
+	case ReportStatsExamplesActionsReturnActionCodeR01, ReportStatsExamplesActionsReturnActionCodeR02, ReportStatsExamplesActionsReturnActionCodeR03, ReportStatsExamplesActionsReturnActionCodeR04, ReportStatsExamplesActionsReturnActionCodeR05, ReportStatsExamplesActionsReturnActionCodeR06, ReportStatsExamplesActionsReturnActionCodeR07, ReportStatsExamplesActionsReturnActionCodeR08, ReportStatsExamplesActionsReturnActionCodeR09, ReportStatsExamplesActionsReturnActionCodeR10, ReportStatsExamplesActionsReturnActionCodeR11, ReportStatsExamplesActionsReturnActionCodeR12, ReportStatsExamplesActionsReturnActionCodeR13, ReportStatsExamplesActionsReturnActionCodeR14, ReportStatsExamplesActionsReturnActionCodeR15, ReportStatsExamplesActionsReturnActionCodeR16, ReportStatsExamplesActionsReturnActionCodeR17, ReportStatsExamplesActionsReturnActionCodeR18, ReportStatsExamplesActionsReturnActionCodeR19, ReportStatsExamplesActionsReturnActionCodeR20, ReportStatsExamplesActionsReturnActionCodeR21, ReportStatsExamplesActionsReturnActionCodeR22, ReportStatsExamplesActionsReturnActionCodeR23, ReportStatsExamplesActionsReturnActionCodeR24, ReportStatsExamplesActionsReturnActionCodeR25, ReportStatsExamplesActionsReturnActionCodeR26, ReportStatsExamplesActionsReturnActionCodeR27, ReportStatsExamplesActionsReturnActionCodeR28, ReportStatsExamplesActionsReturnActionCodeR29, ReportStatsExamplesActionsReturnActionCodeR30, ReportStatsExamplesActionsReturnActionCodeR31, ReportStatsExamplesActionsReturnActionCodeR32, ReportStatsExamplesActionsReturnActionCodeR33, ReportStatsExamplesActionsReturnActionCodeR34, ReportStatsExamplesActionsReturnActionCodeR35, ReportStatsExamplesActionsReturnActionCodeR36, ReportStatsExamplesActionsReturnActionCodeR37, ReportStatsExamplesActionsReturnActionCodeR38, ReportStatsExamplesActionsReturnActionCodeR39, ReportStatsExamplesActionsReturnActionCodeR40, ReportStatsExamplesActionsReturnActionCodeR41, ReportStatsExamplesActionsReturnActionCodeR42, ReportStatsExamplesActionsReturnActionCodeR43, ReportStatsExamplesActionsReturnActionCodeR44, ReportStatsExamplesActionsReturnActionCodeR45, ReportStatsExamplesActionsReturnActionCodeR46, ReportStatsExamplesActionsReturnActionCodeR47, ReportStatsExamplesActionsReturnActionCodeR50, ReportStatsExamplesActionsReturnActionCodeR51, ReportStatsExamplesActionsReturnActionCodeR52, ReportStatsExamplesActionsReturnActionCodeR53, ReportStatsExamplesActionsReturnActionCodeR61, ReportStatsExamplesActionsReturnActionCodeR62, ReportStatsExamplesActionsReturnActionCodeR67, ReportStatsExamplesActionsReturnActionCodeR68, ReportStatsExamplesActionsReturnActionCodeR69, ReportStatsExamplesActionsReturnActionCodeR70, ReportStatsExamplesActionsReturnActionCodeR71, ReportStatsExamplesActionsReturnActionCodeR72, ReportStatsExamplesActionsReturnActionCodeR73, ReportStatsExamplesActionsReturnActionCodeR74, ReportStatsExamplesActionsReturnActionCodeR75, ReportStatsExamplesActionsReturnActionCodeR76, ReportStatsExamplesActionsReturnActionCodeR77, ReportStatsExamplesActionsReturnActionCodeR80, ReportStatsExamplesActionsReturnActionCodeR81, ReportStatsExamplesActionsReturnActionCodeR82, ReportStatsExamplesActionsReturnActionCodeR83, ReportStatsExamplesActionsReturnActionCodeR84, ReportStatsExamplesActionsReturnActionCodeR85:
+		return true
+	}
+	return false
+}
+
+// Return the ACH transaction
+type ReportStatsExamplesActionsReturnActionType string
+
+const (
+	ReportStatsExamplesActionsReturnActionTypeReturn ReportStatsExamplesActionsReturnActionType = "RETURN"
+)
+
+func (r ReportStatsExamplesActionsReturnActionType) IsKnown() bool {
+	switch r {
+	case ReportStatsExamplesActionsReturnActionTypeReturn:
+		return true
+	}
+	return false
+}
+
+type ReportStatsExamplesActionsType string
+
+const (
+	ReportStatsExamplesActionsTypeDecline    ReportStatsExamplesActionsType = "DECLINE"
+	ReportStatsExamplesActionsTypeChallenge  ReportStatsExamplesActionsType = "CHALLENGE"
+	ReportStatsExamplesActionsTypeRequireTfa ReportStatsExamplesActionsType = "REQUIRE_TFA"
+	ReportStatsExamplesActionsTypeApprove    ReportStatsExamplesActionsType = "APPROVE"
+	ReportStatsExamplesActionsTypeReturn     ReportStatsExamplesActionsType = "RETURN"
+)
+
+func (r ReportStatsExamplesActionsType) IsKnown() bool {
+	switch r {
+	case ReportStatsExamplesActionsTypeDecline, ReportStatsExamplesActionsTypeChallenge, ReportStatsExamplesActionsTypeRequireTfa, ReportStatsExamplesActionsTypeApprove, ReportStatsExamplesActionsTypeReturn:
+		return true
+	}
+	return false
+}
+
+// The detailed result code explaining the specific reason for the decline
+type ReportStatsExamplesActionsCode string
+
+const (
+	ReportStatsExamplesActionsCodeAccountDailySpendLimitExceeded              ReportStatsExamplesActionsCode = "ACCOUNT_DAILY_SPEND_LIMIT_EXCEEDED"
+	ReportStatsExamplesActionsCodeAccountDelinquent                           ReportStatsExamplesActionsCode = "ACCOUNT_DELINQUENT"
+	ReportStatsExamplesActionsCodeAccountInactive                             ReportStatsExamplesActionsCode = "ACCOUNT_INACTIVE"
+	ReportStatsExamplesActionsCodeAccountLifetimeSpendLimitExceeded           ReportStatsExamplesActionsCode = "ACCOUNT_LIFETIME_SPEND_LIMIT_EXCEEDED"
+	ReportStatsExamplesActionsCodeAccountMonthlySpendLimitExceeded            ReportStatsExamplesActionsCode = "ACCOUNT_MONTHLY_SPEND_LIMIT_EXCEEDED"
+	ReportStatsExamplesActionsCodeAccountPaused                               ReportStatsExamplesActionsCode = "ACCOUNT_PAUSED"
+	ReportStatsExamplesActionsCodeAccountUnderReview                          ReportStatsExamplesActionsCode = "ACCOUNT_UNDER_REVIEW"
+	ReportStatsExamplesActionsCodeAddressIncorrect                            ReportStatsExamplesActionsCode = "ADDRESS_INCORRECT"
+	ReportStatsExamplesActionsCodeApproved                                    ReportStatsExamplesActionsCode = "APPROVED"
+	ReportStatsExamplesActionsCodeAuthRuleAllowedCountry                      ReportStatsExamplesActionsCode = "AUTH_RULE_ALLOWED_COUNTRY"
+	ReportStatsExamplesActionsCodeAuthRuleAllowedMcc                          ReportStatsExamplesActionsCode = "AUTH_RULE_ALLOWED_MCC"
+	ReportStatsExamplesActionsCodeAuthRuleBlockedCountry                      ReportStatsExamplesActionsCode = "AUTH_RULE_BLOCKED_COUNTRY"
+	ReportStatsExamplesActionsCodeAuthRuleBlockedMcc                          ReportStatsExamplesActionsCode = "AUTH_RULE_BLOCKED_MCC"
+	ReportStatsExamplesActionsCodeAuthRule                                    ReportStatsExamplesActionsCode = "AUTH_RULE"
+	ReportStatsExamplesActionsCodeCardClosed                                  ReportStatsExamplesActionsCode = "CARD_CLOSED"
+	ReportStatsExamplesActionsCodeCardCryptogramValidationFailure             ReportStatsExamplesActionsCode = "CARD_CRYPTOGRAM_VALIDATION_FAILURE"
+	ReportStatsExamplesActionsCodeCardExpired                                 ReportStatsExamplesActionsCode = "CARD_EXPIRED"
+	ReportStatsExamplesActionsCodeCardExpiryDateIncorrect                     ReportStatsExamplesActionsCode = "CARD_EXPIRY_DATE_INCORRECT"
+	ReportStatsExamplesActionsCodeCardInvalid                                 ReportStatsExamplesActionsCode = "CARD_INVALID"
+	ReportStatsExamplesActionsCodeCardNotActivated                            ReportStatsExamplesActionsCode = "CARD_NOT_ACTIVATED"
+	ReportStatsExamplesActionsCodeCardPaused                                  ReportStatsExamplesActionsCode = "CARD_PAUSED"
+	ReportStatsExamplesActionsCodeCardPinIncorrect                            ReportStatsExamplesActionsCode = "CARD_PIN_INCORRECT"
+	ReportStatsExamplesActionsCodeCardRestricted                              ReportStatsExamplesActionsCode = "CARD_RESTRICTED"
+	ReportStatsExamplesActionsCodeCardSecurityCodeIncorrect                   ReportStatsExamplesActionsCode = "CARD_SECURITY_CODE_INCORRECT"
+	ReportStatsExamplesActionsCodeCardSpendLimitExceeded                      ReportStatsExamplesActionsCode = "CARD_SPEND_LIMIT_EXCEEDED"
+	ReportStatsExamplesActionsCodeContactCardIssuer                           ReportStatsExamplesActionsCode = "CONTACT_CARD_ISSUER"
+	ReportStatsExamplesActionsCodeCustomerAsaTimeout                          ReportStatsExamplesActionsCode = "CUSTOMER_ASA_TIMEOUT"
+	ReportStatsExamplesActionsCodeCustomAsaResult                             ReportStatsExamplesActionsCode = "CUSTOM_ASA_RESULT"
+	ReportStatsExamplesActionsCodeDeclined                                    ReportStatsExamplesActionsCode = "DECLINED"
+	ReportStatsExamplesActionsCodeDoNotHonor                                  ReportStatsExamplesActionsCode = "DO_NOT_HONOR"
+	ReportStatsExamplesActionsCodeDriverNumberInvalid                         ReportStatsExamplesActionsCode = "DRIVER_NUMBER_INVALID"
+	ReportStatsExamplesActionsCodeFormatError                                 ReportStatsExamplesActionsCode = "FORMAT_ERROR"
+	ReportStatsExamplesActionsCodeInsufficientFundingSourceBalance            ReportStatsExamplesActionsCode = "INSUFFICIENT_FUNDING_SOURCE_BALANCE"
+	ReportStatsExamplesActionsCodeInsufficientFunds                           ReportStatsExamplesActionsCode = "INSUFFICIENT_FUNDS"
+	ReportStatsExamplesActionsCodeLithicSystemError                           ReportStatsExamplesActionsCode = "LITHIC_SYSTEM_ERROR"
+	ReportStatsExamplesActionsCodeLithicSystemRateLimit                       ReportStatsExamplesActionsCode = "LITHIC_SYSTEM_RATE_LIMIT"
+	ReportStatsExamplesActionsCodeMalformedAsaResponse                        ReportStatsExamplesActionsCode = "MALFORMED_ASA_RESPONSE"
+	ReportStatsExamplesActionsCodeMerchantInvalid                             ReportStatsExamplesActionsCode = "MERCHANT_INVALID"
+	ReportStatsExamplesActionsCodeMerchantLockedCardAttemptedElsewhere        ReportStatsExamplesActionsCode = "MERCHANT_LOCKED_CARD_ATTEMPTED_ELSEWHERE"
+	ReportStatsExamplesActionsCodeMerchantNotPermitted                        ReportStatsExamplesActionsCode = "MERCHANT_NOT_PERMITTED"
+	ReportStatsExamplesActionsCodeOverReversalAttempted                       ReportStatsExamplesActionsCode = "OVER_REVERSAL_ATTEMPTED"
+	ReportStatsExamplesActionsCodePinBlocked                                  ReportStatsExamplesActionsCode = "PIN_BLOCKED"
+	ReportStatsExamplesActionsCodeProgramCardSpendLimitExceeded               ReportStatsExamplesActionsCode = "PROGRAM_CARD_SPEND_LIMIT_EXCEEDED"
+	ReportStatsExamplesActionsCodeProgramSuspended                            ReportStatsExamplesActionsCode = "PROGRAM_SUSPENDED"
+	ReportStatsExamplesActionsCodeProgramUsageRestriction                     ReportStatsExamplesActionsCode = "PROGRAM_USAGE_RESTRICTION"
+	ReportStatsExamplesActionsCodeReversalUnmatched                           ReportStatsExamplesActionsCode = "REVERSAL_UNMATCHED"
+	ReportStatsExamplesActionsCodeSecurityViolation                           ReportStatsExamplesActionsCode = "SECURITY_VIOLATION"
+	ReportStatsExamplesActionsCodeSingleUseCardReattempted                    ReportStatsExamplesActionsCode = "SINGLE_USE_CARD_REATTEMPTED"
+	ReportStatsExamplesActionsCodeSuspectedFraud                              ReportStatsExamplesActionsCode = "SUSPECTED_FRAUD"
+	ReportStatsExamplesActionsCodeTransactionInvalid                          ReportStatsExamplesActionsCode = "TRANSACTION_INVALID"
+	ReportStatsExamplesActionsCodeTransactionNotPermittedToAcquirerOrTerminal ReportStatsExamplesActionsCode = "TRANSACTION_NOT_PERMITTED_TO_ACQUIRER_OR_TERMINAL"
+	ReportStatsExamplesActionsCodeTransactionNotPermittedToIssuerOrCardholder ReportStatsExamplesActionsCode = "TRANSACTION_NOT_PERMITTED_TO_ISSUER_OR_CARDHOLDER"
+	ReportStatsExamplesActionsCodeTransactionPreviouslyCompleted              ReportStatsExamplesActionsCode = "TRANSACTION_PREVIOUSLY_COMPLETED"
+	ReportStatsExamplesActionsCodeUnauthorizedMerchant                        ReportStatsExamplesActionsCode = "UNAUTHORIZED_MERCHANT"
+	ReportStatsExamplesActionsCodeVehicleNumberInvalid                        ReportStatsExamplesActionsCode = "VEHICLE_NUMBER_INVALID"
+	ReportStatsExamplesActionsCodeCardholderChallenged                        ReportStatsExamplesActionsCode = "CARDHOLDER_CHALLENGED"
+	ReportStatsExamplesActionsCodeCardholderChallengeFailed                   ReportStatsExamplesActionsCode = "CARDHOLDER_CHALLENGE_FAILED"
+	ReportStatsExamplesActionsCodeR01                                         ReportStatsExamplesActionsCode = "R01"
+	ReportStatsExamplesActionsCodeR02                                         ReportStatsExamplesActionsCode = "R02"
+	ReportStatsExamplesActionsCodeR03                                         ReportStatsExamplesActionsCode = "R03"
+	ReportStatsExamplesActionsCodeR04                                         ReportStatsExamplesActionsCode = "R04"
+	ReportStatsExamplesActionsCodeR05                                         ReportStatsExamplesActionsCode = "R05"
+	ReportStatsExamplesActionsCodeR06                                         ReportStatsExamplesActionsCode = "R06"
+	ReportStatsExamplesActionsCodeR07                                         ReportStatsExamplesActionsCode = "R07"
+	ReportStatsExamplesActionsCodeR08                                         ReportStatsExamplesActionsCode = "R08"
+	ReportStatsExamplesActionsCodeR09                                         ReportStatsExamplesActionsCode = "R09"
+	ReportStatsExamplesActionsCodeR10                                         ReportStatsExamplesActionsCode = "R10"
+	ReportStatsExamplesActionsCodeR11                                         ReportStatsExamplesActionsCode = "R11"
+	ReportStatsExamplesActionsCodeR12                                         ReportStatsExamplesActionsCode = "R12"
+	ReportStatsExamplesActionsCodeR13                                         ReportStatsExamplesActionsCode = "R13"
+	ReportStatsExamplesActionsCodeR14                                         ReportStatsExamplesActionsCode = "R14"
+	ReportStatsExamplesActionsCodeR15                                         ReportStatsExamplesActionsCode = "R15"
+	ReportStatsExamplesActionsCodeR16                                         ReportStatsExamplesActionsCode = "R16"
+	ReportStatsExamplesActionsCodeR17                                         ReportStatsExamplesActionsCode = "R17"
+	ReportStatsExamplesActionsCodeR18                                         ReportStatsExamplesActionsCode = "R18"
+	ReportStatsExamplesActionsCodeR19                                         ReportStatsExamplesActionsCode = "R19"
+	ReportStatsExamplesActionsCodeR20                                         ReportStatsExamplesActionsCode = "R20"
+	ReportStatsExamplesActionsCodeR21                                         ReportStatsExamplesActionsCode = "R21"
+	ReportStatsExamplesActionsCodeR22                                         ReportStatsExamplesActionsCode = "R22"
+	ReportStatsExamplesActionsCodeR23                                         ReportStatsExamplesActionsCode = "R23"
+	ReportStatsExamplesActionsCodeR24                                         ReportStatsExamplesActionsCode = "R24"
+	ReportStatsExamplesActionsCodeR25                                         ReportStatsExamplesActionsCode = "R25"
+	ReportStatsExamplesActionsCodeR26                                         ReportStatsExamplesActionsCode = "R26"
+	ReportStatsExamplesActionsCodeR27                                         ReportStatsExamplesActionsCode = "R27"
+	ReportStatsExamplesActionsCodeR28                                         ReportStatsExamplesActionsCode = "R28"
+	ReportStatsExamplesActionsCodeR29                                         ReportStatsExamplesActionsCode = "R29"
+	ReportStatsExamplesActionsCodeR30                                         ReportStatsExamplesActionsCode = "R30"
+	ReportStatsExamplesActionsCodeR31                                         ReportStatsExamplesActionsCode = "R31"
+	ReportStatsExamplesActionsCodeR32                                         ReportStatsExamplesActionsCode = "R32"
+	ReportStatsExamplesActionsCodeR33                                         ReportStatsExamplesActionsCode = "R33"
+	ReportStatsExamplesActionsCodeR34                                         ReportStatsExamplesActionsCode = "R34"
+	ReportStatsExamplesActionsCodeR35                                         ReportStatsExamplesActionsCode = "R35"
+	ReportStatsExamplesActionsCodeR36                                         ReportStatsExamplesActionsCode = "R36"
+	ReportStatsExamplesActionsCodeR37                                         ReportStatsExamplesActionsCode = "R37"
+	ReportStatsExamplesActionsCodeR38                                         ReportStatsExamplesActionsCode = "R38"
+	ReportStatsExamplesActionsCodeR39                                         ReportStatsExamplesActionsCode = "R39"
+	ReportStatsExamplesActionsCodeR40                                         ReportStatsExamplesActionsCode = "R40"
+	ReportStatsExamplesActionsCodeR41                                         ReportStatsExamplesActionsCode = "R41"
+	ReportStatsExamplesActionsCodeR42                                         ReportStatsExamplesActionsCode = "R42"
+	ReportStatsExamplesActionsCodeR43                                         ReportStatsExamplesActionsCode = "R43"
+	ReportStatsExamplesActionsCodeR44                                         ReportStatsExamplesActionsCode = "R44"
+	ReportStatsExamplesActionsCodeR45                                         ReportStatsExamplesActionsCode = "R45"
+	ReportStatsExamplesActionsCodeR46                                         ReportStatsExamplesActionsCode = "R46"
+	ReportStatsExamplesActionsCodeR47                                         ReportStatsExamplesActionsCode = "R47"
+	ReportStatsExamplesActionsCodeR50                                         ReportStatsExamplesActionsCode = "R50"
+	ReportStatsExamplesActionsCodeR51                                         ReportStatsExamplesActionsCode = "R51"
+	ReportStatsExamplesActionsCodeR52                                         ReportStatsExamplesActionsCode = "R52"
+	ReportStatsExamplesActionsCodeR53                                         ReportStatsExamplesActionsCode = "R53"
+	ReportStatsExamplesActionsCodeR61                                         ReportStatsExamplesActionsCode = "R61"
+	ReportStatsExamplesActionsCodeR62                                         ReportStatsExamplesActionsCode = "R62"
+	ReportStatsExamplesActionsCodeR67                                         ReportStatsExamplesActionsCode = "R67"
+	ReportStatsExamplesActionsCodeR68                                         ReportStatsExamplesActionsCode = "R68"
+	ReportStatsExamplesActionsCodeR69                                         ReportStatsExamplesActionsCode = "R69"
+	ReportStatsExamplesActionsCodeR70                                         ReportStatsExamplesActionsCode = "R70"
+	ReportStatsExamplesActionsCodeR71                                         ReportStatsExamplesActionsCode = "R71"
+	ReportStatsExamplesActionsCodeR72                                         ReportStatsExamplesActionsCode = "R72"
+	ReportStatsExamplesActionsCodeR73                                         ReportStatsExamplesActionsCode = "R73"
+	ReportStatsExamplesActionsCodeR74                                         ReportStatsExamplesActionsCode = "R74"
+	ReportStatsExamplesActionsCodeR75                                         ReportStatsExamplesActionsCode = "R75"
+	ReportStatsExamplesActionsCodeR76                                         ReportStatsExamplesActionsCode = "R76"
+	ReportStatsExamplesActionsCodeR77                                         ReportStatsExamplesActionsCode = "R77"
+	ReportStatsExamplesActionsCodeR80                                         ReportStatsExamplesActionsCode = "R80"
+	ReportStatsExamplesActionsCodeR81                                         ReportStatsExamplesActionsCode = "R81"
+	ReportStatsExamplesActionsCodeR82                                         ReportStatsExamplesActionsCode = "R82"
+	ReportStatsExamplesActionsCodeR83                                         ReportStatsExamplesActionsCode = "R83"
+	ReportStatsExamplesActionsCodeR84                                         ReportStatsExamplesActionsCode = "R84"
+	ReportStatsExamplesActionsCodeR85                                         ReportStatsExamplesActionsCode = "R85"
+)
+
+func (r ReportStatsExamplesActionsCode) IsKnown() bool {
+	switch r {
+	case ReportStatsExamplesActionsCodeAccountDailySpendLimitExceeded, ReportStatsExamplesActionsCodeAccountDelinquent, ReportStatsExamplesActionsCodeAccountInactive, ReportStatsExamplesActionsCodeAccountLifetimeSpendLimitExceeded, ReportStatsExamplesActionsCodeAccountMonthlySpendLimitExceeded, ReportStatsExamplesActionsCodeAccountPaused, ReportStatsExamplesActionsCodeAccountUnderReview, ReportStatsExamplesActionsCodeAddressIncorrect, ReportStatsExamplesActionsCodeApproved, ReportStatsExamplesActionsCodeAuthRuleAllowedCountry, ReportStatsExamplesActionsCodeAuthRuleAllowedMcc, ReportStatsExamplesActionsCodeAuthRuleBlockedCountry, ReportStatsExamplesActionsCodeAuthRuleBlockedMcc, ReportStatsExamplesActionsCodeAuthRule, ReportStatsExamplesActionsCodeCardClosed, ReportStatsExamplesActionsCodeCardCryptogramValidationFailure, ReportStatsExamplesActionsCodeCardExpired, ReportStatsExamplesActionsCodeCardExpiryDateIncorrect, ReportStatsExamplesActionsCodeCardInvalid, ReportStatsExamplesActionsCodeCardNotActivated, ReportStatsExamplesActionsCodeCardPaused, ReportStatsExamplesActionsCodeCardPinIncorrect, ReportStatsExamplesActionsCodeCardRestricted, ReportStatsExamplesActionsCodeCardSecurityCodeIncorrect, ReportStatsExamplesActionsCodeCardSpendLimitExceeded, ReportStatsExamplesActionsCodeContactCardIssuer, ReportStatsExamplesActionsCodeCustomerAsaTimeout, ReportStatsExamplesActionsCodeCustomAsaResult, ReportStatsExamplesActionsCodeDeclined, ReportStatsExamplesActionsCodeDoNotHonor, ReportStatsExamplesActionsCodeDriverNumberInvalid, ReportStatsExamplesActionsCodeFormatError, ReportStatsExamplesActionsCodeInsufficientFundingSourceBalance, ReportStatsExamplesActionsCodeInsufficientFunds, ReportStatsExamplesActionsCodeLithicSystemError, ReportStatsExamplesActionsCodeLithicSystemRateLimit, ReportStatsExamplesActionsCodeMalformedAsaResponse, ReportStatsExamplesActionsCodeMerchantInvalid, ReportStatsExamplesActionsCodeMerchantLockedCardAttemptedElsewhere, ReportStatsExamplesActionsCodeMerchantNotPermitted, ReportStatsExamplesActionsCodeOverReversalAttempted, ReportStatsExamplesActionsCodePinBlocked, ReportStatsExamplesActionsCodeProgramCardSpendLimitExceeded, ReportStatsExamplesActionsCodeProgramSuspended, ReportStatsExamplesActionsCodeProgramUsageRestriction, ReportStatsExamplesActionsCodeReversalUnmatched, ReportStatsExamplesActionsCodeSecurityViolation, ReportStatsExamplesActionsCodeSingleUseCardReattempted, ReportStatsExamplesActionsCodeSuspectedFraud, ReportStatsExamplesActionsCodeTransactionInvalid, ReportStatsExamplesActionsCodeTransactionNotPermittedToAcquirerOrTerminal, ReportStatsExamplesActionsCodeTransactionNotPermittedToIssuerOrCardholder, ReportStatsExamplesActionsCodeTransactionPreviouslyCompleted, ReportStatsExamplesActionsCodeUnauthorizedMerchant, ReportStatsExamplesActionsCodeVehicleNumberInvalid, ReportStatsExamplesActionsCodeCardholderChallenged, ReportStatsExamplesActionsCodeCardholderChallengeFailed, ReportStatsExamplesActionsCodeR01, ReportStatsExamplesActionsCodeR02, ReportStatsExamplesActionsCodeR03, ReportStatsExamplesActionsCodeR04, ReportStatsExamplesActionsCodeR05, ReportStatsExamplesActionsCodeR06, ReportStatsExamplesActionsCodeR07, ReportStatsExamplesActionsCodeR08, ReportStatsExamplesActionsCodeR09, ReportStatsExamplesActionsCodeR10, ReportStatsExamplesActionsCodeR11, ReportStatsExamplesActionsCodeR12, ReportStatsExamplesActionsCodeR13, ReportStatsExamplesActionsCodeR14, ReportStatsExamplesActionsCodeR15, ReportStatsExamplesActionsCodeR16, ReportStatsExamplesActionsCodeR17, ReportStatsExamplesActionsCodeR18, ReportStatsExamplesActionsCodeR19, ReportStatsExamplesActionsCodeR20, ReportStatsExamplesActionsCodeR21, ReportStatsExamplesActionsCodeR22, ReportStatsExamplesActionsCodeR23, ReportStatsExamplesActionsCodeR24, ReportStatsExamplesActionsCodeR25, ReportStatsExamplesActionsCodeR26, ReportStatsExamplesActionsCodeR27, ReportStatsExamplesActionsCodeR28, ReportStatsExamplesActionsCodeR29, ReportStatsExamplesActionsCodeR30, ReportStatsExamplesActionsCodeR31, ReportStatsExamplesActionsCodeR32, ReportStatsExamplesActionsCodeR33, ReportStatsExamplesActionsCodeR34, ReportStatsExamplesActionsCodeR35, ReportStatsExamplesActionsCodeR36, ReportStatsExamplesActionsCodeR37, ReportStatsExamplesActionsCodeR38, ReportStatsExamplesActionsCodeR39, ReportStatsExamplesActionsCodeR40, ReportStatsExamplesActionsCodeR41, ReportStatsExamplesActionsCodeR42, ReportStatsExamplesActionsCodeR43, ReportStatsExamplesActionsCodeR44, ReportStatsExamplesActionsCodeR45, ReportStatsExamplesActionsCodeR46, ReportStatsExamplesActionsCodeR47, ReportStatsExamplesActionsCodeR50, ReportStatsExamplesActionsCodeR51, ReportStatsExamplesActionsCodeR52, ReportStatsExamplesActionsCodeR53, ReportStatsExamplesActionsCodeR61, ReportStatsExamplesActionsCodeR62, ReportStatsExamplesActionsCodeR67, ReportStatsExamplesActionsCodeR68, ReportStatsExamplesActionsCodeR69, ReportStatsExamplesActionsCodeR70, ReportStatsExamplesActionsCodeR71, ReportStatsExamplesActionsCodeR72, ReportStatsExamplesActionsCodeR73, ReportStatsExamplesActionsCodeR74, ReportStatsExamplesActionsCodeR75, ReportStatsExamplesActionsCodeR76, ReportStatsExamplesActionsCodeR77, ReportStatsExamplesActionsCodeR80, ReportStatsExamplesActionsCodeR81, ReportStatsExamplesActionsCodeR82, ReportStatsExamplesActionsCodeR83, ReportStatsExamplesActionsCodeR84, ReportStatsExamplesActionsCodeR85:
+		return true
+	}
+	return false
+}
+
+// Reason code for declining the tokenization request
+type ReportStatsExamplesActionsReason string
+
+const (
+	ReportStatsExamplesActionsReasonAccountScore1                  ReportStatsExamplesActionsReason = "ACCOUNT_SCORE_1"
+	ReportStatsExamplesActionsReasonDeviceScore1                   ReportStatsExamplesActionsReason = "DEVICE_SCORE_1"
+	ReportStatsExamplesActionsReasonAllWalletDeclineReasonsPresent ReportStatsExamplesActionsReason = "ALL_WALLET_DECLINE_REASONS_PRESENT"
+	ReportStatsExamplesActionsReasonWalletRecommendedDecisionRed   ReportStatsExamplesActionsReason = "WALLET_RECOMMENDED_DECISION_RED"
+	ReportStatsExamplesActionsReasonCvcMismatch                    ReportStatsExamplesActionsReason = "CVC_MISMATCH"
+	ReportStatsExamplesActionsReasonCardExpiryMonthMismatch        ReportStatsExamplesActionsReason = "CARD_EXPIRY_MONTH_MISMATCH"
+	ReportStatsExamplesActionsReasonCardExpiryYearMismatch         ReportStatsExamplesActionsReason = "CARD_EXPIRY_YEAR_MISMATCH"
+	ReportStatsExamplesActionsReasonCardInvalidState               ReportStatsExamplesActionsReason = "CARD_INVALID_STATE"
+	ReportStatsExamplesActionsReasonCustomerRedPath                ReportStatsExamplesActionsReason = "CUSTOMER_RED_PATH"
+	ReportStatsExamplesActionsReasonInvalidCustomerResponse        ReportStatsExamplesActionsReason = "INVALID_CUSTOMER_RESPONSE"
+	ReportStatsExamplesActionsReasonNetworkFailure                 ReportStatsExamplesActionsReason = "NETWORK_FAILURE"
+	ReportStatsExamplesActionsReasonGenericDecline                 ReportStatsExamplesActionsReason = "GENERIC_DECLINE"
+	ReportStatsExamplesActionsReasonDigitalCardArtRequired         ReportStatsExamplesActionsReason = "DIGITAL_CARD_ART_REQUIRED"
+	ReportStatsExamplesActionsReasonWalletRecommendedTfa           ReportStatsExamplesActionsReason = "WALLET_RECOMMENDED_TFA"
+	ReportStatsExamplesActionsReasonSuspiciousActivity             ReportStatsExamplesActionsReason = "SUSPICIOUS_ACTIVITY"
+	ReportStatsExamplesActionsReasonDeviceRecentlyLost             ReportStatsExamplesActionsReason = "DEVICE_RECENTLY_LOST"
+	ReportStatsExamplesActionsReasonTooManyRecentAttempts          ReportStatsExamplesActionsReason = "TOO_MANY_RECENT_ATTEMPTS"
+	ReportStatsExamplesActionsReasonTooManyRecentTokens            ReportStatsExamplesActionsReason = "TOO_MANY_RECENT_TOKENS"
+	ReportStatsExamplesActionsReasonTooManyDifferentCardholders    ReportStatsExamplesActionsReason = "TOO_MANY_DIFFERENT_CARDHOLDERS"
+	ReportStatsExamplesActionsReasonOutsideHomeTerritory           ReportStatsExamplesActionsReason = "OUTSIDE_HOME_TERRITORY"
+	ReportStatsExamplesActionsReasonHasSuspendedTokens             ReportStatsExamplesActionsReason = "HAS_SUSPENDED_TOKENS"
+	ReportStatsExamplesActionsReasonHighRisk                       ReportStatsExamplesActionsReason = "HIGH_RISK"
+	ReportStatsExamplesActionsReasonAccountScoreLow                ReportStatsExamplesActionsReason = "ACCOUNT_SCORE_LOW"
+	ReportStatsExamplesActionsReasonDeviceScoreLow                 ReportStatsExamplesActionsReason = "DEVICE_SCORE_LOW"
+	ReportStatsExamplesActionsReasonCardStateTfa                   ReportStatsExamplesActionsReason = "CARD_STATE_TFA"
+	ReportStatsExamplesActionsReasonHardcodedTfa                   ReportStatsExamplesActionsReason = "HARDCODED_TFA"
+	ReportStatsExamplesActionsReasonCustomerRuleTfa                ReportStatsExamplesActionsReason = "CUSTOMER_RULE_TFA"
+	ReportStatsExamplesActionsReasonDeviceHostCardEmulation        ReportStatsExamplesActionsReason = "DEVICE_HOST_CARD_EMULATION"
+)
+
+func (r ReportStatsExamplesActionsReason) IsKnown() bool {
+	switch r {
+	case ReportStatsExamplesActionsReasonAccountScore1, ReportStatsExamplesActionsReasonDeviceScore1, ReportStatsExamplesActionsReasonAllWalletDeclineReasonsPresent, ReportStatsExamplesActionsReasonWalletRecommendedDecisionRed, ReportStatsExamplesActionsReasonCvcMismatch, ReportStatsExamplesActionsReasonCardExpiryMonthMismatch, ReportStatsExamplesActionsReasonCardExpiryYearMismatch, ReportStatsExamplesActionsReasonCardInvalidState, ReportStatsExamplesActionsReasonCustomerRedPath, ReportStatsExamplesActionsReasonInvalidCustomerResponse, ReportStatsExamplesActionsReasonNetworkFailure, ReportStatsExamplesActionsReasonGenericDecline, ReportStatsExamplesActionsReasonDigitalCardArtRequired, ReportStatsExamplesActionsReasonWalletRecommendedTfa, ReportStatsExamplesActionsReasonSuspiciousActivity, ReportStatsExamplesActionsReasonDeviceRecentlyLost, ReportStatsExamplesActionsReasonTooManyRecentAttempts, ReportStatsExamplesActionsReasonTooManyRecentTokens, ReportStatsExamplesActionsReasonTooManyDifferentCardholders, ReportStatsExamplesActionsReasonOutsideHomeTerritory, ReportStatsExamplesActionsReasonHasSuspendedTokens, ReportStatsExamplesActionsReasonHighRisk, ReportStatsExamplesActionsReasonAccountScoreLow, ReportStatsExamplesActionsReasonDeviceScoreLow, ReportStatsExamplesActionsReasonCardStateTfa, ReportStatsExamplesActionsReasonHardcodedTfa, ReportStatsExamplesActionsReasonCustomerRuleTfa, ReportStatsExamplesActionsReasonDeviceHostCardEmulation:
+		return true
+	}
+	return false
+}
+
+// The decision made by the rule for this event.
+type ReportStatsExamplesDecision string
+
+const (
+	ReportStatsExamplesDecisionApproved   ReportStatsExamplesDecision = "APPROVED"
+	ReportStatsExamplesDecisionDeclined   ReportStatsExamplesDecision = "DECLINED"
+	ReportStatsExamplesDecisionChallenged ReportStatsExamplesDecision = "CHALLENGED"
+)
+
+func (r ReportStatsExamplesDecision) IsKnown() bool {
+	switch r {
+	case ReportStatsExamplesDecisionApproved, ReportStatsExamplesDecisionDeclined, ReportStatsExamplesDecisionChallenged:
 		return true
 	}
 	return false
@@ -3093,26 +3988,226 @@ func (r AuthRuleV2ListResultsResponseAuthorizationResult) implementsAuthRuleV2Li
 
 type AuthRuleV2ListResultsResponseAuthorizationResultAction struct {
 	Type AuthRuleV2ListResultsResponseAuthorizationResultActionsType `json:"type" api:"required"`
+	// The detailed result code explaining the specific reason for the decline
+	Code AuthRuleV2ListResultsResponseAuthorizationResultActionsCode `json:"code"`
 	// Optional explanation for why this action was taken
 	Explanation string                                                     `json:"explanation"`
 	JSON        authRuleV2ListResultsResponseAuthorizationResultActionJSON `json:"-"`
+	union       AuthRuleV2ListResultsResponseAuthorizationResultActionsUnion
 }
 
 // authRuleV2ListResultsResponseAuthorizationResultActionJSON contains the JSON
 // metadata for the struct [AuthRuleV2ListResultsResponseAuthorizationResultAction]
 type authRuleV2ListResultsResponseAuthorizationResultActionJSON struct {
 	Type        apijson.Field
+	Code        apijson.Field
 	Explanation apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
+func (r authRuleV2ListResultsResponseAuthorizationResultActionJSON) RawJSON() string {
+	return r.raw
+}
+
 func (r *AuthRuleV2ListResultsResponseAuthorizationResultAction) UnmarshalJSON(data []byte) (err error) {
+	*r = AuthRuleV2ListResultsResponseAuthorizationResultAction{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a [AuthRuleV2ListResultsResponseAuthorizationResultActionsUnion]
+// interface which you can cast to the specific types for more type safety.
+//
+// Possible runtime types of the union are
+// [AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorization],
+// [AuthRuleV2ListResultsResponseAuthorizationResultActionsChallengeActionAuthorization].
+func (r AuthRuleV2ListResultsResponseAuthorizationResultAction) AsUnion() AuthRuleV2ListResultsResponseAuthorizationResultActionsUnion {
+	return r.union
+}
+
+// Union satisfied by
+// [AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorization]
+// or
+// [AuthRuleV2ListResultsResponseAuthorizationResultActionsChallengeActionAuthorization].
+type AuthRuleV2ListResultsResponseAuthorizationResultActionsUnion interface {
+	implementsAuthRuleV2ListResultsResponseAuthorizationResultAction()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2ListResultsResponseAuthorizationResultActionsUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorization{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseAuthorizationResultActionsChallengeActionAuthorization{}),
+		},
+	)
+}
+
+type AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorization struct {
+	// The detailed result code explaining the specific reason for the decline
+	Code AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode `json:"code" api:"required"`
+	Type AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationType `json:"type" api:"required"`
+	// Optional explanation for why this action was taken
+	Explanation string                                                                                `json:"explanation"`
+	JSON        authRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationJSON `json:"-"`
+}
+
+// authRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorization]
+type authRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationJSON struct {
+	Code        apijson.Field
+	Type        apijson.Field
+	Explanation apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorization) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r authRuleV2ListResultsResponseAuthorizationResultActionJSON) RawJSON() string {
+func (r authRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationJSON) RawJSON() string {
 	return r.raw
+}
+
+func (r AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorization) implementsAuthRuleV2ListResultsResponseAuthorizationResultAction() {
+}
+
+// The detailed result code explaining the specific reason for the decline
+type AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode string
+
+const (
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAccountDailySpendLimitExceeded              AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "ACCOUNT_DAILY_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAccountDelinquent                           AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "ACCOUNT_DELINQUENT"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAccountInactive                             AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "ACCOUNT_INACTIVE"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAccountLifetimeSpendLimitExceeded           AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "ACCOUNT_LIFETIME_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAccountMonthlySpendLimitExceeded            AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "ACCOUNT_MONTHLY_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAccountPaused                               AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "ACCOUNT_PAUSED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAccountUnderReview                          AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "ACCOUNT_UNDER_REVIEW"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAddressIncorrect                            AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "ADDRESS_INCORRECT"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeApproved                                    AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "APPROVED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAuthRuleAllowedCountry                      AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "AUTH_RULE_ALLOWED_COUNTRY"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAuthRuleAllowedMcc                          AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "AUTH_RULE_ALLOWED_MCC"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAuthRuleBlockedCountry                      AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "AUTH_RULE_BLOCKED_COUNTRY"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAuthRuleBlockedMcc                          AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "AUTH_RULE_BLOCKED_MCC"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAuthRule                                    AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "AUTH_RULE"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardClosed                                  AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "CARD_CLOSED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardCryptogramValidationFailure             AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "CARD_CRYPTOGRAM_VALIDATION_FAILURE"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardExpired                                 AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "CARD_EXPIRED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardExpiryDateIncorrect                     AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "CARD_EXPIRY_DATE_INCORRECT"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardInvalid                                 AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "CARD_INVALID"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardNotActivated                            AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "CARD_NOT_ACTIVATED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardPaused                                  AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "CARD_PAUSED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardPinIncorrect                            AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "CARD_PIN_INCORRECT"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardRestricted                              AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "CARD_RESTRICTED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardSecurityCodeIncorrect                   AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "CARD_SECURITY_CODE_INCORRECT"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardSpendLimitExceeded                      AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "CARD_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeContactCardIssuer                           AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "CONTACT_CARD_ISSUER"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCustomerAsaTimeout                          AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "CUSTOMER_ASA_TIMEOUT"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCustomAsaResult                             AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "CUSTOM_ASA_RESULT"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeDeclined                                    AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "DECLINED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeDoNotHonor                                  AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "DO_NOT_HONOR"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeDriverNumberInvalid                         AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "DRIVER_NUMBER_INVALID"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeFormatError                                 AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "FORMAT_ERROR"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeInsufficientFundingSourceBalance            AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "INSUFFICIENT_FUNDING_SOURCE_BALANCE"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeInsufficientFunds                           AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "INSUFFICIENT_FUNDS"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeLithicSystemError                           AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "LITHIC_SYSTEM_ERROR"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeLithicSystemRateLimit                       AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "LITHIC_SYSTEM_RATE_LIMIT"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeMalformedAsaResponse                        AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "MALFORMED_ASA_RESPONSE"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeMerchantInvalid                             AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "MERCHANT_INVALID"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeMerchantLockedCardAttemptedElsewhere        AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "MERCHANT_LOCKED_CARD_ATTEMPTED_ELSEWHERE"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeMerchantNotPermitted                        AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "MERCHANT_NOT_PERMITTED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeOverReversalAttempted                       AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "OVER_REVERSAL_ATTEMPTED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodePinBlocked                                  AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "PIN_BLOCKED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeProgramCardSpendLimitExceeded               AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "PROGRAM_CARD_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeProgramSuspended                            AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "PROGRAM_SUSPENDED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeProgramUsageRestriction                     AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "PROGRAM_USAGE_RESTRICTION"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeReversalUnmatched                           AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "REVERSAL_UNMATCHED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeSecurityViolation                           AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "SECURITY_VIOLATION"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeSingleUseCardReattempted                    AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "SINGLE_USE_CARD_REATTEMPTED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeSuspectedFraud                              AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "SUSPECTED_FRAUD"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeTransactionInvalid                          AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "TRANSACTION_INVALID"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeTransactionNotPermittedToAcquirerOrTerminal AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "TRANSACTION_NOT_PERMITTED_TO_ACQUIRER_OR_TERMINAL"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeTransactionNotPermittedToIssuerOrCardholder AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "TRANSACTION_NOT_PERMITTED_TO_ISSUER_OR_CARDHOLDER"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeTransactionPreviouslyCompleted              AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "TRANSACTION_PREVIOUSLY_COMPLETED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeUnauthorizedMerchant                        AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "UNAUTHORIZED_MERCHANT"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeVehicleNumberInvalid                        AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "VEHICLE_NUMBER_INVALID"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardholderChallenged                        AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "CARDHOLDER_CHALLENGED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardholderChallengeFailed                   AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode = "CARDHOLDER_CHALLENGE_FAILED"
+)
+
+func (r AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCode) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAccountDailySpendLimitExceeded, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAccountDelinquent, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAccountInactive, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAccountLifetimeSpendLimitExceeded, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAccountMonthlySpendLimitExceeded, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAccountPaused, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAccountUnderReview, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAddressIncorrect, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeApproved, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAuthRuleAllowedCountry, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAuthRuleAllowedMcc, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAuthRuleBlockedCountry, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAuthRuleBlockedMcc, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeAuthRule, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardClosed, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardCryptogramValidationFailure, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardExpired, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardExpiryDateIncorrect, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardInvalid, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardNotActivated, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardPaused, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardPinIncorrect, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardRestricted, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardSecurityCodeIncorrect, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardSpendLimitExceeded, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeContactCardIssuer, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCustomerAsaTimeout, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCustomAsaResult, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeDeclined, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeDoNotHonor, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeDriverNumberInvalid, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeFormatError, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeInsufficientFundingSourceBalance, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeInsufficientFunds, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeLithicSystemError, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeLithicSystemRateLimit, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeMalformedAsaResponse, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeMerchantInvalid, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeMerchantLockedCardAttemptedElsewhere, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeMerchantNotPermitted, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeOverReversalAttempted, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodePinBlocked, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeProgramCardSpendLimitExceeded, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeProgramSuspended, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeProgramUsageRestriction, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeReversalUnmatched, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeSecurityViolation, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeSingleUseCardReattempted, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeSuspectedFraud, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeTransactionInvalid, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeTransactionNotPermittedToAcquirerOrTerminal, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeTransactionNotPermittedToIssuerOrCardholder, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeTransactionPreviouslyCompleted, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeUnauthorizedMerchant, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeVehicleNumberInvalid, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardholderChallenged, AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationCodeCardholderChallengeFailed:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationType string
+
+const (
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationTypeDecline AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationType = "DECLINE"
+)
+
+func (r AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseAuthorizationResultActionsDeclineActionAuthorizationTypeDecline:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2ListResultsResponseAuthorizationResultActionsChallengeActionAuthorization struct {
+	Type AuthRuleV2ListResultsResponseAuthorizationResultActionsChallengeActionAuthorizationType `json:"type" api:"required"`
+	// Optional explanation for why this action was taken
+	Explanation string                                                                                  `json:"explanation"`
+	JSON        authRuleV2ListResultsResponseAuthorizationResultActionsChallengeActionAuthorizationJSON `json:"-"`
+}
+
+// authRuleV2ListResultsResponseAuthorizationResultActionsChallengeActionAuthorizationJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ListResultsResponseAuthorizationResultActionsChallengeActionAuthorization]
+type authRuleV2ListResultsResponseAuthorizationResultActionsChallengeActionAuthorizationJSON struct {
+	Type        apijson.Field
+	Explanation apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResultsResponseAuthorizationResultActionsChallengeActionAuthorization) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResultsResponseAuthorizationResultActionsChallengeActionAuthorizationJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ListResultsResponseAuthorizationResultActionsChallengeActionAuthorization) implementsAuthRuleV2ListResultsResponseAuthorizationResultAction() {
+}
+
+type AuthRuleV2ListResultsResponseAuthorizationResultActionsChallengeActionAuthorizationType string
+
+const (
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsChallengeActionAuthorizationTypeChallenge AuthRuleV2ListResultsResponseAuthorizationResultActionsChallengeActionAuthorizationType = "CHALLENGE"
+)
+
+func (r AuthRuleV2ListResultsResponseAuthorizationResultActionsChallengeActionAuthorizationType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseAuthorizationResultActionsChallengeActionAuthorizationTypeChallenge:
+		return true
+	}
+	return false
 }
 
 type AuthRuleV2ListResultsResponseAuthorizationResultActionsType string
@@ -3125,6 +4220,77 @@ const (
 func (r AuthRuleV2ListResultsResponseAuthorizationResultActionsType) IsKnown() bool {
 	switch r {
 	case AuthRuleV2ListResultsResponseAuthorizationResultActionsTypeDecline, AuthRuleV2ListResultsResponseAuthorizationResultActionsTypeChallenge:
+		return true
+	}
+	return false
+}
+
+// The detailed result code explaining the specific reason for the decline
+type AuthRuleV2ListResultsResponseAuthorizationResultActionsCode string
+
+const (
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAccountDailySpendLimitExceeded              AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "ACCOUNT_DAILY_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAccountDelinquent                           AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "ACCOUNT_DELINQUENT"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAccountInactive                             AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "ACCOUNT_INACTIVE"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAccountLifetimeSpendLimitExceeded           AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "ACCOUNT_LIFETIME_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAccountMonthlySpendLimitExceeded            AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "ACCOUNT_MONTHLY_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAccountPaused                               AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "ACCOUNT_PAUSED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAccountUnderReview                          AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "ACCOUNT_UNDER_REVIEW"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAddressIncorrect                            AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "ADDRESS_INCORRECT"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeApproved                                    AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "APPROVED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAuthRuleAllowedCountry                      AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "AUTH_RULE_ALLOWED_COUNTRY"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAuthRuleAllowedMcc                          AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "AUTH_RULE_ALLOWED_MCC"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAuthRuleBlockedCountry                      AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "AUTH_RULE_BLOCKED_COUNTRY"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAuthRuleBlockedMcc                          AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "AUTH_RULE_BLOCKED_MCC"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAuthRule                                    AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "AUTH_RULE"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardClosed                                  AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "CARD_CLOSED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardCryptogramValidationFailure             AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "CARD_CRYPTOGRAM_VALIDATION_FAILURE"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardExpired                                 AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "CARD_EXPIRED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardExpiryDateIncorrect                     AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "CARD_EXPIRY_DATE_INCORRECT"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardInvalid                                 AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "CARD_INVALID"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardNotActivated                            AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "CARD_NOT_ACTIVATED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardPaused                                  AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "CARD_PAUSED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardPinIncorrect                            AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "CARD_PIN_INCORRECT"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardRestricted                              AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "CARD_RESTRICTED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardSecurityCodeIncorrect                   AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "CARD_SECURITY_CODE_INCORRECT"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardSpendLimitExceeded                      AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "CARD_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeContactCardIssuer                           AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "CONTACT_CARD_ISSUER"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCustomerAsaTimeout                          AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "CUSTOMER_ASA_TIMEOUT"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCustomAsaResult                             AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "CUSTOM_ASA_RESULT"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeDeclined                                    AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "DECLINED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeDoNotHonor                                  AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "DO_NOT_HONOR"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeDriverNumberInvalid                         AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "DRIVER_NUMBER_INVALID"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeFormatError                                 AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "FORMAT_ERROR"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeInsufficientFundingSourceBalance            AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "INSUFFICIENT_FUNDING_SOURCE_BALANCE"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeInsufficientFunds                           AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "INSUFFICIENT_FUNDS"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeLithicSystemError                           AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "LITHIC_SYSTEM_ERROR"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeLithicSystemRateLimit                       AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "LITHIC_SYSTEM_RATE_LIMIT"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeMalformedAsaResponse                        AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "MALFORMED_ASA_RESPONSE"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeMerchantInvalid                             AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "MERCHANT_INVALID"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeMerchantLockedCardAttemptedElsewhere        AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "MERCHANT_LOCKED_CARD_ATTEMPTED_ELSEWHERE"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeMerchantNotPermitted                        AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "MERCHANT_NOT_PERMITTED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeOverReversalAttempted                       AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "OVER_REVERSAL_ATTEMPTED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodePinBlocked                                  AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "PIN_BLOCKED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeProgramCardSpendLimitExceeded               AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "PROGRAM_CARD_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeProgramSuspended                            AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "PROGRAM_SUSPENDED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeProgramUsageRestriction                     AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "PROGRAM_USAGE_RESTRICTION"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeReversalUnmatched                           AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "REVERSAL_UNMATCHED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeSecurityViolation                           AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "SECURITY_VIOLATION"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeSingleUseCardReattempted                    AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "SINGLE_USE_CARD_REATTEMPTED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeSuspectedFraud                              AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "SUSPECTED_FRAUD"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeTransactionInvalid                          AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "TRANSACTION_INVALID"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeTransactionNotPermittedToAcquirerOrTerminal AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "TRANSACTION_NOT_PERMITTED_TO_ACQUIRER_OR_TERMINAL"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeTransactionNotPermittedToIssuerOrCardholder AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "TRANSACTION_NOT_PERMITTED_TO_ISSUER_OR_CARDHOLDER"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeTransactionPreviouslyCompleted              AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "TRANSACTION_PREVIOUSLY_COMPLETED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeUnauthorizedMerchant                        AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "UNAUTHORIZED_MERCHANT"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeVehicleNumberInvalid                        AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "VEHICLE_NUMBER_INVALID"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardholderChallenged                        AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "CARDHOLDER_CHALLENGED"
+	AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardholderChallengeFailed                   AuthRuleV2ListResultsResponseAuthorizationResultActionsCode = "CARDHOLDER_CHALLENGE_FAILED"
+)
+
+func (r AuthRuleV2ListResultsResponseAuthorizationResultActionsCode) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAccountDailySpendLimitExceeded, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAccountDelinquent, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAccountInactive, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAccountLifetimeSpendLimitExceeded, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAccountMonthlySpendLimitExceeded, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAccountPaused, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAccountUnderReview, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAddressIncorrect, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeApproved, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAuthRuleAllowedCountry, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAuthRuleAllowedMcc, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAuthRuleBlockedCountry, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAuthRuleBlockedMcc, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeAuthRule, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardClosed, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardCryptogramValidationFailure, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardExpired, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardExpiryDateIncorrect, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardInvalid, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardNotActivated, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardPaused, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardPinIncorrect, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardRestricted, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardSecurityCodeIncorrect, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardSpendLimitExceeded, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeContactCardIssuer, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCustomerAsaTimeout, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCustomAsaResult, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeDeclined, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeDoNotHonor, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeDriverNumberInvalid, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeFormatError, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeInsufficientFundingSourceBalance, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeInsufficientFunds, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeLithicSystemError, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeLithicSystemRateLimit, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeMalformedAsaResponse, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeMerchantInvalid, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeMerchantLockedCardAttemptedElsewhere, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeMerchantNotPermitted, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeOverReversalAttempted, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodePinBlocked, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeProgramCardSpendLimitExceeded, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeProgramSuspended, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeProgramUsageRestriction, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeReversalUnmatched, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeSecurityViolation, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeSingleUseCardReattempted, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeSuspectedFraud, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeTransactionInvalid, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeTransactionNotPermittedToAcquirerOrTerminal, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeTransactionNotPermittedToIssuerOrCardholder, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeTransactionPreviouslyCompleted, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeUnauthorizedMerchant, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeVehicleNumberInvalid, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardholderChallenged, AuthRuleV2ListResultsResponseAuthorizationResultActionsCodeCardholderChallengeFailed:
 		return true
 	}
 	return false
@@ -3361,15 +4527,15 @@ func (r *AuthRuleV2ListResultsResponseTokenizationResultAction) UnmarshalJSON(da
 // interface which you can cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are
-// [AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineAction],
+// [AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenization],
 // [AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaAction].
 func (r AuthRuleV2ListResultsResponseTokenizationResultAction) AsUnion() AuthRuleV2ListResultsResponseTokenizationResultActionsUnion {
 	return r.union
 }
 
 // Union satisfied by
-// [AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineAction] or
-// [AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaAction].
+// [AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenization]
+// or [AuthRuleV2ListResultsResponseTokenizationResultActionsRequireTfaAction].
 type AuthRuleV2ListResultsResponseTokenizationResultActionsUnion interface {
 	implementsAuthRuleV2ListResultsResponseTokenizationResultAction()
 }
@@ -3380,7 +4546,7 @@ func init() {
 		"",
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineAction{}),
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenization{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -3389,20 +4555,20 @@ func init() {
 	)
 }
 
-type AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineAction struct {
+type AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenization struct {
 	// Decline the tokenization request
-	Type AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionType `json:"type" api:"required"`
+	Type AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationType `json:"type" api:"required"`
 	// Optional explanation for why this action was taken
 	Explanation string `json:"explanation"`
 	// Reason code for declining the tokenization request
-	Reason AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason `json:"reason"`
-	JSON   authRuleV2ListResultsResponseTokenizationResultActionsDeclineActionJSON   `json:"-"`
+	Reason AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReason `json:"reason"`
+	JSON   authRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationJSON   `json:"-"`
 }
 
-// authRuleV2ListResultsResponseTokenizationResultActionsDeclineActionJSON contains
-// the JSON metadata for the struct
-// [AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineAction]
-type authRuleV2ListResultsResponseTokenizationResultActionsDeclineActionJSON struct {
+// authRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenization]
+type authRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationJSON struct {
 	Type        apijson.Field
 	Explanation apijson.Field
 	Reason      apijson.Field
@@ -3410,54 +4576,54 @@ type authRuleV2ListResultsResponseTokenizationResultActionsDeclineActionJSON str
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineAction) UnmarshalJSON(data []byte) (err error) {
+func (r *AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenization) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r authRuleV2ListResultsResponseTokenizationResultActionsDeclineActionJSON) RawJSON() string {
+func (r authRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineAction) implementsAuthRuleV2ListResultsResponseTokenizationResultAction() {
+func (r AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenization) implementsAuthRuleV2ListResultsResponseTokenizationResultAction() {
 }
 
 // Decline the tokenization request
-type AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionType string
+type AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationType string
 
 const (
-	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTypeDecline AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionType = "DECLINE"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationTypeDecline AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationType = "DECLINE"
 )
 
-func (r AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionType) IsKnown() bool {
+func (r AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTypeDecline:
+	case AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationTypeDecline:
 		return true
 	}
 	return false
 }
 
 // Reason code for declining the tokenization request
-type AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason string
+type AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReason string
 
 const (
-	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonAccountScore1                  AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "ACCOUNT_SCORE_1"
-	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonDeviceScore1                   AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "DEVICE_SCORE_1"
-	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonAllWalletDeclineReasonsPresent AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "ALL_WALLET_DECLINE_REASONS_PRESENT"
-	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonWalletRecommendedDecisionRed   AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "WALLET_RECOMMENDED_DECISION_RED"
-	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCvcMismatch                    AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "CVC_MISMATCH"
-	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCardExpiryMonthMismatch        AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "CARD_EXPIRY_MONTH_MISMATCH"
-	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCardExpiryYearMismatch         AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "CARD_EXPIRY_YEAR_MISMATCH"
-	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCardInvalidState               AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "CARD_INVALID_STATE"
-	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCustomerRedPath                AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "CUSTOMER_RED_PATH"
-	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonInvalidCustomerResponse        AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "INVALID_CUSTOMER_RESPONSE"
-	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonNetworkFailure                 AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "NETWORK_FAILURE"
-	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonGenericDecline                 AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "GENERIC_DECLINE"
-	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonDigitalCardArtRequired         AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason = "DIGITAL_CARD_ART_REQUIRED"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonAccountScore1                  AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReason = "ACCOUNT_SCORE_1"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonDeviceScore1                   AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReason = "DEVICE_SCORE_1"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonAllWalletDeclineReasonsPresent AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReason = "ALL_WALLET_DECLINE_REASONS_PRESENT"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonWalletRecommendedDecisionRed   AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReason = "WALLET_RECOMMENDED_DECISION_RED"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonCvcMismatch                    AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReason = "CVC_MISMATCH"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonCardExpiryMonthMismatch        AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReason = "CARD_EXPIRY_MONTH_MISMATCH"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonCardExpiryYearMismatch         AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReason = "CARD_EXPIRY_YEAR_MISMATCH"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonCardInvalidState               AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReason = "CARD_INVALID_STATE"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonCustomerRedPath                AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReason = "CUSTOMER_RED_PATH"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonInvalidCustomerResponse        AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReason = "INVALID_CUSTOMER_RESPONSE"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonNetworkFailure                 AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReason = "NETWORK_FAILURE"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonGenericDecline                 AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReason = "GENERIC_DECLINE"
+	AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonDigitalCardArtRequired         AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReason = "DIGITAL_CARD_ART_REQUIRED"
 )
 
-func (r AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReason) IsKnown() bool {
+func (r AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReason) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonAccountScore1, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonDeviceScore1, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonAllWalletDeclineReasonsPresent, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonWalletRecommendedDecisionRed, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCvcMismatch, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCardExpiryMonthMismatch, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCardExpiryYearMismatch, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCardInvalidState, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonCustomerRedPath, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonInvalidCustomerResponse, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonNetworkFailure, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonGenericDecline, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionReasonDigitalCardArtRequired:
+	case AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonAccountScore1, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonDeviceScore1, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonAllWalletDeclineReasonsPresent, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonWalletRecommendedDecisionRed, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonCvcMismatch, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonCardExpiryMonthMismatch, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonCardExpiryYearMismatch, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonCardInvalidState, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonCustomerRedPath, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonInvalidCustomerResponse, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonNetworkFailure, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonGenericDecline, AuthRuleV2ListResultsResponseTokenizationResultActionsDeclineActionTokenizationReasonDigitalCardArtRequired:
 		return true
 	}
 	return false
@@ -3713,14 +4879,15 @@ func (r *AuthRuleV2ListResultsResponseACHResultAction) UnmarshalJSON(data []byte
 // which you can cast to the specific types for more type safety.
 //
 // Possible runtime types of the union are
-// [AuthRuleV2ListResultsResponseACHResultActionsApproveAction],
+// [AuthRuleV2ListResultsResponseACHResultActionsApproveActionACH],
 // [AuthRuleV2ListResultsResponseACHResultActionsReturnAction].
 func (r AuthRuleV2ListResultsResponseACHResultAction) AsUnion() AuthRuleV2ListResultsResponseACHResultActionsUnion {
 	return r.union
 }
 
-// Union satisfied by [AuthRuleV2ListResultsResponseACHResultActionsApproveAction]
-// or [AuthRuleV2ListResultsResponseACHResultActionsReturnAction].
+// Union satisfied by
+// [AuthRuleV2ListResultsResponseACHResultActionsApproveActionACH] or
+// [AuthRuleV2ListResultsResponseACHResultActionsReturnAction].
 type AuthRuleV2ListResultsResponseACHResultActionsUnion interface {
 	implementsAuthRuleV2ListResultsResponseACHResultAction()
 }
@@ -3731,7 +4898,7 @@ func init() {
 		"",
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseACHResultActionsApproveAction{}),
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseACHResultActionsApproveActionACH{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -3740,45 +4907,45 @@ func init() {
 	)
 }
 
-type AuthRuleV2ListResultsResponseACHResultActionsApproveAction struct {
+type AuthRuleV2ListResultsResponseACHResultActionsApproveActionACH struct {
 	// Approve the ACH transaction
-	Type AuthRuleV2ListResultsResponseACHResultActionsApproveActionType `json:"type" api:"required"`
+	Type AuthRuleV2ListResultsResponseACHResultActionsApproveActionACHType `json:"type" api:"required"`
 	// Optional explanation for why this action was taken
-	Explanation string                                                         `json:"explanation"`
-	JSON        authRuleV2ListResultsResponseACHResultActionsApproveActionJSON `json:"-"`
+	Explanation string                                                            `json:"explanation"`
+	JSON        authRuleV2ListResultsResponseACHResultActionsApproveActionACHJSON `json:"-"`
 }
 
-// authRuleV2ListResultsResponseACHResultActionsApproveActionJSON contains the JSON
-// metadata for the struct
-// [AuthRuleV2ListResultsResponseACHResultActionsApproveAction]
-type authRuleV2ListResultsResponseACHResultActionsApproveActionJSON struct {
+// authRuleV2ListResultsResponseACHResultActionsApproveActionACHJSON contains the
+// JSON metadata for the struct
+// [AuthRuleV2ListResultsResponseACHResultActionsApproveActionACH]
+type authRuleV2ListResultsResponseACHResultActionsApproveActionACHJSON struct {
 	Type        apijson.Field
 	Explanation apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *AuthRuleV2ListResultsResponseACHResultActionsApproveAction) UnmarshalJSON(data []byte) (err error) {
+func (r *AuthRuleV2ListResultsResponseACHResultActionsApproveActionACH) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r authRuleV2ListResultsResponseACHResultActionsApproveActionJSON) RawJSON() string {
+func (r authRuleV2ListResultsResponseACHResultActionsApproveActionACHJSON) RawJSON() string {
 	return r.raw
 }
 
-func (r AuthRuleV2ListResultsResponseACHResultActionsApproveAction) implementsAuthRuleV2ListResultsResponseACHResultAction() {
+func (r AuthRuleV2ListResultsResponseACHResultActionsApproveActionACH) implementsAuthRuleV2ListResultsResponseACHResultAction() {
 }
 
 // Approve the ACH transaction
-type AuthRuleV2ListResultsResponseACHResultActionsApproveActionType string
+type AuthRuleV2ListResultsResponseACHResultActionsApproveActionACHType string
 
 const (
-	AuthRuleV2ListResultsResponseACHResultActionsApproveActionTypeApprove AuthRuleV2ListResultsResponseACHResultActionsApproveActionType = "APPROVE"
+	AuthRuleV2ListResultsResponseACHResultActionsApproveActionACHTypeApprove AuthRuleV2ListResultsResponseACHResultActionsApproveActionACHType = "APPROVE"
 )
 
-func (r AuthRuleV2ListResultsResponseACHResultActionsApproveActionType) IsKnown() bool {
+func (r AuthRuleV2ListResultsResponseACHResultActionsApproveActionACHType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResultsResponseACHResultActionsApproveActionTypeApprove:
+	case AuthRuleV2ListResultsResponseACHResultActionsApproveActionACHTypeApprove:
 		return true
 	}
 	return false
@@ -4288,11 +5455,11 @@ func (r authRuleV2GetReportResponseJSON) RawJSON() string {
 
 type AuthRuleV2GetReportResponseDailyStatistic struct {
 	// Detailed statistics for the current version of the rule.
-	CurrentVersionStatistics RuleStats `json:"current_version_statistics" api:"required,nullable"`
+	CurrentVersionStatistics ReportStats `json:"current_version_statistics" api:"required,nullable"`
 	// The date (UTC) for which the statistics are reported.
 	Date time.Time `json:"date" api:"required" format:"date"`
 	// Detailed statistics for the draft version of the rule.
-	DraftVersionStatistics RuleStats                                     `json:"draft_version_statistics" api:"required,nullable"`
+	DraftVersionStatistics ReportStats                                   `json:"draft_version_statistics" api:"required,nullable"`
 	JSON                   authRuleV2GetReportResponseDailyStatisticJSON `json:"-"`
 }
 
@@ -5026,6 +6193,12 @@ func (r AuthRuleV2DraftParamsParametersScope) IsKnown() bool {
 type AuthRuleV2ListResultsParams struct {
 	// Filter by Auth Rule token
 	AuthRuleToken param.Field[string] `query:"auth_rule_token" format:"uuid"`
+	// Date string in RFC 3339 format. Only events evaluated after the specified time
+	// will be included. UTC time zone.
+	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
+	// Date string in RFC 3339 format. Only events evaluated before the specified time
+	// will be included. UTC time zone.
+	End param.Field[time.Time] `query:"end" format:"date-time"`
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string] `query:"ending_before" format:"uuid"`
