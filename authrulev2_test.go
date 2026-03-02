@@ -137,6 +137,8 @@ func TestAuthRuleV2ListResultsWithOptionalParams(t *testing.T) {
 	)
 	_, err := client.AuthRules.V2.ListResults(context.TODO(), lithic.AuthRuleV2ListResultsParams{
 		AuthRuleToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		Begin:         lithic.F(time.Now()),
+		End:           lithic.F(time.Now()),
 		EndingBefore:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		EventToken:    lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		HasActions:    lithic.F(true),
