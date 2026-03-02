@@ -227,10 +227,6 @@ type AccountHolder struct {
 	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Globally unique identifier for the account.
 	AccountToken string `json:"account_token" format:"uuid"`
-	// Deprecated.
-	//
-	// Deprecated: deprecated
-	BeneficialOwnerEntities []AccountHolderBeneficialOwnerEntity `json:"beneficial_owner_entities"`
 	// Only present when user_type == "BUSINESS". You must submit a list of all direct
 	// and indirect individuals with 25% or more ownership in the company. A maximum of
 	// 4 beneficial owners can be submitted. If no individual owns 25% of the company
@@ -306,7 +302,6 @@ type accountHolderJSON struct {
 	Token                      apijson.Field
 	Created                    apijson.Field
 	AccountToken               apijson.Field
-	BeneficialOwnerEntities    apijson.Field
 	BeneficialOwnerIndividuals apijson.Field
 	BusinessAccountToken       apijson.Field
 	BusinessEntity             apijson.Field
@@ -333,51 +328,6 @@ func (r *AccountHolder) UnmarshalJSON(data []byte) (err error) {
 }
 
 func (r accountHolderJSON) RawJSON() string {
-	return r.raw
-}
-
-type AccountHolderBeneficialOwnerEntity struct {
-	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
-	// acceptable; APO/FPO are acceptable.
-	Address shared.Address `json:"address" api:"required"`
-	// Any name that the business operates under that is not its legal business name
-	// (if applicable).
-	DbaBusinessName string `json:"dba_business_name" api:"required"`
-	// Globally unique identifier for the entity.
-	EntityToken string `json:"entity_token" api:"required" format:"uuid"`
-	// Government-issued identification number. US Federal Employer Identification
-	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
-	// without hyphens.
-	GovernmentID string `json:"government_id" api:"required"`
-	// Legal (formal) business name.
-	LegalBusinessName string `json:"legal_business_name" api:"required"`
-	// One or more of the business's phone number(s), entered as a list in E.164
-	// format.
-	PhoneNumbers []string `json:"phone_numbers" api:"required"`
-	// Parent company name (if applicable).
-	ParentCompany string                                 `json:"parent_company"`
-	JSON          accountHolderBeneficialOwnerEntityJSON `json:"-"`
-}
-
-// accountHolderBeneficialOwnerEntityJSON contains the JSON metadata for the struct
-// [AccountHolderBeneficialOwnerEntity]
-type accountHolderBeneficialOwnerEntityJSON struct {
-	Address           apijson.Field
-	DbaBusinessName   apijson.Field
-	EntityToken       apijson.Field
-	GovernmentID      apijson.Field
-	LegalBusinessName apijson.Field
-	PhoneNumbers      apijson.Field
-	ParentCompany     apijson.Field
-	raw               string
-	ExtraFields       map[string]apijson.Field
-}
-
-func (r *AccountHolderBeneficialOwnerEntity) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r accountHolderBeneficialOwnerEntityJSON) RawJSON() string {
 	return r.raw
 }
 
@@ -777,10 +727,6 @@ type KYBParam struct {
 	TosTimestamp param.Field[string] `json:"tos_timestamp" api:"required"`
 	// Specifies the type of KYB workflow to run.
 	Workflow param.Field[KYBWorkflow] `json:"workflow" api:"required"`
-	// Deprecated.
-	//
-	// Deprecated: deprecated
-	BeneficialOwnerEntities param.Field[[]KYBBeneficialOwnerEntityParam] `json:"beneficial_owner_entities"`
 	// A user provided id that can be used to link an account holder with an external
 	// system
 	ExternalID param.Field[string] `json:"external_id"`
@@ -903,30 +849,6 @@ func (r KYBWorkflow) IsKnown() bool {
 		return true
 	}
 	return false
-}
-
-type KYBBeneficialOwnerEntityParam struct {
-	// Business's physical address - PO boxes, UPS drops, and FedEx drops are not
-	// acceptable; APO/FPO are acceptable.
-	Address param.Field[shared.AddressParam] `json:"address" api:"required"`
-	// Government-issued identification number. US Federal Employer Identification
-	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
-	// without hyphens.
-	GovernmentID param.Field[string] `json:"government_id" api:"required"`
-	// Legal (formal) business name.
-	LegalBusinessName param.Field[string] `json:"legal_business_name" api:"required"`
-	// One or more of the business's phone number(s), entered as a list in E.164
-	// format.
-	PhoneNumbers param.Field[[]string] `json:"phone_numbers" api:"required"`
-	// Any name that the business operates under that is not its legal business name
-	// (if applicable).
-	DbaBusinessName param.Field[string] `json:"dba_business_name"`
-	// Parent company name (if applicable).
-	ParentCompany param.Field[string] `json:"parent_company"`
-}
-
-func (r KYBBeneficialOwnerEntityParam) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
 }
 
 type KYBBusinessEntity struct {
@@ -1290,8 +1212,6 @@ type AccountHolderUpdateResponse struct {
 	// This field can have the runtime type of
 	// [AccountHolderUpdateResponsePatchResponseAddress].
 	Address interface{} `json:"address"`
-	// This field can have the runtime type of [[]KYBBusinessEntity].
-	BeneficialOwnerEntities interface{} `json:"beneficial_owner_entities"`
 	// This field can have the runtime type of
 	// [[]AccountHolderUpdateResponseKybkycPatchResponseBeneficialOwnerIndividual].
 	BeneficialOwnerIndividuals interface{} `json:"beneficial_owner_individuals"`
@@ -1369,7 +1289,6 @@ type accountHolderUpdateResponseJSON struct {
 	Token                      apijson.Field
 	AccountToken               apijson.Field
 	Address                    apijson.Field
-	BeneficialOwnerEntities    apijson.Field
 	BeneficialOwnerIndividuals apijson.Field
 	BusinessAccountToken       apijson.Field
 	BusinessEntity             apijson.Field
@@ -1444,8 +1363,6 @@ type AccountHolderUpdateResponseKYBKYCPatchResponse struct {
 	Token string `json:"token" format:"uuid"`
 	// Globally unique identifier for the account.
 	AccountToken string `json:"account_token" format:"uuid"`
-	// Deprecated.
-	BeneficialOwnerEntities []KYBBusinessEntity `json:"beneficial_owner_entities"`
 	// Only present when user_type == "BUSINESS". You must submit a list of all direct
 	// and indirect individuals with 25% or more ownership in the company. A maximum of
 	// 4 beneficial owners can be submitted. If no individual owns 25% of the company
@@ -1528,7 +1445,6 @@ type AccountHolderUpdateResponseKYBKYCPatchResponse struct {
 type accountHolderUpdateResponseKybkycPatchResponseJSON struct {
 	Token                      apijson.Field
 	AccountToken               apijson.Field
-	BeneficialOwnerEntities    apijson.Field
 	BeneficialOwnerIndividuals apijson.Field
 	BusinessAccountToken       apijson.Field
 	BusinessEntity             apijson.Field
@@ -2192,8 +2108,6 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 	Token string `json:"token" format:"uuid"`
 	// Globally unique identifier for the account.
 	AccountToken string `json:"account_token" format:"uuid"`
-	// Deprecated.
-	BeneficialOwnerEntities []KYBBusinessEntity `json:"beneficial_owner_entities"`
 	// Only present when user_type == "BUSINESS". You must submit a list of all direct
 	// and indirect individuals with 25% or more ownership in the company. A maximum of
 	// 4 beneficial owners can be submitted. If no individual owns 25% of the company
@@ -2276,7 +2190,6 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 type accountHolderSimulateEnrollmentReviewResponseJSON struct {
 	Token                      apijson.Field
 	AccountToken               apijson.Field
-	BeneficialOwnerEntities    apijson.Field
 	BeneficialOwnerIndividuals apijson.Field
 	BusinessAccountToken       apijson.Field
 	BusinessEntity             apijson.Field
@@ -2778,7 +2691,6 @@ type AccountHolderNewParamsBody struct {
 	// KYC Exempt user's current address - PO boxes, UPS drops, and FedEx drops are not
 	// acceptable; APO/FPO are acceptable.
 	Address                    param.Field[shared.AddressParam] `json:"address"`
-	BeneficialOwnerEntities    param.Field[interface{}]         `json:"beneficial_owner_entities"`
 	BeneficialOwnerIndividuals param.Field[interface{}]         `json:"beneficial_owner_individuals"`
 	// Only applicable for customers using the KYC-Exempt workflow to enroll authorized
 	// users of businesses. Pass the account_token of the enrolled business associated
@@ -3032,7 +2944,6 @@ func (r AccountHolderUpdateParams) MarshalJSON() (data []byte, err error) {
 type AccountHolderUpdateParamsBody struct {
 	// Allowed for: KYC-Exempt, BYO-KYC, BYO-KYB.
 	Address                    param.Field[AddressUpdateParam] `json:"address"`
-	BeneficialOwnerEntities    param.Field[interface{}]        `json:"beneficial_owner_entities"`
 	BeneficialOwnerIndividuals param.Field[interface{}]        `json:"beneficial_owner_individuals"`
 	// Allowed for: KYC-Exempt, BYO-KYC. The token of the business account to which the
 	// account holder is associated.
@@ -3084,10 +2995,6 @@ type AccountHolderUpdateParamsBodyUnion interface {
 
 // The KYB request payload for updating a business.
 type AccountHolderUpdateParamsBodyKYBPatchRequest struct {
-	// Deprecated.
-	//
-	// Deprecated: deprecated
-	BeneficialOwnerEntities param.Field[[]AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerEntity] `json:"beneficial_owner_entities"`
 	// You must submit a list of all direct and indirect individuals with 25% or more
 	// ownership in the company. A maximum of 4 beneficial owners can be submitted. If
 	// no individual owns 25% of the company you do not need to send beneficial owner
@@ -3125,32 +3032,6 @@ func (r AccountHolderUpdateParamsBodyKYBPatchRequest) MarshalJSON() (data []byte
 }
 
 func (r AccountHolderUpdateParamsBodyKYBPatchRequest) implementsAccountHolderUpdateParamsBodyUnion() {
-}
-
-type AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerEntity struct {
-	// Globally unique identifier for an entity.
-	EntityToken param.Field[string] `json:"entity_token" api:"required" format:"uuid"`
-	// Business”s physical address - PO boxes, UPS drops, and FedEx drops are not
-	// acceptable; APO/FPO are acceptable.
-	Address param.Field[AddressUpdateParam] `json:"address"`
-	// Any name that the business operates under that is not its legal business name
-	// (if applicable).
-	DbaBusinessName param.Field[string] `json:"dba_business_name"`
-	// Government-issued identification number. US Federal Employer Identification
-	// Numbers (EIN) are currently supported, entered as full nine-digits, with or
-	// without hyphens.
-	GovernmentID param.Field[string] `json:"government_id"`
-	// Legal (formal) business name.
-	LegalBusinessName param.Field[string] `json:"legal_business_name"`
-	// Parent company name (if applicable).
-	ParentCompany param.Field[string] `json:"parent_company"`
-	// One or more of the business's phone number(s), entered as a list in E.164
-	// format.
-	PhoneNumbers param.Field[[]string] `json:"phone_numbers"`
-}
-
-func (r AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerEntity) MarshalJSON() (data []byte, err error) {
-	return apijson.MarshalRoot(r)
 }
 
 // Individuals associated with a KYB application. Phone number is optional.
