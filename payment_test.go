@@ -36,8 +36,11 @@ func TestPaymentNewWithOptionalParams(t *testing.T) {
 			ACHHoldPeriod: lithic.F(int64(0)),
 			Addenda:       lithic.F("addenda"),
 		}),
-		Type:          lithic.F(lithic.PaymentNewParamsTypeCollection),
-		Token:         lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		Type:  lithic.F(lithic.PaymentNewParamsTypeCollection),
+		Token: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		Hold: lithic.F(lithic.PaymentNewParamsHold{
+			Token: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		}),
 		Memo:          lithic.F("memo"),
 		UserDefinedID: lithic.F("user_defined_id"),
 	})
