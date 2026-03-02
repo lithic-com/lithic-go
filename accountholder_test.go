@@ -76,24 +76,9 @@ func TestAccountHolderNewWithOptionalParams(t *testing.T) {
 				LastName:     lithic.F("Timothy"),
 				PhoneNumber:  lithic.F("+15555555555"),
 			}),
-			NatureOfBusiness: lithic.F("Software company selling solutions to the restaurant industry"),
-			TosTimestamp:     lithic.F("2022-03-08T08:00:00Z"),
-			Workflow:         lithic.F(lithic.KYBWorkflowKYBByo),
-			BeneficialOwnerEntities: lithic.F([]lithic.KYBBeneficialOwnerEntityParam{{
-				Address: lithic.F(shared.AddressParam{
-					Address1:   lithic.F("300 Normal Forest Way"),
-					City:       lithic.F("Portland"),
-					Country:    lithic.F("USA"),
-					PostalCode: lithic.F("90210"),
-					State:      lithic.F("OR"),
-					Address2:   lithic.F("address2"),
-				}),
-				GovernmentID:      lithic.F("98-7654321"),
-				LegalBusinessName: lithic.F("Majority Holdings LLC"),
-				PhoneNumbers:      lithic.F([]string{"+15555555555"}),
-				DbaBusinessName:   lithic.F("MHoldings"),
-				ParentCompany:     lithic.F("parent_company"),
-			}}),
+			NatureOfBusiness:   lithic.F("Software company selling solutions to the restaurant industry"),
+			TosTimestamp:       lithic.F("2022-03-08T08:00:00Z"),
+			Workflow:           lithic.F(lithic.KYBWorkflowKYBByo),
 			ExternalID:         lithic.F("external_id"),
 			KYBPassedTimestamp: lithic.F("2022-03-08T08:00:00Z"),
 			NaicsCode:          lithic.F("541512"),
@@ -148,22 +133,6 @@ func TestAccountHolderUpdateWithOptionalParams(t *testing.T) {
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.AccountHolderUpdateParams{
 			Body: lithic.AccountHolderUpdateParamsBodyKYBPatchRequest{
-				BeneficialOwnerEntities: lithic.F([]lithic.AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerEntity{{
-					EntityToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-					Address: lithic.F(lithic.AddressUpdateParam{
-						Address1:   lithic.F("123 Old Forest Way"),
-						Address2:   lithic.F("address2"),
-						City:       lithic.F("Omaha"),
-						Country:    lithic.F("USA"),
-						PostalCode: lithic.F("68022"),
-						State:      lithic.F("NE"),
-					}),
-					DbaBusinessName:   lithic.F("dba_business_name"),
-					GovernmentID:      lithic.F("114-123-1513"),
-					LegalBusinessName: lithic.F("Acme, Inc."),
-					ParentCompany:     lithic.F("parent_company"),
-					PhoneNumbers:      lithic.F([]string{"+15555555555"}),
-				}}),
 				BeneficialOwnerIndividuals: lithic.F([]lithic.AccountHolderUpdateParamsBodyKYBPatchRequestBeneficialOwnerIndividual{{
 					EntityToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 					Address: lithic.F(lithic.AddressUpdateParam{
