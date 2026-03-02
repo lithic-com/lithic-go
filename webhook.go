@@ -312,10 +312,6 @@ func (r AccountHolderUpdatedWebhookEventKYBPayload) implementsAccountHolderUpdat
 
 // Original request to update the account holder.
 type AccountHolderUpdatedWebhookEventKYBPayloadUpdateRequest struct {
-	// Deprecated.
-	//
-	// Deprecated: deprecated
-	BeneficialOwnerEntities []KYBBusinessEntity `json:"beneficial_owner_entities"`
 	// You must submit a list of all direct and indirect individuals with 25% or more
 	// ownership in the company. A maximum of 4 beneficial owners can be submitted. If
 	// no individual owns 25% of the company you do not need to send beneficial owner
@@ -342,7 +338,6 @@ type AccountHolderUpdatedWebhookEventKYBPayloadUpdateRequest struct {
 // metadata for the struct
 // [AccountHolderUpdatedWebhookEventKYBPayloadUpdateRequest]
 type accountHolderUpdatedWebhookEventKYBPayloadUpdateRequestJSON struct {
-	BeneficialOwnerEntities    apijson.Field
 	BeneficialOwnerIndividuals apijson.Field
 	BusinessEntity             apijson.Field
 	ControlPerson              apijson.Field
@@ -6275,10 +6270,6 @@ func (r ParsedWebhookEventKYBPayload) implementsParsedWebhookEvent() {}
 
 // Original request to update the account holder.
 type ParsedWebhookEventKYBPayloadUpdateRequest struct {
-	// Deprecated.
-	//
-	// Deprecated: deprecated
-	BeneficialOwnerEntities []KYBBusinessEntity `json:"beneficial_owner_entities"`
 	// You must submit a list of all direct and indirect individuals with 25% or more
 	// ownership in the company. A maximum of 4 beneficial owners can be submitted. If
 	// no individual owns 25% of the company you do not need to send beneficial owner
@@ -6304,7 +6295,6 @@ type ParsedWebhookEventKYBPayloadUpdateRequest struct {
 // parsedWebhookEventKYBPayloadUpdateRequestJSON contains the JSON metadata for the
 // struct [ParsedWebhookEventKYBPayloadUpdateRequest]
 type parsedWebhookEventKYBPayloadUpdateRequestJSON struct {
-	BeneficialOwnerEntities    apijson.Field
 	BeneficialOwnerIndividuals apijson.Field
 	BusinessEntity             apijson.Field
 	ControlPerson              apijson.Field
