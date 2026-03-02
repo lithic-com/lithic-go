@@ -130,8 +130,8 @@ func (r backtestResultsJSON) RawJSON() string {
 }
 
 type BacktestResultsResults struct {
-	CurrentVersion RuleStats                  `json:"current_version" api:"nullable"`
-	DraftVersion   RuleStats                  `json:"draft_version" api:"nullable"`
+	CurrentVersion BacktestStats              `json:"current_version" api:"nullable"`
+	DraftVersion   BacktestStats              `json:"draft_version" api:"nullable"`
 	JSON           backtestResultsResultsJSON `json:"-"`
 }
 
