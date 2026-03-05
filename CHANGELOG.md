@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.103.0 (2026-03-05)
+
+Full Changelog: [v0.102.0...v0.103.0](https://github.com/lithic-com/lithic-go/compare/v0.102.0...v0.103.0)
+
+### Features
+
+* **api:** add action_counts to rule performance reports and code to authorization actions ([3849aa1](https://github.com/lithic-com/lithic-go/commit/3849aa146493f2cfd3f6910c177eb79cfc6de64e))
+* **api:** Add Hold API for financial account fund reservations ([df3e831](https://github.com/lithic-com/lithic-go/commit/df3e8318e5e5dc1a5f0ec915ee37640325cc4b8f))
+* **api:** Remove deprecated beneficial owner entities field ([d22040a](https://github.com/lithic-com/lithic-go/commit/d22040adc5a5ecc609c9de050221018bf0c11b1f))
+
+
+### Chores
+
+* **internal:** codegen related update ([28e50ec](https://github.com/lithic-com/lithic-go/commit/28e50ec8bf3b645740df3e8496b2394c3f1df137))
+* **internal:** codegen related update ([d17b62a](https://github.com/lithic-com/lithic-go/commit/d17b62a3c47830f7d5e7c28d23fc52d11abb7efd))
+
 ## 0.102.0 (2026-02-27)
 
 Full Changelog: [v0.101.0...v0.102.0](https://github.com/lithic-com/lithic-go/compare/v0.101.0...v0.102.0)

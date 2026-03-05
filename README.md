@@ -31,7 +31,7 @@ Or to pin the version:
 <!-- x-release-please-start-version -->
 
 ```sh
-go get -u 'github.com/lithic-com/lithic-go@v0.102.0'
+go get -u 'github.com/lithic-com/lithic-go@v0.103.0'
 ```
 
 <!-- x-release-please-end -->
