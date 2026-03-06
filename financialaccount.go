@@ -317,11 +317,12 @@ const (
 	FinancialAccountTypeProgramReceivables         FinancialAccountType = "PROGRAM_RECEIVABLES"
 	FinancialAccountTypeCollection                 FinancialAccountType = "COLLECTION"
 	FinancialAccountTypeProgramBankAccountsPayable FinancialAccountType = "PROGRAM_BANK_ACCOUNTS_PAYABLE"
+	FinancialAccountTypeEarlyDirectDepositFloat    FinancialAccountType = "EARLY_DIRECT_DEPOSIT_FLOAT"
 )
 
 func (r FinancialAccountType) IsKnown() bool {
 	switch r {
-	case FinancialAccountTypeIssuing, FinancialAccountTypeReserve, FinancialAccountTypeOperating, FinancialAccountTypeChargedOffFees, FinancialAccountTypeChargedOffInterest, FinancialAccountTypeChargedOffPrincipal, FinancialAccountTypeSecurity, FinancialAccountTypeProgramReceivables, FinancialAccountTypeCollection, FinancialAccountTypeProgramBankAccountsPayable:
+	case FinancialAccountTypeIssuing, FinancialAccountTypeReserve, FinancialAccountTypeOperating, FinancialAccountTypeChargedOffFees, FinancialAccountTypeChargedOffInterest, FinancialAccountTypeChargedOffPrincipal, FinancialAccountTypeSecurity, FinancialAccountTypeProgramReceivables, FinancialAccountTypeCollection, FinancialAccountTypeProgramBankAccountsPayable, FinancialAccountTypeEarlyDirectDepositFloat:
 		return true
 	}
 	return false
@@ -650,15 +651,16 @@ func (r FinancialAccountListParams) URLQuery() (v url.Values) {
 type FinancialAccountListParamsType string
 
 const (
-	FinancialAccountListParamsTypeIssuing   FinancialAccountListParamsType = "ISSUING"
-	FinancialAccountListParamsTypeOperating FinancialAccountListParamsType = "OPERATING"
-	FinancialAccountListParamsTypeReserve   FinancialAccountListParamsType = "RESERVE"
-	FinancialAccountListParamsTypeSecurity  FinancialAccountListParamsType = "SECURITY"
+	FinancialAccountListParamsTypeIssuing                 FinancialAccountListParamsType = "ISSUING"
+	FinancialAccountListParamsTypeOperating               FinancialAccountListParamsType = "OPERATING"
+	FinancialAccountListParamsTypeReserve                 FinancialAccountListParamsType = "RESERVE"
+	FinancialAccountListParamsTypeSecurity                FinancialAccountListParamsType = "SECURITY"
+	FinancialAccountListParamsTypeEarlyDirectDepositFloat FinancialAccountListParamsType = "EARLY_DIRECT_DEPOSIT_FLOAT"
 )
 
 func (r FinancialAccountListParamsType) IsKnown() bool {
 	switch r {
-	case FinancialAccountListParamsTypeIssuing, FinancialAccountListParamsTypeOperating, FinancialAccountListParamsTypeReserve, FinancialAccountListParamsTypeSecurity:
+	case FinancialAccountListParamsTypeIssuing, FinancialAccountListParamsTypeOperating, FinancialAccountListParamsTypeReserve, FinancialAccountListParamsTypeSecurity, FinancialAccountListParamsTypeEarlyDirectDepositFloat:
 		return true
 	}
 	return false
