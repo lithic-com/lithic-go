@@ -6831,11 +6831,12 @@ const (
 	ParsedWebhookEventCategoryManagementDisbursement ParsedWebhookEventCategory = "MANAGEMENT_DISBURSEMENT"
 	ParsedWebhookEventCategoryACH                    ParsedWebhookEventCategory = "ACH"
 	ParsedWebhookEventCategoryCard                   ParsedWebhookEventCategory = "CARD"
+	ParsedWebhookEventCategoryHold                   ParsedWebhookEventCategory = "HOLD"
 )
 
 func (r ParsedWebhookEventCategory) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventCategoryAdjustment, ParsedWebhookEventCategoryBalanceOrFunding, ParsedWebhookEventCategoryDerecognition, ParsedWebhookEventCategoryDispute, ParsedWebhookEventCategoryFee, ParsedWebhookEventCategoryInternal, ParsedWebhookEventCategoryReward, ParsedWebhookEventCategoryProgramFunding, ParsedWebhookEventCategoryTransfer, ParsedWebhookEventCategoryExternalWire, ParsedWebhookEventCategoryExternalACH, ParsedWebhookEventCategoryExternalCheck, ParsedWebhookEventCategoryExternalFednow, ParsedWebhookEventCategoryExternalRtp, ParsedWebhookEventCategoryExternalTransfer, ParsedWebhookEventCategoryManagementFee, ParsedWebhookEventCategoryManagementDispute, ParsedWebhookEventCategoryManagementReward, ParsedWebhookEventCategoryManagementAdjustment, ParsedWebhookEventCategoryManagementDisbursement, ParsedWebhookEventCategoryACH, ParsedWebhookEventCategoryCard:
+	case ParsedWebhookEventCategoryAdjustment, ParsedWebhookEventCategoryBalanceOrFunding, ParsedWebhookEventCategoryDerecognition, ParsedWebhookEventCategoryDispute, ParsedWebhookEventCategoryFee, ParsedWebhookEventCategoryInternal, ParsedWebhookEventCategoryReward, ParsedWebhookEventCategoryProgramFunding, ParsedWebhookEventCategoryTransfer, ParsedWebhookEventCategoryExternalWire, ParsedWebhookEventCategoryExternalACH, ParsedWebhookEventCategoryExternalCheck, ParsedWebhookEventCategoryExternalFednow, ParsedWebhookEventCategoryExternalRtp, ParsedWebhookEventCategoryExternalTransfer, ParsedWebhookEventCategoryManagementFee, ParsedWebhookEventCategoryManagementDispute, ParsedWebhookEventCategoryManagementReward, ParsedWebhookEventCategoryManagementAdjustment, ParsedWebhookEventCategoryManagementDisbursement, ParsedWebhookEventCategoryACH, ParsedWebhookEventCategoryCard, ParsedWebhookEventCategoryHold:
 		return true
 	}
 	return false
@@ -7543,6 +7544,7 @@ const (
 	ParsedWebhookEventTypeProgramReceivables         ParsedWebhookEventType = "PROGRAM_RECEIVABLES"
 	ParsedWebhookEventTypeCollection                 ParsedWebhookEventType = "COLLECTION"
 	ParsedWebhookEventTypeProgramBankAccountsPayable ParsedWebhookEventType = "PROGRAM_BANK_ACCOUNTS_PAYABLE"
+	ParsedWebhookEventTypeEarlyDirectDepositFloat    ParsedWebhookEventType = "EARLY_DIRECT_DEPOSIT_FLOAT"
 	ParsedWebhookEventTypeOriginationCredit          ParsedWebhookEventType = "ORIGINATION_CREDIT"
 	ParsedWebhookEventTypeOriginationDebit           ParsedWebhookEventType = "ORIGINATION_DEBIT"
 	ParsedWebhookEventTypeReceiptCredit              ParsedWebhookEventType = "RECEIPT_CREDIT"
@@ -7556,7 +7558,7 @@ const (
 
 func (r ParsedWebhookEventType) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventTypeChecking, ParsedWebhookEventTypeSavings, ParsedWebhookEventTypeIssuing, ParsedWebhookEventTypeReserve, ParsedWebhookEventTypeOperating, ParsedWebhookEventTypeChargedOffFees, ParsedWebhookEventTypeChargedOffInterest, ParsedWebhookEventTypeChargedOffPrincipal, ParsedWebhookEventTypeSecurity, ParsedWebhookEventTypeProgramReceivables, ParsedWebhookEventTypeCollection, ParsedWebhookEventTypeProgramBankAccountsPayable, ParsedWebhookEventTypeOriginationCredit, ParsedWebhookEventTypeOriginationDebit, ParsedWebhookEventTypeReceiptCredit, ParsedWebhookEventTypeReceiptDebit, ParsedWebhookEventTypeWireInboundPayment, ParsedWebhookEventTypeWireInboundAdmin, ParsedWebhookEventTypeWireOutboundPayment, ParsedWebhookEventTypeWireOutboundAdmin, ParsedWebhookEventTypeWireInboundDrawdownRequest:
+	case ParsedWebhookEventTypeChecking, ParsedWebhookEventTypeSavings, ParsedWebhookEventTypeIssuing, ParsedWebhookEventTypeReserve, ParsedWebhookEventTypeOperating, ParsedWebhookEventTypeChargedOffFees, ParsedWebhookEventTypeChargedOffInterest, ParsedWebhookEventTypeChargedOffPrincipal, ParsedWebhookEventTypeSecurity, ParsedWebhookEventTypeProgramReceivables, ParsedWebhookEventTypeCollection, ParsedWebhookEventTypeProgramBankAccountsPayable, ParsedWebhookEventTypeEarlyDirectDepositFloat, ParsedWebhookEventTypeOriginationCredit, ParsedWebhookEventTypeOriginationDebit, ParsedWebhookEventTypeReceiptCredit, ParsedWebhookEventTypeReceiptDebit, ParsedWebhookEventTypeWireInboundPayment, ParsedWebhookEventTypeWireInboundAdmin, ParsedWebhookEventTypeWireOutboundPayment, ParsedWebhookEventTypeWireOutboundAdmin, ParsedWebhookEventTypeWireInboundDrawdownRequest:
 		return true
 	}
 	return false
