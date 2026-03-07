@@ -111,7 +111,8 @@ func (r wirePartyDetailsJSON) RawJSON() string {
 // which transaction type is returned: INTERNAL returns FinancialTransaction,
 // TRANSFER returns BookTransferTransaction, CARD returns CardTransaction, PAYMENT
 // returns PaymentTransaction, EXTERNAL_PAYMENT returns ExternalPaymentResponse,
-// and MANAGEMENT_OPERATION returns ManagementOperationTransaction
+// MANAGEMENT_OPERATION returns ManagementOperationTransaction, and HOLD returns
+// HoldTransaction
 type AccountActivityListResponse struct {
 	// Unique identifier for the transaction
 	Token string `json:"token" api:"required" format:"uuid"`
@@ -164,10 +165,13 @@ type AccountActivityListResponse struct {
 	Direction AccountActivityListResponseDirection `json:"direction"`
 	// This field can have the runtime type of [[]shared.FinancialEvent],
 	// [[]BookTransferResponseEvent], [[]TransactionEvent], [[]PaymentEvent],
-	// [[]ExternalPaymentEvent], [[]ManagementOperationTransactionEvent].
+	// [[]ExternalPaymentEvent], [[]ManagementOperationTransactionEvent],
+	// [[]HoldEvent].
 	Events interface{} `json:"events"`
 	// Expected release date for the transaction
 	ExpectedReleaseDate time.Time `json:"expected_release_date" api:"nullable" format:"date"`
+	// When the hold will auto-expire if not resolved
+	ExpirationDatetime time.Time `json:"expiration_datetime" api:"nullable" format:"date-time"`
 	// External bank account token
 	ExternalBankAccountToken string `json:"external_bank_account_token" api:"nullable" format:"uuid"`
 	// External ID defined by the customer
@@ -259,6 +263,7 @@ type accountActivityListResponseJSON struct {
 	Direction                   apijson.Field
 	Events                      apijson.Field
 	ExpectedReleaseDate         apijson.Field
+	ExpirationDatetime          apijson.Field
 	ExternalBankAccountToken    apijson.Field
 	ExternalID                  apijson.Field
 	ExternalResource            apijson.Field
@@ -309,7 +314,7 @@ func (r *AccountActivityListResponse) UnmarshalJSON(data []byte) (err error) {
 // Possible runtime types of the union are
 // [AccountActivityListResponseFinancialTransaction], [BookTransferResponse],
 // [AccountActivityListResponseCardTransaction], [Payment], [ExternalPayment],
-// [ManagementOperationTransaction].
+// [ManagementOperationTransaction], [Hold].
 func (r AccountActivityListResponse) AsUnion() AccountActivityListResponseUnion {
 	return r.union
 }
@@ -318,11 +323,12 @@ func (r AccountActivityListResponse) AsUnion() AccountActivityListResponseUnion 
 // which transaction type is returned: INTERNAL returns FinancialTransaction,
 // TRANSFER returns BookTransferTransaction, CARD returns CardTransaction, PAYMENT
 // returns PaymentTransaction, EXTERNAL_PAYMENT returns ExternalPaymentResponse,
-// and MANAGEMENT_OPERATION returns ManagementOperationTransaction
+// MANAGEMENT_OPERATION returns ManagementOperationTransaction, and HOLD returns
+// HoldTransaction
 //
 // Union satisfied by [AccountActivityListResponseFinancialTransaction],
 // [BookTransferResponse], [AccountActivityListResponseCardTransaction], [Payment],
-// [ExternalPayment] or [ManagementOperationTransaction].
+// [ExternalPayment], [ManagementOperationTransaction] or [Hold].
 type AccountActivityListResponseUnion interface {
 	implementsAccountActivityListResponse()
 }
@@ -360,6 +366,11 @@ func init() {
 			TypeFilter:         gjson.JSON,
 			Type:               reflect.TypeOf(ManagementOperationTransaction{}),
 			DiscriminatorValue: "MANAGEMENT_OPERATION",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(Hold{}),
+			DiscriminatorValue: "HOLD",
 		},
 	)
 }
@@ -448,12 +459,13 @@ const (
 	AccountActivityListResponseFinancialTransactionCategoryManagementFee          AccountActivityListResponseFinancialTransactionCategory = "MANAGEMENT_FEE"
 	AccountActivityListResponseFinancialTransactionCategoryManagementReward       AccountActivityListResponseFinancialTransactionCategory = "MANAGEMENT_REWARD"
 	AccountActivityListResponseFinancialTransactionCategoryManagementDisbursement AccountActivityListResponseFinancialTransactionCategory = "MANAGEMENT_DISBURSEMENT"
+	AccountActivityListResponseFinancialTransactionCategoryHold                   AccountActivityListResponseFinancialTransactionCategory = "HOLD"
 	AccountActivityListResponseFinancialTransactionCategoryProgramFunding         AccountActivityListResponseFinancialTransactionCategory = "PROGRAM_FUNDING"
 )
 
 func (r AccountActivityListResponseFinancialTransactionCategory) IsKnown() bool {
 	switch r {
-	case AccountActivityListResponseFinancialTransactionCategoryACH, AccountActivityListResponseFinancialTransactionCategoryBalanceOrFunding, AccountActivityListResponseFinancialTransactionCategoryFee, AccountActivityListResponseFinancialTransactionCategoryReward, AccountActivityListResponseFinancialTransactionCategoryAdjustment, AccountActivityListResponseFinancialTransactionCategoryDerecognition, AccountActivityListResponseFinancialTransactionCategoryDispute, AccountActivityListResponseFinancialTransactionCategoryCard, AccountActivityListResponseFinancialTransactionCategoryExternalACH, AccountActivityListResponseFinancialTransactionCategoryExternalCheck, AccountActivityListResponseFinancialTransactionCategoryExternalFednow, AccountActivityListResponseFinancialTransactionCategoryExternalRtp, AccountActivityListResponseFinancialTransactionCategoryExternalTransfer, AccountActivityListResponseFinancialTransactionCategoryExternalWire, AccountActivityListResponseFinancialTransactionCategoryManagementAdjustment, AccountActivityListResponseFinancialTransactionCategoryManagementDispute, AccountActivityListResponseFinancialTransactionCategoryManagementFee, AccountActivityListResponseFinancialTransactionCategoryManagementReward, AccountActivityListResponseFinancialTransactionCategoryManagementDisbursement, AccountActivityListResponseFinancialTransactionCategoryProgramFunding:
+	case AccountActivityListResponseFinancialTransactionCategoryACH, AccountActivityListResponseFinancialTransactionCategoryBalanceOrFunding, AccountActivityListResponseFinancialTransactionCategoryFee, AccountActivityListResponseFinancialTransactionCategoryReward, AccountActivityListResponseFinancialTransactionCategoryAdjustment, AccountActivityListResponseFinancialTransactionCategoryDerecognition, AccountActivityListResponseFinancialTransactionCategoryDispute, AccountActivityListResponseFinancialTransactionCategoryCard, AccountActivityListResponseFinancialTransactionCategoryExternalACH, AccountActivityListResponseFinancialTransactionCategoryExternalCheck, AccountActivityListResponseFinancialTransactionCategoryExternalFednow, AccountActivityListResponseFinancialTransactionCategoryExternalRtp, AccountActivityListResponseFinancialTransactionCategoryExternalTransfer, AccountActivityListResponseFinancialTransactionCategoryExternalWire, AccountActivityListResponseFinancialTransactionCategoryManagementAdjustment, AccountActivityListResponseFinancialTransactionCategoryManagementDispute, AccountActivityListResponseFinancialTransactionCategoryManagementFee, AccountActivityListResponseFinancialTransactionCategoryManagementReward, AccountActivityListResponseFinancialTransactionCategoryManagementDisbursement, AccountActivityListResponseFinancialTransactionCategoryHold, AccountActivityListResponseFinancialTransactionCategoryProgramFunding:
 		return true
 	}
 	return false
@@ -628,6 +640,7 @@ const (
 	AccountActivityListResponseCategoryManagementFee          AccountActivityListResponseCategory = "MANAGEMENT_FEE"
 	AccountActivityListResponseCategoryManagementReward       AccountActivityListResponseCategory = "MANAGEMENT_REWARD"
 	AccountActivityListResponseCategoryManagementDisbursement AccountActivityListResponseCategory = "MANAGEMENT_DISBURSEMENT"
+	AccountActivityListResponseCategoryHold                   AccountActivityListResponseCategory = "HOLD"
 	AccountActivityListResponseCategoryProgramFunding         AccountActivityListResponseCategory = "PROGRAM_FUNDING"
 	AccountActivityListResponseCategoryInternal               AccountActivityListResponseCategory = "INTERNAL"
 	AccountActivityListResponseCategoryTransfer               AccountActivityListResponseCategory = "TRANSFER"
@@ -635,7 +648,7 @@ const (
 
 func (r AccountActivityListResponseCategory) IsKnown() bool {
 	switch r {
-	case AccountActivityListResponseCategoryACH, AccountActivityListResponseCategoryBalanceOrFunding, AccountActivityListResponseCategoryFee, AccountActivityListResponseCategoryReward, AccountActivityListResponseCategoryAdjustment, AccountActivityListResponseCategoryDerecognition, AccountActivityListResponseCategoryDispute, AccountActivityListResponseCategoryCard, AccountActivityListResponseCategoryExternalACH, AccountActivityListResponseCategoryExternalCheck, AccountActivityListResponseCategoryExternalFednow, AccountActivityListResponseCategoryExternalRtp, AccountActivityListResponseCategoryExternalTransfer, AccountActivityListResponseCategoryExternalWire, AccountActivityListResponseCategoryManagementAdjustment, AccountActivityListResponseCategoryManagementDispute, AccountActivityListResponseCategoryManagementFee, AccountActivityListResponseCategoryManagementReward, AccountActivityListResponseCategoryManagementDisbursement, AccountActivityListResponseCategoryProgramFunding, AccountActivityListResponseCategoryInternal, AccountActivityListResponseCategoryTransfer:
+	case AccountActivityListResponseCategoryACH, AccountActivityListResponseCategoryBalanceOrFunding, AccountActivityListResponseCategoryFee, AccountActivityListResponseCategoryReward, AccountActivityListResponseCategoryAdjustment, AccountActivityListResponseCategoryDerecognition, AccountActivityListResponseCategoryDispute, AccountActivityListResponseCategoryCard, AccountActivityListResponseCategoryExternalACH, AccountActivityListResponseCategoryExternalCheck, AccountActivityListResponseCategoryExternalFednow, AccountActivityListResponseCategoryExternalRtp, AccountActivityListResponseCategoryExternalTransfer, AccountActivityListResponseCategoryExternalWire, AccountActivityListResponseCategoryManagementAdjustment, AccountActivityListResponseCategoryManagementDispute, AccountActivityListResponseCategoryManagementFee, AccountActivityListResponseCategoryManagementReward, AccountActivityListResponseCategoryManagementDisbursement, AccountActivityListResponseCategoryHold, AccountActivityListResponseCategoryProgramFunding, AccountActivityListResponseCategoryInternal, AccountActivityListResponseCategoryTransfer:
 		return true
 	}
 	return false
@@ -667,11 +680,12 @@ const (
 	AccountActivityListResponseFamilyPayment             AccountActivityListResponseFamily = "PAYMENT"
 	AccountActivityListResponseFamilyExternalPayment     AccountActivityListResponseFamily = "EXTERNAL_PAYMENT"
 	AccountActivityListResponseFamilyManagementOperation AccountActivityListResponseFamily = "MANAGEMENT_OPERATION"
+	AccountActivityListResponseFamilyHold                AccountActivityListResponseFamily = "HOLD"
 )
 
 func (r AccountActivityListResponseFamily) IsKnown() bool {
 	switch r {
-	case AccountActivityListResponseFamilyInternal, AccountActivityListResponseFamilyTransfer, AccountActivityListResponseFamilyCard, AccountActivityListResponseFamilyPayment, AccountActivityListResponseFamilyExternalPayment, AccountActivityListResponseFamilyManagementOperation:
+	case AccountActivityListResponseFamilyInternal, AccountActivityListResponseFamilyTransfer, AccountActivityListResponseFamilyCard, AccountActivityListResponseFamilyPayment, AccountActivityListResponseFamilyExternalPayment, AccountActivityListResponseFamilyManagementOperation, AccountActivityListResponseFamilyHold:
 		return true
 	}
 	return false
@@ -812,7 +826,8 @@ func (r AccountActivityListResponseType) IsKnown() bool {
 // which transaction type is returned: INTERNAL returns FinancialTransaction,
 // TRANSFER returns BookTransferTransaction, CARD returns CardTransaction, PAYMENT
 // returns PaymentTransaction, EXTERNAL_PAYMENT returns ExternalPaymentResponse,
-// and MANAGEMENT_OPERATION returns ManagementOperationTransaction
+// MANAGEMENT_OPERATION returns ManagementOperationTransaction, and HOLD returns
+// HoldTransaction
 type AccountActivityGetTransactionResponse struct {
 	// Unique identifier for the transaction
 	Token string `json:"token" api:"required" format:"uuid"`
@@ -865,10 +880,13 @@ type AccountActivityGetTransactionResponse struct {
 	Direction AccountActivityGetTransactionResponseDirection `json:"direction"`
 	// This field can have the runtime type of [[]shared.FinancialEvent],
 	// [[]BookTransferResponseEvent], [[]TransactionEvent], [[]PaymentEvent],
-	// [[]ExternalPaymentEvent], [[]ManagementOperationTransactionEvent].
+	// [[]ExternalPaymentEvent], [[]ManagementOperationTransactionEvent],
+	// [[]HoldEvent].
 	Events interface{} `json:"events"`
 	// Expected release date for the transaction
 	ExpectedReleaseDate time.Time `json:"expected_release_date" api:"nullable" format:"date"`
+	// When the hold will auto-expire if not resolved
+	ExpirationDatetime time.Time `json:"expiration_datetime" api:"nullable" format:"date-time"`
 	// External bank account token
 	ExternalBankAccountToken string `json:"external_bank_account_token" api:"nullable" format:"uuid"`
 	// External ID defined by the customer
@@ -960,6 +978,7 @@ type accountActivityGetTransactionResponseJSON struct {
 	Direction                   apijson.Field
 	Events                      apijson.Field
 	ExpectedReleaseDate         apijson.Field
+	ExpirationDatetime          apijson.Field
 	ExternalBankAccountToken    apijson.Field
 	ExternalID                  apijson.Field
 	ExternalResource            apijson.Field
@@ -1010,7 +1029,7 @@ func (r *AccountActivityGetTransactionResponse) UnmarshalJSON(data []byte) (err 
 // Possible runtime types of the union are
 // [AccountActivityGetTransactionResponseFinancialTransaction],
 // [BookTransferResponse], [AccountActivityGetTransactionResponseCardTransaction],
-// [Payment], [ExternalPayment], [ManagementOperationTransaction].
+// [Payment], [ExternalPayment], [ManagementOperationTransaction], [Hold].
 func (r AccountActivityGetTransactionResponse) AsUnion() AccountActivityGetTransactionResponseUnion {
 	return r.union
 }
@@ -1019,11 +1038,12 @@ func (r AccountActivityGetTransactionResponse) AsUnion() AccountActivityGetTrans
 // which transaction type is returned: INTERNAL returns FinancialTransaction,
 // TRANSFER returns BookTransferTransaction, CARD returns CardTransaction, PAYMENT
 // returns PaymentTransaction, EXTERNAL_PAYMENT returns ExternalPaymentResponse,
-// and MANAGEMENT_OPERATION returns ManagementOperationTransaction
+// MANAGEMENT_OPERATION returns ManagementOperationTransaction, and HOLD returns
+// HoldTransaction
 //
 // Union satisfied by [AccountActivityGetTransactionResponseFinancialTransaction],
 // [BookTransferResponse], [AccountActivityGetTransactionResponseCardTransaction],
-// [Payment], [ExternalPayment] or [ManagementOperationTransaction].
+// [Payment], [ExternalPayment], [ManagementOperationTransaction] or [Hold].
 type AccountActivityGetTransactionResponseUnion interface {
 	implementsAccountActivityGetTransactionResponse()
 }
@@ -1061,6 +1081,11 @@ func init() {
 			TypeFilter:         gjson.JSON,
 			Type:               reflect.TypeOf(ManagementOperationTransaction{}),
 			DiscriminatorValue: "MANAGEMENT_OPERATION",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(Hold{}),
+			DiscriminatorValue: "HOLD",
 		},
 	)
 }
@@ -1151,12 +1176,13 @@ const (
 	AccountActivityGetTransactionResponseFinancialTransactionCategoryManagementFee          AccountActivityGetTransactionResponseFinancialTransactionCategory = "MANAGEMENT_FEE"
 	AccountActivityGetTransactionResponseFinancialTransactionCategoryManagementReward       AccountActivityGetTransactionResponseFinancialTransactionCategory = "MANAGEMENT_REWARD"
 	AccountActivityGetTransactionResponseFinancialTransactionCategoryManagementDisbursement AccountActivityGetTransactionResponseFinancialTransactionCategory = "MANAGEMENT_DISBURSEMENT"
+	AccountActivityGetTransactionResponseFinancialTransactionCategoryHold                   AccountActivityGetTransactionResponseFinancialTransactionCategory = "HOLD"
 	AccountActivityGetTransactionResponseFinancialTransactionCategoryProgramFunding         AccountActivityGetTransactionResponseFinancialTransactionCategory = "PROGRAM_FUNDING"
 )
 
 func (r AccountActivityGetTransactionResponseFinancialTransactionCategory) IsKnown() bool {
 	switch r {
-	case AccountActivityGetTransactionResponseFinancialTransactionCategoryACH, AccountActivityGetTransactionResponseFinancialTransactionCategoryBalanceOrFunding, AccountActivityGetTransactionResponseFinancialTransactionCategoryFee, AccountActivityGetTransactionResponseFinancialTransactionCategoryReward, AccountActivityGetTransactionResponseFinancialTransactionCategoryAdjustment, AccountActivityGetTransactionResponseFinancialTransactionCategoryDerecognition, AccountActivityGetTransactionResponseFinancialTransactionCategoryDispute, AccountActivityGetTransactionResponseFinancialTransactionCategoryCard, AccountActivityGetTransactionResponseFinancialTransactionCategoryExternalACH, AccountActivityGetTransactionResponseFinancialTransactionCategoryExternalCheck, AccountActivityGetTransactionResponseFinancialTransactionCategoryExternalFednow, AccountActivityGetTransactionResponseFinancialTransactionCategoryExternalRtp, AccountActivityGetTransactionResponseFinancialTransactionCategoryExternalTransfer, AccountActivityGetTransactionResponseFinancialTransactionCategoryExternalWire, AccountActivityGetTransactionResponseFinancialTransactionCategoryManagementAdjustment, AccountActivityGetTransactionResponseFinancialTransactionCategoryManagementDispute, AccountActivityGetTransactionResponseFinancialTransactionCategoryManagementFee, AccountActivityGetTransactionResponseFinancialTransactionCategoryManagementReward, AccountActivityGetTransactionResponseFinancialTransactionCategoryManagementDisbursement, AccountActivityGetTransactionResponseFinancialTransactionCategoryProgramFunding:
+	case AccountActivityGetTransactionResponseFinancialTransactionCategoryACH, AccountActivityGetTransactionResponseFinancialTransactionCategoryBalanceOrFunding, AccountActivityGetTransactionResponseFinancialTransactionCategoryFee, AccountActivityGetTransactionResponseFinancialTransactionCategoryReward, AccountActivityGetTransactionResponseFinancialTransactionCategoryAdjustment, AccountActivityGetTransactionResponseFinancialTransactionCategoryDerecognition, AccountActivityGetTransactionResponseFinancialTransactionCategoryDispute, AccountActivityGetTransactionResponseFinancialTransactionCategoryCard, AccountActivityGetTransactionResponseFinancialTransactionCategoryExternalACH, AccountActivityGetTransactionResponseFinancialTransactionCategoryExternalCheck, AccountActivityGetTransactionResponseFinancialTransactionCategoryExternalFednow, AccountActivityGetTransactionResponseFinancialTransactionCategoryExternalRtp, AccountActivityGetTransactionResponseFinancialTransactionCategoryExternalTransfer, AccountActivityGetTransactionResponseFinancialTransactionCategoryExternalWire, AccountActivityGetTransactionResponseFinancialTransactionCategoryManagementAdjustment, AccountActivityGetTransactionResponseFinancialTransactionCategoryManagementDispute, AccountActivityGetTransactionResponseFinancialTransactionCategoryManagementFee, AccountActivityGetTransactionResponseFinancialTransactionCategoryManagementReward, AccountActivityGetTransactionResponseFinancialTransactionCategoryManagementDisbursement, AccountActivityGetTransactionResponseFinancialTransactionCategoryHold, AccountActivityGetTransactionResponseFinancialTransactionCategoryProgramFunding:
 		return true
 	}
 	return false
@@ -1332,6 +1358,7 @@ const (
 	AccountActivityGetTransactionResponseCategoryManagementFee          AccountActivityGetTransactionResponseCategory = "MANAGEMENT_FEE"
 	AccountActivityGetTransactionResponseCategoryManagementReward       AccountActivityGetTransactionResponseCategory = "MANAGEMENT_REWARD"
 	AccountActivityGetTransactionResponseCategoryManagementDisbursement AccountActivityGetTransactionResponseCategory = "MANAGEMENT_DISBURSEMENT"
+	AccountActivityGetTransactionResponseCategoryHold                   AccountActivityGetTransactionResponseCategory = "HOLD"
 	AccountActivityGetTransactionResponseCategoryProgramFunding         AccountActivityGetTransactionResponseCategory = "PROGRAM_FUNDING"
 	AccountActivityGetTransactionResponseCategoryInternal               AccountActivityGetTransactionResponseCategory = "INTERNAL"
 	AccountActivityGetTransactionResponseCategoryTransfer               AccountActivityGetTransactionResponseCategory = "TRANSFER"
@@ -1339,7 +1366,7 @@ const (
 
 func (r AccountActivityGetTransactionResponseCategory) IsKnown() bool {
 	switch r {
-	case AccountActivityGetTransactionResponseCategoryACH, AccountActivityGetTransactionResponseCategoryBalanceOrFunding, AccountActivityGetTransactionResponseCategoryFee, AccountActivityGetTransactionResponseCategoryReward, AccountActivityGetTransactionResponseCategoryAdjustment, AccountActivityGetTransactionResponseCategoryDerecognition, AccountActivityGetTransactionResponseCategoryDispute, AccountActivityGetTransactionResponseCategoryCard, AccountActivityGetTransactionResponseCategoryExternalACH, AccountActivityGetTransactionResponseCategoryExternalCheck, AccountActivityGetTransactionResponseCategoryExternalFednow, AccountActivityGetTransactionResponseCategoryExternalRtp, AccountActivityGetTransactionResponseCategoryExternalTransfer, AccountActivityGetTransactionResponseCategoryExternalWire, AccountActivityGetTransactionResponseCategoryManagementAdjustment, AccountActivityGetTransactionResponseCategoryManagementDispute, AccountActivityGetTransactionResponseCategoryManagementFee, AccountActivityGetTransactionResponseCategoryManagementReward, AccountActivityGetTransactionResponseCategoryManagementDisbursement, AccountActivityGetTransactionResponseCategoryProgramFunding, AccountActivityGetTransactionResponseCategoryInternal, AccountActivityGetTransactionResponseCategoryTransfer:
+	case AccountActivityGetTransactionResponseCategoryACH, AccountActivityGetTransactionResponseCategoryBalanceOrFunding, AccountActivityGetTransactionResponseCategoryFee, AccountActivityGetTransactionResponseCategoryReward, AccountActivityGetTransactionResponseCategoryAdjustment, AccountActivityGetTransactionResponseCategoryDerecognition, AccountActivityGetTransactionResponseCategoryDispute, AccountActivityGetTransactionResponseCategoryCard, AccountActivityGetTransactionResponseCategoryExternalACH, AccountActivityGetTransactionResponseCategoryExternalCheck, AccountActivityGetTransactionResponseCategoryExternalFednow, AccountActivityGetTransactionResponseCategoryExternalRtp, AccountActivityGetTransactionResponseCategoryExternalTransfer, AccountActivityGetTransactionResponseCategoryExternalWire, AccountActivityGetTransactionResponseCategoryManagementAdjustment, AccountActivityGetTransactionResponseCategoryManagementDispute, AccountActivityGetTransactionResponseCategoryManagementFee, AccountActivityGetTransactionResponseCategoryManagementReward, AccountActivityGetTransactionResponseCategoryManagementDisbursement, AccountActivityGetTransactionResponseCategoryHold, AccountActivityGetTransactionResponseCategoryProgramFunding, AccountActivityGetTransactionResponseCategoryInternal, AccountActivityGetTransactionResponseCategoryTransfer:
 		return true
 	}
 	return false
@@ -1371,11 +1398,12 @@ const (
 	AccountActivityGetTransactionResponseFamilyPayment             AccountActivityGetTransactionResponseFamily = "PAYMENT"
 	AccountActivityGetTransactionResponseFamilyExternalPayment     AccountActivityGetTransactionResponseFamily = "EXTERNAL_PAYMENT"
 	AccountActivityGetTransactionResponseFamilyManagementOperation AccountActivityGetTransactionResponseFamily = "MANAGEMENT_OPERATION"
+	AccountActivityGetTransactionResponseFamilyHold                AccountActivityGetTransactionResponseFamily = "HOLD"
 )
 
 func (r AccountActivityGetTransactionResponseFamily) IsKnown() bool {
 	switch r {
-	case AccountActivityGetTransactionResponseFamilyInternal, AccountActivityGetTransactionResponseFamilyTransfer, AccountActivityGetTransactionResponseFamilyCard, AccountActivityGetTransactionResponseFamilyPayment, AccountActivityGetTransactionResponseFamilyExternalPayment, AccountActivityGetTransactionResponseFamilyManagementOperation:
+	case AccountActivityGetTransactionResponseFamilyInternal, AccountActivityGetTransactionResponseFamilyTransfer, AccountActivityGetTransactionResponseFamilyCard, AccountActivityGetTransactionResponseFamilyPayment, AccountActivityGetTransactionResponseFamilyExternalPayment, AccountActivityGetTransactionResponseFamilyManagementOperation, AccountActivityGetTransactionResponseFamilyHold:
 		return true
 	}
 	return false
@@ -1573,12 +1601,13 @@ const (
 	AccountActivityListParamsCategoryManagementFee          AccountActivityListParamsCategory = "MANAGEMENT_FEE"
 	AccountActivityListParamsCategoryManagementReward       AccountActivityListParamsCategory = "MANAGEMENT_REWARD"
 	AccountActivityListParamsCategoryManagementDisbursement AccountActivityListParamsCategory = "MANAGEMENT_DISBURSEMENT"
+	AccountActivityListParamsCategoryHold                   AccountActivityListParamsCategory = "HOLD"
 	AccountActivityListParamsCategoryProgramFunding         AccountActivityListParamsCategory = "PROGRAM_FUNDING"
 )
 
 func (r AccountActivityListParamsCategory) IsKnown() bool {
 	switch r {
-	case AccountActivityListParamsCategoryACH, AccountActivityListParamsCategoryBalanceOrFunding, AccountActivityListParamsCategoryFee, AccountActivityListParamsCategoryReward, AccountActivityListParamsCategoryAdjustment, AccountActivityListParamsCategoryDerecognition, AccountActivityListParamsCategoryDispute, AccountActivityListParamsCategoryCard, AccountActivityListParamsCategoryExternalACH, AccountActivityListParamsCategoryExternalCheck, AccountActivityListParamsCategoryExternalFednow, AccountActivityListParamsCategoryExternalRtp, AccountActivityListParamsCategoryExternalTransfer, AccountActivityListParamsCategoryExternalWire, AccountActivityListParamsCategoryManagementAdjustment, AccountActivityListParamsCategoryManagementDispute, AccountActivityListParamsCategoryManagementFee, AccountActivityListParamsCategoryManagementReward, AccountActivityListParamsCategoryManagementDisbursement, AccountActivityListParamsCategoryProgramFunding:
+	case AccountActivityListParamsCategoryACH, AccountActivityListParamsCategoryBalanceOrFunding, AccountActivityListParamsCategoryFee, AccountActivityListParamsCategoryReward, AccountActivityListParamsCategoryAdjustment, AccountActivityListParamsCategoryDerecognition, AccountActivityListParamsCategoryDispute, AccountActivityListParamsCategoryCard, AccountActivityListParamsCategoryExternalACH, AccountActivityListParamsCategoryExternalCheck, AccountActivityListParamsCategoryExternalFednow, AccountActivityListParamsCategoryExternalRtp, AccountActivityListParamsCategoryExternalTransfer, AccountActivityListParamsCategoryExternalWire, AccountActivityListParamsCategoryManagementAdjustment, AccountActivityListParamsCategoryManagementDispute, AccountActivityListParamsCategoryManagementFee, AccountActivityListParamsCategoryManagementReward, AccountActivityListParamsCategoryManagementDisbursement, AccountActivityListParamsCategoryHold, AccountActivityListParamsCategoryProgramFunding:
 		return true
 	}
 	return false

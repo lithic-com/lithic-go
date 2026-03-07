@@ -47,6 +47,7 @@ type Client struct {
 	FundingEvents           *FundingEventService
 	Fraud                   *FraudService
 	NetworkPrograms         *NetworkProgramService
+	Holds                   *HoldService
 	AccountActivity         *AccountActivityService
 	TransferLimits          *TransferLimitService
 	Webhooks                *WebhookService
@@ -108,6 +109,7 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.FundingEvents = NewFundingEventService(opts...)
 	r.Fraud = NewFraudService(opts...)
 	r.NetworkPrograms = NewNetworkProgramService(opts...)
+	r.Holds = NewHoldService(opts...)
 	r.AccountActivity = NewAccountActivityService(opts...)
 	r.TransferLimits = NewTransferLimitService(opts...)
 	r.Webhooks = NewWebhookService(opts...)
