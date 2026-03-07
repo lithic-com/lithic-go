@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.104.0 (2026-03-07)
+
+Full Changelog: [v0.103.0...v0.104.0](https://github.com/lithic-com/lithic-go/compare/v0.103.0...v0.104.0)
+
+### Features
+
+* **api:** add EARLY_DIRECT_DEPOSIT_FLOAT enum to financial_account/webhook types ([59520dc](https://github.com/lithic-com/lithic-go/commit/59520dc2818e5263cb0ecc28f490512cfd5d8fa7))
+
+
+### Chores
+
+* **internal:** codegen related update ([e7aa352](https://github.com/lithic-com/lithic-go/commit/e7aa3529507f81ac222c2dc1ed1c69e83231d2d9))
+
 ## 0.103.0 (2026-03-05)
 
 Full Changelog: [v0.102.0...v0.103.0](https://github.com/lithic-com/lithic-go/compare/v0.102.0...v0.103.0)
