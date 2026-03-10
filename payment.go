@@ -324,6 +324,8 @@ type PaymentEvent struct {
 	//   - `ACH_RECEIPT_SETTLED` - ACH receipt funds have settled.
 	//   - `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to available
 	//     balance.
+	//   - `ACH_RECEIPT_RELEASED_EARLY` - ACH receipt released early from pending to
+	//     available balance.
 	//   - `ACH_RETURN_INITIATED` - ACH initiated return for an ACH receipt.
 	//   - `ACH_RETURN_PROCESSED` - ACH receipt returned by the Receiving Depository
 	//     Financial Institution.
@@ -394,6 +396,8 @@ func (r PaymentEventsResult) IsKnown() bool {
 //   - `ACH_RECEIPT_SETTLED` - ACH receipt funds have settled.
 //   - `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to available
 //     balance.
+//   - `ACH_RECEIPT_RELEASED_EARLY` - ACH receipt released early from pending to
+//     available balance.
 //   - `ACH_RETURN_INITIATED` - ACH initiated return for an ACH receipt.
 //   - `ACH_RETURN_PROCESSED` - ACH receipt returned by the Receiving Depository
 //     Financial Institution.
@@ -413,6 +417,7 @@ const (
 	PaymentEventsTypeACHOriginationSettled   PaymentEventsType = "ACH_ORIGINATION_SETTLED"
 	PaymentEventsTypeACHReceiptProcessed     PaymentEventsType = "ACH_RECEIPT_PROCESSED"
 	PaymentEventsTypeACHReceiptReleased      PaymentEventsType = "ACH_RECEIPT_RELEASED"
+	PaymentEventsTypeACHReceiptReleasedEarly PaymentEventsType = "ACH_RECEIPT_RELEASED_EARLY"
 	PaymentEventsTypeACHReceiptSettled       PaymentEventsType = "ACH_RECEIPT_SETTLED"
 	PaymentEventsTypeACHReturnInitiated      PaymentEventsType = "ACH_RETURN_INITIATED"
 	PaymentEventsTypeACHReturnProcessed      PaymentEventsType = "ACH_RETURN_PROCESSED"
@@ -422,7 +427,7 @@ const (
 
 func (r PaymentEventsType) IsKnown() bool {
 	switch r {
-	case PaymentEventsTypeACHOriginationCancelled, PaymentEventsTypeACHOriginationInitiated, PaymentEventsTypeACHOriginationProcessed, PaymentEventsTypeACHOriginationRejected, PaymentEventsTypeACHOriginationReleased, PaymentEventsTypeACHOriginationReviewed, PaymentEventsTypeACHOriginationSettled, PaymentEventsTypeACHReceiptProcessed, PaymentEventsTypeACHReceiptReleased, PaymentEventsTypeACHReceiptSettled, PaymentEventsTypeACHReturnInitiated, PaymentEventsTypeACHReturnProcessed, PaymentEventsTypeACHReturnRejected, PaymentEventsTypeACHReturnSettled:
+	case PaymentEventsTypeACHOriginationCancelled, PaymentEventsTypeACHOriginationInitiated, PaymentEventsTypeACHOriginationProcessed, PaymentEventsTypeACHOriginationRejected, PaymentEventsTypeACHOriginationReleased, PaymentEventsTypeACHOriginationReviewed, PaymentEventsTypeACHOriginationSettled, PaymentEventsTypeACHReceiptProcessed, PaymentEventsTypeACHReceiptReleased, PaymentEventsTypeACHReceiptReleasedEarly, PaymentEventsTypeACHReceiptSettled, PaymentEventsTypeACHReturnInitiated, PaymentEventsTypeACHReturnProcessed, PaymentEventsTypeACHReturnRejected, PaymentEventsTypeACHReturnSettled:
 		return true
 	}
 	return false
@@ -1273,6 +1278,7 @@ const (
 	PaymentSimulateActionParamsEventTypeACHOriginationSettled   PaymentSimulateActionParamsEventType = "ACH_ORIGINATION_SETTLED"
 	PaymentSimulateActionParamsEventTypeACHReceiptSettled       PaymentSimulateActionParamsEventType = "ACH_RECEIPT_SETTLED"
 	PaymentSimulateActionParamsEventTypeACHReceiptReleased      PaymentSimulateActionParamsEventType = "ACH_RECEIPT_RELEASED"
+	PaymentSimulateActionParamsEventTypeACHReceiptReleasedEarly PaymentSimulateActionParamsEventType = "ACH_RECEIPT_RELEASED_EARLY"
 	PaymentSimulateActionParamsEventTypeACHReturnInitiated      PaymentSimulateActionParamsEventType = "ACH_RETURN_INITIATED"
 	PaymentSimulateActionParamsEventTypeACHReturnProcessed      PaymentSimulateActionParamsEventType = "ACH_RETURN_PROCESSED"
 	PaymentSimulateActionParamsEventTypeACHReturnSettled        PaymentSimulateActionParamsEventType = "ACH_RETURN_SETTLED"
@@ -1280,7 +1286,7 @@ const (
 
 func (r PaymentSimulateActionParamsEventType) IsKnown() bool {
 	switch r {
-	case PaymentSimulateActionParamsEventTypeACHOriginationReviewed, PaymentSimulateActionParamsEventTypeACHOriginationReleased, PaymentSimulateActionParamsEventTypeACHOriginationProcessed, PaymentSimulateActionParamsEventTypeACHOriginationSettled, PaymentSimulateActionParamsEventTypeACHReceiptSettled, PaymentSimulateActionParamsEventTypeACHReceiptReleased, PaymentSimulateActionParamsEventTypeACHReturnInitiated, PaymentSimulateActionParamsEventTypeACHReturnProcessed, PaymentSimulateActionParamsEventTypeACHReturnSettled:
+	case PaymentSimulateActionParamsEventTypeACHOriginationReviewed, PaymentSimulateActionParamsEventTypeACHOriginationReleased, PaymentSimulateActionParamsEventTypeACHOriginationProcessed, PaymentSimulateActionParamsEventTypeACHOriginationSettled, PaymentSimulateActionParamsEventTypeACHReceiptSettled, PaymentSimulateActionParamsEventTypeACHReceiptReleased, PaymentSimulateActionParamsEventTypeACHReceiptReleasedEarly, PaymentSimulateActionParamsEventTypeACHReturnInitiated, PaymentSimulateActionParamsEventTypeACHReturnProcessed, PaymentSimulateActionParamsEventTypeACHReturnSettled:
 		return true
 	}
 	return false
