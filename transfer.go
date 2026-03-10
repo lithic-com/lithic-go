@@ -42,7 +42,7 @@ func (r *TransferService) New(ctx context.Context, body TransferNewParams, opts 
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/transfer"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 type Transfer struct {

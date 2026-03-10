@@ -44,7 +44,7 @@ func (r *BookTransferService) New(ctx context.Context, body BookTransferNewParam
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/book_transfers"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Get book transfer by token
@@ -52,11 +52,11 @@ func (r *BookTransferService) Get(ctx context.Context, bookTransferToken string,
 	opts = slices.Concat(r.Options, opts)
 	if bookTransferToken == "" {
 		err = errors.New("missing required book_transfer_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/book_transfers/%s", bookTransferToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // List book transfers
@@ -87,11 +87,11 @@ func (r *BookTransferService) Retry(ctx context.Context, bookTransferToken strin
 	opts = slices.Concat(r.Options, opts)
 	if bookTransferToken == "" {
 		err = errors.New("missing required book_transfer_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/book_transfers/%s/retry", bookTransferToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Reverse a book transfer
@@ -99,11 +99,11 @@ func (r *BookTransferService) Reverse(ctx context.Context, bookTransferToken str
 	opts = slices.Concat(r.Options, opts)
 	if bookTransferToken == "" {
 		err = errors.New("missing required book_transfer_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/book_transfers/%s/reverse", bookTransferToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Book transfer transaction

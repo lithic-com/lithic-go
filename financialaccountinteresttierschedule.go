@@ -44,11 +44,11 @@ func (r *FinancialAccountInterestTierScheduleService) New(ctx context.Context, f
 	opts = slices.Concat(r.Options, opts)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/financial_accounts/%s/interest_tier_schedule", financialAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Get a specific interest tier schedule by effective date
@@ -56,11 +56,11 @@ func (r *FinancialAccountInterestTierScheduleService) Get(ctx context.Context, f
 	opts = slices.Concat(r.Options, opts)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/financial_accounts/%s/interest_tier_schedule/%s", financialAccountToken, effectiveDate.Format("2006-01-02"))
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Update an existing interest tier schedule
@@ -68,11 +68,11 @@ func (r *FinancialAccountInterestTierScheduleService) Update(ctx context.Context
 	opts = slices.Concat(r.Options, opts)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/financial_accounts/%s/interest_tier_schedule/%s", financialAccountToken, effectiveDate.Format("2006-01-02"))
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPut, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // List interest tier schedules for a financial account with optional date
@@ -91,7 +91,7 @@ func (r *FinancialAccountInterestTierScheduleService) List(ctx context.Context, 
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/financial_accounts/%s/interest_tier_schedule", financialAccountToken)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -141,11 +141,11 @@ func (r *FinancialAccountInterestTierScheduleService) Delete(ctx context.Context
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
-		return
+		return err
 	}
 	path := fmt.Sprintf("v1/financial_accounts/%s/interest_tier_schedule/%s", financialAccountToken, effectiveDate.Format("2006-01-02"))
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, nil, opts...)
-	return
+	return err
 }
 
 // Entry in the Tier Schedule of an account

@@ -47,11 +47,11 @@ func (r *EventService) Get(ctx context.Context, eventToken string, opts ...optio
 	opts = slices.Concat(r.Options, opts)
 	if eventToken == "" {
 		err = errors.New("missing required event_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/events/%s", eventToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // List all events.
@@ -84,7 +84,7 @@ func (r *EventService) ListAttempts(ctx context.Context, eventToken string, quer
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if eventToken == "" {
 		err = errors.New("missing required event_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/events/%s/attempts", eventToken)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)

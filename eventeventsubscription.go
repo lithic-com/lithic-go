@@ -38,13 +38,13 @@ func (r *EventEventSubscriptionService) Resend(ctx context.Context, eventToken s
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if eventToken == "" {
 		err = errors.New("missing required event_token parameter")
-		return
+		return err
 	}
 	if eventSubscriptionToken == "" {
 		err = errors.New("missing required event_subscription_token parameter")
-		return
+		return err
 	}
 	path := fmt.Sprintf("v1/events/%s/event_subscriptions/%s/resend", eventToken, eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
-	return
+	return err
 }

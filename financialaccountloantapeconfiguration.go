@@ -40,11 +40,11 @@ func (r *FinancialAccountLoanTapeConfigurationService) Get(ctx context.Context, 
 	opts = slices.Concat(r.Options, opts)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/financial_accounts/%s/loan_tape_configuration", financialAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Configuration for loan tapes
