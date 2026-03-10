@@ -46,11 +46,11 @@ func (r *DisputesV2Service) Get(ctx context.Context, disputeToken string, opts .
 	opts = slices.Concat(r.Options, opts)
 	if disputeToken == "" {
 		err = errors.New("missing required dispute_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v2/disputes/%s", disputeToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Returns a paginated list of disputes.

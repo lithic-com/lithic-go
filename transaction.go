@@ -49,11 +49,11 @@ func (r *TransactionService) Get(ctx context.Context, transactionToken string, o
 	opts = slices.Concat(r.Options, opts)
 	if transactionToken == "" {
 		err = errors.New("missing required transaction_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/transactions/%s", transactionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // List card transactions. All amounts are in the smallest unit of their respective
@@ -87,11 +87,11 @@ func (r *TransactionService) ExpireAuthorization(ctx context.Context, transactio
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if transactionToken == "" {
 		err = errors.New("missing required transaction_token parameter")
-		return
+		return err
 	}
 	path := fmt.Sprintf("v1/transactions/%s/expire_authorization", transactionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
-	return
+	return err
 }
 
 // Simulates an authorization request from the card network as if it came from a
@@ -106,7 +106,7 @@ func (r *TransactionService) SimulateAuthorization(ctx context.Context, body Tra
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/authorize"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Simulates an authorization advice from the card network as if it came from a
@@ -116,7 +116,7 @@ func (r *TransactionService) SimulateAuthorizationAdvice(ctx context.Context, bo
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/authorization_advice"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Clears an existing authorization, either debit or credit. After this event, the
@@ -129,7 +129,7 @@ func (r *TransactionService) SimulateClearing(ctx context.Context, body Transact
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/clearing"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Simulates a credit authorization advice from the card network. This message
@@ -140,7 +140,7 @@ func (r *TransactionService) SimulateCreditAuthorization(ctx context.Context, bo
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/credit_authorization_advice"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Simulates a credit authorization advice from the card network. This message
@@ -149,7 +149,7 @@ func (r *TransactionService) SimulateCreditAuthorizationAdvice(ctx context.Conte
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/credit_authorization_advice"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Returns, or refunds, an amount back to a card. Returns simulated via this
@@ -159,7 +159,7 @@ func (r *TransactionService) SimulateReturn(ctx context.Context, body Transactio
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/return"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Reverses a return, i.e. a credit transaction with a `SETTLED` status. Returns
@@ -169,7 +169,7 @@ func (r *TransactionService) SimulateReturnReversal(ctx context.Context, body Tr
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/return_reversal"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Voids a pending authorization. If `amount` is not set, the full amount will be
@@ -180,7 +180,7 @@ func (r *TransactionService) SimulateVoid(ctx context.Context, body TransactionS
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/void"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 type CardholderAuthentication struct {

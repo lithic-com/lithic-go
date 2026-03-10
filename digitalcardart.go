@@ -43,11 +43,11 @@ func (r *DigitalCardArtService) Get(ctx context.Context, digitalCardArtToken str
 	opts = slices.Concat(r.Options, opts)
 	if digitalCardArtToken == "" {
 		err = errors.New("missing required digital_card_art_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/digital_card_art/%s", digitalCardArtToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // List digital card art.

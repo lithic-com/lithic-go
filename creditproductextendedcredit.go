@@ -38,11 +38,11 @@ func (r *CreditProductExtendedCreditService) Get(ctx context.Context, creditProd
 	opts = slices.Concat(r.Options, opts)
 	if creditProductToken == "" {
 		err = errors.New("missing required credit_product_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/credit_products/%s/extended_credit", creditProductToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 type ExtendedCredit struct {

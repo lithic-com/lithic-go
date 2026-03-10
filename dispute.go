@@ -43,7 +43,7 @@ func (r *DisputeService) New(ctx context.Context, body DisputeNewParams, opts ..
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/disputes"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Get dispute.
@@ -51,11 +51,11 @@ func (r *DisputeService) Get(ctx context.Context, disputeToken string, opts ...o
 	opts = slices.Concat(r.Options, opts)
 	if disputeToken == "" {
 		err = errors.New("missing required dispute_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/disputes/%s", disputeToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Update dispute. Can only be modified if status is `NEW`.
@@ -63,11 +63,11 @@ func (r *DisputeService) Update(ctx context.Context, disputeToken string, body D
 	opts = slices.Concat(r.Options, opts)
 	if disputeToken == "" {
 		err = errors.New("missing required dispute_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/disputes/%s", disputeToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // List disputes.
@@ -98,11 +98,11 @@ func (r *DisputeService) Delete(ctx context.Context, disputeToken string, opts .
 	opts = slices.Concat(r.Options, opts)
 	if disputeToken == "" {
 		err = errors.New("missing required dispute_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/disputes/%s", disputeToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Soft delete evidence for a dispute. Evidence will not be reviewed or submitted
@@ -111,15 +111,15 @@ func (r *DisputeService) DeleteEvidence(ctx context.Context, disputeToken string
 	opts = slices.Concat(r.Options, opts)
 	if disputeToken == "" {
 		err = errors.New("missing required dispute_token parameter")
-		return
+		return nil, err
 	}
 	if evidenceToken == "" {
 		err = errors.New("missing required evidence_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/disputes/%s/evidences/%s", disputeToken, evidenceToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Use this endpoint to upload evidences for the dispute. It will return a URL to
@@ -131,11 +131,11 @@ func (r *DisputeService) InitiateEvidenceUpload(ctx context.Context, disputeToke
 	opts = slices.Concat(r.Options, opts)
 	if disputeToken == "" {
 		err = errors.New("missing required dispute_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/disputes/%s/evidences", disputeToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // List evidence metadata for a dispute.
@@ -145,7 +145,7 @@ func (r *DisputeService) ListEvidences(ctx context.Context, disputeToken string,
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if disputeToken == "" {
 		err = errors.New("missing required dispute_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/disputes/%s/evidences", disputeToken)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -170,15 +170,15 @@ func (r *DisputeService) GetEvidence(ctx context.Context, disputeToken string, e
 	opts = slices.Concat(r.Options, opts)
 	if disputeToken == "" {
 		err = errors.New("missing required dispute_token parameter")
-		return
+		return nil, err
 	}
 	if evidenceToken == "" {
 		err = errors.New("missing required evidence_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/disputes/%s/evidences/%s", disputeToken, evidenceToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Dispute.

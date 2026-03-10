@@ -69,11 +69,11 @@ func (r *AccountActivityService) GetTransaction(ctx context.Context, transaction
 	opts = slices.Concat(r.Options, opts)
 	if transactionToken == "" {
 		err = errors.New("missing required transaction_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/account_activity/%s", transactionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 type WirePartyDetails struct {

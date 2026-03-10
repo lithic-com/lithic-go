@@ -48,7 +48,7 @@ func (r *AuthRuleV2Service) New(ctx context.Context, body AuthRuleV2NewParams, o
 	opts = slices.Concat(r.Options, opts)
 	path := "v2/auth_rules"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Fetches a V2 Auth rule by its token
@@ -56,11 +56,11 @@ func (r *AuthRuleV2Service) Get(ctx context.Context, authRuleToken string, opts 
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v2/auth_rules/%s", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Updates a V2 Auth rule's properties
@@ -72,11 +72,11 @@ func (r *AuthRuleV2Service) Update(ctx context.Context, authRuleToken string, bo
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v2/auth_rules/%s", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Lists V2 Auth rules
@@ -108,11 +108,11 @@ func (r *AuthRuleV2Service) Delete(ctx context.Context, authRuleToken string, op
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
-		return
+		return err
 	}
 	path := fmt.Sprintf("v2/auth_rules/%s", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, nil, opts...)
-	return
+	return err
 }
 
 // Creates a new draft version of a rule that will be ran in shadow mode.
@@ -123,11 +123,11 @@ func (r *AuthRuleV2Service) Draft(ctx context.Context, authRuleToken string, bod
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v2/auth_rules/%s/draft", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Lists Auth Rule evaluation results.
@@ -171,11 +171,11 @@ func (r *AuthRuleV2Service) Promote(ctx context.Context, authRuleToken string, o
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v2/auth_rules/%s/promote", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Fetches the current calculated Feature values for the given Auth Rule
@@ -191,11 +191,11 @@ func (r *AuthRuleV2Service) GetFeatures(ctx context.Context, authRuleToken strin
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v2/auth_rules/%s/features", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
-	return
+	return res, err
 }
 
 // Retrieves a performance report for an Auth rule containing daily statistics and
@@ -215,11 +215,11 @@ func (r *AuthRuleV2Service) GetReport(ctx context.Context, authRuleToken string,
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v2/auth_rules/%s/report", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
-	return
+	return res, err
 }
 
 type AuthRule struct {

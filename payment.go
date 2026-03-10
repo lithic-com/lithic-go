@@ -45,7 +45,7 @@ func (r *PaymentService) New(ctx context.Context, body PaymentNewParams, opts ..
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/payments"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Get the payment by token.
@@ -53,11 +53,11 @@ func (r *PaymentService) Get(ctx context.Context, paymentToken string, opts ...o
 	opts = slices.Concat(r.Options, opts)
 	if paymentToken == "" {
 		err = errors.New("missing required payment_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/payments/%s", paymentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // List all the payments for the provided search criteria.
@@ -88,11 +88,11 @@ func (r *PaymentService) Retry(ctx context.Context, paymentToken string, opts ..
 	opts = slices.Concat(r.Options, opts)
 	if paymentToken == "" {
 		err = errors.New("missing required payment_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/payments/%s/retry", paymentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Return an ACH payment with a specified return reason code. Returns must be
@@ -113,11 +113,11 @@ func (r *PaymentService) Return(ctx context.Context, paymentToken string, body P
 	opts = slices.Concat(r.Options, opts)
 	if paymentToken == "" {
 		err = errors.New("missing required payment_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/payments/%s/return", paymentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Simulate payment lifecycle event
@@ -125,11 +125,11 @@ func (r *PaymentService) SimulateAction(ctx context.Context, paymentToken string
 	opts = slices.Concat(r.Options, opts)
 	if paymentToken == "" {
 		err = errors.New("missing required payment_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/simulate/payments/%s/action", paymentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Simulates a receipt of a Payment.
@@ -137,7 +137,7 @@ func (r *PaymentService) SimulateReceipt(ctx context.Context, body PaymentSimula
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/payments/receipt"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Simulates a release of a Payment.
@@ -145,7 +145,7 @@ func (r *PaymentService) SimulateRelease(ctx context.Context, body PaymentSimula
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/payments/release"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Simulates a return of a Payment.
@@ -153,7 +153,7 @@ func (r *PaymentService) SimulateReturn(ctx context.Context, body PaymentSimulat
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/payments/return"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Payment transaction

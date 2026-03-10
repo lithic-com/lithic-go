@@ -41,11 +41,11 @@ func (r *FraudTransactionService) Get(ctx context.Context, transactionToken stri
 	opts = slices.Concat(r.Options, opts)
 	if transactionToken == "" {
 		err = errors.New("missing required transaction_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/fraud/transactions/%s", transactionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Report fraud for a specific transaction token by providing details such as fraud
@@ -54,11 +54,11 @@ func (r *FraudTransactionService) Report(ctx context.Context, transactionToken s
 	opts = slices.Concat(r.Options, opts)
 	if transactionToken == "" {
 		err = errors.New("missing required transaction_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/fraud/transactions/%s", transactionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 type FraudTransactionGetResponse struct {

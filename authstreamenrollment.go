@@ -41,7 +41,7 @@ func (r *AuthStreamEnrollmentService) GetSecret(ctx context.Context, opts ...opt
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/auth_stream/secret"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Generate a new ASA HMAC secret key. The old ASA HMAC secret key will be
@@ -53,7 +53,7 @@ func (r *AuthStreamEnrollmentService) RotateSecret(ctx context.Context, opts ...
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	path := "v1/auth_stream/secret/rotate"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
-	return
+	return err
 }
 
 type AuthStreamSecret struct {

@@ -43,15 +43,15 @@ func (r *FinancialAccountLoanTapeService) Get(ctx context.Context, financialAcco
 	opts = slices.Concat(r.Options, opts)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
-		return
+		return nil, err
 	}
 	if loanTapeToken == "" {
 		err = errors.New("missing required loan_tape_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/financial_accounts/%s/loan_tapes/%s", financialAccountToken, loanTapeToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // List the loan tapes for a given financial account.
@@ -61,7 +61,7 @@ func (r *FinancialAccountLoanTapeService) List(ctx context.Context, financialAcc
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/financial_accounts/%s/loan_tapes", financialAccountToken)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
