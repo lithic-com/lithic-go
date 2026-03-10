@@ -38,7 +38,7 @@ func TestUserAgentHeader(t *testing.T) {
 			},
 		}),
 	)
-	client.Cards.New(context.Background(), lithic.CardNewParams{
+	_, _ = client.Cards.New(context.Background(), lithic.CardNewParams{
 		Type: lithic.F(lithic.CardNewParamsTypeSingleUse),
 	})
 	if userAgent != fmt.Sprintf("Lithic/Go %s", internal.PackageVersion) {
