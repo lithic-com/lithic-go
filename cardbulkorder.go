@@ -48,7 +48,7 @@ func (r *CardBulkOrderService) New(ctx context.Context, body CardBulkOrderNewPar
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/card_bulk_orders"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Retrieve a specific bulk order by token **[BETA]**
@@ -56,11 +56,11 @@ func (r *CardBulkOrderService) Get(ctx context.Context, bulkOrderToken string, o
 	opts = slices.Concat(r.Options, opts)
 	if bulkOrderToken == "" {
 		err = errors.New("missing required bulk_order_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/card_bulk_orders/%s", bulkOrderToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Update a bulk order **[BETA]**. Primarily used to lock the order, preventing
@@ -69,11 +69,11 @@ func (r *CardBulkOrderService) Update(ctx context.Context, bulkOrderToken string
 	opts = slices.Concat(r.Options, opts)
 	if bulkOrderToken == "" {
 		err = errors.New("missing required bulk_order_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/card_bulk_orders/%s", bulkOrderToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // List bulk orders for physical card shipments **[BETA]**

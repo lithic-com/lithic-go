@@ -39,7 +39,7 @@ func (r *ResponderEndpointService) New(ctx context.Context, body ResponderEndpoi
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/responder_endpoints"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Disenroll a responder endpoint
@@ -48,7 +48,7 @@ func (r *ResponderEndpointService) Delete(ctx context.Context, body ResponderEnd
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	path := "v1/responder_endpoints"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, body, nil, opts...)
-	return
+	return err
 }
 
 // Check the status of a responder endpoint
@@ -56,7 +56,7 @@ func (r *ResponderEndpointService) CheckStatus(ctx context.Context, query Respon
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/responder_endpoints"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
-	return
+	return res, err
 }
 
 type ResponderEndpointStatus struct {

@@ -61,7 +61,7 @@ func (r *FinancialAccountService) New(ctx context.Context, params FinancialAccou
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/financial_accounts"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, params, &res, opts...)
-	return
+	return res, err
 }
 
 // Get a financial account
@@ -69,11 +69,11 @@ func (r *FinancialAccountService) Get(ctx context.Context, financialAccountToken
 	opts = slices.Concat(r.Options, opts)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/financial_accounts/%s", financialAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Update a financial account
@@ -81,11 +81,11 @@ func (r *FinancialAccountService) Update(ctx context.Context, financialAccountTo
 	opts = slices.Concat(r.Options, opts)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/financial_accounts/%s", financialAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Retrieve information on your financial accounts including routing and account
@@ -119,11 +119,11 @@ func (r *FinancialAccountService) RegisterAccountNumber(ctx context.Context, fin
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
-		return
+		return err
 	}
 	path := fmt.Sprintf("v1/financial_accounts/%s/register_account_number", financialAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
-	return
+	return err
 }
 
 // Update financial account status
@@ -131,11 +131,11 @@ func (r *FinancialAccountService) UpdateStatus(ctx context.Context, financialAcc
 	opts = slices.Concat(r.Options, opts)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/financial_accounts/%s/update_status", financialAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 type CategoryDetails struct {

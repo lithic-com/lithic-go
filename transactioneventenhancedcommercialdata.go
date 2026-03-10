@@ -41,11 +41,11 @@ func (r *TransactionEventEnhancedCommercialDataService) Get(ctx context.Context,
 	opts = slices.Concat(r.Options, opts)
 	if eventToken == "" {
 		err = errors.New("missing required event_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/transactions/events/%s/enhanced_commercial_data", eventToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 type EnhancedData struct {

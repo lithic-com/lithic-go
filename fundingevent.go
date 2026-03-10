@@ -43,11 +43,11 @@ func (r *FundingEventService) Get(ctx context.Context, fundingEventToken string,
 	opts = slices.Concat(r.Options, opts)
 	if fundingEventToken == "" {
 		err = errors.New("missing required funding_event_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/funding_events/%s", fundingEventToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Get all funding events for program
@@ -78,11 +78,11 @@ func (r *FundingEventService) GetDetails(ctx context.Context, fundingEventToken 
 	opts = slices.Concat(r.Options, opts)
 	if fundingEventToken == "" {
 		err = errors.New("missing required funding_event_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/funding_events/%s/details", fundingEventToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 type FundingEvent struct {

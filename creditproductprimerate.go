@@ -43,11 +43,11 @@ func (r *CreditProductPrimeRateService) New(ctx context.Context, creditProductTo
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if creditProductToken == "" {
 		err = errors.New("missing required credit_product_token parameter")
-		return
+		return err
 	}
 	path := fmt.Sprintf("v1/credit_products/%s/prime_rates", creditProductToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
-	return
+	return err
 }
 
 // Get Credit Product Prime Rates
@@ -55,11 +55,11 @@ func (r *CreditProductPrimeRateService) Get(ctx context.Context, creditProductTo
 	opts = slices.Concat(r.Options, opts)
 	if creditProductToken == "" {
 		err = errors.New("missing required credit_product_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/credit_products/%s/prime_rates", creditProductToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
-	return
+	return res, err
 }
 
 type CreditProductPrimeRateGetResponse struct {

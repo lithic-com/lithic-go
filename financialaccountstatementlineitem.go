@@ -45,11 +45,11 @@ func (r *FinancialAccountStatementLineItemService) List(ctx context.Context, fin
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
-		return
+		return nil, err
 	}
 	if statementToken == "" {
 		err = errors.New("missing required statement_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/financial_accounts/%s/statements/%s/line_items", financialAccountToken, statementToken)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)

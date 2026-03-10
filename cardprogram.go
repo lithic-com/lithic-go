@@ -43,11 +43,11 @@ func (r *CardProgramService) Get(ctx context.Context, cardProgramToken string, o
 	opts = slices.Concat(r.Options, opts)
 	if cardProgramToken == "" {
 		err = errors.New("missing required card_program_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/card_programs/%s", cardProgramToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // List card programs.

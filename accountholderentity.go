@@ -44,11 +44,11 @@ func (r *AccountHolderEntityService) New(ctx context.Context, accountHolderToken
 	opts = slices.Concat(r.Options, opts)
 	if accountHolderToken == "" {
 		err = errors.New("missing required account_holder_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/account_holders/%s/entities", accountHolderToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Deactivate a beneficial owner individual on an existing KYB account holder. Only
@@ -57,15 +57,15 @@ func (r *AccountHolderEntityService) Delete(ctx context.Context, accountHolderTo
 	opts = slices.Concat(r.Options, opts)
 	if accountHolderToken == "" {
 		err = errors.New("missing required account_holder_token parameter")
-		return
+		return nil, err
 	}
 	if entityToken == "" {
 		err = errors.New("missing required entity_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/account_holders/%s/entities/%s", accountHolderToken, entityToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Information about an entity associated with an account holder

@@ -45,7 +45,7 @@ func (r *ExternalBankAccountService) New(ctx context.Context, body ExternalBankA
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/external_bank_accounts"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Get the external bank account by token.
@@ -53,11 +53,11 @@ func (r *ExternalBankAccountService) Get(ctx context.Context, externalBankAccoun
 	opts = slices.Concat(r.Options, opts)
 	if externalBankAccountToken == "" {
 		err = errors.New("missing required external_bank_account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/external_bank_accounts/%s", externalBankAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Update the external bank account by token.
@@ -65,11 +65,11 @@ func (r *ExternalBankAccountService) Update(ctx context.Context, externalBankAcc
 	opts = slices.Concat(r.Options, opts)
 	if externalBankAccountToken == "" {
 		err = errors.New("missing required external_bank_account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/external_bank_accounts/%s", externalBankAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // List all the external bank accounts for the provided search criteria.
@@ -100,11 +100,11 @@ func (r *ExternalBankAccountService) RetryMicroDeposits(ctx context.Context, ext
 	opts = slices.Concat(r.Options, opts)
 	if externalBankAccountToken == "" {
 		err = errors.New("missing required external_bank_account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/external_bank_accounts/%s/retry_micro_deposits", externalBankAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Retry external bank account prenote verification.
@@ -112,11 +112,11 @@ func (r *ExternalBankAccountService) RetryPrenote(ctx context.Context, externalB
 	opts = slices.Concat(r.Options, opts)
 	if externalBankAccountToken == "" {
 		err = errors.New("missing required external_bank_account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/external_bank_accounts/%s/retry_prenote", externalBankAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Unpause an external bank account
@@ -124,11 +124,11 @@ func (r *ExternalBankAccountService) Unpause(ctx context.Context, externalBankAc
 	opts = slices.Concat(r.Options, opts)
 	if externalBankAccountToken == "" {
 		err = errors.New("missing required external_bank_account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/external_bank_accounts/%s/unpause", externalBankAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 type ExternalBankAccount struct {

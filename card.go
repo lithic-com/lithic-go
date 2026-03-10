@@ -57,7 +57,7 @@ func (r *CardService) New(ctx context.Context, params CardNewParams, opts ...opt
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/cards"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, params, &res, opts...)
-	return
+	return res, err
 }
 
 // Get card configuration such as spend limit and state.
@@ -65,11 +65,11 @@ func (r *CardService) Get(ctx context.Context, cardToken string, opts ...option.
 	opts = slices.Concat(r.Options, opts)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/cards/%s", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Update the specified properties of the card. Unsupplied properties will remain
@@ -81,11 +81,11 @@ func (r *CardService) Update(ctx context.Context, cardToken string, body CardUpd
 	opts = slices.Concat(r.Options, opts)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/cards/%s", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // List cards.
@@ -125,11 +125,11 @@ func (r *CardService) ConvertPhysical(ctx context.Context, cardToken string, bod
 	opts = slices.Concat(r.Options, opts)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/cards/%s/convert_physical", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Handling full card PANs and CVV codes requires that you comply with the Payment
@@ -166,7 +166,7 @@ func (r *CardService) Embed(ctx context.Context, query CardEmbedParams, opts ...
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "text/html")}, opts...)
 	path := "v1/embed/card"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
-	return
+	return res, err
 }
 
 func (r *CardService) GetEmbedHTML(ctx context.Context, params CardGetEmbedHTMLParams, opts ...option.RequestOption) (res []byte, err error) {
@@ -262,11 +262,11 @@ func (r *CardService) Provision(ctx context.Context, cardToken string, body Card
 	opts = slices.Concat(r.Options, opts)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/cards/%s/provision", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Initiate print and shipment of a duplicate physical card (e.g. card is
@@ -278,11 +278,11 @@ func (r *CardService) Reissue(ctx context.Context, cardToken string, body CardRe
 	opts = slices.Concat(r.Options, opts)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/cards/%s/reissue", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Applies to card types `PHYSICAL` and `VIRTUAL`. For `PHYSICAL`, creates a new
@@ -298,11 +298,11 @@ func (r *CardService) Renew(ctx context.Context, cardToken string, body CardRene
 	opts = slices.Concat(r.Options, opts)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/cards/%s/renew", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Get a Card's available spend limit, which is based on the spend limit configured
@@ -313,11 +313,11 @@ func (r *CardService) GetSpendLimits(ctx context.Context, cardToken string, opts
 	opts = slices.Concat(r.Options, opts)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/cards/%s/spend_limits", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Get card configuration such as spend limit and state. Customers must be PCI
@@ -329,7 +329,7 @@ func (r *CardService) SearchByPan(ctx context.Context, body CardSearchByPanParam
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/cards/search_by_pan"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Allow your cardholders to directly add payment cards to the device's digital
@@ -342,11 +342,11 @@ func (r *CardService) WebProvision(ctx context.Context, cardToken string, body C
 	opts = slices.Concat(r.Options, opts)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/cards/%s/web_provision", cardToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Card details with potentially PCI sensitive information for Enterprise customers

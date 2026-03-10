@@ -43,7 +43,7 @@ func (r *ExternalPaymentService) New(ctx context.Context, body ExternalPaymentNe
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/external_payments"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Get external payment
@@ -51,11 +51,11 @@ func (r *ExternalPaymentService) Get(ctx context.Context, externalPaymentToken s
 	opts = slices.Concat(r.Options, opts)
 	if externalPaymentToken == "" {
 		err = errors.New("missing required external_payment_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/external_payments/%s", externalPaymentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // List external payments
@@ -86,11 +86,11 @@ func (r *ExternalPaymentService) Cancel(ctx context.Context, externalPaymentToke
 	opts = slices.Concat(r.Options, opts)
 	if externalPaymentToken == "" {
 		err = errors.New("missing required external_payment_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/external_payments/%s/cancel", externalPaymentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Release external payment
@@ -98,11 +98,11 @@ func (r *ExternalPaymentService) Release(ctx context.Context, externalPaymentTok
 	opts = slices.Concat(r.Options, opts)
 	if externalPaymentToken == "" {
 		err = errors.New("missing required external_payment_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/external_payments/%s/release", externalPaymentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Reverse external payment
@@ -110,11 +110,11 @@ func (r *ExternalPaymentService) Reverse(ctx context.Context, externalPaymentTok
 	opts = slices.Concat(r.Options, opts)
 	if externalPaymentToken == "" {
 		err = errors.New("missing required external_payment_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/external_payments/%s/reverse", externalPaymentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Settle external payment
@@ -122,11 +122,11 @@ func (r *ExternalPaymentService) Settle(ctx context.Context, externalPaymentToke
 	opts = slices.Concat(r.Options, opts)
 	if externalPaymentToken == "" {
 		err = errors.New("missing required external_payment_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/external_payments/%s/settle", externalPaymentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 type ExternalPayment struct {

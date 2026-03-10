@@ -57,7 +57,7 @@ func (r *AccountHolderService) New(ctx context.Context, body AccountHolderNewPar
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/account_holders"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Get an Individual or Business Account Holder and/or their KYC or KYB evaluation
@@ -66,11 +66,11 @@ func (r *AccountHolderService) Get(ctx context.Context, accountHolderToken strin
 	opts = slices.Concat(r.Options, opts)
 	if accountHolderToken == "" {
 		err = errors.New("missing required account_holder_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/account_holders/%s", accountHolderToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Update the information associated with a particular account holder (including
@@ -87,11 +87,11 @@ func (r *AccountHolderService) Update(ctx context.Context, accountHolderToken st
 	opts = slices.Concat(r.Options, opts)
 	if accountHolderToken == "" {
 		err = errors.New("missing required account_holder_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/account_holders/%s", accountHolderToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Get a list of individual or business account holders and their KYC or KYB
@@ -138,11 +138,11 @@ func (r *AccountHolderService) ListDocuments(ctx context.Context, accountHolderT
 	opts = slices.Concat(r.Options, opts)
 	if accountHolderToken == "" {
 		err = errors.New("missing required account_holder_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/account_holders/%s/documents", accountHolderToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Check the status of an account holder document upload, or retrieve the upload
@@ -163,15 +163,15 @@ func (r *AccountHolderService) GetDocument(ctx context.Context, accountHolderTok
 	opts = slices.Concat(r.Options, opts)
 	if accountHolderToken == "" {
 		err = errors.New("missing required account_holder_token parameter")
-		return
+		return nil, err
 	}
 	if documentToken == "" {
 		err = errors.New("missing required document_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/account_holders/%s/documents/%s", accountHolderToken, documentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Simulates a review for an account holder document upload.
@@ -179,7 +179,7 @@ func (r *AccountHolderService) SimulateEnrollmentDocumentReview(ctx context.Cont
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/account_holders/enrollment_document_review"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Simulates an enrollment review for an account holder. This endpoint is only
@@ -188,7 +188,7 @@ func (r *AccountHolderService) SimulateEnrollmentReview(ctx context.Context, bod
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/account_holders/enrollment_review"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Use this endpoint to identify which type of supported government-issued
@@ -213,11 +213,11 @@ func (r *AccountHolderService) UploadDocument(ctx context.Context, accountHolder
 	opts = slices.Concat(r.Options, opts)
 	if accountHolderToken == "" {
 		err = errors.New("missing required account_holder_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/account_holders/%s/documents", accountHolderToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 type AccountHolder struct {

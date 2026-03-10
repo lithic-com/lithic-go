@@ -45,11 +45,11 @@ func (r *HoldService) New(ctx context.Context, financialAccountToken string, bod
 	opts = slices.Concat(r.Options, opts)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/financial_accounts/%s/holds", financialAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Get hold by token.
@@ -57,11 +57,11 @@ func (r *HoldService) Get(ctx context.Context, holdToken string, opts ...option.
 	opts = slices.Concat(r.Options, opts)
 	if holdToken == "" {
 		err = errors.New("missing required hold_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/holds/%s", holdToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // List holds for a financial account.
@@ -71,7 +71,7 @@ func (r *HoldService) List(ctx context.Context, financialAccountToken string, qu
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/financial_accounts/%s/holds", financialAccountToken)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -97,11 +97,11 @@ func (r *HoldService) Void(ctx context.Context, holdToken string, body HoldVoidP
 	opts = slices.Concat(r.Options, opts)
 	if holdToken == "" {
 		err = errors.New("missing required hold_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/holds/%s/void", holdToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // A hold transaction representing reserved funds on a financial account. Holds
