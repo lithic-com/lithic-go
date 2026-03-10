@@ -116,7 +116,9 @@ type StatementLineItemsData struct {
 	CardToken  string `json:"card_token" format:"uuid"`
 	Descriptor string `json:"descriptor"`
 	// Subtype of the event that generated the line items
-	EventSubtype string                     `json:"event_subtype" api:"nullable"`
+	EventSubtype string `json:"event_subtype" api:"nullable"`
+	// Date of the loan tape that generated this line item
+	LoanTapeDate time.Time                  `json:"loan_tape_date" api:"nullable" format:"date"`
 	JSON         statementLineItemsDataJSON `json:"-"`
 }
 
@@ -136,6 +138,7 @@ type statementLineItemsDataJSON struct {
 	CardToken                      apijson.Field
 	Descriptor                     apijson.Field
 	EventSubtype                   apijson.Field
+	LoanTapeDate                   apijson.Field
 	raw                            string
 	ExtraFields                    map[string]apijson.Field
 }
