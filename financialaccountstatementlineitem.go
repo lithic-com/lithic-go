@@ -113,9 +113,11 @@ type StatementLineItemsData struct {
 	// Globally unique identifier for a financial transaction
 	FinancialTransactionToken string `json:"financial_transaction_token" api:"required" format:"uuid"`
 	// Globally unique identifier for a card
-	CardToken  string                     `json:"card_token" format:"uuid"`
-	Descriptor string                     `json:"descriptor"`
-	JSON       statementLineItemsDataJSON `json:"-"`
+	CardToken  string `json:"card_token" format:"uuid"`
+	Descriptor string `json:"descriptor"`
+	// Subtype of the event that generated the line items
+	EventSubtype string                     `json:"event_subtype" api:"nullable"`
+	JSON         statementLineItemsDataJSON `json:"-"`
 }
 
 // statementLineItemsDataJSON contains the JSON metadata for the struct
@@ -133,6 +135,7 @@ type statementLineItemsDataJSON struct {
 	FinancialTransactionToken      apijson.Field
 	CardToken                      apijson.Field
 	Descriptor                     apijson.Field
+	EventSubtype                   apijson.Field
 	raw                            string
 	ExtraFields                    map[string]apijson.Field
 }
