@@ -65,9 +65,9 @@ func (r *AuthRuleV2Service) Get(ctx context.Context, authRuleToken string, opts 
 
 // Updates a V2 Auth rule's properties
 //
-// If `account_tokens`, `card_tokens`, `program_level`, or `excluded_card_tokens`
-// is provided, this will replace existing associations with the provided list of
-// entities.
+// If `account_tokens`, `card_tokens`, `program_level`, `excluded_card_tokens`,
+// `excluded_account_tokens`, or `excluded_business_account_tokens` is provided,
+// this will replace existing associations with the provided list of entities.
 func (r *AuthRuleV2Service) Update(ctx context.Context, authRuleToken string, body AuthRuleV2UpdateParams, opts ...option.RequestOption) (res *AuthRule, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
@@ -258,6 +258,10 @@ type AuthRule struct {
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type AuthRuleType `json:"type" api:"required"`
+	// Account tokens to which the Auth Rule does not apply.
+	ExcludedAccountTokens []string `json:"excluded_account_tokens" format:"uuid"`
+	// Business account tokens to which the Auth Rule does not apply.
+	ExcludedBusinessAccountTokens []string `json:"excluded_business_account_tokens" format:"uuid"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens []string     `json:"excluded_card_tokens" format:"uuid"`
 	JSON               authRuleJSON `json:"-"`
@@ -265,21 +269,23 @@ type AuthRule struct {
 
 // authRuleJSON contains the JSON metadata for the struct [AuthRule]
 type authRuleJSON struct {
-	Token                 apijson.Field
-	AccountTokens         apijson.Field
-	BusinessAccountTokens apijson.Field
-	CardTokens            apijson.Field
-	CurrentVersion        apijson.Field
-	DraftVersion          apijson.Field
-	EventStream           apijson.Field
-	LithicManaged         apijson.Field
-	Name                  apijson.Field
-	ProgramLevel          apijson.Field
-	State                 apijson.Field
-	Type                  apijson.Field
-	ExcludedCardTokens    apijson.Field
-	raw                   string
-	ExtraFields           map[string]apijson.Field
+	Token                         apijson.Field
+	AccountTokens                 apijson.Field
+	BusinessAccountTokens         apijson.Field
+	CardTokens                    apijson.Field
+	CurrentVersion                apijson.Field
+	DraftVersion                  apijson.Field
+	EventStream                   apijson.Field
+	LithicManaged                 apijson.Field
+	Name                          apijson.Field
+	ProgramLevel                  apijson.Field
+	State                         apijson.Field
+	Type                          apijson.Field
+	ExcludedAccountTokens         apijson.Field
+	ExcludedBusinessAccountTokens apijson.Field
+	ExcludedCardTokens            apijson.Field
+	raw                           string
+	ExtraFields                   map[string]apijson.Field
 }
 
 func (r *AuthRule) UnmarshalJSON(data []byte) (err error) {
@@ -6258,8 +6264,10 @@ type AuthRuleV2NewParamsBody struct {
 	BusinessAccountTokens param.Field[interface{}]                 `json:"business_account_tokens"`
 	CardTokens            param.Field[interface{}]                 `json:"card_tokens"`
 	// The event stream during which the rule will be evaluated.
-	EventStream        param.Field[EventStream] `json:"event_stream"`
-	ExcludedCardTokens param.Field[interface{}] `json:"excluded_card_tokens"`
+	EventStream                   param.Field[EventStream] `json:"event_stream"`
+	ExcludedAccountTokens         param.Field[interface{}] `json:"excluded_account_tokens"`
+	ExcludedBusinessAccountTokens param.Field[interface{}] `json:"excluded_business_account_tokens"`
+	ExcludedCardTokens            param.Field[interface{}] `json:"excluded_card_tokens"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
@@ -6548,6 +6556,10 @@ type AuthRuleV2NewParamsBodyProgramLevelRule struct {
 	Type param.Field[AuthRuleV2NewParamsBodyProgramLevelRuleType] `json:"type" api:"required"`
 	// The event stream during which the rule will be evaluated.
 	EventStream param.Field[EventStream] `json:"event_stream"`
+	// Account tokens to which the Auth Rule does not apply.
+	ExcludedAccountTokens param.Field[[]string] `json:"excluded_account_tokens" format:"uuid"`
+	// Business account tokens to which the Auth Rule does not apply.
+	ExcludedBusinessAccountTokens param.Field[[]string] `json:"excluded_business_account_tokens" format:"uuid"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens param.Field[[]string] `json:"excluded_card_tokens" format:"uuid"`
 	// Auth Rule Name
@@ -6692,10 +6704,12 @@ func (r AuthRuleV2UpdateParams) MarshalJSON() (data []byte, err error) {
 }
 
 type AuthRuleV2UpdateParamsBody struct {
-	AccountTokens         param.Field[interface{}] `json:"account_tokens"`
-	BusinessAccountTokens param.Field[interface{}] `json:"business_account_tokens"`
-	CardTokens            param.Field[interface{}] `json:"card_tokens"`
-	ExcludedCardTokens    param.Field[interface{}] `json:"excluded_card_tokens"`
+	AccountTokens                 param.Field[interface{}] `json:"account_tokens"`
+	BusinessAccountTokens         param.Field[interface{}] `json:"business_account_tokens"`
+	CardTokens                    param.Field[interface{}] `json:"card_tokens"`
+	ExcludedAccountTokens         param.Field[interface{}] `json:"excluded_account_tokens"`
+	ExcludedBusinessAccountTokens param.Field[interface{}] `json:"excluded_business_account_tokens"`
+	ExcludedCardTokens            param.Field[interface{}] `json:"excluded_card_tokens"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
@@ -6800,6 +6814,10 @@ func (r AuthRuleV2UpdateParamsBodyCardLevelRuleState) IsKnown() bool {
 }
 
 type AuthRuleV2UpdateParamsBodyProgramLevelRule struct {
+	// Account tokens to which the Auth Rule does not apply.
+	ExcludedAccountTokens param.Field[[]string] `json:"excluded_account_tokens" format:"uuid"`
+	// Business account tokens to which the Auth Rule does not apply.
+	ExcludedBusinessAccountTokens param.Field[[]string] `json:"excluded_business_account_tokens" format:"uuid"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens param.Field[[]string] `json:"excluded_card_tokens" format:"uuid"`
 	// Auth Rule Name
