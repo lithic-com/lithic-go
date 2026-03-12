@@ -6214,8 +6214,11 @@ type AuthRuleV2GetReportResponseDailyStatistic struct {
 	// The date (UTC) for which the statistics are reported.
 	Date time.Time `json:"date" api:"required" format:"date"`
 	// Detailed statistics for the draft version of the rule.
-	DraftVersionStatistics ReportStats                                   `json:"draft_version_statistics" api:"required,nullable"`
-	JSON                   authRuleV2GetReportResponseDailyStatisticJSON `json:"-"`
+	DraftVersionStatistics ReportStats `json:"draft_version_statistics" api:"required,nullable"`
+	// Statistics for each version of the rule that was evaluated during the reported
+	// day.
+	Versions []AuthRuleV2GetReportResponseDailyStatisticsVersion `json:"versions" api:"required"`
+	JSON     authRuleV2GetReportResponseDailyStatisticJSON       `json:"-"`
 }
 
 // authRuleV2GetReportResponseDailyStatisticJSON contains the JSON metadata for the
@@ -6224,6 +6227,7 @@ type authRuleV2GetReportResponseDailyStatisticJSON struct {
 	CurrentVersionStatistics apijson.Field
 	Date                     apijson.Field
 	DraftVersionStatistics   apijson.Field
+	Versions                 apijson.Field
 	raw                      string
 	ExtraFields              map[string]apijson.Field
 }
@@ -6234,6 +6238,894 @@ func (r *AuthRuleV2GetReportResponseDailyStatistic) UnmarshalJSON(data []byte) (
 
 func (r authRuleV2GetReportResponseDailyStatisticJSON) RawJSON() string {
 	return r.raw
+}
+
+type AuthRuleV2GetReportResponseDailyStatisticsVersion struct {
+	// A mapping of action types to the number of times that action was returned by
+	// this version during the relevant period. Actions are the possible outcomes of a
+	// rule evaluation, such as DECLINE, CHALLENGE, REQUIRE_TFA, etc. In case rule
+	// didn't trigger any action, it's counted under NO_ACTION key.
+	ActionCounts map[string]int64 `json:"action_counts" api:"required"`
+	// Example events and their outcomes for this version.
+	Examples []AuthRuleV2GetReportResponseDailyStatisticsVersionsExample `json:"examples" api:"required"`
+	// The evaluation mode of this version during the reported period.
+	State AuthRuleV2GetReportResponseDailyStatisticsVersionsState `json:"state" api:"required"`
+	// The rule version number.
+	Version int64                                                 `json:"version" api:"required"`
+	JSON    authRuleV2GetReportResponseDailyStatisticsVersionJSON `json:"-"`
+}
+
+// authRuleV2GetReportResponseDailyStatisticsVersionJSON contains the JSON metadata
+// for the struct [AuthRuleV2GetReportResponseDailyStatisticsVersion]
+type authRuleV2GetReportResponseDailyStatisticsVersionJSON struct {
+	ActionCounts apijson.Field
+	Examples     apijson.Field
+	State        apijson.Field
+	Version      apijson.Field
+	raw          string
+	ExtraFields  map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetReportResponseDailyStatisticsVersion) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetReportResponseDailyStatisticsVersionJSON) RawJSON() string {
+	return r.raw
+}
+
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExample struct {
+	// The actions taken by this version for this event.
+	Actions []AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesAction `json:"actions" api:"required"`
+	// The event token.
+	EventToken string `json:"event_token" api:"required" format:"uuid"`
+	// The timestamp of the event.
+	Timestamp time.Time                                                     `json:"timestamp" api:"required" format:"date-time"`
+	JSON      authRuleV2GetReportResponseDailyStatisticsVersionsExampleJSON `json:"-"`
+}
+
+// authRuleV2GetReportResponseDailyStatisticsVersionsExampleJSON contains the JSON
+// metadata for the struct
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExample]
+type authRuleV2GetReportResponseDailyStatisticsVersionsExampleJSON struct {
+	Actions     apijson.Field
+	EventToken  apijson.Field
+	Timestamp   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetReportResponseDailyStatisticsVersionsExample) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetReportResponseDailyStatisticsVersionsExampleJSON) RawJSON() string {
+	return r.raw
+}
+
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesAction struct {
+	Type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsType `json:"type" api:"required"`
+	// The detailed result code explaining the specific reason for the decline
+	Code AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode `json:"code"`
+	// Reason code for declining the tokenization request
+	Reason AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason `json:"reason"`
+	JSON   authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionJSON    `json:"-"`
+	union  AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsUnion
+}
+
+// authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionJSON contains
+// the JSON metadata for the struct
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesAction]
+type authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionJSON struct {
+	Type        apijson.Field
+	Code        apijson.Field
+	Reason      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r *AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesAction) UnmarshalJSON(data []byte) (err error) {
+	*r = AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesAction{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsUnion]
+// interface which you can cast to the specific types for more type safety.
+//
+// Possible runtime types of the union are
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorization],
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsChallengeActionAuthorization],
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DSAction],
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenization],
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaAction],
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsApproveActionACH],
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnAction].
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesAction) AsUnion() AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsUnion {
+	return r.union
+}
+
+// Union satisfied by
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorization],
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsChallengeActionAuthorization],
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DSAction],
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenization],
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaAction],
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsApproveActionACH]
+// or
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnAction].
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsUnion interface {
+	implementsAuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesAction()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorization{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsChallengeActionAuthorization{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DSAction{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenization{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaAction{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsApproveActionACH{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnAction{}),
+		},
+	)
+}
+
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorization struct {
+	// The detailed result code explaining the specific reason for the decline
+	Code AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode `json:"code" api:"required"`
+	Type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationType `json:"type" api:"required"`
+	JSON authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationJSON `json:"-"`
+}
+
+// authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorization]
+type authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationJSON struct {
+	Code        apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorization) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorization) implementsAuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesAction() {
+}
+
+// The detailed result code explaining the specific reason for the decline
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode string
+
+const (
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAccountDailySpendLimitExceeded              AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "ACCOUNT_DAILY_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAccountDelinquent                           AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "ACCOUNT_DELINQUENT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAccountInactive                             AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "ACCOUNT_INACTIVE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAccountLifetimeSpendLimitExceeded           AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "ACCOUNT_LIFETIME_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAccountMonthlySpendLimitExceeded            AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "ACCOUNT_MONTHLY_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAccountPaused                               AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "ACCOUNT_PAUSED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAccountUnderReview                          AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "ACCOUNT_UNDER_REVIEW"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAddressIncorrect                            AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "ADDRESS_INCORRECT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeApproved                                    AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "APPROVED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAuthRuleAllowedCountry                      AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "AUTH_RULE_ALLOWED_COUNTRY"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAuthRuleAllowedMcc                          AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "AUTH_RULE_ALLOWED_MCC"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAuthRuleBlockedCountry                      AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "AUTH_RULE_BLOCKED_COUNTRY"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAuthRuleBlockedMcc                          AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "AUTH_RULE_BLOCKED_MCC"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAuthRule                                    AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "AUTH_RULE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardClosed                                  AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "CARD_CLOSED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardCryptogramValidationFailure             AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "CARD_CRYPTOGRAM_VALIDATION_FAILURE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardExpired                                 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "CARD_EXPIRED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardExpiryDateIncorrect                     AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "CARD_EXPIRY_DATE_INCORRECT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardInvalid                                 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "CARD_INVALID"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardNotActivated                            AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "CARD_NOT_ACTIVATED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardPaused                                  AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "CARD_PAUSED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardPinIncorrect                            AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "CARD_PIN_INCORRECT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardRestricted                              AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "CARD_RESTRICTED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardSecurityCodeIncorrect                   AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "CARD_SECURITY_CODE_INCORRECT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardSpendLimitExceeded                      AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "CARD_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeContactCardIssuer                           AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "CONTACT_CARD_ISSUER"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCustomerAsaTimeout                          AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "CUSTOMER_ASA_TIMEOUT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCustomAsaResult                             AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "CUSTOM_ASA_RESULT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeDeclined                                    AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "DECLINED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeDoNotHonor                                  AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "DO_NOT_HONOR"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeDriverNumberInvalid                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "DRIVER_NUMBER_INVALID"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeFormatError                                 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "FORMAT_ERROR"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeInsufficientFundingSourceBalance            AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "INSUFFICIENT_FUNDING_SOURCE_BALANCE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeInsufficientFunds                           AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "INSUFFICIENT_FUNDS"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeLithicSystemError                           AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "LITHIC_SYSTEM_ERROR"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeLithicSystemRateLimit                       AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "LITHIC_SYSTEM_RATE_LIMIT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeMalformedAsaResponse                        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "MALFORMED_ASA_RESPONSE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeMerchantInvalid                             AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "MERCHANT_INVALID"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeMerchantLockedCardAttemptedElsewhere        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "MERCHANT_LOCKED_CARD_ATTEMPTED_ELSEWHERE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeMerchantNotPermitted                        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "MERCHANT_NOT_PERMITTED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeOverReversalAttempted                       AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "OVER_REVERSAL_ATTEMPTED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodePinBlocked                                  AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "PIN_BLOCKED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeProgramCardSpendLimitExceeded               AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "PROGRAM_CARD_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeProgramSuspended                            AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "PROGRAM_SUSPENDED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeProgramUsageRestriction                     AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "PROGRAM_USAGE_RESTRICTION"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeReversalUnmatched                           AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "REVERSAL_UNMATCHED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeSecurityViolation                           AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "SECURITY_VIOLATION"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeSingleUseCardReattempted                    AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "SINGLE_USE_CARD_REATTEMPTED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeSuspectedFraud                              AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "SUSPECTED_FRAUD"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeTransactionInvalid                          AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "TRANSACTION_INVALID"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeTransactionNotPermittedToAcquirerOrTerminal AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "TRANSACTION_NOT_PERMITTED_TO_ACQUIRER_OR_TERMINAL"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeTransactionNotPermittedToIssuerOrCardholder AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "TRANSACTION_NOT_PERMITTED_TO_ISSUER_OR_CARDHOLDER"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeTransactionPreviouslyCompleted              AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "TRANSACTION_PREVIOUSLY_COMPLETED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeUnauthorizedMerchant                        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "UNAUTHORIZED_MERCHANT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeVehicleNumberInvalid                        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "VEHICLE_NUMBER_INVALID"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardholderChallenged                        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "CARDHOLDER_CHALLENGED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardholderChallengeFailed                   AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode = "CARDHOLDER_CHALLENGE_FAILED"
+)
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCode) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAccountDailySpendLimitExceeded, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAccountDelinquent, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAccountInactive, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAccountLifetimeSpendLimitExceeded, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAccountMonthlySpendLimitExceeded, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAccountPaused, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAccountUnderReview, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAddressIncorrect, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeApproved, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAuthRuleAllowedCountry, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAuthRuleAllowedMcc, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAuthRuleBlockedCountry, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAuthRuleBlockedMcc, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeAuthRule, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardClosed, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardCryptogramValidationFailure, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardExpired, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardExpiryDateIncorrect, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardInvalid, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardNotActivated, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardPaused, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardPinIncorrect, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardRestricted, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardSecurityCodeIncorrect, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardSpendLimitExceeded, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeContactCardIssuer, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCustomerAsaTimeout, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCustomAsaResult, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeDeclined, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeDoNotHonor, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeDriverNumberInvalid, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeFormatError, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeInsufficientFundingSourceBalance, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeInsufficientFunds, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeLithicSystemError, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeLithicSystemRateLimit, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeMalformedAsaResponse, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeMerchantInvalid, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeMerchantLockedCardAttemptedElsewhere, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeMerchantNotPermitted, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeOverReversalAttempted, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodePinBlocked, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeProgramCardSpendLimitExceeded, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeProgramSuspended, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeProgramUsageRestriction, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeReversalUnmatched, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeSecurityViolation, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeSingleUseCardReattempted, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeSuspectedFraud, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeTransactionInvalid, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeTransactionNotPermittedToAcquirerOrTerminal, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeTransactionNotPermittedToIssuerOrCardholder, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeTransactionPreviouslyCompleted, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeUnauthorizedMerchant, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeVehicleNumberInvalid, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardholderChallenged, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationCodeCardholderChallengeFailed:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationType string
+
+const (
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationTypeDecline AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationType = "DECLINE"
+)
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionAuthorizationTypeDecline:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsChallengeActionAuthorization struct {
+	Type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsChallengeActionAuthorizationType `json:"type" api:"required"`
+	JSON authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsChallengeActionAuthorizationJSON `json:"-"`
+}
+
+// authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsChallengeActionAuthorizationJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsChallengeActionAuthorization]
+type authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsChallengeActionAuthorizationJSON struct {
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsChallengeActionAuthorization) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsChallengeActionAuthorizationJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsChallengeActionAuthorization) implementsAuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesAction() {
+}
+
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsChallengeActionAuthorizationType string
+
+const (
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsChallengeActionAuthorizationTypeChallenge AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsChallengeActionAuthorizationType = "CHALLENGE"
+)
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsChallengeActionAuthorizationType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsChallengeActionAuthorizationTypeChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DSAction struct {
+	Type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DSActionType `json:"type" api:"required"`
+	JSON authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DsActionJSON `json:"-"`
+}
+
+// authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DsActionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DSAction]
+type authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DsActionJSON struct {
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DSAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DsActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DSAction) implementsAuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesAction() {
+}
+
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DSActionType string
+
+const (
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DSActionTypeDecline   AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DSActionType = "DECLINE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DSActionTypeChallenge AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DSActionType = "CHALLENGE"
+)
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DSActionType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DSActionTypeDecline, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsResultAuthentication3DSActionTypeChallenge:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenization struct {
+	// Decline the tokenization request
+	Type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationType `json:"type" api:"required"`
+	// Reason code for declining the tokenization request
+	Reason AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReason `json:"reason"`
+	JSON   authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationJSON   `json:"-"`
+}
+
+// authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenization]
+type authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationJSON struct {
+	Type        apijson.Field
+	Reason      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenization) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenization) implementsAuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesAction() {
+}
+
+// Decline the tokenization request
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationType string
+
+const (
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationTypeDecline AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationType = "DECLINE"
+)
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationTypeDecline:
+		return true
+	}
+	return false
+}
+
+// Reason code for declining the tokenization request
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReason string
+
+const (
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonAccountScore1                  AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReason = "ACCOUNT_SCORE_1"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonDeviceScore1                   AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReason = "DEVICE_SCORE_1"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonAllWalletDeclineReasonsPresent AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReason = "ALL_WALLET_DECLINE_REASONS_PRESENT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonWalletRecommendedDecisionRed   AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReason = "WALLET_RECOMMENDED_DECISION_RED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonCvcMismatch                    AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReason = "CVC_MISMATCH"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonCardExpiryMonthMismatch        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReason = "CARD_EXPIRY_MONTH_MISMATCH"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonCardExpiryYearMismatch         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReason = "CARD_EXPIRY_YEAR_MISMATCH"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonCardInvalidState               AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReason = "CARD_INVALID_STATE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonCustomerRedPath                AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReason = "CUSTOMER_RED_PATH"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonInvalidCustomerResponse        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReason = "INVALID_CUSTOMER_RESPONSE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonNetworkFailure                 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReason = "NETWORK_FAILURE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonGenericDecline                 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReason = "GENERIC_DECLINE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonDigitalCardArtRequired         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReason = "DIGITAL_CARD_ART_REQUIRED"
+)
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReason) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonAccountScore1, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonDeviceScore1, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonAllWalletDeclineReasonsPresent, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonWalletRecommendedDecisionRed, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonCvcMismatch, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonCardExpiryMonthMismatch, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonCardExpiryYearMismatch, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonCardInvalidState, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonCustomerRedPath, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonInvalidCustomerResponse, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonNetworkFailure, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonGenericDecline, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsDeclineActionTokenizationReasonDigitalCardArtRequired:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaAction struct {
+	// Require two-factor authentication for the tokenization request
+	Type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionType `json:"type" api:"required"`
+	// Reason code for requiring two-factor authentication
+	Reason AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReason `json:"reason"`
+	JSON   authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionJSON   `json:"-"`
+}
+
+// authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaAction]
+type authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionJSON struct {
+	Type        apijson.Field
+	Reason      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaAction) implementsAuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesAction() {
+}
+
+// Require two-factor authentication for the tokenization request
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionType string
+
+const (
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionTypeRequireTfa AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionType = "REQUIRE_TFA"
+)
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionTypeRequireTfa:
+		return true
+	}
+	return false
+}
+
+// Reason code for requiring two-factor authentication
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReason string
+
+const (
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonWalletRecommendedTfa        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReason = "WALLET_RECOMMENDED_TFA"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonSuspiciousActivity          AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReason = "SUSPICIOUS_ACTIVITY"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonDeviceRecentlyLost          AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReason = "DEVICE_RECENTLY_LOST"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonTooManyRecentAttempts       AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReason = "TOO_MANY_RECENT_ATTEMPTS"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonTooManyRecentTokens         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReason = "TOO_MANY_RECENT_TOKENS"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonTooManyDifferentCardholders AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReason = "TOO_MANY_DIFFERENT_CARDHOLDERS"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonOutsideHomeTerritory        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReason = "OUTSIDE_HOME_TERRITORY"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonHasSuspendedTokens          AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReason = "HAS_SUSPENDED_TOKENS"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonHighRisk                    AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReason = "HIGH_RISK"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonAccountScoreLow             AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReason = "ACCOUNT_SCORE_LOW"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonDeviceScoreLow              AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReason = "DEVICE_SCORE_LOW"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonCardStateTfa                AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReason = "CARD_STATE_TFA"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonHardcodedTfa                AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReason = "HARDCODED_TFA"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonCustomerRuleTfa             AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReason = "CUSTOMER_RULE_TFA"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonDeviceHostCardEmulation     AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReason = "DEVICE_HOST_CARD_EMULATION"
+)
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReason) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonWalletRecommendedTfa, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonSuspiciousActivity, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonDeviceRecentlyLost, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonTooManyRecentAttempts, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonTooManyRecentTokens, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonTooManyDifferentCardholders, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonOutsideHomeTerritory, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonHasSuspendedTokens, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonHighRisk, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonAccountScoreLow, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonDeviceScoreLow, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonCardStateTfa, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonHardcodedTfa, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonCustomerRuleTfa, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsRequireTfaActionReasonDeviceHostCardEmulation:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsApproveActionACH struct {
+	// Approve the ACH transaction
+	Type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsApproveActionACHType `json:"type" api:"required"`
+	JSON authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsApproveActionACHJSON `json:"-"`
+}
+
+// authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsApproveActionACHJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsApproveActionACH]
+type authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsApproveActionACHJSON struct {
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsApproveActionACH) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsApproveActionACHJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsApproveActionACH) implementsAuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesAction() {
+}
+
+// Approve the ACH transaction
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsApproveActionACHType string
+
+const (
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsApproveActionACHTypeApprove AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsApproveActionACHType = "APPROVE"
+)
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsApproveActionACHType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsApproveActionACHTypeApprove:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnAction struct {
+	// NACHA return code to use when returning the transaction. Note that the list of
+	// available return codes is subject to an allowlist configured at the program
+	// level
+	Code AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode `json:"code" api:"required"`
+	// Return the ACH transaction
+	Type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionType `json:"type" api:"required"`
+	JSON authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionJSON `json:"-"`
+}
+
+// authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnAction]
+type authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionJSON struct {
+	Code        apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnAction) implementsAuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesAction() {
+}
+
+// NACHA return code to use when returning the transaction. Note that the list of
+// available return codes is subject to an allowlist configured at the program
+// level
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode string
+
+const (
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR01 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R01"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR02 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R02"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR03 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R03"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR04 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R04"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR05 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R05"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR06 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R06"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR07 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R07"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR08 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R08"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR09 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R09"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR10 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R10"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR11 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R11"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR12 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R12"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR13 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R13"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR14 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R14"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR15 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R15"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR16 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R16"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR17 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R17"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR18 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R18"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR19 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R19"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR20 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R20"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR21 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R21"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR22 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R22"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR23 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R23"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR24 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R24"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR25 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R25"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR26 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R26"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR27 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R27"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR28 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R28"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR29 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R29"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR30 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R30"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR31 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R31"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR32 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R32"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR33 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R33"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR34 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R34"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR35 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R35"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR36 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R36"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR37 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R37"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR38 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R38"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR39 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R39"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR40 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R40"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR41 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R41"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR42 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R42"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR43 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R43"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR44 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R44"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR45 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R45"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR46 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R46"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR47 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R47"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR50 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R50"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR51 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R51"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR52 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R52"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR53 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R53"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR61 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R61"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR62 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R62"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR67 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R67"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR68 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R68"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR69 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R69"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR70 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R70"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR71 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R71"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR72 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R72"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR73 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R73"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR74 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R74"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR75 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R75"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR76 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R76"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR77 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R77"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR80 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R80"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR81 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R81"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR82 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R82"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR83 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R83"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR84 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R84"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR85 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode = "R85"
+)
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCode) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR01, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR02, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR03, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR04, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR05, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR06, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR07, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR08, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR09, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR10, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR11, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR12, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR13, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR14, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR15, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR16, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR17, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR18, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR19, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR20, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR21, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR22, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR23, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR24, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR25, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR26, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR27, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR28, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR29, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR30, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR31, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR32, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR33, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR34, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR35, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR36, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR37, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR38, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR39, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR40, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR41, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR42, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR43, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR44, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR45, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR46, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR47, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR50, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR51, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR52, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR53, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR61, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR62, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR67, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR68, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR69, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR70, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR71, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR72, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR73, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR74, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR75, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR76, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR77, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR80, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR81, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR82, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR83, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR84, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionCodeR85:
+		return true
+	}
+	return false
+}
+
+// Return the ACH transaction
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionType string
+
+const (
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionTypeReturn AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionType = "RETURN"
+)
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReturnActionTypeReturn:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsType string
+
+const (
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsTypeDecline    AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsType = "DECLINE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsTypeChallenge  AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsType = "CHALLENGE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsTypeRequireTfa AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsType = "REQUIRE_TFA"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsTypeApprove    AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsType = "APPROVE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsTypeReturn     AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsType = "RETURN"
+)
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsTypeDecline, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsTypeChallenge, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsTypeRequireTfa, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsTypeApprove, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsTypeReturn:
+		return true
+	}
+	return false
+}
+
+// The detailed result code explaining the specific reason for the decline
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode string
+
+const (
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAccountDailySpendLimitExceeded              AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "ACCOUNT_DAILY_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAccountDelinquent                           AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "ACCOUNT_DELINQUENT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAccountInactive                             AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "ACCOUNT_INACTIVE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAccountLifetimeSpendLimitExceeded           AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "ACCOUNT_LIFETIME_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAccountMonthlySpendLimitExceeded            AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "ACCOUNT_MONTHLY_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAccountPaused                               AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "ACCOUNT_PAUSED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAccountUnderReview                          AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "ACCOUNT_UNDER_REVIEW"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAddressIncorrect                            AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "ADDRESS_INCORRECT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeApproved                                    AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "APPROVED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAuthRuleAllowedCountry                      AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "AUTH_RULE_ALLOWED_COUNTRY"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAuthRuleAllowedMcc                          AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "AUTH_RULE_ALLOWED_MCC"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAuthRuleBlockedCountry                      AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "AUTH_RULE_BLOCKED_COUNTRY"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAuthRuleBlockedMcc                          AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "AUTH_RULE_BLOCKED_MCC"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAuthRule                                    AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "AUTH_RULE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardClosed                                  AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "CARD_CLOSED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardCryptogramValidationFailure             AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "CARD_CRYPTOGRAM_VALIDATION_FAILURE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardExpired                                 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "CARD_EXPIRED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardExpiryDateIncorrect                     AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "CARD_EXPIRY_DATE_INCORRECT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardInvalid                                 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "CARD_INVALID"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardNotActivated                            AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "CARD_NOT_ACTIVATED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardPaused                                  AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "CARD_PAUSED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardPinIncorrect                            AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "CARD_PIN_INCORRECT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardRestricted                              AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "CARD_RESTRICTED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardSecurityCodeIncorrect                   AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "CARD_SECURITY_CODE_INCORRECT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardSpendLimitExceeded                      AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "CARD_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeContactCardIssuer                           AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "CONTACT_CARD_ISSUER"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCustomerAsaTimeout                          AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "CUSTOMER_ASA_TIMEOUT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCustomAsaResult                             AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "CUSTOM_ASA_RESULT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeDeclined                                    AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "DECLINED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeDoNotHonor                                  AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "DO_NOT_HONOR"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeDriverNumberInvalid                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "DRIVER_NUMBER_INVALID"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeFormatError                                 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "FORMAT_ERROR"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeInsufficientFundingSourceBalance            AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "INSUFFICIENT_FUNDING_SOURCE_BALANCE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeInsufficientFunds                           AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "INSUFFICIENT_FUNDS"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeLithicSystemError                           AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "LITHIC_SYSTEM_ERROR"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeLithicSystemRateLimit                       AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "LITHIC_SYSTEM_RATE_LIMIT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeMalformedAsaResponse                        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "MALFORMED_ASA_RESPONSE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeMerchantInvalid                             AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "MERCHANT_INVALID"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeMerchantLockedCardAttemptedElsewhere        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "MERCHANT_LOCKED_CARD_ATTEMPTED_ELSEWHERE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeMerchantNotPermitted                        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "MERCHANT_NOT_PERMITTED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeOverReversalAttempted                       AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "OVER_REVERSAL_ATTEMPTED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodePinBlocked                                  AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "PIN_BLOCKED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeProgramCardSpendLimitExceeded               AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "PROGRAM_CARD_SPEND_LIMIT_EXCEEDED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeProgramSuspended                            AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "PROGRAM_SUSPENDED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeProgramUsageRestriction                     AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "PROGRAM_USAGE_RESTRICTION"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeReversalUnmatched                           AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "REVERSAL_UNMATCHED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeSecurityViolation                           AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "SECURITY_VIOLATION"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeSingleUseCardReattempted                    AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "SINGLE_USE_CARD_REATTEMPTED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeSuspectedFraud                              AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "SUSPECTED_FRAUD"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeTransactionInvalid                          AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "TRANSACTION_INVALID"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeTransactionNotPermittedToAcquirerOrTerminal AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "TRANSACTION_NOT_PERMITTED_TO_ACQUIRER_OR_TERMINAL"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeTransactionNotPermittedToIssuerOrCardholder AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "TRANSACTION_NOT_PERMITTED_TO_ISSUER_OR_CARDHOLDER"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeTransactionPreviouslyCompleted              AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "TRANSACTION_PREVIOUSLY_COMPLETED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeUnauthorizedMerchant                        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "UNAUTHORIZED_MERCHANT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeVehicleNumberInvalid                        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "VEHICLE_NUMBER_INVALID"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardholderChallenged                        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "CARDHOLDER_CHALLENGED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardholderChallengeFailed                   AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "CARDHOLDER_CHALLENGE_FAILED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR01                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R01"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR02                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R02"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR03                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R03"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR04                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R04"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR05                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R05"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR06                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R06"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR07                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R07"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR08                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R08"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR09                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R09"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR10                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R10"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR11                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R11"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR12                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R12"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR13                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R13"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR14                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R14"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR15                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R15"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR16                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R16"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR17                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R17"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR18                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R18"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR19                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R19"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR20                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R20"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR21                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R21"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR22                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R22"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR23                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R23"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR24                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R24"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR25                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R25"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR26                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R26"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR27                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R27"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR28                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R28"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR29                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R29"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR30                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R30"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR31                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R31"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR32                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R32"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR33                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R33"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR34                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R34"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR35                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R35"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR36                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R36"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR37                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R37"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR38                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R38"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR39                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R39"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR40                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R40"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR41                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R41"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR42                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R42"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR43                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R43"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR44                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R44"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR45                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R45"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR46                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R46"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR47                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R47"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR50                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R50"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR51                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R51"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR52                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R52"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR53                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R53"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR61                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R61"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR62                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R62"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR67                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R67"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR68                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R68"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR69                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R69"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR70                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R70"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR71                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R71"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR72                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R72"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR73                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R73"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR74                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R74"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR75                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R75"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR76                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R76"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR77                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R77"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR80                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R80"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR81                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R81"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR82                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R82"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR83                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R83"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR84                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R84"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR85                                         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode = "R85"
+)
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCode) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAccountDailySpendLimitExceeded, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAccountDelinquent, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAccountInactive, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAccountLifetimeSpendLimitExceeded, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAccountMonthlySpendLimitExceeded, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAccountPaused, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAccountUnderReview, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAddressIncorrect, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeApproved, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAuthRuleAllowedCountry, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAuthRuleAllowedMcc, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAuthRuleBlockedCountry, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAuthRuleBlockedMcc, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeAuthRule, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardClosed, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardCryptogramValidationFailure, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardExpired, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardExpiryDateIncorrect, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardInvalid, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardNotActivated, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardPaused, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardPinIncorrect, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardRestricted, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardSecurityCodeIncorrect, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardSpendLimitExceeded, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeContactCardIssuer, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCustomerAsaTimeout, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCustomAsaResult, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeDeclined, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeDoNotHonor, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeDriverNumberInvalid, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeFormatError, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeInsufficientFundingSourceBalance, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeInsufficientFunds, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeLithicSystemError, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeLithicSystemRateLimit, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeMalformedAsaResponse, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeMerchantInvalid, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeMerchantLockedCardAttemptedElsewhere, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeMerchantNotPermitted, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeOverReversalAttempted, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodePinBlocked, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeProgramCardSpendLimitExceeded, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeProgramSuspended, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeProgramUsageRestriction, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeReversalUnmatched, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeSecurityViolation, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeSingleUseCardReattempted, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeSuspectedFraud, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeTransactionInvalid, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeTransactionNotPermittedToAcquirerOrTerminal, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeTransactionNotPermittedToIssuerOrCardholder, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeTransactionPreviouslyCompleted, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeUnauthorizedMerchant, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeVehicleNumberInvalid, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardholderChallenged, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeCardholderChallengeFailed, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR01, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR02, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR03, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR04, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR05, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR06, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR07, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR08, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR09, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR10, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR11, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR12, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR13, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR14, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR15, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR16, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR17, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR18, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR19, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR20, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR21, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR22, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR23, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR24, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR25, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR26, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR27, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR28, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR29, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR30, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR31, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR32, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR33, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR34, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR35, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR36, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR37, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR38, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR39, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR40, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR41, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR42, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR43, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR44, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR45, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR46, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR47, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR50, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR51, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR52, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR53, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR61, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR62, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR67, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR68, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR69, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR70, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR71, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR72, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR73, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR74, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR75, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR76, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR77, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR80, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR81, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR82, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR83, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR84, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsCodeR85:
+		return true
+	}
+	return false
+}
+
+// Reason code for declining the tokenization request
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason string
+
+const (
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonAccountScore1                  AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "ACCOUNT_SCORE_1"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonDeviceScore1                   AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "DEVICE_SCORE_1"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonAllWalletDeclineReasonsPresent AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "ALL_WALLET_DECLINE_REASONS_PRESENT"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonWalletRecommendedDecisionRed   AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "WALLET_RECOMMENDED_DECISION_RED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonCvcMismatch                    AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "CVC_MISMATCH"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonCardExpiryMonthMismatch        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "CARD_EXPIRY_MONTH_MISMATCH"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonCardExpiryYearMismatch         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "CARD_EXPIRY_YEAR_MISMATCH"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonCardInvalidState               AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "CARD_INVALID_STATE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonCustomerRedPath                AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "CUSTOMER_RED_PATH"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonInvalidCustomerResponse        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "INVALID_CUSTOMER_RESPONSE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonNetworkFailure                 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "NETWORK_FAILURE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonGenericDecline                 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "GENERIC_DECLINE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonDigitalCardArtRequired         AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "DIGITAL_CARD_ART_REQUIRED"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonWalletRecommendedTfa           AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "WALLET_RECOMMENDED_TFA"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonSuspiciousActivity             AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "SUSPICIOUS_ACTIVITY"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonDeviceRecentlyLost             AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "DEVICE_RECENTLY_LOST"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonTooManyRecentAttempts          AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "TOO_MANY_RECENT_ATTEMPTS"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonTooManyRecentTokens            AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "TOO_MANY_RECENT_TOKENS"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonTooManyDifferentCardholders    AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "TOO_MANY_DIFFERENT_CARDHOLDERS"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonOutsideHomeTerritory           AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "OUTSIDE_HOME_TERRITORY"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonHasSuspendedTokens             AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "HAS_SUSPENDED_TOKENS"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonHighRisk                       AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "HIGH_RISK"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonAccountScoreLow                AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "ACCOUNT_SCORE_LOW"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonDeviceScoreLow                 AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "DEVICE_SCORE_LOW"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonCardStateTfa                   AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "CARD_STATE_TFA"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonHardcodedTfa                   AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "HARDCODED_TFA"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonCustomerRuleTfa                AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "CUSTOMER_RULE_TFA"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonDeviceHostCardEmulation        AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason = "DEVICE_HOST_CARD_EMULATION"
+)
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReason) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonAccountScore1, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonDeviceScore1, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonAllWalletDeclineReasonsPresent, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonWalletRecommendedDecisionRed, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonCvcMismatch, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonCardExpiryMonthMismatch, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonCardExpiryYearMismatch, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonCardInvalidState, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonCustomerRedPath, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonInvalidCustomerResponse, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonNetworkFailure, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonGenericDecline, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonDigitalCardArtRequired, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonWalletRecommendedTfa, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonSuspiciousActivity, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonDeviceRecentlyLost, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonTooManyRecentAttempts, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonTooManyRecentTokens, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonTooManyDifferentCardholders, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonOutsideHomeTerritory, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonHasSuspendedTokens, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonHighRisk, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonAccountScoreLow, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonDeviceScoreLow, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonCardStateTfa, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonHardcodedTfa, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonCustomerRuleTfa, AuthRuleV2GetReportResponseDailyStatisticsVersionsExamplesActionsReasonDeviceHostCardEmulation:
+		return true
+	}
+	return false
+}
+
+// The evaluation mode of this version during the reported period.
+type AuthRuleV2GetReportResponseDailyStatisticsVersionsState string
+
+const (
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsStateActive   AuthRuleV2GetReportResponseDailyStatisticsVersionsState = "ACTIVE"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsStateShadow   AuthRuleV2GetReportResponseDailyStatisticsVersionsState = "SHADOW"
+	AuthRuleV2GetReportResponseDailyStatisticsVersionsStateInactive AuthRuleV2GetReportResponseDailyStatisticsVersionsState = "INACTIVE"
+)
+
+func (r AuthRuleV2GetReportResponseDailyStatisticsVersionsState) IsKnown() bool {
+	switch r {
+	case AuthRuleV2GetReportResponseDailyStatisticsVersionsStateActive, AuthRuleV2GetReportResponseDailyStatisticsVersionsStateShadow, AuthRuleV2GetReportResponseDailyStatisticsVersionsStateInactive:
+		return true
+	}
+	return false
 }
 
 type AuthRuleV2NewParams struct {
