@@ -43,11 +43,11 @@ func (r *TokenizationService) Get(ctx context.Context, tokenizationToken string,
 	opts = slices.Concat(r.Options, opts)
 	if tokenizationToken == "" {
 		err = errors.New("missing required tokenization_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/tokenizations/%s", tokenizationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // List card tokenizations
@@ -86,11 +86,11 @@ func (r *TokenizationService) Activate(ctx context.Context, tokenizationToken st
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if tokenizationToken == "" {
 		err = errors.New("missing required tokenization_token parameter")
-		return
+		return err
 	}
 	path := fmt.Sprintf("v1/tokenizations/%s/activate", tokenizationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
-	return
+	return err
 }
 
 // This endpoint is used to ask the card network to deactivate a tokenization. A
@@ -107,11 +107,11 @@ func (r *TokenizationService) Deactivate(ctx context.Context, tokenizationToken 
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if tokenizationToken == "" {
 		err = errors.New("missing required tokenization_token parameter")
-		return
+		return err
 	}
 	path := fmt.Sprintf("v1/tokenizations/%s/deactivate", tokenizationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
-	return
+	return err
 }
 
 // This endpoint is used to ask the card network to pause a tokenization. A
@@ -127,11 +127,11 @@ func (r *TokenizationService) Pause(ctx context.Context, tokenizationToken strin
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if tokenizationToken == "" {
 		err = errors.New("missing required tokenization_token parameter")
-		return
+		return err
 	}
 	path := fmt.Sprintf("v1/tokenizations/%s/pause", tokenizationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
-	return
+	return err
 }
 
 // This endpoint is used to ask the card network to send another activation code to
@@ -149,11 +149,11 @@ func (r *TokenizationService) ResendActivationCode(ctx context.Context, tokeniza
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if tokenizationToken == "" {
 		err = errors.New("missing required tokenization_token parameter")
-		return
+		return err
 	}
 	path := fmt.Sprintf("v1/tokenizations/%s/resend_activation_code", tokenizationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
-	return
+	return err
 }
 
 // This endpoint is used to simulate a card's tokenization in the Digital Wallet
@@ -162,7 +162,7 @@ func (r *TokenizationService) Simulate(ctx context.Context, body TokenizationSim
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/tokenizations"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // This endpoint is used to ask the card network to unpause a tokenization. A
@@ -177,11 +177,11 @@ func (r *TokenizationService) Unpause(ctx context.Context, tokenizationToken str
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if tokenizationToken == "" {
 		err = errors.New("missing required tokenization_token parameter")
-		return
+		return err
 	}
 	path := fmt.Sprintf("v1/tokenizations/%s/unpause", tokenizationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
-	return
+	return err
 }
 
 // This endpoint is used update the digital card art for a digital wallet
@@ -196,11 +196,11 @@ func (r *TokenizationService) UpdateDigitalCardArt(ctx context.Context, tokeniza
 	opts = slices.Concat(r.Options, opts)
 	if tokenizationToken == "" {
 		err = errors.New("missing required tokenization_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/tokenizations/%s/update_digital_card_art", tokenizationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 type Device struct {

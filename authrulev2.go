@@ -48,7 +48,7 @@ func (r *AuthRuleV2Service) New(ctx context.Context, body AuthRuleV2NewParams, o
 	opts = slices.Concat(r.Options, opts)
 	path := "v2/auth_rules"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Fetches a V2 Auth rule by its token
@@ -56,27 +56,27 @@ func (r *AuthRuleV2Service) Get(ctx context.Context, authRuleToken string, opts 
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v2/auth_rules/%s", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Updates a V2 Auth rule's properties
 //
-// If `account_tokens`, `card_tokens`, `program_level`, or `excluded_card_tokens`
-// is provided, this will replace existing associations with the provided list of
-// entities.
+// If `account_tokens`, `card_tokens`, `program_level`, `excluded_card_tokens`,
+// `excluded_account_tokens`, or `excluded_business_account_tokens` is provided,
+// this will replace existing associations with the provided list of entities.
 func (r *AuthRuleV2Service) Update(ctx context.Context, authRuleToken string, body AuthRuleV2UpdateParams, opts ...option.RequestOption) (res *AuthRule, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v2/auth_rules/%s", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Lists V2 Auth rules
@@ -108,11 +108,11 @@ func (r *AuthRuleV2Service) Delete(ctx context.Context, authRuleToken string, op
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
-		return
+		return err
 	}
 	path := fmt.Sprintf("v2/auth_rules/%s", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, nil, opts...)
-	return
+	return err
 }
 
 // Creates a new draft version of a rule that will be ran in shadow mode.
@@ -123,11 +123,11 @@ func (r *AuthRuleV2Service) Draft(ctx context.Context, authRuleToken string, bod
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v2/auth_rules/%s/draft", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Lists Auth Rule evaluation results.
@@ -171,11 +171,11 @@ func (r *AuthRuleV2Service) Promote(ctx context.Context, authRuleToken string, o
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v2/auth_rules/%s/promote", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Fetches the current calculated Feature values for the given Auth Rule
@@ -191,11 +191,11 @@ func (r *AuthRuleV2Service) GetFeatures(ctx context.Context, authRuleToken strin
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v2/auth_rules/%s/features", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
-	return
+	return res, err
 }
 
 // Retrieves a performance report for an Auth rule containing daily statistics and
@@ -215,11 +215,11 @@ func (r *AuthRuleV2Service) GetReport(ctx context.Context, authRuleToken string,
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v2/auth_rules/%s/report", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
-	return
+	return res, err
 }
 
 type AuthRule struct {
@@ -255,7 +255,13 @@ type AuthRule struct {
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type AuthRuleType `json:"type" api:"required"`
+	// Account tokens to which the Auth Rule does not apply.
+	ExcludedAccountTokens []string `json:"excluded_account_tokens" format:"uuid"`
+	// Business account tokens to which the Auth Rule does not apply.
+	ExcludedBusinessAccountTokens []string `json:"excluded_business_account_tokens" format:"uuid"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens []string     `json:"excluded_card_tokens" format:"uuid"`
 	JSON               authRuleJSON `json:"-"`
@@ -263,21 +269,23 @@ type AuthRule struct {
 
 // authRuleJSON contains the JSON metadata for the struct [AuthRule]
 type authRuleJSON struct {
-	Token                 apijson.Field
-	AccountTokens         apijson.Field
-	BusinessAccountTokens apijson.Field
-	CardTokens            apijson.Field
-	CurrentVersion        apijson.Field
-	DraftVersion          apijson.Field
-	EventStream           apijson.Field
-	LithicManaged         apijson.Field
-	Name                  apijson.Field
-	ProgramLevel          apijson.Field
-	State                 apijson.Field
-	Type                  apijson.Field
-	ExcludedCardTokens    apijson.Field
-	raw                   string
-	ExtraFields           map[string]apijson.Field
+	Token                         apijson.Field
+	AccountTokens                 apijson.Field
+	BusinessAccountTokens         apijson.Field
+	CardTokens                    apijson.Field
+	CurrentVersion                apijson.Field
+	DraftVersion                  apijson.Field
+	EventStream                   apijson.Field
+	LithicManaged                 apijson.Field
+	Name                          apijson.Field
+	ProgramLevel                  apijson.Field
+	State                         apijson.Field
+	Type                          apijson.Field
+	ExcludedAccountTokens         apijson.Field
+	ExcludedBusinessAccountTokens apijson.Field
+	ExcludedCardTokens            apijson.Field
+	raw                           string
+	ExtraFields                   map[string]apijson.Field
 }
 
 func (r *AuthRule) UnmarshalJSON(data []byte) (err error) {
@@ -321,14 +329,19 @@ type AuthRuleCurrentVersionParameters struct {
 	// [ConditionalACHActionParametersAction],
 	// [ConditionalTokenizationActionParametersAction].
 	Action interface{} `json:"action"`
+	// The TypeScript source code of the rule. Must define a `rule()` function that
+	// accepts the declared features as positional arguments (in the same order as the
+	// `features` array) and returns an array of actions.
+	Code string `json:"code"`
 	// This field can have the runtime type of [[]AuthRuleCondition],
 	// [[]Conditional3DsActionParametersCondition],
 	// [[]ConditionalAuthorizationActionParametersCondition],
 	// [[]ConditionalACHActionParametersCondition],
 	// [[]ConditionalTokenizationActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
-	// This field can have the runtime type of [VelocityLimitParamsFilters].
-	Filters interface{} `json:"filters"`
+	// This field can have the runtime type of [[]RuleFeature].
+	Features interface{}          `json:"features"`
+	Filters  VelocityLimitFilters `json:"filters"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -353,7 +366,9 @@ type AuthRuleCurrentVersionParameters struct {
 // [AuthRuleCurrentVersionParameters]
 type authRuleCurrentVersionParametersJSON struct {
 	Action      apijson.Field
+	Code        apijson.Field
 	Conditions  apijson.Field
+	Features    apijson.Field
 	Filters     apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
@@ -383,7 +398,8 @@ func (r *AuthRuleCurrentVersionParameters) UnmarshalJSON(data []byte) (err error
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams], [MerchantLockParameters],
 // [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
-// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
+// [TypescriptCodeParameters].
 func (r AuthRuleCurrentVersionParameters) AsUnion() AuthRuleCurrentVersionParametersUnion {
 	return r.union
 }
@@ -392,8 +408,8 @@ func (r AuthRuleCurrentVersionParameters) AsUnion() AuthRuleCurrentVersionParame
 //
 // Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
-// [ConditionalTokenizationActionParameters].
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
+// [ConditionalTokenizationActionParameters] or [TypescriptCodeParameters].
 type AuthRuleCurrentVersionParametersUnion interface {
 	implementsAuthRuleCurrentVersionParameters()
 }
@@ -430,6 +446,10 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(TypescriptCodeParameters{}),
+		},
 	)
 }
 
@@ -450,8 +470,22 @@ func (r AuthRuleCurrentVersionParametersScope) IsKnown() bool {
 }
 
 type AuthRuleDraftVersion struct {
+	// An error message if the draft version failed compilation. Populated when `state`
+	// is `ERROR`, `null` otherwise.
+	Error string `json:"error" api:"required,nullable"`
 	// Parameters for the Auth Rule
 	Parameters AuthRuleDraftVersionParameters `json:"parameters" api:"required"`
+	// The state of the draft version. Most rules are created synchronously and the
+	// state is immediately `SHADOWING`. Rules backed by TypeScript code are compiled
+	// asynchronously — the state starts as `PENDING` and transitions to `SHADOWING` on
+	// success or `ERROR` on failure.
+	//
+	//   - `PENDING`: Compilation of the rule is in progress (TypeScript rules only).
+	//   - `SHADOWING`: The draft version is ready and evaluating in shadow mode
+	//     alongside the current active version. It can be promoted to the active
+	//     version.
+	//   - `ERROR`: Compilation of the rule failed. Check the `error` field for details.
+	State AuthRuleDraftVersionState `json:"state" api:"required"`
 	// The version of the rule, this is incremented whenever the rule's parameters
 	// change.
 	Version int64                    `json:"version" api:"required"`
@@ -461,7 +495,9 @@ type AuthRuleDraftVersion struct {
 // authRuleDraftVersionJSON contains the JSON metadata for the struct
 // [AuthRuleDraftVersion]
 type authRuleDraftVersionJSON struct {
+	Error       apijson.Field
 	Parameters  apijson.Field
+	State       apijson.Field
 	Version     apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
@@ -482,14 +518,19 @@ type AuthRuleDraftVersionParameters struct {
 	// [ConditionalACHActionParametersAction],
 	// [ConditionalTokenizationActionParametersAction].
 	Action interface{} `json:"action"`
+	// The TypeScript source code of the rule. Must define a `rule()` function that
+	// accepts the declared features as positional arguments (in the same order as the
+	// `features` array) and returns an array of actions.
+	Code string `json:"code"`
 	// This field can have the runtime type of [[]AuthRuleCondition],
 	// [[]Conditional3DsActionParametersCondition],
 	// [[]ConditionalAuthorizationActionParametersCondition],
 	// [[]ConditionalACHActionParametersCondition],
 	// [[]ConditionalTokenizationActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
-	// This field can have the runtime type of [VelocityLimitParamsFilters].
-	Filters interface{} `json:"filters"`
+	// This field can have the runtime type of [[]RuleFeature].
+	Features interface{}          `json:"features"`
+	Filters  VelocityLimitFilters `json:"filters"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -514,7 +555,9 @@ type AuthRuleDraftVersionParameters struct {
 // [AuthRuleDraftVersionParameters]
 type authRuleDraftVersionParametersJSON struct {
 	Action      apijson.Field
+	Code        apijson.Field
 	Conditions  apijson.Field
+	Features    apijson.Field
 	Filters     apijson.Field
 	LimitAmount apijson.Field
 	LimitCount  apijson.Field
@@ -544,7 +587,8 @@ func (r *AuthRuleDraftVersionParameters) UnmarshalJSON(data []byte) (err error) 
 // Possible runtime types of the union are [ConditionalBlockParameters],
 // [VelocityLimitParams], [MerchantLockParameters],
 // [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
-// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters].
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
+// [TypescriptCodeParameters].
 func (r AuthRuleDraftVersionParameters) AsUnion() AuthRuleDraftVersionParametersUnion {
 	return r.union
 }
@@ -553,8 +597,8 @@ func (r AuthRuleDraftVersionParameters) AsUnion() AuthRuleDraftVersionParameters
 //
 // Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters] or
-// [ConditionalTokenizationActionParameters].
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
+// [ConditionalTokenizationActionParameters] or [TypescriptCodeParameters].
 type AuthRuleDraftVersionParametersUnion interface {
 	implementsAuthRuleDraftVersionParameters()
 }
@@ -591,6 +635,10 @@ func init() {
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
 		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(TypescriptCodeParameters{}),
+		},
 	)
 }
 
@@ -605,6 +653,32 @@ const (
 func (r AuthRuleDraftVersionParametersScope) IsKnown() bool {
 	switch r {
 	case AuthRuleDraftVersionParametersScopeCard, AuthRuleDraftVersionParametersScopeAccount:
+		return true
+	}
+	return false
+}
+
+// The state of the draft version. Most rules are created synchronously and the
+// state is immediately `SHADOWING`. Rules backed by TypeScript code are compiled
+// asynchronously — the state starts as `PENDING` and transitions to `SHADOWING` on
+// success or `ERROR` on failure.
+//
+//   - `PENDING`: Compilation of the rule is in progress (TypeScript rules only).
+//   - `SHADOWING`: The draft version is ready and evaluating in shadow mode
+//     alongside the current active version. It can be promoted to the active
+//     version.
+//   - `ERROR`: Compilation of the rule failed. Check the `error` field for details.
+type AuthRuleDraftVersionState string
+
+const (
+	AuthRuleDraftVersionStatePending   AuthRuleDraftVersionState = "PENDING"
+	AuthRuleDraftVersionStateShadowing AuthRuleDraftVersionState = "SHADOWING"
+	AuthRuleDraftVersionStateError     AuthRuleDraftVersionState = "ERROR"
+)
+
+func (r AuthRuleDraftVersionState) IsKnown() bool {
+	switch r {
+	case AuthRuleDraftVersionStatePending, AuthRuleDraftVersionStateShadowing, AuthRuleDraftVersionStateError:
 		return true
 	}
 	return false
@@ -637,6 +711,8 @@ func (r AuthRuleState) IsKnown() bool {
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 //     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleType string
 
 const (
@@ -644,11 +720,12 @@ const (
 	AuthRuleTypeVelocityLimit     AuthRuleType = "VELOCITY_LIMIT"
 	AuthRuleTypeMerchantLock      AuthRuleType = "MERCHANT_LOCK"
 	AuthRuleTypeConditionalAction AuthRuleType = "CONDITIONAL_ACTION"
+	AuthRuleTypeTypescriptCode    AuthRuleType = "TYPESCRIPT_CODE"
 )
 
 func (r AuthRuleType) IsKnown() bool {
 	switch r {
-	case AuthRuleTypeConditionalBlock, AuthRuleTypeVelocityLimit, AuthRuleTypeMerchantLock, AuthRuleTypeConditionalAction:
+	case AuthRuleTypeConditionalBlock, AuthRuleTypeVelocityLimit, AuthRuleTypeMerchantLock, AuthRuleTypeConditionalAction, AuthRuleTypeTypescriptCode:
 		return true
 	}
 	return false
@@ -3279,12 +3356,828 @@ func (r ReportStatsExamplesDecision) IsKnown() bool {
 	return false
 }
 
+// A feature made available to the rule. The `name` field is the variable name used
+// in the rule function signature. The `type` field determines which data the
+// feature provides to the rule at evaluation time.
+//
+//   - `AUTHORIZATION`: The authorization request being evaluated. Only available for
+//     AUTHORIZATION event stream rules.
+//   - `AUTHENTICATION`: The 3DS authentication request being evaluated. Only
+//     available for THREE_DS_AUTHENTICATION event stream rules.
+//   - `TOKENIZATION`: The tokenization request being evaluated. Only available for
+//     TOKENIZATION event stream rules.
+//   - `ACH_RECEIPT`: The ACH receipt being evaluated. Only available for
+//     ACH_CREDIT_RECEIPT and ACH_DEBIT_RECEIPT event stream rules.
+//   - `CARD`: The card associated with the event. Available for AUTHORIZATION and
+//     THREE_DS_AUTHENTICATION event stream rules.
+//   - `ACCOUNT_HOLDER`: The account holder associated with the card. Available for
+//     THREE_DS_AUTHENTICATION event stream rules.
+//   - `IP_METADATA`: IP address metadata for the request. Available for
+//     THREE_DS_AUTHENTICATION event stream rules.
+//   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
+//     `scope`, `period`, and optionally `filters` to configure the velocity
+//     calculation. Available for AUTHORIZATION event stream rules.
+type RuleFeature struct {
+	Type    RuleFeatureType      `json:"type" api:"required"`
+	Filters VelocityLimitFilters `json:"filters"`
+	// The variable name for this feature in the rule function signature
+	Name string `json:"name"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitPeriod `json:"period"`
+	// The scope the velocity is calculated for
+	Scope RuleFeatureScope `json:"scope"`
+	JSON  ruleFeatureJSON  `json:"-"`
+	union RuleFeatureUnion
+}
+
+// ruleFeatureJSON contains the JSON metadata for the struct [RuleFeature]
+type ruleFeatureJSON struct {
+	Type        apijson.Field
+	Filters     apijson.Field
+	Name        apijson.Field
+	Period      apijson.Field
+	Scope       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r ruleFeatureJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r *RuleFeature) UnmarshalJSON(data []byte) (err error) {
+	*r = RuleFeature{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a [RuleFeatureUnion] interface which you can cast to the
+// specific types for more type safety.
+//
+// Possible runtime types of the union are [RuleFeatureAuthorizationFeature],
+// [RuleFeatureAuthenticationFeature], [RuleFeatureTokenizationFeature],
+// [RuleFeatureACHReceiptFeature], [RuleFeatureCardFeature],
+// [RuleFeatureAccountHolderFeature], [RuleFeatureIPMetadataFeature],
+// [RuleFeatureSpendVelocityFeature].
+func (r RuleFeature) AsUnion() RuleFeatureUnion {
+	return r.union
+}
+
+// A feature made available to the rule. The `name` field is the variable name used
+// in the rule function signature. The `type` field determines which data the
+// feature provides to the rule at evaluation time.
+//
+//   - `AUTHORIZATION`: The authorization request being evaluated. Only available for
+//     AUTHORIZATION event stream rules.
+//   - `AUTHENTICATION`: The 3DS authentication request being evaluated. Only
+//     available for THREE_DS_AUTHENTICATION event stream rules.
+//   - `TOKENIZATION`: The tokenization request being evaluated. Only available for
+//     TOKENIZATION event stream rules.
+//   - `ACH_RECEIPT`: The ACH receipt being evaluated. Only available for
+//     ACH_CREDIT_RECEIPT and ACH_DEBIT_RECEIPT event stream rules.
+//   - `CARD`: The card associated with the event. Available for AUTHORIZATION and
+//     THREE_DS_AUTHENTICATION event stream rules.
+//   - `ACCOUNT_HOLDER`: The account holder associated with the card. Available for
+//     THREE_DS_AUTHENTICATION event stream rules.
+//   - `IP_METADATA`: IP address metadata for the request. Available for
+//     THREE_DS_AUTHENTICATION event stream rules.
+//   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
+//     `scope`, `period`, and optionally `filters` to configure the velocity
+//     calculation. Available for AUTHORIZATION event stream rules.
+//
+// Union satisfied by [RuleFeatureAuthorizationFeature],
+// [RuleFeatureAuthenticationFeature], [RuleFeatureTokenizationFeature],
+// [RuleFeatureACHReceiptFeature], [RuleFeatureCardFeature],
+// [RuleFeatureAccountHolderFeature], [RuleFeatureIPMetadataFeature] or
+// [RuleFeatureSpendVelocityFeature].
+type RuleFeatureUnion interface {
+	implementsRuleFeature()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*RuleFeatureUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(RuleFeatureAuthorizationFeature{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(RuleFeatureAuthenticationFeature{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(RuleFeatureTokenizationFeature{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(RuleFeatureACHReceiptFeature{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(RuleFeatureCardFeature{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(RuleFeatureAccountHolderFeature{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(RuleFeatureIPMetadataFeature{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(RuleFeatureSpendVelocityFeature{}),
+		},
+	)
+}
+
+type RuleFeatureAuthorizationFeature struct {
+	Type RuleFeatureAuthorizationFeatureType `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name string                              `json:"name"`
+	JSON ruleFeatureAuthorizationFeatureJSON `json:"-"`
+}
+
+// ruleFeatureAuthorizationFeatureJSON contains the JSON metadata for the struct
+// [RuleFeatureAuthorizationFeature]
+type ruleFeatureAuthorizationFeatureJSON struct {
+	Type        apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *RuleFeatureAuthorizationFeature) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r ruleFeatureAuthorizationFeatureJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r RuleFeatureAuthorizationFeature) implementsRuleFeature() {}
+
+type RuleFeatureAuthorizationFeatureType string
+
+const (
+	RuleFeatureAuthorizationFeatureTypeAuthorization RuleFeatureAuthorizationFeatureType = "AUTHORIZATION"
+)
+
+func (r RuleFeatureAuthorizationFeatureType) IsKnown() bool {
+	switch r {
+	case RuleFeatureAuthorizationFeatureTypeAuthorization:
+		return true
+	}
+	return false
+}
+
+type RuleFeatureAuthenticationFeature struct {
+	Type RuleFeatureAuthenticationFeatureType `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name string                               `json:"name"`
+	JSON ruleFeatureAuthenticationFeatureJSON `json:"-"`
+}
+
+// ruleFeatureAuthenticationFeatureJSON contains the JSON metadata for the struct
+// [RuleFeatureAuthenticationFeature]
+type ruleFeatureAuthenticationFeatureJSON struct {
+	Type        apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *RuleFeatureAuthenticationFeature) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r ruleFeatureAuthenticationFeatureJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r RuleFeatureAuthenticationFeature) implementsRuleFeature() {}
+
+type RuleFeatureAuthenticationFeatureType string
+
+const (
+	RuleFeatureAuthenticationFeatureTypeAuthentication RuleFeatureAuthenticationFeatureType = "AUTHENTICATION"
+)
+
+func (r RuleFeatureAuthenticationFeatureType) IsKnown() bool {
+	switch r {
+	case RuleFeatureAuthenticationFeatureTypeAuthentication:
+		return true
+	}
+	return false
+}
+
+type RuleFeatureTokenizationFeature struct {
+	Type RuleFeatureTokenizationFeatureType `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name string                             `json:"name"`
+	JSON ruleFeatureTokenizationFeatureJSON `json:"-"`
+}
+
+// ruleFeatureTokenizationFeatureJSON contains the JSON metadata for the struct
+// [RuleFeatureTokenizationFeature]
+type ruleFeatureTokenizationFeatureJSON struct {
+	Type        apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *RuleFeatureTokenizationFeature) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r ruleFeatureTokenizationFeatureJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r RuleFeatureTokenizationFeature) implementsRuleFeature() {}
+
+type RuleFeatureTokenizationFeatureType string
+
+const (
+	RuleFeatureTokenizationFeatureTypeTokenization RuleFeatureTokenizationFeatureType = "TOKENIZATION"
+)
+
+func (r RuleFeatureTokenizationFeatureType) IsKnown() bool {
+	switch r {
+	case RuleFeatureTokenizationFeatureTypeTokenization:
+		return true
+	}
+	return false
+}
+
+type RuleFeatureACHReceiptFeature struct {
+	Type RuleFeatureACHReceiptFeatureType `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name string                           `json:"name"`
+	JSON ruleFeatureACHReceiptFeatureJSON `json:"-"`
+}
+
+// ruleFeatureACHReceiptFeatureJSON contains the JSON metadata for the struct
+// [RuleFeatureACHReceiptFeature]
+type ruleFeatureACHReceiptFeatureJSON struct {
+	Type        apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *RuleFeatureACHReceiptFeature) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r ruleFeatureACHReceiptFeatureJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r RuleFeatureACHReceiptFeature) implementsRuleFeature() {}
+
+type RuleFeatureACHReceiptFeatureType string
+
+const (
+	RuleFeatureACHReceiptFeatureTypeACHReceipt RuleFeatureACHReceiptFeatureType = "ACH_RECEIPT"
+)
+
+func (r RuleFeatureACHReceiptFeatureType) IsKnown() bool {
+	switch r {
+	case RuleFeatureACHReceiptFeatureTypeACHReceipt:
+		return true
+	}
+	return false
+}
+
+type RuleFeatureCardFeature struct {
+	Type RuleFeatureCardFeatureType `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name string                     `json:"name"`
+	JSON ruleFeatureCardFeatureJSON `json:"-"`
+}
+
+// ruleFeatureCardFeatureJSON contains the JSON metadata for the struct
+// [RuleFeatureCardFeature]
+type ruleFeatureCardFeatureJSON struct {
+	Type        apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *RuleFeatureCardFeature) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r ruleFeatureCardFeatureJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r RuleFeatureCardFeature) implementsRuleFeature() {}
+
+type RuleFeatureCardFeatureType string
+
+const (
+	RuleFeatureCardFeatureTypeCard RuleFeatureCardFeatureType = "CARD"
+)
+
+func (r RuleFeatureCardFeatureType) IsKnown() bool {
+	switch r {
+	case RuleFeatureCardFeatureTypeCard:
+		return true
+	}
+	return false
+}
+
+type RuleFeatureAccountHolderFeature struct {
+	Type RuleFeatureAccountHolderFeatureType `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name string                              `json:"name"`
+	JSON ruleFeatureAccountHolderFeatureJSON `json:"-"`
+}
+
+// ruleFeatureAccountHolderFeatureJSON contains the JSON metadata for the struct
+// [RuleFeatureAccountHolderFeature]
+type ruleFeatureAccountHolderFeatureJSON struct {
+	Type        apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *RuleFeatureAccountHolderFeature) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r ruleFeatureAccountHolderFeatureJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r RuleFeatureAccountHolderFeature) implementsRuleFeature() {}
+
+type RuleFeatureAccountHolderFeatureType string
+
+const (
+	RuleFeatureAccountHolderFeatureTypeAccountHolder RuleFeatureAccountHolderFeatureType = "ACCOUNT_HOLDER"
+)
+
+func (r RuleFeatureAccountHolderFeatureType) IsKnown() bool {
+	switch r {
+	case RuleFeatureAccountHolderFeatureTypeAccountHolder:
+		return true
+	}
+	return false
+}
+
+type RuleFeatureIPMetadataFeature struct {
+	Type RuleFeatureIPMetadataFeatureType `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name string                           `json:"name"`
+	JSON ruleFeatureIPMetadataFeatureJSON `json:"-"`
+}
+
+// ruleFeatureIPMetadataFeatureJSON contains the JSON metadata for the struct
+// [RuleFeatureIPMetadataFeature]
+type ruleFeatureIPMetadataFeatureJSON struct {
+	Type        apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *RuleFeatureIPMetadataFeature) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r ruleFeatureIPMetadataFeatureJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r RuleFeatureIPMetadataFeature) implementsRuleFeature() {}
+
+type RuleFeatureIPMetadataFeatureType string
+
+const (
+	RuleFeatureIPMetadataFeatureTypeIPMetadata RuleFeatureIPMetadataFeatureType = "IP_METADATA"
+)
+
+func (r RuleFeatureIPMetadataFeatureType) IsKnown() bool {
+	switch r {
+	case RuleFeatureIPMetadataFeatureTypeIPMetadata:
+		return true
+	}
+	return false
+}
+
+type RuleFeatureSpendVelocityFeature struct {
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitPeriod `json:"period" api:"required"`
+	// The scope the velocity is calculated for
+	Scope   RuleFeatureSpendVelocityFeatureScope `json:"scope" api:"required"`
+	Type    RuleFeatureSpendVelocityFeatureType  `json:"type" api:"required"`
+	Filters VelocityLimitFilters                 `json:"filters"`
+	// The variable name for this feature in the rule function signature
+	Name string                              `json:"name"`
+	JSON ruleFeatureSpendVelocityFeatureJSON `json:"-"`
+}
+
+// ruleFeatureSpendVelocityFeatureJSON contains the JSON metadata for the struct
+// [RuleFeatureSpendVelocityFeature]
+type ruleFeatureSpendVelocityFeatureJSON struct {
+	Period      apijson.Field
+	Scope       apijson.Field
+	Type        apijson.Field
+	Filters     apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *RuleFeatureSpendVelocityFeature) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r ruleFeatureSpendVelocityFeatureJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r RuleFeatureSpendVelocityFeature) implementsRuleFeature() {}
+
+// The scope the velocity is calculated for
+type RuleFeatureSpendVelocityFeatureScope string
+
+const (
+	RuleFeatureSpendVelocityFeatureScopeCard    RuleFeatureSpendVelocityFeatureScope = "CARD"
+	RuleFeatureSpendVelocityFeatureScopeAccount RuleFeatureSpendVelocityFeatureScope = "ACCOUNT"
+)
+
+func (r RuleFeatureSpendVelocityFeatureScope) IsKnown() bool {
+	switch r {
+	case RuleFeatureSpendVelocityFeatureScopeCard, RuleFeatureSpendVelocityFeatureScopeAccount:
+		return true
+	}
+	return false
+}
+
+type RuleFeatureSpendVelocityFeatureType string
+
+const (
+	RuleFeatureSpendVelocityFeatureTypeSpendVelocity RuleFeatureSpendVelocityFeatureType = "SPEND_VELOCITY"
+)
+
+func (r RuleFeatureSpendVelocityFeatureType) IsKnown() bool {
+	switch r {
+	case RuleFeatureSpendVelocityFeatureTypeSpendVelocity:
+		return true
+	}
+	return false
+}
+
+type RuleFeatureType string
+
+const (
+	RuleFeatureTypeAuthorization  RuleFeatureType = "AUTHORIZATION"
+	RuleFeatureTypeAuthentication RuleFeatureType = "AUTHENTICATION"
+	RuleFeatureTypeTokenization   RuleFeatureType = "TOKENIZATION"
+	RuleFeatureTypeACHReceipt     RuleFeatureType = "ACH_RECEIPT"
+	RuleFeatureTypeCard           RuleFeatureType = "CARD"
+	RuleFeatureTypeAccountHolder  RuleFeatureType = "ACCOUNT_HOLDER"
+	RuleFeatureTypeIPMetadata     RuleFeatureType = "IP_METADATA"
+	RuleFeatureTypeSpendVelocity  RuleFeatureType = "SPEND_VELOCITY"
+)
+
+func (r RuleFeatureType) IsKnown() bool {
+	switch r {
+	case RuleFeatureTypeAuthorization, RuleFeatureTypeAuthentication, RuleFeatureTypeTokenization, RuleFeatureTypeACHReceipt, RuleFeatureTypeCard, RuleFeatureTypeAccountHolder, RuleFeatureTypeIPMetadata, RuleFeatureTypeSpendVelocity:
+		return true
+	}
+	return false
+}
+
+// The scope the velocity is calculated for
+type RuleFeatureScope string
+
+const (
+	RuleFeatureScopeCard    RuleFeatureScope = "CARD"
+	RuleFeatureScopeAccount RuleFeatureScope = "ACCOUNT"
+)
+
+func (r RuleFeatureScope) IsKnown() bool {
+	switch r {
+	case RuleFeatureScopeCard, RuleFeatureScopeAccount:
+		return true
+	}
+	return false
+}
+
+// A feature made available to the rule. The `name` field is the variable name used
+// in the rule function signature. The `type` field determines which data the
+// feature provides to the rule at evaluation time.
+//
+//   - `AUTHORIZATION`: The authorization request being evaluated. Only available for
+//     AUTHORIZATION event stream rules.
+//   - `AUTHENTICATION`: The 3DS authentication request being evaluated. Only
+//     available for THREE_DS_AUTHENTICATION event stream rules.
+//   - `TOKENIZATION`: The tokenization request being evaluated. Only available for
+//     TOKENIZATION event stream rules.
+//   - `ACH_RECEIPT`: The ACH receipt being evaluated. Only available for
+//     ACH_CREDIT_RECEIPT and ACH_DEBIT_RECEIPT event stream rules.
+//   - `CARD`: The card associated with the event. Available for AUTHORIZATION and
+//     THREE_DS_AUTHENTICATION event stream rules.
+//   - `ACCOUNT_HOLDER`: The account holder associated with the card. Available for
+//     THREE_DS_AUTHENTICATION event stream rules.
+//   - `IP_METADATA`: IP address metadata for the request. Available for
+//     THREE_DS_AUTHENTICATION event stream rules.
+//   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
+//     `scope`, `period`, and optionally `filters` to configure the velocity
+//     calculation. Available for AUTHORIZATION event stream rules.
+type RuleFeatureParam struct {
+	Type    param.Field[RuleFeatureType]           `json:"type" api:"required"`
+	Filters param.Field[VelocityLimitFiltersParam] `json:"filters"`
+	// The variable name for this feature in the rule function signature
+	Name param.Field[string] `json:"name"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period param.Field[VelocityLimitPeriodUnionParam] `json:"period"`
+	// The scope the velocity is calculated for
+	Scope param.Field[RuleFeatureScope] `json:"scope"`
+}
+
+func (r RuleFeatureParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r RuleFeatureParam) implementsRuleFeatureUnionParam() {}
+
+// A feature made available to the rule. The `name` field is the variable name used
+// in the rule function signature. The `type` field determines which data the
+// feature provides to the rule at evaluation time.
+//
+//   - `AUTHORIZATION`: The authorization request being evaluated. Only available for
+//     AUTHORIZATION event stream rules.
+//   - `AUTHENTICATION`: The 3DS authentication request being evaluated. Only
+//     available for THREE_DS_AUTHENTICATION event stream rules.
+//   - `TOKENIZATION`: The tokenization request being evaluated. Only available for
+//     TOKENIZATION event stream rules.
+//   - `ACH_RECEIPT`: The ACH receipt being evaluated. Only available for
+//     ACH_CREDIT_RECEIPT and ACH_DEBIT_RECEIPT event stream rules.
+//   - `CARD`: The card associated with the event. Available for AUTHORIZATION and
+//     THREE_DS_AUTHENTICATION event stream rules.
+//   - `ACCOUNT_HOLDER`: The account holder associated with the card. Available for
+//     THREE_DS_AUTHENTICATION event stream rules.
+//   - `IP_METADATA`: IP address metadata for the request. Available for
+//     THREE_DS_AUTHENTICATION event stream rules.
+//   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
+//     `scope`, `period`, and optionally `filters` to configure the velocity
+//     calculation. Available for AUTHORIZATION event stream rules.
+//
+// Satisfied by [RuleFeatureAuthorizationFeatureParam],
+// [RuleFeatureAuthenticationFeatureParam], [RuleFeatureTokenizationFeatureParam],
+// [RuleFeatureACHReceiptFeatureParam], [RuleFeatureCardFeatureParam],
+// [RuleFeatureAccountHolderFeatureParam], [RuleFeatureIPMetadataFeatureParam],
+// [RuleFeatureSpendVelocityFeatureParam], [RuleFeatureParam].
+type RuleFeatureUnionParam interface {
+	implementsRuleFeatureUnionParam()
+}
+
+type RuleFeatureAuthorizationFeatureParam struct {
+	Type param.Field[RuleFeatureAuthorizationFeatureType] `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name param.Field[string] `json:"name"`
+}
+
+func (r RuleFeatureAuthorizationFeatureParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r RuleFeatureAuthorizationFeatureParam) implementsRuleFeatureUnionParam() {}
+
+type RuleFeatureAuthenticationFeatureParam struct {
+	Type param.Field[RuleFeatureAuthenticationFeatureType] `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name param.Field[string] `json:"name"`
+}
+
+func (r RuleFeatureAuthenticationFeatureParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r RuleFeatureAuthenticationFeatureParam) implementsRuleFeatureUnionParam() {}
+
+type RuleFeatureTokenizationFeatureParam struct {
+	Type param.Field[RuleFeatureTokenizationFeatureType] `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name param.Field[string] `json:"name"`
+}
+
+func (r RuleFeatureTokenizationFeatureParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r RuleFeatureTokenizationFeatureParam) implementsRuleFeatureUnionParam() {}
+
+type RuleFeatureACHReceiptFeatureParam struct {
+	Type param.Field[RuleFeatureACHReceiptFeatureType] `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name param.Field[string] `json:"name"`
+}
+
+func (r RuleFeatureACHReceiptFeatureParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r RuleFeatureACHReceiptFeatureParam) implementsRuleFeatureUnionParam() {}
+
+type RuleFeatureCardFeatureParam struct {
+	Type param.Field[RuleFeatureCardFeatureType] `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name param.Field[string] `json:"name"`
+}
+
+func (r RuleFeatureCardFeatureParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r RuleFeatureCardFeatureParam) implementsRuleFeatureUnionParam() {}
+
+type RuleFeatureAccountHolderFeatureParam struct {
+	Type param.Field[RuleFeatureAccountHolderFeatureType] `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name param.Field[string] `json:"name"`
+}
+
+func (r RuleFeatureAccountHolderFeatureParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r RuleFeatureAccountHolderFeatureParam) implementsRuleFeatureUnionParam() {}
+
+type RuleFeatureIPMetadataFeatureParam struct {
+	Type param.Field[RuleFeatureIPMetadataFeatureType] `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name param.Field[string] `json:"name"`
+}
+
+func (r RuleFeatureIPMetadataFeatureParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r RuleFeatureIPMetadataFeatureParam) implementsRuleFeatureUnionParam() {}
+
+type RuleFeatureSpendVelocityFeatureParam struct {
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period param.Field[VelocityLimitPeriodUnionParam] `json:"period" api:"required"`
+	// The scope the velocity is calculated for
+	Scope   param.Field[RuleFeatureSpendVelocityFeatureScope] `json:"scope" api:"required"`
+	Type    param.Field[RuleFeatureSpendVelocityFeatureType]  `json:"type" api:"required"`
+	Filters param.Field[VelocityLimitFiltersParam]            `json:"filters"`
+	// The variable name for this feature in the rule function signature
+	Name param.Field[string] `json:"name"`
+}
+
+func (r RuleFeatureSpendVelocityFeatureParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r RuleFeatureSpendVelocityFeatureParam) implementsRuleFeatureUnionParam() {}
+
+// Parameters for defining a TypeScript code rule
+type TypescriptCodeParameters struct {
+	// The TypeScript source code of the rule. Must define a `rule()` function that
+	// accepts the declared features as positional arguments (in the same order as the
+	// `features` array) and returns an array of actions.
+	Code string `json:"code" api:"required"`
+	// Features available to the TypeScript code at evaluation time
+	Features []RuleFeature                `json:"features" api:"required"`
+	JSON     typescriptCodeParametersJSON `json:"-"`
+}
+
+// typescriptCodeParametersJSON contains the JSON metadata for the struct
+// [TypescriptCodeParameters]
+type typescriptCodeParametersJSON struct {
+	Code        apijson.Field
+	Features    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *TypescriptCodeParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r typescriptCodeParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r TypescriptCodeParameters) implementsAuthRuleCurrentVersionParameters() {}
+
+func (r TypescriptCodeParameters) implementsAuthRuleDraftVersionParameters() {}
+
+type VelocityLimitFilters struct {
+	// ISO-3166-1 alpha-3 Country Codes to exclude from the velocity calculation.
+	// Transactions matching any of the provided will be excluded from the calculated
+	// velocity.
+	ExcludeCountries []string `json:"exclude_countries" api:"nullable"`
+	// Merchant Category Codes to exclude from the velocity calculation. Transactions
+	// matching this MCC will be excluded from the calculated velocity.
+	ExcludeMccs []string `json:"exclude_mccs" api:"nullable"`
+	// ISO-3166-1 alpha-3 Country Codes to include in the velocity calculation.
+	// Transactions not matching any of the provided will not be included in the
+	// calculated velocity.
+	IncludeCountries []string `json:"include_countries" api:"nullable"`
+	// Merchant Category Codes to include in the velocity calculation. Transactions not
+	// matching this MCC will not be included in the calculated velocity.
+	IncludeMccs []string `json:"include_mccs" api:"nullable"`
+	// PAN entry modes to include in the velocity calculation. Transactions not
+	// matching any of the provided will not be included in the calculated velocity.
+	IncludePanEntryModes []VelocityLimitFiltersIncludePanEntryMode `json:"include_pan_entry_modes" api:"nullable"`
+	JSON                 velocityLimitFiltersJSON                  `json:"-"`
+}
+
+// velocityLimitFiltersJSON contains the JSON metadata for the struct
+// [VelocityLimitFilters]
+type velocityLimitFiltersJSON struct {
+	ExcludeCountries     apijson.Field
+	ExcludeMccs          apijson.Field
+	IncludeCountries     apijson.Field
+	IncludeMccs          apijson.Field
+	IncludePanEntryModes apijson.Field
+	raw                  string
+	ExtraFields          map[string]apijson.Field
+}
+
+func (r *VelocityLimitFilters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r velocityLimitFiltersJSON) RawJSON() string {
+	return r.raw
+}
+
+type VelocityLimitFiltersIncludePanEntryMode string
+
+const (
+	VelocityLimitFiltersIncludePanEntryModeAutoEntry           VelocityLimitFiltersIncludePanEntryMode = "AUTO_ENTRY"
+	VelocityLimitFiltersIncludePanEntryModeBarCode             VelocityLimitFiltersIncludePanEntryMode = "BAR_CODE"
+	VelocityLimitFiltersIncludePanEntryModeContactless         VelocityLimitFiltersIncludePanEntryMode = "CONTACTLESS"
+	VelocityLimitFiltersIncludePanEntryModeCredentialOnFile    VelocityLimitFiltersIncludePanEntryMode = "CREDENTIAL_ON_FILE"
+	VelocityLimitFiltersIncludePanEntryModeEcommerce           VelocityLimitFiltersIncludePanEntryMode = "ECOMMERCE"
+	VelocityLimitFiltersIncludePanEntryModeErrorKeyed          VelocityLimitFiltersIncludePanEntryMode = "ERROR_KEYED"
+	VelocityLimitFiltersIncludePanEntryModeErrorMagneticStripe VelocityLimitFiltersIncludePanEntryMode = "ERROR_MAGNETIC_STRIPE"
+	VelocityLimitFiltersIncludePanEntryModeIcc                 VelocityLimitFiltersIncludePanEntryMode = "ICC"
+	VelocityLimitFiltersIncludePanEntryModeKeyEntered          VelocityLimitFiltersIncludePanEntryMode = "KEY_ENTERED"
+	VelocityLimitFiltersIncludePanEntryModeMagneticStripe      VelocityLimitFiltersIncludePanEntryMode = "MAGNETIC_STRIPE"
+	VelocityLimitFiltersIncludePanEntryModeManual              VelocityLimitFiltersIncludePanEntryMode = "MANUAL"
+	VelocityLimitFiltersIncludePanEntryModeOcr                 VelocityLimitFiltersIncludePanEntryMode = "OCR"
+	VelocityLimitFiltersIncludePanEntryModeSecureCardless      VelocityLimitFiltersIncludePanEntryMode = "SECURE_CARDLESS"
+	VelocityLimitFiltersIncludePanEntryModeUnspecified         VelocityLimitFiltersIncludePanEntryMode = "UNSPECIFIED"
+	VelocityLimitFiltersIncludePanEntryModeUnknown             VelocityLimitFiltersIncludePanEntryMode = "UNKNOWN"
+)
+
+func (r VelocityLimitFiltersIncludePanEntryMode) IsKnown() bool {
+	switch r {
+	case VelocityLimitFiltersIncludePanEntryModeAutoEntry, VelocityLimitFiltersIncludePanEntryModeBarCode, VelocityLimitFiltersIncludePanEntryModeContactless, VelocityLimitFiltersIncludePanEntryModeCredentialOnFile, VelocityLimitFiltersIncludePanEntryModeEcommerce, VelocityLimitFiltersIncludePanEntryModeErrorKeyed, VelocityLimitFiltersIncludePanEntryModeErrorMagneticStripe, VelocityLimitFiltersIncludePanEntryModeIcc, VelocityLimitFiltersIncludePanEntryModeKeyEntered, VelocityLimitFiltersIncludePanEntryModeMagneticStripe, VelocityLimitFiltersIncludePanEntryModeManual, VelocityLimitFiltersIncludePanEntryModeOcr, VelocityLimitFiltersIncludePanEntryModeSecureCardless, VelocityLimitFiltersIncludePanEntryModeUnspecified, VelocityLimitFiltersIncludePanEntryModeUnknown:
+		return true
+	}
+	return false
+}
+
+type VelocityLimitFiltersParam struct {
+	// ISO-3166-1 alpha-3 Country Codes to exclude from the velocity calculation.
+	// Transactions matching any of the provided will be excluded from the calculated
+	// velocity.
+	ExcludeCountries param.Field[[]string] `json:"exclude_countries"`
+	// Merchant Category Codes to exclude from the velocity calculation. Transactions
+	// matching this MCC will be excluded from the calculated velocity.
+	ExcludeMccs param.Field[[]string] `json:"exclude_mccs"`
+	// ISO-3166-1 alpha-3 Country Codes to include in the velocity calculation.
+	// Transactions not matching any of the provided will not be included in the
+	// calculated velocity.
+	IncludeCountries param.Field[[]string] `json:"include_countries"`
+	// Merchant Category Codes to include in the velocity calculation. Transactions not
+	// matching this MCC will not be included in the calculated velocity.
+	IncludeMccs param.Field[[]string] `json:"include_mccs"`
+	// PAN entry modes to include in the velocity calculation. Transactions not
+	// matching any of the provided will not be included in the calculated velocity.
+	IncludePanEntryModes param.Field[[]VelocityLimitFiltersIncludePanEntryMode] `json:"include_pan_entry_modes"`
+}
+
+func (r VelocityLimitFiltersParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
 type VelocityLimitParams struct {
 	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
 	Period VelocityLimitPeriod `json:"period" api:"required"`
 	// The scope the velocity is calculated for
-	Scope   VelocityLimitParamsScope   `json:"scope" api:"required"`
-	Filters VelocityLimitParamsFilters `json:"filters"`
+	Scope   VelocityLimitParamsScope `json:"scope" api:"required"`
+	Filters VelocityLimitFilters     `json:"filters"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -3333,75 +4226,6 @@ const (
 func (r VelocityLimitParamsScope) IsKnown() bool {
 	switch r {
 	case VelocityLimitParamsScopeCard, VelocityLimitParamsScopeAccount:
-		return true
-	}
-	return false
-}
-
-type VelocityLimitParamsFilters struct {
-	// ISO-3166-1 alpha-3 Country Codes to exclude from the velocity calculation.
-	// Transactions matching any of the provided will be excluded from the calculated
-	// velocity.
-	ExcludeCountries []string `json:"exclude_countries" api:"nullable"`
-	// Merchant Category Codes to exclude from the velocity calculation. Transactions
-	// matching this MCC will be excluded from the calculated velocity.
-	ExcludeMccs []string `json:"exclude_mccs" api:"nullable"`
-	// ISO-3166-1 alpha-3 Country Codes to include in the velocity calculation.
-	// Transactions not matching any of the provided will not be included in the
-	// calculated velocity.
-	IncludeCountries []string `json:"include_countries" api:"nullable"`
-	// Merchant Category Codes to include in the velocity calculation. Transactions not
-	// matching this MCC will not be included in the calculated velocity.
-	IncludeMccs []string `json:"include_mccs" api:"nullable"`
-	// PAN entry modes to include in the velocity calculation. Transactions not
-	// matching any of the provided will not be included in the calculated velocity.
-	IncludePanEntryModes []VelocityLimitParamsFiltersIncludePanEntryMode `json:"include_pan_entry_modes" api:"nullable"`
-	JSON                 velocityLimitParamsFiltersJSON                  `json:"-"`
-}
-
-// velocityLimitParamsFiltersJSON contains the JSON metadata for the struct
-// [VelocityLimitParamsFilters]
-type velocityLimitParamsFiltersJSON struct {
-	ExcludeCountries     apijson.Field
-	ExcludeMccs          apijson.Field
-	IncludeCountries     apijson.Field
-	IncludeMccs          apijson.Field
-	IncludePanEntryModes apijson.Field
-	raw                  string
-	ExtraFields          map[string]apijson.Field
-}
-
-func (r *VelocityLimitParamsFilters) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r velocityLimitParamsFiltersJSON) RawJSON() string {
-	return r.raw
-}
-
-type VelocityLimitParamsFiltersIncludePanEntryMode string
-
-const (
-	VelocityLimitParamsFiltersIncludePanEntryModeAutoEntry           VelocityLimitParamsFiltersIncludePanEntryMode = "AUTO_ENTRY"
-	VelocityLimitParamsFiltersIncludePanEntryModeBarCode             VelocityLimitParamsFiltersIncludePanEntryMode = "BAR_CODE"
-	VelocityLimitParamsFiltersIncludePanEntryModeContactless         VelocityLimitParamsFiltersIncludePanEntryMode = "CONTACTLESS"
-	VelocityLimitParamsFiltersIncludePanEntryModeCredentialOnFile    VelocityLimitParamsFiltersIncludePanEntryMode = "CREDENTIAL_ON_FILE"
-	VelocityLimitParamsFiltersIncludePanEntryModeEcommerce           VelocityLimitParamsFiltersIncludePanEntryMode = "ECOMMERCE"
-	VelocityLimitParamsFiltersIncludePanEntryModeErrorKeyed          VelocityLimitParamsFiltersIncludePanEntryMode = "ERROR_KEYED"
-	VelocityLimitParamsFiltersIncludePanEntryModeErrorMagneticStripe VelocityLimitParamsFiltersIncludePanEntryMode = "ERROR_MAGNETIC_STRIPE"
-	VelocityLimitParamsFiltersIncludePanEntryModeIcc                 VelocityLimitParamsFiltersIncludePanEntryMode = "ICC"
-	VelocityLimitParamsFiltersIncludePanEntryModeKeyEntered          VelocityLimitParamsFiltersIncludePanEntryMode = "KEY_ENTERED"
-	VelocityLimitParamsFiltersIncludePanEntryModeMagneticStripe      VelocityLimitParamsFiltersIncludePanEntryMode = "MAGNETIC_STRIPE"
-	VelocityLimitParamsFiltersIncludePanEntryModeManual              VelocityLimitParamsFiltersIncludePanEntryMode = "MANUAL"
-	VelocityLimitParamsFiltersIncludePanEntryModeOcr                 VelocityLimitParamsFiltersIncludePanEntryMode = "OCR"
-	VelocityLimitParamsFiltersIncludePanEntryModeSecureCardless      VelocityLimitParamsFiltersIncludePanEntryMode = "SECURE_CARDLESS"
-	VelocityLimitParamsFiltersIncludePanEntryModeUnspecified         VelocityLimitParamsFiltersIncludePanEntryMode = "UNSPECIFIED"
-	VelocityLimitParamsFiltersIncludePanEntryModeUnknown             VelocityLimitParamsFiltersIncludePanEntryMode = "UNKNOWN"
-)
-
-func (r VelocityLimitParamsFiltersIncludePanEntryMode) IsKnown() bool {
-	switch r {
-	case VelocityLimitParamsFiltersIncludePanEntryModeAutoEntry, VelocityLimitParamsFiltersIncludePanEntryModeBarCode, VelocityLimitParamsFiltersIncludePanEntryModeContactless, VelocityLimitParamsFiltersIncludePanEntryModeCredentialOnFile, VelocityLimitParamsFiltersIncludePanEntryModeEcommerce, VelocityLimitParamsFiltersIncludePanEntryModeErrorKeyed, VelocityLimitParamsFiltersIncludePanEntryModeErrorMagneticStripe, VelocityLimitParamsFiltersIncludePanEntryModeIcc, VelocityLimitParamsFiltersIncludePanEntryModeKeyEntered, VelocityLimitParamsFiltersIncludePanEntryModeMagneticStripe, VelocityLimitParamsFiltersIncludePanEntryModeManual, VelocityLimitParamsFiltersIncludePanEntryModeOcr, VelocityLimitParamsFiltersIncludePanEntryModeSecureCardless, VelocityLimitParamsFiltersIncludePanEntryModeUnspecified, VelocityLimitParamsFiltersIncludePanEntryModeUnknown:
 		return true
 	}
 	return false
@@ -5281,7 +6105,7 @@ func (r authRuleV2GetFeaturesResponseJSON) RawJSON() string {
 }
 
 type AuthRuleV2GetFeaturesResponseFeature struct {
-	Filters AuthRuleV2GetFeaturesResponseFeaturesFilters `json:"filters" api:"required"`
+	Filters VelocityLimitFilters `json:"filters" api:"required"`
 	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
 	Period VelocityLimitPeriod `json:"period" api:"required"`
 	// The scope the velocity is calculated for
@@ -5307,75 +6131,6 @@ func (r *AuthRuleV2GetFeaturesResponseFeature) UnmarshalJSON(data []byte) (err e
 
 func (r authRuleV2GetFeaturesResponseFeatureJSON) RawJSON() string {
 	return r.raw
-}
-
-type AuthRuleV2GetFeaturesResponseFeaturesFilters struct {
-	// ISO-3166-1 alpha-3 Country Codes to exclude from the velocity calculation.
-	// Transactions matching any of the provided will be excluded from the calculated
-	// velocity.
-	ExcludeCountries []string `json:"exclude_countries" api:"nullable"`
-	// Merchant Category Codes to exclude from the velocity calculation. Transactions
-	// matching this MCC will be excluded from the calculated velocity.
-	ExcludeMccs []string `json:"exclude_mccs" api:"nullable"`
-	// ISO-3166-1 alpha-3 Country Codes to include in the velocity calculation.
-	// Transactions not matching any of the provided will not be included in the
-	// calculated velocity.
-	IncludeCountries []string `json:"include_countries" api:"nullable"`
-	// Merchant Category Codes to include in the velocity calculation. Transactions not
-	// matching this MCC will not be included in the calculated velocity.
-	IncludeMccs []string `json:"include_mccs" api:"nullable"`
-	// PAN entry modes to include in the velocity calculation. Transactions not
-	// matching any of the provided will not be included in the calculated velocity.
-	IncludePanEntryModes []AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode `json:"include_pan_entry_modes" api:"nullable"`
-	JSON                 authRuleV2GetFeaturesResponseFeaturesFiltersJSON                  `json:"-"`
-}
-
-// authRuleV2GetFeaturesResponseFeaturesFiltersJSON contains the JSON metadata for
-// the struct [AuthRuleV2GetFeaturesResponseFeaturesFilters]
-type authRuleV2GetFeaturesResponseFeaturesFiltersJSON struct {
-	ExcludeCountries     apijson.Field
-	ExcludeMccs          apijson.Field
-	IncludeCountries     apijson.Field
-	IncludeMccs          apijson.Field
-	IncludePanEntryModes apijson.Field
-	raw                  string
-	ExtraFields          map[string]apijson.Field
-}
-
-func (r *AuthRuleV2GetFeaturesResponseFeaturesFilters) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r authRuleV2GetFeaturesResponseFeaturesFiltersJSON) RawJSON() string {
-	return r.raw
-}
-
-type AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode string
-
-const (
-	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeAutoEntry           AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "AUTO_ENTRY"
-	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeBarCode             AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "BAR_CODE"
-	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeContactless         AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "CONTACTLESS"
-	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeCredentialOnFile    AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "CREDENTIAL_ON_FILE"
-	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeEcommerce           AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "ECOMMERCE"
-	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeErrorKeyed          AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "ERROR_KEYED"
-	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeErrorMagneticStripe AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "ERROR_MAGNETIC_STRIPE"
-	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeIcc                 AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "ICC"
-	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeKeyEntered          AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "KEY_ENTERED"
-	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeMagneticStripe      AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "MAGNETIC_STRIPE"
-	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeManual              AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "MANUAL"
-	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeOcr                 AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "OCR"
-	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeSecureCardless      AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "SECURE_CARDLESS"
-	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeUnspecified         AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "UNSPECIFIED"
-	AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeUnknown             AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode = "UNKNOWN"
-)
-
-func (r AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryMode) IsKnown() bool {
-	switch r {
-	case AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeAutoEntry, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeBarCode, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeContactless, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeCredentialOnFile, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeEcommerce, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeErrorKeyed, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeErrorMagneticStripe, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeIcc, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeKeyEntered, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeMagneticStripe, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeManual, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeOcr, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeSecureCardless, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeUnspecified, AuthRuleV2GetFeaturesResponseFeaturesFiltersIncludePanEntryModeUnknown:
-		return true
-	}
-	return false
 }
 
 // The scope the velocity is calculated for
@@ -5502,13 +6257,17 @@ type AuthRuleV2NewParamsBody struct {
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type                  param.Field[AuthRuleV2NewParamsBodyType] `json:"type" api:"required"`
 	AccountTokens         param.Field[interface{}]                 `json:"account_tokens"`
 	BusinessAccountTokens param.Field[interface{}]                 `json:"business_account_tokens"`
 	CardTokens            param.Field[interface{}]                 `json:"card_tokens"`
 	// The event stream during which the rule will be evaluated.
-	EventStream        param.Field[EventStream] `json:"event_stream"`
-	ExcludedCardTokens param.Field[interface{}] `json:"excluded_card_tokens"`
+	EventStream                   param.Field[EventStream] `json:"event_stream"`
+	ExcludedAccountTokens         param.Field[interface{}] `json:"excluded_account_tokens"`
+	ExcludedBusinessAccountTokens param.Field[interface{}] `json:"excluded_business_account_tokens"`
+	ExcludedCardTokens            param.Field[interface{}] `json:"excluded_card_tokens"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
@@ -5542,6 +6301,8 @@ type AuthRuleV2NewParamsBodyAccountLevelRule struct {
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type param.Field[AuthRuleV2NewParamsBodyAccountLevelRuleType] `json:"type" api:"required"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens param.Field[[]string] `json:"account_tokens" format:"uuid"`
@@ -5561,9 +6322,14 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRule) implementsAuthRuleV2NewParamsBo
 
 // Parameters for the Auth Rule
 type AuthRuleV2NewParamsBodyAccountLevelRuleParameters struct {
-	Action     param.Field[interface{}] `json:"action"`
-	Conditions param.Field[interface{}] `json:"conditions"`
-	Filters    param.Field[interface{}] `json:"filters"`
+	Action param.Field[interface{}] `json:"action"`
+	// The TypeScript source code of the rule. Must define a `rule()` function that
+	// accepts the declared features as positional arguments (in the same order as the
+	// `features` array) and returns an array of actions.
+	Code       param.Field[string]                    `json:"code"`
+	Conditions param.Field[interface{}]               `json:"conditions"`
+	Features   param.Field[interface{}]               `json:"features"`
+	Filters    param.Field[VelocityLimitFiltersParam] `json:"filters"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -5593,7 +6359,7 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRuleParameters) implementsAuthRuleV2N
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [MerchantLockParameters], [Conditional3DSActionParameters],
 // [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
-// [ConditionalTokenizationActionParameters],
+// [ConditionalTokenizationActionParameters], [TypescriptCodeParameters],
 // [AuthRuleV2NewParamsBodyAccountLevelRuleParameters].
 type AuthRuleV2NewParamsBodyAccountLevelRuleParametersUnion interface {
 	implementsAuthRuleV2NewParamsBodyAccountLevelRuleParametersUnion()
@@ -5626,6 +6392,8 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRuleParametersScope) IsKnown() bool {
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 //     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleV2NewParamsBodyAccountLevelRuleType string
 
 const (
@@ -5633,11 +6401,12 @@ const (
 	AuthRuleV2NewParamsBodyAccountLevelRuleTypeVelocityLimit     AuthRuleV2NewParamsBodyAccountLevelRuleType = "VELOCITY_LIMIT"
 	AuthRuleV2NewParamsBodyAccountLevelRuleTypeMerchantLock      AuthRuleV2NewParamsBodyAccountLevelRuleType = "MERCHANT_LOCK"
 	AuthRuleV2NewParamsBodyAccountLevelRuleTypeConditionalAction AuthRuleV2NewParamsBodyAccountLevelRuleType = "CONDITIONAL_ACTION"
+	AuthRuleV2NewParamsBodyAccountLevelRuleTypeTypescriptCode    AuthRuleV2NewParamsBodyAccountLevelRuleType = "TYPESCRIPT_CODE"
 )
 
 func (r AuthRuleV2NewParamsBodyAccountLevelRuleType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyAccountLevelRuleTypeConditionalBlock, AuthRuleV2NewParamsBodyAccountLevelRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyAccountLevelRuleTypeMerchantLock, AuthRuleV2NewParamsBodyAccountLevelRuleTypeConditionalAction:
+	case AuthRuleV2NewParamsBodyAccountLevelRuleTypeConditionalBlock, AuthRuleV2NewParamsBodyAccountLevelRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyAccountLevelRuleTypeMerchantLock, AuthRuleV2NewParamsBodyAccountLevelRuleTypeConditionalAction, AuthRuleV2NewParamsBodyAccountLevelRuleTypeTypescriptCode:
 		return true
 	}
 	return false
@@ -5659,6 +6428,8 @@ type AuthRuleV2NewParamsBodyCardLevelRule struct {
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type param.Field[AuthRuleV2NewParamsBodyCardLevelRuleType] `json:"type" api:"required"`
 	// The event stream during which the rule will be evaluated.
 	EventStream param.Field[EventStream] `json:"event_stream"`
@@ -5674,9 +6445,14 @@ func (r AuthRuleV2NewParamsBodyCardLevelRule) implementsAuthRuleV2NewParamsBodyU
 
 // Parameters for the Auth Rule
 type AuthRuleV2NewParamsBodyCardLevelRuleParameters struct {
-	Action     param.Field[interface{}] `json:"action"`
-	Conditions param.Field[interface{}] `json:"conditions"`
-	Filters    param.Field[interface{}] `json:"filters"`
+	Action param.Field[interface{}] `json:"action"`
+	// The TypeScript source code of the rule. Must define a `rule()` function that
+	// accepts the declared features as positional arguments (in the same order as the
+	// `features` array) and returns an array of actions.
+	Code       param.Field[string]                    `json:"code"`
+	Conditions param.Field[interface{}]               `json:"conditions"`
+	Features   param.Field[interface{}]               `json:"features"`
+	Filters    param.Field[VelocityLimitFiltersParam] `json:"filters"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -5706,7 +6482,7 @@ func (r AuthRuleV2NewParamsBodyCardLevelRuleParameters) implementsAuthRuleV2NewP
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [MerchantLockParameters], [Conditional3DSActionParameters],
 // [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
-// [ConditionalTokenizationActionParameters],
+// [ConditionalTokenizationActionParameters], [TypescriptCodeParameters],
 // [AuthRuleV2NewParamsBodyCardLevelRuleParameters].
 type AuthRuleV2NewParamsBodyCardLevelRuleParametersUnion interface {
 	implementsAuthRuleV2NewParamsBodyCardLevelRuleParametersUnion()
@@ -5739,6 +6515,8 @@ func (r AuthRuleV2NewParamsBodyCardLevelRuleParametersScope) IsKnown() bool {
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 //     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleV2NewParamsBodyCardLevelRuleType string
 
 const (
@@ -5746,11 +6524,12 @@ const (
 	AuthRuleV2NewParamsBodyCardLevelRuleTypeVelocityLimit     AuthRuleV2NewParamsBodyCardLevelRuleType = "VELOCITY_LIMIT"
 	AuthRuleV2NewParamsBodyCardLevelRuleTypeMerchantLock      AuthRuleV2NewParamsBodyCardLevelRuleType = "MERCHANT_LOCK"
 	AuthRuleV2NewParamsBodyCardLevelRuleTypeConditionalAction AuthRuleV2NewParamsBodyCardLevelRuleType = "CONDITIONAL_ACTION"
+	AuthRuleV2NewParamsBodyCardLevelRuleTypeTypescriptCode    AuthRuleV2NewParamsBodyCardLevelRuleType = "TYPESCRIPT_CODE"
 )
 
 func (r AuthRuleV2NewParamsBodyCardLevelRuleType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCardLevelRuleTypeConditionalBlock, AuthRuleV2NewParamsBodyCardLevelRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyCardLevelRuleTypeMerchantLock, AuthRuleV2NewParamsBodyCardLevelRuleTypeConditionalAction:
+	case AuthRuleV2NewParamsBodyCardLevelRuleTypeConditionalBlock, AuthRuleV2NewParamsBodyCardLevelRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyCardLevelRuleTypeMerchantLock, AuthRuleV2NewParamsBodyCardLevelRuleTypeConditionalAction, AuthRuleV2NewParamsBodyCardLevelRuleTypeTypescriptCode:
 		return true
 	}
 	return false
@@ -5772,9 +6551,15 @@ type AuthRuleV2NewParamsBodyProgramLevelRule struct {
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type param.Field[AuthRuleV2NewParamsBodyProgramLevelRuleType] `json:"type" api:"required"`
 	// The event stream during which the rule will be evaluated.
 	EventStream param.Field[EventStream] `json:"event_stream"`
+	// Account tokens to which the Auth Rule does not apply.
+	ExcludedAccountTokens param.Field[[]string] `json:"excluded_account_tokens" format:"uuid"`
+	// Business account tokens to which the Auth Rule does not apply.
+	ExcludedBusinessAccountTokens param.Field[[]string] `json:"excluded_business_account_tokens" format:"uuid"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens param.Field[[]string] `json:"excluded_card_tokens" format:"uuid"`
 	// Auth Rule Name
@@ -5789,9 +6574,14 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRule) implementsAuthRuleV2NewParamsBo
 
 // Parameters for the Auth Rule
 type AuthRuleV2NewParamsBodyProgramLevelRuleParameters struct {
-	Action     param.Field[interface{}] `json:"action"`
-	Conditions param.Field[interface{}] `json:"conditions"`
-	Filters    param.Field[interface{}] `json:"filters"`
+	Action param.Field[interface{}] `json:"action"`
+	// The TypeScript source code of the rule. Must define a `rule()` function that
+	// accepts the declared features as positional arguments (in the same order as the
+	// `features` array) and returns an array of actions.
+	Code       param.Field[string]                    `json:"code"`
+	Conditions param.Field[interface{}]               `json:"conditions"`
+	Features   param.Field[interface{}]               `json:"features"`
+	Filters    param.Field[VelocityLimitFiltersParam] `json:"filters"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -5821,7 +6611,7 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleParameters) implementsAuthRuleV2N
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [MerchantLockParameters], [Conditional3DSActionParameters],
 // [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
-// [ConditionalTokenizationActionParameters],
+// [ConditionalTokenizationActionParameters], [TypescriptCodeParameters],
 // [AuthRuleV2NewParamsBodyProgramLevelRuleParameters].
 type AuthRuleV2NewParamsBodyProgramLevelRuleParametersUnion interface {
 	implementsAuthRuleV2NewParamsBodyProgramLevelRuleParametersUnion()
@@ -5854,6 +6644,8 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleParametersScope) IsKnown() bool {
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 //     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleV2NewParamsBodyProgramLevelRuleType string
 
 const (
@@ -5861,11 +6653,12 @@ const (
 	AuthRuleV2NewParamsBodyProgramLevelRuleTypeVelocityLimit     AuthRuleV2NewParamsBodyProgramLevelRuleType = "VELOCITY_LIMIT"
 	AuthRuleV2NewParamsBodyProgramLevelRuleTypeMerchantLock      AuthRuleV2NewParamsBodyProgramLevelRuleType = "MERCHANT_LOCK"
 	AuthRuleV2NewParamsBodyProgramLevelRuleTypeConditionalAction AuthRuleV2NewParamsBodyProgramLevelRuleType = "CONDITIONAL_ACTION"
+	AuthRuleV2NewParamsBodyProgramLevelRuleTypeTypescriptCode    AuthRuleV2NewParamsBodyProgramLevelRuleType = "TYPESCRIPT_CODE"
 )
 
 func (r AuthRuleV2NewParamsBodyProgramLevelRuleType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyProgramLevelRuleTypeConditionalBlock, AuthRuleV2NewParamsBodyProgramLevelRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyProgramLevelRuleTypeMerchantLock, AuthRuleV2NewParamsBodyProgramLevelRuleTypeConditionalAction:
+	case AuthRuleV2NewParamsBodyProgramLevelRuleTypeConditionalBlock, AuthRuleV2NewParamsBodyProgramLevelRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyProgramLevelRuleTypeMerchantLock, AuthRuleV2NewParamsBodyProgramLevelRuleTypeConditionalAction, AuthRuleV2NewParamsBodyProgramLevelRuleTypeTypescriptCode:
 		return true
 	}
 	return false
@@ -5882,6 +6675,8 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleType) IsKnown() bool {
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 //     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleV2NewParamsBodyType string
 
 const (
@@ -5889,11 +6684,12 @@ const (
 	AuthRuleV2NewParamsBodyTypeVelocityLimit     AuthRuleV2NewParamsBodyType = "VELOCITY_LIMIT"
 	AuthRuleV2NewParamsBodyTypeMerchantLock      AuthRuleV2NewParamsBodyType = "MERCHANT_LOCK"
 	AuthRuleV2NewParamsBodyTypeConditionalAction AuthRuleV2NewParamsBodyType = "CONDITIONAL_ACTION"
+	AuthRuleV2NewParamsBodyTypeTypescriptCode    AuthRuleV2NewParamsBodyType = "TYPESCRIPT_CODE"
 )
 
 func (r AuthRuleV2NewParamsBodyType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyTypeConditionalBlock, AuthRuleV2NewParamsBodyTypeVelocityLimit, AuthRuleV2NewParamsBodyTypeMerchantLock, AuthRuleV2NewParamsBodyTypeConditionalAction:
+	case AuthRuleV2NewParamsBodyTypeConditionalBlock, AuthRuleV2NewParamsBodyTypeVelocityLimit, AuthRuleV2NewParamsBodyTypeMerchantLock, AuthRuleV2NewParamsBodyTypeConditionalAction, AuthRuleV2NewParamsBodyTypeTypescriptCode:
 		return true
 	}
 	return false
@@ -5908,10 +6704,12 @@ func (r AuthRuleV2UpdateParams) MarshalJSON() (data []byte, err error) {
 }
 
 type AuthRuleV2UpdateParamsBody struct {
-	AccountTokens         param.Field[interface{}] `json:"account_tokens"`
-	BusinessAccountTokens param.Field[interface{}] `json:"business_account_tokens"`
-	CardTokens            param.Field[interface{}] `json:"card_tokens"`
-	ExcludedCardTokens    param.Field[interface{}] `json:"excluded_card_tokens"`
+	AccountTokens                 param.Field[interface{}] `json:"account_tokens"`
+	BusinessAccountTokens         param.Field[interface{}] `json:"business_account_tokens"`
+	CardTokens                    param.Field[interface{}] `json:"card_tokens"`
+	ExcludedAccountTokens         param.Field[interface{}] `json:"excluded_account_tokens"`
+	ExcludedBusinessAccountTokens param.Field[interface{}] `json:"excluded_business_account_tokens"`
+	ExcludedCardTokens            param.Field[interface{}] `json:"excluded_card_tokens"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
 	// Whether the Auth Rule applies to all authorizations on the card program.
@@ -6016,6 +6814,10 @@ func (r AuthRuleV2UpdateParamsBodyCardLevelRuleState) IsKnown() bool {
 }
 
 type AuthRuleV2UpdateParamsBodyProgramLevelRule struct {
+	// Account tokens to which the Auth Rule does not apply.
+	ExcludedAccountTokens param.Field[[]string] `json:"excluded_account_tokens" format:"uuid"`
+	// Business account tokens to which the Auth Rule does not apply.
+	ExcludedBusinessAccountTokens param.Field[[]string] `json:"excluded_business_account_tokens" format:"uuid"`
 	// Card tokens to which the Auth Rule does not apply.
 	ExcludedCardTokens param.Field[[]string] `json:"excluded_card_tokens" format:"uuid"`
 	// Auth Rule Name
@@ -6138,9 +6940,14 @@ func (r AuthRuleV2DraftParams) MarshalJSON() (data []byte, err error) {
 
 // Parameters for the Auth Rule
 type AuthRuleV2DraftParamsParameters struct {
-	Action     param.Field[interface{}] `json:"action"`
-	Conditions param.Field[interface{}] `json:"conditions"`
-	Filters    param.Field[interface{}] `json:"filters"`
+	Action param.Field[interface{}] `json:"action"`
+	// The TypeScript source code of the rule. Must define a `rule()` function that
+	// accepts the declared features as positional arguments (in the same order as the
+	// `features` array) and returns an array of actions.
+	Code       param.Field[string]                    `json:"code"`
+	Conditions param.Field[interface{}]               `json:"conditions"`
+	Features   param.Field[interface{}]               `json:"features"`
+	Filters    param.Field[VelocityLimitFiltersParam] `json:"filters"`
 	// The maximum amount of spend velocity allowed in the period in minor units (the
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
@@ -6169,7 +6976,8 @@ func (r AuthRuleV2DraftParamsParameters) implementsAuthRuleV2DraftParamsParamete
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [MerchantLockParameters], [Conditional3DSActionParameters],
 // [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
-// [ConditionalTokenizationActionParameters], [AuthRuleV2DraftParamsParameters].
+// [ConditionalTokenizationActionParameters], [TypescriptCodeParameters],
+// [AuthRuleV2DraftParamsParameters].
 type AuthRuleV2DraftParamsParametersUnion interface {
 	implementsAuthRuleV2DraftParamsParametersUnion()
 }

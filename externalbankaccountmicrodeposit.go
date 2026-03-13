@@ -40,11 +40,11 @@ func (r *ExternalBankAccountMicroDepositService) New(ctx context.Context, extern
 	opts = slices.Concat(r.Options, opts)
 	if externalBankAccountToken == "" {
 		err = errors.New("missing required external_bank_account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/external_bank_accounts/%s/micro_deposits", externalBankAccountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 type ExternalBankAccountMicroDepositNewResponse struct {

@@ -43,7 +43,7 @@ func (r *EventSubscriptionService) New(ctx context.Context, body EventSubscripti
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/event_subscriptions"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Get an event subscription.
@@ -51,11 +51,11 @@ func (r *EventSubscriptionService) Get(ctx context.Context, eventSubscriptionTok
 	opts = slices.Concat(r.Options, opts)
 	if eventSubscriptionToken == "" {
 		err = errors.New("missing required event_subscription_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/event_subscriptions/%s", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Update an event subscription.
@@ -63,11 +63,11 @@ func (r *EventSubscriptionService) Update(ctx context.Context, eventSubscription
 	opts = slices.Concat(r.Options, opts)
 	if eventSubscriptionToken == "" {
 		err = errors.New("missing required event_subscription_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/event_subscriptions/%s", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // List all the event subscriptions.
@@ -99,11 +99,11 @@ func (r *EventSubscriptionService) Delete(ctx context.Context, eventSubscription
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if eventSubscriptionToken == "" {
 		err = errors.New("missing required event_subscription_token parameter")
-		return
+		return err
 	}
 	path := fmt.Sprintf("v1/event_subscriptions/%s", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodDelete, path, nil, nil, opts...)
-	return
+	return err
 }
 
 // List all the message attempts for a given event subscription.
@@ -113,7 +113,7 @@ func (r *EventSubscriptionService) ListAttempts(ctx context.Context, eventSubscr
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if eventSubscriptionToken == "" {
 		err = errors.New("missing required event_subscription_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/event_subscriptions/%s/attempts", eventSubscriptionToken)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -139,11 +139,11 @@ func (r *EventSubscriptionService) Recover(ctx context.Context, eventSubscriptio
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if eventSubscriptionToken == "" {
 		err = errors.New("missing required event_subscription_token parameter")
-		return
+		return err
 	}
 	path := fmt.Sprintf("v1/event_subscriptions/%s/recover", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
-	return
+	return err
 }
 
 // Replays messages to the endpoint. Only messages that were created after `begin`
@@ -156,11 +156,11 @@ func (r *EventSubscriptionService) ReplayMissing(ctx context.Context, eventSubsc
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if eventSubscriptionToken == "" {
 		err = errors.New("missing required event_subscription_token parameter")
-		return
+		return err
 	}
 	path := fmt.Sprintf("v1/event_subscriptions/%s/replay_missing", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
-	return
+	return err
 }
 
 // Get the secret for an event subscription.
@@ -168,11 +168,11 @@ func (r *EventSubscriptionService) GetSecret(ctx context.Context, eventSubscript
 	opts = slices.Concat(r.Options, opts)
 	if eventSubscriptionToken == "" {
 		err = errors.New("missing required event_subscription_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/event_subscriptions/%s/secret", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Rotate the secret for an event subscription. The previous secret will be valid
@@ -182,11 +182,11 @@ func (r *EventSubscriptionService) RotateSecret(ctx context.Context, eventSubscr
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if eventSubscriptionToken == "" {
 		err = errors.New("missing required event_subscription_token parameter")
-		return
+		return err
 	}
 	path := fmt.Sprintf("v1/event_subscriptions/%s/secret/rotate", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
-	return
+	return err
 }
 
 // Send an example message for event.
@@ -195,11 +195,11 @@ func (r *EventSubscriptionService) SendSimulatedExample(ctx context.Context, eve
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	if eventSubscriptionToken == "" {
 		err = errors.New("missing required event_subscription_token parameter")
-		return
+		return err
 	}
 	path := fmt.Sprintf("v1/simulate/event_subscriptions/%s/send_example", eventSubscriptionToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
-	return
+	return err
 }
 
 type EventSubscriptionGetSecretResponse struct {
@@ -266,9 +266,6 @@ func (r EventSubscriptionNewParams) MarshalJSON() (data []byte, err error) {
 //   - card.renewed: Occurs when a card is renewed.
 //   - card.shipped: Occurs when a card is shipped.
 //   - card.updated: Occurs when a card is updated.
-//   - digital_wallet.tokenization_approval_request: Occurs when a tokenization
-//     approval request is made. This event will be deprecated in the future. We
-//     recommend using `tokenization.approval_request` instead.
 //   - digital_wallet.tokenization_result: Occurs when a tokenization request
 //     succeeded or failed.
 //
@@ -361,7 +358,6 @@ const (
 	EventSubscriptionNewParamsEventTypeCardRenewed                                              EventSubscriptionNewParamsEventType = "card.renewed"
 	EventSubscriptionNewParamsEventTypeCardShipped                                              EventSubscriptionNewParamsEventType = "card.shipped"
 	EventSubscriptionNewParamsEventTypeCardUpdated                                              EventSubscriptionNewParamsEventType = "card.updated"
-	EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationApprovalRequest                 EventSubscriptionNewParamsEventType = "digital_wallet.tokenization_approval_request"
 	EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationResult                          EventSubscriptionNewParamsEventType = "digital_wallet.tokenization_result"
 	EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode     EventSubscriptionNewParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent EventSubscriptionNewParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code_sent"
@@ -401,7 +397,7 @@ const (
 
 func (r EventSubscriptionNewParamsEventType) IsKnown() bool {
 	switch r {
-	case EventSubscriptionNewParamsEventTypeAccountHolderDocumentUpdated, EventSubscriptionNewParamsEventTypeAccountHolderCreated, EventSubscriptionNewParamsEventTypeAccountHolderUpdated, EventSubscriptionNewParamsEventTypeAccountHolderVerification, EventSubscriptionNewParamsEventTypeAuthRulesBacktestReportCreated, EventSubscriptionNewParamsEventTypeBalanceUpdated, EventSubscriptionNewParamsEventTypeBookTransferTransactionCreated, EventSubscriptionNewParamsEventTypeBookTransferTransactionUpdated, EventSubscriptionNewParamsEventTypeCardTransactionEnhancedDataCreated, EventSubscriptionNewParamsEventTypeCardTransactionEnhancedDataUpdated, EventSubscriptionNewParamsEventTypeCardTransactionUpdated, EventSubscriptionNewParamsEventTypeCardConverted, EventSubscriptionNewParamsEventTypeCardCreated, EventSubscriptionNewParamsEventTypeCardReissued, EventSubscriptionNewParamsEventTypeCardRenewed, EventSubscriptionNewParamsEventTypeCardShipped, EventSubscriptionNewParamsEventTypeCardUpdated, EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationResult, EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationUpdated, EventSubscriptionNewParamsEventTypeDisputeEvidenceUploadFailed, EventSubscriptionNewParamsEventTypeDisputeTransactionCreated, EventSubscriptionNewParamsEventTypeDisputeTransactionUpdated, EventSubscriptionNewParamsEventTypeDisputeUpdated, EventSubscriptionNewParamsEventTypeExternalBankAccountCreated, EventSubscriptionNewParamsEventTypeExternalBankAccountUpdated, EventSubscriptionNewParamsEventTypeExternalPaymentCreated, EventSubscriptionNewParamsEventTypeExternalPaymentUpdated, EventSubscriptionNewParamsEventTypeFinancialAccountCreated, EventSubscriptionNewParamsEventTypeFinancialAccountUpdated, EventSubscriptionNewParamsEventTypeFundingEventCreated, EventSubscriptionNewParamsEventTypeInternalTransactionCreated, EventSubscriptionNewParamsEventTypeInternalTransactionUpdated, EventSubscriptionNewParamsEventTypeLoanTapeCreated, EventSubscriptionNewParamsEventTypeLoanTapeUpdated, EventSubscriptionNewParamsEventTypeManagementOperationCreated, EventSubscriptionNewParamsEventTypeManagementOperationUpdated, EventSubscriptionNewParamsEventTypeNetworkTotalCreated, EventSubscriptionNewParamsEventTypeNetworkTotalUpdated, EventSubscriptionNewParamsEventTypePaymentTransactionCreated, EventSubscriptionNewParamsEventTypePaymentTransactionUpdated, EventSubscriptionNewParamsEventTypeSettlementReportUpdated, EventSubscriptionNewParamsEventTypeStatementsCreated, EventSubscriptionNewParamsEventTypeThreeDSAuthenticationChallenge, EventSubscriptionNewParamsEventTypeThreeDSAuthenticationCreated, EventSubscriptionNewParamsEventTypeThreeDSAuthenticationUpdated, EventSubscriptionNewParamsEventTypeTokenizationApprovalRequest, EventSubscriptionNewParamsEventTypeTokenizationResult, EventSubscriptionNewParamsEventTypeTokenizationTwoFactorAuthenticationCode, EventSubscriptionNewParamsEventTypeTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionNewParamsEventTypeTokenizationUpdated:
+	case EventSubscriptionNewParamsEventTypeAccountHolderDocumentUpdated, EventSubscriptionNewParamsEventTypeAccountHolderCreated, EventSubscriptionNewParamsEventTypeAccountHolderUpdated, EventSubscriptionNewParamsEventTypeAccountHolderVerification, EventSubscriptionNewParamsEventTypeAuthRulesBacktestReportCreated, EventSubscriptionNewParamsEventTypeBalanceUpdated, EventSubscriptionNewParamsEventTypeBookTransferTransactionCreated, EventSubscriptionNewParamsEventTypeBookTransferTransactionUpdated, EventSubscriptionNewParamsEventTypeCardTransactionEnhancedDataCreated, EventSubscriptionNewParamsEventTypeCardTransactionEnhancedDataUpdated, EventSubscriptionNewParamsEventTypeCardTransactionUpdated, EventSubscriptionNewParamsEventTypeCardConverted, EventSubscriptionNewParamsEventTypeCardCreated, EventSubscriptionNewParamsEventTypeCardReissued, EventSubscriptionNewParamsEventTypeCardRenewed, EventSubscriptionNewParamsEventTypeCardShipped, EventSubscriptionNewParamsEventTypeCardUpdated, EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationResult, EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionNewParamsEventTypeDigitalWalletTokenizationUpdated, EventSubscriptionNewParamsEventTypeDisputeEvidenceUploadFailed, EventSubscriptionNewParamsEventTypeDisputeTransactionCreated, EventSubscriptionNewParamsEventTypeDisputeTransactionUpdated, EventSubscriptionNewParamsEventTypeDisputeUpdated, EventSubscriptionNewParamsEventTypeExternalBankAccountCreated, EventSubscriptionNewParamsEventTypeExternalBankAccountUpdated, EventSubscriptionNewParamsEventTypeExternalPaymentCreated, EventSubscriptionNewParamsEventTypeExternalPaymentUpdated, EventSubscriptionNewParamsEventTypeFinancialAccountCreated, EventSubscriptionNewParamsEventTypeFinancialAccountUpdated, EventSubscriptionNewParamsEventTypeFundingEventCreated, EventSubscriptionNewParamsEventTypeInternalTransactionCreated, EventSubscriptionNewParamsEventTypeInternalTransactionUpdated, EventSubscriptionNewParamsEventTypeLoanTapeCreated, EventSubscriptionNewParamsEventTypeLoanTapeUpdated, EventSubscriptionNewParamsEventTypeManagementOperationCreated, EventSubscriptionNewParamsEventTypeManagementOperationUpdated, EventSubscriptionNewParamsEventTypeNetworkTotalCreated, EventSubscriptionNewParamsEventTypeNetworkTotalUpdated, EventSubscriptionNewParamsEventTypePaymentTransactionCreated, EventSubscriptionNewParamsEventTypePaymentTransactionUpdated, EventSubscriptionNewParamsEventTypeSettlementReportUpdated, EventSubscriptionNewParamsEventTypeStatementsCreated, EventSubscriptionNewParamsEventTypeThreeDSAuthenticationChallenge, EventSubscriptionNewParamsEventTypeThreeDSAuthenticationCreated, EventSubscriptionNewParamsEventTypeThreeDSAuthenticationUpdated, EventSubscriptionNewParamsEventTypeTokenizationApprovalRequest, EventSubscriptionNewParamsEventTypeTokenizationResult, EventSubscriptionNewParamsEventTypeTokenizationTwoFactorAuthenticationCode, EventSubscriptionNewParamsEventTypeTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionNewParamsEventTypeTokenizationUpdated:
 		return true
 	}
 	return false
@@ -449,9 +445,6 @@ func (r EventSubscriptionUpdateParams) MarshalJSON() (data []byte, err error) {
 //   - card.renewed: Occurs when a card is renewed.
 //   - card.shipped: Occurs when a card is shipped.
 //   - card.updated: Occurs when a card is updated.
-//   - digital_wallet.tokenization_approval_request: Occurs when a tokenization
-//     approval request is made. This event will be deprecated in the future. We
-//     recommend using `tokenization.approval_request` instead.
 //   - digital_wallet.tokenization_result: Occurs when a tokenization request
 //     succeeded or failed.
 //
@@ -544,7 +537,6 @@ const (
 	EventSubscriptionUpdateParamsEventTypeCardRenewed                                              EventSubscriptionUpdateParamsEventType = "card.renewed"
 	EventSubscriptionUpdateParamsEventTypeCardShipped                                              EventSubscriptionUpdateParamsEventType = "card.shipped"
 	EventSubscriptionUpdateParamsEventTypeCardUpdated                                              EventSubscriptionUpdateParamsEventType = "card.updated"
-	EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationApprovalRequest                 EventSubscriptionUpdateParamsEventType = "digital_wallet.tokenization_approval_request"
 	EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationResult                          EventSubscriptionUpdateParamsEventType = "digital_wallet.tokenization_result"
 	EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode     EventSubscriptionUpdateParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent EventSubscriptionUpdateParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code_sent"
@@ -584,7 +576,7 @@ const (
 
 func (r EventSubscriptionUpdateParamsEventType) IsKnown() bool {
 	switch r {
-	case EventSubscriptionUpdateParamsEventTypeAccountHolderDocumentUpdated, EventSubscriptionUpdateParamsEventTypeAccountHolderCreated, EventSubscriptionUpdateParamsEventTypeAccountHolderUpdated, EventSubscriptionUpdateParamsEventTypeAccountHolderVerification, EventSubscriptionUpdateParamsEventTypeAuthRulesBacktestReportCreated, EventSubscriptionUpdateParamsEventTypeBalanceUpdated, EventSubscriptionUpdateParamsEventTypeBookTransferTransactionCreated, EventSubscriptionUpdateParamsEventTypeBookTransferTransactionUpdated, EventSubscriptionUpdateParamsEventTypeCardTransactionEnhancedDataCreated, EventSubscriptionUpdateParamsEventTypeCardTransactionEnhancedDataUpdated, EventSubscriptionUpdateParamsEventTypeCardTransactionUpdated, EventSubscriptionUpdateParamsEventTypeCardConverted, EventSubscriptionUpdateParamsEventTypeCardCreated, EventSubscriptionUpdateParamsEventTypeCardReissued, EventSubscriptionUpdateParamsEventTypeCardRenewed, EventSubscriptionUpdateParamsEventTypeCardShipped, EventSubscriptionUpdateParamsEventTypeCardUpdated, EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationResult, EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationUpdated, EventSubscriptionUpdateParamsEventTypeDisputeEvidenceUploadFailed, EventSubscriptionUpdateParamsEventTypeDisputeTransactionCreated, EventSubscriptionUpdateParamsEventTypeDisputeTransactionUpdated, EventSubscriptionUpdateParamsEventTypeDisputeUpdated, EventSubscriptionUpdateParamsEventTypeExternalBankAccountCreated, EventSubscriptionUpdateParamsEventTypeExternalBankAccountUpdated, EventSubscriptionUpdateParamsEventTypeExternalPaymentCreated, EventSubscriptionUpdateParamsEventTypeExternalPaymentUpdated, EventSubscriptionUpdateParamsEventTypeFinancialAccountCreated, EventSubscriptionUpdateParamsEventTypeFinancialAccountUpdated, EventSubscriptionUpdateParamsEventTypeFundingEventCreated, EventSubscriptionUpdateParamsEventTypeInternalTransactionCreated, EventSubscriptionUpdateParamsEventTypeInternalTransactionUpdated, EventSubscriptionUpdateParamsEventTypeLoanTapeCreated, EventSubscriptionUpdateParamsEventTypeLoanTapeUpdated, EventSubscriptionUpdateParamsEventTypeManagementOperationCreated, EventSubscriptionUpdateParamsEventTypeManagementOperationUpdated, EventSubscriptionUpdateParamsEventTypeNetworkTotalCreated, EventSubscriptionUpdateParamsEventTypeNetworkTotalUpdated, EventSubscriptionUpdateParamsEventTypePaymentTransactionCreated, EventSubscriptionUpdateParamsEventTypePaymentTransactionUpdated, EventSubscriptionUpdateParamsEventTypeSettlementReportUpdated, EventSubscriptionUpdateParamsEventTypeStatementsCreated, EventSubscriptionUpdateParamsEventTypeThreeDSAuthenticationChallenge, EventSubscriptionUpdateParamsEventTypeThreeDSAuthenticationCreated, EventSubscriptionUpdateParamsEventTypeThreeDSAuthenticationUpdated, EventSubscriptionUpdateParamsEventTypeTokenizationApprovalRequest, EventSubscriptionUpdateParamsEventTypeTokenizationResult, EventSubscriptionUpdateParamsEventTypeTokenizationTwoFactorAuthenticationCode, EventSubscriptionUpdateParamsEventTypeTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionUpdateParamsEventTypeTokenizationUpdated:
+	case EventSubscriptionUpdateParamsEventTypeAccountHolderDocumentUpdated, EventSubscriptionUpdateParamsEventTypeAccountHolderCreated, EventSubscriptionUpdateParamsEventTypeAccountHolderUpdated, EventSubscriptionUpdateParamsEventTypeAccountHolderVerification, EventSubscriptionUpdateParamsEventTypeAuthRulesBacktestReportCreated, EventSubscriptionUpdateParamsEventTypeBalanceUpdated, EventSubscriptionUpdateParamsEventTypeBookTransferTransactionCreated, EventSubscriptionUpdateParamsEventTypeBookTransferTransactionUpdated, EventSubscriptionUpdateParamsEventTypeCardTransactionEnhancedDataCreated, EventSubscriptionUpdateParamsEventTypeCardTransactionEnhancedDataUpdated, EventSubscriptionUpdateParamsEventTypeCardTransactionUpdated, EventSubscriptionUpdateParamsEventTypeCardConverted, EventSubscriptionUpdateParamsEventTypeCardCreated, EventSubscriptionUpdateParamsEventTypeCardReissued, EventSubscriptionUpdateParamsEventTypeCardRenewed, EventSubscriptionUpdateParamsEventTypeCardShipped, EventSubscriptionUpdateParamsEventTypeCardUpdated, EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationResult, EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionUpdateParamsEventTypeDigitalWalletTokenizationUpdated, EventSubscriptionUpdateParamsEventTypeDisputeEvidenceUploadFailed, EventSubscriptionUpdateParamsEventTypeDisputeTransactionCreated, EventSubscriptionUpdateParamsEventTypeDisputeTransactionUpdated, EventSubscriptionUpdateParamsEventTypeDisputeUpdated, EventSubscriptionUpdateParamsEventTypeExternalBankAccountCreated, EventSubscriptionUpdateParamsEventTypeExternalBankAccountUpdated, EventSubscriptionUpdateParamsEventTypeExternalPaymentCreated, EventSubscriptionUpdateParamsEventTypeExternalPaymentUpdated, EventSubscriptionUpdateParamsEventTypeFinancialAccountCreated, EventSubscriptionUpdateParamsEventTypeFinancialAccountUpdated, EventSubscriptionUpdateParamsEventTypeFundingEventCreated, EventSubscriptionUpdateParamsEventTypeInternalTransactionCreated, EventSubscriptionUpdateParamsEventTypeInternalTransactionUpdated, EventSubscriptionUpdateParamsEventTypeLoanTapeCreated, EventSubscriptionUpdateParamsEventTypeLoanTapeUpdated, EventSubscriptionUpdateParamsEventTypeManagementOperationCreated, EventSubscriptionUpdateParamsEventTypeManagementOperationUpdated, EventSubscriptionUpdateParamsEventTypeNetworkTotalCreated, EventSubscriptionUpdateParamsEventTypeNetworkTotalUpdated, EventSubscriptionUpdateParamsEventTypePaymentTransactionCreated, EventSubscriptionUpdateParamsEventTypePaymentTransactionUpdated, EventSubscriptionUpdateParamsEventTypeSettlementReportUpdated, EventSubscriptionUpdateParamsEventTypeStatementsCreated, EventSubscriptionUpdateParamsEventTypeThreeDSAuthenticationChallenge, EventSubscriptionUpdateParamsEventTypeThreeDSAuthenticationCreated, EventSubscriptionUpdateParamsEventTypeThreeDSAuthenticationUpdated, EventSubscriptionUpdateParamsEventTypeTokenizationApprovalRequest, EventSubscriptionUpdateParamsEventTypeTokenizationResult, EventSubscriptionUpdateParamsEventTypeTokenizationTwoFactorAuthenticationCode, EventSubscriptionUpdateParamsEventTypeTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionUpdateParamsEventTypeTokenizationUpdated:
 		return true
 	}
 	return false
@@ -720,7 +712,6 @@ const (
 	EventSubscriptionSendSimulatedExampleParamsEventTypeCardRenewed                                              EventSubscriptionSendSimulatedExampleParamsEventType = "card.renewed"
 	EventSubscriptionSendSimulatedExampleParamsEventTypeCardShipped                                              EventSubscriptionSendSimulatedExampleParamsEventType = "card.shipped"
 	EventSubscriptionSendSimulatedExampleParamsEventTypeCardUpdated                                              EventSubscriptionSendSimulatedExampleParamsEventType = "card.updated"
-	EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationApprovalRequest                 EventSubscriptionSendSimulatedExampleParamsEventType = "digital_wallet.tokenization_approval_request"
 	EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationResult                          EventSubscriptionSendSimulatedExampleParamsEventType = "digital_wallet.tokenization_result"
 	EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode     EventSubscriptionSendSimulatedExampleParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent EventSubscriptionSendSimulatedExampleParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code_sent"
@@ -760,7 +751,7 @@ const (
 
 func (r EventSubscriptionSendSimulatedExampleParamsEventType) IsKnown() bool {
 	switch r {
-	case EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderDocumentUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderVerification, EventSubscriptionSendSimulatedExampleParamsEventTypeAuthRulesBacktestReportCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeBalanceUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeBookTransferTransactionCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeBookTransferTransactionUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeCardTransactionEnhancedDataCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeCardTransactionEnhancedDataUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeCardTransactionUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeCardConverted, EventSubscriptionSendSimulatedExampleParamsEventTypeCardCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeCardReissued, EventSubscriptionSendSimulatedExampleParamsEventTypeCardRenewed, EventSubscriptionSendSimulatedExampleParamsEventTypeCardShipped, EventSubscriptionSendSimulatedExampleParamsEventTypeCardUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationApprovalRequest, EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationResult, EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeDisputeEvidenceUploadFailed, EventSubscriptionSendSimulatedExampleParamsEventTypeDisputeTransactionCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeDisputeTransactionUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeDisputeUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeExternalBankAccountCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeExternalBankAccountUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeExternalPaymentCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeExternalPaymentUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeFinancialAccountCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeFinancialAccountUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeFundingEventCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeInternalTransactionCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeInternalTransactionUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeLoanTapeCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeLoanTapeUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeManagementOperationCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeManagementOperationUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeNetworkTotalCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeNetworkTotalUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypePaymentTransactionCreated, EventSubscriptionSendSimulatedExampleParamsEventTypePaymentTransactionUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeSettlementReportUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeStatementsCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeThreeDSAuthenticationChallenge, EventSubscriptionSendSimulatedExampleParamsEventTypeThreeDSAuthenticationCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeThreeDSAuthenticationUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeTokenizationApprovalRequest, EventSubscriptionSendSimulatedExampleParamsEventTypeTokenizationResult, EventSubscriptionSendSimulatedExampleParamsEventTypeTokenizationTwoFactorAuthenticationCode, EventSubscriptionSendSimulatedExampleParamsEventTypeTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionSendSimulatedExampleParamsEventTypeTokenizationUpdated:
+	case EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderDocumentUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeAccountHolderVerification, EventSubscriptionSendSimulatedExampleParamsEventTypeAuthRulesBacktestReportCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeBalanceUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeBookTransferTransactionCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeBookTransferTransactionUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeCardTransactionEnhancedDataCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeCardTransactionEnhancedDataUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeCardTransactionUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeCardConverted, EventSubscriptionSendSimulatedExampleParamsEventTypeCardCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeCardReissued, EventSubscriptionSendSimulatedExampleParamsEventTypeCardRenewed, EventSubscriptionSendSimulatedExampleParamsEventTypeCardShipped, EventSubscriptionSendSimulatedExampleParamsEventTypeCardUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationResult, EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionSendSimulatedExampleParamsEventTypeDigitalWalletTokenizationUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeDisputeEvidenceUploadFailed, EventSubscriptionSendSimulatedExampleParamsEventTypeDisputeTransactionCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeDisputeTransactionUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeDisputeUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeExternalBankAccountCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeExternalBankAccountUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeExternalPaymentCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeExternalPaymentUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeFinancialAccountCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeFinancialAccountUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeFundingEventCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeInternalTransactionCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeInternalTransactionUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeLoanTapeCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeLoanTapeUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeManagementOperationCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeManagementOperationUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeNetworkTotalCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeNetworkTotalUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypePaymentTransactionCreated, EventSubscriptionSendSimulatedExampleParamsEventTypePaymentTransactionUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeSettlementReportUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeStatementsCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeThreeDSAuthenticationChallenge, EventSubscriptionSendSimulatedExampleParamsEventTypeThreeDSAuthenticationCreated, EventSubscriptionSendSimulatedExampleParamsEventTypeThreeDSAuthenticationUpdated, EventSubscriptionSendSimulatedExampleParamsEventTypeTokenizationApprovalRequest, EventSubscriptionSendSimulatedExampleParamsEventTypeTokenizationResult, EventSubscriptionSendSimulatedExampleParamsEventTypeTokenizationTwoFactorAuthenticationCode, EventSubscriptionSendSimulatedExampleParamsEventTypeTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionSendSimulatedExampleParamsEventTypeTokenizationUpdated:
 		return true
 	}
 	return false

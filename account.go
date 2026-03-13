@@ -43,11 +43,11 @@ func (r *AccountService) Get(ctx context.Context, accountToken string, opts ...o
 	opts = slices.Concat(r.Options, opts)
 	if accountToken == "" {
 		err = errors.New("missing required account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/accounts/%s", accountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Update account configuration such as state or spend limits. Can only be run on
@@ -57,11 +57,11 @@ func (r *AccountService) Update(ctx context.Context, accountToken string, body A
 	opts = slices.Concat(r.Options, opts)
 	if accountToken == "" {
 		err = errors.New("missing required account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/accounts/%s", accountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // List account configurations.
@@ -96,11 +96,11 @@ func (r *AccountService) GetSpendLimits(ctx context.Context, accountToken string
 	opts = slices.Concat(r.Options, opts)
 	if accountToken == "" {
 		err = errors.New("missing required account_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/accounts/%s/spend_limits", accountToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 type Account struct {

@@ -45,11 +45,11 @@ func (r *FinancialAccountStatementLineItemService) List(ctx context.Context, fin
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if financialAccountToken == "" {
 		err = errors.New("missing required financial_account_token parameter")
-		return
+		return nil, err
 	}
 	if statementToken == "" {
 		err = errors.New("missing required statement_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/financial_accounts/%s/statements/%s/line_items", financialAccountToken, statementToken)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)
@@ -113,9 +113,13 @@ type StatementLineItemsData struct {
 	// Globally unique identifier for a financial transaction
 	FinancialTransactionToken string `json:"financial_transaction_token" api:"required" format:"uuid"`
 	// Globally unique identifier for a card
-	CardToken  string                     `json:"card_token" format:"uuid"`
-	Descriptor string                     `json:"descriptor"`
-	JSON       statementLineItemsDataJSON `json:"-"`
+	CardToken  string `json:"card_token" format:"uuid"`
+	Descriptor string `json:"descriptor"`
+	// Subtype of the event that generated the line items
+	EventSubtype string `json:"event_subtype" api:"nullable"`
+	// Date of the loan tape that generated this line item
+	LoanTapeDate time.Time                  `json:"loan_tape_date" api:"nullable" format:"date"`
+	JSON         statementLineItemsDataJSON `json:"-"`
 }
 
 // statementLineItemsDataJSON contains the JSON metadata for the struct
@@ -133,6 +137,8 @@ type statementLineItemsDataJSON struct {
 	FinancialTransactionToken      apijson.Field
 	CardToken                      apijson.Field
 	Descriptor                     apijson.Field
+	EventSubtype                   apijson.Field
+	LoanTapeDate                   apijson.Field
 	raw                            string
 	ExtraFields                    map[string]apijson.Field
 }
@@ -167,12 +173,13 @@ const (
 	StatementLineItemsDataCategoryManagementFee          StatementLineItemsDataCategory = "MANAGEMENT_FEE"
 	StatementLineItemsDataCategoryManagementReward       StatementLineItemsDataCategory = "MANAGEMENT_REWARD"
 	StatementLineItemsDataCategoryManagementDisbursement StatementLineItemsDataCategory = "MANAGEMENT_DISBURSEMENT"
+	StatementLineItemsDataCategoryHold                   StatementLineItemsDataCategory = "HOLD"
 	StatementLineItemsDataCategoryProgramFunding         StatementLineItemsDataCategory = "PROGRAM_FUNDING"
 )
 
 func (r StatementLineItemsDataCategory) IsKnown() bool {
 	switch r {
-	case StatementLineItemsDataCategoryACH, StatementLineItemsDataCategoryBalanceOrFunding, StatementLineItemsDataCategoryFee, StatementLineItemsDataCategoryReward, StatementLineItemsDataCategoryAdjustment, StatementLineItemsDataCategoryDerecognition, StatementLineItemsDataCategoryDispute, StatementLineItemsDataCategoryCard, StatementLineItemsDataCategoryExternalACH, StatementLineItemsDataCategoryExternalCheck, StatementLineItemsDataCategoryExternalFednow, StatementLineItemsDataCategoryExternalRtp, StatementLineItemsDataCategoryExternalTransfer, StatementLineItemsDataCategoryExternalWire, StatementLineItemsDataCategoryManagementAdjustment, StatementLineItemsDataCategoryManagementDispute, StatementLineItemsDataCategoryManagementFee, StatementLineItemsDataCategoryManagementReward, StatementLineItemsDataCategoryManagementDisbursement, StatementLineItemsDataCategoryProgramFunding:
+	case StatementLineItemsDataCategoryACH, StatementLineItemsDataCategoryBalanceOrFunding, StatementLineItemsDataCategoryFee, StatementLineItemsDataCategoryReward, StatementLineItemsDataCategoryAdjustment, StatementLineItemsDataCategoryDerecognition, StatementLineItemsDataCategoryDispute, StatementLineItemsDataCategoryCard, StatementLineItemsDataCategoryExternalACH, StatementLineItemsDataCategoryExternalCheck, StatementLineItemsDataCategoryExternalFednow, StatementLineItemsDataCategoryExternalRtp, StatementLineItemsDataCategoryExternalTransfer, StatementLineItemsDataCategoryExternalWire, StatementLineItemsDataCategoryManagementAdjustment, StatementLineItemsDataCategoryManagementDispute, StatementLineItemsDataCategoryManagementFee, StatementLineItemsDataCategoryManagementReward, StatementLineItemsDataCategoryManagementDisbursement, StatementLineItemsDataCategoryHold, StatementLineItemsDataCategoryProgramFunding:
 		return true
 	}
 	return false

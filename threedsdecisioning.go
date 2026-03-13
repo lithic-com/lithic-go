@@ -43,7 +43,7 @@ func (r *ThreeDSDecisioningService) ChallengeResponse(ctx context.Context, body 
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	path := "v1/three_ds_decisioning/challenge_response"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
-	return
+	return err
 }
 
 // Retrieve the 3DS Decisioning HMAC secret key. If one does not exist for your
@@ -56,7 +56,7 @@ func (r *ThreeDSDecisioningService) GetSecret(ctx context.Context, opts ...optio
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/three_ds_decisioning/secret"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Generate a new 3DS Decisioning HMAC secret key. The old secret key will be
@@ -68,7 +68,7 @@ func (r *ThreeDSDecisioningService) RotateSecret(ctx context.Context, opts ...op
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	path := "v1/three_ds_decisioning/secret/rotate"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, nil, opts...)
-	return
+	return err
 }
 
 // Response from Card Program to a 3DS Authentication challenge

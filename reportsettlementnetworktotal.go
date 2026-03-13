@@ -42,11 +42,11 @@ func (r *ReportSettlementNetworkTotalService) Get(ctx context.Context, token str
 	opts = slices.Concat(r.Options, opts)
 	if token == "" {
 		err = errors.New("missing required token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/reports/settlement/network_totals/%s", token)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // List network total records with optional filters. Not available in sandbox.

@@ -44,7 +44,7 @@ func (r *CardBalanceService) List(ctx context.Context, cardToken string, query C
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
 	if cardToken == "" {
 		err = errors.New("missing required card_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/cards/%s/balances", cardToken)
 	cfg, err := requestconfig.NewRequestConfig(ctx, http.MethodGet, path, query, &res, opts...)

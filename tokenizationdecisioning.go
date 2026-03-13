@@ -41,7 +41,7 @@ func (r *TokenizationDecisioningService) GetSecret(ctx context.Context, opts ...
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/tokenization_decisioning/secret"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Generate a new Tokenization Decisioning secret key. The old Tokenization
@@ -51,7 +51,7 @@ func (r *TokenizationDecisioningService) RotateSecret(ctx context.Context, opts 
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/tokenization_decisioning/secret/rotate"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 type TokenizationSecret struct {

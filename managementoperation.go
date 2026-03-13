@@ -43,7 +43,7 @@ func (r *ManagementOperationService) New(ctx context.Context, body ManagementOpe
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/management_operations"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Get management operation
@@ -51,11 +51,11 @@ func (r *ManagementOperationService) Get(ctx context.Context, managementOperatio
 	opts = slices.Concat(r.Options, opts)
 	if managementOperationToken == "" {
 		err = errors.New("missing required management_operation_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/management_operations/%s", managementOperationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // List management operations
@@ -86,11 +86,11 @@ func (r *ManagementOperationService) Reverse(ctx context.Context, managementOper
 	opts = slices.Concat(r.Options, opts)
 	if managementOperationToken == "" {
 		err = errors.New("missing required management_operation_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/management_operations/%s/reverse", managementOperationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // External resource associated with the management operation

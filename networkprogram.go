@@ -43,11 +43,11 @@ func (r *NetworkProgramService) Get(ctx context.Context, networkProgramToken str
 	opts = slices.Concat(r.Options, opts)
 	if networkProgramToken == "" {
 		err = errors.New("missing required network_program_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/network_programs/%s", networkProgramToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // List network programs.

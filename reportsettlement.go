@@ -66,7 +66,7 @@ func (r *ReportSettlementService) Summary(ctx context.Context, reportDate time.T
 	opts = slices.Concat(r.Options, opts)
 	path := fmt.Sprintf("v1/reports/settlement/summary/%s", reportDate.Format("2006-01-02"))
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 type ReportSettlementListDetailsParams struct {

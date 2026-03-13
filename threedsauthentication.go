@@ -39,11 +39,11 @@ func (r *ThreeDSAuthenticationService) Get(ctx context.Context, threeDSAuthentic
 	opts = slices.Concat(r.Options, opts)
 	if threeDSAuthenticationToken == "" {
 		err = errors.New("missing required three_ds_authentication_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/three_ds_authentication/%s", threeDSAuthenticationToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Simulates a 3DS authentication request from the payment network as if it came
@@ -56,7 +56,7 @@ func (r *ThreeDSAuthenticationService) Simulate(ctx context.Context, body ThreeD
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/three_ds_authentication/simulate"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Endpoint for simulating entering OTP into 3DS Challenge UI. A call to
@@ -68,7 +68,7 @@ func (r *ThreeDSAuthenticationService) SimulateOtpEntry(ctx context.Context, bod
 	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
 	path := "v1/three_ds_decisioning/simulate/enter_otp"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
-	return
+	return err
 }
 
 type ThreeDSAuthenticationSimulateResponse struct {

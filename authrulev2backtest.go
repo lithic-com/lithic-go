@@ -64,11 +64,11 @@ func (r *AuthRuleV2BacktestService) New(ctx context.Context, authRuleToken strin
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v2/auth_rules/%s/backtests", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Returns the backtest results of an Auth rule (if available).
@@ -93,15 +93,15 @@ func (r *AuthRuleV2BacktestService) Get(ctx context.Context, authRuleToken strin
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
 		err = errors.New("missing required auth_rule_token parameter")
-		return
+		return nil, err
 	}
 	if authRuleBacktestToken == "" {
 		err = errors.New("missing required auth_rule_backtest_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v2/auth_rules/%s/backtests/%s", authRuleToken, authRuleBacktestToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 type BacktestResults struct {

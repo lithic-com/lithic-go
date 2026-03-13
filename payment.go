@@ -45,7 +45,7 @@ func (r *PaymentService) New(ctx context.Context, body PaymentNewParams, opts ..
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/payments"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Get the payment by token.
@@ -53,11 +53,11 @@ func (r *PaymentService) Get(ctx context.Context, paymentToken string, opts ...o
 	opts = slices.Concat(r.Options, opts)
 	if paymentToken == "" {
 		err = errors.New("missing required payment_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/payments/%s", paymentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // List all the payments for the provided search criteria.
@@ -88,11 +88,11 @@ func (r *PaymentService) Retry(ctx context.Context, paymentToken string, opts ..
 	opts = slices.Concat(r.Options, opts)
 	if paymentToken == "" {
 		err = errors.New("missing required payment_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/payments/%s/retry", paymentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
-	return
+	return res, err
 }
 
 // Return an ACH payment with a specified return reason code. Returns must be
@@ -113,11 +113,11 @@ func (r *PaymentService) Return(ctx context.Context, paymentToken string, body P
 	opts = slices.Concat(r.Options, opts)
 	if paymentToken == "" {
 		err = errors.New("missing required payment_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/payments/%s/return", paymentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Simulate payment lifecycle event
@@ -125,11 +125,11 @@ func (r *PaymentService) SimulateAction(ctx context.Context, paymentToken string
 	opts = slices.Concat(r.Options, opts)
 	if paymentToken == "" {
 		err = errors.New("missing required payment_token parameter")
-		return
+		return nil, err
 	}
 	path := fmt.Sprintf("v1/simulate/payments/%s/action", paymentToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Simulates a receipt of a Payment.
@@ -137,7 +137,7 @@ func (r *PaymentService) SimulateReceipt(ctx context.Context, body PaymentSimula
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/payments/receipt"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Simulates a release of a Payment.
@@ -145,7 +145,7 @@ func (r *PaymentService) SimulateRelease(ctx context.Context, body PaymentSimula
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/payments/release"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Simulates a return of a Payment.
@@ -153,7 +153,7 @@ func (r *PaymentService) SimulateReturn(ctx context.Context, body PaymentSimulat
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/simulate/payments/return"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
-	return
+	return res, err
 }
 
 // Payment transaction
@@ -267,12 +267,13 @@ const (
 	PaymentCategoryManagementFee          PaymentCategory = "MANAGEMENT_FEE"
 	PaymentCategoryManagementReward       PaymentCategory = "MANAGEMENT_REWARD"
 	PaymentCategoryManagementDisbursement PaymentCategory = "MANAGEMENT_DISBURSEMENT"
+	PaymentCategoryHold                   PaymentCategory = "HOLD"
 	PaymentCategoryProgramFunding         PaymentCategory = "PROGRAM_FUNDING"
 )
 
 func (r PaymentCategory) IsKnown() bool {
 	switch r {
-	case PaymentCategoryACH, PaymentCategoryBalanceOrFunding, PaymentCategoryFee, PaymentCategoryReward, PaymentCategoryAdjustment, PaymentCategoryDerecognition, PaymentCategoryDispute, PaymentCategoryCard, PaymentCategoryExternalACH, PaymentCategoryExternalCheck, PaymentCategoryExternalFednow, PaymentCategoryExternalRtp, PaymentCategoryExternalTransfer, PaymentCategoryExternalWire, PaymentCategoryManagementAdjustment, PaymentCategoryManagementDispute, PaymentCategoryManagementFee, PaymentCategoryManagementReward, PaymentCategoryManagementDisbursement, PaymentCategoryProgramFunding:
+	case PaymentCategoryACH, PaymentCategoryBalanceOrFunding, PaymentCategoryFee, PaymentCategoryReward, PaymentCategoryAdjustment, PaymentCategoryDerecognition, PaymentCategoryDispute, PaymentCategoryCard, PaymentCategoryExternalACH, PaymentCategoryExternalCheck, PaymentCategoryExternalFednow, PaymentCategoryExternalRtp, PaymentCategoryExternalTransfer, PaymentCategoryExternalWire, PaymentCategoryManagementAdjustment, PaymentCategoryManagementDispute, PaymentCategoryManagementFee, PaymentCategoryManagementReward, PaymentCategoryManagementDisbursement, PaymentCategoryHold, PaymentCategoryProgramFunding:
 		return true
 	}
 	return false
@@ -323,6 +324,8 @@ type PaymentEvent struct {
 	//   - `ACH_RECEIPT_SETTLED` - ACH receipt funds have settled.
 	//   - `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to available
 	//     balance.
+	//   - `ACH_RECEIPT_RELEASED_EARLY` - ACH receipt released early from pending to
+	//     available balance.
 	//   - `ACH_RETURN_INITIATED` - ACH initiated return for an ACH receipt.
 	//   - `ACH_RETURN_PROCESSED` - ACH receipt returned by the Receiving Depository
 	//     Financial Institution.
@@ -393,6 +396,8 @@ func (r PaymentEventsResult) IsKnown() bool {
 //   - `ACH_RECEIPT_SETTLED` - ACH receipt funds have settled.
 //   - `ACH_RECEIPT_RELEASED` - ACH receipt released from pending to available
 //     balance.
+//   - `ACH_RECEIPT_RELEASED_EARLY` - ACH receipt released early from pending to
+//     available balance.
 //   - `ACH_RETURN_INITIATED` - ACH initiated return for an ACH receipt.
 //   - `ACH_RETURN_PROCESSED` - ACH receipt returned by the Receiving Depository
 //     Financial Institution.
@@ -412,6 +417,7 @@ const (
 	PaymentEventsTypeACHOriginationSettled   PaymentEventsType = "ACH_ORIGINATION_SETTLED"
 	PaymentEventsTypeACHReceiptProcessed     PaymentEventsType = "ACH_RECEIPT_PROCESSED"
 	PaymentEventsTypeACHReceiptReleased      PaymentEventsType = "ACH_RECEIPT_RELEASED"
+	PaymentEventsTypeACHReceiptReleasedEarly PaymentEventsType = "ACH_RECEIPT_RELEASED_EARLY"
 	PaymentEventsTypeACHReceiptSettled       PaymentEventsType = "ACH_RECEIPT_SETTLED"
 	PaymentEventsTypeACHReturnInitiated      PaymentEventsType = "ACH_RETURN_INITIATED"
 	PaymentEventsTypeACHReturnProcessed      PaymentEventsType = "ACH_RETURN_PROCESSED"
@@ -421,7 +427,7 @@ const (
 
 func (r PaymentEventsType) IsKnown() bool {
 	switch r {
-	case PaymentEventsTypeACHOriginationCancelled, PaymentEventsTypeACHOriginationInitiated, PaymentEventsTypeACHOriginationProcessed, PaymentEventsTypeACHOriginationRejected, PaymentEventsTypeACHOriginationReleased, PaymentEventsTypeACHOriginationReviewed, PaymentEventsTypeACHOriginationSettled, PaymentEventsTypeACHReceiptProcessed, PaymentEventsTypeACHReceiptReleased, PaymentEventsTypeACHReceiptSettled, PaymentEventsTypeACHReturnInitiated, PaymentEventsTypeACHReturnProcessed, PaymentEventsTypeACHReturnRejected, PaymentEventsTypeACHReturnSettled:
+	case PaymentEventsTypeACHOriginationCancelled, PaymentEventsTypeACHOriginationInitiated, PaymentEventsTypeACHOriginationProcessed, PaymentEventsTypeACHOriginationRejected, PaymentEventsTypeACHOriginationReleased, PaymentEventsTypeACHOriginationReviewed, PaymentEventsTypeACHOriginationSettled, PaymentEventsTypeACHReceiptProcessed, PaymentEventsTypeACHReceiptReleased, PaymentEventsTypeACHReceiptReleasedEarly, PaymentEventsTypeACHReceiptSettled, PaymentEventsTypeACHReturnInitiated, PaymentEventsTypeACHReturnProcessed, PaymentEventsTypeACHReturnRejected, PaymentEventsTypeACHReturnSettled:
 		return true
 	}
 	return false
@@ -1272,6 +1278,7 @@ const (
 	PaymentSimulateActionParamsEventTypeACHOriginationSettled   PaymentSimulateActionParamsEventType = "ACH_ORIGINATION_SETTLED"
 	PaymentSimulateActionParamsEventTypeACHReceiptSettled       PaymentSimulateActionParamsEventType = "ACH_RECEIPT_SETTLED"
 	PaymentSimulateActionParamsEventTypeACHReceiptReleased      PaymentSimulateActionParamsEventType = "ACH_RECEIPT_RELEASED"
+	PaymentSimulateActionParamsEventTypeACHReceiptReleasedEarly PaymentSimulateActionParamsEventType = "ACH_RECEIPT_RELEASED_EARLY"
 	PaymentSimulateActionParamsEventTypeACHReturnInitiated      PaymentSimulateActionParamsEventType = "ACH_RETURN_INITIATED"
 	PaymentSimulateActionParamsEventTypeACHReturnProcessed      PaymentSimulateActionParamsEventType = "ACH_RETURN_PROCESSED"
 	PaymentSimulateActionParamsEventTypeACHReturnSettled        PaymentSimulateActionParamsEventType = "ACH_RETURN_SETTLED"
@@ -1279,7 +1286,7 @@ const (
 
 func (r PaymentSimulateActionParamsEventType) IsKnown() bool {
 	switch r {
-	case PaymentSimulateActionParamsEventTypeACHOriginationReviewed, PaymentSimulateActionParamsEventTypeACHOriginationReleased, PaymentSimulateActionParamsEventTypeACHOriginationProcessed, PaymentSimulateActionParamsEventTypeACHOriginationSettled, PaymentSimulateActionParamsEventTypeACHReceiptSettled, PaymentSimulateActionParamsEventTypeACHReceiptReleased, PaymentSimulateActionParamsEventTypeACHReturnInitiated, PaymentSimulateActionParamsEventTypeACHReturnProcessed, PaymentSimulateActionParamsEventTypeACHReturnSettled:
+	case PaymentSimulateActionParamsEventTypeACHOriginationReviewed, PaymentSimulateActionParamsEventTypeACHOriginationReleased, PaymentSimulateActionParamsEventTypeACHOriginationProcessed, PaymentSimulateActionParamsEventTypeACHOriginationSettled, PaymentSimulateActionParamsEventTypeACHReceiptSettled, PaymentSimulateActionParamsEventTypeACHReceiptReleased, PaymentSimulateActionParamsEventTypeACHReceiptReleasedEarly, PaymentSimulateActionParamsEventTypeACHReturnInitiated, PaymentSimulateActionParamsEventTypeACHReturnProcessed, PaymentSimulateActionParamsEventTypeACHReturnSettled:
 		return true
 	}
 	return false
