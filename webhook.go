@@ -2065,129 +2065,6 @@ func (r CardAuthorizationApprovalRequestWebhookEventPosTerminalType) IsKnown() b
 	return false
 }
 
-// A webhook for tokenization decisioning sent to the customer's responder endpoint
-type TokenizationDecisioningRequestWebhookEvent struct {
-	// Unique identifier for the user tokenizing a card
-	AccountToken string `json:"account_token" api:"required"`
-	// Unique identifier for the card being tokenized
-	CardToken string `json:"card_token" api:"required"`
-	// Indicate when the request was received from Mastercard or Visa
-	Created time.Time `json:"created" api:"required" format:"date-time"`
-	// Contains the metadata for the digital wallet being tokenized.
-	DigitalWalletTokenMetadata TokenMetadata `json:"digital_wallet_token_metadata" api:"required"`
-	// The name of this event
-	EventType TokenizationDecisioningRequestWebhookEventEventType `json:"event_type" api:"required"`
-	// Whether Lithic decisioned on the token, and if so, what the decision was.
-	// APPROVED/VERIFICATION_REQUIRED/DENIED.
-	IssuerDecision TokenizationDecisioningRequestWebhookEventIssuerDecision `json:"issuer_decision" api:"required"`
-	// The channel through which the tokenization was made.
-	TokenizationChannel TokenizationDecisioningRequestWebhookEventTokenizationChannel `json:"tokenization_channel" api:"required"`
-	// Unique identifier for the digital wallet token attempt
-	TokenizationToken     string                `json:"tokenization_token" api:"required"`
-	WalletDecisioningInfo WalletDecisioningInfo `json:"wallet_decisioning_info" api:"required"`
-	Device                Device                `json:"device"`
-	// The source of the tokenization.
-	TokenizationSource TokenizationDecisioningRequestWebhookEventTokenizationSource `json:"tokenization_source"`
-	JSON               tokenizationDecisioningRequestWebhookEventJSON               `json:"-"`
-}
-
-// tokenizationDecisioningRequestWebhookEventJSON contains the JSON metadata for
-// the struct [TokenizationDecisioningRequestWebhookEvent]
-type tokenizationDecisioningRequestWebhookEventJSON struct {
-	AccountToken               apijson.Field
-	CardToken                  apijson.Field
-	Created                    apijson.Field
-	DigitalWalletTokenMetadata apijson.Field
-	EventType                  apijson.Field
-	IssuerDecision             apijson.Field
-	TokenizationChannel        apijson.Field
-	TokenizationToken          apijson.Field
-	WalletDecisioningInfo      apijson.Field
-	Device                     apijson.Field
-	TokenizationSource         apijson.Field
-	raw                        string
-	ExtraFields                map[string]apijson.Field
-}
-
-func (r *TokenizationDecisioningRequestWebhookEvent) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r tokenizationDecisioningRequestWebhookEventJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r TokenizationDecisioningRequestWebhookEvent) implementsParsedWebhookEvent() {}
-
-// The name of this event
-type TokenizationDecisioningRequestWebhookEventEventType string
-
-const (
-	TokenizationDecisioningRequestWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest TokenizationDecisioningRequestWebhookEventEventType = "digital_wallet.tokenization_approval_request"
-)
-
-func (r TokenizationDecisioningRequestWebhookEventEventType) IsKnown() bool {
-	switch r {
-	case TokenizationDecisioningRequestWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest:
-		return true
-	}
-	return false
-}
-
-// Whether Lithic decisioned on the token, and if so, what the decision was.
-// APPROVED/VERIFICATION_REQUIRED/DENIED.
-type TokenizationDecisioningRequestWebhookEventIssuerDecision string
-
-const (
-	TokenizationDecisioningRequestWebhookEventIssuerDecisionApproved             TokenizationDecisioningRequestWebhookEventIssuerDecision = "APPROVED"
-	TokenizationDecisioningRequestWebhookEventIssuerDecisionDenied               TokenizationDecisioningRequestWebhookEventIssuerDecision = "DENIED"
-	TokenizationDecisioningRequestWebhookEventIssuerDecisionVerificationRequired TokenizationDecisioningRequestWebhookEventIssuerDecision = "VERIFICATION_REQUIRED"
-)
-
-func (r TokenizationDecisioningRequestWebhookEventIssuerDecision) IsKnown() bool {
-	switch r {
-	case TokenizationDecisioningRequestWebhookEventIssuerDecisionApproved, TokenizationDecisioningRequestWebhookEventIssuerDecisionDenied, TokenizationDecisioningRequestWebhookEventIssuerDecisionVerificationRequired:
-		return true
-	}
-	return false
-}
-
-// The channel through which the tokenization was made.
-type TokenizationDecisioningRequestWebhookEventTokenizationChannel string
-
-const (
-	TokenizationDecisioningRequestWebhookEventTokenizationChannelDigitalWallet TokenizationDecisioningRequestWebhookEventTokenizationChannel = "DIGITAL_WALLET"
-	TokenizationDecisioningRequestWebhookEventTokenizationChannelMerchant      TokenizationDecisioningRequestWebhookEventTokenizationChannel = "MERCHANT"
-)
-
-func (r TokenizationDecisioningRequestWebhookEventTokenizationChannel) IsKnown() bool {
-	switch r {
-	case TokenizationDecisioningRequestWebhookEventTokenizationChannelDigitalWallet, TokenizationDecisioningRequestWebhookEventTokenizationChannelMerchant:
-		return true
-	}
-	return false
-}
-
-// The source of the tokenization.
-type TokenizationDecisioningRequestWebhookEventTokenizationSource string
-
-const (
-	TokenizationDecisioningRequestWebhookEventTokenizationSourceAccountOnFile   TokenizationDecisioningRequestWebhookEventTokenizationSource = "ACCOUNT_ON_FILE"
-	TokenizationDecisioningRequestWebhookEventTokenizationSourceContactlessTap  TokenizationDecisioningRequestWebhookEventTokenizationSource = "CONTACTLESS_TAP"
-	TokenizationDecisioningRequestWebhookEventTokenizationSourceManualProvision TokenizationDecisioningRequestWebhookEventTokenizationSource = "MANUAL_PROVISION"
-	TokenizationDecisioningRequestWebhookEventTokenizationSourcePushProvision   TokenizationDecisioningRequestWebhookEventTokenizationSource = "PUSH_PROVISION"
-	TokenizationDecisioningRequestWebhookEventTokenizationSourceToken           TokenizationDecisioningRequestWebhookEventTokenizationSource = "TOKEN"
-	TokenizationDecisioningRequestWebhookEventTokenizationSourceUnknown         TokenizationDecisioningRequestWebhookEventTokenizationSource = "UNKNOWN"
-)
-
-func (r TokenizationDecisioningRequestWebhookEventTokenizationSource) IsKnown() bool {
-	switch r {
-	case TokenizationDecisioningRequestWebhookEventTokenizationSourceAccountOnFile, TokenizationDecisioningRequestWebhookEventTokenizationSourceContactlessTap, TokenizationDecisioningRequestWebhookEventTokenizationSourceManualProvision, TokenizationDecisioningRequestWebhookEventTokenizationSourcePushProvision, TokenizationDecisioningRequestWebhookEventTokenizationSourceToken, TokenizationDecisioningRequestWebhookEventTokenizationSourceUnknown:
-		return true
-	}
-	return false
-}
-
 type AuthRulesBacktestReportCreatedWebhookEvent struct {
 	// The type of event that occurred.
 	EventType AuthRulesBacktestReportCreatedWebhookEventEventType `json:"event_type" api:"required"`
@@ -2778,6 +2655,12 @@ func (r CardTransactionEnhancedDataUpdatedWebhookEventEventType) IsKnown() bool 
 	return false
 }
 
+// Payload for digital wallet tokenization approval requests. Used for both the
+// decisioning responder request (sent to the customer's endpoint for a real-time
+// decision) and the subsequent webhook event (sent after the decision is made).
+// Fields like customer_tokenization_decision, tokenization_decline_reasons,
+// tokenization_tfa_reasons, and rule_results are only populated in the webhook
+// event, not in the initial decisioning request.
 type DigitalWalletTokenizationApprovalRequestWebhookEvent struct {
 	// Unique identifier for the user tokenizing a card
 	AccountToken string `json:"account_token" api:"required"`
@@ -2785,8 +2668,6 @@ type DigitalWalletTokenizationApprovalRequestWebhookEvent struct {
 	CardToken string `json:"card_token" api:"required"`
 	// Indicate when the request was received from Mastercard or Visa
 	Created time.Time `json:"created" api:"required" format:"date-time"`
-	// Contains the metadata for the customer tokenization decision.
-	CustomerTokenizationDecision DigitalWalletTokenizationApprovalRequestWebhookEventCustomerTokenizationDecision `json:"customer_tokenization_decision" api:"required,nullable"`
 	// Contains the metadata for the digital wallet being tokenized.
 	DigitalWalletTokenMetadata TokenMetadata `json:"digital_wallet_token_metadata" api:"required"`
 	// The name of this event
@@ -2799,14 +2680,19 @@ type DigitalWalletTokenizationApprovalRequestWebhookEvent struct {
 	// Unique identifier for the digital wallet token attempt
 	TokenizationToken     string                `json:"tokenization_token" api:"required"`
 	WalletDecisioningInfo WalletDecisioningInfo `json:"wallet_decisioning_info" api:"required"`
-	Device                Device                `json:"device"`
-	// Results from rules that were evaluated for this tokenization
+	// Contains the metadata for the customer tokenization decision.
+	CustomerTokenizationDecision DigitalWalletTokenizationApprovalRequestWebhookEventCustomerTokenizationDecision `json:"customer_tokenization_decision" api:"nullable"`
+	Device                       Device                                                                           `json:"device"`
+	// Results from rules that were evaluated for this tokenization. Only populated in
+	// webhook events, not in the initial decisioning request
 	RuleResults []TokenizationRuleResult `json:"rule_results"`
-	// List of reasons why the tokenization was declined
+	// List of reasons why the tokenization was declined. Only populated in webhook
+	// events, not in the initial decisioning request
 	TokenizationDeclineReasons []TokenizationDeclineReason `json:"tokenization_decline_reasons"`
 	// The source of the tokenization.
 	TokenizationSource DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationSource `json:"tokenization_source"`
-	// List of reasons why two-factor authentication was required
+	// List of reasons why two-factor authentication was required. Only populated in
+	// webhook events, not in the initial decisioning request
 	TokenizationTfaReasons []TokenizationTfaReason                                  `json:"tokenization_tfa_reasons"`
 	JSON                   digitalWalletTokenizationApprovalRequestWebhookEventJSON `json:"-"`
 }
@@ -2817,13 +2703,13 @@ type digitalWalletTokenizationApprovalRequestWebhookEventJSON struct {
 	AccountToken                 apijson.Field
 	CardToken                    apijson.Field
 	Created                      apijson.Field
-	CustomerTokenizationDecision apijson.Field
 	DigitalWalletTokenMetadata   apijson.Field
 	EventType                    apijson.Field
 	IssuerDecision               apijson.Field
 	TokenizationChannel          apijson.Field
 	TokenizationToken            apijson.Field
 	WalletDecisioningInfo        apijson.Field
+	CustomerTokenizationDecision apijson.Field
 	Device                       apijson.Field
 	RuleResults                  apijson.Field
 	TokenizationDeclineReasons   apijson.Field
@@ -2842,6 +2728,55 @@ func (r digitalWalletTokenizationApprovalRequestWebhookEventJSON) RawJSON() stri
 }
 
 func (r DigitalWalletTokenizationApprovalRequestWebhookEvent) implementsParsedWebhookEvent() {}
+
+// The name of this event
+type DigitalWalletTokenizationApprovalRequestWebhookEventEventType string
+
+const (
+	DigitalWalletTokenizationApprovalRequestWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest DigitalWalletTokenizationApprovalRequestWebhookEventEventType = "digital_wallet.tokenization_approval_request"
+)
+
+func (r DigitalWalletTokenizationApprovalRequestWebhookEventEventType) IsKnown() bool {
+	switch r {
+	case DigitalWalletTokenizationApprovalRequestWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest:
+		return true
+	}
+	return false
+}
+
+// Whether Lithic decisioned on the token, and if so, what the decision was.
+// APPROVED/VERIFICATION_REQUIRED/DENIED.
+type DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecision string
+
+const (
+	DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecisionApproved             DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecision = "APPROVED"
+	DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecisionDenied               DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecision = "DENIED"
+	DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecisionVerificationRequired DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecision = "VERIFICATION_REQUIRED"
+)
+
+func (r DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecision) IsKnown() bool {
+	switch r {
+	case DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecisionApproved, DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecisionDenied, DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecisionVerificationRequired:
+		return true
+	}
+	return false
+}
+
+// The channel through which the tokenization was made.
+type DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationChannel string
+
+const (
+	DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationChannelDigitalWallet DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationChannel = "DIGITAL_WALLET"
+	DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationChannelMerchant      DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationChannel = "MERCHANT"
+)
+
+func (r DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationChannel) IsKnown() bool {
+	switch r {
+	case DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationChannelDigitalWallet, DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationChannelMerchant:
+		return true
+	}
+	return false
+}
 
 // Contains the metadata for the customer tokenization decision.
 type DigitalWalletTokenizationApprovalRequestWebhookEventCustomerTokenizationDecision struct {
@@ -2891,55 +2826,6 @@ const (
 func (r DigitalWalletTokenizationApprovalRequestWebhookEventCustomerTokenizationDecisionOutcome) IsKnown() bool {
 	switch r {
 	case DigitalWalletTokenizationApprovalRequestWebhookEventCustomerTokenizationDecisionOutcomeApproved, DigitalWalletTokenizationApprovalRequestWebhookEventCustomerTokenizationDecisionOutcomeDeclined, DigitalWalletTokenizationApprovalRequestWebhookEventCustomerTokenizationDecisionOutcomeError, DigitalWalletTokenizationApprovalRequestWebhookEventCustomerTokenizationDecisionOutcomeInvalidResponse, DigitalWalletTokenizationApprovalRequestWebhookEventCustomerTokenizationDecisionOutcomeRequireAdditionalAuthentication, DigitalWalletTokenizationApprovalRequestWebhookEventCustomerTokenizationDecisionOutcomeTimeout:
-		return true
-	}
-	return false
-}
-
-// The name of this event
-type DigitalWalletTokenizationApprovalRequestWebhookEventEventType string
-
-const (
-	DigitalWalletTokenizationApprovalRequestWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest DigitalWalletTokenizationApprovalRequestWebhookEventEventType = "digital_wallet.tokenization_approval_request"
-)
-
-func (r DigitalWalletTokenizationApprovalRequestWebhookEventEventType) IsKnown() bool {
-	switch r {
-	case DigitalWalletTokenizationApprovalRequestWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest:
-		return true
-	}
-	return false
-}
-
-// Whether Lithic decisioned on the token, and if so, what the decision was.
-// APPROVED/VERIFICATION_REQUIRED/DENIED.
-type DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecision string
-
-const (
-	DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecisionApproved             DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecision = "APPROVED"
-	DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecisionDenied               DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecision = "DENIED"
-	DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecisionVerificationRequired DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecision = "VERIFICATION_REQUIRED"
-)
-
-func (r DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecision) IsKnown() bool {
-	switch r {
-	case DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecisionApproved, DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecisionDenied, DigitalWalletTokenizationApprovalRequestWebhookEventIssuerDecisionVerificationRequired:
-		return true
-	}
-	return false
-}
-
-// The channel through which the tokenization was made.
-type DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationChannel string
-
-const (
-	DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationChannelDigitalWallet DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationChannel = "DIGITAL_WALLET"
-	DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationChannelMerchant      DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationChannel = "MERCHANT"
-)
-
-func (r DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationChannel) IsKnown() bool {
-	switch r {
-	case DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationChannelDigitalWallet, DigitalWalletTokenizationApprovalRequestWebhookEventTokenizationChannelMerchant:
 		return true
 	}
 	return false
@@ -5139,8 +5025,8 @@ type ParsedWebhookEvent struct {
 	// Indicates whether the expiration date provided by the cardholder during checkout
 	// matches Lithic's record of the card's expiration date.
 	CardExpiryCheck ParsedWebhookEventCardExpiryCheck `json:"card_expiry_check"`
-	// Unique identifier for the card being tokenized
-	CardToken string `json:"card_token"`
+	// The token of the card that was created.
+	CardToken string `json:"card_token" format:"uuid"`
 	// This field can have the runtime type of [ThreeDSAuthenticationCardholder].
 	Cardholder               interface{}              `json:"cardholder"`
 	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication" api:"nullable"`
@@ -5896,7 +5782,6 @@ func (r *ParsedWebhookEvent) UnmarshalJSON(data []byte) (err error) {
 // [ParsedWebhookEventLegacyPayload], [AccountHolderVerificationWebhookEvent],
 // [AccountHolderDocumentUpdatedWebhookEvent],
 // [CardAuthorizationApprovalRequestWebhookEvent],
-// [TokenizationDecisioningRequestWebhookEvent],
 // [AuthRulesBacktestReportCreatedWebhookEvent], [BalanceUpdatedWebhookEvent],
 // [BookTransferTransactionCreatedWebhookEvent],
 // [BookTransferTransactionUpdatedWebhookEvent], [CardCreatedWebhookEvent],
@@ -5943,7 +5828,6 @@ func (r ParsedWebhookEvent) AsUnion() ParsedWebhookEventUnion {
 // [ParsedWebhookEventLegacyPayload], [AccountHolderVerificationWebhookEvent],
 // [AccountHolderDocumentUpdatedWebhookEvent],
 // [CardAuthorizationApprovalRequestWebhookEvent],
-// [TokenizationDecisioningRequestWebhookEvent],
 // [AuthRulesBacktestReportCreatedWebhookEvent], [BalanceUpdatedWebhookEvent],
 // [BookTransferTransactionCreatedWebhookEvent],
 // [BookTransferTransactionUpdatedWebhookEvent], [CardCreatedWebhookEvent],
@@ -6014,10 +5898,6 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(CardAuthorizationApprovalRequestWebhookEvent{}),
-		},
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(TokenizationDecisioningRequestWebhookEvent{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -6830,14 +6710,13 @@ const (
 	ParsedWebhookEventCategoryManagementAdjustment   ParsedWebhookEventCategory = "MANAGEMENT_ADJUSTMENT"
 	ParsedWebhookEventCategoryManagementDisbursement ParsedWebhookEventCategory = "MANAGEMENT_DISBURSEMENT"
 	ParsedWebhookEventCategoryACH                    ParsedWebhookEventCategory = "ACH"
-	ParsedWebhookEventCategoryWire                   ParsedWebhookEventCategory = "WIRE"
 	ParsedWebhookEventCategoryCard                   ParsedWebhookEventCategory = "CARD"
 	ParsedWebhookEventCategoryHold                   ParsedWebhookEventCategory = "HOLD"
 )
 
 func (r ParsedWebhookEventCategory) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventCategoryAdjustment, ParsedWebhookEventCategoryBalanceOrFunding, ParsedWebhookEventCategoryDerecognition, ParsedWebhookEventCategoryDispute, ParsedWebhookEventCategoryFee, ParsedWebhookEventCategoryInternal, ParsedWebhookEventCategoryReward, ParsedWebhookEventCategoryProgramFunding, ParsedWebhookEventCategoryTransfer, ParsedWebhookEventCategoryExternalWire, ParsedWebhookEventCategoryExternalACH, ParsedWebhookEventCategoryExternalCheck, ParsedWebhookEventCategoryExternalFednow, ParsedWebhookEventCategoryExternalRtp, ParsedWebhookEventCategoryExternalTransfer, ParsedWebhookEventCategoryManagementFee, ParsedWebhookEventCategoryManagementDispute, ParsedWebhookEventCategoryManagementReward, ParsedWebhookEventCategoryManagementAdjustment, ParsedWebhookEventCategoryManagementDisbursement, ParsedWebhookEventCategoryACH, ParsedWebhookEventCategoryWire, ParsedWebhookEventCategoryCard, ParsedWebhookEventCategoryHold:
+	case ParsedWebhookEventCategoryAdjustment, ParsedWebhookEventCategoryBalanceOrFunding, ParsedWebhookEventCategoryDerecognition, ParsedWebhookEventCategoryDispute, ParsedWebhookEventCategoryFee, ParsedWebhookEventCategoryInternal, ParsedWebhookEventCategoryReward, ParsedWebhookEventCategoryProgramFunding, ParsedWebhookEventCategoryTransfer, ParsedWebhookEventCategoryExternalWire, ParsedWebhookEventCategoryExternalACH, ParsedWebhookEventCategoryExternalCheck, ParsedWebhookEventCategoryExternalFednow, ParsedWebhookEventCategoryExternalRtp, ParsedWebhookEventCategoryExternalTransfer, ParsedWebhookEventCategoryManagementFee, ParsedWebhookEventCategoryManagementDispute, ParsedWebhookEventCategoryManagementReward, ParsedWebhookEventCategoryManagementAdjustment, ParsedWebhookEventCategoryManagementDisbursement, ParsedWebhookEventCategoryACH, ParsedWebhookEventCategoryCard, ParsedWebhookEventCategoryHold:
 		return true
 	}
 	return false
@@ -6994,7 +6873,6 @@ const (
 	ParsedWebhookEventEventTypeAccountHolderVerification                                ParsedWebhookEventEventType = "account_holder.verification"
 	ParsedWebhookEventEventTypeAccountHolderDocumentUpdated                             ParsedWebhookEventEventType = "account_holder_document.updated"
 	ParsedWebhookEventEventTypeCardAuthorizationApprovalRequest                         ParsedWebhookEventEventType = "card_authorization.approval_request"
-	ParsedWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest                 ParsedWebhookEventEventType = "digital_wallet.tokenization_approval_request"
 	ParsedWebhookEventEventTypeAuthRulesBacktestReportCreated                           ParsedWebhookEventEventType = "auth_rules.backtest_report.created"
 	ParsedWebhookEventEventTypeBalanceUpdated                                           ParsedWebhookEventEventType = "balance.updated"
 	ParsedWebhookEventEventTypeBookTransferTransactionCreated                           ParsedWebhookEventEventType = "book_transfer_transaction.created"
@@ -7008,6 +6886,7 @@ const (
 	ParsedWebhookEventEventTypeCardTransactionUpdated                                   ParsedWebhookEventEventType = "card_transaction.updated"
 	ParsedWebhookEventEventTypeCardTransactionEnhancedDataCreated                       ParsedWebhookEventEventType = "card_transaction.enhanced_data.created"
 	ParsedWebhookEventEventTypeCardTransactionEnhancedDataUpdated                       ParsedWebhookEventEventType = "card_transaction.enhanced_data.updated"
+	ParsedWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest                 ParsedWebhookEventEventType = "digital_wallet.tokenization_approval_request"
 	ParsedWebhookEventEventTypeDigitalWalletTokenizationResult                          ParsedWebhookEventEventType = "digital_wallet.tokenization_result"
 	ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode     ParsedWebhookEventEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent ParsedWebhookEventEventType = "digital_wallet.tokenization_two_factor_authentication_code_sent"
@@ -7048,7 +6927,7 @@ const (
 
 func (r ParsedWebhookEventEventType) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventEventTypeAccountHolderCreated, ParsedWebhookEventEventTypeAccountHolderUpdated, ParsedWebhookEventEventTypeAccountHolderVerification, ParsedWebhookEventEventTypeAccountHolderDocumentUpdated, ParsedWebhookEventEventTypeCardAuthorizationApprovalRequest, ParsedWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest, ParsedWebhookEventEventTypeAuthRulesBacktestReportCreated, ParsedWebhookEventEventTypeBalanceUpdated, ParsedWebhookEventEventTypeBookTransferTransactionCreated, ParsedWebhookEventEventTypeBookTransferTransactionUpdated, ParsedWebhookEventEventTypeCardCreated, ParsedWebhookEventEventTypeCardConverted, ParsedWebhookEventEventTypeCardRenewed, ParsedWebhookEventEventTypeCardReissued, ParsedWebhookEventEventTypeCardShipped, ParsedWebhookEventEventTypeCardUpdated, ParsedWebhookEventEventTypeCardTransactionUpdated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataCreated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataUpdated, ParsedWebhookEventEventTypeDigitalWalletTokenizationResult, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeDigitalWalletTokenizationUpdated, ParsedWebhookEventEventTypeDisputeUpdated, ParsedWebhookEventEventTypeDisputeEvidenceUploadFailed, ParsedWebhookEventEventTypeExternalBankAccountCreated, ParsedWebhookEventEventTypeExternalBankAccountUpdated, ParsedWebhookEventEventTypeExternalPaymentCreated, ParsedWebhookEventEventTypeExternalPaymentUpdated, ParsedWebhookEventEventTypeFinancialAccountCreated, ParsedWebhookEventEventTypeFinancialAccountUpdated, ParsedWebhookEventEventTypeFundingEventCreated, ParsedWebhookEventEventTypeLoanTapeCreated, ParsedWebhookEventEventTypeLoanTapeUpdated, ParsedWebhookEventEventTypeManagementOperationCreated, ParsedWebhookEventEventTypeManagementOperationUpdated, ParsedWebhookEventEventTypeInternalTransactionCreated, ParsedWebhookEventEventTypeInternalTransactionUpdated, ParsedWebhookEventEventTypeNetworkTotalCreated, ParsedWebhookEventEventTypeNetworkTotalUpdated, ParsedWebhookEventEventTypePaymentTransactionCreated, ParsedWebhookEventEventTypePaymentTransactionUpdated, ParsedWebhookEventEventTypeSettlementReportUpdated, ParsedWebhookEventEventTypeStatementsCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationChallenge, ParsedWebhookEventEventTypeTokenizationApprovalRequest, ParsedWebhookEventEventTypeTokenizationResult, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeTokenizationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationApprovalRequest, ParsedWebhookEventEventTypeDisputeTransactionCreated, ParsedWebhookEventEventTypeDisputeTransactionUpdated:
+	case ParsedWebhookEventEventTypeAccountHolderCreated, ParsedWebhookEventEventTypeAccountHolderUpdated, ParsedWebhookEventEventTypeAccountHolderVerification, ParsedWebhookEventEventTypeAccountHolderDocumentUpdated, ParsedWebhookEventEventTypeCardAuthorizationApprovalRequest, ParsedWebhookEventEventTypeAuthRulesBacktestReportCreated, ParsedWebhookEventEventTypeBalanceUpdated, ParsedWebhookEventEventTypeBookTransferTransactionCreated, ParsedWebhookEventEventTypeBookTransferTransactionUpdated, ParsedWebhookEventEventTypeCardCreated, ParsedWebhookEventEventTypeCardConverted, ParsedWebhookEventEventTypeCardRenewed, ParsedWebhookEventEventTypeCardReissued, ParsedWebhookEventEventTypeCardShipped, ParsedWebhookEventEventTypeCardUpdated, ParsedWebhookEventEventTypeCardTransactionUpdated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataCreated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataUpdated, ParsedWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest, ParsedWebhookEventEventTypeDigitalWalletTokenizationResult, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeDigitalWalletTokenizationUpdated, ParsedWebhookEventEventTypeDisputeUpdated, ParsedWebhookEventEventTypeDisputeEvidenceUploadFailed, ParsedWebhookEventEventTypeExternalBankAccountCreated, ParsedWebhookEventEventTypeExternalBankAccountUpdated, ParsedWebhookEventEventTypeExternalPaymentCreated, ParsedWebhookEventEventTypeExternalPaymentUpdated, ParsedWebhookEventEventTypeFinancialAccountCreated, ParsedWebhookEventEventTypeFinancialAccountUpdated, ParsedWebhookEventEventTypeFundingEventCreated, ParsedWebhookEventEventTypeLoanTapeCreated, ParsedWebhookEventEventTypeLoanTapeUpdated, ParsedWebhookEventEventTypeManagementOperationCreated, ParsedWebhookEventEventTypeManagementOperationUpdated, ParsedWebhookEventEventTypeInternalTransactionCreated, ParsedWebhookEventEventTypeInternalTransactionUpdated, ParsedWebhookEventEventTypeNetworkTotalCreated, ParsedWebhookEventEventTypeNetworkTotalUpdated, ParsedWebhookEventEventTypePaymentTransactionCreated, ParsedWebhookEventEventTypePaymentTransactionUpdated, ParsedWebhookEventEventTypeSettlementReportUpdated, ParsedWebhookEventEventTypeStatementsCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationChallenge, ParsedWebhookEventEventTypeTokenizationApprovalRequest, ParsedWebhookEventEventTypeTokenizationResult, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeTokenizationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationApprovalRequest, ParsedWebhookEventEventTypeDisputeTransactionCreated, ParsedWebhookEventEventTypeDisputeTransactionUpdated:
 		return true
 	}
 	return false
