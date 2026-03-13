@@ -38,7 +38,7 @@ func NewDisputeService(opts ...option.RequestOption) (r *DisputeService) {
 	return
 }
 
-// Request a chargeback.
+// Initiate a dispute.
 func (r *DisputeService) New(ctx context.Context, body DisputeNewParams, opts ...option.RequestOption) (res *Dispute, err error) {
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/disputes"
@@ -46,7 +46,7 @@ func (r *DisputeService) New(ctx context.Context, body DisputeNewParams, opts ..
 	return res, err
 }
 
-// Get chargeback request.
+// Get dispute.
 func (r *DisputeService) Get(ctx context.Context, disputeToken string, opts ...option.RequestOption) (res *Dispute, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if disputeToken == "" {
@@ -58,7 +58,7 @@ func (r *DisputeService) Get(ctx context.Context, disputeToken string, opts ...o
 	return res, err
 }
 
-// Update chargeback request. Can only be modified if status is `NEW`.
+// Update dispute. Can only be modified if status is `NEW`.
 func (r *DisputeService) Update(ctx context.Context, disputeToken string, body DisputeUpdateParams, opts ...option.RequestOption) (res *Dispute, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if disputeToken == "" {
@@ -70,7 +70,7 @@ func (r *DisputeService) Update(ctx context.Context, disputeToken string, body D
 	return res, err
 }
 
-// List chargeback requests.
+// List disputes.
 func (r *DisputeService) List(ctx context.Context, query DisputeListParams, opts ...option.RequestOption) (res *pagination.CursorPage[Dispute], err error) {
 	var raw *http.Response
 	opts = slices.Concat(r.Options, opts)
@@ -88,12 +88,12 @@ func (r *DisputeService) List(ctx context.Context, query DisputeListParams, opts
 	return res, nil
 }
 
-// List chargeback requests.
+// List disputes.
 func (r *DisputeService) ListAutoPaging(ctx context.Context, query DisputeListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[Dispute] {
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
-// Withdraw chargeback request.
+// Withdraw dispute.
 func (r *DisputeService) Delete(ctx context.Context, disputeToken string, opts ...option.RequestOption) (res *Dispute, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if disputeToken == "" {
@@ -105,8 +105,8 @@ func (r *DisputeService) Delete(ctx context.Context, disputeToken string, opts .
 	return res, err
 }
 
-// Soft delete evidence for a chargeback request. Evidence will not be reviewed or
-// submitted by Lithic after it is withdrawn.
+// Soft delete evidence for a dispute. Evidence will not be reviewed or submitted
+// by Lithic after it is withdrawn.
 func (r *DisputeService) DeleteEvidence(ctx context.Context, disputeToken string, evidenceToken string, opts ...option.RequestOption) (res *DisputeEvidence, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if disputeToken == "" {
@@ -122,8 +122,8 @@ func (r *DisputeService) DeleteEvidence(ctx context.Context, disputeToken string
 	return res, err
 }
 
-// Use this endpoint to upload evidence for a chargeback request. It will return a
-// URL to upload your documents to. The URL will expire in 30 minutes.
+// Use this endpoint to upload evidences for the dispute. It will return a URL to
+// upload your documents to. The URL will expire in 30 minutes.
 //
 // Uploaded documents must either be a `jpg`, `png` or `pdf` file, and each must be
 // less than 5 GiB.
@@ -138,7 +138,7 @@ func (r *DisputeService) InitiateEvidenceUpload(ctx context.Context, disputeToke
 	return res, err
 }
 
-// List evidence for a chargeback request.
+// List evidence metadata for a dispute.
 func (r *DisputeService) ListEvidences(ctx context.Context, disputeToken string, query DisputeListEvidencesParams, opts ...option.RequestOption) (res *pagination.CursorPage[DisputeEvidence], err error) {
 	var raw *http.Response
 	opts = slices.Concat(r.Options, opts)
@@ -160,12 +160,12 @@ func (r *DisputeService) ListEvidences(ctx context.Context, disputeToken string,
 	return res, nil
 }
 
-// List evidence for a chargeback request.
+// List evidence metadata for a dispute.
 func (r *DisputeService) ListEvidencesAutoPaging(ctx context.Context, disputeToken string, query DisputeListEvidencesParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[DisputeEvidence] {
 	return pagination.NewCursorPageAutoPager(r.ListEvidences(ctx, disputeToken, query, opts...))
 }
 
-// Get evidence for a chargeback request.
+// Get a dispute's evidence metadata.
 func (r *DisputeService) GetEvidence(ctx context.Context, disputeToken string, evidenceToken string, opts ...option.RequestOption) (res *DisputeEvidence, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if disputeToken == "" {
@@ -502,15 +502,15 @@ func (r DisputeEvidenceUploadStatus) IsKnown() bool {
 }
 
 type DisputeNewParams struct {
-	// Amount for chargeback
+	// Amount to dispute
 	Amount param.Field[int64] `json:"amount" api:"required"`
-	// Reason for chargeback
+	// Reason for dispute
 	Reason param.Field[DisputeNewParamsReason] `json:"reason" api:"required"`
-	// Transaction for chargeback
+	// Transaction to dispute
 	TransactionToken param.Field[string] `json:"transaction_token" api:"required" format:"uuid"`
-	// Date the customer filed the chargeback request
+	// Date the customer filed the dispute
 	CustomerFiledDate param.Field[time.Time] `json:"customer_filed_date" format:"date-time"`
-	// Customer description
+	// Customer description of dispute
 	CustomerNote param.Field[string] `json:"customer_note"`
 }
 
@@ -518,7 +518,7 @@ func (r DisputeNewParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-// Reason for chargeback
+// Reason for dispute
 type DisputeNewParamsReason string
 
 const (
@@ -547,13 +547,13 @@ func (r DisputeNewParamsReason) IsKnown() bool {
 }
 
 type DisputeUpdateParams struct {
-	// Amount for chargeback
+	// Amount to dispute
 	Amount param.Field[int64] `json:"amount"`
-	// Date the customer filed the chargeback request
+	// Date the customer filed the dispute
 	CustomerFiledDate param.Field[time.Time] `json:"customer_filed_date" format:"date-time"`
-	// Customer description
+	// Customer description of dispute
 	CustomerNote param.Field[string] `json:"customer_note"`
-	// Reason for chargeback
+	// Reason for dispute
 	Reason param.Field[DisputeUpdateParamsReason] `json:"reason"`
 }
 
@@ -561,7 +561,7 @@ func (r DisputeUpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-// Reason for chargeback
+// Reason for dispute
 type DisputeUpdateParamsReason string
 
 const (
@@ -604,7 +604,7 @@ type DisputeListParams struct {
 	// A cursor representing an item's token after which a page of results should
 	// begin. Used to retrieve the next page of results after this item.
 	StartingAfter param.Field[string] `query:"starting_after"`
-	// Filter by status.
+	// List disputes of a specific status.
 	Status param.Field[DisputeListParamsStatus] `query:"status"`
 	// Transaction tokens to filter by.
 	TransactionTokens param.Field[[]string] `query:"transaction_tokens" format:"uuid"`
@@ -618,7 +618,7 @@ func (r DisputeListParams) URLQuery() (v url.Values) {
 	})
 }
 
-// Filter by status.
+// List disputes of a specific status.
 type DisputeListParamsStatus string
 
 const (

@@ -96,10 +96,7 @@ type StatementLineItemsData struct {
 	// Globally unique identifier for a Statement Line Item
 	Token string `json:"token" api:"required"`
 	// Transaction amount in cents
-	Amount int64 `json:"amount" api:"required"`
-	// Note: Inbound wire transfers are coming soon (availability varies by partner
-	// bank). The WIRE category is a preview. To learn more, contact your customer
-	// success manager.
+	Amount   int64                          `json:"amount" api:"required"`
 	Category StatementLineItemsDataCategory `json:"category" api:"required"`
 	// Timestamp of when the line item was generated
 	Created time.Time `json:"created" api:"required" format:"date-time"`
@@ -154,14 +151,10 @@ func (r statementLineItemsDataJSON) RawJSON() string {
 	return r.raw
 }
 
-// Note: Inbound wire transfers are coming soon (availability varies by partner
-// bank). The WIRE category is a preview. To learn more, contact your customer
-// success manager.
 type StatementLineItemsDataCategory string
 
 const (
 	StatementLineItemsDataCategoryACH                    StatementLineItemsDataCategory = "ACH"
-	StatementLineItemsDataCategoryWire                   StatementLineItemsDataCategory = "WIRE"
 	StatementLineItemsDataCategoryBalanceOrFunding       StatementLineItemsDataCategory = "BALANCE_OR_FUNDING"
 	StatementLineItemsDataCategoryFee                    StatementLineItemsDataCategory = "FEE"
 	StatementLineItemsDataCategoryReward                 StatementLineItemsDataCategory = "REWARD"
@@ -186,7 +179,7 @@ const (
 
 func (r StatementLineItemsDataCategory) IsKnown() bool {
 	switch r {
-	case StatementLineItemsDataCategoryACH, StatementLineItemsDataCategoryWire, StatementLineItemsDataCategoryBalanceOrFunding, StatementLineItemsDataCategoryFee, StatementLineItemsDataCategoryReward, StatementLineItemsDataCategoryAdjustment, StatementLineItemsDataCategoryDerecognition, StatementLineItemsDataCategoryDispute, StatementLineItemsDataCategoryCard, StatementLineItemsDataCategoryExternalACH, StatementLineItemsDataCategoryExternalCheck, StatementLineItemsDataCategoryExternalFednow, StatementLineItemsDataCategoryExternalRtp, StatementLineItemsDataCategoryExternalTransfer, StatementLineItemsDataCategoryExternalWire, StatementLineItemsDataCategoryManagementAdjustment, StatementLineItemsDataCategoryManagementDispute, StatementLineItemsDataCategoryManagementFee, StatementLineItemsDataCategoryManagementReward, StatementLineItemsDataCategoryManagementDisbursement, StatementLineItemsDataCategoryHold, StatementLineItemsDataCategoryProgramFunding:
+	case StatementLineItemsDataCategoryACH, StatementLineItemsDataCategoryBalanceOrFunding, StatementLineItemsDataCategoryFee, StatementLineItemsDataCategoryReward, StatementLineItemsDataCategoryAdjustment, StatementLineItemsDataCategoryDerecognition, StatementLineItemsDataCategoryDispute, StatementLineItemsDataCategoryCard, StatementLineItemsDataCategoryExternalACH, StatementLineItemsDataCategoryExternalCheck, StatementLineItemsDataCategoryExternalFednow, StatementLineItemsDataCategoryExternalRtp, StatementLineItemsDataCategoryExternalTransfer, StatementLineItemsDataCategoryExternalWire, StatementLineItemsDataCategoryManagementAdjustment, StatementLineItemsDataCategoryManagementDispute, StatementLineItemsDataCategoryManagementFee, StatementLineItemsDataCategoryManagementReward, StatementLineItemsDataCategoryManagementDisbursement, StatementLineItemsDataCategoryHold, StatementLineItemsDataCategoryProgramFunding:
 		return true
 	}
 	return false
