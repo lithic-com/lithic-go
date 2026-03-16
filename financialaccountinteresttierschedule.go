@@ -154,6 +154,8 @@ type InterestTierSchedule struct {
 	CreditProductToken string `json:"credit_product_token" api:"required"`
 	// Date the tier should be effective in YYYY-MM-DD format
 	EffectiveDate time.Time `json:"effective_date" api:"required" format:"date"`
+	// Custom rates per category for penalties
+	PenaltyRates interface{} `json:"penalty_rates"`
 	// Name of a tier contained in the credit product. Mutually exclusive with
 	// tier_rates
 	TierName string `json:"tier_name"`
@@ -167,6 +169,7 @@ type InterestTierSchedule struct {
 type interestTierScheduleJSON struct {
 	CreditProductToken apijson.Field
 	EffectiveDate      apijson.Field
+	PenaltyRates       apijson.Field
 	TierName           apijson.Field
 	TierRates          apijson.Field
 	raw                string
@@ -187,6 +190,8 @@ type InterestTierScheduleParam struct {
 	CreditProductToken param.Field[string] `json:"credit_product_token" api:"required"`
 	// Date the tier should be effective in YYYY-MM-DD format
 	EffectiveDate param.Field[time.Time] `json:"effective_date" api:"required" format:"date"`
+	// Custom rates per category for penalties
+	PenaltyRates param.Field[interface{}] `json:"penalty_rates"`
 	// Name of a tier contained in the credit product. Mutually exclusive with
 	// tier_rates
 	TierName param.Field[string] `json:"tier_name"`
@@ -208,6 +213,8 @@ func (r FinancialAccountInterestTierScheduleNewParams) MarshalJSON() (data []byt
 }
 
 type FinancialAccountInterestTierScheduleUpdateParams struct {
+	// Custom rates per category for penalties
+	PenaltyRates param.Field[interface{}] `json:"penalty_rates"`
 	// Name of a tier contained in the credit product. Mutually exclusive with
 	// tier_rates
 	TierName param.Field[string] `json:"tier_name"`
