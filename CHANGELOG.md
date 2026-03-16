@@ -1,5 +1,44 @@
 # Changelog
 
+## 0.104.0 (2026-03-16)
+
+Full Changelog: [v0.103.0...v0.104.0](https://github.com/lithic-com/lithic-go/compare/v0.103.0...v0.104.0)
+
+### Features
+
+* **api:** add ACH_RECEIPT_RELEASED_EARLY event type to payment ([01369fc](https://github.com/lithic-com/lithic-go/commit/01369fce4429ca5c4e817ee962d81b52104749f2))
+* **api:** add EARLY_DIRECT_DEPOSIT_FLOAT enum to financial_account/webhook types ([59520dc](https://github.com/lithic-com/lithic-go/commit/59520dc2818e5263cb0ecc28f490512cfd5d8fa7))
+* **api:** add event_subtype field to statement line items ([63662d9](https://github.com/lithic-com/lithic-go/commit/63662d93e6de30f10fd44fae05828dd564994da1))
+* **api:** add excluded_account_tokens to auth rule V2 ([e6c9931](https://github.com/lithic-com/lithic-go/commit/e6c9931ef6000ee35b6d460bfb836f7e11cae082))
+* **api:** add loan_tape_date field to statement line items ([3541af2](https://github.com/lithic-com/lithic-go/commit/3541af2ba10925f9e6a96a0c4bb690d8e314b63c))
+* **api:** add penalty_rates field to interest tier schedule ([04fa775](https://github.com/lithic-com/lithic-go/commit/04fa775981ff4dd06e13fd14d554eae75183793e))
+* **api:** add typescript code rules, rule features, draft state tracking to auth rules ([afc0dbb](https://github.com/lithic-com/lithic-go/commit/afc0dbbde29def1384a6b269c706b7b7942c614a))
+* **api:** add versions field to auth rule v2 daily statistics response ([5d21ea4](https://github.com/lithic-com/lithic-go/commit/5d21ea481c8da027c2f52e9b191711ab611ee176))
+* **api:** add WIRE category, wire transfer event types, remove remittance_information ([94306dd](https://github.com/lithic-com/lithic-go/commit/94306ddbbcdaca780abf91522527c0cc4b1c0f0b))
+
+
+### Bug Fixes
+
+* **api:** [breaking] unify webhook schemas for digital_wallet.tokenization_approval_request webhooks ([854f1ab](https://github.com/lithic-com/lithic-go/commit/854f1ab073691fbfb4dd8760f6265a98c4f0dd82))
+* **types:** remove auth_rule_token, require end/start in backtest simulation parameters ([db127f3](https://github.com/lithic-com/lithic-go/commit/db127f3f4b121b636d4d1589ede2003fc8ca38d3))
+
+
+### Chores
+
+* **internal:** codegen related update ([636d523](https://github.com/lithic-com/lithic-go/commit/636d5237a6d38f1e365a501bb61b926bec9c47be))
+* **internal:** codegen related update ([263a0a9](https://github.com/lithic-com/lithic-go/commit/263a0a94985fc759c6c25e2f522421a8e8287830))
+* **internal:** codegen related update ([3b62530](https://github.com/lithic-com/lithic-go/commit/3b6253065cc4f358e4e27a3816025fd8d45f5e6a))
+* **internal:** codegen related update ([41f596e](https://github.com/lithic-com/lithic-go/commit/41f596e0c528be81a7c306be8d612fa341d339e1))
+* **internal:** codegen related update ([e7aa352](https://github.com/lithic-com/lithic-go/commit/e7aa3529507f81ac222c2dc1ed1c69e83231d2d9))
+* **internal:** regenerate SDK with no functional changes ([c5d97e0](https://github.com/lithic-com/lithic-go/commit/c5d97e04ef3eb9f1d0ae730a65030939f4960ad8))
+
+
+### Documentation
+
+* add MCP server integration guide to README ([1959006](https://github.com/lithic-com/lithic-go/commit/195900619b8ae5dc86f5fb768c8f9d252cf8c03e))
+* **api:** update dispute method and parameter descriptions ([79b55db](https://github.com/lithic-com/lithic-go/commit/79b55dbf1709cfc6d41ea18126164605f61032a5))
+* **internal:** remove MCP server section from README ([d58f672](https://github.com/lithic-com/lithic-go/commit/d58f6722f4e946ece344abc5d9e60a05e78643dc))
+
 ## 0.103.0 (2026-03-05)
 
 Full Changelog: [v0.102.0...v0.103.0](https://github.com/lithic-com/lithic-go/compare/v0.102.0...v0.103.0)
