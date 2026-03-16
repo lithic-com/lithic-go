@@ -33,6 +33,7 @@ func TestFinancialAccountInterestTierScheduleNewWithOptionalParams(t *testing.T)
 			InterestTierSchedule: lithic.InterestTierScheduleParam{
 				CreditProductToken: lithic.F("credit_product_token"),
 				EffectiveDate:      lithic.F(time.Now()),
+				PenaltyRates:       lithic.F[any](map[string]interface{}{}),
 				TierName:           lithic.F("tier_name"),
 				TierRates:          lithic.F[any](map[string]interface{}{}),
 			},
@@ -90,8 +91,9 @@ func TestFinancialAccountInterestTierScheduleUpdateWithOptionalParams(t *testing
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		time.Now(),
 		lithic.FinancialAccountInterestTierScheduleUpdateParams{
-			TierName:  lithic.F("tier_name"),
-			TierRates: lithic.F[any](map[string]interface{}{}),
+			PenaltyRates: lithic.F[any](map[string]interface{}{}),
+			TierName:     lithic.F("tier_name"),
+			TierRates:    lithic.F[any](map[string]interface{}{}),
 		},
 	)
 	if err != nil {

@@ -153,23 +153,20 @@ func (r backtestResultsResultsJSON) RawJSON() string {
 }
 
 type BacktestResultsSimulationParameters struct {
-	// Auth Rule Token
-	AuthRuleToken string `json:"auth_rule_token" format:"uuid"`
-	// The end time of the simulation.
-	End time.Time `json:"end" format:"date-time"`
-	// The start time of the simulation.
-	Start time.Time                               `json:"start" format:"date-time"`
+	// The end time of the simulation
+	End time.Time `json:"end" api:"required" format:"date-time"`
+	// The start time of the simulation
+	Start time.Time                               `json:"start" api:"required" format:"date-time"`
 	JSON  backtestResultsSimulationParametersJSON `json:"-"`
 }
 
 // backtestResultsSimulationParametersJSON contains the JSON metadata for the
 // struct [BacktestResultsSimulationParameters]
 type backtestResultsSimulationParametersJSON struct {
-	AuthRuleToken apijson.Field
-	End           apijson.Field
-	Start         apijson.Field
-	raw           string
-	ExtraFields   map[string]apijson.Field
+	End         apijson.Field
+	Start       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
 }
 
 func (r *BacktestResultsSimulationParameters) UnmarshalJSON(data []byte) (err error) {
