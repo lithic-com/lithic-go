@@ -249,6 +249,7 @@ type PaymentCategory string
 
 const (
 	PaymentCategoryACH                    PaymentCategory = "ACH"
+	PaymentCategoryWire                   PaymentCategory = "WIRE"
 	PaymentCategoryBalanceOrFunding       PaymentCategory = "BALANCE_OR_FUNDING"
 	PaymentCategoryFee                    PaymentCategory = "FEE"
 	PaymentCategoryReward                 PaymentCategory = "REWARD"
@@ -273,7 +274,7 @@ const (
 
 func (r PaymentCategory) IsKnown() bool {
 	switch r {
-	case PaymentCategoryACH, PaymentCategoryBalanceOrFunding, PaymentCategoryFee, PaymentCategoryReward, PaymentCategoryAdjustment, PaymentCategoryDerecognition, PaymentCategoryDispute, PaymentCategoryCard, PaymentCategoryExternalACH, PaymentCategoryExternalCheck, PaymentCategoryExternalFednow, PaymentCategoryExternalRtp, PaymentCategoryExternalTransfer, PaymentCategoryExternalWire, PaymentCategoryManagementAdjustment, PaymentCategoryManagementDispute, PaymentCategoryManagementFee, PaymentCategoryManagementReward, PaymentCategoryManagementDisbursement, PaymentCategoryHold, PaymentCategoryProgramFunding:
+	case PaymentCategoryACH, PaymentCategoryWire, PaymentCategoryBalanceOrFunding, PaymentCategoryFee, PaymentCategoryReward, PaymentCategoryAdjustment, PaymentCategoryDerecognition, PaymentCategoryDispute, PaymentCategoryCard, PaymentCategoryExternalACH, PaymentCategoryExternalCheck, PaymentCategoryExternalFednow, PaymentCategoryExternalRtp, PaymentCategoryExternalTransfer, PaymentCategoryExternalWire, PaymentCategoryManagementAdjustment, PaymentCategoryManagementDispute, PaymentCategoryManagementFee, PaymentCategoryManagementReward, PaymentCategoryManagementDisbursement, PaymentCategoryHold, PaymentCategoryProgramFunding:
 		return true
 	}
 	return false
@@ -295,6 +296,10 @@ func (r PaymentDirection) IsKnown() bool {
 	return false
 }
 
+// Note: Inbound wire transfers are coming soon (availability varies by partner
+// bank). Wire-related fields below are a preview. To learn more, contact your
+// customer success manager.
+//
 // Payment Event
 type PaymentEvent struct {
 	// Globally unique identifier.
@@ -307,7 +312,13 @@ type PaymentEvent struct {
 	// APPROVED financial events were successful while DECLINED financial events were
 	// declined by user, Lithic, or the network.
 	Result PaymentEventsResult `json:"result" api:"required"`
+	// Note: Inbound wire transfers are coming soon (availability varies by partner
+	// bank). Wire-related event types below are a preview. To learn more, contact your
+	// customer success manager.
+	//
 	// Event types:
+	//
+	// ACH events:
 	//
 	//   - `ACH_ORIGINATION_INITIATED` - ACH origination received and pending
 	//     approval/release from an ACH hold.
@@ -333,10 +344,32 @@ type PaymentEvent struct {
 	//     Financial Institution.
 	//   - `ACH_RETURN_REJECTED` - ACH return was rejected by the Receiving Depository
 	//     Financial Institution.
+	//
+	// Wire transfer events:
+	//
+	//   - `WIRE_TRANSFER_INBOUND_RECEIVED` - Inbound wire transfer received from the
+	//     Federal Reserve and pending release to available balance.
+	//   - `WIRE_TRANSFER_INBOUND_SETTLED` - Inbound wire transfer funds released from
+	//     pending to available balance.
+	//   - `WIRE_TRANSFER_INBOUND_BLOCKED` - Inbound wire transfer blocked and funds
+	//     frozen for regulatory review.
+	//
+	// Wire return events:
+	//
+	//   - `WIRE_RETURN_OUTBOUND_INITIATED` - Outbound wire return initiated to return
+	//     funds from an inbound wire transfer.
+	//   - `WIRE_RETURN_OUTBOUND_SENT` - Outbound wire return sent to the Federal Reserve
+	//     and pending acceptance.
+	//   - `WIRE_RETURN_OUTBOUND_SETTLED` - Outbound wire return accepted by the Federal
+	//     Reserve and funds returned to sender.
+	//   - `WIRE_RETURN_OUTBOUND_REJECTED` - Outbound wire return rejected by the Federal
+	//     Reserve.
 	Type PaymentEventsType `json:"type" api:"required"`
 	// More detailed reasons for the event
 	DetailedResults []PaymentEventsDetailedResult `json:"detailed_results"`
-	// Payment event external ID, for example, ACH trace number.
+	// Payment event external ID. For ACH transactions, this is the ACH trace number.
+	// For inbound wire transfers, this is the IMAD (Input Message Accountability
+	// Data).
 	ExternalID string           `json:"external_id" api:"nullable"`
 	JSON       paymentEventJSON `json:"-"`
 }
@@ -379,7 +412,13 @@ func (r PaymentEventsResult) IsKnown() bool {
 	return false
 }
 
+// Note: Inbound wire transfers are coming soon (availability varies by partner
+// bank). Wire-related event types below are a preview. To learn more, contact your
+// customer success manager.
+//
 // Event types:
+//
+// ACH events:
 //
 //   - `ACH_ORIGINATION_INITIATED` - ACH origination received and pending
 //     approval/release from an ACH hold.
@@ -405,29 +444,56 @@ func (r PaymentEventsResult) IsKnown() bool {
 //     Financial Institution.
 //   - `ACH_RETURN_REJECTED` - ACH return was rejected by the Receiving Depository
 //     Financial Institution.
+//
+// Wire transfer events:
+//
+//   - `WIRE_TRANSFER_INBOUND_RECEIVED` - Inbound wire transfer received from the
+//     Federal Reserve and pending release to available balance.
+//   - `WIRE_TRANSFER_INBOUND_SETTLED` - Inbound wire transfer funds released from
+//     pending to available balance.
+//   - `WIRE_TRANSFER_INBOUND_BLOCKED` - Inbound wire transfer blocked and funds
+//     frozen for regulatory review.
+//
+// Wire return events:
+//
+//   - `WIRE_RETURN_OUTBOUND_INITIATED` - Outbound wire return initiated to return
+//     funds from an inbound wire transfer.
+//   - `WIRE_RETURN_OUTBOUND_SENT` - Outbound wire return sent to the Federal Reserve
+//     and pending acceptance.
+//   - `WIRE_RETURN_OUTBOUND_SETTLED` - Outbound wire return accepted by the Federal
+//     Reserve and funds returned to sender.
+//   - `WIRE_RETURN_OUTBOUND_REJECTED` - Outbound wire return rejected by the Federal
+//     Reserve.
 type PaymentEventsType string
 
 const (
-	PaymentEventsTypeACHOriginationCancelled PaymentEventsType = "ACH_ORIGINATION_CANCELLED"
-	PaymentEventsTypeACHOriginationInitiated PaymentEventsType = "ACH_ORIGINATION_INITIATED"
-	PaymentEventsTypeACHOriginationProcessed PaymentEventsType = "ACH_ORIGINATION_PROCESSED"
-	PaymentEventsTypeACHOriginationRejected  PaymentEventsType = "ACH_ORIGINATION_REJECTED"
-	PaymentEventsTypeACHOriginationReleased  PaymentEventsType = "ACH_ORIGINATION_RELEASED"
-	PaymentEventsTypeACHOriginationReviewed  PaymentEventsType = "ACH_ORIGINATION_REVIEWED"
-	PaymentEventsTypeACHOriginationSettled   PaymentEventsType = "ACH_ORIGINATION_SETTLED"
-	PaymentEventsTypeACHReceiptProcessed     PaymentEventsType = "ACH_RECEIPT_PROCESSED"
-	PaymentEventsTypeACHReceiptReleased      PaymentEventsType = "ACH_RECEIPT_RELEASED"
-	PaymentEventsTypeACHReceiptReleasedEarly PaymentEventsType = "ACH_RECEIPT_RELEASED_EARLY"
-	PaymentEventsTypeACHReceiptSettled       PaymentEventsType = "ACH_RECEIPT_SETTLED"
-	PaymentEventsTypeACHReturnInitiated      PaymentEventsType = "ACH_RETURN_INITIATED"
-	PaymentEventsTypeACHReturnProcessed      PaymentEventsType = "ACH_RETURN_PROCESSED"
-	PaymentEventsTypeACHReturnRejected       PaymentEventsType = "ACH_RETURN_REJECTED"
-	PaymentEventsTypeACHReturnSettled        PaymentEventsType = "ACH_RETURN_SETTLED"
+	PaymentEventsTypeACHOriginationCancelled     PaymentEventsType = "ACH_ORIGINATION_CANCELLED"
+	PaymentEventsTypeACHOriginationInitiated     PaymentEventsType = "ACH_ORIGINATION_INITIATED"
+	PaymentEventsTypeACHOriginationProcessed     PaymentEventsType = "ACH_ORIGINATION_PROCESSED"
+	PaymentEventsTypeACHOriginationRejected      PaymentEventsType = "ACH_ORIGINATION_REJECTED"
+	PaymentEventsTypeACHOriginationReleased      PaymentEventsType = "ACH_ORIGINATION_RELEASED"
+	PaymentEventsTypeACHOriginationReviewed      PaymentEventsType = "ACH_ORIGINATION_REVIEWED"
+	PaymentEventsTypeACHOriginationSettled       PaymentEventsType = "ACH_ORIGINATION_SETTLED"
+	PaymentEventsTypeACHReceiptProcessed         PaymentEventsType = "ACH_RECEIPT_PROCESSED"
+	PaymentEventsTypeACHReceiptReleased          PaymentEventsType = "ACH_RECEIPT_RELEASED"
+	PaymentEventsTypeACHReceiptReleasedEarly     PaymentEventsType = "ACH_RECEIPT_RELEASED_EARLY"
+	PaymentEventsTypeACHReceiptSettled           PaymentEventsType = "ACH_RECEIPT_SETTLED"
+	PaymentEventsTypeACHReturnInitiated          PaymentEventsType = "ACH_RETURN_INITIATED"
+	PaymentEventsTypeACHReturnProcessed          PaymentEventsType = "ACH_RETURN_PROCESSED"
+	PaymentEventsTypeACHReturnRejected           PaymentEventsType = "ACH_RETURN_REJECTED"
+	PaymentEventsTypeACHReturnSettled            PaymentEventsType = "ACH_RETURN_SETTLED"
+	PaymentEventsTypeWireTransferInboundReceived PaymentEventsType = "WIRE_TRANSFER_INBOUND_RECEIVED"
+	PaymentEventsTypeWireTransferInboundSettled  PaymentEventsType = "WIRE_TRANSFER_INBOUND_SETTLED"
+	PaymentEventsTypeWireTransferInboundBlocked  PaymentEventsType = "WIRE_TRANSFER_INBOUND_BLOCKED"
+	PaymentEventsTypeWireReturnOutboundInitiated PaymentEventsType = "WIRE_RETURN_OUTBOUND_INITIATED"
+	PaymentEventsTypeWireReturnOutboundSent      PaymentEventsType = "WIRE_RETURN_OUTBOUND_SENT"
+	PaymentEventsTypeWireReturnOutboundSettled   PaymentEventsType = "WIRE_RETURN_OUTBOUND_SETTLED"
+	PaymentEventsTypeWireReturnOutboundRejected  PaymentEventsType = "WIRE_RETURN_OUTBOUND_REJECTED"
 )
 
 func (r PaymentEventsType) IsKnown() bool {
 	switch r {
-	case PaymentEventsTypeACHOriginationCancelled, PaymentEventsTypeACHOriginationInitiated, PaymentEventsTypeACHOriginationProcessed, PaymentEventsTypeACHOriginationRejected, PaymentEventsTypeACHOriginationReleased, PaymentEventsTypeACHOriginationReviewed, PaymentEventsTypeACHOriginationSettled, PaymentEventsTypeACHReceiptProcessed, PaymentEventsTypeACHReceiptReleased, PaymentEventsTypeACHReceiptReleasedEarly, PaymentEventsTypeACHReceiptSettled, PaymentEventsTypeACHReturnInitiated, PaymentEventsTypeACHReturnProcessed, PaymentEventsTypeACHReturnRejected, PaymentEventsTypeACHReturnSettled:
+	case PaymentEventsTypeACHOriginationCancelled, PaymentEventsTypeACHOriginationInitiated, PaymentEventsTypeACHOriginationProcessed, PaymentEventsTypeACHOriginationRejected, PaymentEventsTypeACHOriginationReleased, PaymentEventsTypeACHOriginationReviewed, PaymentEventsTypeACHOriginationSettled, PaymentEventsTypeACHReceiptProcessed, PaymentEventsTypeACHReceiptReleased, PaymentEventsTypeACHReceiptReleasedEarly, PaymentEventsTypeACHReceiptSettled, PaymentEventsTypeACHReturnInitiated, PaymentEventsTypeACHReturnProcessed, PaymentEventsTypeACHReturnRejected, PaymentEventsTypeACHReturnSettled, PaymentEventsTypeWireTransferInboundReceived, PaymentEventsTypeWireTransferInboundSettled, PaymentEventsTypeWireTransferInboundBlocked, PaymentEventsTypeWireReturnOutboundInitiated, PaymentEventsTypeWireReturnOutboundSent, PaymentEventsTypeWireReturnOutboundSettled, PaymentEventsTypeWireReturnOutboundRejected:
 		return true
 	}
 	return false
@@ -500,8 +566,6 @@ type PaymentMethodAttributes struct {
 	MessageID string `json:"message_id" api:"nullable"`
 	// Receipt routing number
 	ReceiptRoutingNumber string `json:"receipt_routing_number" api:"nullable"`
-	// Payment details or invoice reference
-	RemittanceInformation string `json:"remittance_information" api:"nullable"`
 	// Number of retries attempted
 	Retries int64 `json:"retries" api:"nullable"`
 	// Return reason code if the transaction was returned
@@ -521,22 +585,21 @@ type PaymentMethodAttributes struct {
 // paymentMethodAttributesJSON contains the JSON metadata for the struct
 // [PaymentMethodAttributes]
 type paymentMethodAttributesJSON struct {
-	ACHHoldPeriod         apijson.Field
-	Addenda               apijson.Field
-	CompanyID             apijson.Field
-	Creditor              apijson.Field
-	Debtor                apijson.Field
-	MessageID             apijson.Field
-	ReceiptRoutingNumber  apijson.Field
-	RemittanceInformation apijson.Field
-	Retries               apijson.Field
-	ReturnReasonCode      apijson.Field
-	SecCode               apijson.Field
-	TraceNumbers          apijson.Field
-	WireMessageType       apijson.Field
-	WireNetwork           apijson.Field
-	raw                   string
-	ExtraFields           map[string]apijson.Field
+	ACHHoldPeriod        apijson.Field
+	Addenda              apijson.Field
+	CompanyID            apijson.Field
+	Creditor             apijson.Field
+	Debtor               apijson.Field
+	MessageID            apijson.Field
+	ReceiptRoutingNumber apijson.Field
+	Retries              apijson.Field
+	ReturnReasonCode     apijson.Field
+	SecCode              apijson.Field
+	TraceNumbers         apijson.Field
+	WireMessageType      apijson.Field
+	WireNetwork          apijson.Field
+	raw                  string
+	ExtraFields          map[string]apijson.Field
 }
 
 func (r paymentMethodAttributesJSON) RawJSON() string {
@@ -659,23 +722,20 @@ type PaymentMethodAttributesWireMethodAttributes struct {
 	Debtor      WirePartyDetails                                       `json:"debtor"`
 	// Point to point reference identifier, as assigned by the instructing party, used
 	// for tracking the message through the Fedwire system
-	MessageID string `json:"message_id" api:"nullable"`
-	// Payment details or invoice reference
-	RemittanceInformation string                                          `json:"remittance_information" api:"nullable"`
-	JSON                  paymentMethodAttributesWireMethodAttributesJSON `json:"-"`
+	MessageID string                                          `json:"message_id" api:"nullable"`
+	JSON      paymentMethodAttributesWireMethodAttributesJSON `json:"-"`
 }
 
 // paymentMethodAttributesWireMethodAttributesJSON contains the JSON metadata for
 // the struct [PaymentMethodAttributesWireMethodAttributes]
 type paymentMethodAttributesWireMethodAttributesJSON struct {
-	WireMessageType       apijson.Field
-	WireNetwork           apijson.Field
-	Creditor              apijson.Field
-	Debtor                apijson.Field
-	MessageID             apijson.Field
-	RemittanceInformation apijson.Field
-	raw                   string
-	ExtraFields           map[string]apijson.Field
+	WireMessageType apijson.Field
+	WireNetwork     apijson.Field
+	Creditor        apijson.Field
+	Debtor          apijson.Field
+	MessageID       apijson.Field
+	raw             string
+	ExtraFields     map[string]apijson.Field
 }
 
 func (r *PaymentMethodAttributesWireMethodAttributes) UnmarshalJSON(data []byte) (err error) {
