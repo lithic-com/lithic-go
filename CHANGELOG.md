@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.105.0 (2026-03-17)
+
+Full Changelog: [v0.104.0...v0.105.0](https://github.com/lithic-com/lithic-go/compare/v0.104.0...v0.105.0)
+
+### Features
+
+* **api:** add remittance_information to payment method attributes ([a95ce34](https://github.com/lithic-com/lithic-go/commit/a95ce34d916aa156881965702ca2a126c5855574))
+
+
+### Bug Fixes
+
+* **types:** make address/dob/email/government_id optional in KYB_DELEGATED individuals ([3a5f4b7](https://github.com/lithic-com/lithic-go/commit/3a5f4b75969652ad99580491e55b7a98441a09c4))
+
+
+### Chores
+
+* **internal:** tweak CI branches ([81664c2](https://github.com/lithic-com/lithic-go/commit/81664c2a72441f49481dc9e71bf6fdd9a9145086))
+
+
+### Documentation
+
+* **api:** add pdf to supported file types in account holder document upload ([9dfe6be](https://github.com/lithic-com/lithic-go/commit/9dfe6be8856a1e305acf8605ec1b7a84667d367c))
+
 ## 0.104.0 (2026-03-16)
 
 Full Changelog: [v0.103.0...v0.104.0](https://github.com/lithic-com/lithic-go/compare/v0.103.0...v0.104.0)
