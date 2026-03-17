@@ -2819,25 +2819,26 @@ func (r AccountHolderNewParamsBodyKYBDelegatedBusinessEntity) MarshalJSON() (dat
 	return apijson.MarshalRoot(r)
 }
 
-// Individuals associated with a KYB application. Phone number is optional.
+// Individuals associated with a KYB_DELEGATED application. Only first and last
+// name are required.
 type AccountHolderNewParamsBodyKYBDelegatedBeneficialOwnerIndividual struct {
-	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
-	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
-	Address param.Field[shared.AddressParam] `json:"address" api:"required"`
-	// Individual's date of birth, as an RFC 3339 date.
-	Dob param.Field[string] `json:"dob" api:"required"`
-	// Individual's email address. If utilizing Lithic for chargeback processing, this
-	// customer email address may be used to communicate dispute status and resolution.
-	Email param.Field[string] `json:"email" api:"required"`
 	// Individual's first name, as it appears on government-issued identity documents.
 	FirstName param.Field[string] `json:"first_name" api:"required"`
+	// Individual's last name, as it appears on government-issued identity documents.
+	LastName param.Field[string] `json:"last_name" api:"required"`
+	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
+	Address param.Field[shared.AddressParam] `json:"address"`
+	// Individual's date of birth, as an RFC 3339 date.
+	Dob param.Field[string] `json:"dob"`
+	// Individual's email address. If utilizing Lithic for chargeback processing, this
+	// customer email address may be used to communicate dispute status and resolution.
+	Email param.Field[string] `json:"email"`
 	// Government-issued identification number (required for identity verification and
 	// compliance with banking regulations). Social Security Numbers (SSN) and
 	// Individual Taxpayer Identification Numbers (ITIN) are currently supported,
 	// entered as full nine-digits, with or without hyphens
-	GovernmentID param.Field[string] `json:"government_id" api:"required"`
-	// Individual's last name, as it appears on government-issued identity documents.
-	LastName param.Field[string] `json:"last_name" api:"required"`
+	GovernmentID param.Field[string] `json:"government_id"`
 	// Individual's phone number, entered in E.164 format.
 	PhoneNumber param.Field[string] `json:"phone_number"`
 }
@@ -2855,23 +2856,23 @@ func (r AccountHolderNewParamsBodyKYBDelegatedBeneficialOwnerIndividual) Marshal
 // [FinCEN requirements](https://www.fincen.gov/sites/default/files/shared/CDD_Rev6.7_Sept_2017_Certificate.pdf)
 // (Section II) for more background.
 type AccountHolderNewParamsBodyKYBDelegatedControlPerson struct {
-	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
-	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
-	Address param.Field[shared.AddressParam] `json:"address" api:"required"`
-	// Individual's date of birth, as an RFC 3339 date.
-	Dob param.Field[string] `json:"dob" api:"required"`
-	// Individual's email address. If utilizing Lithic for chargeback processing, this
-	// customer email address may be used to communicate dispute status and resolution.
-	Email param.Field[string] `json:"email" api:"required"`
 	// Individual's first name, as it appears on government-issued identity documents.
 	FirstName param.Field[string] `json:"first_name" api:"required"`
+	// Individual's last name, as it appears on government-issued identity documents.
+	LastName param.Field[string] `json:"last_name" api:"required"`
+	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
+	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
+	Address param.Field[shared.AddressParam] `json:"address"`
+	// Individual's date of birth, as an RFC 3339 date.
+	Dob param.Field[string] `json:"dob"`
+	// Individual's email address. If utilizing Lithic for chargeback processing, this
+	// customer email address may be used to communicate dispute status and resolution.
+	Email param.Field[string] `json:"email"`
 	// Government-issued identification number (required for identity verification and
 	// compliance with banking regulations). Social Security Numbers (SSN) and
 	// Individual Taxpayer Identification Numbers (ITIN) are currently supported,
 	// entered as full nine-digits, with or without hyphens
-	GovernmentID param.Field[string] `json:"government_id" api:"required"`
-	// Individual's last name, as it appears on government-issued identity documents.
-	LastName param.Field[string] `json:"last_name" api:"required"`
+	GovernmentID param.Field[string] `json:"government_id"`
 	// Individual's phone number, entered in E.164 format.
 	PhoneNumber param.Field[string] `json:"phone_number"`
 }
