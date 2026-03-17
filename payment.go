@@ -566,6 +566,8 @@ type PaymentMethodAttributes struct {
 	MessageID string `json:"message_id" api:"nullable"`
 	// Receipt routing number
 	ReceiptRoutingNumber string `json:"receipt_routing_number" api:"nullable"`
+	// Payment details or invoice reference
+	RemittanceInformation string `json:"remittance_information" api:"nullable"`
 	// Number of retries attempted
 	Retries int64 `json:"retries" api:"nullable"`
 	// Return reason code if the transaction was returned
@@ -585,21 +587,22 @@ type PaymentMethodAttributes struct {
 // paymentMethodAttributesJSON contains the JSON metadata for the struct
 // [PaymentMethodAttributes]
 type paymentMethodAttributesJSON struct {
-	ACHHoldPeriod        apijson.Field
-	Addenda              apijson.Field
-	CompanyID            apijson.Field
-	Creditor             apijson.Field
-	Debtor               apijson.Field
-	MessageID            apijson.Field
-	ReceiptRoutingNumber apijson.Field
-	Retries              apijson.Field
-	ReturnReasonCode     apijson.Field
-	SecCode              apijson.Field
-	TraceNumbers         apijson.Field
-	WireMessageType      apijson.Field
-	WireNetwork          apijson.Field
-	raw                  string
-	ExtraFields          map[string]apijson.Field
+	ACHHoldPeriod         apijson.Field
+	Addenda               apijson.Field
+	CompanyID             apijson.Field
+	Creditor              apijson.Field
+	Debtor                apijson.Field
+	MessageID             apijson.Field
+	ReceiptRoutingNumber  apijson.Field
+	RemittanceInformation apijson.Field
+	Retries               apijson.Field
+	ReturnReasonCode      apijson.Field
+	SecCode               apijson.Field
+	TraceNumbers          apijson.Field
+	WireMessageType       apijson.Field
+	WireNetwork           apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
 }
 
 func (r paymentMethodAttributesJSON) RawJSON() string {
@@ -722,20 +725,23 @@ type PaymentMethodAttributesWireMethodAttributes struct {
 	Debtor      WirePartyDetails                                       `json:"debtor"`
 	// Point to point reference identifier, as assigned by the instructing party, used
 	// for tracking the message through the Fedwire system
-	MessageID string                                          `json:"message_id" api:"nullable"`
-	JSON      paymentMethodAttributesWireMethodAttributesJSON `json:"-"`
+	MessageID string `json:"message_id" api:"nullable"`
+	// Payment details or invoice reference
+	RemittanceInformation string                                          `json:"remittance_information" api:"nullable"`
+	JSON                  paymentMethodAttributesWireMethodAttributesJSON `json:"-"`
 }
 
 // paymentMethodAttributesWireMethodAttributesJSON contains the JSON metadata for
 // the struct [PaymentMethodAttributesWireMethodAttributes]
 type paymentMethodAttributesWireMethodAttributesJSON struct {
-	WireMessageType apijson.Field
-	WireNetwork     apijson.Field
-	Creditor        apijson.Field
-	Debtor          apijson.Field
-	MessageID       apijson.Field
-	raw             string
-	ExtraFields     map[string]apijson.Field
+	WireMessageType       apijson.Field
+	WireNetwork           apijson.Field
+	Creditor              apijson.Field
+	Debtor                apijson.Field
+	MessageID             apijson.Field
+	RemittanceInformation apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
 }
 
 func (r *PaymentMethodAttributesWireMethodAttributes) UnmarshalJSON(data []byte) (err error) {
