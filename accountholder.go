@@ -198,8 +198,8 @@ func (r *AccountHolderService) SimulateEnrollmentReview(ctx context.Context, bod
 //
 // This endpoint is only valid for evaluations in a `PENDING_DOCUMENT` state.
 //
-// Uploaded images must either be a `jpg` or `png` file, and each must be less than
-// 15 MiB. Once both required uploads have been successfully completed, your
+// Supported file types include `jpg`, `png`, and `pdf`. Each file must be less
+// than 15 MiB. Once both required uploads have been successfully completed, your
 // document will be run through KYC verification.
 //
 // If you have registered a webhook, you will receive evaluation updates for any
