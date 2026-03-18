@@ -1934,6 +1934,9 @@ type ConditionalAuthorizationActionParametersCondition struct {
 	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
 	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
 	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
+	//   - `CARD_AGE`: The age of the card in seconds at the time of the authorization.
+	//   - `ACCOUNT_AGE`: The age of the account holder's account in seconds at the time
+	//     of the authorization.
 	Attribute ConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute" api:"required"`
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation" api:"required"`
@@ -2014,6 +2017,9 @@ func (r conditionalAuthorizationActionParametersConditionJSON) RawJSON() string 
 //   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
 //     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
 //     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
+//   - `CARD_AGE`: The age of the card in seconds at the time of the authorization.
+//   - `ACCOUNT_AGE`: The age of the account holder's account in seconds at the time
+//     of the authorization.
 type ConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -2036,11 +2042,13 @@ const (
 	ConditionalAuthorizationActionParametersConditionsAttributeWalletType              ConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
 	ConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    ConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
 	ConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            ConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
+	ConditionalAuthorizationActionParametersConditionsAttributeCardAge                 ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_AGE"
+	ConditionalAuthorizationActionParametersConditionsAttributeAccountAge              ConditionalAuthorizationActionParametersConditionsAttribute = "ACCOUNT_AGE"
 )
 
 func (r ConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case ConditionalAuthorizationActionParametersConditionsAttributeMcc, ConditionalAuthorizationActionParametersConditionsAttributeCountry, ConditionalAuthorizationActionParametersConditionsAttributeCurrency, ConditionalAuthorizationActionParametersConditionsAttributeMerchantID, ConditionalAuthorizationActionParametersConditionsAttributeDescriptor, ConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, ConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, ConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeCashAmount, ConditionalAuthorizationActionParametersConditionsAttributeRiskScore, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, ConditionalAuthorizationActionParametersConditionsAttributeCardState, ConditionalAuthorizationActionParametersConditionsAttributePinEntered, ConditionalAuthorizationActionParametersConditionsAttributePinStatus, ConditionalAuthorizationActionParametersConditionsAttributeWalletType, ConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, ConditionalAuthorizationActionParametersConditionsAttributeAddressMatch:
+	case ConditionalAuthorizationActionParametersConditionsAttributeMcc, ConditionalAuthorizationActionParametersConditionsAttributeCountry, ConditionalAuthorizationActionParametersConditionsAttributeCurrency, ConditionalAuthorizationActionParametersConditionsAttributeMerchantID, ConditionalAuthorizationActionParametersConditionsAttributeDescriptor, ConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, ConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, ConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeCashAmount, ConditionalAuthorizationActionParametersConditionsAttributeRiskScore, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, ConditionalAuthorizationActionParametersConditionsAttributeCardState, ConditionalAuthorizationActionParametersConditionsAttributePinEntered, ConditionalAuthorizationActionParametersConditionsAttributePinStatus, ConditionalAuthorizationActionParametersConditionsAttributeWalletType, ConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, ConditionalAuthorizationActionParametersConditionsAttributeAddressMatch, ConditionalAuthorizationActionParametersConditionsAttributeCardAge, ConditionalAuthorizationActionParametersConditionsAttributeAccountAge:
 		return true
 	}
 	return false
@@ -3591,7 +3599,7 @@ func (r ReportStatsExamplesDecision) IsKnown() bool {
 //   - `CARD`: The card associated with the event. Available for AUTHORIZATION and
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `ACCOUNT_HOLDER`: The account holder associated with the card. Available for
-//     THREE_DS_AUTHENTICATION event stream rules.
+//     AUTHORIZATION and THREE_DS_AUTHENTICATION event stream rules.
 //   - `IP_METADATA`: IP address metadata for the request. Available for
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
@@ -3661,7 +3669,7 @@ func (r RuleFeature) AsUnion() RuleFeatureUnion {
 //   - `CARD`: The card associated with the event. Available for AUTHORIZATION and
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `ACCOUNT_HOLDER`: The account holder associated with the card. Available for
-//     THREE_DS_AUTHENTICATION event stream rules.
+//     AUTHORIZATION and THREE_DS_AUTHENTICATION event stream rules.
 //   - `IP_METADATA`: IP address metadata for the request. Available for
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
@@ -4112,7 +4120,7 @@ func (r RuleFeatureScope) IsKnown() bool {
 //   - `CARD`: The card associated with the event. Available for AUTHORIZATION and
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `ACCOUNT_HOLDER`: The account holder associated with the card. Available for
-//     THREE_DS_AUTHENTICATION event stream rules.
+//     AUTHORIZATION and THREE_DS_AUTHENTICATION event stream rules.
 //   - `IP_METADATA`: IP address metadata for the request. Available for
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
@@ -4150,7 +4158,7 @@ func (r RuleFeatureParam) implementsRuleFeatureUnionParam() {}
 //   - `CARD`: The card associated with the event. Available for AUTHORIZATION and
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `ACCOUNT_HOLDER`: The account holder associated with the card. Available for
-//     THREE_DS_AUTHENTICATION event stream rules.
+//     AUTHORIZATION and THREE_DS_AUTHENTICATION event stream rules.
 //   - `IP_METADATA`: IP address metadata for the request. Available for
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
