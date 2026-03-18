@@ -1934,6 +1934,14 @@ type ConditionalAuthorizationActionParametersCondition struct {
 	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
 	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
 	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
+	//   - `SERVICE_LOCATION_STATE`: The state/province code (ISO 3166-2) where the
+	//     cardholder received the service, e.g. "NY". When a service location is present
+	//     in the network data, the service location state is used. Otherwise, falls back
+	//     to the card acceptor state.
+	//   - `SERVICE_LOCATION_POSTAL_CODE`: The postal code where the cardholder received
+	//     the service, e.g. "10001". When a service location is present in the network
+	//     data, the service location postal code is used. Otherwise, falls back to the
+	//     card acceptor postal code.
 	//   - `CARD_AGE`: The age of the card in seconds at the time of the authorization.
 	//   - `ACCOUNT_AGE`: The age of the account holder's account in seconds at the time
 	//     of the authorization.
@@ -2017,38 +2025,48 @@ func (r conditionalAuthorizationActionParametersConditionJSON) RawJSON() string 
 //   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
 //     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
 //     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
+//   - `SERVICE_LOCATION_STATE`: The state/province code (ISO 3166-2) where the
+//     cardholder received the service, e.g. "NY". When a service location is present
+//     in the network data, the service location state is used. Otherwise, falls back
+//     to the card acceptor state.
+//   - `SERVICE_LOCATION_POSTAL_CODE`: The postal code where the cardholder received
+//     the service, e.g. "10001". When a service location is present in the network
+//     data, the service location postal code is used. Otherwise, falls back to the
+//     card acceptor postal code.
 //   - `CARD_AGE`: The age of the card in seconds at the time of the authorization.
 //   - `ACCOUNT_AGE`: The age of the account holder's account in seconds at the time
 //     of the authorization.
 type ConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
-	ConditionalAuthorizationActionParametersConditionsAttributeMcc                     ConditionalAuthorizationActionParametersConditionsAttribute = "MCC"
-	ConditionalAuthorizationActionParametersConditionsAttributeCountry                 ConditionalAuthorizationActionParametersConditionsAttribute = "COUNTRY"
-	ConditionalAuthorizationActionParametersConditionsAttributeCurrency                ConditionalAuthorizationActionParametersConditionsAttribute = "CURRENCY"
-	ConditionalAuthorizationActionParametersConditionsAttributeMerchantID              ConditionalAuthorizationActionParametersConditionsAttribute = "MERCHANT_ID"
-	ConditionalAuthorizationActionParametersConditionsAttributeDescriptor              ConditionalAuthorizationActionParametersConditionsAttribute = "DESCRIPTOR"
-	ConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift          ConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
-	ConditionalAuthorizationActionParametersConditionsAttributePanEntryMode            ConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	ConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount       ConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	ConditionalAuthorizationActionParametersConditionsAttributeCashAmount              ConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
-	ConditionalAuthorizationActionParametersConditionsAttributeRiskScore               ConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H  ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardState               ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_STATE"
-	ConditionalAuthorizationActionParametersConditionsAttributePinEntered              ConditionalAuthorizationActionParametersConditionsAttribute = "PIN_ENTERED"
-	ConditionalAuthorizationActionParametersConditionsAttributePinStatus               ConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
-	ConditionalAuthorizationActionParametersConditionsAttributeWalletType              ConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
-	ConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator    ConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
-	ConditionalAuthorizationActionParametersConditionsAttributeAddressMatch            ConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardAge                 ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_AGE"
-	ConditionalAuthorizationActionParametersConditionsAttributeAccountAge              ConditionalAuthorizationActionParametersConditionsAttribute = "ACCOUNT_AGE"
+	ConditionalAuthorizationActionParametersConditionsAttributeMcc                       ConditionalAuthorizationActionParametersConditionsAttribute = "MCC"
+	ConditionalAuthorizationActionParametersConditionsAttributeCountry                   ConditionalAuthorizationActionParametersConditionsAttribute = "COUNTRY"
+	ConditionalAuthorizationActionParametersConditionsAttributeCurrency                  ConditionalAuthorizationActionParametersConditionsAttribute = "CURRENCY"
+	ConditionalAuthorizationActionParametersConditionsAttributeMerchantID                ConditionalAuthorizationActionParametersConditionsAttribute = "MERCHANT_ID"
+	ConditionalAuthorizationActionParametersConditionsAttributeDescriptor                ConditionalAuthorizationActionParametersConditionsAttribute = "DESCRIPTOR"
+	ConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift            ConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
+	ConditionalAuthorizationActionParametersConditionsAttributePanEntryMode              ConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	ConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount         ConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	ConditionalAuthorizationActionParametersConditionsAttributeCashAmount                ConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
+	ConditionalAuthorizationActionParametersConditionsAttributeRiskScore                 ConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
+	ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M   ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
+	ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H    ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H   ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
+	ConditionalAuthorizationActionParametersConditionsAttributeCardState                 ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_STATE"
+	ConditionalAuthorizationActionParametersConditionsAttributePinEntered                ConditionalAuthorizationActionParametersConditionsAttribute = "PIN_ENTERED"
+	ConditionalAuthorizationActionParametersConditionsAttributePinStatus                 ConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
+	ConditionalAuthorizationActionParametersConditionsAttributeWalletType                ConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
+	ConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator      ConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	ConditionalAuthorizationActionParametersConditionsAttributeAddressMatch              ConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
+	ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationState      ConditionalAuthorizationActionParametersConditionsAttribute = "SERVICE_LOCATION_STATE"
+	ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationPostalCode ConditionalAuthorizationActionParametersConditionsAttribute = "SERVICE_LOCATION_POSTAL_CODE"
+	ConditionalAuthorizationActionParametersConditionsAttributeCardAge                   ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_AGE"
+	ConditionalAuthorizationActionParametersConditionsAttributeAccountAge                ConditionalAuthorizationActionParametersConditionsAttribute = "ACCOUNT_AGE"
 )
 
 func (r ConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case ConditionalAuthorizationActionParametersConditionsAttributeMcc, ConditionalAuthorizationActionParametersConditionsAttributeCountry, ConditionalAuthorizationActionParametersConditionsAttributeCurrency, ConditionalAuthorizationActionParametersConditionsAttributeMerchantID, ConditionalAuthorizationActionParametersConditionsAttributeDescriptor, ConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, ConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, ConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeCashAmount, ConditionalAuthorizationActionParametersConditionsAttributeRiskScore, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, ConditionalAuthorizationActionParametersConditionsAttributeCardState, ConditionalAuthorizationActionParametersConditionsAttributePinEntered, ConditionalAuthorizationActionParametersConditionsAttributePinStatus, ConditionalAuthorizationActionParametersConditionsAttributeWalletType, ConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, ConditionalAuthorizationActionParametersConditionsAttributeAddressMatch, ConditionalAuthorizationActionParametersConditionsAttributeCardAge, ConditionalAuthorizationActionParametersConditionsAttributeAccountAge:
+	case ConditionalAuthorizationActionParametersConditionsAttributeMcc, ConditionalAuthorizationActionParametersConditionsAttributeCountry, ConditionalAuthorizationActionParametersConditionsAttributeCurrency, ConditionalAuthorizationActionParametersConditionsAttributeMerchantID, ConditionalAuthorizationActionParametersConditionsAttributeDescriptor, ConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, ConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, ConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeCashAmount, ConditionalAuthorizationActionParametersConditionsAttributeRiskScore, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, ConditionalAuthorizationActionParametersConditionsAttributeCardState, ConditionalAuthorizationActionParametersConditionsAttributePinEntered, ConditionalAuthorizationActionParametersConditionsAttributePinStatus, ConditionalAuthorizationActionParametersConditionsAttributeWalletType, ConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, ConditionalAuthorizationActionParametersConditionsAttributeAddressMatch, ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationState, ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationPostalCode, ConditionalAuthorizationActionParametersConditionsAttributeCardAge, ConditionalAuthorizationActionParametersConditionsAttributeAccountAge:
 		return true
 	}
 	return false

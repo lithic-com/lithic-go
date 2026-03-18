@@ -1066,7 +1066,8 @@ type CardAuthorizationApprovalRequestWebhookEvent struct {
 	// Date and time when the transaction first occurred in UTC.
 	Created   time.Time                                             `json:"created" api:"required" format:"date-time"`
 	EventType CardAuthorizationApprovalRequestWebhookEventEventType `json:"event_type" api:"required"`
-	Merchant  shared.Merchant                                       `json:"merchant" api:"required"`
+	// Merchant information including full location details.
+	Merchant CardAuthorizationApprovalRequestWebhookEventMerchant `json:"merchant" api:"required"`
 	// Deprecated, use `amounts`. The amount that the merchant will receive,
 	// denominated in `merchant_currency` and in the smallest currency unit. Note the
 	// amount includes `acquirer_fee`, similar to `authorization_amount`. It will be
@@ -1079,6 +1080,10 @@ type CardAuthorizationApprovalRequestWebhookEvent struct {
 	//
 	// Deprecated: deprecated
 	MerchantCurrency string `json:"merchant_currency" api:"required"`
+	// Where the cardholder received the service, when different from the card acceptor
+	// location. This is populated from network data elements such as Mastercard DE-122
+	// SE1 SF9-14 and Visa F34 DS02.
+	ServiceLocation CardAuthorizationApprovalRequestWebhookEventServiceLocation `json:"service_location" api:"required,nullable"`
 	// Deprecated, use `amounts`. Amount (in cents) of the transaction that has been
 	// settled, including any acquirer fees.
 	//
@@ -1150,6 +1155,7 @@ type cardAuthorizationApprovalRequestWebhookEventJSON struct {
 	Merchant                 apijson.Field
 	MerchantAmount           apijson.Field
 	MerchantCurrency         apijson.Field
+	ServiceLocation          apijson.Field
 	SettledAmount            apijson.Field
 	Status                   apijson.Field
 	TransactionInitiator     apijson.Field
@@ -1493,6 +1499,74 @@ func (r CardAuthorizationApprovalRequestWebhookEventEventType) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+// Merchant information including full location details.
+type CardAuthorizationApprovalRequestWebhookEventMerchant struct {
+	// Phone number of card acceptor.
+	PhoneNumber string `json:"phone_number" api:"required,nullable"`
+	// Postal code of card acceptor.
+	PostalCode string `json:"postal_code" api:"required,nullable"`
+	// Street address of card acceptor.
+	StreetAddress string                                                   `json:"street_address" api:"required,nullable"`
+	JSON          cardAuthorizationApprovalRequestWebhookEventMerchantJSON `json:"-"`
+	shared.Merchant
+}
+
+// cardAuthorizationApprovalRequestWebhookEventMerchantJSON contains the JSON
+// metadata for the struct [CardAuthorizationApprovalRequestWebhookEventMerchant]
+type cardAuthorizationApprovalRequestWebhookEventMerchantJSON struct {
+	PhoneNumber   apijson.Field
+	PostalCode    apijson.Field
+	StreetAddress apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
+}
+
+func (r *CardAuthorizationApprovalRequestWebhookEventMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardAuthorizationApprovalRequestWebhookEventMerchantJSON) RawJSON() string {
+	return r.raw
+}
+
+// Where the cardholder received the service, when different from the card acceptor
+// location. This is populated from network data elements such as Mastercard DE-122
+// SE1 SF9-14 and Visa F34 DS02.
+type CardAuthorizationApprovalRequestWebhookEventServiceLocation struct {
+	// City of service location.
+	City string `json:"city" api:"required,nullable"`
+	// Country code of service location, ISO 3166-1 alpha-3.
+	Country string `json:"country" api:"required,nullable"`
+	// Postal code of service location.
+	PostalCode string `json:"postal_code" api:"required,nullable"`
+	// State/province code of service location, ISO 3166-2.
+	State string `json:"state" api:"required,nullable"`
+	// Street address of service location.
+	StreetAddress string                                                          `json:"street_address" api:"required,nullable"`
+	JSON          cardAuthorizationApprovalRequestWebhookEventServiceLocationJSON `json:"-"`
+}
+
+// cardAuthorizationApprovalRequestWebhookEventServiceLocationJSON contains the
+// JSON metadata for the struct
+// [CardAuthorizationApprovalRequestWebhookEventServiceLocation]
+type cardAuthorizationApprovalRequestWebhookEventServiceLocationJSON struct {
+	City          apijson.Field
+	Country       apijson.Field
+	PostalCode    apijson.Field
+	State         apijson.Field
+	StreetAddress apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
+}
+
+func (r *CardAuthorizationApprovalRequestWebhookEventServiceLocation) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardAuthorizationApprovalRequestWebhookEventServiceLocationJSON) RawJSON() string {
+	return r.raw
 }
 
 // The type of authorization request that this request is for. Note that
@@ -5224,8 +5298,9 @@ type ParsedWebhookEvent struct {
 	LegalBusinessName string `json:"legal_business_name"`
 	// This field can have the runtime type of [DisputeV2LiabilityAllocation].
 	LiabilityAllocation interface{} `json:"liability_allocation"`
-	// This field can have the runtime type of [shared.Merchant],
-	// [ThreeDSAuthenticationMerchant].
+	// This field can have the runtime type of
+	// [CardAuthorizationApprovalRequestWebhookEventMerchant], [TransactionMerchant],
+	// [ThreeDSAuthenticationMerchant], [shared.Merchant].
 	Merchant interface{} `json:"merchant"`
 	// Deprecated, use `amounts`. The amount that the merchant will receive,
 	// denominated in `merchant_currency` and in the smallest currency unit. Note the
@@ -5397,6 +5472,10 @@ type ParsedWebhookEvent struct {
 	RoutingNumber string `json:"routing_number" api:"nullable"`
 	// This field can have the runtime type of [[]TokenizationRuleResult].
 	RuleResults interface{} `json:"rule_results"`
+	// This field can have the runtime type of
+	// [CardAuthorizationApprovalRequestWebhookEventServiceLocation],
+	// [TransactionServiceLocation].
+	ServiceLocation interface{} `json:"service_location"`
 	// Deprecated, use `amounts`. Amount (in cents) of the transaction that has been
 	// settled, including any acquirer fees.
 	//
@@ -5705,6 +5784,7 @@ type parsedWebhookEventJSON struct {
 	Results                            apijson.Field
 	RoutingNumber                      apijson.Field
 	RuleResults                        apijson.Field
+	ServiceLocation                    apijson.Field
 	SettledAmount                      apijson.Field
 	SettledNetAmount                   apijson.Field
 	SettlementInstitutionID            apijson.Field
