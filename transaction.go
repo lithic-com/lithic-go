@@ -392,9 +392,10 @@ type Transaction struct {
 	CardToken                string                   `json:"card_token" api:"required" format:"uuid"`
 	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication" api:"required,nullable"`
 	// Date and time when the transaction first occurred. UTC time zone.
-	Created               time.Time       `json:"created" api:"required" format:"date-time"`
-	FinancialAccountToken string          `json:"financial_account_token" api:"required,nullable" format:"uuid"`
-	Merchant              shared.Merchant `json:"merchant" api:"required"`
+	Created               time.Time `json:"created" api:"required" format:"date-time"`
+	FinancialAccountToken string    `json:"financial_account_token" api:"required,nullable" format:"uuid"`
+	// Merchant information including full location details.
+	Merchant TransactionMerchant `json:"merchant" api:"required"`
 	// Analogous to the 'amount', but in the merchant currency.
 	//
 	// Deprecated: deprecated
@@ -418,6 +419,10 @@ type Transaction struct {
 	NetworkRiskScore int64             `json:"network_risk_score" api:"required,nullable"`
 	Pos              TransactionPos    `json:"pos" api:"required"`
 	Result           TransactionResult `json:"result" api:"required"`
+	// Where the cardholder received the service, when different from the card acceptor
+	// location. This is populated from network data elements such as Mastercard DE-122
+	// SE1 SF9-14 and Visa F34 DS02.
+	ServiceLocation TransactionServiceLocation `json:"service_location" api:"required,nullable"`
 	// The settled amount of the transaction in the settlement currency.
 	//
 	// Deprecated: deprecated
@@ -457,6 +462,7 @@ type transactionJSON struct {
 	NetworkRiskScore            apijson.Field
 	Pos                         apijson.Field
 	Result                      apijson.Field
+	ServiceLocation             apijson.Field
 	SettledAmount               apijson.Field
 	Status                      apijson.Field
 	Tags                        apijson.Field
@@ -628,6 +634,36 @@ func (r *TransactionAvs) UnmarshalJSON(data []byte) (err error) {
 }
 
 func (r transactionAvsJSON) RawJSON() string {
+	return r.raw
+}
+
+// Merchant information including full location details.
+type TransactionMerchant struct {
+	// Phone number of card acceptor.
+	PhoneNumber string `json:"phone_number" api:"required,nullable"`
+	// Postal code of card acceptor.
+	PostalCode string `json:"postal_code" api:"required,nullable"`
+	// Street address of card acceptor.
+	StreetAddress string                  `json:"street_address" api:"required,nullable"`
+	JSON          transactionMerchantJSON `json:"-"`
+	shared.Merchant
+}
+
+// transactionMerchantJSON contains the JSON metadata for the struct
+// [TransactionMerchant]
+type transactionMerchantJSON struct {
+	PhoneNumber   apijson.Field
+	PostalCode    apijson.Field
+	StreetAddress apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
+}
+
+func (r *TransactionMerchant) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionMerchantJSON) RawJSON() string {
 	return r.raw
 }
 
@@ -934,6 +970,43 @@ func (r TransactionResult) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+// Where the cardholder received the service, when different from the card acceptor
+// location. This is populated from network data elements such as Mastercard DE-122
+// SE1 SF9-14 and Visa F34 DS02.
+type TransactionServiceLocation struct {
+	// City of service location.
+	City string `json:"city" api:"required,nullable"`
+	// Country code of service location, ISO 3166-1 alpha-3.
+	Country string `json:"country" api:"required,nullable"`
+	// Postal code of service location.
+	PostalCode string `json:"postal_code" api:"required,nullable"`
+	// State/province code of service location, ISO 3166-2.
+	State string `json:"state" api:"required,nullable"`
+	// Street address of service location.
+	StreetAddress string                         `json:"street_address" api:"required,nullable"`
+	JSON          transactionServiceLocationJSON `json:"-"`
+}
+
+// transactionServiceLocationJSON contains the JSON metadata for the struct
+// [TransactionServiceLocation]
+type transactionServiceLocationJSON struct {
+	City          apijson.Field
+	Country       apijson.Field
+	PostalCode    apijson.Field
+	State         apijson.Field
+	StreetAddress apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
+}
+
+func (r *TransactionServiceLocation) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r transactionServiceLocationJSON) RawJSON() string {
+	return r.raw
 }
 
 // Status of the transaction.

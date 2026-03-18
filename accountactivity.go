@@ -184,8 +184,9 @@ type AccountActivityListResponse struct {
 	FinancialAccountToken string `json:"financial_account_token" api:"nullable" format:"uuid"`
 	// Globally unique identifier for the financial account or card that will send the
 	// funds. Accepted type dependent on the program's use case
-	FromFinancialAccountToken string          `json:"from_financial_account_token" format:"uuid"`
-	Merchant                  shared.Merchant `json:"merchant"`
+	FromFinancialAccountToken string `json:"from_financial_account_token" format:"uuid"`
+	// This field can have the runtime type of [TransactionMerchant].
+	Merchant interface{} `json:"merchant"`
 	// Analogous to the 'amount', but in the merchant currency.
 	//
 	// Deprecated: deprecated
@@ -220,6 +221,8 @@ type AccountActivityListResponse struct {
 	RelatedAccountTokens interface{} `json:"related_account_tokens"`
 	// Transaction result
 	Result AccountActivityListResponseResult `json:"result"`
+	// This field can have the runtime type of [TransactionServiceLocation].
+	ServiceLocation interface{} `json:"service_location"`
 	// Settled amount in cents
 	SettledAmount int64 `json:"settled_amount"`
 	// Transaction source
@@ -283,6 +286,7 @@ type accountActivityListResponseJSON struct {
 	Pos                         apijson.Field
 	RelatedAccountTokens        apijson.Field
 	Result                      apijson.Field
+	ServiceLocation             apijson.Field
 	SettledAmount               apijson.Field
 	Source                      apijson.Field
 	Tags                        apijson.Field
@@ -901,8 +905,9 @@ type AccountActivityGetTransactionResponse struct {
 	FinancialAccountToken string `json:"financial_account_token" api:"nullable" format:"uuid"`
 	// Globally unique identifier for the financial account or card that will send the
 	// funds. Accepted type dependent on the program's use case
-	FromFinancialAccountToken string          `json:"from_financial_account_token" format:"uuid"`
-	Merchant                  shared.Merchant `json:"merchant"`
+	FromFinancialAccountToken string `json:"from_financial_account_token" format:"uuid"`
+	// This field can have the runtime type of [TransactionMerchant].
+	Merchant interface{} `json:"merchant"`
 	// Analogous to the 'amount', but in the merchant currency.
 	//
 	// Deprecated: deprecated
@@ -937,6 +942,8 @@ type AccountActivityGetTransactionResponse struct {
 	RelatedAccountTokens interface{} `json:"related_account_tokens"`
 	// Transaction result
 	Result AccountActivityGetTransactionResponseResult `json:"result"`
+	// This field can have the runtime type of [TransactionServiceLocation].
+	ServiceLocation interface{} `json:"service_location"`
 	// Settled amount in cents
 	SettledAmount int64 `json:"settled_amount"`
 	// Transaction source
@@ -1000,6 +1007,7 @@ type accountActivityGetTransactionResponseJSON struct {
 	Pos                         apijson.Field
 	RelatedAccountTokens        apijson.Field
 	Result                      apijson.Field
+	ServiceLocation             apijson.Field
 	SettledAmount               apijson.Field
 	Source                      apijson.Field
 	Tags                        apijson.Field
