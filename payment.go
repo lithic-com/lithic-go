@@ -564,6 +564,9 @@ type PaymentMethodAttributes struct {
 	// Point to point reference identifier, as assigned by the instructing party, used
 	// for tracking the message through the Fedwire system
 	MessageID string `json:"message_id" api:"nullable"`
+	// Value to override the configured company name with. Can only be used if allowed
+	// to override
+	OverrideCompanyName string `json:"override_company_name" api:"nullable"`
 	// Receipt routing number
 	ReceiptRoutingNumber string `json:"receipt_routing_number" api:"nullable"`
 	// Payment details or invoice reference
@@ -593,6 +596,7 @@ type paymentMethodAttributesJSON struct {
 	Creditor              apijson.Field
 	Debtor                apijson.Field
 	MessageID             apijson.Field
+	OverrideCompanyName   apijson.Field
 	ReceiptRoutingNumber  apijson.Field
 	RemittanceInformation apijson.Field
 	Retries               apijson.Field
@@ -660,6 +664,9 @@ type PaymentMethodAttributesACHMethodAttributes struct {
 	Addenda string `json:"addenda" api:"nullable"`
 	// Company ID for the ACH transaction
 	CompanyID string `json:"company_id" api:"nullable"`
+	// Value to override the configured company name with. Can only be used if allowed
+	// to override
+	OverrideCompanyName string `json:"override_company_name" api:"nullable"`
 	// Receipt routing number
 	ReceiptRoutingNumber string `json:"receipt_routing_number" api:"nullable"`
 	// Number of retries attempted
@@ -678,6 +685,7 @@ type paymentMethodAttributesACHMethodAttributesJSON struct {
 	ACHHoldPeriod        apijson.Field
 	Addenda              apijson.Field
 	CompanyID            apijson.Field
+	OverrideCompanyName  apijson.Field
 	ReceiptRoutingNumber apijson.Field
 	Retries              apijson.Field
 	ReturnReasonCode     apijson.Field
