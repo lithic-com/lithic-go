@@ -719,7 +719,8 @@ type KYBParam struct {
 	// (Section II) for more background.
 	ControlPerson param.Field[KYBControlPersonParam] `json:"control_person" api:"required"`
 	// Short description of the company's line of business (i.e., what does the company
-	// do?).
+	// do?). Values longer than 255 characters will be truncated before KYB
+	// verification
 	NatureOfBusiness param.Field[string] `json:"nature_of_business" api:"required"`
 	// An RFC 3339 timestamp indicating when the account holder accepted the applicable
 	// legal agreements (e.g., cardholder terms) as agreed upon during API customer's
@@ -2724,7 +2725,8 @@ type AccountHolderNewParamsBody struct {
 	// business.
 	NaicsCode param.Field[string] `json:"naics_code"`
 	// Short description of the company's line of business (i.e., what does the company
-	// do?).
+	// do?). Values longer than 255 characters will be truncated before KYB
+	// verification
 	NatureOfBusiness param.Field[string] `json:"nature_of_business"`
 	// The KYC Exempt user's phone number, entered in E.164 format.
 	PhoneNumber param.Field[string] `json:"phone_number"`
@@ -2776,7 +2778,8 @@ type AccountHolderNewParamsBodyKYBDelegated struct {
 	// business.
 	NaicsCode param.Field[string] `json:"naics_code"`
 	// Short description of the company's line of business (i.e., what does the company
-	// do?).
+	// do?). Values longer than 255 characters will be truncated before KYB
+	// verification
 	NatureOfBusiness param.Field[string] `json:"nature_of_business"`
 	// An RFC 3339 timestamp indicating when the account holder accepted the applicable
 	// legal agreements (e.g., cardholder terms) as agreed upon during API customer's
@@ -2969,7 +2972,8 @@ type AccountHolderUpdateParamsBody struct {
 	// business.
 	NaicsCode param.Field[string] `json:"naics_code"`
 	// Short description of the company's line of business (i.e., what does the company
-	// do?).
+	// do?). Values longer than 255 characters will be truncated before KYB
+	// verification
 	NatureOfBusiness param.Field[string] `json:"nature_of_business"`
 	// Allowed for all Account Holders. Account holder's phone number, entered in E.164
 	// format. The primary purpose of this field is for cardholder identification and
@@ -3022,7 +3026,8 @@ type AccountHolderUpdateParamsBodyKYBPatchRequest struct {
 	// business.
 	NaicsCode param.Field[string] `json:"naics_code"`
 	// Short description of the company's line of business (i.e., what does the company
-	// do?).
+	// do?). Values longer than 255 characters will be truncated before KYB
+	// verification
 	NatureOfBusiness param.Field[string] `json:"nature_of_business"`
 	// Company website URL.
 	WebsiteURL param.Field[string] `json:"website_url"`
