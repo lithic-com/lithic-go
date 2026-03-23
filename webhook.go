@@ -176,7 +176,8 @@ type AccountHolderUpdatedWebhookEvent struct {
 	// business. Only present if naics_code was included in the update request.
 	NaicsCode string `json:"naics_code"`
 	// Short description of the company's line of business (i.e., what does the company
-	// do?).
+	// do?). Values longer than 255 characters will be truncated before KYB
+	// verification
 	NatureOfBusiness string `json:"nature_of_business"`
 	// If updated, the newly updated phone_number associated with the account_holder
 	// otherwise the existing phone_number is provided.
@@ -279,7 +280,8 @@ type AccountHolderUpdatedWebhookEventKYBPayload struct {
 	// business. Only present if naics_code was included in the update request.
 	NaicsCode string `json:"naics_code"`
 	// Short description of the company's line of business (i.e., what does the company
-	// do?).
+	// do?). Values longer than 255 characters will be truncated before KYB
+	// verification
 	NatureOfBusiness string `json:"nature_of_business"`
 	// Company website URL.
 	WebsiteURL string                                         `json:"website_url"`
@@ -5334,7 +5336,8 @@ type ParsedWebhookEvent struct {
 	// The nickname for this External Bank Account
 	Name string `json:"name" api:"nullable"`
 	// Short description of the company's line of business (i.e., what does the company
-	// do?).
+	// do?). Values longer than 255 characters will be truncated before KYB
+	// verification
 	NatureOfBusiness string `json:"nature_of_business"`
 	// Card network of the authorization.
 	Network ParsedWebhookEventNetwork `json:"network" api:"nullable"`
@@ -6197,7 +6200,8 @@ type ParsedWebhookEventKYBPayload struct {
 	// business. Only present if naics_code was included in the update request.
 	NaicsCode string `json:"naics_code"`
 	// Short description of the company's line of business (i.e., what does the company
-	// do?).
+	// do?). Values longer than 255 characters will be truncated before KYB
+	// verification
 	NatureOfBusiness string `json:"nature_of_business"`
 	// Company website URL.
 	WebsiteURL string                           `json:"website_url"`
