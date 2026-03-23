@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.106.0 (2026-03-23)
+
+Full Changelog: [v0.105.0...v0.106.0](https://github.com/lithic-com/lithic-go/compare/v0.105.0...v0.106.0)
+
+### Features
+
+* **api:** add card_age/account_age attributes to auth rule conditions ([ed54e79](https://github.com/lithic-com/lithic-go/commit/ed54e791d18023fc45334cd4ae829c473aed0716))
+* **api:** add override_company_name parameter to external payments ([cc38aac](https://github.com/lithic-com/lithic-go/commit/cc38aacabb40b58028f5def7704aa82b3306e567))
+* **api:** add service location fields to Merchant and auth rule conditions ([699d7c4](https://github.com/lithic-com/lithic-go/commit/699d7c4e8dbd9d317a5ac88ae3a183c45c00483d))
+
+
+### Chores
+
+* **internal:** switch mock server from steady to prism ([e7c13bc](https://github.com/lithic-com/lithic-go/commit/e7c13bc2d6696877630d50cdccd0504621aec819))
+* **internal:** update gitignore ([91aabf6](https://github.com/lithic-com/lithic-go/commit/91aabf6d7fe4250b155cbfa73d7c7b53277a6c05))
+* **tests:** bump steady to v0.19.4 ([688f938](https://github.com/lithic-com/lithic-go/commit/688f9383ebee6db521b5ca497d01ef2a3fdb31d6))
+* **tests:** bump steady to v0.19.5 ([550512e](https://github.com/lithic-com/lithic-go/commit/550512e81bba7e374ed29928fda91c3785241348))
+* **tests:** bump steady to v0.19.6 ([1162a97](https://github.com/lithic-com/lithic-go/commit/1162a979d8ef9d3352378ff11697824a8ad14af3))
+
+
+### Documentation
+
+* **api:** update nature_of_business and qr_code_url param descriptions ([0be7e9e](https://github.com/lithic-com/lithic-go/commit/0be7e9e82c7f28cbf50d40a8fc60419f247fda44))
+
+
+### Refactors
+
+* **tests:** switch from prism to steady ([7f662a6](https://github.com/lithic-com/lithic-go/commit/7f662a6ea3fe38feb27c44ae70eaae9f6e7a15c7))
+
 ## 0.105.0 (2026-03-17)
 
 Full Changelog: [v0.104.0...v0.105.0](https://github.com/lithic-com/lithic-go/compare/v0.104.0...v0.105.0)
