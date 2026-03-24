@@ -1,15 +1,19 @@
 # Shared Params Types
 
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#AccountFinancialAccountType">AccountFinancialAccountType</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#AddressParam">AddressParam</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#CarrierParam">CarrierParam</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#InstanceFinancialAccountType">InstanceFinancialAccountType</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#ShippingAddressParam">ShippingAddressParam</a>
 
 # Shared Response Types
 
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#AccountFinancialAccountType">AccountFinancialAccountType</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#Address">Address</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#Currency">Currency</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#Document">Document</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#FinancialEvent">FinancialEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#InstanceFinancialAccountType">InstanceFinancialAccountType</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared">shared</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/shared#Merchant">Merchant</a>
 
 # lithic
