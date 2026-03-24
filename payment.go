@@ -1179,6 +1179,9 @@ type PaymentNewParamsMethodAttributes struct {
 	// Number of days to hold the ACH payment
 	ACHHoldPeriod param.Field[int64]  `json:"ach_hold_period"`
 	Addenda       param.Field[string] `json:"addenda"`
+	// Value to override the configured company name with. Can only be used if allowed
+	// to override
+	OverrideCompanyName param.Field[string] `json:"override_company_name"`
 }
 
 func (r PaymentNewParamsMethodAttributes) MarshalJSON() (data []byte, err error) {
