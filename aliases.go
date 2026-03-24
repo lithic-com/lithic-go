@@ -9,6 +9,17 @@ import (
 
 type Error = apierror.Error
 
+// Type of account financial account
+//
+// This is an alias to an internal type.
+type AccountFinancialAccountType = shared.AccountFinancialAccountType
+
+// This is an alias to an internal value.
+const AccountFinancialAccountTypeIssuing = shared.AccountFinancialAccountTypeIssuing
+
+// This is an alias to an internal value.
+const AccountFinancialAccountTypeOperating = shared.AccountFinancialAccountTypeOperating
+
 // This is an alias to an internal type.
 type Address = shared.Address
 
@@ -445,6 +456,44 @@ const FinancialEventTypeMonthly = shared.FinancialEventTypeMonthly
 
 // This is an alias to an internal value.
 const FinancialEventTypeMonthlyReversal = shared.FinancialEventTypeMonthlyReversal
+
+// Type of instance financial account
+//
+// This is an alias to an internal type.
+type InstanceFinancialAccountType = shared.InstanceFinancialAccountType
+
+// This is an alias to an internal value.
+const InstanceFinancialAccountTypeIssuing = shared.InstanceFinancialAccountTypeIssuing
+
+// This is an alias to an internal value.
+const InstanceFinancialAccountTypeReserve = shared.InstanceFinancialAccountTypeReserve
+
+// This is an alias to an internal value.
+const InstanceFinancialAccountTypeOperating = shared.InstanceFinancialAccountTypeOperating
+
+// This is an alias to an internal value.
+const InstanceFinancialAccountTypeChargedOffFees = shared.InstanceFinancialAccountTypeChargedOffFees
+
+// This is an alias to an internal value.
+const InstanceFinancialAccountTypeChargedOffInterest = shared.InstanceFinancialAccountTypeChargedOffInterest
+
+// This is an alias to an internal value.
+const InstanceFinancialAccountTypeChargedOffPrincipal = shared.InstanceFinancialAccountTypeChargedOffPrincipal
+
+// This is an alias to an internal value.
+const InstanceFinancialAccountTypeSecurity = shared.InstanceFinancialAccountTypeSecurity
+
+// This is an alias to an internal value.
+const InstanceFinancialAccountTypeProgramReceivables = shared.InstanceFinancialAccountTypeProgramReceivables
+
+// This is an alias to an internal value.
+const InstanceFinancialAccountTypeCollection = shared.InstanceFinancialAccountTypeCollection
+
+// This is an alias to an internal value.
+const InstanceFinancialAccountTypeProgramBankAccountsPayable = shared.InstanceFinancialAccountTypeProgramBankAccountsPayable
+
+// This is an alias to an internal value.
+const InstanceFinancialAccountTypeEarlyDirectDepositFloat = shared.InstanceFinancialAccountTypeEarlyDirectDepositFloat
 
 // This is an alias to an internal type.
 type Merchant = shared.Merchant
