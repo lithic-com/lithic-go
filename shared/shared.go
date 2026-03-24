@@ -9,6 +9,22 @@ import (
 	"github.com/lithic-com/lithic-go/internal/param"
 )
 
+// Type of account financial account
+type AccountFinancialAccountType string
+
+const (
+	AccountFinancialAccountTypeIssuing   AccountFinancialAccountType = "ISSUING"
+	AccountFinancialAccountTypeOperating AccountFinancialAccountType = "OPERATING"
+)
+
+func (r AccountFinancialAccountType) IsKnown() bool {
+	switch r {
+	case AccountFinancialAccountTypeIssuing, AccountFinancialAccountTypeOperating:
+		return true
+	}
+	return false
+}
+
 type Address struct {
 	// Valid deliverable address (no PO boxes).
 	Address1 string `json:"address1" api:"required"`
@@ -415,6 +431,31 @@ const (
 func (r FinancialEventType) IsKnown() bool {
 	switch r {
 	case FinancialEventTypeACHOriginationCancelled, FinancialEventTypeACHOriginationInitiated, FinancialEventTypeACHOriginationProcessed, FinancialEventTypeACHOriginationReleased, FinancialEventTypeACHOriginationRejected, FinancialEventTypeACHOriginationReviewed, FinancialEventTypeACHOriginationSettled, FinancialEventTypeACHReceiptProcessed, FinancialEventTypeACHReceiptReleased, FinancialEventTypeACHReceiptSettled, FinancialEventTypeACHReturnInitiated, FinancialEventTypeACHReturnProcessed, FinancialEventTypeACHReturnRejected, FinancialEventTypeACHReturnSettled, FinancialEventTypeAuthorization, FinancialEventTypeAuthorizationAdvice, FinancialEventTypeAuthorizationExpiry, FinancialEventTypeAuthorizationReversal, FinancialEventTypeBalanceInquiry, FinancialEventTypeBillingError, FinancialEventTypeBillingErrorReversal, FinancialEventTypeCardToCard, FinancialEventTypeCashBack, FinancialEventTypeCashBackReversal, FinancialEventTypeClearing, FinancialEventTypeCollection, FinancialEventTypeCorrectionCredit, FinancialEventTypeCorrectionDebit, FinancialEventTypeCreditAuthorization, FinancialEventTypeCreditAuthorizationAdvice, FinancialEventTypeCurrencyConversion, FinancialEventTypeCurrencyConversionReversal, FinancialEventTypeDisputeWon, FinancialEventTypeExternalACHCanceled, FinancialEventTypeExternalACHInitiated, FinancialEventTypeExternalACHReleased, FinancialEventTypeExternalACHReversed, FinancialEventTypeExternalACHSettled, FinancialEventTypeExternalCheckCanceled, FinancialEventTypeExternalCheckInitiated, FinancialEventTypeExternalCheckReleased, FinancialEventTypeExternalCheckReversed, FinancialEventTypeExternalCheckSettled, FinancialEventTypeExternalFednowCanceled, FinancialEventTypeExternalFednowInitiated, FinancialEventTypeExternalFednowReleased, FinancialEventTypeExternalFednowReversed, FinancialEventTypeExternalFednowSettled, FinancialEventTypeExternalRtpCanceled, FinancialEventTypeExternalRtpInitiated, FinancialEventTypeExternalRtpReleased, FinancialEventTypeExternalRtpReversed, FinancialEventTypeExternalRtpSettled, FinancialEventTypeExternalTransferCanceled, FinancialEventTypeExternalTransferInitiated, FinancialEventTypeExternalTransferReleased, FinancialEventTypeExternalTransferReversed, FinancialEventTypeExternalTransferSettled, FinancialEventTypeExternalWireCanceled, FinancialEventTypeExternalWireInitiated, FinancialEventTypeExternalWireReleased, FinancialEventTypeExternalWireReversed, FinancialEventTypeExternalWireSettled, FinancialEventTypeFinancialAuthorization, FinancialEventTypeFinancialCreditAuthorization, FinancialEventTypeInterest, FinancialEventTypeInterestReversal, FinancialEventTypeInternalAdjustment, FinancialEventTypeLatePayment, FinancialEventTypeLatePaymentReversal, FinancialEventTypeLossWriteOff, FinancialEventTypeProvisionalCredit, FinancialEventTypeProvisionalCreditReversal, FinancialEventTypeService, FinancialEventTypeReturn, FinancialEventTypeReturnReversal, FinancialEventTypeTransfer, FinancialEventTypeTransferInsufficientFunds, FinancialEventTypeReturnedPayment, FinancialEventTypeReturnedPaymentReversal, FinancialEventTypeLithicNetworkPayment, FinancialEventTypeAnnual, FinancialEventTypeAnnualReversal, FinancialEventTypeQuarterly, FinancialEventTypeQuarterlyReversal, FinancialEventTypeMonthly, FinancialEventTypeMonthlyReversal:
+		return true
+	}
+	return false
+}
+
+// Type of instance financial account
+type InstanceFinancialAccountType string
+
+const (
+	InstanceFinancialAccountTypeIssuing                    InstanceFinancialAccountType = "ISSUING"
+	InstanceFinancialAccountTypeReserve                    InstanceFinancialAccountType = "RESERVE"
+	InstanceFinancialAccountTypeOperating                  InstanceFinancialAccountType = "OPERATING"
+	InstanceFinancialAccountTypeChargedOffFees             InstanceFinancialAccountType = "CHARGED_OFF_FEES"
+	InstanceFinancialAccountTypeChargedOffInterest         InstanceFinancialAccountType = "CHARGED_OFF_INTEREST"
+	InstanceFinancialAccountTypeChargedOffPrincipal        InstanceFinancialAccountType = "CHARGED_OFF_PRINCIPAL"
+	InstanceFinancialAccountTypeSecurity                   InstanceFinancialAccountType = "SECURITY"
+	InstanceFinancialAccountTypeProgramReceivables         InstanceFinancialAccountType = "PROGRAM_RECEIVABLES"
+	InstanceFinancialAccountTypeCollection                 InstanceFinancialAccountType = "COLLECTION"
+	InstanceFinancialAccountTypeProgramBankAccountsPayable InstanceFinancialAccountType = "PROGRAM_BANK_ACCOUNTS_PAYABLE"
+	InstanceFinancialAccountTypeEarlyDirectDepositFloat    InstanceFinancialAccountType = "EARLY_DIRECT_DEPOSIT_FLOAT"
+)
+
+func (r InstanceFinancialAccountType) IsKnown() bool {
+	switch r {
+	case InstanceFinancialAccountTypeIssuing, InstanceFinancialAccountTypeReserve, InstanceFinancialAccountTypeOperating, InstanceFinancialAccountTypeChargedOffFees, InstanceFinancialAccountTypeChargedOffInterest, InstanceFinancialAccountTypeChargedOffPrincipal, InstanceFinancialAccountTypeSecurity, InstanceFinancialAccountTypeProgramReceivables, InstanceFinancialAccountTypeCollection, InstanceFinancialAccountTypeProgramBankAccountsPayable, InstanceFinancialAccountTypeEarlyDirectDepositFloat:
 		return true
 	}
 	return false
