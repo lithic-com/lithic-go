@@ -1268,7 +1268,8 @@ type CardNewParams struct {
 	//     tracking
 	//   - `EXPEDITED` - FedEx or UPS depending on card manufacturer, Standard Overnight
 	//     or similar international option, with tracking
-	//   - `BULK_EXPEDITED` - Bulk shipment with Expedited shipping
+	//   - `BULK` - Card will be shipped as part of a bulk fulfillment order. The
+	//     shipping method and timeline are inherited from the parent bulk order.
 	ShippingMethod param.Field[CardNewParamsShippingMethod] `json:"shipping_method"`
 	// Amount (in cents) to limit approved authorizations (e.g. 100000 would be a
 	// $1,000 limit). Transaction requests above the spend limit will be declined. Note
@@ -1403,12 +1404,13 @@ func (r CardNewParamsReplacementSubstatus) IsKnown() bool {
 //     tracking
 //   - `EXPEDITED` - FedEx or UPS depending on card manufacturer, Standard Overnight
 //     or similar international option, with tracking
-//   - `BULK_EXPEDITED` - Bulk shipment with Expedited shipping
+//   - `BULK` - Card will be shipped as part of a bulk fulfillment order. The
+//     shipping method and timeline are inherited from the parent bulk order.
 type CardNewParamsShippingMethod string
 
 const (
 	CardNewParamsShippingMethod2Day                 CardNewParamsShippingMethod = "2_DAY"
-	CardNewParamsShippingMethodBulkExpedited        CardNewParamsShippingMethod = "BULK_EXPEDITED"
+	CardNewParamsShippingMethodBulk                 CardNewParamsShippingMethod = "BULK"
 	CardNewParamsShippingMethodExpedited            CardNewParamsShippingMethod = "EXPEDITED"
 	CardNewParamsShippingMethodExpress              CardNewParamsShippingMethod = "EXPRESS"
 	CardNewParamsShippingMethodPriority             CardNewParamsShippingMethod = "PRIORITY"
@@ -1418,7 +1420,7 @@ const (
 
 func (r CardNewParamsShippingMethod) IsKnown() bool {
 	switch r {
-	case CardNewParamsShippingMethod2Day, CardNewParamsShippingMethodBulkExpedited, CardNewParamsShippingMethodExpedited, CardNewParamsShippingMethodExpress, CardNewParamsShippingMethodPriority, CardNewParamsShippingMethodStandard, CardNewParamsShippingMethodStandardWithTracking:
+	case CardNewParamsShippingMethod2Day, CardNewParamsShippingMethodBulk, CardNewParamsShippingMethodExpedited, CardNewParamsShippingMethodExpress, CardNewParamsShippingMethodPriority, CardNewParamsShippingMethodStandard, CardNewParamsShippingMethodStandardWithTracking:
 		return true
 	}
 	return false
@@ -1691,7 +1693,8 @@ type CardConvertPhysicalParams struct {
 	//     tracking
 	//   - `EXPEDITED` - FedEx or UPS depending on card manufacturer, Standard Overnight
 	//     or similar international option, with tracking
-	//   - `BULK_EXPEDITED` - Bulk shipment with Expedited shipping
+	//   - `BULK` - Card will be shipped as part of a bulk fulfillment order. The
+	//     shipping method and timeline are inherited from the parent bulk order.
 	ShippingMethod param.Field[CardConvertPhysicalParamsShippingMethod] `json:"shipping_method"`
 }
 
@@ -1713,12 +1716,13 @@ func (r CardConvertPhysicalParams) MarshalJSON() (data []byte, err error) {
 //     tracking
 //   - `EXPEDITED` - FedEx or UPS depending on card manufacturer, Standard Overnight
 //     or similar international option, with tracking
-//   - `BULK_EXPEDITED` - Bulk shipment with Expedited shipping
+//   - `BULK` - Card will be shipped as part of a bulk fulfillment order. The
+//     shipping method and timeline are inherited from the parent bulk order.
 type CardConvertPhysicalParamsShippingMethod string
 
 const (
 	CardConvertPhysicalParamsShippingMethod2Day                 CardConvertPhysicalParamsShippingMethod = "2_DAY"
-	CardConvertPhysicalParamsShippingMethodBulkExpedited        CardConvertPhysicalParamsShippingMethod = "BULK_EXPEDITED"
+	CardConvertPhysicalParamsShippingMethodBulk                 CardConvertPhysicalParamsShippingMethod = "BULK"
 	CardConvertPhysicalParamsShippingMethodExpedited            CardConvertPhysicalParamsShippingMethod = "EXPEDITED"
 	CardConvertPhysicalParamsShippingMethodExpress              CardConvertPhysicalParamsShippingMethod = "EXPRESS"
 	CardConvertPhysicalParamsShippingMethodPriority             CardConvertPhysicalParamsShippingMethod = "PRIORITY"
@@ -1728,7 +1732,7 @@ const (
 
 func (r CardConvertPhysicalParamsShippingMethod) IsKnown() bool {
 	switch r {
-	case CardConvertPhysicalParamsShippingMethod2Day, CardConvertPhysicalParamsShippingMethodBulkExpedited, CardConvertPhysicalParamsShippingMethodExpedited, CardConvertPhysicalParamsShippingMethodExpress, CardConvertPhysicalParamsShippingMethodPriority, CardConvertPhysicalParamsShippingMethodStandard, CardConvertPhysicalParamsShippingMethodStandardWithTracking:
+	case CardConvertPhysicalParamsShippingMethod2Day, CardConvertPhysicalParamsShippingMethodBulk, CardConvertPhysicalParamsShippingMethodExpedited, CardConvertPhysicalParamsShippingMethodExpress, CardConvertPhysicalParamsShippingMethodPriority, CardConvertPhysicalParamsShippingMethodStandard, CardConvertPhysicalParamsShippingMethodStandardWithTracking:
 		return true
 	}
 	return false
@@ -1873,7 +1877,8 @@ type CardReissueParams struct {
 	//     tracking
 	//   - `EXPEDITED` - FedEx or UPS depending on card manufacturer, Standard Overnight
 	//     or similar international option, with tracking
-	//   - `BULK_EXPEDITED` - Bulk shipment with Expedited shipping
+	//   - `BULK` - Card will be shipped as part of a bulk fulfillment order. The
+	//     shipping method and timeline are inherited from the parent bulk order.
 	ShippingMethod param.Field[CardReissueParamsShippingMethod] `json:"shipping_method"`
 }
 
@@ -1895,12 +1900,13 @@ func (r CardReissueParams) MarshalJSON() (data []byte, err error) {
 //     tracking
 //   - `EXPEDITED` - FedEx or UPS depending on card manufacturer, Standard Overnight
 //     or similar international option, with tracking
-//   - `BULK_EXPEDITED` - Bulk shipment with Expedited shipping
+//   - `BULK` - Card will be shipped as part of a bulk fulfillment order. The
+//     shipping method and timeline are inherited from the parent bulk order.
 type CardReissueParamsShippingMethod string
 
 const (
 	CardReissueParamsShippingMethod2Day                 CardReissueParamsShippingMethod = "2_DAY"
-	CardReissueParamsShippingMethodBulkExpedited        CardReissueParamsShippingMethod = "BULK_EXPEDITED"
+	CardReissueParamsShippingMethodBulk                 CardReissueParamsShippingMethod = "BULK"
 	CardReissueParamsShippingMethodExpedited            CardReissueParamsShippingMethod = "EXPEDITED"
 	CardReissueParamsShippingMethodExpress              CardReissueParamsShippingMethod = "EXPRESS"
 	CardReissueParamsShippingMethodPriority             CardReissueParamsShippingMethod = "PRIORITY"
@@ -1910,7 +1916,7 @@ const (
 
 func (r CardReissueParamsShippingMethod) IsKnown() bool {
 	switch r {
-	case CardReissueParamsShippingMethod2Day, CardReissueParamsShippingMethodBulkExpedited, CardReissueParamsShippingMethodExpedited, CardReissueParamsShippingMethodExpress, CardReissueParamsShippingMethodPriority, CardReissueParamsShippingMethodStandard, CardReissueParamsShippingMethodStandardWithTracking:
+	case CardReissueParamsShippingMethod2Day, CardReissueParamsShippingMethodBulk, CardReissueParamsShippingMethodExpedited, CardReissueParamsShippingMethodExpress, CardReissueParamsShippingMethodPriority, CardReissueParamsShippingMethodStandard, CardReissueParamsShippingMethodStandardWithTracking:
 		return true
 	}
 	return false
@@ -1945,7 +1951,8 @@ type CardRenewParams struct {
 	//     tracking
 	//   - `EXPEDITED` - FedEx or UPS depending on card manufacturer, Standard Overnight
 	//     or similar international option, with tracking
-	//   - `BULK_EXPEDITED` - Bulk shipment with Expedited shipping
+	//   - `BULK` - Card will be shipped as part of a bulk fulfillment order. The
+	//     shipping method and timeline are inherited from the parent bulk order.
 	ShippingMethod param.Field[CardRenewParamsShippingMethod] `json:"shipping_method"`
 }
 
@@ -1967,12 +1974,13 @@ func (r CardRenewParams) MarshalJSON() (data []byte, err error) {
 //     tracking
 //   - `EXPEDITED` - FedEx or UPS depending on card manufacturer, Standard Overnight
 //     or similar international option, with tracking
-//   - `BULK_EXPEDITED` - Bulk shipment with Expedited shipping
+//   - `BULK` - Card will be shipped as part of a bulk fulfillment order. The
+//     shipping method and timeline are inherited from the parent bulk order.
 type CardRenewParamsShippingMethod string
 
 const (
 	CardRenewParamsShippingMethod2Day                 CardRenewParamsShippingMethod = "2_DAY"
-	CardRenewParamsShippingMethodBulkExpedited        CardRenewParamsShippingMethod = "BULK_EXPEDITED"
+	CardRenewParamsShippingMethodBulk                 CardRenewParamsShippingMethod = "BULK"
 	CardRenewParamsShippingMethodExpedited            CardRenewParamsShippingMethod = "EXPEDITED"
 	CardRenewParamsShippingMethodExpress              CardRenewParamsShippingMethod = "EXPRESS"
 	CardRenewParamsShippingMethodPriority             CardRenewParamsShippingMethod = "PRIORITY"
@@ -1982,7 +1990,7 @@ const (
 
 func (r CardRenewParamsShippingMethod) IsKnown() bool {
 	switch r {
-	case CardRenewParamsShippingMethod2Day, CardRenewParamsShippingMethodBulkExpedited, CardRenewParamsShippingMethodExpedited, CardRenewParamsShippingMethodExpress, CardRenewParamsShippingMethodPriority, CardRenewParamsShippingMethodStandard, CardRenewParamsShippingMethodStandardWithTracking:
+	case CardRenewParamsShippingMethod2Day, CardRenewParamsShippingMethodBulk, CardRenewParamsShippingMethodExpedited, CardRenewParamsShippingMethodExpress, CardRenewParamsShippingMethodPriority, CardRenewParamsShippingMethodStandard, CardRenewParamsShippingMethodStandardWithTracking:
 		return true
 	}
 	return false
