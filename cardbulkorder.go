@@ -38,12 +38,11 @@ func NewCardBulkOrderService(opts ...option.RequestOption) (r *CardBulkOrderServ
 	return
 }
 
-// Create a new bulk order for physical card shipments **[BETA]**. Cards can be
-// added to the order via the POST /v1/cards endpoint by specifying the
-// bulk_order_token. Lock the order via PATCH
-// /v1/card_bulk_orders/{bulk_order_token} to prepare for shipment. Please work
-// with your Customer Success Manager and card personalization bureau to ensure
-// bulk shipping is supported for your program.
+// Create a new bulk order for physical card shipments. Cards can be added to the
+// order via the POST /v1/cards endpoint by specifying the bulk_order_token. Lock
+// the order via PATCH /v1/card_bulk_orders/{bulk_order_token} to prepare for
+// shipment. Please work with your Customer Success Manager and card
+// personalization bureau to ensure bulk shipping is supported for your program.
 func (r *CardBulkOrderService) New(ctx context.Context, body CardBulkOrderNewParams, opts ...option.RequestOption) (res *CardBulkOrder, err error) {
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/card_bulk_orders"
@@ -51,7 +50,7 @@ func (r *CardBulkOrderService) New(ctx context.Context, body CardBulkOrderNewPar
 	return res, err
 }
 
-// Retrieve a specific bulk order by token **[BETA]**
+// Retrieve a specific bulk order by token
 func (r *CardBulkOrderService) Get(ctx context.Context, bulkOrderToken string, opts ...option.RequestOption) (res *CardBulkOrder, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if bulkOrderToken == "" {
@@ -63,8 +62,8 @@ func (r *CardBulkOrderService) Get(ctx context.Context, bulkOrderToken string, o
 	return res, err
 }
 
-// Update a bulk order **[BETA]**. Primarily used to lock the order, preventing
-// additional cards from being added
+// Update a bulk order. Primarily used to lock the order, preventing additional
+// cards from being added
 func (r *CardBulkOrderService) Update(ctx context.Context, bulkOrderToken string, body CardBulkOrderUpdateParams, opts ...option.RequestOption) (res *CardBulkOrder, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if bulkOrderToken == "" {
@@ -76,7 +75,7 @@ func (r *CardBulkOrderService) Update(ctx context.Context, bulkOrderToken string
 	return res, err
 }
 
-// List bulk orders for physical card shipments **[BETA]**
+// List bulk orders for physical card shipments
 func (r *CardBulkOrderService) List(ctx context.Context, query CardBulkOrderListParams, opts ...option.RequestOption) (res *pagination.CursorPage[CardBulkOrder], err error) {
 	var raw *http.Response
 	opts = slices.Concat(r.Options, opts)
@@ -94,7 +93,7 @@ func (r *CardBulkOrderService) List(ctx context.Context, query CardBulkOrderList
 	return res, nil
 }
 
-// List bulk orders for physical card shipments **[BETA]**
+// List bulk orders for physical card shipments
 func (r *CardBulkOrderService) ListAutoPaging(ctx context.Context, query CardBulkOrderListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[CardBulkOrder] {
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
@@ -112,7 +111,8 @@ type CardBulkOrder struct {
 	CustomerProductID string `json:"customer_product_id" api:"required,nullable"`
 	// Shipping address for all cards in this bulk order
 	ShippingAddress interface{} `json:"shipping_address" api:"required"`
-	// Shipping method for all cards in this bulk order
+	// Shipping method for all cards in this bulk order. BULK_PRIORITY, BULK_2_DAY, and
+	// BULK_EXPRESS are only available with Perfect Plastic Printing
 	ShippingMethod CardBulkOrderShippingMethod `json:"shipping_method" api:"required"`
 	// Status of the bulk order. OPEN indicates the order is accepting cards. LOCKED
 	// indicates the order is finalized and no more cards can be added
@@ -144,16 +144,20 @@ func (r cardBulkOrderJSON) RawJSON() string {
 	return r.raw
 }
 
-// Shipping method for all cards in this bulk order
+// Shipping method for all cards in this bulk order. BULK_PRIORITY, BULK_2_DAY, and
+// BULK_EXPRESS are only available with Perfect Plastic Printing
 type CardBulkOrderShippingMethod string
 
 const (
 	CardBulkOrderShippingMethodBulkExpedited CardBulkOrderShippingMethod = "BULK_EXPEDITED"
+	CardBulkOrderShippingMethodBulkPriority  CardBulkOrderShippingMethod = "BULK_PRIORITY"
+	CardBulkOrderShippingMethodBulk2Day      CardBulkOrderShippingMethod = "BULK_2_DAY"
+	CardBulkOrderShippingMethodBulkExpress   CardBulkOrderShippingMethod = "BULK_EXPRESS"
 )
 
 func (r CardBulkOrderShippingMethod) IsKnown() bool {
 	switch r {
-	case CardBulkOrderShippingMethodBulkExpedited:
+	case CardBulkOrderShippingMethodBulkExpedited, CardBulkOrderShippingMethodBulkPriority, CardBulkOrderShippingMethodBulk2Day, CardBulkOrderShippingMethodBulkExpress:
 		return true
 	}
 	return false
@@ -182,7 +186,8 @@ type CardBulkOrderNewParams struct {
 	CustomerProductID param.Field[string] `json:"customer_product_id" api:"required"`
 	// Shipping address for all cards in this bulk order
 	ShippingAddress param.Field[interface{}] `json:"shipping_address" api:"required"`
-	// Shipping method for all cards in this bulk order
+	// Shipping method for all cards in this bulk order. BULK_PRIORITY, BULK_2_DAY, and
+	// BULK_EXPRESS are only available with Perfect Plastic Printing
 	ShippingMethod param.Field[CardBulkOrderNewParamsShippingMethod] `json:"shipping_method" api:"required"`
 }
 
@@ -190,16 +195,20 @@ func (r CardBulkOrderNewParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
-// Shipping method for all cards in this bulk order
+// Shipping method for all cards in this bulk order. BULK_PRIORITY, BULK_2_DAY, and
+// BULK_EXPRESS are only available with Perfect Plastic Printing
 type CardBulkOrderNewParamsShippingMethod string
 
 const (
 	CardBulkOrderNewParamsShippingMethodBulkExpedited CardBulkOrderNewParamsShippingMethod = "BULK_EXPEDITED"
+	CardBulkOrderNewParamsShippingMethodBulkPriority  CardBulkOrderNewParamsShippingMethod = "BULK_PRIORITY"
+	CardBulkOrderNewParamsShippingMethodBulk2Day      CardBulkOrderNewParamsShippingMethod = "BULK_2_DAY"
+	CardBulkOrderNewParamsShippingMethodBulkExpress   CardBulkOrderNewParamsShippingMethod = "BULK_EXPRESS"
 )
 
 func (r CardBulkOrderNewParamsShippingMethod) IsKnown() bool {
 	switch r {
-	case CardBulkOrderNewParamsShippingMethodBulkExpedited:
+	case CardBulkOrderNewParamsShippingMethodBulkExpedited, CardBulkOrderNewParamsShippingMethodBulkPriority, CardBulkOrderNewParamsShippingMethodBulk2Day, CardBulkOrderNewParamsShippingMethodBulkExpress:
 		return true
 	}
 	return false
