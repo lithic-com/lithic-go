@@ -1919,6 +1919,12 @@ type ConditionalAuthorizationActionParametersCondition struct {
 	//     trailing hour up and until the authorization.
 	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
 	//     trailing 24 hours up and until the authorization.
+	//   - `CARD_DECLINE_COUNT_15M`: The number of declined transactions on the card in
+	//     the trailing 15 minutes before the authorization.
+	//   - `CARD_DECLINE_COUNT_1H`: The number of declined transactions on the card in
+	//     the trailing hour up and until the authorization.
+	//   - `CARD_DECLINE_COUNT_24H`: The number of declined transactions on the card in
+	//     the trailing 24 hours up and until the authorization.
 	//   - `CARD_STATE`: The current state of the card associated with the transaction.
 	//     Valid values are `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`,
 	//     `PENDING_FULFILLMENT`.
@@ -2010,6 +2016,12 @@ func (r conditionalAuthorizationActionParametersConditionJSON) RawJSON() string 
 //     trailing hour up and until the authorization.
 //   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
 //     trailing 24 hours up and until the authorization.
+//   - `CARD_DECLINE_COUNT_15M`: The number of declined transactions on the card in
+//     the trailing 15 minutes before the authorization.
+//   - `CARD_DECLINE_COUNT_1H`: The number of declined transactions on the card in
+//     the trailing hour up and until the authorization.
+//   - `CARD_DECLINE_COUNT_24H`: The number of declined transactions on the card in
+//     the trailing 24 hours up and until the authorization.
 //   - `CARD_STATE`: The current state of the card associated with the transaction.
 //     Valid values are `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`,
 //     `PENDING_FULFILLMENT`.
@@ -2052,6 +2064,9 @@ const (
 	ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M   ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
 	ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H    ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
 	ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H   ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
+	ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount15M       ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_DECLINE_COUNT_15M"
+	ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount1H        ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_DECLINE_COUNT_1H"
+	ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount24H       ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_DECLINE_COUNT_24H"
 	ConditionalAuthorizationActionParametersConditionsAttributeCardState                 ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_STATE"
 	ConditionalAuthorizationActionParametersConditionsAttributePinEntered                ConditionalAuthorizationActionParametersConditionsAttribute = "PIN_ENTERED"
 	ConditionalAuthorizationActionParametersConditionsAttributePinStatus                 ConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
@@ -2066,7 +2081,7 @@ const (
 
 func (r ConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case ConditionalAuthorizationActionParametersConditionsAttributeMcc, ConditionalAuthorizationActionParametersConditionsAttributeCountry, ConditionalAuthorizationActionParametersConditionsAttributeCurrency, ConditionalAuthorizationActionParametersConditionsAttributeMerchantID, ConditionalAuthorizationActionParametersConditionsAttributeDescriptor, ConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, ConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, ConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeCashAmount, ConditionalAuthorizationActionParametersConditionsAttributeRiskScore, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, ConditionalAuthorizationActionParametersConditionsAttributeCardState, ConditionalAuthorizationActionParametersConditionsAttributePinEntered, ConditionalAuthorizationActionParametersConditionsAttributePinStatus, ConditionalAuthorizationActionParametersConditionsAttributeWalletType, ConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, ConditionalAuthorizationActionParametersConditionsAttributeAddressMatch, ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationState, ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationPostalCode, ConditionalAuthorizationActionParametersConditionsAttributeCardAge, ConditionalAuthorizationActionParametersConditionsAttributeAccountAge:
+	case ConditionalAuthorizationActionParametersConditionsAttributeMcc, ConditionalAuthorizationActionParametersConditionsAttributeCountry, ConditionalAuthorizationActionParametersConditionsAttributeCurrency, ConditionalAuthorizationActionParametersConditionsAttributeMerchantID, ConditionalAuthorizationActionParametersConditionsAttributeDescriptor, ConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, ConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, ConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeCashAmount, ConditionalAuthorizationActionParametersConditionsAttributeRiskScore, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount15M, ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount1H, ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount24H, ConditionalAuthorizationActionParametersConditionsAttributeCardState, ConditionalAuthorizationActionParametersConditionsAttributePinEntered, ConditionalAuthorizationActionParametersConditionsAttributePinStatus, ConditionalAuthorizationActionParametersConditionsAttributeWalletType, ConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, ConditionalAuthorizationActionParametersConditionsAttributeAddressMatch, ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationState, ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationPostalCode, ConditionalAuthorizationActionParametersConditionsAttributeCardAge, ConditionalAuthorizationActionParametersConditionsAttributeAccountAge:
 		return true
 	}
 	return false
