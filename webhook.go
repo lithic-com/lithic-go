@@ -5495,6 +5495,7 @@ type ParsedWebhookEvent struct {
 	StatementEndDate time.Time `json:"statement_end_date" format:"date"`
 	// Date when the billing period began
 	StatementStartDate time.Time                       `json:"statement_start_date" format:"date"`
+	StatementTotals    StatementTotals                 `json:"statement_totals"`
 	StatementType      ParsedWebhookEventStatementType `json:"statement_type"`
 	// The status of the account_holder that was created.
 	Status ParsedWebhookEventStatus `json:"status" api:"nullable"`
@@ -5783,6 +5784,7 @@ type parsedWebhookEventJSON struct {
 	State                              apijson.Field
 	StatementEndDate                   apijson.Field
 	StatementStartDate                 apijson.Field
+	StatementTotals                    apijson.Field
 	StatementType                      apijson.Field
 	Status                             apijson.Field
 	StatusReason                       apijson.Field
