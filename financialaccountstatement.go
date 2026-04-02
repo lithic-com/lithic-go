@@ -122,8 +122,9 @@ type Statement struct {
 	// Date when the next billing period will end
 	NextStatementEndDate time.Time `json:"next_statement_end_date" format:"date"`
 	// Details on number and size of payments to pay off balance
-	PayoffDetails StatementPayoffDetails `json:"payoff_details" api:"nullable"`
-	JSON          statementJSON          `json:"-"`
+	PayoffDetails   StatementPayoffDetails `json:"payoff_details" api:"nullable"`
+	StatementTotals StatementTotals        `json:"statement_totals"`
+	JSON            statementJSON          `json:"-"`
 }
 
 // statementJSON contains the JSON metadata for the struct [Statement]
@@ -150,6 +151,7 @@ type statementJSON struct {
 	NextPaymentDueDate    apijson.Field
 	NextStatementEndDate  apijson.Field
 	PayoffDetails         apijson.Field
+	StatementTotals       apijson.Field
 	raw                   string
 	ExtraFields           map[string]apijson.Field
 }
