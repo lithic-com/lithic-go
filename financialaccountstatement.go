@@ -95,7 +95,7 @@ type Statement struct {
 	// This is the maximum credit balance extended by the lender in cents
 	CreditLimit int64 `json:"credit_limit" api:"required"`
 	// Globally unique identifier for a credit product
-	CreditProductToken string `json:"credit_product_token" api:"required"`
+	CreditProductToken string `json:"credit_product_token" api:"required,nullable"`
 	// Number of days in the billing cycle
 	DaysInBillingCycle int64 `json:"days_in_billing_cycle" api:"required"`
 	// Balance at the end of the billing period. For charge cards, this should be the
