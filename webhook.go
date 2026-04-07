@@ -5164,7 +5164,7 @@ type ParsedWebhookEvent struct {
 	// lender
 	CreditLimit int64 `json:"credit_limit"`
 	// Globally unique identifier for a credit product
-	CreditProductToken string `json:"credit_product_token"`
+	CreditProductToken string `json:"credit_product_token" api:"nullable"`
 	// 3-character alphabetic ISO 4217 code for the settling currency of the
 	// transaction
 	Currency string `json:"currency"`
