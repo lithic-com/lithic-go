@@ -1367,14 +1367,11 @@ func (r CardAuthorizationApprovalRequestWebhookEventAvsAddressOnFileMatch) IsKno
 // Card object in ASA
 type CardAuthorizationApprovalRequestWebhookEventCard struct {
 	// Globally unique identifier for the card.
-	Token string `json:"token" format:"uuid"`
-	// Hostname of card’s locked merchant (will be empty if not applicable)
-	Hostname string `json:"hostname"`
+	Token string `json:"token" api:"required" format:"uuid"`
 	// Last four digits of the card number
-	LastFour string `json:"last_four"`
-	// Customizable name to identify the card. We recommend against using this field to
-	// store JSON data as it can cause unexpected behavior.
-	Memo string `json:"memo"`
+	LastFour string `json:"last_four" api:"required"`
+	// Customizable name to identify the card
+	Memo string `json:"memo" api:"required"`
 	// Amount (in cents) to limit approved authorizations. Purchase requests above the
 	// spend limit will be declined (refunds and credits will be approved).
 	//
@@ -1383,13 +1380,13 @@ type CardAuthorizationApprovalRequestWebhookEventCard struct {
 	// reconciliation-level accuracy. Spend limits also cannot block force posted
 	// charges (i.e., when a merchant sends a clearing message without a prior
 	// authorization).
-	SpendLimit int64 `json:"spend_limit"`
+	SpendLimit int64 `json:"spend_limit" api:"required"`
 	// Note that to support recurring monthly payments, which can occur on different
 	// day every month, the time window we consider for MONTHLY velocity starts 6 days
 	// after the current calendar date one month prior.
-	SpendLimitDuration CardAuthorizationApprovalRequestWebhookEventCardSpendLimitDuration `json:"spend_limit_duration"`
-	State              CardAuthorizationApprovalRequestWebhookEventCardState              `json:"state"`
-	Type               CardAuthorizationApprovalRequestWebhookEventCardType               `json:"type"`
+	SpendLimitDuration CardAuthorizationApprovalRequestWebhookEventCardSpendLimitDuration `json:"spend_limit_duration" api:"required"`
+	State              CardAuthorizationApprovalRequestWebhookEventCardState              `json:"state" api:"required"`
+	Type               CardAuthorizationApprovalRequestWebhookEventCardType               `json:"type" api:"required"`
 	JSON               cardAuthorizationApprovalRequestWebhookEventCardJSON               `json:"-"`
 }
 
@@ -1397,7 +1394,6 @@ type CardAuthorizationApprovalRequestWebhookEventCard struct {
 // for the struct [CardAuthorizationApprovalRequestWebhookEventCard]
 type cardAuthorizationApprovalRequestWebhookEventCardJSON struct {
 	Token              apijson.Field
-	Hostname           apijson.Field
 	LastFour           apijson.Field
 	Memo               apijson.Field
 	SpendLimit         apijson.Field
