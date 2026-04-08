@@ -451,14 +451,12 @@ const (
 	InstanceFinancialAccountTypeCollection                 InstanceFinancialAccountType = "COLLECTION"
 	InstanceFinancialAccountTypeProgramBankAccountsPayable InstanceFinancialAccountType = "PROGRAM_BANK_ACCOUNTS_PAYABLE"
 	InstanceFinancialAccountTypeEarlyDirectDepositFloat    InstanceFinancialAccountType = "EARLY_DIRECT_DEPOSIT_FLOAT"
-	InstanceFinancialAccountTypeInterchange                InstanceFinancialAccountType = "INTERCHANGE"
-	InstanceFinancialAccountTypeChargeback                 InstanceFinancialAccountType = "CHARGEBACK"
 	InstanceFinancialAccountTypeProvisionalCreditAccount   InstanceFinancialAccountType = "PROVISIONAL_CREDIT_ACCOUNT"
 )
 
 func (r InstanceFinancialAccountType) IsKnown() bool {
 	switch r {
-	case InstanceFinancialAccountTypeIssuing, InstanceFinancialAccountTypeReserve, InstanceFinancialAccountTypeOperating, InstanceFinancialAccountTypeChargedOffFees, InstanceFinancialAccountTypeChargedOffInterest, InstanceFinancialAccountTypeChargedOffPrincipal, InstanceFinancialAccountTypeSecurity, InstanceFinancialAccountTypeProgramReceivables, InstanceFinancialAccountTypeCollection, InstanceFinancialAccountTypeProgramBankAccountsPayable, InstanceFinancialAccountTypeEarlyDirectDepositFloat, InstanceFinancialAccountTypeInterchange, InstanceFinancialAccountTypeChargeback, InstanceFinancialAccountTypeProvisionalCreditAccount:
+	case InstanceFinancialAccountTypeIssuing, InstanceFinancialAccountTypeReserve, InstanceFinancialAccountTypeOperating, InstanceFinancialAccountTypeChargedOffFees, InstanceFinancialAccountTypeChargedOffInterest, InstanceFinancialAccountTypeChargedOffPrincipal, InstanceFinancialAccountTypeSecurity, InstanceFinancialAccountTypeProgramReceivables, InstanceFinancialAccountTypeCollection, InstanceFinancialAccountTypeProgramBankAccountsPayable, InstanceFinancialAccountTypeEarlyDirectDepositFloat, InstanceFinancialAccountTypeProvisionalCreditAccount:
 		return true
 	}
 	return false
