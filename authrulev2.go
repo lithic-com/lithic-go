@@ -799,7 +799,7 @@ type AuthRuleCondition struct {
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation" api:"required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value ConditionalValueUnion `json:"value" api:"required" format:"date-time"`
+	Value ConditionalValueUnion `json:"value" api:"required"`
 	JSON  authRuleConditionJSON `json:"-"`
 }
 
@@ -876,7 +876,7 @@ type AuthRuleConditionParam struct {
 	// The operation to apply to the attribute
 	Operation param.Field[ConditionalOperation] `json:"operation" api:"required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value param.Field[ConditionalValueUnionParam] `json:"value" api:"required" format:"date-time"`
+	Value param.Field[ConditionalValueUnionParam] `json:"value" api:"required"`
 }
 
 func (r AuthRuleConditionParam) MarshalJSON() (data []byte, err error) {
@@ -1239,7 +1239,7 @@ type Conditional3DsActionParametersCondition struct {
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation" api:"required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value ConditionalValueUnion                       `json:"value" api:"required" format:"date-time"`
+	Value ConditionalValueUnion                       `json:"value" api:"required"`
 	JSON  conditional3DsActionParametersConditionJSON `json:"-"`
 }
 
@@ -1697,7 +1697,7 @@ type ConditionalACHActionParametersCondition struct {
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation" api:"required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value ConditionalValueUnion                       `json:"value" api:"required" format:"date-time"`
+	Value ConditionalValueUnion                       `json:"value" api:"required"`
 	JSON  conditionalACHActionParametersConditionJSON `json:"-"`
 }
 
@@ -1955,7 +1955,7 @@ type ConditionalAuthorizationActionParametersCondition struct {
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation" api:"required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value ConditionalValueUnion                                 `json:"value" api:"required" format:"date-time"`
+	Value ConditionalValueUnion                                 `json:"value" api:"required"`
 	JSON  conditionalAuthorizationActionParametersConditionJSON `json:"-"`
 }
 
@@ -2496,7 +2496,7 @@ type ConditionalTokenizationActionParametersCondition struct {
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation" api:"required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value ConditionalValueUnion                                `json:"value" api:"required" format:"date-time"`
+	Value ConditionalValueUnion                                `json:"value" api:"required"`
 	JSON  conditionalTokenizationActionParametersConditionJSON `json:"-"`
 }
 
