@@ -495,6 +495,15 @@ const InstanceFinancialAccountTypeProgramBankAccountsPayable = shared.InstanceFi
 // This is an alias to an internal value.
 const InstanceFinancialAccountTypeEarlyDirectDepositFloat = shared.InstanceFinancialAccountTypeEarlyDirectDepositFloat
 
+// This is an alias to an internal value.
+const InstanceFinancialAccountTypeInterchange = shared.InstanceFinancialAccountTypeInterchange
+
+// This is an alias to an internal value.
+const InstanceFinancialAccountTypeChargeback = shared.InstanceFinancialAccountTypeChargeback
+
+// This is an alias to an internal value.
+const InstanceFinancialAccountTypeProvisionalCreditAccount = shared.InstanceFinancialAccountTypeProvisionalCreditAccount
+
 // This is an alias to an internal type.
 type Merchant = shared.Merchant
 
