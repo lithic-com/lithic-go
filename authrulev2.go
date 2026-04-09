@@ -4952,24 +4952,27 @@ type AuthRuleV2ListResultsResponse struct {
 	// The state of the Auth Rule
 	Mode AuthRuleV2ListResultsResponseMode `json:"mode" api:"required"`
 	// Version of the rule that was evaluated
-	RuleVersion int64                             `json:"rule_version" api:"required"`
-	JSON        authRuleV2ListResultsResponseJSON `json:"-"`
-	union       AuthRuleV2ListResultsResponseUnion
+	RuleVersion int64 `json:"rule_version" api:"required"`
+	// The token of the transaction that triggered the rule evaluation
+	TransactionToken string                            `json:"transaction_token" api:"required,nullable" format:"uuid"`
+	JSON             authRuleV2ListResultsResponseJSON `json:"-"`
+	union            AuthRuleV2ListResultsResponseUnion
 }
 
 // authRuleV2ListResultsResponseJSON contains the JSON metadata for the struct
 // [AuthRuleV2ListResultsResponse]
 type authRuleV2ListResultsResponseJSON struct {
-	Token          apijson.Field
-	Actions        apijson.Field
-	AuthRuleToken  apijson.Field
-	EvaluationTime apijson.Field
-	EventStream    apijson.Field
-	EventToken     apijson.Field
-	Mode           apijson.Field
-	RuleVersion    apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
+	Token            apijson.Field
+	Actions          apijson.Field
+	AuthRuleToken    apijson.Field
+	EvaluationTime   apijson.Field
+	EventStream      apijson.Field
+	EventToken       apijson.Field
+	Mode             apijson.Field
+	RuleVersion      apijson.Field
+	TransactionToken apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
 }
 
 func (r authRuleV2ListResultsResponseJSON) RawJSON() string {
@@ -5046,23 +5049,26 @@ type AuthRuleV2ListResultsResponseAuthorizationResult struct {
 	// The state of the Auth Rule
 	Mode AuthRuleV2ListResultsResponseAuthorizationResultMode `json:"mode" api:"required"`
 	// Version of the rule that was evaluated
-	RuleVersion int64                                                `json:"rule_version" api:"required"`
-	JSON        authRuleV2ListResultsResponseAuthorizationResultJSON `json:"-"`
+	RuleVersion int64 `json:"rule_version" api:"required"`
+	// The token of the transaction that triggered the rule evaluation
+	TransactionToken string                                               `json:"transaction_token" api:"required,nullable" format:"uuid"`
+	JSON             authRuleV2ListResultsResponseAuthorizationResultJSON `json:"-"`
 }
 
 // authRuleV2ListResultsResponseAuthorizationResultJSON contains the JSON metadata
 // for the struct [AuthRuleV2ListResultsResponseAuthorizationResult]
 type authRuleV2ListResultsResponseAuthorizationResultJSON struct {
-	Token          apijson.Field
-	Actions        apijson.Field
-	AuthRuleToken  apijson.Field
-	EvaluationTime apijson.Field
-	EventStream    apijson.Field
-	EventToken     apijson.Field
-	Mode           apijson.Field
-	RuleVersion    apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
+	Token            apijson.Field
+	Actions          apijson.Field
+	AuthRuleToken    apijson.Field
+	EvaluationTime   apijson.Field
+	EventStream      apijson.Field
+	EventToken       apijson.Field
+	Mode             apijson.Field
+	RuleVersion      apijson.Field
+	TransactionToken apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
 }
 
 func (r *AuthRuleV2ListResultsResponseAuthorizationResult) UnmarshalJSON(data []byte) (err error) {
@@ -5432,23 +5438,26 @@ type AuthRuleV2ListResultsResponseAuthentication3DSResult struct {
 	// The state of the Auth Rule
 	Mode AuthRuleV2ListResultsResponseAuthentication3DSResultMode `json:"mode" api:"required"`
 	// Version of the rule that was evaluated
-	RuleVersion int64                                                    `json:"rule_version" api:"required"`
-	JSON        authRuleV2ListResultsResponseAuthentication3DsResultJSON `json:"-"`
+	RuleVersion int64 `json:"rule_version" api:"required"`
+	// The token of the transaction that triggered the rule evaluation
+	TransactionToken string                                                   `json:"transaction_token" api:"required,nullable" format:"uuid"`
+	JSON             authRuleV2ListResultsResponseAuthentication3DsResultJSON `json:"-"`
 }
 
 // authRuleV2ListResultsResponseAuthentication3DsResultJSON contains the JSON
 // metadata for the struct [AuthRuleV2ListResultsResponseAuthentication3DSResult]
 type authRuleV2ListResultsResponseAuthentication3DsResultJSON struct {
-	Token          apijson.Field
-	Actions        apijson.Field
-	AuthRuleToken  apijson.Field
-	EvaluationTime apijson.Field
-	EventStream    apijson.Field
-	EventToken     apijson.Field
-	Mode           apijson.Field
-	RuleVersion    apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
+	Token            apijson.Field
+	Actions          apijson.Field
+	AuthRuleToken    apijson.Field
+	EvaluationTime   apijson.Field
+	EventStream      apijson.Field
+	EventToken       apijson.Field
+	Mode             apijson.Field
+	RuleVersion      apijson.Field
+	TransactionToken apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
 }
 
 func (r *AuthRuleV2ListResultsResponseAuthentication3DSResult) UnmarshalJSON(data []byte) (err error) {
@@ -5549,23 +5558,26 @@ type AuthRuleV2ListResultsResponseTokenizationResult struct {
 	// The state of the Auth Rule
 	Mode AuthRuleV2ListResultsResponseTokenizationResultMode `json:"mode" api:"required"`
 	// Version of the rule that was evaluated
-	RuleVersion int64                                               `json:"rule_version" api:"required"`
-	JSON        authRuleV2ListResultsResponseTokenizationResultJSON `json:"-"`
+	RuleVersion int64 `json:"rule_version" api:"required"`
+	// The token of the transaction that triggered the rule evaluation
+	TransactionToken string                                              `json:"transaction_token" api:"required,nullable" format:"uuid"`
+	JSON             authRuleV2ListResultsResponseTokenizationResultJSON `json:"-"`
 }
 
 // authRuleV2ListResultsResponseTokenizationResultJSON contains the JSON metadata
 // for the struct [AuthRuleV2ListResultsResponseTokenizationResult]
 type authRuleV2ListResultsResponseTokenizationResultJSON struct {
-	Token          apijson.Field
-	Actions        apijson.Field
-	AuthRuleToken  apijson.Field
-	EvaluationTime apijson.Field
-	EventStream    apijson.Field
-	EventToken     apijson.Field
-	Mode           apijson.Field
-	RuleVersion    apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
+	Token            apijson.Field
+	Actions          apijson.Field
+	AuthRuleToken    apijson.Field
+	EvaluationTime   apijson.Field
+	EventStream      apijson.Field
+	EventToken       apijson.Field
+	Mode             apijson.Field
+	RuleVersion      apijson.Field
+	TransactionToken apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
 }
 
 func (r *AuthRuleV2ListResultsResponseTokenizationResult) UnmarshalJSON(data []byte) (err error) {
@@ -5899,23 +5911,26 @@ type AuthRuleV2ListResultsResponseACHResult struct {
 	// The state of the Auth Rule
 	Mode AuthRuleV2ListResultsResponseACHResultMode `json:"mode" api:"required"`
 	// Version of the rule that was evaluated
-	RuleVersion int64                                      `json:"rule_version" api:"required"`
-	JSON        authRuleV2ListResultsResponseACHResultJSON `json:"-"`
+	RuleVersion int64 `json:"rule_version" api:"required"`
+	// The token of the transaction that triggered the rule evaluation
+	TransactionToken string                                     `json:"transaction_token" api:"required,nullable" format:"uuid"`
+	JSON             authRuleV2ListResultsResponseACHResultJSON `json:"-"`
 }
 
 // authRuleV2ListResultsResponseACHResultJSON contains the JSON metadata for the
 // struct [AuthRuleV2ListResultsResponseACHResult]
 type authRuleV2ListResultsResponseACHResultJSON struct {
-	Token          apijson.Field
-	Actions        apijson.Field
-	AuthRuleToken  apijson.Field
-	EvaluationTime apijson.Field
-	EventStream    apijson.Field
-	EventToken     apijson.Field
-	Mode           apijson.Field
-	RuleVersion    apijson.Field
-	raw            string
-	ExtraFields    map[string]apijson.Field
+	Token            apijson.Field
+	Actions          apijson.Field
+	AuthRuleToken    apijson.Field
+	EvaluationTime   apijson.Field
+	EventStream      apijson.Field
+	EventToken       apijson.Field
+	Mode             apijson.Field
+	RuleVersion      apijson.Field
+	TransactionToken apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
 }
 
 func (r *AuthRuleV2ListResultsResponseACHResult) UnmarshalJSON(data []byte) (err error) {
