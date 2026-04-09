@@ -1125,18 +1125,21 @@ type BacktestStatsExample struct {
 	// The event token.
 	EventToken string `json:"event_token" format:"uuid"`
 	// The timestamp of the event.
-	Timestamp time.Time                `json:"timestamp" format:"date-time"`
-	JSON      backtestStatsExampleJSON `json:"-"`
+	Timestamp time.Time `json:"timestamp" format:"date-time"`
+	// The token of the transaction associated with the event
+	TransactionToken string                   `json:"transaction_token" api:"nullable" format:"uuid"`
+	JSON             backtestStatsExampleJSON `json:"-"`
 }
 
 // backtestStatsExampleJSON contains the JSON metadata for the struct
 // [BacktestStatsExample]
 type backtestStatsExampleJSON struct {
-	Decision    apijson.Field
-	EventToken  apijson.Field
-	Timestamp   apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+	Decision         apijson.Field
+	EventToken       apijson.Field
+	Timestamp        apijson.Field
+	TransactionToken apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
 }
 
 func (r *BacktestStatsExample) UnmarshalJSON(data []byte) (err error) {
@@ -2783,20 +2786,23 @@ type ReportStatsExample struct {
 	// The event token.
 	EventToken string `json:"event_token" format:"uuid"`
 	// The timestamp of the event.
-	Timestamp time.Time              `json:"timestamp" format:"date-time"`
-	JSON      reportStatsExampleJSON `json:"-"`
+	Timestamp time.Time `json:"timestamp" format:"date-time"`
+	// The token of the transaction associated with the event
+	TransactionToken string                 `json:"transaction_token" api:"nullable" format:"uuid"`
+	JSON             reportStatsExampleJSON `json:"-"`
 }
 
 // reportStatsExampleJSON contains the JSON metadata for the struct
 // [ReportStatsExample]
 type reportStatsExampleJSON struct {
-	Actions     apijson.Field
-	Approved    apijson.Field
-	Decision    apijson.Field
-	EventToken  apijson.Field
-	Timestamp   apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+	Actions          apijson.Field
+	Approved         apijson.Field
+	Decision         apijson.Field
+	EventToken       apijson.Field
+	Timestamp        apijson.Field
+	TransactionToken apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
 }
 
 func (r *ReportStatsExample) UnmarshalJSON(data []byte) (err error) {
@@ -6581,19 +6587,22 @@ type AuthRuleV2GetReportResponseDailyStatisticsVersionsExample struct {
 	// The event token.
 	EventToken string `json:"event_token" api:"required" format:"uuid"`
 	// The timestamp of the event.
-	Timestamp time.Time                                                     `json:"timestamp" api:"required" format:"date-time"`
-	JSON      authRuleV2GetReportResponseDailyStatisticsVersionsExampleJSON `json:"-"`
+	Timestamp time.Time `json:"timestamp" api:"required" format:"date-time"`
+	// The token of the transaction associated with the event
+	TransactionToken string                                                        `json:"transaction_token" api:"nullable" format:"uuid"`
+	JSON             authRuleV2GetReportResponseDailyStatisticsVersionsExampleJSON `json:"-"`
 }
 
 // authRuleV2GetReportResponseDailyStatisticsVersionsExampleJSON contains the JSON
 // metadata for the struct
 // [AuthRuleV2GetReportResponseDailyStatisticsVersionsExample]
 type authRuleV2GetReportResponseDailyStatisticsVersionsExampleJSON struct {
-	Actions     apijson.Field
-	EventToken  apijson.Field
-	Timestamp   apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+	Actions          apijson.Field
+	EventToken       apijson.Field
+	Timestamp        apijson.Field
+	TransactionToken apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
 }
 
 func (r *AuthRuleV2GetReportResponseDailyStatisticsVersionsExample) UnmarshalJSON(data []byte) (err error) {
