@@ -161,8 +161,8 @@ func TestFinancialAccountUpdateStatusWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.FinancialAccountUpdateStatusParams{
-			Status:            lithic.F(lithic.FinancialAccountUpdateStatusParamsStatusOpen),
-			Substatus:         lithic.F(lithic.FinancialAccountUpdateStatusParamsSubstatusChargedOffFraud),
+			Status:            lithic.F(lithic.FinancialAccountUpdateStatusParamsStatusClosed),
+			Substatus:         lithic.F(lithic.FinancialAccountUpdateStatusParamsSubstatusEndUserRequest),
 			UserDefinedStatus: lithic.F("26"),
 		},
 	)
