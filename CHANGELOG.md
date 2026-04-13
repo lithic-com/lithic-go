@@ -1,5 +1,45 @@
 # Changelog
 
+## 0.107.0 (2026-04-13)
+
+Full Changelog: [v0.106.0...v0.107.0](https://github.com/lithic-com/lithic-go/compare/v0.106.0...v0.107.0)
+
+### Features
+
+* **api:** add CARD_DECLINE_COUNT enum values to authrulev2 conditions ([8759cfc](https://github.com/lithic-com/lithic-go/commit/8759cfc8ca5dff9043be4e4af2fa7632a53e61b5))
+* **api:** add DELINQUENT substatus to financial_account update status ([f1a6dfb](https://github.com/lithic-com/lithic-go/commit/f1a6dfbbde4bcedef9f256ee49114b74bf874765))
+* **api:** add interchange/chargeback/provisional_credit_account to financial account types ([fa89cb1](https://github.com/lithic-com/lithic-go/commit/fa89cb1fce5a47e3f48e145010615179401ee7eb))
+* **api:** add override_company_name parameter to payment method attributes ([f024ccf](https://github.com/lithic-com/lithic-go/commit/f024ccf225bf006f718ef9103a9d319426726d24))
+* **api:** add statement_totals field to Statement and ParsedWebhookEvent ([86a1180](https://github.com/lithic-com/lithic-go/commit/86a118046d214fa8d55c577895e7e2545b3a49ae))
+* **api:** add transaction_token field to auth rule v2 list results responses ([e333632](https://github.com/lithic-com/lithic-go/commit/e333632d9338f3ae8fecc4be7d69fc6e1622bce5))
+* **api:** add transaction_token field to authrulev2 stats examples ([805c6c8](https://github.com/lithic-com/lithic-go/commit/805c6c8296d2741dabf51c3735bf7fd157cec1cd))
+* **api:** remove Interchange/Chargeback from financial account and webhook event types ([1a8f9e9](https://github.com/lithic-com/lithic-go/commit/1a8f9e97f616dd3faebe5f64a91fa9feb09b76f6))
+* **internal:** support comma format in multipart form encoding ([26a774a](https://github.com/lithic-com/lithic-go/commit/26a774a9c25330574338e45365f59d662a367309))
+
+
+### Bug Fixes
+
+* better respect format tags from the spec ([4059511](https://github.com/lithic-com/lithic-go/commit/4059511757fb2d9ce2b339a454c94053546f6c93))
+* prevent duplicate ? in query params ([0e82833](https://github.com/lithic-com/lithic-go/commit/0e828338bd69d2f4cd415e3391ed970364c6623c))
+* **types:** generate shared enum types that are not referenced by other schemas ([13bae12](https://github.com/lithic-com/lithic-go/commit/13bae12ec49babb0938a36ec938810f59308765c))
+* **types:** make credit_product_token optional in Statement/ParsedWebhookEvent ([f81eb76](https://github.com/lithic-com/lithic-go/commit/f81eb765113103141f9c853d21e78806ff6da86f))
+* **types:** remove hostname, make fields required in authorization webhook card ([7e05474](https://github.com/lithic-com/lithic-go/commit/7e054748be4068cbf70b82d680c21fafaeb691fb))
+
+
+### Chores
+
+* **api:** [breaking] remove deprecated fields from authrulev2 report stats ([532c764](https://github.com/lithic-com/lithic-go/commit/532c764f22f84f0600a05e98de93bf4e680dad8c))
+* **ci:** skip lint on metadata-only changes ([6ed7c0b](https://github.com/lithic-com/lithic-go/commit/6ed7c0b6f1494713141eef20f3604ff810d80aeb))
+* **ci:** support opting out of skipping builds on metadata-only commits ([7e2b69b](https://github.com/lithic-com/lithic-go/commit/7e2b69b86ee78bc42aa83997a54617479326d299))
+* remove unnecessary error check for url parsing ([de3a8c0](https://github.com/lithic-com/lithic-go/commit/de3a8c080acc16dd3ff32f6c08e5ed94e3d02f96))
+
+
+### Documentation
+
+* **api:** update nature_of_business and qr_code_url parameter descriptions ([0696488](https://github.com/lithic-com/lithic-go/commit/0696488eeb1fc5a2bbcfdda190d6ebcff6372ae3))
+* improve examples ([06ceaad](https://github.com/lithic-com/lithic-go/commit/06ceaada0c3bfdcf0d3653d4e1b38765485e387d))
+* update examples ([2df6a20](https://github.com/lithic-com/lithic-go/commit/2df6a208627d9a1d4fb093b3ee1bd19fc7ae82c7))
+
 ## 0.106.0 (2026-03-23)
 
 Full Changelog: [v0.105.0...v0.106.0](https://github.com/lithic-com/lithic-go/compare/v0.105.0...v0.106.0)
