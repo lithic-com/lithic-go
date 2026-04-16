@@ -837,6 +837,7 @@ Response Types:
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderVerificationWebhookEvent">AccountHolderVerificationWebhookEvent</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AccountHolderDocumentUpdatedWebhookEvent">AccountHolderDocumentUpdatedWebhookEvent</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardAuthorizationApprovalRequestWebhookEvent">CardAuthorizationApprovalRequestWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#CardAuthorizationChallengeResponseWebhookEvent">CardAuthorizationChallengeResponseWebhookEvent</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#AuthRulesBacktestReportCreatedWebhookEvent">AuthRulesBacktestReportCreatedWebhookEvent</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#BalanceUpdatedWebhookEvent">BalanceUpdatedWebhookEvent</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#BookTransferTransactionCreatedWebhookEvent">BookTransferTransactionCreatedWebhookEvent</a>
