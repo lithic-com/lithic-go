@@ -2121,6 +2121,98 @@ func (r CardAuthorizationApprovalRequestWebhookEventPosTerminalType) IsKnown() b
 	return false
 }
 
+type CardAuthorizationChallengeResponseWebhookEvent struct {
+	// The token of the card associated with the challenge
+	CardToken string `json:"card_token" api:"required,nullable" format:"uuid"`
+	// The method used to deliver the challenge to the cardholder
+	ChallengeMethod CardAuthorizationChallengeResponseWebhookEventChallengeMethod `json:"challenge_method" api:"required"`
+	// The timestamp of when the challenge was completed
+	Completed time.Time `json:"completed" api:"required,nullable" format:"date-time"`
+	// The timestamp of when the challenge was created
+	Created time.Time `json:"created" api:"required" format:"date-time"`
+	// Globally unique identifier for the event
+	EventToken string `json:"event_token" api:"required" format:"uuid"`
+	// Event type
+	EventType CardAuthorizationChallengeResponseWebhookEventEventType `json:"event_type" api:"required"`
+	// The cardholder's response to the challenge
+	Response CardAuthorizationChallengeResponseWebhookEventResponse `json:"response" api:"required"`
+	// The token of the transaction associated with the authorization event being
+	// challenged
+	TransactionToken string                                             `json:"transaction_token" api:"required,nullable" format:"uuid"`
+	JSON             cardAuthorizationChallengeResponseWebhookEventJSON `json:"-"`
+}
+
+// cardAuthorizationChallengeResponseWebhookEventJSON contains the JSON metadata
+// for the struct [CardAuthorizationChallengeResponseWebhookEvent]
+type cardAuthorizationChallengeResponseWebhookEventJSON struct {
+	CardToken        apijson.Field
+	ChallengeMethod  apijson.Field
+	Completed        apijson.Field
+	Created          apijson.Field
+	EventToken       apijson.Field
+	EventType        apijson.Field
+	Response         apijson.Field
+	TransactionToken apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
+}
+
+func (r *CardAuthorizationChallengeResponseWebhookEvent) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardAuthorizationChallengeResponseWebhookEventJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r CardAuthorizationChallengeResponseWebhookEvent) implementsParsedWebhookEvent() {}
+
+// The method used to deliver the challenge to the cardholder
+type CardAuthorizationChallengeResponseWebhookEventChallengeMethod string
+
+const (
+	CardAuthorizationChallengeResponseWebhookEventChallengeMethodSMS CardAuthorizationChallengeResponseWebhookEventChallengeMethod = "SMS"
+)
+
+func (r CardAuthorizationChallengeResponseWebhookEventChallengeMethod) IsKnown() bool {
+	switch r {
+	case CardAuthorizationChallengeResponseWebhookEventChallengeMethodSMS:
+		return true
+	}
+	return false
+}
+
+// Event type
+type CardAuthorizationChallengeResponseWebhookEventEventType string
+
+const (
+	CardAuthorizationChallengeResponseWebhookEventEventTypeCardAuthorizationChallengeResponse CardAuthorizationChallengeResponseWebhookEventEventType = "card_authorization.challenge_response"
+)
+
+func (r CardAuthorizationChallengeResponseWebhookEventEventType) IsKnown() bool {
+	switch r {
+	case CardAuthorizationChallengeResponseWebhookEventEventTypeCardAuthorizationChallengeResponse:
+		return true
+	}
+	return false
+}
+
+// The cardholder's response to the challenge
+type CardAuthorizationChallengeResponseWebhookEventResponse string
+
+const (
+	CardAuthorizationChallengeResponseWebhookEventResponseApprove CardAuthorizationChallengeResponseWebhookEventResponse = "APPROVE"
+	CardAuthorizationChallengeResponseWebhookEventResponseDecline CardAuthorizationChallengeResponseWebhookEventResponse = "DECLINE"
+)
+
+func (r CardAuthorizationChallengeResponseWebhookEventResponse) IsKnown() bool {
+	switch r {
+	case CardAuthorizationChallengeResponseWebhookEventResponseApprove, CardAuthorizationChallengeResponseWebhookEventResponseDecline:
+		return true
+	}
+	return false
+}
+
 type AuthRulesBacktestReportCreatedWebhookEvent struct {
 	// The type of event that occurred.
 	EventType AuthRulesBacktestReportCreatedWebhookEventEventType `json:"event_type" api:"required"`
@@ -5081,8 +5173,8 @@ type ParsedWebhookEvent struct {
 	// Indicates whether the expiration date provided by the cardholder during checkout
 	// matches Lithic's record of the card's expiration date.
 	CardExpiryCheck ParsedWebhookEventCardExpiryCheck `json:"card_expiry_check"`
-	// The token of the card that was created.
-	CardToken string `json:"card_token" format:"uuid"`
+	// The token of the card associated with the challenge
+	CardToken string `json:"card_token" api:"nullable" format:"uuid"`
 	// This field can have the runtime type of [ThreeDSAuthenticationCardholder].
 	Cardholder               interface{}              `json:"cardholder"`
 	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication" api:"nullable"`
@@ -5109,6 +5201,8 @@ type ParsedWebhookEvent struct {
 	// This field can have the runtime type of
 	// [ThreeDSAuthenticationChallengeMetadata].
 	ChallengeMetadata interface{} `json:"challenge_metadata"`
+	// The method used to deliver the challenge to the cardholder
+	ChallengeMethod ParsedWebhookEventChallengeMethod `json:"challenge_method"`
 	// Entity that orchestrates the challenge. This won't be set for authentications
 	// for which a decision has not yet been made (e.g. in-flight customer decisioning
 	// request).
@@ -5124,6 +5218,8 @@ type ParsedWebhookEvent struct {
 	Common interface{} `json:"common"`
 	// Optional field that helps identify bank accounts in receipts
 	CompanyID string `json:"company_id" api:"nullable"`
+	// The timestamp of when the challenge was completed
+	Completed time.Time `json:"completed" api:"nullable" format:"date-time"`
 	// Deprecated, use `amounts`. If the transaction was requested in a currency other
 	// than the settlement currency, this field will be populated to indicate the rate
 	// used to translate the merchant_amount to the amount (i.e., `merchant_amount` x
@@ -5448,7 +5544,9 @@ type ParsedWebhookEvent struct {
 	// - `WON_FIRST_CHARGEBACK`: Won first chargeback.
 	// - `WON_PREARBITRATION`: Won prearbitration.
 	ResolutionReason ParsedWebhookEventResolutionReason `json:"resolution_reason" api:"nullable"`
-	Result           ParsedWebhookEventResult           `json:"result"`
+	// The cardholder's response to the challenge
+	Response ParsedWebhookEventResponse `json:"response"`
+	Result   ParsedWebhookEventResult   `json:"result"`
 	// This field can have the runtime type of [BacktestResultsResults].
 	Results interface{} `json:"results"`
 	// Routing Number
@@ -5552,8 +5650,9 @@ type ParsedWebhookEvent struct {
 	// This field can have the runtime type of [BookTransferResponseTransactionSeries],
 	// [ManagementOperationTransactionTransactionSeries], [DisputeV2TransactionSeries].
 	TransactionSeries interface{} `json:"transaction_series"`
-	// The token of the transaction that the enhanced data is associated with.
-	TransactionToken string `json:"transaction_token" format:"uuid"`
+	// The token of the transaction associated with the authorization event being
+	// challenged
+	TransactionToken string `json:"transaction_token" api:"nullable" format:"uuid"`
 	// The total amount of settlement impacting transactions (excluding interchange,
 	// fees, and disputes). (This field is deprecated and will be removed in a future
 	// version of the API. To compute total amounts, Lithic recommends that customers
@@ -5649,12 +5748,14 @@ type parsedWebhookEventJSON struct {
 	Category                           apijson.Field
 	Challenge                          apijson.Field
 	ChallengeMetadata                  apijson.Field
+	ChallengeMethod                    apijson.Field
 	ChallengeOrchestratedBy            apijson.Field
 	Channel                            apijson.Field
 	CollectionResourceType             apijson.Field
 	CollectionTokens                   apijson.Field
 	Common                             apijson.Field
 	CompanyID                          apijson.Field
+	Completed                          apijson.Field
 	ConversionRate                     apijson.Field
 	Country                            apijson.Field
 	Created                            apijson.Field
@@ -5764,6 +5865,7 @@ type parsedWebhookEventJSON struct {
 	ResolutionDate                     apijson.Field
 	ResolutionNote                     apijson.Field
 	ResolutionReason                   apijson.Field
+	Response                           apijson.Field
 	Result                             apijson.Field
 	Results                            apijson.Field
 	RoutingNumber                      apijson.Field
@@ -5847,6 +5949,7 @@ func (r *ParsedWebhookEvent) UnmarshalJSON(data []byte) (err error) {
 // [ParsedWebhookEventLegacyPayload], [AccountHolderVerificationWebhookEvent],
 // [AccountHolderDocumentUpdatedWebhookEvent],
 // [CardAuthorizationApprovalRequestWebhookEvent],
+// [CardAuthorizationChallengeResponseWebhookEvent],
 // [AuthRulesBacktestReportCreatedWebhookEvent], [BalanceUpdatedWebhookEvent],
 // [BookTransferTransactionCreatedWebhookEvent],
 // [BookTransferTransactionUpdatedWebhookEvent], [CardCreatedWebhookEvent],
@@ -5893,6 +5996,7 @@ func (r ParsedWebhookEvent) AsUnion() ParsedWebhookEventUnion {
 // [ParsedWebhookEventLegacyPayload], [AccountHolderVerificationWebhookEvent],
 // [AccountHolderDocumentUpdatedWebhookEvent],
 // [CardAuthorizationApprovalRequestWebhookEvent],
+// [CardAuthorizationChallengeResponseWebhookEvent],
 // [AuthRulesBacktestReportCreatedWebhookEvent], [BalanceUpdatedWebhookEvent],
 // [BookTransferTransactionCreatedWebhookEvent],
 // [BookTransferTransactionUpdatedWebhookEvent], [CardCreatedWebhookEvent],
@@ -5963,6 +6067,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(CardAuthorizationApprovalRequestWebhookEvent{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(CardAuthorizationChallengeResponseWebhookEvent{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -6789,6 +6897,21 @@ func (r ParsedWebhookEventCategory) IsKnown() bool {
 	return false
 }
 
+// The method used to deliver the challenge to the cardholder
+type ParsedWebhookEventChallengeMethod string
+
+const (
+	ParsedWebhookEventChallengeMethodSMS ParsedWebhookEventChallengeMethod = "SMS"
+)
+
+func (r ParsedWebhookEventChallengeMethod) IsKnown() bool {
+	switch r {
+	case ParsedWebhookEventChallengeMethodSMS:
+		return true
+	}
+	return false
+}
+
 // Entity that orchestrates the challenge. This won't be set for authentications
 // for which a decision has not yet been made (e.g. in-flight customer decisioning
 // request).
@@ -6940,6 +7063,7 @@ const (
 	ParsedWebhookEventEventTypeAccountHolderVerification                                ParsedWebhookEventEventType = "account_holder.verification"
 	ParsedWebhookEventEventTypeAccountHolderDocumentUpdated                             ParsedWebhookEventEventType = "account_holder_document.updated"
 	ParsedWebhookEventEventTypeCardAuthorizationApprovalRequest                         ParsedWebhookEventEventType = "card_authorization.approval_request"
+	ParsedWebhookEventEventTypeCardAuthorizationChallengeResponse                       ParsedWebhookEventEventType = "card_authorization.challenge_response"
 	ParsedWebhookEventEventTypeAuthRulesBacktestReportCreated                           ParsedWebhookEventEventType = "auth_rules.backtest_report.created"
 	ParsedWebhookEventEventTypeBalanceUpdated                                           ParsedWebhookEventEventType = "balance.updated"
 	ParsedWebhookEventEventTypeBookTransferTransactionCreated                           ParsedWebhookEventEventType = "book_transfer_transaction.created"
@@ -6994,7 +7118,7 @@ const (
 
 func (r ParsedWebhookEventEventType) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventEventTypeAccountHolderCreated, ParsedWebhookEventEventTypeAccountHolderUpdated, ParsedWebhookEventEventTypeAccountHolderVerification, ParsedWebhookEventEventTypeAccountHolderDocumentUpdated, ParsedWebhookEventEventTypeCardAuthorizationApprovalRequest, ParsedWebhookEventEventTypeAuthRulesBacktestReportCreated, ParsedWebhookEventEventTypeBalanceUpdated, ParsedWebhookEventEventTypeBookTransferTransactionCreated, ParsedWebhookEventEventTypeBookTransferTransactionUpdated, ParsedWebhookEventEventTypeCardCreated, ParsedWebhookEventEventTypeCardConverted, ParsedWebhookEventEventTypeCardRenewed, ParsedWebhookEventEventTypeCardReissued, ParsedWebhookEventEventTypeCardShipped, ParsedWebhookEventEventTypeCardUpdated, ParsedWebhookEventEventTypeCardTransactionUpdated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataCreated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataUpdated, ParsedWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest, ParsedWebhookEventEventTypeDigitalWalletTokenizationResult, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeDigitalWalletTokenizationUpdated, ParsedWebhookEventEventTypeDisputeUpdated, ParsedWebhookEventEventTypeDisputeEvidenceUploadFailed, ParsedWebhookEventEventTypeExternalBankAccountCreated, ParsedWebhookEventEventTypeExternalBankAccountUpdated, ParsedWebhookEventEventTypeExternalPaymentCreated, ParsedWebhookEventEventTypeExternalPaymentUpdated, ParsedWebhookEventEventTypeFinancialAccountCreated, ParsedWebhookEventEventTypeFinancialAccountUpdated, ParsedWebhookEventEventTypeFundingEventCreated, ParsedWebhookEventEventTypeLoanTapeCreated, ParsedWebhookEventEventTypeLoanTapeUpdated, ParsedWebhookEventEventTypeManagementOperationCreated, ParsedWebhookEventEventTypeManagementOperationUpdated, ParsedWebhookEventEventTypeInternalTransactionCreated, ParsedWebhookEventEventTypeInternalTransactionUpdated, ParsedWebhookEventEventTypeNetworkTotalCreated, ParsedWebhookEventEventTypeNetworkTotalUpdated, ParsedWebhookEventEventTypePaymentTransactionCreated, ParsedWebhookEventEventTypePaymentTransactionUpdated, ParsedWebhookEventEventTypeSettlementReportUpdated, ParsedWebhookEventEventTypeStatementsCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationChallenge, ParsedWebhookEventEventTypeTokenizationApprovalRequest, ParsedWebhookEventEventTypeTokenizationResult, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeTokenizationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationApprovalRequest, ParsedWebhookEventEventTypeDisputeTransactionCreated, ParsedWebhookEventEventTypeDisputeTransactionUpdated:
+	case ParsedWebhookEventEventTypeAccountHolderCreated, ParsedWebhookEventEventTypeAccountHolderUpdated, ParsedWebhookEventEventTypeAccountHolderVerification, ParsedWebhookEventEventTypeAccountHolderDocumentUpdated, ParsedWebhookEventEventTypeCardAuthorizationApprovalRequest, ParsedWebhookEventEventTypeCardAuthorizationChallengeResponse, ParsedWebhookEventEventTypeAuthRulesBacktestReportCreated, ParsedWebhookEventEventTypeBalanceUpdated, ParsedWebhookEventEventTypeBookTransferTransactionCreated, ParsedWebhookEventEventTypeBookTransferTransactionUpdated, ParsedWebhookEventEventTypeCardCreated, ParsedWebhookEventEventTypeCardConverted, ParsedWebhookEventEventTypeCardRenewed, ParsedWebhookEventEventTypeCardReissued, ParsedWebhookEventEventTypeCardShipped, ParsedWebhookEventEventTypeCardUpdated, ParsedWebhookEventEventTypeCardTransactionUpdated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataCreated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataUpdated, ParsedWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest, ParsedWebhookEventEventTypeDigitalWalletTokenizationResult, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeDigitalWalletTokenizationUpdated, ParsedWebhookEventEventTypeDisputeUpdated, ParsedWebhookEventEventTypeDisputeEvidenceUploadFailed, ParsedWebhookEventEventTypeExternalBankAccountCreated, ParsedWebhookEventEventTypeExternalBankAccountUpdated, ParsedWebhookEventEventTypeExternalPaymentCreated, ParsedWebhookEventEventTypeExternalPaymentUpdated, ParsedWebhookEventEventTypeFinancialAccountCreated, ParsedWebhookEventEventTypeFinancialAccountUpdated, ParsedWebhookEventEventTypeFundingEventCreated, ParsedWebhookEventEventTypeLoanTapeCreated, ParsedWebhookEventEventTypeLoanTapeUpdated, ParsedWebhookEventEventTypeManagementOperationCreated, ParsedWebhookEventEventTypeManagementOperationUpdated, ParsedWebhookEventEventTypeInternalTransactionCreated, ParsedWebhookEventEventTypeInternalTransactionUpdated, ParsedWebhookEventEventTypeNetworkTotalCreated, ParsedWebhookEventEventTypeNetworkTotalUpdated, ParsedWebhookEventEventTypePaymentTransactionCreated, ParsedWebhookEventEventTypePaymentTransactionUpdated, ParsedWebhookEventEventTypeSettlementReportUpdated, ParsedWebhookEventEventTypeStatementsCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationChallenge, ParsedWebhookEventEventTypeTokenizationApprovalRequest, ParsedWebhookEventEventTypeTokenizationResult, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeTokenizationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationApprovalRequest, ParsedWebhookEventEventTypeDisputeTransactionCreated, ParsedWebhookEventEventTypeDisputeTransactionUpdated:
 		return true
 	}
 	return false
@@ -7196,6 +7320,22 @@ const (
 func (r ParsedWebhookEventResolutionReason) IsKnown() bool {
 	switch r {
 	case ParsedWebhookEventResolutionReasonCaseLost, ParsedWebhookEventResolutionReasonNetworkRejected, ParsedWebhookEventResolutionReasonNoDisputeRights3DS, ParsedWebhookEventResolutionReasonNoDisputeRightsBelowThreshold, ParsedWebhookEventResolutionReasonNoDisputeRightsContactless, ParsedWebhookEventResolutionReasonNoDisputeRightsHybrid, ParsedWebhookEventResolutionReasonNoDisputeRightsMaxChargebacks, ParsedWebhookEventResolutionReasonNoDisputeRightsOther, ParsedWebhookEventResolutionReasonPastFilingDate, ParsedWebhookEventResolutionReasonPrearbitrationRejected, ParsedWebhookEventResolutionReasonProcessorRejectedOther, ParsedWebhookEventResolutionReasonRefunded, ParsedWebhookEventResolutionReasonRefundedAfterChargeback, ParsedWebhookEventResolutionReasonWithdrawn, ParsedWebhookEventResolutionReasonWonArbitration, ParsedWebhookEventResolutionReasonWonFirstChargeback, ParsedWebhookEventResolutionReasonWonPrearbitration:
+		return true
+	}
+	return false
+}
+
+// The cardholder's response to the challenge
+type ParsedWebhookEventResponse string
+
+const (
+	ParsedWebhookEventResponseApprove ParsedWebhookEventResponse = "APPROVE"
+	ParsedWebhookEventResponseDecline ParsedWebhookEventResponse = "DECLINE"
+)
+
+func (r ParsedWebhookEventResponse) IsKnown() bool {
+	switch r {
+	case ParsedWebhookEventResponseApprove, ParsedWebhookEventResponseDecline:
 		return true
 	}
 	return false
