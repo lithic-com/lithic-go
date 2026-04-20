@@ -119,6 +119,19 @@ func (r *ExternalBankAccountService) RetryPrenote(ctx context.Context, externalB
 	return res, err
 }
 
+// Update the verification method for an external bank account. Verification method
+// can only be updated if the `verification_state` is `PENDING`.
+func (r *ExternalBankAccountService) SetVerificationMethod(ctx context.Context, externalBankAccountToken string, body ExternalBankAccountSetVerificationMethodParams, opts ...option.RequestOption) (res *ExternalBankAccount, err error) {
+	opts = slices.Concat(r.Options, opts)
+	if externalBankAccountToken == "" {
+		err = errors.New("missing required external_bank_account_token parameter")
+		return nil, err
+	}
+	path := fmt.Sprintf("v1/external_bank_accounts/%s/set_verification_method", externalBankAccountToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+	return res, err
+}
+
 // Unpause an external bank account
 func (r *ExternalBankAccountService) Unpause(ctx context.Context, externalBankAccountToken string, opts ...option.RequestOption) (res *ExternalBankAccount, err error) {
 	opts = slices.Concat(r.Options, opts)
@@ -1680,4 +1693,33 @@ type ExternalBankAccountRetryPrenoteParams struct {
 
 func (r ExternalBankAccountRetryPrenoteParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
+}
+
+type ExternalBankAccountSetVerificationMethodParams struct {
+	// The verification method to set for the external bank account
+	VerificationMethod param.Field[ExternalBankAccountSetVerificationMethodParamsVerificationMethod] `json:"verification_method" api:"required"`
+	// The financial account token of the operating account to fund the micro deposits.
+	// Required when verification_method is MICRO_DEPOSIT or PRENOTE.
+	FinancialAccountToken param.Field[string] `json:"financial_account_token" format:"uuid"`
+}
+
+func (r ExternalBankAccountSetVerificationMethodParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// The verification method to set for the external bank account
+type ExternalBankAccountSetVerificationMethodParamsVerificationMethod string
+
+const (
+	ExternalBankAccountSetVerificationMethodParamsVerificationMethodMicroDeposit       ExternalBankAccountSetVerificationMethodParamsVerificationMethod = "MICRO_DEPOSIT"
+	ExternalBankAccountSetVerificationMethodParamsVerificationMethodPrenote            ExternalBankAccountSetVerificationMethodParamsVerificationMethod = "PRENOTE"
+	ExternalBankAccountSetVerificationMethodParamsVerificationMethodExternallyVerified ExternalBankAccountSetVerificationMethodParamsVerificationMethod = "EXTERNALLY_VERIFIED"
+)
+
+func (r ExternalBankAccountSetVerificationMethodParamsVerificationMethod) IsKnown() bool {
+	switch r {
+	case ExternalBankAccountSetVerificationMethodParamsVerificationMethodMicroDeposit, ExternalBankAccountSetVerificationMethodParamsVerificationMethodPrenote, ExternalBankAccountSetVerificationMethodParamsVerificationMethodExternallyVerified:
+		return true
+	}
+	return false
 }
