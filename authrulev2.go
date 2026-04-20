@@ -1954,12 +1954,45 @@ type ConditionalAuthorizationActionParametersCondition struct {
 	//   - `CARD_AGE`: The age of the card in seconds at the time of the authorization.
 	//   - `ACCOUNT_AGE`: The age of the account holder's account in seconds at the time
 	//     of the authorization.
+	//   - `AMOUNT_Z_SCORE`: The z-score of the transaction amount relative to the
+	//     entity's transaction history. Null if fewer than 30 approved transactions in
+	//     the specified window. Requires `parameters.scope` and `parameters.interval`.
+	//   - `AVG_TRANSACTION_AMOUNT`: The average approved transaction amount for the
+	//     entity over the specified window, in cents. Requires `parameters.scope` and
+	//     `parameters.interval`.
+	//   - `STDEV_TRANSACTION_AMOUNT`: The standard deviation of approved transaction
+	//     amounts for the entity over the specified window, in cents. Null if fewer than
+	//     30 approved transactions in the specified window. Requires `parameters.scope`
+	//     and `parameters.interval`.
+	//   - `IS_NEW_COUNTRY`: Whether the transaction's merchant country has not been seen
+	//     in the entity's transaction history. Valid values are `TRUE`, `FALSE`.
+	//     Requires `parameters.scope`.
+	//   - `IS_NEW_MCC`: Whether the transaction's MCC has not been seen in the entity's
+	//     transaction history. Valid values are `TRUE`, `FALSE`. Requires
+	//     `parameters.scope`.
+	//   - `IS_FIRST_TRANSACTION`: Whether this is the first transaction for the entity.
+	//     Valid values are `TRUE`, `FALSE`. Requires `parameters.scope`.
+	//   - `CONSECUTIVE_DECLINES`: The number of consecutive declined transactions for
+	//     the entity over the last 30 days (rolling). Requires `parameters.scope`. Not
+	//     supported for `BUSINESS_ACCOUNT` scope.
+	//   - `TIME_SINCE_LAST_TRANSACTION`: The number of days since the last approved
+	//     transaction for the entity. Requires `parameters.scope`.
+	//   - `DISTINCT_COUNTRY_COUNT`: The number of distinct merchant countries seen in
+	//     the entity's transaction history. Requires `parameters.scope`.
+	//   - `THREE_DS_SUCCESS_RATE`: The 3DS authentication success rate for the card, as
+	//     a percentage from 0.0 to 100.0. Card-scoped only; no `parameters` required.
 	Attribute ConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute" api:"required"`
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation" api:"required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value ConditionalValueUnion                                 `json:"value" api:"required"`
-	JSON  conditionalAuthorizationActionParametersConditionJSON `json:"-"`
+	Value ConditionalValueUnion `json:"value" api:"required"`
+	// Additional parameters required for transaction history signal attributes.
+	// Required when `attribute` is one of `AMOUNT_Z_SCORE`, `AVG_TRANSACTION_AMOUNT`,
+	// `STDEV_TRANSACTION_AMOUNT`, `IS_NEW_COUNTRY`, `IS_NEW_MCC`,
+	// `IS_FIRST_TRANSACTION`, `CONSECUTIVE_DECLINES`, `TIME_SINCE_LAST_TRANSACTION`,
+	// or `DISTINCT_COUNTRY_COUNT`. Not used for other attributes.
+	Parameters ConditionalAuthorizationActionParametersConditionsParameters `json:"parameters"`
+	JSON       conditionalAuthorizationActionParametersConditionJSON        `json:"-"`
 }
 
 // conditionalAuthorizationActionParametersConditionJSON contains the JSON metadata
@@ -1968,6 +2001,7 @@ type conditionalAuthorizationActionParametersConditionJSON struct {
 	Attribute   apijson.Field
 	Operation   apijson.Field
 	Value       apijson.Field
+	Parameters  apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -2051,6 +2085,33 @@ func (r conditionalAuthorizationActionParametersConditionJSON) RawJSON() string 
 //   - `CARD_AGE`: The age of the card in seconds at the time of the authorization.
 //   - `ACCOUNT_AGE`: The age of the account holder's account in seconds at the time
 //     of the authorization.
+//   - `AMOUNT_Z_SCORE`: The z-score of the transaction amount relative to the
+//     entity's transaction history. Null if fewer than 30 approved transactions in
+//     the specified window. Requires `parameters.scope` and `parameters.interval`.
+//   - `AVG_TRANSACTION_AMOUNT`: The average approved transaction amount for the
+//     entity over the specified window, in cents. Requires `parameters.scope` and
+//     `parameters.interval`.
+//   - `STDEV_TRANSACTION_AMOUNT`: The standard deviation of approved transaction
+//     amounts for the entity over the specified window, in cents. Null if fewer than
+//     30 approved transactions in the specified window. Requires `parameters.scope`
+//     and `parameters.interval`.
+//   - `IS_NEW_COUNTRY`: Whether the transaction's merchant country has not been seen
+//     in the entity's transaction history. Valid values are `TRUE`, `FALSE`.
+//     Requires `parameters.scope`.
+//   - `IS_NEW_MCC`: Whether the transaction's MCC has not been seen in the entity's
+//     transaction history. Valid values are `TRUE`, `FALSE`. Requires
+//     `parameters.scope`.
+//   - `IS_FIRST_TRANSACTION`: Whether this is the first transaction for the entity.
+//     Valid values are `TRUE`, `FALSE`. Requires `parameters.scope`.
+//   - `CONSECUTIVE_DECLINES`: The number of consecutive declined transactions for
+//     the entity over the last 30 days (rolling). Requires `parameters.scope`. Not
+//     supported for `BUSINESS_ACCOUNT` scope.
+//   - `TIME_SINCE_LAST_TRANSACTION`: The number of days since the last approved
+//     transaction for the entity. Requires `parameters.scope`.
+//   - `DISTINCT_COUNTRY_COUNT`: The number of distinct merchant countries seen in
+//     the entity's transaction history. Requires `parameters.scope`.
+//   - `THREE_DS_SUCCESS_RATE`: The 3DS authentication success rate for the card, as
+//     a percentage from 0.0 to 100.0. Card-scoped only; no `parameters` required.
 type ConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -2080,11 +2141,91 @@ const (
 	ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationPostalCode ConditionalAuthorizationActionParametersConditionsAttribute = "SERVICE_LOCATION_POSTAL_CODE"
 	ConditionalAuthorizationActionParametersConditionsAttributeCardAge                   ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_AGE"
 	ConditionalAuthorizationActionParametersConditionsAttributeAccountAge                ConditionalAuthorizationActionParametersConditionsAttribute = "ACCOUNT_AGE"
+	ConditionalAuthorizationActionParametersConditionsAttributeAmountZScore              ConditionalAuthorizationActionParametersConditionsAttribute = "AMOUNT_Z_SCORE"
+	ConditionalAuthorizationActionParametersConditionsAttributeAvgTransactionAmount      ConditionalAuthorizationActionParametersConditionsAttribute = "AVG_TRANSACTION_AMOUNT"
+	ConditionalAuthorizationActionParametersConditionsAttributeStdevTransactionAmount    ConditionalAuthorizationActionParametersConditionsAttribute = "STDEV_TRANSACTION_AMOUNT"
+	ConditionalAuthorizationActionParametersConditionsAttributeIsNewCountry              ConditionalAuthorizationActionParametersConditionsAttribute = "IS_NEW_COUNTRY"
+	ConditionalAuthorizationActionParametersConditionsAttributeIsNewMcc                  ConditionalAuthorizationActionParametersConditionsAttribute = "IS_NEW_MCC"
+	ConditionalAuthorizationActionParametersConditionsAttributeIsFirstTransaction        ConditionalAuthorizationActionParametersConditionsAttribute = "IS_FIRST_TRANSACTION"
+	ConditionalAuthorizationActionParametersConditionsAttributeConsecutiveDeclines       ConditionalAuthorizationActionParametersConditionsAttribute = "CONSECUTIVE_DECLINES"
+	ConditionalAuthorizationActionParametersConditionsAttributeTimeSinceLastTransaction  ConditionalAuthorizationActionParametersConditionsAttribute = "TIME_SINCE_LAST_TRANSACTION"
+	ConditionalAuthorizationActionParametersConditionsAttributeDistinctCountryCount      ConditionalAuthorizationActionParametersConditionsAttribute = "DISTINCT_COUNTRY_COUNT"
+	ConditionalAuthorizationActionParametersConditionsAttributeThreeDSSuccessRate        ConditionalAuthorizationActionParametersConditionsAttribute = "THREE_DS_SUCCESS_RATE"
 )
 
 func (r ConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case ConditionalAuthorizationActionParametersConditionsAttributeMcc, ConditionalAuthorizationActionParametersConditionsAttributeCountry, ConditionalAuthorizationActionParametersConditionsAttributeCurrency, ConditionalAuthorizationActionParametersConditionsAttributeMerchantID, ConditionalAuthorizationActionParametersConditionsAttributeDescriptor, ConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, ConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, ConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeCashAmount, ConditionalAuthorizationActionParametersConditionsAttributeRiskScore, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount15M, ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount1H, ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount24H, ConditionalAuthorizationActionParametersConditionsAttributeCardState, ConditionalAuthorizationActionParametersConditionsAttributePinEntered, ConditionalAuthorizationActionParametersConditionsAttributePinStatus, ConditionalAuthorizationActionParametersConditionsAttributeWalletType, ConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, ConditionalAuthorizationActionParametersConditionsAttributeAddressMatch, ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationState, ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationPostalCode, ConditionalAuthorizationActionParametersConditionsAttributeCardAge, ConditionalAuthorizationActionParametersConditionsAttributeAccountAge:
+	case ConditionalAuthorizationActionParametersConditionsAttributeMcc, ConditionalAuthorizationActionParametersConditionsAttributeCountry, ConditionalAuthorizationActionParametersConditionsAttributeCurrency, ConditionalAuthorizationActionParametersConditionsAttributeMerchantID, ConditionalAuthorizationActionParametersConditionsAttributeDescriptor, ConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, ConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, ConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeCashAmount, ConditionalAuthorizationActionParametersConditionsAttributeRiskScore, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount15M, ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount1H, ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount24H, ConditionalAuthorizationActionParametersConditionsAttributeCardState, ConditionalAuthorizationActionParametersConditionsAttributePinEntered, ConditionalAuthorizationActionParametersConditionsAttributePinStatus, ConditionalAuthorizationActionParametersConditionsAttributeWalletType, ConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, ConditionalAuthorizationActionParametersConditionsAttributeAddressMatch, ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationState, ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationPostalCode, ConditionalAuthorizationActionParametersConditionsAttributeCardAge, ConditionalAuthorizationActionParametersConditionsAttributeAccountAge, ConditionalAuthorizationActionParametersConditionsAttributeAmountZScore, ConditionalAuthorizationActionParametersConditionsAttributeAvgTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeStdevTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeIsNewCountry, ConditionalAuthorizationActionParametersConditionsAttributeIsNewMcc, ConditionalAuthorizationActionParametersConditionsAttributeIsFirstTransaction, ConditionalAuthorizationActionParametersConditionsAttributeConsecutiveDeclines, ConditionalAuthorizationActionParametersConditionsAttributeTimeSinceLastTransaction, ConditionalAuthorizationActionParametersConditionsAttributeDistinctCountryCount, ConditionalAuthorizationActionParametersConditionsAttributeThreeDSSuccessRate:
+		return true
+	}
+	return false
+}
+
+// Additional parameters required for transaction history signal attributes.
+// Required when `attribute` is one of `AMOUNT_Z_SCORE`, `AVG_TRANSACTION_AMOUNT`,
+// `STDEV_TRANSACTION_AMOUNT`, `IS_NEW_COUNTRY`, `IS_NEW_MCC`,
+// `IS_FIRST_TRANSACTION`, `CONSECUTIVE_DECLINES`, `TIME_SINCE_LAST_TRANSACTION`,
+// or `DISTINCT_COUNTRY_COUNT`. Not used for other attributes.
+type ConditionalAuthorizationActionParametersConditionsParameters struct {
+	// The time window for statistical attributes (`AMOUNT_Z_SCORE`,
+	// `AVG_TRANSACTION_AMOUNT`, `STDEV_TRANSACTION_AMOUNT`). Use `LIFETIME` for
+	// all-time history or a specific window (`7D`, `30D`, `90D`).
+	Interval ConditionalAuthorizationActionParametersConditionsParametersInterval `json:"interval"`
+	// The entity scope to evaluate the attribute against.
+	Scope ConditionalAuthorizationActionParametersConditionsParametersScope `json:"scope"`
+	JSON  conditionalAuthorizationActionParametersConditionsParametersJSON  `json:"-"`
+}
+
+// conditionalAuthorizationActionParametersConditionsParametersJSON contains the
+// JSON metadata for the struct
+// [ConditionalAuthorizationActionParametersConditionsParameters]
+type conditionalAuthorizationActionParametersConditionsParametersJSON struct {
+	Interval    apijson.Field
+	Scope       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ConditionalAuthorizationActionParametersConditionsParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r conditionalAuthorizationActionParametersConditionsParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+// The time window for statistical attributes (`AMOUNT_Z_SCORE`,
+// `AVG_TRANSACTION_AMOUNT`, `STDEV_TRANSACTION_AMOUNT`). Use `LIFETIME` for
+// all-time history or a specific window (`7D`, `30D`, `90D`).
+type ConditionalAuthorizationActionParametersConditionsParametersInterval string
+
+const (
+	ConditionalAuthorizationActionParametersConditionsParametersIntervalLifetime ConditionalAuthorizationActionParametersConditionsParametersInterval = "LIFETIME"
+	ConditionalAuthorizationActionParametersConditionsParametersInterval7D       ConditionalAuthorizationActionParametersConditionsParametersInterval = "7D"
+	ConditionalAuthorizationActionParametersConditionsParametersInterval30D      ConditionalAuthorizationActionParametersConditionsParametersInterval = "30D"
+	ConditionalAuthorizationActionParametersConditionsParametersInterval90D      ConditionalAuthorizationActionParametersConditionsParametersInterval = "90D"
+)
+
+func (r ConditionalAuthorizationActionParametersConditionsParametersInterval) IsKnown() bool {
+	switch r {
+	case ConditionalAuthorizationActionParametersConditionsParametersIntervalLifetime, ConditionalAuthorizationActionParametersConditionsParametersInterval7D, ConditionalAuthorizationActionParametersConditionsParametersInterval30D, ConditionalAuthorizationActionParametersConditionsParametersInterval90D:
+		return true
+	}
+	return false
+}
+
+// The entity scope to evaluate the attribute against.
+type ConditionalAuthorizationActionParametersConditionsParametersScope string
+
+const (
+	ConditionalAuthorizationActionParametersConditionsParametersScopeCard            ConditionalAuthorizationActionParametersConditionsParametersScope = "CARD"
+	ConditionalAuthorizationActionParametersConditionsParametersScopeAccount         ConditionalAuthorizationActionParametersConditionsParametersScope = "ACCOUNT"
+	ConditionalAuthorizationActionParametersConditionsParametersScopeBusinessAccount ConditionalAuthorizationActionParametersConditionsParametersScope = "BUSINESS_ACCOUNT"
+)
+
+func (r ConditionalAuthorizationActionParametersConditionsParametersScope) IsKnown() bool {
+	switch r {
+	case ConditionalAuthorizationActionParametersConditionsParametersScopeCard, ConditionalAuthorizationActionParametersConditionsParametersScopeAccount, ConditionalAuthorizationActionParametersConditionsParametersScopeBusinessAccount:
 		return true
 	}
 	return false
@@ -3618,6 +3759,10 @@ func (r ReportStatsState) IsKnown() bool {
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
 //     `scope`, `period`, and optionally `filters` to configure the velocity
 //     calculation. Available for AUTHORIZATION event stream rules.
+//   - `TRANSACTION_HISTORY_SIGNALS`: Behavioral feature state derived from the
+//     entity's transaction history. Requires `scope` to specify whether to load
+//     card, account, or business account history. Available for AUTHORIZATION event
+//     stream rules.
 type RuleFeature struct {
 	Type    RuleFeatureType      `json:"type" api:"required"`
 	Filters VelocityLimitFilters `json:"filters"`
@@ -3662,7 +3807,8 @@ func (r *RuleFeature) UnmarshalJSON(data []byte) (err error) {
 // [RuleFeatureAuthenticationFeature], [RuleFeatureTokenizationFeature],
 // [RuleFeatureACHReceiptFeature], [RuleFeatureCardFeature],
 // [RuleFeatureAccountHolderFeature], [RuleFeatureIPMetadataFeature],
-// [RuleFeatureSpendVelocityFeature].
+// [RuleFeatureSpendVelocityFeature],
+// [RuleFeatureTransactionHistorySignalsFeature].
 func (r RuleFeature) AsUnion() RuleFeatureUnion {
 	return r.union
 }
@@ -3688,12 +3834,17 @@ func (r RuleFeature) AsUnion() RuleFeatureUnion {
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
 //     `scope`, `period`, and optionally `filters` to configure the velocity
 //     calculation. Available for AUTHORIZATION event stream rules.
+//   - `TRANSACTION_HISTORY_SIGNALS`: Behavioral feature state derived from the
+//     entity's transaction history. Requires `scope` to specify whether to load
+//     card, account, or business account history. Available for AUTHORIZATION event
+//     stream rules.
 //
 // Union satisfied by [RuleFeatureAuthorizationFeature],
 // [RuleFeatureAuthenticationFeature], [RuleFeatureTokenizationFeature],
 // [RuleFeatureACHReceiptFeature], [RuleFeatureCardFeature],
-// [RuleFeatureAccountHolderFeature], [RuleFeatureIPMetadataFeature] or
-// [RuleFeatureSpendVelocityFeature].
+// [RuleFeatureAccountHolderFeature], [RuleFeatureIPMetadataFeature],
+// [RuleFeatureSpendVelocityFeature] or
+// [RuleFeatureTransactionHistorySignalsFeature].
 type RuleFeatureUnion interface {
 	implementsRuleFeature()
 }
@@ -3733,6 +3884,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(RuleFeatureSpendVelocityFeature{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(RuleFeatureTransactionHistorySignalsFeature{}),
 		},
 	)
 }
@@ -4081,22 +4236,83 @@ func (r RuleFeatureSpendVelocityFeatureType) IsKnown() bool {
 	return false
 }
 
+type RuleFeatureTransactionHistorySignalsFeature struct {
+	// The entity scope to load transaction history signals for.
+	Scope RuleFeatureTransactionHistorySignalsFeatureScope `json:"scope" api:"required"`
+	Type  RuleFeatureTransactionHistorySignalsFeatureType  `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name string                                          `json:"name"`
+	JSON ruleFeatureTransactionHistorySignalsFeatureJSON `json:"-"`
+}
+
+// ruleFeatureTransactionHistorySignalsFeatureJSON contains the JSON metadata for
+// the struct [RuleFeatureTransactionHistorySignalsFeature]
+type ruleFeatureTransactionHistorySignalsFeatureJSON struct {
+	Scope       apijson.Field
+	Type        apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *RuleFeatureTransactionHistorySignalsFeature) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r ruleFeatureTransactionHistorySignalsFeatureJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r RuleFeatureTransactionHistorySignalsFeature) implementsRuleFeature() {}
+
+// The entity scope to load transaction history signals for.
+type RuleFeatureTransactionHistorySignalsFeatureScope string
+
+const (
+	RuleFeatureTransactionHistorySignalsFeatureScopeCard            RuleFeatureTransactionHistorySignalsFeatureScope = "CARD"
+	RuleFeatureTransactionHistorySignalsFeatureScopeAccount         RuleFeatureTransactionHistorySignalsFeatureScope = "ACCOUNT"
+	RuleFeatureTransactionHistorySignalsFeatureScopeBusinessAccount RuleFeatureTransactionHistorySignalsFeatureScope = "BUSINESS_ACCOUNT"
+)
+
+func (r RuleFeatureTransactionHistorySignalsFeatureScope) IsKnown() bool {
+	switch r {
+	case RuleFeatureTransactionHistorySignalsFeatureScopeCard, RuleFeatureTransactionHistorySignalsFeatureScopeAccount, RuleFeatureTransactionHistorySignalsFeatureScopeBusinessAccount:
+		return true
+	}
+	return false
+}
+
+type RuleFeatureTransactionHistorySignalsFeatureType string
+
+const (
+	RuleFeatureTransactionHistorySignalsFeatureTypeTransactionHistorySignals RuleFeatureTransactionHistorySignalsFeatureType = "TRANSACTION_HISTORY_SIGNALS"
+)
+
+func (r RuleFeatureTransactionHistorySignalsFeatureType) IsKnown() bool {
+	switch r {
+	case RuleFeatureTransactionHistorySignalsFeatureTypeTransactionHistorySignals:
+		return true
+	}
+	return false
+}
+
 type RuleFeatureType string
 
 const (
-	RuleFeatureTypeAuthorization  RuleFeatureType = "AUTHORIZATION"
-	RuleFeatureTypeAuthentication RuleFeatureType = "AUTHENTICATION"
-	RuleFeatureTypeTokenization   RuleFeatureType = "TOKENIZATION"
-	RuleFeatureTypeACHReceipt     RuleFeatureType = "ACH_RECEIPT"
-	RuleFeatureTypeCard           RuleFeatureType = "CARD"
-	RuleFeatureTypeAccountHolder  RuleFeatureType = "ACCOUNT_HOLDER"
-	RuleFeatureTypeIPMetadata     RuleFeatureType = "IP_METADATA"
-	RuleFeatureTypeSpendVelocity  RuleFeatureType = "SPEND_VELOCITY"
+	RuleFeatureTypeAuthorization             RuleFeatureType = "AUTHORIZATION"
+	RuleFeatureTypeAuthentication            RuleFeatureType = "AUTHENTICATION"
+	RuleFeatureTypeTokenization              RuleFeatureType = "TOKENIZATION"
+	RuleFeatureTypeACHReceipt                RuleFeatureType = "ACH_RECEIPT"
+	RuleFeatureTypeCard                      RuleFeatureType = "CARD"
+	RuleFeatureTypeAccountHolder             RuleFeatureType = "ACCOUNT_HOLDER"
+	RuleFeatureTypeIPMetadata                RuleFeatureType = "IP_METADATA"
+	RuleFeatureTypeSpendVelocity             RuleFeatureType = "SPEND_VELOCITY"
+	RuleFeatureTypeTransactionHistorySignals RuleFeatureType = "TRANSACTION_HISTORY_SIGNALS"
 )
 
 func (r RuleFeatureType) IsKnown() bool {
 	switch r {
-	case RuleFeatureTypeAuthorization, RuleFeatureTypeAuthentication, RuleFeatureTypeTokenization, RuleFeatureTypeACHReceipt, RuleFeatureTypeCard, RuleFeatureTypeAccountHolder, RuleFeatureTypeIPMetadata, RuleFeatureTypeSpendVelocity:
+	case RuleFeatureTypeAuthorization, RuleFeatureTypeAuthentication, RuleFeatureTypeTokenization, RuleFeatureTypeACHReceipt, RuleFeatureTypeCard, RuleFeatureTypeAccountHolder, RuleFeatureTypeIPMetadata, RuleFeatureTypeSpendVelocity, RuleFeatureTypeTransactionHistorySignals:
 		return true
 	}
 	return false
@@ -4106,13 +4322,14 @@ func (r RuleFeatureType) IsKnown() bool {
 type RuleFeatureScope string
 
 const (
-	RuleFeatureScopeCard    RuleFeatureScope = "CARD"
-	RuleFeatureScopeAccount RuleFeatureScope = "ACCOUNT"
+	RuleFeatureScopeCard            RuleFeatureScope = "CARD"
+	RuleFeatureScopeAccount         RuleFeatureScope = "ACCOUNT"
+	RuleFeatureScopeBusinessAccount RuleFeatureScope = "BUSINESS_ACCOUNT"
 )
 
 func (r RuleFeatureScope) IsKnown() bool {
 	switch r {
-	case RuleFeatureScopeCard, RuleFeatureScopeAccount:
+	case RuleFeatureScopeCard, RuleFeatureScopeAccount, RuleFeatureScopeBusinessAccount:
 		return true
 	}
 	return false
@@ -4139,6 +4356,10 @@ func (r RuleFeatureScope) IsKnown() bool {
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
 //     `scope`, `period`, and optionally `filters` to configure the velocity
 //     calculation. Available for AUTHORIZATION event stream rules.
+//   - `TRANSACTION_HISTORY_SIGNALS`: Behavioral feature state derived from the
+//     entity's transaction history. Requires `scope` to specify whether to load
+//     card, account, or business account history. Available for AUTHORIZATION event
+//     stream rules.
 type RuleFeatureParam struct {
 	Type    param.Field[RuleFeatureType]           `json:"type" api:"required"`
 	Filters param.Field[VelocityLimitFiltersParam] `json:"filters"`
@@ -4177,12 +4398,17 @@ func (r RuleFeatureParam) implementsRuleFeatureUnionParam() {}
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
 //     `scope`, `period`, and optionally `filters` to configure the velocity
 //     calculation. Available for AUTHORIZATION event stream rules.
+//   - `TRANSACTION_HISTORY_SIGNALS`: Behavioral feature state derived from the
+//     entity's transaction history. Requires `scope` to specify whether to load
+//     card, account, or business account history. Available for AUTHORIZATION event
+//     stream rules.
 //
 // Satisfied by [RuleFeatureAuthorizationFeatureParam],
 // [RuleFeatureAuthenticationFeatureParam], [RuleFeatureTokenizationFeatureParam],
 // [RuleFeatureACHReceiptFeatureParam], [RuleFeatureCardFeatureParam],
 // [RuleFeatureAccountHolderFeatureParam], [RuleFeatureIPMetadataFeatureParam],
-// [RuleFeatureSpendVelocityFeatureParam], [RuleFeatureParam].
+// [RuleFeatureSpendVelocityFeatureParam],
+// [RuleFeatureTransactionHistorySignalsFeatureParam], [RuleFeatureParam].
 type RuleFeatureUnionParam interface {
 	implementsRuleFeatureUnionParam()
 }
@@ -4287,6 +4513,20 @@ func (r RuleFeatureSpendVelocityFeatureParam) MarshalJSON() (data []byte, err er
 }
 
 func (r RuleFeatureSpendVelocityFeatureParam) implementsRuleFeatureUnionParam() {}
+
+type RuleFeatureTransactionHistorySignalsFeatureParam struct {
+	// The entity scope to load transaction history signals for.
+	Scope param.Field[RuleFeatureTransactionHistorySignalsFeatureScope] `json:"scope" api:"required"`
+	Type  param.Field[RuleFeatureTransactionHistorySignalsFeatureType]  `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name param.Field[string] `json:"name"`
+}
+
+func (r RuleFeatureTransactionHistorySignalsFeatureParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r RuleFeatureTransactionHistorySignalsFeatureParam) implementsRuleFeatureUnionParam() {}
 
 // Parameters for defining a TypeScript code rule
 type TypescriptCodeParameters struct {
