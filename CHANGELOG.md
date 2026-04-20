@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.108.0 (2026-04-20)
+
+Full Changelog: [v0.107.0...v0.108.0](https://github.com/lithic-com/lithic-go/compare/v0.107.0...v0.108.0)
+
+### Features
+
+* **api:** add card_authorization.challenge_response webhook event ([0a89349](https://github.com/lithic-com/lithic-go/commit/0a89349b0d44982e335d908911072ca2da783a67))
+* **api:** Add card/account/business account signals endpoints and behavioral rule attributes ([0ac9da9](https://github.com/lithic-com/lithic-go/commit/0ac9da911293f3692a9add359a529ab5d8aaf667))
+* **api:** add set_verification_method to external_bank_accounts ([b261845](https://github.com/lithic-com/lithic-go/commit/b26184544acb446a365febe90e6ca8c36318d4f1))
+
 ## 0.107.0 (2026-04-13)
 
 Full Changelog: [v0.106.0...v0.107.0](https://github.com/lithic-com/lithic-go/compare/v0.106.0...v0.107.0)
