@@ -1232,7 +1232,7 @@ type AccountHolderUpdateResponse struct {
 	// individual.phone_number when user_type == "INDIVIDUAL".) Primary email of
 	// Account Holder.
 	Email string `json:"email"`
-	// The type of KYC exemption for a KYC-Exempt Account Holder. "None" if the account
+	// The type of KYC exemption for a KYC-Exempt Account Holder. `null` if the account
 	// holder is not KYC-Exempt.
 	ExemptionType AccountHolderUpdateResponseExemptionType `json:"exemption_type"`
 	// Customer-provided token that indicates a relationship with an object outside of
@@ -1396,7 +1396,7 @@ type AccountHolderUpdateResponseKYBKYCPatchResponse struct {
 	// individual.phone_number when user_type == "INDIVIDUAL".) Primary email of
 	// Account Holder.
 	Email string `json:"email"`
-	// The type of KYC exemption for a KYC-Exempt Account Holder. "None" if the account
+	// The type of KYC exemption for a KYC-Exempt Account Holder. `null` if the account
 	// holder is not KYC-Exempt.
 	ExemptionType AccountHolderUpdateResponseKYBKYCPatchResponseExemptionType `json:"exemption_type"`
 	// Customer-provided token that indicates a relationship with an object outside of
@@ -1655,7 +1655,7 @@ func (r accountHolderUpdateResponseKybkycPatchResponseControlPersonAddressJSON) 
 	return r.raw
 }
 
-// The type of KYC exemption for a KYC-Exempt Account Holder. "None" if the account
+// The type of KYC exemption for a KYC-Exempt Account Holder. `null` if the account
 // holder is not KYC-Exempt.
 type AccountHolderUpdateResponseKYBKYCPatchResponseExemptionType string
 
@@ -2023,7 +2023,7 @@ func (r accountHolderUpdateResponsePatchResponseAddressJSON) RawJSON() string {
 	return r.raw
 }
 
-// The type of KYC exemption for a KYC-Exempt Account Holder. "None" if the account
+// The type of KYC exemption for a KYC-Exempt Account Holder. `null` if the account
 // holder is not KYC-Exempt.
 type AccountHolderUpdateResponseExemptionType string
 
@@ -2141,9 +2141,9 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 	// individual.phone_number when user_type == "INDIVIDUAL".) Primary email of
 	// Account Holder.
 	Email string `json:"email"`
-	// The type of KYC exemption for a KYC-Exempt Account Holder. "None" if the account
+	// The type of KYC exemption for a KYC-Exempt Account Holder. `null` if the account
 	// holder is not KYC-Exempt.
-	ExemptionType AccountHolderSimulateEnrollmentReviewResponseExemptionType `json:"exemption_type"`
+	ExemptionType AccountHolderSimulateEnrollmentReviewResponseExemptionType `json:"exemption_type" api:"nullable"`
 	// Customer-provided token that indicates a relationship with an object outside of
 	// the Lithic ecosystem.
 	ExternalID string `json:"external_id"`
@@ -2398,7 +2398,7 @@ func (r accountHolderSimulateEnrollmentReviewResponseControlPersonAddressJSON) R
 	return r.raw
 }
 
-// The type of KYC exemption for a KYC-Exempt Account Holder. "None" if the account
+// The type of KYC exemption for a KYC-Exempt Account Holder. `null` if the account
 // holder is not KYC-Exempt.
 type AccountHolderSimulateEnrollmentReviewResponseExemptionType string
 

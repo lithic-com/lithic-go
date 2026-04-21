@@ -167,7 +167,7 @@ type Account struct {
 	//   - `OTHER` - The reason for the account's current status does not fall into any
 	//     of the above categories. A comment should be provided to specify the
 	//     particular reason.
-	Substatus AccountSubstatus `json:"substatus"`
+	Substatus AccountSubstatus `json:"substatus" api:"nullable"`
 	// Deprecated: deprecated
 	VerificationAddress AccountVerificationAddress `json:"verification_address"`
 	JSON                accountJSON                `json:"-"`
