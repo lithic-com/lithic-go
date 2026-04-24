@@ -115,6 +115,7 @@ func (r ReportSettlementNetworkTotalListParams) URLQuery() (v url.Values) {
 type ReportSettlementNetworkTotalListParamsNetwork string
 
 const (
+	ReportSettlementNetworkTotalListParamsNetworkAmex       ReportSettlementNetworkTotalListParamsNetwork = "AMEX"
 	ReportSettlementNetworkTotalListParamsNetworkVisa       ReportSettlementNetworkTotalListParamsNetwork = "VISA"
 	ReportSettlementNetworkTotalListParamsNetworkMastercard ReportSettlementNetworkTotalListParamsNetwork = "MASTERCARD"
 	ReportSettlementNetworkTotalListParamsNetworkMaestro    ReportSettlementNetworkTotalListParamsNetwork = "MAESTRO"
@@ -123,7 +124,7 @@ const (
 
 func (r ReportSettlementNetworkTotalListParamsNetwork) IsKnown() bool {
 	switch r {
-	case ReportSettlementNetworkTotalListParamsNetworkVisa, ReportSettlementNetworkTotalListParamsNetworkMastercard, ReportSettlementNetworkTotalListParamsNetworkMaestro, ReportSettlementNetworkTotalListParamsNetworkInterlink:
+	case ReportSettlementNetworkTotalListParamsNetworkAmex, ReportSettlementNetworkTotalListParamsNetworkVisa, ReportSettlementNetworkTotalListParamsNetworkMastercard, ReportSettlementNetworkTotalListParamsNetworkMaestro, ReportSettlementNetworkTotalListParamsNetworkInterlink:
 		return true
 	}
 	return false
