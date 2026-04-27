@@ -1197,10 +1197,12 @@ type CardNewParams struct {
 	// [Flexible Card Art Guide](https://docs.lithic.com/docs/about-digital-wallets#flexible-card-art).
 	DigitalCardArtToken param.Field[string] `json:"digital_card_art_token" format:"uuid"`
 	// Two digit (MM) expiry month. If neither `exp_month` nor `exp_year` is provided,
-	// an expiration date will be generated.
+	// an expiration date five years in the future will be generated. Five years is the
+	// maximum expiration date.
 	ExpMonth param.Field[string] `json:"exp_month"`
 	// Four digit (yyyy) expiry year. If neither `exp_month` nor `exp_year` is
-	// provided, an expiration date will be generated.
+	// provided, an expiration date five years in the future will be generated. Five
+	// years is the maximum expiration date.
 	ExpYear param.Field[string] `json:"exp_year"`
 	// Friendly name to identify the card.
 	Memo param.Field[string] `json:"memo"`
@@ -1928,10 +1930,12 @@ type CardRenewParams struct {
 	// If omitted, the previous carrier will be used.
 	Carrier param.Field[shared.CarrierParam] `json:"carrier"`
 	// Two digit (MM) expiry month. If neither `exp_month` nor `exp_year` is provided,
-	// an expiration date six years in the future will be generated.
+	// an expiration date five years in the future will be generated. Five years is the
+	// maximum expiration date.
 	ExpMonth param.Field[string] `json:"exp_month"`
 	// Four digit (yyyy) expiry year. If neither `exp_month` nor `exp_year` is
-	// provided, an expiration date six years in the future will be generated.
+	// provided, an expiration date five years in the future will be generated. Five
+	// years is the maximum expiration date.
 	ExpYear param.Field[string] `json:"exp_year"`
 	// Specifies the configuration (e.g. physical card art) that the card should be
 	// manufactured with, and only applies to cards of type `PHYSICAL`. This must be
