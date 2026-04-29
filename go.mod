@@ -3,7 +3,7 @@ module github.com/lithic-com/lithic-go
 go 1.22
 
 require (
-	github.com/standard-webhooks/standard-webhooks/libraries v0.0.0-20260309172517-425968d811b9
+	github.com/standard-webhooks/standard-webhooks/libraries v0.0.0-20260427160145-3afa6683f8b2
 	github.com/tidwall/gjson v1.14.4
 	github.com/tidwall/sjson v1.2.5
 )

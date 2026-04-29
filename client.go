@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"slices"
+	"strings"
 
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/option"
@@ -57,7 +58,7 @@ type Client struct {
 // LITHIC_WEBHOOK_SECRET, LITHIC_BASE_URL). This should be used to initialize new
 // clients.
 func DefaultClientOptions() []option.RequestOption {
-	defaults := []option.RequestOption{option.WithEnvironmentProduction()}
+	defaults := []option.RequestOption{option.WithHTTPClient(defaultHTTPClient()), option.WithEnvironmentProduction()}
 	if o, ok := os.LookupEnv("LITHIC_BASE_URL"); ok {
 		defaults = append(defaults, option.WithBaseURL(o))
 	}
@@ -66,6 +67,14 @@ func DefaultClientOptions() []option.RequestOption {
 	}
 	if o, ok := os.LookupEnv("LITHIC_WEBHOOK_SECRET"); ok {
 		defaults = append(defaults, option.WithWebhookSecret(o))
+	}
+	if o, ok := os.LookupEnv("LITHIC_CUSTOM_HEADERS"); ok {
+		for _, line := range strings.Split(o, "\n") {
+			colon := strings.Index(line, ":")
+			if colon >= 0 {
+				defaults = append(defaults, option.WithHeader(strings.TrimSpace(line[:colon]), strings.TrimSpace(line[colon+1:])))
+			}
+		}
 	}
 	return defaults
 }

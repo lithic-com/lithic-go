@@ -501,8 +501,8 @@ type NonPCICard struct {
 	CardProgramToken string `json:"card_program_token" api:"required"`
 	// An RFC 3339 timestamp for when the card was created. UTC time zone.
 	Created time.Time `json:"created" api:"required" format:"date-time"`
-	// Deprecated: Funding account for the card.
-	Funding NonPCICardFunding `json:"funding" api:"required"`
+	// Funding account for a card
+	Funding NonPCICardFunding `json:"funding" api:"required,nullable"`
 	// Last four digits of the card number.
 	LastFour string `json:"last_four" api:"required"`
 	// Indicates if a card is blocked due a PIN status issue (e.g. excessive incorrect
@@ -567,7 +567,7 @@ type NonPCICard struct {
 	// Specifies the digital card art to be displayed in the user's digital wallet
 	// after tokenization. This artwork must be approved by Mastercard and configured
 	// by Lithic to use.
-	DigitalCardArtToken string `json:"digital_card_art_token"`
+	DigitalCardArtToken string `json:"digital_card_art_token" api:"nullable"`
 	// Two digit (MM) expiry month.
 	ExpMonth string `json:"exp_month"`
 	// Four digit (yyyy) expiry year.
@@ -587,7 +587,7 @@ type NonPCICard struct {
 	// Only applicable to cards of type `PHYSICAL`. This must be configured with Lithic
 	// before use. Specifies the configuration (i.e., physical card art) that the card
 	// should be manufactured with.
-	ProductID string `json:"product_id"`
+	ProductID string `json:"product_id" api:"nullable"`
 	// If the card is a replacement for another card, the globally unique identifier
 	// for the card that was replaced.
 	ReplacementFor string `json:"replacement_for" api:"nullable"`
@@ -611,7 +611,7 @@ type NonPCICard struct {
 	// reissued. _ `UNDELIVERABLE` - The card cannot be delivered to the cardholder and
 	// has been returned. \* `OTHER` - The reason for the status does not fall into any
 	// of the above categories. A comment can be provided to specify the reason.
-	Substatus NonPCICardSubstatus `json:"substatus"`
+	Substatus NonPCICardSubstatus `json:"substatus" api:"nullable"`
 	JSON      nonPCICardJSON      `json:"-"`
 }
 
@@ -654,7 +654,7 @@ func (r nonPCICardJSON) RawJSON() string {
 	return r.raw
 }
 
-// Deprecated: Funding account for the card.
+// Funding account for a card
 type NonPCICardFunding struct {
 	// A globally unique identifier for this FundingAccount.
 	Token string `json:"token" api:"required" format:"uuid"`
@@ -675,7 +675,7 @@ type NonPCICardFunding struct {
 	// Account name identifying the funding source. This may be `null`.
 	AccountName string `json:"account_name"`
 	// The nickname given to the `FundingAccount` or `null` if it has no nickname.
-	Nickname string                `json:"nickname"`
+	Nickname string                `json:"nickname" api:"nullable"`
 	JSON     nonPCICardFundingJSON `json:"-"`
 }
 
@@ -1197,10 +1197,12 @@ type CardNewParams struct {
 	// [Flexible Card Art Guide](https://docs.lithic.com/docs/about-digital-wallets#flexible-card-art).
 	DigitalCardArtToken param.Field[string] `json:"digital_card_art_token" format:"uuid"`
 	// Two digit (MM) expiry month. If neither `exp_month` nor `exp_year` is provided,
-	// an expiration date will be generated.
+	// an expiration date five years in the future will be generated. Five years is the
+	// maximum expiration date.
 	ExpMonth param.Field[string] `json:"exp_month"`
 	// Four digit (yyyy) expiry year. If neither `exp_month` nor `exp_year` is
-	// provided, an expiration date will be generated.
+	// provided, an expiration date five years in the future will be generated. Five
+	// years is the maximum expiration date.
 	ExpYear param.Field[string] `json:"exp_year"`
 	// Friendly name to identify the card.
 	Memo param.Field[string] `json:"memo"`
@@ -1928,10 +1930,12 @@ type CardRenewParams struct {
 	// If omitted, the previous carrier will be used.
 	Carrier param.Field[shared.CarrierParam] `json:"carrier"`
 	// Two digit (MM) expiry month. If neither `exp_month` nor `exp_year` is provided,
-	// an expiration date six years in the future will be generated.
+	// an expiration date five years in the future will be generated. Five years is the
+	// maximum expiration date.
 	ExpMonth param.Field[string] `json:"exp_month"`
 	// Four digit (yyyy) expiry year. If neither `exp_month` nor `exp_year` is
-	// provided, an expiration date six years in the future will be generated.
+	// provided, an expiration date five years in the future will be generated. Five
+	// years is the maximum expiration date.
 	ExpYear param.Field[string] `json:"exp_year"`
 	// Specifies the configuration (e.g. physical card art) that the card should be
 	// manufactured with, and only applies to cards of type `PHYSICAL`. This must be

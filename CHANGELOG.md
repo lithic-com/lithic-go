@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.109.0 (2026-04-29)
+
+Full Changelog: [v0.108.0...v0.109.0](https://github.com/lithic-com/lithic-go/compare/v0.108.0...v0.109.0)
+
+### Features
+
+* **api:** add AMEX enum value to settlement network types ([0552e04](https://github.com/lithic-com/lithic-go/commit/0552e045c545e01b74aea34a01949cec13ec3846))
+* **go:** add default http client with timeout ([07da638](https://github.com/lithic-com/lithic-go/commit/07da638b181c1dfd4a93959f183a54948b28cf37))
+* support setting headers via env ([b5f9417](https://github.com/lithic-com/lithic-go/commit/b5f94171edcff067601ccd93899a9d612a1d6cb1))
+
+
+### Bug Fixes
+
+* **types:** make fields nullable in account/card, add empty enum to accountholder ([803dbd8](https://github.com/lithic-com/lithic-go/commit/803dbd85181db483098c24d4716f109901a2e3bc))
+
+
+### Chores
+
+* **internal:** codegen related update ([2d41b74](https://github.com/lithic-com/lithic-go/commit/2d41b74ff8f9e807af4540615d524da8ea81d2ac))
+* **internal:** more robust bootstrap script ([708ae2d](https://github.com/lithic-com/lithic-go/commit/708ae2d963d63d37a2165cd72abe4a0005005ba5))
+
+
+### Documentation
+
+* **api:** clarify expiration date generation in card new and renew params ([053c93d](https://github.com/lithic-com/lithic-go/commit/053c93dfd470774c2c941d888adad4cecec18d7a))
+
 ## 0.108.0 (2026-04-20)
 
 Full Changelog: [v0.107.0...v0.108.0](https://github.com/lithic-com/lithic-go/compare/v0.107.0...v0.108.0)

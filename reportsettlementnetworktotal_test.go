@@ -53,7 +53,7 @@ func TestReportSettlementNetworkTotalListWithOptionalParams(t *testing.T) {
 		End:                     lithic.F(time.Now()),
 		EndingBefore:            lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		InstitutionID:           lithic.F("institution_id"),
-		Network:                 lithic.F(lithic.ReportSettlementNetworkTotalListParamsNetworkVisa),
+		Network:                 lithic.F(lithic.ReportSettlementNetworkTotalListParamsNetworkAmex),
 		PageSize:                lithic.F(int64(1)),
 		ReportDate:              lithic.F(time.Now()),
 		ReportDateBegin:         lithic.F(time.Now()),
