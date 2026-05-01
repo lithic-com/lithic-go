@@ -159,7 +159,8 @@ type SettlementDetail struct {
 	Currency string `json:"currency" api:"required"`
 	// The total gross amount of disputes settlements.
 	DisputesGrossAmount int64 `json:"disputes_gross_amount" api:"required"`
-	// Globally unique identifiers denoting the Events associated with this settlement.
+	// Array of globally unique identifiers for the financial events that comprise this
+	// settlement. Use these tokens to access detailed event-level information.
 	EventTokens []string `json:"event_tokens" api:"required"`
 	// The most granular ID the network settles with (e.g., ICA for Mastercard, FTSRE
 	// for Visa).
@@ -180,7 +181,12 @@ type SettlementDetail struct {
 	// applies - for Mastercard dual message settlement, this is the settlement
 	// advisement date, which is distinct from the date of money movement.
 	SettlementDate string `json:"settlement_date" api:"required"`
-	// Globally unique identifier denoting the associated Transaction object.
+	// Globally unique identifier denoting the associated transaction. For settlement
+	// records with type `CLEARING`, `FINANCIAL`, or `NON-FINANCIAL`, this references a
+	// card transaction token. For settlement records with type `CHARGEBACK`,
+	// `REPRESENTMENT`, `PREARBITRATION`, `ARBITRATION`, or `COLLABORATION`, this
+	// references the dispute transaction token. May be null for certain settlement
+	// types.
 	TransactionToken string `json:"transaction_token" api:"required" format:"uuid"`
 	// The total amount of settlement impacting transactions (excluding interchange,
 	// fees, and disputes).
