@@ -267,7 +267,8 @@ type AuthRule struct {
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+	//     stream.
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type AuthRuleType `json:"type" api:"required"`
@@ -340,7 +341,7 @@ type AuthRuleCurrentVersionParameters struct {
 	// This field can have the runtime type of [Conditional3DSActionParametersAction],
 	// [ConditionalAuthorizationActionParametersAction],
 	// [ConditionalACHActionParametersAction],
-	// [ConditionalTokenizationActionParametersAction].
+	// [ConditionalTokenizationActionParametersAction], [CardTransactionUpdateAction].
 	Action interface{} `json:"action"`
 	// The TypeScript source code of the rule. Must define a `rule()` function that
 	// accepts the declared features as positional arguments (in the same order as the
@@ -350,7 +351,8 @@ type AuthRuleCurrentVersionParameters struct {
 	// [[]Conditional3DsActionParametersCondition],
 	// [[]ConditionalAuthorizationActionParametersCondition],
 	// [[]ConditionalACHActionParametersCondition],
-	// [[]ConditionalTokenizationActionParametersCondition].
+	// [[]ConditionalTokenizationActionParametersCondition],
+	// [[]ConditionalCardTransactionUpdateActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [[]RuleFeature].
 	Features interface{}          `json:"features"`
@@ -412,7 +414,7 @@ func (r *AuthRuleCurrentVersionParameters) UnmarshalJSON(data []byte) (err error
 // [VelocityLimitParams], [MerchantLockParameters],
 // [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
 // [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
-// [TypescriptCodeParameters].
+// [ConditionalCardTransactionUpdateActionParameters], [TypescriptCodeParameters].
 func (r AuthRuleCurrentVersionParameters) AsUnion() AuthRuleCurrentVersionParametersUnion {
 	return r.union
 }
@@ -422,7 +424,9 @@ func (r AuthRuleCurrentVersionParameters) AsUnion() AuthRuleCurrentVersionParame
 // Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [MerchantLockParameters], [Conditional3DSActionParameters],
 // [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
-// [ConditionalTokenizationActionParameters] or [TypescriptCodeParameters].
+// [ConditionalTokenizationActionParameters],
+// [ConditionalCardTransactionUpdateActionParameters] or
+// [TypescriptCodeParameters].
 type AuthRuleCurrentVersionParametersUnion interface {
 	implementsAuthRuleCurrentVersionParameters()
 }
@@ -458,6 +462,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalCardTransactionUpdateActionParameters{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -529,7 +537,7 @@ type AuthRuleDraftVersionParameters struct {
 	// This field can have the runtime type of [Conditional3DSActionParametersAction],
 	// [ConditionalAuthorizationActionParametersAction],
 	// [ConditionalACHActionParametersAction],
-	// [ConditionalTokenizationActionParametersAction].
+	// [ConditionalTokenizationActionParametersAction], [CardTransactionUpdateAction].
 	Action interface{} `json:"action"`
 	// The TypeScript source code of the rule. Must define a `rule()` function that
 	// accepts the declared features as positional arguments (in the same order as the
@@ -539,7 +547,8 @@ type AuthRuleDraftVersionParameters struct {
 	// [[]Conditional3DsActionParametersCondition],
 	// [[]ConditionalAuthorizationActionParametersCondition],
 	// [[]ConditionalACHActionParametersCondition],
-	// [[]ConditionalTokenizationActionParametersCondition].
+	// [[]ConditionalTokenizationActionParametersCondition],
+	// [[]ConditionalCardTransactionUpdateActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [[]RuleFeature].
 	Features interface{}          `json:"features"`
@@ -601,7 +610,7 @@ func (r *AuthRuleDraftVersionParameters) UnmarshalJSON(data []byte) (err error) 
 // [VelocityLimitParams], [MerchantLockParameters],
 // [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
 // [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
-// [TypescriptCodeParameters].
+// [ConditionalCardTransactionUpdateActionParameters], [TypescriptCodeParameters].
 func (r AuthRuleDraftVersionParameters) AsUnion() AuthRuleDraftVersionParametersUnion {
 	return r.union
 }
@@ -611,7 +620,9 @@ func (r AuthRuleDraftVersionParameters) AsUnion() AuthRuleDraftVersionParameters
 // Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [MerchantLockParameters], [Conditional3DSActionParameters],
 // [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
-// [ConditionalTokenizationActionParameters] or [TypescriptCodeParameters].
+// [ConditionalTokenizationActionParameters],
+// [ConditionalCardTransactionUpdateActionParameters] or
+// [TypescriptCodeParameters].
 type AuthRuleDraftVersionParametersUnion interface {
 	implementsAuthRuleDraftVersionParameters()
 }
@@ -647,6 +658,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalCardTransactionUpdateActionParameters{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -723,7 +738,8 @@ func (r AuthRuleState) IsKnown() bool {
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+//     stream.
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 //     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleType string
@@ -919,7 +935,7 @@ type AuthRuleVersionParameters struct {
 	// This field can have the runtime type of [Conditional3DSActionParametersAction],
 	// [ConditionalAuthorizationActionParametersAction],
 	// [ConditionalACHActionParametersAction],
-	// [ConditionalTokenizationActionParametersAction].
+	// [ConditionalTokenizationActionParametersAction], [CardTransactionUpdateAction].
 	Action interface{} `json:"action"`
 	// The TypeScript source code of the rule. Must define a `rule()` function that
 	// accepts the declared features as positional arguments (in the same order as the
@@ -929,7 +945,8 @@ type AuthRuleVersionParameters struct {
 	// [[]Conditional3DsActionParametersCondition],
 	// [[]ConditionalAuthorizationActionParametersCondition],
 	// [[]ConditionalACHActionParametersCondition],
-	// [[]ConditionalTokenizationActionParametersCondition].
+	// [[]ConditionalTokenizationActionParametersCondition],
+	// [[]ConditionalCardTransactionUpdateActionParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [[]RuleFeature].
 	Features interface{}          `json:"features"`
@@ -991,7 +1008,7 @@ func (r *AuthRuleVersionParameters) UnmarshalJSON(data []byte) (err error) {
 // [VelocityLimitParams], [MerchantLockParameters],
 // [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
 // [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
-// [TypescriptCodeParameters].
+// [ConditionalCardTransactionUpdateActionParameters], [TypescriptCodeParameters].
 func (r AuthRuleVersionParameters) AsUnion() AuthRuleVersionParametersUnion {
 	return r.union
 }
@@ -1001,7 +1018,9 @@ func (r AuthRuleVersionParameters) AsUnion() AuthRuleVersionParametersUnion {
 // Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [MerchantLockParameters], [Conditional3DSActionParameters],
 // [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
-// [ConditionalTokenizationActionParameters] or [TypescriptCodeParameters].
+// [ConditionalTokenizationActionParameters],
+// [ConditionalCardTransactionUpdateActionParameters] or
+// [TypescriptCodeParameters].
 type AuthRuleVersionParametersUnion interface {
 	implementsAuthRuleVersionParameters()
 }
@@ -1037,6 +1056,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalTokenizationActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalCardTransactionUpdateActionParameters{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -1165,6 +1188,272 @@ func (r BacktestStatsExamplesDecision) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+type CardTransactionUpdateAction struct {
+	// Tag the transaction with key-value metadata
+	Type CardTransactionUpdateActionType `json:"type" api:"required"`
+	// The key of the tag to apply to the transaction
+	Key string `json:"key"`
+	// The token of the queue to create the case in
+	QueueToken string `json:"queue_token" format:"uuid"`
+	// The scope of the case to create
+	Scope CardTransactionUpdateActionScope `json:"scope"`
+	// The value of the tag to apply to the transaction
+	Value string                          `json:"value"`
+	JSON  cardTransactionUpdateActionJSON `json:"-"`
+	union CardTransactionUpdateActionUnion
+}
+
+// cardTransactionUpdateActionJSON contains the JSON metadata for the struct
+// [CardTransactionUpdateAction]
+type cardTransactionUpdateActionJSON struct {
+	Type        apijson.Field
+	Key         apijson.Field
+	QueueToken  apijson.Field
+	Scope       apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r cardTransactionUpdateActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r *CardTransactionUpdateAction) UnmarshalJSON(data []byte) (err error) {
+	*r = CardTransactionUpdateAction{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a [CardTransactionUpdateActionUnion] interface which you can
+// cast to the specific types for more type safety.
+//
+// Possible runtime types of the union are [CardTransactionUpdateActionTagAction],
+// [CardTransactionUpdateActionCreateCaseAction].
+func (r CardTransactionUpdateAction) AsUnion() CardTransactionUpdateActionUnion {
+	return r.union
+}
+
+// Union satisfied by [CardTransactionUpdateActionTagAction] or
+// [CardTransactionUpdateActionCreateCaseAction].
+type CardTransactionUpdateActionUnion interface {
+	implementsCardTransactionUpdateAction()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*CardTransactionUpdateActionUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(CardTransactionUpdateActionTagAction{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(CardTransactionUpdateActionCreateCaseAction{}),
+		},
+	)
+}
+
+type CardTransactionUpdateActionTagAction struct {
+	// The key of the tag to apply to the transaction
+	Key string `json:"key" api:"required"`
+	// Tag the transaction with key-value metadata
+	Type CardTransactionUpdateActionTagActionType `json:"type" api:"required"`
+	// The value of the tag to apply to the transaction
+	Value string                                   `json:"value" api:"required"`
+	JSON  cardTransactionUpdateActionTagActionJSON `json:"-"`
+}
+
+// cardTransactionUpdateActionTagActionJSON contains the JSON metadata for the
+// struct [CardTransactionUpdateActionTagAction]
+type cardTransactionUpdateActionTagActionJSON struct {
+	Key         apijson.Field
+	Type        apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CardTransactionUpdateActionTagAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardTransactionUpdateActionTagActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r CardTransactionUpdateActionTagAction) implementsCardTransactionUpdateAction() {}
+
+// Tag the transaction with key-value metadata
+type CardTransactionUpdateActionTagActionType string
+
+const (
+	CardTransactionUpdateActionTagActionTypeTag CardTransactionUpdateActionTagActionType = "TAG"
+)
+
+func (r CardTransactionUpdateActionTagActionType) IsKnown() bool {
+	switch r {
+	case CardTransactionUpdateActionTagActionTypeTag:
+		return true
+	}
+	return false
+}
+
+type CardTransactionUpdateActionCreateCaseAction struct {
+	// The token of the queue to create the case in
+	QueueToken string `json:"queue_token" api:"required" format:"uuid"`
+	// The scope of the case to create
+	Scope CardTransactionUpdateActionCreateCaseActionScope `json:"scope" api:"required"`
+	// Create a case for the transaction
+	Type CardTransactionUpdateActionCreateCaseActionType `json:"type" api:"required"`
+	JSON cardTransactionUpdateActionCreateCaseActionJSON `json:"-"`
+}
+
+// cardTransactionUpdateActionCreateCaseActionJSON contains the JSON metadata for
+// the struct [CardTransactionUpdateActionCreateCaseAction]
+type cardTransactionUpdateActionCreateCaseActionJSON struct {
+	QueueToken  apijson.Field
+	Scope       apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CardTransactionUpdateActionCreateCaseAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardTransactionUpdateActionCreateCaseActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r CardTransactionUpdateActionCreateCaseAction) implementsCardTransactionUpdateAction() {}
+
+// The scope of the case to create
+type CardTransactionUpdateActionCreateCaseActionScope string
+
+const (
+	CardTransactionUpdateActionCreateCaseActionScopeCard    CardTransactionUpdateActionCreateCaseActionScope = "CARD"
+	CardTransactionUpdateActionCreateCaseActionScopeAccount CardTransactionUpdateActionCreateCaseActionScope = "ACCOUNT"
+)
+
+func (r CardTransactionUpdateActionCreateCaseActionScope) IsKnown() bool {
+	switch r {
+	case CardTransactionUpdateActionCreateCaseActionScopeCard, CardTransactionUpdateActionCreateCaseActionScopeAccount:
+		return true
+	}
+	return false
+}
+
+// Create a case for the transaction
+type CardTransactionUpdateActionCreateCaseActionType string
+
+const (
+	CardTransactionUpdateActionCreateCaseActionTypeCreateCase CardTransactionUpdateActionCreateCaseActionType = "CREATE_CASE"
+)
+
+func (r CardTransactionUpdateActionCreateCaseActionType) IsKnown() bool {
+	switch r {
+	case CardTransactionUpdateActionCreateCaseActionTypeCreateCase:
+		return true
+	}
+	return false
+}
+
+// Tag the transaction with key-value metadata
+type CardTransactionUpdateActionType string
+
+const (
+	CardTransactionUpdateActionTypeTag        CardTransactionUpdateActionType = "TAG"
+	CardTransactionUpdateActionTypeCreateCase CardTransactionUpdateActionType = "CREATE_CASE"
+)
+
+func (r CardTransactionUpdateActionType) IsKnown() bool {
+	switch r {
+	case CardTransactionUpdateActionTypeTag, CardTransactionUpdateActionTypeCreateCase:
+		return true
+	}
+	return false
+}
+
+// The scope of the case to create
+type CardTransactionUpdateActionScope string
+
+const (
+	CardTransactionUpdateActionScopeCard    CardTransactionUpdateActionScope = "CARD"
+	CardTransactionUpdateActionScopeAccount CardTransactionUpdateActionScope = "ACCOUNT"
+)
+
+func (r CardTransactionUpdateActionScope) IsKnown() bool {
+	switch r {
+	case CardTransactionUpdateActionScopeCard, CardTransactionUpdateActionScopeAccount:
+		return true
+	}
+	return false
+}
+
+type CardTransactionUpdateActionParam struct {
+	// Tag the transaction with key-value metadata
+	Type param.Field[CardTransactionUpdateActionType] `json:"type" api:"required"`
+	// The key of the tag to apply to the transaction
+	Key param.Field[string] `json:"key"`
+	// The token of the queue to create the case in
+	QueueToken param.Field[string] `json:"queue_token" format:"uuid"`
+	// The scope of the case to create
+	Scope param.Field[CardTransactionUpdateActionScope] `json:"scope"`
+	// The value of the tag to apply to the transaction
+	Value param.Field[string] `json:"value"`
+}
+
+func (r CardTransactionUpdateActionParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r CardTransactionUpdateActionParam) implementsCardTransactionUpdateActionUnionParam() {}
+
+// Satisfied by [CardTransactionUpdateActionTagActionParam],
+// [CardTransactionUpdateActionCreateCaseActionParam],
+// [CardTransactionUpdateActionParam].
+type CardTransactionUpdateActionUnionParam interface {
+	implementsCardTransactionUpdateActionUnionParam()
+}
+
+type CardTransactionUpdateActionTagActionParam struct {
+	// The key of the tag to apply to the transaction
+	Key param.Field[string] `json:"key" api:"required"`
+	// Tag the transaction with key-value metadata
+	Type param.Field[CardTransactionUpdateActionTagActionType] `json:"type" api:"required"`
+	// The value of the tag to apply to the transaction
+	Value param.Field[string] `json:"value" api:"required"`
+}
+
+func (r CardTransactionUpdateActionTagActionParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r CardTransactionUpdateActionTagActionParam) implementsCardTransactionUpdateActionUnionParam() {
+}
+
+type CardTransactionUpdateActionCreateCaseActionParam struct {
+	// The token of the queue to create the case in
+	QueueToken param.Field[string] `json:"queue_token" api:"required" format:"uuid"`
+	// The scope of the case to create
+	Scope param.Field[CardTransactionUpdateActionCreateCaseActionScope] `json:"scope" api:"required"`
+	// Create a case for the transaction
+	Type param.Field[CardTransactionUpdateActionCreateCaseActionType] `json:"type" api:"required"`
+}
+
+func (r CardTransactionUpdateActionCreateCaseActionParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r CardTransactionUpdateActionCreateCaseActionParam) implementsCardTransactionUpdateActionUnionParam() {
 }
 
 type Conditional3DSActionParameters struct {
@@ -2270,6 +2559,252 @@ func (r ConditionalBlockParameters) implementsAuthRuleDraftVersionParameters() {
 
 func (r ConditionalBlockParameters) implementsAuthRuleVersionParameters() {}
 
+type ConditionalCardTransactionUpdateActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     CardTransactionUpdateAction                                 `json:"action" api:"required"`
+	Conditions []ConditionalCardTransactionUpdateActionParametersCondition `json:"conditions" api:"required"`
+	JSON       conditionalCardTransactionUpdateActionParametersJSON        `json:"-"`
+}
+
+// conditionalCardTransactionUpdateActionParametersJSON contains the JSON metadata
+// for the struct [ConditionalCardTransactionUpdateActionParameters]
+type conditionalCardTransactionUpdateActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ConditionalCardTransactionUpdateActionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r conditionalCardTransactionUpdateActionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ConditionalCardTransactionUpdateActionParameters) implementsAuthRuleCurrentVersionParameters() {
+}
+
+func (r ConditionalCardTransactionUpdateActionParameters) implementsAuthRuleDraftVersionParameters() {
+}
+
+func (r ConditionalCardTransactionUpdateActionParameters) implementsAuthRuleVersionParameters() {}
+
+type ConditionalCardTransactionUpdateActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+	//     business by the types of goods or services it provides.
+	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+	//     Netherlands Antilles.
+	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+	//     the transaction.
+	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+	//     (merchant).
+	//   - `DESCRIPTOR`: Short description of card acceptor.
+	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+	//     fee field in the settlement/cardholder billing currency. This is the amount
+	//     the issuer should authorize against unless the issuer is paying the acquirer
+	//     fee on behalf of the cardholder.
+	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+	//     given authorization. Scores are on a range of 0-999, with 0 representing the
+	//     lowest risk and 999 representing the highest risk. For Visa transactions,
+	//     where the raw score has a range of 0-99, Lithic will normalize the score by
+	//     multiplying the raw score by 10x.
+	//   - `TRANSACTION_STATUS`: The status of the transaction. Valid values are
+	//     `PENDING`, `VOIDED`, `SETTLING`, `SETTLED`, `BOUNCED`, `RETURNED`, `DECLINED`,
+	//     `EXPIRED`.
+	//   - `LAST_EVENT_TYPE`: The type of the most recent event on the transaction. Valid
+	//     values are `AUTHORIZATION`, `AUTHORIZATION_ADVICE`, `AUTHORIZATION_EXPIRY`,
+	//     `AUTHORIZATION_REVERSAL`, `BALANCE_INQUIRY`, `CLEARING`, `CORRECTION_CREDIT`,
+	//     `CORRECTION_DEBIT`, `CREDIT_AUTHORIZATION`, `CREDIT_AUTHORIZATION_ADVICE`,
+	//     `FINANCIAL_AUTHORIZATION`, `FINANCIAL_CREDIT_AUTHORIZATION`, `RETURN`,
+	//     `RETURN_REVERSAL`.
+	//   - `LIABILITY_SHIFT`: Indicates whether chargeback liability shift to the issuer
+	//     applies to the transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+	//     `TOKEN_AUTHENTICATED`.
+	//   - `PAN_ENTRY_MODE`: The method by which the cardholder's primary account number
+	//     (PAN) was entered. Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`,
+	//     `ECOMMERCE`, `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`,
+	//     `MAGNETIC_STRIPE`, `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`,
+	//     `UNKNOWN`, or `CREDENTIAL_ON_FILE`.
+	//   - `WALLET_TYPE`: For transactions using a digital wallet token, indicates the
+	//     source of the token. Valid values are `APPLE_PAY`, `GOOGLE_PAY`,
+	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
+	//   - `CARD_AGE`: The age of the card in seconds at the time of the transaction.
+	//   - `ACCOUNT_AGE`: The age of the account in seconds at the time of the
+	//     transaction.
+	//   - `SPEND_VELOCITY_COUNT`: The number of transactions matching the specified
+	//     filters within the given period. Requires `parameters` with `scope`, `period`,
+	//     and optional `filters`.
+	//   - `SPEND_VELOCITY_AMOUNT`: The total spend amount (in cents) of transactions
+	//     matching the specified filters within the given period. Requires `parameters`
+	//     with `scope`, `period`, and optional `filters`.
+	Attribute ConditionalCardTransactionUpdateActionParametersConditionsAttribute `json:"attribute" api:"required"`
+	// The operation to apply to the attribute
+	Operation ConditionalOperation `json:"operation" api:"required"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value ConditionalValueUnion `json:"value" api:"required"`
+	// Additional parameters for spend velocity attributes. Required when `attribute`
+	// is `SPEND_VELOCITY_COUNT` or `SPEND_VELOCITY_AMOUNT`. Not used for other
+	// attributes.
+	Parameters ConditionalCardTransactionUpdateActionParametersConditionsParameters `json:"parameters"`
+	JSON       conditionalCardTransactionUpdateActionParametersConditionJSON        `json:"-"`
+}
+
+// conditionalCardTransactionUpdateActionParametersConditionJSON contains the JSON
+// metadata for the struct
+// [ConditionalCardTransactionUpdateActionParametersCondition]
+type conditionalCardTransactionUpdateActionParametersConditionJSON struct {
+	Attribute   apijson.Field
+	Operation   apijson.Field
+	Value       apijson.Field
+	Parameters  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ConditionalCardTransactionUpdateActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r conditionalCardTransactionUpdateActionParametersConditionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
+//     business by the types of goods or services it provides.
+//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
+//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
+//     Netherlands Antilles.
+//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
+//     the transaction.
+//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
+//     (merchant).
+//   - `DESCRIPTOR`: Short description of card acceptor.
+//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
+//     fee field in the settlement/cardholder billing currency. This is the amount
+//     the issuer should authorize against unless the issuer is paying the acquirer
+//     fee on behalf of the cardholder.
+//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
+//     given authorization. Scores are on a range of 0-999, with 0 representing the
+//     lowest risk and 999 representing the highest risk. For Visa transactions,
+//     where the raw score has a range of 0-99, Lithic will normalize the score by
+//     multiplying the raw score by 10x.
+//   - `TRANSACTION_STATUS`: The status of the transaction. Valid values are
+//     `PENDING`, `VOIDED`, `SETTLING`, `SETTLED`, `BOUNCED`, `RETURNED`, `DECLINED`,
+//     `EXPIRED`.
+//   - `LAST_EVENT_TYPE`: The type of the most recent event on the transaction. Valid
+//     values are `AUTHORIZATION`, `AUTHORIZATION_ADVICE`, `AUTHORIZATION_EXPIRY`,
+//     `AUTHORIZATION_REVERSAL`, `BALANCE_INQUIRY`, `CLEARING`, `CORRECTION_CREDIT`,
+//     `CORRECTION_DEBIT`, `CREDIT_AUTHORIZATION`, `CREDIT_AUTHORIZATION_ADVICE`,
+//     `FINANCIAL_AUTHORIZATION`, `FINANCIAL_CREDIT_AUTHORIZATION`, `RETURN`,
+//     `RETURN_REVERSAL`.
+//   - `LIABILITY_SHIFT`: Indicates whether chargeback liability shift to the issuer
+//     applies to the transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
+//     `TOKEN_AUTHENTICATED`.
+//   - `PAN_ENTRY_MODE`: The method by which the cardholder's primary account number
+//     (PAN) was entered. Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`,
+//     `ECOMMERCE`, `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`,
+//     `MAGNETIC_STRIPE`, `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`,
+//     `UNKNOWN`, or `CREDENTIAL_ON_FILE`.
+//   - `WALLET_TYPE`: For transactions using a digital wallet token, indicates the
+//     source of the token. Valid values are `APPLE_PAY`, `GOOGLE_PAY`,
+//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
+//   - `CARD_AGE`: The age of the card in seconds at the time of the transaction.
+//   - `ACCOUNT_AGE`: The age of the account in seconds at the time of the
+//     transaction.
+//   - `SPEND_VELOCITY_COUNT`: The number of transactions matching the specified
+//     filters within the given period. Requires `parameters` with `scope`, `period`,
+//     and optional `filters`.
+//   - `SPEND_VELOCITY_AMOUNT`: The total spend amount (in cents) of transactions
+//     matching the specified filters within the given period. Requires `parameters`
+//     with `scope`, `period`, and optional `filters`.
+type ConditionalCardTransactionUpdateActionParametersConditionsAttribute string
+
+const (
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeMcc                 ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "MCC"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeCountry             ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "COUNTRY"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeCurrency            ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "CURRENCY"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeMerchantID          ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "MERCHANT_ID"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeDescriptor          ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "DESCRIPTOR"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeTransactionAmount   ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeRiskScore           ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "RISK_SCORE"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeTransactionStatus   ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "TRANSACTION_STATUS"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeLastEventType       ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "LAST_EVENT_TYPE"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeLiabilityShift      ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "LIABILITY_SHIFT"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributePanEntryMode        ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeWalletType          ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "WALLET_TYPE"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeCardAge             ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "CARD_AGE"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeAccountAge          ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "ACCOUNT_AGE"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeSpendVelocityCount  ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "SPEND_VELOCITY_COUNT"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeSpendVelocityAmount ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "SPEND_VELOCITY_AMOUNT"
+)
+
+func (r ConditionalCardTransactionUpdateActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case ConditionalCardTransactionUpdateActionParametersConditionsAttributeMcc, ConditionalCardTransactionUpdateActionParametersConditionsAttributeCountry, ConditionalCardTransactionUpdateActionParametersConditionsAttributeCurrency, ConditionalCardTransactionUpdateActionParametersConditionsAttributeMerchantID, ConditionalCardTransactionUpdateActionParametersConditionsAttributeDescriptor, ConditionalCardTransactionUpdateActionParametersConditionsAttributeTransactionAmount, ConditionalCardTransactionUpdateActionParametersConditionsAttributeRiskScore, ConditionalCardTransactionUpdateActionParametersConditionsAttributeTransactionStatus, ConditionalCardTransactionUpdateActionParametersConditionsAttributeLastEventType, ConditionalCardTransactionUpdateActionParametersConditionsAttributeLiabilityShift, ConditionalCardTransactionUpdateActionParametersConditionsAttributePanEntryMode, ConditionalCardTransactionUpdateActionParametersConditionsAttributeWalletType, ConditionalCardTransactionUpdateActionParametersConditionsAttributeCardAge, ConditionalCardTransactionUpdateActionParametersConditionsAttributeAccountAge, ConditionalCardTransactionUpdateActionParametersConditionsAttributeSpendVelocityCount, ConditionalCardTransactionUpdateActionParametersConditionsAttributeSpendVelocityAmount:
+		return true
+	}
+	return false
+}
+
+// Additional parameters for spend velocity attributes. Required when `attribute`
+// is `SPEND_VELOCITY_COUNT` or `SPEND_VELOCITY_AMOUNT`. Not used for other
+// attributes.
+type ConditionalCardTransactionUpdateActionParametersConditionsParameters struct {
+	Filters SpendVelocityFilters `json:"filters"`
+	// The time period over which to calculate the spend velocity.
+	Period VelocityLimitPeriod `json:"period"`
+	// The entity scope to evaluate the attribute against.
+	Scope ConditionalCardTransactionUpdateActionParametersConditionsParametersScope `json:"scope"`
+	JSON  conditionalCardTransactionUpdateActionParametersConditionsParametersJSON  `json:"-"`
+}
+
+// conditionalCardTransactionUpdateActionParametersConditionsParametersJSON
+// contains the JSON metadata for the struct
+// [ConditionalCardTransactionUpdateActionParametersConditionsParameters]
+type conditionalCardTransactionUpdateActionParametersConditionsParametersJSON struct {
+	Filters     apijson.Field
+	Period      apijson.Field
+	Scope       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ConditionalCardTransactionUpdateActionParametersConditionsParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r conditionalCardTransactionUpdateActionParametersConditionsParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+// The entity scope to evaluate the attribute against.
+type ConditionalCardTransactionUpdateActionParametersConditionsParametersScope string
+
+const (
+	ConditionalCardTransactionUpdateActionParametersConditionsParametersScopeCard    ConditionalCardTransactionUpdateActionParametersConditionsParametersScope = "CARD"
+	ConditionalCardTransactionUpdateActionParametersConditionsParametersScopeAccount ConditionalCardTransactionUpdateActionParametersConditionsParametersScope = "ACCOUNT"
+	ConditionalCardTransactionUpdateActionParametersConditionsParametersScopeGlobal  ConditionalCardTransactionUpdateActionParametersConditionsParametersScope = "GLOBAL"
+)
+
+func (r ConditionalCardTransactionUpdateActionParametersConditionsParametersScope) IsKnown() bool {
+	switch r {
+	case ConditionalCardTransactionUpdateActionParametersConditionsParametersScopeCard, ConditionalCardTransactionUpdateActionParametersConditionsParametersScopeAccount, ConditionalCardTransactionUpdateActionParametersConditionsParametersScopeGlobal:
+		return true
+	}
+	return false
+}
+
 // The operation to apply to the attribute
 type ConditionalOperation string
 
@@ -2798,11 +3333,12 @@ const (
 	EventStreamTokenization          EventStream = "TOKENIZATION"
 	EventStreamACHCreditReceipt      EventStream = "ACH_CREDIT_RECEIPT"
 	EventStreamACHDebitReceipt       EventStream = "ACH_DEBIT_RECEIPT"
+	EventStreamCardTransactionUpdate EventStream = "CARD_TRANSACTION_UPDATE"
 )
 
 func (r EventStream) IsKnown() bool {
 	switch r {
-	case EventStreamAuthorization, EventStreamThreeDSAuthentication, EventStreamTokenization, EventStreamACHCreditReceipt, EventStreamACHDebitReceipt:
+	case EventStreamAuthorization, EventStreamThreeDSAuthentication, EventStreamTokenization, EventStreamACHCreditReceipt, EventStreamACHDebitReceipt, EventStreamCardTransactionUpdate:
 		return true
 	}
 	return false
@@ -4536,6 +5072,52 @@ func (r RuleFeatureTransactionHistorySignalsFeatureParam) MarshalJSON() (data []
 }
 
 func (r RuleFeatureTransactionHistorySignalsFeatureParam) implementsRuleFeatureUnionParam() {}
+
+type SpendVelocityFilters struct {
+	// Tag key-value pairs to exclude from the velocity calculation. Transactions
+	// matching all specified tag key-value pairs will be excluded from the calculated
+	// velocity.
+	ExcludeTags map[string]string `json:"exclude_tags" api:"nullable"`
+	// Tag key-value pairs to include in the velocity calculation. Only transactions
+	// matching all specified tag key-value pairs will be included in the calculated
+	// velocity.
+	IncludeTags map[string]string        `json:"include_tags" api:"nullable"`
+	JSON        spendVelocityFiltersJSON `json:"-"`
+	VelocityLimitFilters
+}
+
+// spendVelocityFiltersJSON contains the JSON metadata for the struct
+// [SpendVelocityFilters]
+type spendVelocityFiltersJSON struct {
+	ExcludeTags apijson.Field
+	IncludeTags apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *SpendVelocityFilters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r spendVelocityFiltersJSON) RawJSON() string {
+	return r.raw
+}
+
+type SpendVelocityFiltersParam struct {
+	// Tag key-value pairs to exclude from the velocity calculation. Transactions
+	// matching all specified tag key-value pairs will be excluded from the calculated
+	// velocity.
+	ExcludeTags param.Field[map[string]string] `json:"exclude_tags"`
+	// Tag key-value pairs to include in the velocity calculation. Only transactions
+	// matching all specified tag key-value pairs will be included in the calculated
+	// velocity.
+	IncludeTags param.Field[map[string]string] `json:"include_tags"`
+	VelocityLimitFiltersParam
+}
+
+func (r SpendVelocityFiltersParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
 
 // Parameters for defining a TypeScript code rule
 type TypescriptCodeParameters struct {
@@ -6784,7 +7366,8 @@ type AuthRuleV2NewParamsBody struct {
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+	//     stream.
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type                  param.Field[AuthRuleV2NewParamsBodyType] `json:"type" api:"required"`
@@ -6828,7 +7411,8 @@ type AuthRuleV2NewParamsBodyAccountLevelRule struct {
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+	//     stream.
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type param.Field[AuthRuleV2NewParamsBodyAccountLevelRuleType] `json:"type" api:"required"`
@@ -6887,7 +7471,8 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRuleParameters) implementsAuthRuleV2N
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [MerchantLockParameters], [Conditional3DSActionParameters],
 // [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
-// [ConditionalTokenizationActionParameters], [TypescriptCodeParameters],
+// [ConditionalTokenizationActionParameters],
+// [ConditionalCardTransactionUpdateActionParameters], [TypescriptCodeParameters],
 // [AuthRuleV2NewParamsBodyAccountLevelRuleParameters].
 type AuthRuleV2NewParamsBodyAccountLevelRuleParametersUnion interface {
 	implementsAuthRuleV2NewParamsBodyAccountLevelRuleParametersUnion()
@@ -6919,7 +7504,8 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRuleParametersScope) IsKnown() bool {
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+//     stream.
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 //     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleV2NewParamsBodyAccountLevelRuleType string
@@ -6955,7 +7541,8 @@ type AuthRuleV2NewParamsBodyCardLevelRule struct {
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+	//     stream.
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type param.Field[AuthRuleV2NewParamsBodyCardLevelRuleType] `json:"type" api:"required"`
@@ -7010,7 +7597,8 @@ func (r AuthRuleV2NewParamsBodyCardLevelRuleParameters) implementsAuthRuleV2NewP
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [MerchantLockParameters], [Conditional3DSActionParameters],
 // [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
-// [ConditionalTokenizationActionParameters], [TypescriptCodeParameters],
+// [ConditionalTokenizationActionParameters],
+// [ConditionalCardTransactionUpdateActionParameters], [TypescriptCodeParameters],
 // [AuthRuleV2NewParamsBodyCardLevelRuleParameters].
 type AuthRuleV2NewParamsBodyCardLevelRuleParametersUnion interface {
 	implementsAuthRuleV2NewParamsBodyCardLevelRuleParametersUnion()
@@ -7042,7 +7630,8 @@ func (r AuthRuleV2NewParamsBodyCardLevelRuleParametersScope) IsKnown() bool {
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+//     stream.
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 //     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleV2NewParamsBodyCardLevelRuleType string
@@ -7078,7 +7667,8 @@ type AuthRuleV2NewParamsBodyProgramLevelRule struct {
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+	//     stream.
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 	Type param.Field[AuthRuleV2NewParamsBodyProgramLevelRuleType] `json:"type" api:"required"`
@@ -7139,7 +7729,8 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleParameters) implementsAuthRuleV2N
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [MerchantLockParameters], [Conditional3DSActionParameters],
 // [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
-// [ConditionalTokenizationActionParameters], [TypescriptCodeParameters],
+// [ConditionalTokenizationActionParameters],
+// [ConditionalCardTransactionUpdateActionParameters], [TypescriptCodeParameters],
 // [AuthRuleV2NewParamsBodyProgramLevelRuleParameters].
 type AuthRuleV2NewParamsBodyProgramLevelRuleParametersUnion interface {
 	implementsAuthRuleV2NewParamsBodyProgramLevelRuleParametersUnion()
@@ -7171,7 +7762,8 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleParametersScope) IsKnown() bool {
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+//     stream.
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 //     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleV2NewParamsBodyProgramLevelRuleType string
@@ -7202,7 +7794,8 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleType) IsKnown() bool {
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+//     stream.
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 //     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
 type AuthRuleV2NewParamsBodyType string
@@ -7504,7 +8097,8 @@ func (r AuthRuleV2DraftParamsParameters) implementsAuthRuleV2DraftParamsParamete
 // Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
 // [MerchantLockParameters], [Conditional3DSActionParameters],
 // [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
-// [ConditionalTokenizationActionParameters], [TypescriptCodeParameters],
+// [ConditionalTokenizationActionParameters],
+// [ConditionalCardTransactionUpdateActionParameters], [TypescriptCodeParameters],
 // [AuthRuleV2DraftParamsParameters].
 type AuthRuleV2DraftParamsParametersUnion interface {
 	implementsAuthRuleV2DraftParamsParametersUnion()
