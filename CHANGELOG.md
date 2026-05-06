@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.109.0 (2026-05-06)
+
+Full Changelog: [v0.108.0...v0.109.0](https://github.com/lithic-com/lithic-go/compare/v0.108.0...v0.109.0)
+
+### Features
+
+* **api:** add AMEX enum value to settlement network types ([0552e04](https://github.com/lithic-com/lithic-go/commit/0552e045c545e01b74aea34a01949cec13ec3846))
+* **api:** add CARD_TRANSACTION_UPDATE event stream support to auth rules ([0e116f7](https://github.com/lithic-com/lithic-go/commit/0e116f7222f35555ec6380dbc02a99b8c14e9359))
+* **api:** add IS_NEW_MERCHANT attribute to auth rule v2 conditions ([0b18af1](https://github.com/lithic-com/lithic-go/commit/0b18af13f0cd8661813e6ae7816d770df93740ba))
+* **go:** add default http client with timeout ([07da638](https://github.com/lithic-com/lithic-go/commit/07da638b181c1dfd4a93959f183a54948b28cf37))
+* support setting headers via env ([b5f9417](https://github.com/lithic-com/lithic-go/commit/b5f94171edcff067601ccd93899a9d612a1d6cb1))
+
+
+### Bug Fixes
+
+* **types:** make fields nullable in account/card, add empty enum to accountholder ([803dbd8](https://github.com/lithic-com/lithic-go/commit/803dbd85181db483098c24d4716f109901a2e3bc))
+
+
+### Chores
+
+* avoid embedding reflect.Type for dead code elimination ([c99a346](https://github.com/lithic-com/lithic-go/commit/c99a3469b49944e6907843ceb1a1449547b83035))
+* **internal:** codegen related update ([5086429](https://github.com/lithic-com/lithic-go/commit/50864292840acb581d9efaca78539e8b6789d43e))
+* **internal:** codegen related update ([2d41b74](https://github.com/lithic-com/lithic-go/commit/2d41b74ff8f9e807af4540615d524da8ea81d2ac))
+* **internal:** more robust bootstrap script ([708ae2d](https://github.com/lithic-com/lithic-go/commit/708ae2d963d63d37a2165cd72abe4a0005005ba5))
+
+
+### Documentation
+
+* **api:** clarify expiration date generation in card new and renew params ([053c93d](https://github.com/lithic-com/lithic-go/commit/053c93dfd470774c2c941d888adad4cecec18d7a))
+* **types:** clarify event_tokens and transaction_token fields in SettlementDetail ([6f03787](https://github.com/lithic-com/lithic-go/commit/6f0378773c39af476d33c2e6f8b632e416b6f7ff))
+
 ## 0.108.0 (2026-04-20)
 
 Full Changelog: [v0.107.0...v0.108.0](https://github.com/lithic-com/lithic-go/compare/v0.107.0...v0.108.0)
