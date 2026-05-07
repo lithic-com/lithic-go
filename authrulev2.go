@@ -2274,16 +2274,26 @@ type ConditionalAuthorizationActionParametersCondition struct {
 	//     `parameters` required.
 	//   - `THREE_DS_SUCCESS_RATE`: The 3DS authentication success rate for the card, as
 	//     a percentage from 0.0 to 100.0. Card-scoped only; no `parameters` required.
+	//   - `TRAVEL_SPEED`: The estimated speed of travel derived from the distance
+	//     between the postal code centers of the last card-present transaction and the
+	//     current transaction, divided by the elapsed time. Null if there is no prior
+	//     card-present transaction, if either postal code cannot be geocoded, or if
+	//     elapsed time is zero. Requires `parameters.unit` set to `MPH` or `KPH`.
+	//   - `DISTANCE_FROM_LAST_TRANSACTION`: The estimated distance between the postal
+	//     code centers of the last card-present transaction and the current transaction.
+	//     Null if there is no prior card-present transaction or if either postal code
+	//     cannot be geocoded. Requires `parameters.unit` set to `MILES` or `KILOMETERS`.
 	Attribute ConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute" api:"required"`
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation" api:"required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 	Value ConditionalValueUnion `json:"value" api:"required"`
-	// Additional parameters required for transaction history signal attributes.
-	// Required when `attribute` is one of `AMOUNT_Z_SCORE`, `AVG_TRANSACTION_AMOUNT`,
-	// `STDEV_TRANSACTION_AMOUNT`, `IS_NEW_COUNTRY`, `IS_NEW_MCC`,
-	// `IS_FIRST_TRANSACTION`, `CONSECUTIVE_DECLINES`, `TIME_SINCE_LAST_TRANSACTION`,
-	// or `DISTINCT_COUNTRY_COUNT`. Not used for other attributes.
+	// Additional parameters for certain attributes. Required when `attribute` is one
+	// of `AMOUNT_Z_SCORE`, `AVG_TRANSACTION_AMOUNT`, `STDEV_TRANSACTION_AMOUNT`,
+	// `IS_NEW_COUNTRY`, `IS_NEW_MCC`, `IS_FIRST_TRANSACTION`, `CONSECUTIVE_DECLINES`,
+	// `TIME_SINCE_LAST_TRANSACTION`, or `DISTINCT_COUNTRY_COUNT` (require `scope`); or
+	// `TRAVEL_SPEED` or `DISTANCE_FROM_LAST_TRANSACTION` (require `unit`). Not used
+	// for other attributes.
 	Parameters ConditionalAuthorizationActionParametersConditionsParameters `json:"parameters"`
 	JSON       conditionalAuthorizationActionParametersConditionJSON        `json:"-"`
 }
@@ -2409,61 +2419,73 @@ func (r conditionalAuthorizationActionParametersConditionJSON) RawJSON() string 
 //     `parameters` required.
 //   - `THREE_DS_SUCCESS_RATE`: The 3DS authentication success rate for the card, as
 //     a percentage from 0.0 to 100.0. Card-scoped only; no `parameters` required.
+//   - `TRAVEL_SPEED`: The estimated speed of travel derived from the distance
+//     between the postal code centers of the last card-present transaction and the
+//     current transaction, divided by the elapsed time. Null if there is no prior
+//     card-present transaction, if either postal code cannot be geocoded, or if
+//     elapsed time is zero. Requires `parameters.unit` set to `MPH` or `KPH`.
+//   - `DISTANCE_FROM_LAST_TRANSACTION`: The estimated distance between the postal
+//     code centers of the last card-present transaction and the current transaction.
+//     Null if there is no prior card-present transaction or if either postal code
+//     cannot be geocoded. Requires `parameters.unit` set to `MILES` or `KILOMETERS`.
 type ConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
-	ConditionalAuthorizationActionParametersConditionsAttributeMcc                       ConditionalAuthorizationActionParametersConditionsAttribute = "MCC"
-	ConditionalAuthorizationActionParametersConditionsAttributeCountry                   ConditionalAuthorizationActionParametersConditionsAttribute = "COUNTRY"
-	ConditionalAuthorizationActionParametersConditionsAttributeCurrency                  ConditionalAuthorizationActionParametersConditionsAttribute = "CURRENCY"
-	ConditionalAuthorizationActionParametersConditionsAttributeMerchantID                ConditionalAuthorizationActionParametersConditionsAttribute = "MERCHANT_ID"
-	ConditionalAuthorizationActionParametersConditionsAttributeDescriptor                ConditionalAuthorizationActionParametersConditionsAttribute = "DESCRIPTOR"
-	ConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift            ConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
-	ConditionalAuthorizationActionParametersConditionsAttributePanEntryMode              ConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	ConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount         ConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	ConditionalAuthorizationActionParametersConditionsAttributeCashAmount                ConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
-	ConditionalAuthorizationActionParametersConditionsAttributeRiskScore                 ConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M   ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H    ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H   ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount15M       ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_DECLINE_COUNT_15M"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount1H        ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_DECLINE_COUNT_1H"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount24H       ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_DECLINE_COUNT_24H"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardState                 ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_STATE"
-	ConditionalAuthorizationActionParametersConditionsAttributePinEntered                ConditionalAuthorizationActionParametersConditionsAttribute = "PIN_ENTERED"
-	ConditionalAuthorizationActionParametersConditionsAttributePinStatus                 ConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
-	ConditionalAuthorizationActionParametersConditionsAttributeWalletType                ConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
-	ConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator      ConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
-	ConditionalAuthorizationActionParametersConditionsAttributeAddressMatch              ConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
-	ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationState      ConditionalAuthorizationActionParametersConditionsAttribute = "SERVICE_LOCATION_STATE"
-	ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationPostalCode ConditionalAuthorizationActionParametersConditionsAttribute = "SERVICE_LOCATION_POSTAL_CODE"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardAge                   ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_AGE"
-	ConditionalAuthorizationActionParametersConditionsAttributeAccountAge                ConditionalAuthorizationActionParametersConditionsAttribute = "ACCOUNT_AGE"
-	ConditionalAuthorizationActionParametersConditionsAttributeAmountZScore              ConditionalAuthorizationActionParametersConditionsAttribute = "AMOUNT_Z_SCORE"
-	ConditionalAuthorizationActionParametersConditionsAttributeAvgTransactionAmount      ConditionalAuthorizationActionParametersConditionsAttribute = "AVG_TRANSACTION_AMOUNT"
-	ConditionalAuthorizationActionParametersConditionsAttributeStdevTransactionAmount    ConditionalAuthorizationActionParametersConditionsAttribute = "STDEV_TRANSACTION_AMOUNT"
-	ConditionalAuthorizationActionParametersConditionsAttributeIsNewCountry              ConditionalAuthorizationActionParametersConditionsAttribute = "IS_NEW_COUNTRY"
-	ConditionalAuthorizationActionParametersConditionsAttributeIsNewMcc                  ConditionalAuthorizationActionParametersConditionsAttribute = "IS_NEW_MCC"
-	ConditionalAuthorizationActionParametersConditionsAttributeIsFirstTransaction        ConditionalAuthorizationActionParametersConditionsAttribute = "IS_FIRST_TRANSACTION"
-	ConditionalAuthorizationActionParametersConditionsAttributeConsecutiveDeclines       ConditionalAuthorizationActionParametersConditionsAttribute = "CONSECUTIVE_DECLINES"
-	ConditionalAuthorizationActionParametersConditionsAttributeTimeSinceLastTransaction  ConditionalAuthorizationActionParametersConditionsAttribute = "TIME_SINCE_LAST_TRANSACTION"
-	ConditionalAuthorizationActionParametersConditionsAttributeDistinctCountryCount      ConditionalAuthorizationActionParametersConditionsAttribute = "DISTINCT_COUNTRY_COUNT"
-	ConditionalAuthorizationActionParametersConditionsAttributeIsNewMerchant             ConditionalAuthorizationActionParametersConditionsAttribute = "IS_NEW_MERCHANT"
-	ConditionalAuthorizationActionParametersConditionsAttributeThreeDSSuccessRate        ConditionalAuthorizationActionParametersConditionsAttribute = "THREE_DS_SUCCESS_RATE"
+	ConditionalAuthorizationActionParametersConditionsAttributeMcc                         ConditionalAuthorizationActionParametersConditionsAttribute = "MCC"
+	ConditionalAuthorizationActionParametersConditionsAttributeCountry                     ConditionalAuthorizationActionParametersConditionsAttribute = "COUNTRY"
+	ConditionalAuthorizationActionParametersConditionsAttributeCurrency                    ConditionalAuthorizationActionParametersConditionsAttribute = "CURRENCY"
+	ConditionalAuthorizationActionParametersConditionsAttributeMerchantID                  ConditionalAuthorizationActionParametersConditionsAttribute = "MERCHANT_ID"
+	ConditionalAuthorizationActionParametersConditionsAttributeDescriptor                  ConditionalAuthorizationActionParametersConditionsAttribute = "DESCRIPTOR"
+	ConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift              ConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
+	ConditionalAuthorizationActionParametersConditionsAttributePanEntryMode                ConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	ConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount           ConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	ConditionalAuthorizationActionParametersConditionsAttributeCashAmount                  ConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
+	ConditionalAuthorizationActionParametersConditionsAttributeRiskScore                   ConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
+	ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M     ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
+	ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H      ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
+	ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H     ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
+	ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount15M         ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_DECLINE_COUNT_15M"
+	ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount1H          ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_DECLINE_COUNT_1H"
+	ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount24H         ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_DECLINE_COUNT_24H"
+	ConditionalAuthorizationActionParametersConditionsAttributeCardState                   ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_STATE"
+	ConditionalAuthorizationActionParametersConditionsAttributePinEntered                  ConditionalAuthorizationActionParametersConditionsAttribute = "PIN_ENTERED"
+	ConditionalAuthorizationActionParametersConditionsAttributePinStatus                   ConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
+	ConditionalAuthorizationActionParametersConditionsAttributeWalletType                  ConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
+	ConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator        ConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
+	ConditionalAuthorizationActionParametersConditionsAttributeAddressMatch                ConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
+	ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationState        ConditionalAuthorizationActionParametersConditionsAttribute = "SERVICE_LOCATION_STATE"
+	ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationPostalCode   ConditionalAuthorizationActionParametersConditionsAttribute = "SERVICE_LOCATION_POSTAL_CODE"
+	ConditionalAuthorizationActionParametersConditionsAttributeCardAge                     ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_AGE"
+	ConditionalAuthorizationActionParametersConditionsAttributeAccountAge                  ConditionalAuthorizationActionParametersConditionsAttribute = "ACCOUNT_AGE"
+	ConditionalAuthorizationActionParametersConditionsAttributeAmountZScore                ConditionalAuthorizationActionParametersConditionsAttribute = "AMOUNT_Z_SCORE"
+	ConditionalAuthorizationActionParametersConditionsAttributeAvgTransactionAmount        ConditionalAuthorizationActionParametersConditionsAttribute = "AVG_TRANSACTION_AMOUNT"
+	ConditionalAuthorizationActionParametersConditionsAttributeStdevTransactionAmount      ConditionalAuthorizationActionParametersConditionsAttribute = "STDEV_TRANSACTION_AMOUNT"
+	ConditionalAuthorizationActionParametersConditionsAttributeIsNewCountry                ConditionalAuthorizationActionParametersConditionsAttribute = "IS_NEW_COUNTRY"
+	ConditionalAuthorizationActionParametersConditionsAttributeIsNewMcc                    ConditionalAuthorizationActionParametersConditionsAttribute = "IS_NEW_MCC"
+	ConditionalAuthorizationActionParametersConditionsAttributeIsFirstTransaction          ConditionalAuthorizationActionParametersConditionsAttribute = "IS_FIRST_TRANSACTION"
+	ConditionalAuthorizationActionParametersConditionsAttributeConsecutiveDeclines         ConditionalAuthorizationActionParametersConditionsAttribute = "CONSECUTIVE_DECLINES"
+	ConditionalAuthorizationActionParametersConditionsAttributeTimeSinceLastTransaction    ConditionalAuthorizationActionParametersConditionsAttribute = "TIME_SINCE_LAST_TRANSACTION"
+	ConditionalAuthorizationActionParametersConditionsAttributeDistinctCountryCount        ConditionalAuthorizationActionParametersConditionsAttribute = "DISTINCT_COUNTRY_COUNT"
+	ConditionalAuthorizationActionParametersConditionsAttributeIsNewMerchant               ConditionalAuthorizationActionParametersConditionsAttribute = "IS_NEW_MERCHANT"
+	ConditionalAuthorizationActionParametersConditionsAttributeThreeDSSuccessRate          ConditionalAuthorizationActionParametersConditionsAttribute = "THREE_DS_SUCCESS_RATE"
+	ConditionalAuthorizationActionParametersConditionsAttributeTravelSpeed                 ConditionalAuthorizationActionParametersConditionsAttribute = "TRAVEL_SPEED"
+	ConditionalAuthorizationActionParametersConditionsAttributeDistanceFromLastTransaction ConditionalAuthorizationActionParametersConditionsAttribute = "DISTANCE_FROM_LAST_TRANSACTION"
 )
 
 func (r ConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case ConditionalAuthorizationActionParametersConditionsAttributeMcc, ConditionalAuthorizationActionParametersConditionsAttributeCountry, ConditionalAuthorizationActionParametersConditionsAttributeCurrency, ConditionalAuthorizationActionParametersConditionsAttributeMerchantID, ConditionalAuthorizationActionParametersConditionsAttributeDescriptor, ConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, ConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, ConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeCashAmount, ConditionalAuthorizationActionParametersConditionsAttributeRiskScore, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount15M, ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount1H, ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount24H, ConditionalAuthorizationActionParametersConditionsAttributeCardState, ConditionalAuthorizationActionParametersConditionsAttributePinEntered, ConditionalAuthorizationActionParametersConditionsAttributePinStatus, ConditionalAuthorizationActionParametersConditionsAttributeWalletType, ConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, ConditionalAuthorizationActionParametersConditionsAttributeAddressMatch, ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationState, ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationPostalCode, ConditionalAuthorizationActionParametersConditionsAttributeCardAge, ConditionalAuthorizationActionParametersConditionsAttributeAccountAge, ConditionalAuthorizationActionParametersConditionsAttributeAmountZScore, ConditionalAuthorizationActionParametersConditionsAttributeAvgTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeStdevTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeIsNewCountry, ConditionalAuthorizationActionParametersConditionsAttributeIsNewMcc, ConditionalAuthorizationActionParametersConditionsAttributeIsFirstTransaction, ConditionalAuthorizationActionParametersConditionsAttributeConsecutiveDeclines, ConditionalAuthorizationActionParametersConditionsAttributeTimeSinceLastTransaction, ConditionalAuthorizationActionParametersConditionsAttributeDistinctCountryCount, ConditionalAuthorizationActionParametersConditionsAttributeIsNewMerchant, ConditionalAuthorizationActionParametersConditionsAttributeThreeDSSuccessRate:
+	case ConditionalAuthorizationActionParametersConditionsAttributeMcc, ConditionalAuthorizationActionParametersConditionsAttributeCountry, ConditionalAuthorizationActionParametersConditionsAttributeCurrency, ConditionalAuthorizationActionParametersConditionsAttributeMerchantID, ConditionalAuthorizationActionParametersConditionsAttributeDescriptor, ConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, ConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, ConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeCashAmount, ConditionalAuthorizationActionParametersConditionsAttributeRiskScore, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount15M, ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount1H, ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount24H, ConditionalAuthorizationActionParametersConditionsAttributeCardState, ConditionalAuthorizationActionParametersConditionsAttributePinEntered, ConditionalAuthorizationActionParametersConditionsAttributePinStatus, ConditionalAuthorizationActionParametersConditionsAttributeWalletType, ConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, ConditionalAuthorizationActionParametersConditionsAttributeAddressMatch, ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationState, ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationPostalCode, ConditionalAuthorizationActionParametersConditionsAttributeCardAge, ConditionalAuthorizationActionParametersConditionsAttributeAccountAge, ConditionalAuthorizationActionParametersConditionsAttributeAmountZScore, ConditionalAuthorizationActionParametersConditionsAttributeAvgTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeStdevTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeIsNewCountry, ConditionalAuthorizationActionParametersConditionsAttributeIsNewMcc, ConditionalAuthorizationActionParametersConditionsAttributeIsFirstTransaction, ConditionalAuthorizationActionParametersConditionsAttributeConsecutiveDeclines, ConditionalAuthorizationActionParametersConditionsAttributeTimeSinceLastTransaction, ConditionalAuthorizationActionParametersConditionsAttributeDistinctCountryCount, ConditionalAuthorizationActionParametersConditionsAttributeIsNewMerchant, ConditionalAuthorizationActionParametersConditionsAttributeThreeDSSuccessRate, ConditionalAuthorizationActionParametersConditionsAttributeTravelSpeed, ConditionalAuthorizationActionParametersConditionsAttributeDistanceFromLastTransaction:
 		return true
 	}
 	return false
 }
 
-// Additional parameters required for transaction history signal attributes.
-// Required when `attribute` is one of `AMOUNT_Z_SCORE`, `AVG_TRANSACTION_AMOUNT`,
-// `STDEV_TRANSACTION_AMOUNT`, `IS_NEW_COUNTRY`, `IS_NEW_MCC`,
-// `IS_FIRST_TRANSACTION`, `CONSECUTIVE_DECLINES`, `TIME_SINCE_LAST_TRANSACTION`,
-// or `DISTINCT_COUNTRY_COUNT`. Not used for other attributes.
+// Additional parameters for certain attributes. Required when `attribute` is one
+// of `AMOUNT_Z_SCORE`, `AVG_TRANSACTION_AMOUNT`, `STDEV_TRANSACTION_AMOUNT`,
+// `IS_NEW_COUNTRY`, `IS_NEW_MCC`, `IS_FIRST_TRANSACTION`, `CONSECUTIVE_DECLINES`,
+// `TIME_SINCE_LAST_TRANSACTION`, or `DISTINCT_COUNTRY_COUNT` (require `scope`); or
+// `TRAVEL_SPEED` or `DISTANCE_FROM_LAST_TRANSACTION` (require `unit`). Not used
+// for other attributes.
 type ConditionalAuthorizationActionParametersConditionsParameters struct {
 	// The time window for statistical attributes (`AMOUNT_Z_SCORE`,
 	// `AVG_TRANSACTION_AMOUNT`, `STDEV_TRANSACTION_AMOUNT`). Use `LIFETIME` for
@@ -2471,7 +2493,14 @@ type ConditionalAuthorizationActionParametersConditionsParameters struct {
 	Interval ConditionalAuthorizationActionParametersConditionsParametersInterval `json:"interval"`
 	// The entity scope to evaluate the attribute against.
 	Scope ConditionalAuthorizationActionParametersConditionsParametersScope `json:"scope"`
-	JSON  conditionalAuthorizationActionParametersConditionsParametersJSON  `json:"-"`
+	// The unit for impossible travel attributes. Required when `attribute` is
+	// `TRAVEL_SPEED` or `DISTANCE_FROM_LAST_TRANSACTION`.
+	//
+	// For `TRAVEL_SPEED`: `MPH` (miles per hour) or `KPH` (kilometers per hour).
+	//
+	// For `DISTANCE_FROM_LAST_TRANSACTION`: `MILES` or `KILOMETERS`.
+	Unit ConditionalAuthorizationActionParametersConditionsParametersUnit `json:"unit"`
+	JSON conditionalAuthorizationActionParametersConditionsParametersJSON `json:"-"`
 }
 
 // conditionalAuthorizationActionParametersConditionsParametersJSON contains the
@@ -2480,6 +2509,7 @@ type ConditionalAuthorizationActionParametersConditionsParameters struct {
 type conditionalAuthorizationActionParametersConditionsParametersJSON struct {
 	Interval    apijson.Field
 	Scope       apijson.Field
+	Unit        apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -2524,6 +2554,29 @@ const (
 func (r ConditionalAuthorizationActionParametersConditionsParametersScope) IsKnown() bool {
 	switch r {
 	case ConditionalAuthorizationActionParametersConditionsParametersScopeCard, ConditionalAuthorizationActionParametersConditionsParametersScopeAccount, ConditionalAuthorizationActionParametersConditionsParametersScopeBusinessAccount:
+		return true
+	}
+	return false
+}
+
+// The unit for impossible travel attributes. Required when `attribute` is
+// `TRAVEL_SPEED` or `DISTANCE_FROM_LAST_TRANSACTION`.
+//
+// For `TRAVEL_SPEED`: `MPH` (miles per hour) or `KPH` (kilometers per hour).
+//
+// For `DISTANCE_FROM_LAST_TRANSACTION`: `MILES` or `KILOMETERS`.
+type ConditionalAuthorizationActionParametersConditionsParametersUnit string
+
+const (
+	ConditionalAuthorizationActionParametersConditionsParametersUnitMph        ConditionalAuthorizationActionParametersConditionsParametersUnit = "MPH"
+	ConditionalAuthorizationActionParametersConditionsParametersUnitKph        ConditionalAuthorizationActionParametersConditionsParametersUnit = "KPH"
+	ConditionalAuthorizationActionParametersConditionsParametersUnitMiles      ConditionalAuthorizationActionParametersConditionsParametersUnit = "MILES"
+	ConditionalAuthorizationActionParametersConditionsParametersUnitKilometers ConditionalAuthorizationActionParametersConditionsParametersUnit = "KILOMETERS"
+)
+
+func (r ConditionalAuthorizationActionParametersConditionsParametersUnit) IsKnown() bool {
+	switch r {
+	case ConditionalAuthorizationActionParametersConditionsParametersUnitMph, ConditionalAuthorizationActionParametersConditionsParametersUnitKph, ConditionalAuthorizationActionParametersConditionsParametersUnitMiles, ConditionalAuthorizationActionParametersConditionsParametersUnitKilometers:
 		return true
 	}
 	return false
