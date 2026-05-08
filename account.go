@@ -87,6 +87,25 @@ func (r *AccountService) ListAutoPaging(ctx context.Context, query AccountListPa
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
+// Returns behavioral feature state derived from an account's transaction history.
+//
+// These signals expose the same data used by behavioral rule attributes (e.g.
+// `AMOUNT_Z_SCORE` with `scope: ACCOUNT`, `IS_NEW_COUNTRY` with `scope: ACCOUNT`)
+// and custom code `TRANSACTION_HISTORY_SIGNALS` features, allowing clients to
+// inspect feature values before writing rules and debug rule behavior.
+//
+// Note: 3DS fields are not available at the account scope and will be null.
+func (r *AccountService) GetSignals(ctx context.Context, accountToken string, opts ...option.RequestOption) (res *SignalsResponse, err error) {
+	opts = slices.Concat(r.Options, opts)
+	if accountToken == "" {
+		err = errors.New("missing required account_token parameter")
+		return nil, err
+	}
+	path := fmt.Sprintf("v1/accounts/%s/signals", accountToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
+	return res, err
+}
+
 // Get an Account's available spend limits, which is based on the spend limit
 // configured on the Account and the amount already spent over the spend limit's
 // duration. For example, if the Account has a daily spend limit of $1000
