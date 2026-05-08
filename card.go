@@ -219,6 +219,23 @@ func (r *CardService) Renew(ctx context.Context, cardToken string, body CardRene
 	return res, err
 }
 
+// Returns behavioral feature state derived from a card's transaction history.
+//
+// These signals expose the same data used by behavioral rule attributes (e.g.
+// `AMOUNT_Z_SCORE` with `scope: CARD`, `IS_NEW_COUNTRY` with `scope: CARD`) and
+// custom code `TRANSACTION_HISTORY_SIGNALS` features, allowing clients to inspect
+// feature values before writing rules and debug rule behavior.
+func (r *CardService) GetSignals(ctx context.Context, cardToken string, opts ...option.RequestOption) (res *SignalsResponse, err error) {
+	opts = slices.Concat(r.Options, opts)
+	if cardToken == "" {
+		err = errors.New("missing required card_token parameter")
+		return nil, err
+	}
+	path := fmt.Sprintf("v1/cards/%s/signals", cardToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
+	return res, err
+}
+
 // Get a Card's available spend limit, which is based on the spend limit configured
 // on the Card and the amount already spent over the spend limit's duration. For
 // example, if the Card has a monthly spend limit of $1000 configured, and has
