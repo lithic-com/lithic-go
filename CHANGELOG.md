@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.110.0 (2026-05-11)
+
+Full Changelog: [v0.109.0...v0.110.0](https://github.com/lithic-com/lithic-go/compare/v0.109.0...v0.110.0)
+
+### Features
+
+* **api:** add retrieve_signals methods to cards and accounts resources ([6595452](https://github.com/lithic-com/lithic-go/commit/65954529a469ca2983e2ed756664738872f459cb))
+* **api:** add travel speed/distance attributes and unit field to authrulev2 ([8099a62](https://github.com/lithic-com/lithic-go/commit/8099a62b62316e04c864fc6bbe5e6a8e2151113b))
+
+
+### Bug Fixes
+
+* **go:** avoid panic when http.DefaultTransport is wrapped ([19be5c5](https://github.com/lithic-com/lithic-go/commit/19be5c5f0c0a8e4c075813e14d4229cac02a4397))
+
+
+### Chores
+
+* **internal:** codegen related update ([e96267e](https://github.com/lithic-com/lithic-go/commit/e96267e5cc8e37e4eb3f955ee4141d2fa12f67c0))
+* redact api-key headers in debug logs ([f618586](https://github.com/lithic-com/lithic-go/commit/f6185867a2bb98b2b42e49b28bac49de6ed1d720))
+
 ## 0.109.0 (2026-05-06)
 
 Full Changelog: [v0.108.0...v0.109.0](https://github.com/lithic-com/lithic-go/compare/v0.108.0...v0.109.0)
