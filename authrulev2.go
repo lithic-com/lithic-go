@@ -1520,9 +1520,10 @@ type Conditional3DsActionParametersCondition struct {
 	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
-	//     fee on behalf of the cardholder.
+	//     fee on behalf of the cardholder. Use an integer value.
 	//   - `RISK_SCORE`: Mastercard only: Assessment by the network of the authentication
-	//     risk level, with a higher value indicating a higher amount of risk.
+	//     risk level, with a higher value indicating a higher amount of risk. Use an
+	//     integer value.
 	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
 	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
 	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
@@ -1570,9 +1571,10 @@ func (r conditional3DsActionParametersConditionJSON) RawJSON() string {
 //   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
-//     fee on behalf of the cardholder.
+//     fee on behalf of the cardholder. Use an integer value.
 //   - `RISK_SCORE`: Mastercard only: Assessment by the network of the authentication
-//     risk level, with a higher value indicating a higher amount of risk.
+//     risk level, with a higher value indicating a higher amount of risk. Use an
+//     integer value.
 //   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
 //   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
 //     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
@@ -1979,7 +1981,7 @@ type ConditionalACHActionParametersCondition struct {
 	//     ID) of the entity initiating the ACH transaction.
 	//   - `TIMESTAMP`: The timestamp of the ACH transaction in ISO 8601 format.
 	//   - `TRANSACTION_AMOUNT`: The amount of the ACH transaction in minor units
-	//     (cents).
+	//     (cents). Use an integer value.
 	//   - `SEC_CODE`: Standard Entry Class code indicating the type of ACH transaction.
 	//     Valid values include PPD (Prearranged Payment and Deposit Entry), CCD
 	//     (Corporate Credit or Debit Entry), WEB (Internet-Initiated/Mobile Entry), TEL
@@ -2020,7 +2022,7 @@ func (r conditionalACHActionParametersConditionJSON) RawJSON() string {
 //     ID) of the entity initiating the ACH transaction.
 //   - `TIMESTAMP`: The timestamp of the ACH transaction in ISO 8601 format.
 //   - `TRANSACTION_AMOUNT`: The amount of the ACH transaction in minor units
-//     (cents).
+//     (cents). Use an integer value.
 //   - `SEC_CODE`: Standard Entry Class code indicating the type of ACH transaction.
 //     Valid values include PPD (Prearranged Payment and Deposit Entry), CCD
 //     (Corporate Credit or Debit Entry), WEB (Internet-Initiated/Mobile Entry), TEL
@@ -2197,26 +2199,27 @@ type ConditionalAuthorizationActionParametersCondition struct {
 	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
-	//     fee on behalf of the cardholder.
+	//     fee on behalf of the cardholder. Use an integer value.
 	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
-	//     represents the amount of cash being withdrawn or advanced.
+	//     represents the amount of cash being withdrawn or advanced. Use an integer
+	//     value.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
-	//     multiplying the raw score by 10x.
+	//     multiplying the raw score by 10x. Use an integer value.
 	//   - `CARD_TRANSACTION_COUNT_15M`: The number of transactions on the card in the
-	//     trailing 15 minutes before the authorization.
+	//     trailing 15 minutes before the authorization. Use an integer value.
 	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
-	//     trailing hour up and until the authorization.
+	//     trailing hour up and until the authorization. Use an integer value.
 	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
-	//     trailing 24 hours up and until the authorization.
+	//     trailing 24 hours up and until the authorization. Use an integer value.
 	//   - `CARD_DECLINE_COUNT_15M`: The number of declined transactions on the card in
-	//     the trailing 15 minutes before the authorization.
+	//     the trailing 15 minutes before the authorization. Use an integer value.
 	//   - `CARD_DECLINE_COUNT_1H`: The number of declined transactions on the card in
-	//     the trailing hour up and until the authorization.
+	//     the trailing hour up and until the authorization. Use an integer value.
 	//   - `CARD_DECLINE_COUNT_24H`: The number of declined transactions on the card in
-	//     the trailing 24 hours up and until the authorization.
+	//     the trailing 24 hours up and until the authorization. Use an integer value.
 	//   - `CARD_STATE`: The current state of the card associated with the transaction.
 	//     Valid values are `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`,
 	//     `PENDING_FULFILLMENT`.
@@ -2241,18 +2244,20 @@ type ConditionalAuthorizationActionParametersCondition struct {
 	//     data, the service location postal code is used. Otherwise, falls back to the
 	//     card acceptor postal code.
 	//   - `CARD_AGE`: The age of the card in seconds at the time of the authorization.
+	//     Use an integer value.
 	//   - `ACCOUNT_AGE`: The age of the account holder's account in seconds at the time
-	//     of the authorization.
+	//     of the authorization. Use an integer value.
 	//   - `AMOUNT_Z_SCORE`: The z-score of the transaction amount relative to the
 	//     entity's transaction history. Null if fewer than 30 approved transactions in
 	//     the specified window. Requires `parameters.scope` and `parameters.interval`.
+	//     Use a decimal value.
 	//   - `AVG_TRANSACTION_AMOUNT`: The average approved transaction amount for the
 	//     entity over the specified window, in cents. Requires `parameters.scope` and
-	//     `parameters.interval`.
+	//     `parameters.interval`. Use a decimal value.
 	//   - `STDEV_TRANSACTION_AMOUNT`: The standard deviation of approved transaction
 	//     amounts for the entity over the specified window, in cents. Null if fewer than
 	//     30 approved transactions in the specified window. Requires `parameters.scope`
-	//     and `parameters.interval`.
+	//     and `parameters.interval`. Use a decimal value.
 	//   - `IS_NEW_COUNTRY`: Whether the transaction's merchant country has not been seen
 	//     in the entity's transaction history. Valid values are `TRUE`, `FALSE`.
 	//     Requires `parameters.scope`.
@@ -2263,26 +2268,31 @@ type ConditionalAuthorizationActionParametersCondition struct {
 	//     Valid values are `TRUE`, `FALSE`. Requires `parameters.scope`.
 	//   - `CONSECUTIVE_DECLINES`: The number of consecutive declined transactions for
 	//     the entity over the last 30 days (rolling). Requires `parameters.scope`. Not
-	//     supported for `BUSINESS_ACCOUNT` scope.
+	//     supported for `BUSINESS_ACCOUNT` scope. Use an integer value.
 	//   - `TIME_SINCE_LAST_TRANSACTION`: The number of days since the last approved
-	//     transaction for the entity. Requires `parameters.scope`.
+	//     transaction for the entity, rounded to the nearest whole day. Requires
+	//     `parameters.scope`. Use an integer value.
 	//   - `DISTINCT_COUNTRY_COUNT`: The number of distinct merchant countries seen in
-	//     the entity's transaction history. Requires `parameters.scope`.
+	//     the entity's transaction history. Requires `parameters.scope`. Use an integer
+	//     value.
 	//   - `IS_NEW_MERCHANT`: Whether the card acceptor ID has not been seen in the
 	//     card's approved transaction history (capped at the 1000 most recently seen
 	//     merchants). Valid values are `TRUE`, `FALSE`. Card-scoped only; no
 	//     `parameters` required.
 	//   - `THREE_DS_SUCCESS_RATE`: The 3DS authentication success rate for the card, as
 	//     a percentage from 0.0 to 100.0. Card-scoped only; no `parameters` required.
+	//     Use a decimal value.
 	//   - `TRAVEL_SPEED`: The estimated speed of travel derived from the distance
 	//     between the postal code centers of the last card-present transaction and the
 	//     current transaction, divided by the elapsed time. Null if there is no prior
 	//     card-present transaction, if either postal code cannot be geocoded, or if
-	//     elapsed time is zero. Requires `parameters.unit` set to `MPH` or `KPH`.
+	//     elapsed time is zero. Requires `parameters.unit` set to `MPH` or `KPH`. Use a
+	//     decimal value.
 	//   - `DISTANCE_FROM_LAST_TRANSACTION`: The estimated distance between the postal
 	//     code centers of the last card-present transaction and the current transaction.
 	//     Null if there is no prior card-present transaction or if either postal code
 	//     cannot be geocoded. Requires `parameters.unit` set to `MILES` or `KILOMETERS`.
+	//     Use a decimal value.
 	Attribute ConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute" api:"required"`
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation" api:"required"`
@@ -2342,26 +2352,27 @@ func (r conditionalAuthorizationActionParametersConditionJSON) RawJSON() string 
 //   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
-//     fee on behalf of the cardholder.
+//     fee on behalf of the cardholder. Use an integer value.
 //   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
-//     represents the amount of cash being withdrawn or advanced.
+//     represents the amount of cash being withdrawn or advanced. Use an integer
+//     value.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
-//     multiplying the raw score by 10x.
+//     multiplying the raw score by 10x. Use an integer value.
 //   - `CARD_TRANSACTION_COUNT_15M`: The number of transactions on the card in the
-//     trailing 15 minutes before the authorization.
+//     trailing 15 minutes before the authorization. Use an integer value.
 //   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
-//     trailing hour up and until the authorization.
+//     trailing hour up and until the authorization. Use an integer value.
 //   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
-//     trailing 24 hours up and until the authorization.
+//     trailing 24 hours up and until the authorization. Use an integer value.
 //   - `CARD_DECLINE_COUNT_15M`: The number of declined transactions on the card in
-//     the trailing 15 minutes before the authorization.
+//     the trailing 15 minutes before the authorization. Use an integer value.
 //   - `CARD_DECLINE_COUNT_1H`: The number of declined transactions on the card in
-//     the trailing hour up and until the authorization.
+//     the trailing hour up and until the authorization. Use an integer value.
 //   - `CARD_DECLINE_COUNT_24H`: The number of declined transactions on the card in
-//     the trailing 24 hours up and until the authorization.
+//     the trailing 24 hours up and until the authorization. Use an integer value.
 //   - `CARD_STATE`: The current state of the card associated with the transaction.
 //     Valid values are `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`,
 //     `PENDING_FULFILLMENT`.
@@ -2386,18 +2397,20 @@ func (r conditionalAuthorizationActionParametersConditionJSON) RawJSON() string 
 //     data, the service location postal code is used. Otherwise, falls back to the
 //     card acceptor postal code.
 //   - `CARD_AGE`: The age of the card in seconds at the time of the authorization.
+//     Use an integer value.
 //   - `ACCOUNT_AGE`: The age of the account holder's account in seconds at the time
-//     of the authorization.
+//     of the authorization. Use an integer value.
 //   - `AMOUNT_Z_SCORE`: The z-score of the transaction amount relative to the
 //     entity's transaction history. Null if fewer than 30 approved transactions in
 //     the specified window. Requires `parameters.scope` and `parameters.interval`.
+//     Use a decimal value.
 //   - `AVG_TRANSACTION_AMOUNT`: The average approved transaction amount for the
 //     entity over the specified window, in cents. Requires `parameters.scope` and
-//     `parameters.interval`.
+//     `parameters.interval`. Use a decimal value.
 //   - `STDEV_TRANSACTION_AMOUNT`: The standard deviation of approved transaction
 //     amounts for the entity over the specified window, in cents. Null if fewer than
 //     30 approved transactions in the specified window. Requires `parameters.scope`
-//     and `parameters.interval`.
+//     and `parameters.interval`. Use a decimal value.
 //   - `IS_NEW_COUNTRY`: Whether the transaction's merchant country has not been seen
 //     in the entity's transaction history. Valid values are `TRUE`, `FALSE`.
 //     Requires `parameters.scope`.
@@ -2408,26 +2421,31 @@ func (r conditionalAuthorizationActionParametersConditionJSON) RawJSON() string 
 //     Valid values are `TRUE`, `FALSE`. Requires `parameters.scope`.
 //   - `CONSECUTIVE_DECLINES`: The number of consecutive declined transactions for
 //     the entity over the last 30 days (rolling). Requires `parameters.scope`. Not
-//     supported for `BUSINESS_ACCOUNT` scope.
+//     supported for `BUSINESS_ACCOUNT` scope. Use an integer value.
 //   - `TIME_SINCE_LAST_TRANSACTION`: The number of days since the last approved
-//     transaction for the entity. Requires `parameters.scope`.
+//     transaction for the entity, rounded to the nearest whole day. Requires
+//     `parameters.scope`. Use an integer value.
 //   - `DISTINCT_COUNTRY_COUNT`: The number of distinct merchant countries seen in
-//     the entity's transaction history. Requires `parameters.scope`.
+//     the entity's transaction history. Requires `parameters.scope`. Use an integer
+//     value.
 //   - `IS_NEW_MERCHANT`: Whether the card acceptor ID has not been seen in the
 //     card's approved transaction history (capped at the 1000 most recently seen
 //     merchants). Valid values are `TRUE`, `FALSE`. Card-scoped only; no
 //     `parameters` required.
 //   - `THREE_DS_SUCCESS_RATE`: The 3DS authentication success rate for the card, as
 //     a percentage from 0.0 to 100.0. Card-scoped only; no `parameters` required.
+//     Use a decimal value.
 //   - `TRAVEL_SPEED`: The estimated speed of travel derived from the distance
 //     between the postal code centers of the last card-present transaction and the
 //     current transaction, divided by the elapsed time. Null if there is no prior
 //     card-present transaction, if either postal code cannot be geocoded, or if
-//     elapsed time is zero. Requires `parameters.unit` set to `MPH` or `KPH`.
+//     elapsed time is zero. Requires `parameters.unit` set to `MPH` or `KPH`. Use a
+//     decimal value.
 //   - `DISTANCE_FROM_LAST_TRANSACTION`: The estimated distance between the postal
 //     code centers of the last card-present transaction and the current transaction.
 //     Null if there is no prior card-present transaction or if either postal code
 //     cannot be geocoded. Requires `parameters.unit` set to `MILES` or `KILOMETERS`.
+//     Use a decimal value.
 type ConditionalAuthorizationActionParametersConditionsAttribute string
 
 const (
@@ -2662,12 +2680,12 @@ type ConditionalCardTransactionUpdateActionParametersCondition struct {
 	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
-	//     fee on behalf of the cardholder.
+	//     fee on behalf of the cardholder. Use an integer value.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
-	//     multiplying the raw score by 10x.
+	//     multiplying the raw score by 10x. Use an integer value.
 	//   - `TRANSACTION_STATUS`: The status of the transaction. Valid values are
 	//     `PENDING`, `VOIDED`, `SETTLING`, `SETTLED`, `BOUNCED`, `RETURNED`, `DECLINED`,
 	//     `EXPIRED`.
@@ -2688,15 +2706,16 @@ type ConditionalCardTransactionUpdateActionParametersCondition struct {
 	//   - `WALLET_TYPE`: For transactions using a digital wallet token, indicates the
 	//     source of the token. Valid values are `APPLE_PAY`, `GOOGLE_PAY`,
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
-	//   - `CARD_AGE`: The age of the card in seconds at the time of the transaction.
+	//   - `CARD_AGE`: The age of the card in seconds at the time of the transaction. Use
+	//     an integer value.
 	//   - `ACCOUNT_AGE`: The age of the account in seconds at the time of the
-	//     transaction.
+	//     transaction. Use an integer value.
 	//   - `SPEND_VELOCITY_COUNT`: The number of transactions matching the specified
 	//     filters within the given period. Requires `parameters` with `scope`, `period`,
-	//     and optional `filters`.
+	//     and optional `filters`. Use an integer value.
 	//   - `SPEND_VELOCITY_AMOUNT`: The total spend amount (in cents) of transactions
 	//     matching the specified filters within the given period. Requires `parameters`
-	//     with `scope`, `period`, and optional `filters`.
+	//     with `scope`, `period`, and optional `filters`. Use an integer value.
 	Attribute ConditionalCardTransactionUpdateActionParametersConditionsAttribute `json:"attribute" api:"required"`
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation" api:"required"`
@@ -2746,12 +2765,12 @@ func (r conditionalCardTransactionUpdateActionParametersConditionJSON) RawJSON()
 //   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
-//     fee on behalf of the cardholder.
+//     fee on behalf of the cardholder. Use an integer value.
 //   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 //     given authorization. Scores are on a range of 0-999, with 0 representing the
 //     lowest risk and 999 representing the highest risk. For Visa transactions,
 //     where the raw score has a range of 0-99, Lithic will normalize the score by
-//     multiplying the raw score by 10x.
+//     multiplying the raw score by 10x. Use an integer value.
 //   - `TRANSACTION_STATUS`: The status of the transaction. Valid values are
 //     `PENDING`, `VOIDED`, `SETTLING`, `SETTLED`, `BOUNCED`, `RETURNED`, `DECLINED`,
 //     `EXPIRED`.
@@ -2772,15 +2791,16 @@ func (r conditionalCardTransactionUpdateActionParametersConditionJSON) RawJSON()
 //   - `WALLET_TYPE`: For transactions using a digital wallet token, indicates the
 //     source of the token. Valid values are `APPLE_PAY`, `GOOGLE_PAY`,
 //     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
-//   - `CARD_AGE`: The age of the card in seconds at the time of the transaction.
+//   - `CARD_AGE`: The age of the card in seconds at the time of the transaction. Use
+//     an integer value.
 //   - `ACCOUNT_AGE`: The age of the account in seconds at the time of the
-//     transaction.
+//     transaction. Use an integer value.
 //   - `SPEND_VELOCITY_COUNT`: The number of transactions matching the specified
 //     filters within the given period. Requires `parameters` with `scope`, `period`,
-//     and optional `filters`.
+//     and optional `filters`. Use an integer value.
 //   - `SPEND_VELOCITY_AMOUNT`: The total spend amount (in cents) of transactions
 //     matching the specified filters within the given period. Requires `parameters`
-//     with `scope`, `period`, and optional `filters`.
+//     with `scope`, `period`, and optional `filters`. Use an integer value.
 type ConditionalCardTransactionUpdateActionParametersConditionsAttribute string
 
 const (
@@ -3203,10 +3223,10 @@ type ConditionalTokenizationActionParametersCondition struct {
 	//     `SAMSUNG_PAY`, `UNKNOWN`, `VISA_CHECKOUT`.
 	//   - `WALLET_ACCOUNT_SCORE`: Risk score for the account in the digital wallet.
 	//     Numeric value where lower numbers indicate higher risk (e.g., 1 = high risk, 2
-	//     = medium risk).
+	//     = medium risk). Use an integer value.
 	//   - `WALLET_DEVICE_SCORE`: Risk score for the device in the digital wallet.
 	//     Numeric value where lower numbers indicate higher risk (e.g., 1 = high risk, 2
-	//     = medium risk).
+	//     = medium risk). Use an integer value.
 	//   - `WALLET_RECOMMENDED_DECISION`: The decision recommended by the digital wallet
 	//     provider. Valid values include APPROVE, DECLINE,
 	//     REQUIRE_ADDITIONAL_AUTHENTICATION.
@@ -3276,10 +3296,10 @@ func (r conditionalTokenizationActionParametersConditionJSON) RawJSON() string {
 //     `SAMSUNG_PAY`, `UNKNOWN`, `VISA_CHECKOUT`.
 //   - `WALLET_ACCOUNT_SCORE`: Risk score for the account in the digital wallet.
 //     Numeric value where lower numbers indicate higher risk (e.g., 1 = high risk, 2
-//     = medium risk).
+//     = medium risk). Use an integer value.
 //   - `WALLET_DEVICE_SCORE`: Risk score for the device in the digital wallet.
 //     Numeric value where lower numbers indicate higher risk (e.g., 1 = high risk, 2
-//     = medium risk).
+//     = medium risk). Use an integer value.
 //   - `WALLET_RECOMMENDED_DECISION`: The decision recommended by the digital wallet
 //     provider. Valid values include APPROVE, DECLINE,
 //     REQUIRE_ADDITIONAL_AUTHENTICATION.
@@ -3332,7 +3352,7 @@ func (r ConditionalTokenizationActionParametersConditionsAttribute) IsKnown() bo
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Union satisfied by [shared.UnionString], [shared.UnionInt],
+// Union satisfied by [shared.UnionString], [shared.UnionInt], [shared.UnionFloat],
 // [ConditionalValueListOfStrings] or [shared.UnionTime].
 type ConditionalValueUnion interface {
 	ImplementsConditionalValueUnion()
@@ -3351,6 +3371,10 @@ func init() {
 			Type:       reflect.TypeOf(shared.UnionInt(0)),
 		},
 		apijson.UnionVariant{
+			TypeFilter: gjson.Number,
+			Type:       reflect.TypeOf(shared.UnionFloat(0)),
+		},
+		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalValueListOfStrings{}),
 		},
@@ -3367,7 +3391,7 @@ func (r ConditionalValueListOfStrings) ImplementsConditionalValueUnion() {}
 
 // A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 //
-// Satisfied by [shared.UnionString], [shared.UnionInt],
+// Satisfied by [shared.UnionString], [shared.UnionInt], [shared.UnionFloat],
 // [ConditionalValueListOfStringsParam], [shared.UnionTime].
 type ConditionalValueUnionParam interface {
 	ImplementsConditionalValueUnionParam()

@@ -21,3 +21,8 @@ type UnionInt int64
 
 func (UnionInt) ImplementsConditionalValueUnionParam() {}
 func (UnionInt) ImplementsConditionalValueUnion()      {}
+
+type UnionFloat float64
+
+func (UnionFloat) ImplementsConditionalValueUnionParam() {}
+func (UnionFloat) ImplementsConditionalValueUnion()      {}
