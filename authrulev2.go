@@ -2246,7 +2246,8 @@ type ConditionalAuthorizationActionParametersCondition struct {
 	//   - `CARD_AGE`: The age of the card in seconds at the time of the authorization.
 	//     Use an integer value.
 	//   - `ACCOUNT_AGE`: The age of the account holder's account in seconds at the time
-	//     of the authorization. Use an integer value.
+	//     of the authorization. Use an integer value. For programs where Lithic does not
+	//     manage or retain account holder data, this attribute does not evaluate.
 	//   - `AMOUNT_Z_SCORE`: The z-score of the transaction amount relative to the
 	//     entity's transaction history. Null if fewer than 30 approved transactions in
 	//     the specified window. Requires `parameters.scope` and `parameters.interval`.
@@ -2399,7 +2400,8 @@ func (r conditionalAuthorizationActionParametersConditionJSON) RawJSON() string 
 //   - `CARD_AGE`: The age of the card in seconds at the time of the authorization.
 //     Use an integer value.
 //   - `ACCOUNT_AGE`: The age of the account holder's account in seconds at the time
-//     of the authorization. Use an integer value.
+//     of the authorization. Use an integer value. For programs where Lithic does not
+//     manage or retain account holder data, this attribute does not evaluate.
 //   - `AMOUNT_Z_SCORE`: The z-score of the transaction amount relative to the
 //     entity's transaction history. Null if fewer than 30 approved transactions in
 //     the specified window. Requires `parameters.scope` and `parameters.interval`.
@@ -2709,7 +2711,8 @@ type ConditionalCardTransactionUpdateActionParametersCondition struct {
 	//   - `CARD_AGE`: The age of the card in seconds at the time of the transaction. Use
 	//     an integer value.
 	//   - `ACCOUNT_AGE`: The age of the account in seconds at the time of the
-	//     transaction. Use an integer value.
+	//     transaction. Use an integer value. For programs where Lithic does not manage
+	//     or retain account holder data, this attribute does not evaluate.
 	//   - `SPEND_VELOCITY_COUNT`: The number of transactions matching the specified
 	//     filters within the given period. Requires `parameters` with `scope`, `period`,
 	//     and optional `filters`. Use an integer value.
@@ -2794,7 +2797,8 @@ func (r conditionalCardTransactionUpdateActionParametersConditionJSON) RawJSON()
 //   - `CARD_AGE`: The age of the card in seconds at the time of the transaction. Use
 //     an integer value.
 //   - `ACCOUNT_AGE`: The age of the account in seconds at the time of the
-//     transaction. Use an integer value.
+//     transaction. Use an integer value. For programs where Lithic does not manage
+//     or retain account holder data, this attribute does not evaluate.
 //   - `SPEND_VELOCITY_COUNT`: The number of transactions matching the specified
 //     filters within the given period. Requires `parameters` with `scope`, `period`,
 //     and optional `filters`. Use an integer value.
