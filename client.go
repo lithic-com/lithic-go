@@ -25,6 +25,7 @@ type Client struct {
 	TokenizationDecisioning *TokenizationDecisioningService
 	Tokenizations           *TokenizationService
 	Cards                   *CardService
+	CardAuthorizations      *CardAuthorizationService
 	CardBulkOrders          *CardBulkOrderService
 	Balances                *BalanceService
 	Disputes                *DisputeService
@@ -95,6 +96,7 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.TokenizationDecisioning = NewTokenizationDecisioningService(opts...)
 	r.Tokenizations = NewTokenizationService(opts...)
 	r.Cards = NewCardService(opts...)
+	r.CardAuthorizations = NewCardAuthorizationService(opts...)
 	r.CardBulkOrders = NewCardBulkOrderService(opts...)
 	r.Balances = NewBalanceService(opts...)
 	r.Disputes = NewDisputeService(opts...)
