@@ -869,7 +869,7 @@ type KYBBusinessEntity struct {
 	// (if applicable).
 	DbaBusinessName string `json:"dba_business_name"`
 	// Parent company name (if applicable).
-	ParentCompany string                `json:"parent_company"`
+	ParentCompany string                `json:"parent_company" api:"nullable"`
 	JSON          kybBusinessEntityJSON `json:"-"`
 }
 
@@ -2146,13 +2146,13 @@ type AccountHolderSimulateEnrollmentReviewResponse struct {
 	ExemptionType AccountHolderSimulateEnrollmentReviewResponseExemptionType `json:"exemption_type" api:"nullable"`
 	// Customer-provided token that indicates a relationship with an object outside of
 	// the Lithic ecosystem.
-	ExternalID string `json:"external_id"`
+	ExternalID string `json:"external_id" api:"nullable"`
 	// Only present when user_type == "INDIVIDUAL". Information about the individual
 	// for which the account is being opened and KYC is being run.
 	Individual AccountHolderSimulateEnrollmentReviewResponseIndividual `json:"individual"`
 	// Only present when user_type == "BUSINESS". 6-digit North American Industry
 	// Classification System (NAICS) code for the business.
-	NaicsCode string `json:"naics_code"`
+	NaicsCode string `json:"naics_code" api:"nullable"`
 	// Only present when user_type == "BUSINESS". User-submitted description of the
 	// business.
 	NatureOfBusiness string `json:"nature_of_business"`
