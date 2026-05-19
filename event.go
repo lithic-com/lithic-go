@@ -130,8 +130,8 @@ type Event struct {
 	//     during card authorization. The card program should issue its own challenge to
 	//     the cardholder and then respond via
 	//     [/v1/card_authorizations/{event_token}/challenge_response](https://docs.lithic.com/reference/respondtoauthorizationchallenge).
-	//   - card_authorization.challenge_response: Occurs when a cardholder responds to an
-	//     SMS challenge during card authorization.
+	//   - card_authorization.challenge_response: Occurs when a cardholder responds to a
+	//     challenge during card authorization.
 	//   - card_transaction.enhanced_data.created: Occurs when L2/L3 enhanced commercial
 	//     data is processed for a transaction event.
 	//   - card_transaction.enhanced_data.updated: Occurs when L2/L3 enhanced commercial
@@ -257,8 +257,8 @@ func (r eventJSON) RawJSON() string {
 //     during card authorization. The card program should issue its own challenge to
 //     the cardholder and then respond via
 //     [/v1/card_authorizations/{event_token}/challenge_response](https://docs.lithic.com/reference/respondtoauthorizationchallenge).
-//   - card_authorization.challenge_response: Occurs when a cardholder responds to an
-//     SMS challenge during card authorization.
+//   - card_authorization.challenge_response: Occurs when a cardholder responds to a
+//     challenge during card authorization.
 //   - card_transaction.enhanced_data.created: Occurs when L2/L3 enhanced commercial
 //     data is processed for a transaction event.
 //   - card_transaction.enhanced_data.updated: Occurs when L2/L3 enhanced commercial
@@ -461,8 +461,8 @@ func (r eventSubscriptionJSON) RawJSON() string {
 //     during card authorization. The card program should issue its own challenge to
 //     the cardholder and then respond via
 //     [/v1/card_authorizations/{event_token}/challenge_response](https://docs.lithic.com/reference/respondtoauthorizationchallenge).
-//   - card_authorization.challenge_response: Occurs when a cardholder responds to an
-//     SMS challenge during card authorization.
+//   - card_authorization.challenge_response: Occurs when a cardholder responds to a
+//     challenge during card authorization.
 //   - card_transaction.enhanced_data.created: Occurs when L2/L3 enhanced commercial
 //     data is processed for a transaction event.
 //   - card_transaction.enhanced_data.updated: Occurs when L2/L3 enhanced commercial
@@ -723,8 +723,8 @@ func (r EventListParams) URLQuery() (v url.Values) {
 //     during card authorization. The card program should issue its own challenge to
 //     the cardholder and then respond via
 //     [/v1/card_authorizations/{event_token}/challenge_response](https://docs.lithic.com/reference/respondtoauthorizationchallenge).
-//   - card_authorization.challenge_response: Occurs when a cardholder responds to an
-//     SMS challenge during card authorization.
+//   - card_authorization.challenge_response: Occurs when a cardholder responds to a
+//     challenge during card authorization.
 //   - card_transaction.enhanced_data.created: Occurs when L2/L3 enhanced commercial
 //     data is processed for a transaction event.
 //   - card_transaction.enhanced_data.updated: Occurs when L2/L3 enhanced commercial
