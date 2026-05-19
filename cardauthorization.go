@@ -703,11 +703,18 @@ func (r CardAuthorizationFleetInfoFleetRestrictionCode) IsKnown() bool {
 // The latest Authorization Challenge that was issued to the cardholder for this
 // merchant.
 type CardAuthorizationLatestChallenge struct {
-	// The phone number used for sending Authorization Challenge SMS.
-	PhoneNumber string `json:"phone_number" api:"required"`
+	// The method used to deliver the challenge to the cardholder
+	//
+	// - `SMS` - Challenge was delivered via SMS
+	// - `OUT_OF_BAND` - Challenge was delivered via an out-of-band method
+	Method CardAuthorizationLatestChallengeMethod `json:"method" api:"required"`
+	// The phone number used for sending the Authorization Challenge. Present only when
+	// the challenge method is `SMS`.
+	PhoneNumber string `json:"phone_number" api:"required,nullable"`
 	// The status of the Authorization Challenge
 	//
 	// - `COMPLETED` - Challenge was successfully completed by the cardholder
+	// - `DECLINED` - Challenge was declined by the cardholder
 	// - `PENDING` - Challenge is still open
 	// - `EXPIRED` - Challenge has expired without being completed
 	// - `ERROR` - There was an error processing the challenge
@@ -721,6 +728,7 @@ type CardAuthorizationLatestChallenge struct {
 // cardAuthorizationLatestChallengeJSON contains the JSON metadata for the struct
 // [CardAuthorizationLatestChallenge]
 type cardAuthorizationLatestChallengeJSON struct {
+	Method      apijson.Field
 	PhoneNumber apijson.Field
 	Status      apijson.Field
 	CompletedAt apijson.Field
@@ -736,9 +744,29 @@ func (r cardAuthorizationLatestChallengeJSON) RawJSON() string {
 	return r.raw
 }
 
+// The method used to deliver the challenge to the cardholder
+//
+// - `SMS` - Challenge was delivered via SMS
+// - `OUT_OF_BAND` - Challenge was delivered via an out-of-band method
+type CardAuthorizationLatestChallengeMethod string
+
+const (
+	CardAuthorizationLatestChallengeMethodSMS       CardAuthorizationLatestChallengeMethod = "SMS"
+	CardAuthorizationLatestChallengeMethodOutOfBand CardAuthorizationLatestChallengeMethod = "OUT_OF_BAND"
+)
+
+func (r CardAuthorizationLatestChallengeMethod) IsKnown() bool {
+	switch r {
+	case CardAuthorizationLatestChallengeMethodSMS, CardAuthorizationLatestChallengeMethodOutOfBand:
+		return true
+	}
+	return false
+}
+
 // The status of the Authorization Challenge
 //
 // - `COMPLETED` - Challenge was successfully completed by the cardholder
+// - `DECLINED` - Challenge was declined by the cardholder
 // - `PENDING` - Challenge is still open
 // - `EXPIRED` - Challenge has expired without being completed
 // - `ERROR` - There was an error processing the challenge
@@ -746,6 +774,7 @@ type CardAuthorizationLatestChallengeStatus string
 
 const (
 	CardAuthorizationLatestChallengeStatusCompleted CardAuthorizationLatestChallengeStatus = "COMPLETED"
+	CardAuthorizationLatestChallengeStatusDeclined  CardAuthorizationLatestChallengeStatus = "DECLINED"
 	CardAuthorizationLatestChallengeStatusPending   CardAuthorizationLatestChallengeStatus = "PENDING"
 	CardAuthorizationLatestChallengeStatusExpired   CardAuthorizationLatestChallengeStatus = "EXPIRED"
 	CardAuthorizationLatestChallengeStatusError     CardAuthorizationLatestChallengeStatus = "ERROR"
@@ -753,7 +782,7 @@ const (
 
 func (r CardAuthorizationLatestChallengeStatus) IsKnown() bool {
 	switch r {
-	case CardAuthorizationLatestChallengeStatusCompleted, CardAuthorizationLatestChallengeStatusPending, CardAuthorizationLatestChallengeStatusExpired, CardAuthorizationLatestChallengeStatusError:
+	case CardAuthorizationLatestChallengeStatusCompleted, CardAuthorizationLatestChallengeStatusDeclined, CardAuthorizationLatestChallengeStatusPending, CardAuthorizationLatestChallengeStatusExpired, CardAuthorizationLatestChallengeStatusError:
 		return true
 	}
 	return false
