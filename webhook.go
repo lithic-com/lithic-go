@@ -1173,12 +1173,13 @@ func (r CardAuthorizationChallengeResponseWebhookEvent) implementsParsedWebhookE
 type CardAuthorizationChallengeResponseWebhookEventChallengeMethod string
 
 const (
-	CardAuthorizationChallengeResponseWebhookEventChallengeMethodSMS CardAuthorizationChallengeResponseWebhookEventChallengeMethod = "SMS"
+	CardAuthorizationChallengeResponseWebhookEventChallengeMethodSMS       CardAuthorizationChallengeResponseWebhookEventChallengeMethod = "SMS"
+	CardAuthorizationChallengeResponseWebhookEventChallengeMethodOutOfBand CardAuthorizationChallengeResponseWebhookEventChallengeMethod = "OUT_OF_BAND"
 )
 
 func (r CardAuthorizationChallengeResponseWebhookEventChallengeMethod) IsKnown() bool {
 	switch r {
-	case CardAuthorizationChallengeResponseWebhookEventChallengeMethodSMS:
+	case CardAuthorizationChallengeResponseWebhookEventChallengeMethodSMS, CardAuthorizationChallengeResponseWebhookEventChallengeMethodOutOfBand:
 		return true
 	}
 	return false
@@ -5906,12 +5907,13 @@ func (r ParsedWebhookEventCategory) IsKnown() bool {
 type ParsedWebhookEventChallengeMethod string
 
 const (
-	ParsedWebhookEventChallengeMethodSMS ParsedWebhookEventChallengeMethod = "SMS"
+	ParsedWebhookEventChallengeMethodSMS       ParsedWebhookEventChallengeMethod = "SMS"
+	ParsedWebhookEventChallengeMethodOutOfBand ParsedWebhookEventChallengeMethod = "OUT_OF_BAND"
 )
 
 func (r ParsedWebhookEventChallengeMethod) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventChallengeMethodSMS:
+	case ParsedWebhookEventChallengeMethodSMS, ParsedWebhookEventChallengeMethodOutOfBand:
 		return true
 	}
 	return false
