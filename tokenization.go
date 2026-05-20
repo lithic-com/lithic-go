@@ -582,11 +582,12 @@ const (
 	TokenizationDeclineReasonNetworkFailure                 TokenizationDeclineReason = "NETWORK_FAILURE"
 	TokenizationDeclineReasonGenericDecline                 TokenizationDeclineReason = "GENERIC_DECLINE"
 	TokenizationDeclineReasonDigitalCardArtRequired         TokenizationDeclineReason = "DIGITAL_CARD_ART_REQUIRED"
+	TokenizationDeclineReasonInvalidPan                     TokenizationDeclineReason = "INVALID_PAN"
 )
 
 func (r TokenizationDeclineReason) IsKnown() bool {
 	switch r {
-	case TokenizationDeclineReasonAccountScore1, TokenizationDeclineReasonDeviceScore1, TokenizationDeclineReasonAllWalletDeclineReasonsPresent, TokenizationDeclineReasonWalletRecommendedDecisionRed, TokenizationDeclineReasonCvcMismatch, TokenizationDeclineReasonCardExpiryMonthMismatch, TokenizationDeclineReasonCardExpiryYearMismatch, TokenizationDeclineReasonCardInvalidState, TokenizationDeclineReasonCustomerRedPath, TokenizationDeclineReasonInvalidCustomerResponse, TokenizationDeclineReasonNetworkFailure, TokenizationDeclineReasonGenericDecline, TokenizationDeclineReasonDigitalCardArtRequired:
+	case TokenizationDeclineReasonAccountScore1, TokenizationDeclineReasonDeviceScore1, TokenizationDeclineReasonAllWalletDeclineReasonsPresent, TokenizationDeclineReasonWalletRecommendedDecisionRed, TokenizationDeclineReasonCvcMismatch, TokenizationDeclineReasonCardExpiryMonthMismatch, TokenizationDeclineReasonCardExpiryYearMismatch, TokenizationDeclineReasonCardInvalidState, TokenizationDeclineReasonCustomerRedPath, TokenizationDeclineReasonInvalidCustomerResponse, TokenizationDeclineReasonNetworkFailure, TokenizationDeclineReasonGenericDecline, TokenizationDeclineReasonDigitalCardArtRequired, TokenizationDeclineReasonInvalidPan:
 		return true
 	}
 	return false
