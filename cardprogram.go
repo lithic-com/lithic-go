@@ -88,7 +88,7 @@ type CardProgram struct {
 	// The first digits of the card number that this card program starts with.
 	PanRangeStart string `json:"pan_range_start" api:"required"`
 	// 3-character alphabetic ISO 4217 code for the currency of the cardholder.
-	CardholderCurrency string `json:"cardholder_currency"`
+	CardholderCurrency string `json:"cardholder_currency" api:"nullable"`
 	// List of 3-character alphabetic ISO 4217 codes for the currencies that the card
 	// program supports for settlement.
 	SettlementCurrencies []string        `json:"settlement_currencies"`
