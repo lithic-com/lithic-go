@@ -73,10 +73,10 @@ type Balance struct {
 	FinancialAccountType BalanceFinancialAccountType `json:"financial_account_type" api:"required"`
 	// Globally unique identifier for the last financial transaction event that
 	// impacted this balance.
-	LastTransactionEventToken string `json:"last_transaction_event_token" api:"required" format:"uuid"`
+	LastTransactionEventToken string `json:"last_transaction_event_token" api:"required,nullable" format:"uuid"`
 	// Globally unique identifier for the last financial transaction that impacted this
 	// balance.
-	LastTransactionToken string `json:"last_transaction_token" api:"required" format:"uuid"`
+	LastTransactionToken string `json:"last_transaction_token" api:"required,nullable" format:"uuid"`
 	// Funds not available for spend due to card authorizations or pending ACH release.
 	// Shown in the currency's smallest unit (e.g., cents for USD).
 	PendingAmount int64 `json:"pending_amount" api:"required"`
@@ -116,15 +116,17 @@ func (r balanceJSON) RawJSON() string {
 type BalanceFinancialAccountType string
 
 const (
-	BalanceFinancialAccountTypeIssuing   BalanceFinancialAccountType = "ISSUING"
-	BalanceFinancialAccountTypeOperating BalanceFinancialAccountType = "OPERATING"
-	BalanceFinancialAccountTypeReserve   BalanceFinancialAccountType = "RESERVE"
-	BalanceFinancialAccountTypeSecurity  BalanceFinancialAccountType = "SECURITY"
+	BalanceFinancialAccountTypeCard               BalanceFinancialAccountType = "CARD"
+	BalanceFinancialAccountTypeIssuing            BalanceFinancialAccountType = "ISSUING"
+	BalanceFinancialAccountTypeOperating          BalanceFinancialAccountType = "OPERATING"
+	BalanceFinancialAccountTypeProgramReceivables BalanceFinancialAccountType = "PROGRAM_RECEIVABLES"
+	BalanceFinancialAccountTypeReserve            BalanceFinancialAccountType = "RESERVE"
+	BalanceFinancialAccountTypeSecurity           BalanceFinancialAccountType = "SECURITY"
 )
 
 func (r BalanceFinancialAccountType) IsKnown() bool {
 	switch r {
-	case BalanceFinancialAccountTypeIssuing, BalanceFinancialAccountTypeOperating, BalanceFinancialAccountTypeReserve, BalanceFinancialAccountTypeSecurity:
+	case BalanceFinancialAccountTypeCard, BalanceFinancialAccountTypeIssuing, BalanceFinancialAccountTypeOperating, BalanceFinancialAccountTypeProgramReceivables, BalanceFinancialAccountTypeReserve, BalanceFinancialAccountTypeSecurity:
 		return true
 	}
 	return false

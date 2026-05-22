@@ -146,13 +146,13 @@ type SettlementDetail struct {
 	Token string `json:"token" api:"required" format:"uuid"`
 	// Globally unique identifier denoting the account that the associated transaction
 	// occurred on.
-	AccountToken string `json:"account_token" api:"required" format:"uuid"`
+	AccountToken string `json:"account_token" api:"required,nullable" format:"uuid"`
 	// Globally unique identifier denoting the card program that the associated
 	// transaction occurred on.
-	CardProgramToken string `json:"card_program_token" api:"required" format:"uuid"`
+	CardProgramToken string `json:"card_program_token" api:"required,nullable" format:"uuid"`
 	// Globally unique identifier denoting the card that the associated transaction
 	// occurred on.
-	CardToken string `json:"card_token" api:"required" format:"uuid"`
+	CardToken string `json:"card_token" api:"required,nullable" format:"uuid"`
 	// Date and time when the transaction first occurred. UTC time zone.
 	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Three-character alphabetic ISO 4217 code.
@@ -182,12 +182,12 @@ type SettlementDetail struct {
 	// advisement date, which is distinct from the date of money movement.
 	SettlementDate string `json:"settlement_date" api:"required"`
 	// Globally unique identifier denoting the associated transaction. For settlement
-	// records with type `CLEARING`, `FINANCIAL`, or `NON-FINANCIAL`, this references a
+	// records with type `CLEARING`, `FINANCIAL`, or `NON_FINANCIAL`, this references a
 	// card transaction token. For settlement records with type `CHARGEBACK`,
 	// `REPRESENTMENT`, `PREARBITRATION`, `ARBITRATION`, or `COLLABORATION`, this
 	// references the dispute transaction token. May be null for certain settlement
 	// types.
-	TransactionToken string `json:"transaction_token" api:"required" format:"uuid"`
+	TransactionToken string `json:"transaction_token" api:"required,nullable" format:"uuid"`
 	// The total amount of settlement impacting transactions (excluding interchange,
 	// fees, and disputes).
 	TransactionsGrossAmount int64 `json:"transactions_gross_amount" api:"required"`
@@ -289,7 +289,7 @@ const (
 	SettlementDetailTypeCollaboration  SettlementDetailType = "COLLABORATION"
 	SettlementDetailTypeFee            SettlementDetailType = "FEE"
 	SettlementDetailTypeFinancial      SettlementDetailType = "FINANCIAL"
-	SettlementDetailTypeNonFinancial   SettlementDetailType = "NON-FINANCIAL"
+	SettlementDetailTypeNonFinancial   SettlementDetailType = "NON_FINANCIAL"
 	SettlementDetailTypePrearbitration SettlementDetailType = "PREARBITRATION"
 	SettlementDetailTypeRepresentment  SettlementDetailType = "REPRESENTMENT"
 )

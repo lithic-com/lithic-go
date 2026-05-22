@@ -152,7 +152,7 @@ type TransferLimitsResponseDataDailyLimitCredit struct {
 	// The limit amount
 	Limit int64 `json:"limit" api:"required"`
 	// Amount originated towards limit
-	AmountOriginated int64                                          `json:"amount_originated"`
+	AmountOriginated int64                                          `json:"amount_originated" api:"nullable"`
 	JSON             transferLimitsResponseDataDailyLimitCreditJSON `json:"-"`
 }
 
@@ -178,7 +178,7 @@ type TransferLimitsResponseDataDailyLimitDebit struct {
 	// The limit amount
 	Limit int64 `json:"limit" api:"required"`
 	// Amount originated towards limit
-	AmountOriginated int64                                         `json:"amount_originated"`
+	AmountOriginated int64                                         `json:"amount_originated" api:"nullable"`
 	JSON             transferLimitsResponseDataDailyLimitDebitJSON `json:"-"`
 }
 
@@ -230,7 +230,7 @@ type TransferLimitsResponseDataMonthlyLimitCredit struct {
 	// The limit amount
 	Limit int64 `json:"limit" api:"required"`
 	// Amount originated towards limit
-	AmountOriginated int64                                            `json:"amount_originated"`
+	AmountOriginated int64                                            `json:"amount_originated" api:"nullable"`
 	JSON             transferLimitsResponseDataMonthlyLimitCreditJSON `json:"-"`
 }
 
@@ -256,7 +256,7 @@ type TransferLimitsResponseDataMonthlyLimitDebit struct {
 	// The limit amount
 	Limit int64 `json:"limit" api:"required"`
 	// Amount originated towards limit
-	AmountOriginated int64                                           `json:"amount_originated"`
+	AmountOriginated int64                                           `json:"amount_originated" api:"nullable"`
 	JSON             transferLimitsResponseDataMonthlyLimitDebitJSON `json:"-"`
 }
 
@@ -308,7 +308,7 @@ type TransferLimitsResponseDataProgramLimitPerTransactionCredit struct {
 	// The limit amount
 	Limit int64 `json:"limit" api:"required"`
 	// Amount originated towards limit
-	AmountOriginated int64                                                          `json:"amount_originated"`
+	AmountOriginated int64                                                          `json:"amount_originated" api:"nullable"`
 	JSON             transferLimitsResponseDataProgramLimitPerTransactionCreditJSON `json:"-"`
 }
 
@@ -335,7 +335,7 @@ type TransferLimitsResponseDataProgramLimitPerTransactionDebit struct {
 	// The limit amount
 	Limit int64 `json:"limit" api:"required"`
 	// Amount originated towards limit
-	AmountOriginated int64                                                         `json:"amount_originated"`
+	AmountOriginated int64                                                         `json:"amount_originated" api:"nullable"`
 	JSON             transferLimitsResponseDataProgramLimitPerTransactionDebitJSON `json:"-"`
 }
 

@@ -4436,9 +4436,9 @@ type ParsedWebhookEvent struct {
 	// This field can have the runtime type of [CardAuthorizationNetworkSpecificData].
 	NetworkSpecificData interface{} `json:"network_specific_data"`
 	// Date when the next payment is due
-	NextPaymentDueDate time.Time `json:"next_payment_due_date" format:"date"`
+	NextPaymentDueDate time.Time `json:"next_payment_due_date" api:"nullable" format:"date"`
 	// Date when the next billing period will end
-	NextStatementEndDate time.Time `json:"next_statement_end_date" format:"date"`
+	NextStatementEndDate time.Time `json:"next_statement_end_date" api:"nullable" format:"date"`
 	Nickname             string    `json:"nickname" api:"nullable"`
 	// Total amount of gross other fees outside of interchange. (This field is
 	// deprecated and will be removed in a future version of the API. To compute total
