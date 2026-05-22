@@ -1056,7 +1056,7 @@ type TransactionEvent struct {
 	// Type of transaction event
 	Type                TransactionEventsType                `json:"type" api:"required"`
 	AccountType         TransactionEventsAccountType         `json:"account_type"`
-	NetworkSpecificData TransactionEventsNetworkSpecificData `json:"network_specific_data"`
+	NetworkSpecificData TransactionEventsNetworkSpecificData `json:"network_specific_data" api:"nullable"`
 	JSON                transactionEventJSON                 `json:"-"`
 }
 

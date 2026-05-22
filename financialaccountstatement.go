@@ -118,9 +118,9 @@ type Statement struct {
 	YtdTotals       StatementTotals          `json:"ytd_totals" api:"required"`
 	InterestDetails StatementInterestDetails `json:"interest_details" api:"nullable"`
 	// Date when the next payment is due
-	NextPaymentDueDate time.Time `json:"next_payment_due_date" format:"date"`
+	NextPaymentDueDate time.Time `json:"next_payment_due_date" api:"nullable" format:"date"`
 	// Date when the next billing period will end
-	NextStatementEndDate time.Time `json:"next_statement_end_date" format:"date"`
+	NextStatementEndDate time.Time `json:"next_statement_end_date" api:"nullable" format:"date"`
 	// Details on number and size of payments to pay off balance
 	PayoffDetails   StatementPayoffDetails `json:"payoff_details" api:"nullable"`
 	StatementTotals StatementTotals        `json:"statement_totals"`

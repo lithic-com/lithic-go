@@ -563,11 +563,11 @@ type StatementTotals struct {
 	// Net card transaction volume less any cash advances in cents
 	Purchases int64 `json:"purchases" api:"required"`
 	// Breakdown of credits
-	CreditDetails interface{} `json:"credit_details"`
+	CreditDetails interface{} `json:"credit_details" api:"nullable"`
 	// Breakdown of debits
-	DebitDetails interface{} `json:"debit_details"`
+	DebitDetails interface{} `json:"debit_details" api:"nullable"`
 	// Breakdown of payments
-	PaymentDetails interface{}         `json:"payment_details"`
+	PaymentDetails interface{}         `json:"payment_details" api:"nullable"`
 	JSON           statementTotalsJSON `json:"-"`
 }
 
