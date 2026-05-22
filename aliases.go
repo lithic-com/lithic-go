@@ -457,6 +457,9 @@ const FinancialEventTypeMonthly = shared.FinancialEventTypeMonthly
 // This is an alias to an internal value.
 const FinancialEventTypeMonthlyReversal = shared.FinancialEventTypeMonthlyReversal
 
+// This is an alias to an internal value.
+const FinancialEventTypeAccountToAccount = shared.FinancialEventTypeAccountToAccount
+
 // Type of instance financial account
 //
 // This is an alias to an internal type.
