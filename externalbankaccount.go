@@ -95,6 +95,18 @@ func (r *ExternalBankAccountService) ListAutoPaging(ctx context.Context, query E
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
 }
 
+// Pause an external bank account
+func (r *ExternalBankAccountService) Pause(ctx context.Context, externalBankAccountToken string, opts ...option.RequestOption) (res *ExternalBankAccount, err error) {
+	opts = slices.Concat(r.Options, opts)
+	if externalBankAccountToken == "" {
+		err = errors.New("missing required external_bank_account_token parameter")
+		return nil, err
+	}
+	path := fmt.Sprintf("v1/external_bank_accounts/%s/pause", externalBankAccountToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
+	return res, err
+}
+
 // Retry external bank account micro deposit verification.
 func (r *ExternalBankAccountService) RetryMicroDeposits(ctx context.Context, externalBankAccountToken string, body ExternalBankAccountRetryMicroDepositsParams, opts ...option.RequestOption) (res *ExternalBankAccountRetryMicroDepositsResponse, err error) {
 	opts = slices.Concat(r.Options, opts)
