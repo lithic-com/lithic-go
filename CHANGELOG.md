@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.111.0 (2026-05-27)
+
+Full Changelog: [v0.110.0...v0.111.0](https://github.com/lithic-com/lithic-go/compare/v0.110.0...v0.111.0)
+
+### Features
+
+* **api:** add card_authorization.challenge webhook event ([62657e1](https://github.com/lithic-com/lithic-go/commit/62657e14a7799ef1afb62c719ff1140271264111))
+* **api:** add method field, OUT_OF_BAND/DECLINED enums to authorization challenges ([5917893](https://github.com/lithic-com/lithic-go/commit/59178930a38c215554d3b1dd1df9997af4718072))
+* **api:** add pause method to external_bank_accounts ([2f7d2fe](https://github.com/lithic-com/lithic-go/commit/2f7d2fe93e7843c6b686bb6d2dfeb1093b21ef7f))
+* **api:** Add schemas for authorization adjustment rules ([3376152](https://github.com/lithic-com/lithic-go/commit/3376152852f92ba938bdef9f4a0dc91328572ccb))
+* **client:** add compatibility aliases for old type names ([7dd2ddf](https://github.com/lithic-com/lithic-go/commit/7dd2ddf740f3866d45f7786fd419b8226100c75f))
+
+
+### Bug Fixes
+
+* **api:** Add INVALID_PAN to tokenization decline reason enum ([3de5c93](https://github.com/lithic-com/lithic-go/commit/3de5c93ddcd012836120cc62b35856b37c2c6004))
+* **api:** Correct nullable type annotation for cardholder_currency field in card schema ([8f9d052](https://github.com/lithic-com/lithic-go/commit/8f9d0521dac67f1936f45b003ee416bce7db7415))
+* **api:** Correct schema validation for treasury schemas ([d30465b](https://github.com/lithic-com/lithic-go/commit/d30465bc08a87dade3390a13dfae67b01f791ea5))
+* **api:** Fix nullable types in account holder and account response schemas ([584e5fd](https://github.com/lithic-com/lithic-go/commit/584e5fd0e220c185e3cb560a0c36eea4a73eab8a))
+* **types:** change ConditionalValueUnion to float, add date-time format to auth rules ([aee884f](https://github.com/lithic-com/lithic-go/commit/aee884f368e56d824323becf1c07c416a84fc759))
+
+
+### Chores
+
+* **internal:** simplify release-please config ([8627027](https://github.com/lithic-com/lithic-go/commit/86270271b3e6dc57103420cda75f9ab3b7da6147))
+
+
+### Documentation
+
+* **api:** clarify ACCOUNT_AGE attribute behavior in authrulev2 conditions ([c35085b](https://github.com/lithic-com/lithic-go/commit/c35085b16a63cf7964a39a1e6a356f59edbcfecc))
+
 ## 0.110.0 (2026-05-11)
 
 Full Changelog: [v0.109.0...v0.110.0](https://github.com/lithic-com/lithic-go/compare/v0.109.0...v0.110.0)
