@@ -703,6 +703,11 @@ func (r CardAuthorizationFleetInfoFleetRestrictionCode) IsKnown() bool {
 // The latest Authorization Challenge that was issued to the cardholder for this
 // merchant.
 type CardAuthorizationLatestChallenge struct {
+	// The date and time when the Authorization Challenge was completed in UTC. Filled
+	// only if the challenge has been completed.
+	CompletedAt time.Time `json:"completed_at" api:"required,nullable" format:"date-time"`
+	// The date and time when the Authorization Challenge was created in UTC
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// The method used to deliver the challenge to the cardholder
 	//
 	// - `SMS` - Challenge was delivered via SMS
@@ -719,19 +724,17 @@ type CardAuthorizationLatestChallenge struct {
 	// - `EXPIRED` - Challenge has expired without being completed
 	// - `ERROR` - There was an error processing the challenge
 	Status CardAuthorizationLatestChallengeStatus `json:"status" api:"required"`
-	// The date and time when the Authorization Challenge was completed in UTC. Present
-	// only if the status is `COMPLETED`.
-	CompletedAt time.Time                            `json:"completed_at" format:"date-time"`
-	JSON        cardAuthorizationLatestChallengeJSON `json:"-"`
+	JSON   cardAuthorizationLatestChallengeJSON   `json:"-"`
 }
 
 // cardAuthorizationLatestChallengeJSON contains the JSON metadata for the struct
 // [CardAuthorizationLatestChallenge]
 type cardAuthorizationLatestChallengeJSON struct {
+	CompletedAt apijson.Field
+	Created     apijson.Field
 	Method      apijson.Field
 	PhoneNumber apijson.Field
 	Status      apijson.Field
-	CompletedAt apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
