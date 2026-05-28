@@ -253,8 +253,8 @@ func (r *CardService) GetSpendLimits(ctx context.Context, cardToken string, opts
 
 // Get card configuration such as spend limit and state. Customers must be PCI
 // compliant to use this endpoint. Please contact
-// [support@lithic.com](mailto:support@lithic.com) for questions. _Note: this is a
-// `POST` endpoint because it is more secure to send sensitive data in a request
+// [support.lithic.com](https://support.lithic.com/) for questions. _Note: this is
+// a `POST` endpoint because it is more secure to send sensitive data in a request
 // body than in a URL._
 func (r *CardService) SearchByPan(ctx context.Context, body CardSearchByPanParams, opts ...option.RequestOption) (res *Card, err error) {
 	opts = slices.Concat(r.Options, opts)
@@ -286,7 +286,7 @@ type Card struct {
 	Cvv string `json:"cvv"`
 	// Primary Account Number (PAN) (i.e. the card number). Customers must be PCI
 	// compliant to have PAN returned as a field in production. Please contact
-	// support@lithic.com for questions.
+	// https://support.lithic.com/ for questions.
 	Pan  string   `json:"pan"`
 	JSON cardJSON `json:"-"`
 	NonPCICard
