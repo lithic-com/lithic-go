@@ -4427,6 +4427,8 @@ type ParsedWebhookEvent struct {
 	NaicsCode string `json:"naics_code"`
 	// The nickname for this External Bank Account
 	Name string `json:"name" api:"nullable"`
+	// This field can have the runtime type of [CardAuthorizationNameValidation].
+	NameValidation interface{} `json:"name_validation"`
 	// Short description of the company's line of business (i.e., what does the company
 	// do?). Values longer than 255 characters will be truncated before KYB
 	// verification
@@ -4841,6 +4843,7 @@ type parsedWebhookEventJSON struct {
 	MinimumPaymentBalance              apijson.Field
 	NaicsCode                          apijson.Field
 	Name                               apijson.Field
+	NameValidation                     apijson.Field
 	NatureOfBusiness                   apijson.Field
 	Network                            apijson.Field
 	NetworkClaimIDs                    apijson.Field
