@@ -110,6 +110,10 @@ type CardAuthorization struct {
 	//
 	// Deprecated: deprecated
 	MerchantCurrency string `json:"merchant_currency" api:"required"`
+	// Network name validation data, present when the card network requested name
+	// validation for this transaction. Contains the cardholder name provided by the
+	// network and Lithic's computed match result against KYC data on file.
+	NameValidation CardAuthorizationNameValidation `json:"name_validation" api:"required,nullable"`
 	// Where the cardholder received the service, when different from the card acceptor
 	// location. This is populated from network data elements such as Mastercard DE-122
 	// SE1 SF9-14 and Visa F34 DS02.
@@ -184,6 +188,7 @@ type cardAuthorizationJSON struct {
 	Merchant                 apijson.Field
 	MerchantAmount           apijson.Field
 	MerchantCurrency         apijson.Field
+	NameValidation           apijson.Field
 	ServiceLocation          apijson.Field
 	SettledAmount            apijson.Field
 	Status                   apijson.Field
@@ -534,6 +539,106 @@ func (r *CardAuthorizationMerchant) UnmarshalJSON(data []byte) (err error) {
 
 func (r cardAuthorizationMerchantJSON) RawJSON() string {
 	return r.raw
+}
+
+// Network name validation data, present when the card network requested name
+// validation for this transaction. Contains the cardholder name provided by the
+// network and Lithic's computed match result against KYC data on file.
+type CardAuthorizationNameValidation struct {
+	// Cardholder name as provided by the card network.
+	Name CardAuthorizationNameValidationName `json:"name" api:"required"`
+	// Lithic's computed match result comparing the network-provided name to the name
+	// on file.
+	NameOnFileMatch CardAuthorizationNameValidationNameOnFileMatch `json:"name_on_file_match" api:"required"`
+	JSON            cardAuthorizationNameValidationJSON            `json:"-"`
+}
+
+// cardAuthorizationNameValidationJSON contains the JSON metadata for the struct
+// [CardAuthorizationNameValidation]
+type cardAuthorizationNameValidationJSON struct {
+	Name            apijson.Field
+	NameOnFileMatch apijson.Field
+	raw             string
+	ExtraFields     map[string]apijson.Field
+}
+
+func (r *CardAuthorizationNameValidation) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardAuthorizationNameValidationJSON) RawJSON() string {
+	return r.raw
+}
+
+// Cardholder name as provided by the card network.
+type CardAuthorizationNameValidationName struct {
+	// First name
+	First string `json:"first" api:"required"`
+	// Last name
+	Last string `json:"last" api:"required"`
+	// Middle name
+	Middle string                                  `json:"middle" api:"required,nullable"`
+	JSON   cardAuthorizationNameValidationNameJSON `json:"-"`
+}
+
+// cardAuthorizationNameValidationNameJSON contains the JSON metadata for the
+// struct [CardAuthorizationNameValidationName]
+type cardAuthorizationNameValidationNameJSON struct {
+	First       apijson.Field
+	Last        apijson.Field
+	Middle      apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CardAuthorizationNameValidationName) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardAuthorizationNameValidationNameJSON) RawJSON() string {
+	return r.raw
+}
+
+// Lithic's computed match result comparing the network-provided name to the name
+// on file.
+type CardAuthorizationNameValidationNameOnFileMatch struct {
+	// Overall name match result.
+	FullName CardAuthorizationNameValidationNameOnFileMatchFullName `json:"full_name" api:"required"`
+	JSON     cardAuthorizationNameValidationNameOnFileMatchJSON     `json:"-"`
+}
+
+// cardAuthorizationNameValidationNameOnFileMatchJSON contains the JSON metadata
+// for the struct [CardAuthorizationNameValidationNameOnFileMatch]
+type cardAuthorizationNameValidationNameOnFileMatchJSON struct {
+	FullName    apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *CardAuthorizationNameValidationNameOnFileMatch) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardAuthorizationNameValidationNameOnFileMatchJSON) RawJSON() string {
+	return r.raw
+}
+
+// Overall name match result.
+type CardAuthorizationNameValidationNameOnFileMatchFullName string
+
+const (
+	CardAuthorizationNameValidationNameOnFileMatchFullNameMatch        CardAuthorizationNameValidationNameOnFileMatchFullName = "MATCH"
+	CardAuthorizationNameValidationNameOnFileMatchFullNamePartialMatch CardAuthorizationNameValidationNameOnFileMatchFullName = "PARTIAL_MATCH"
+	CardAuthorizationNameValidationNameOnFileMatchFullNameNoMatch      CardAuthorizationNameValidationNameOnFileMatchFullName = "NO_MATCH"
+	CardAuthorizationNameValidationNameOnFileMatchFullNameUnverified   CardAuthorizationNameValidationNameOnFileMatchFullName = "UNVERIFIED"
+)
+
+func (r CardAuthorizationNameValidationNameOnFileMatchFullName) IsKnown() bool {
+	switch r {
+	case CardAuthorizationNameValidationNameOnFileMatchFullNameMatch, CardAuthorizationNameValidationNameOnFileMatchFullNamePartialMatch, CardAuthorizationNameValidationNameOnFileMatchFullNameNoMatch, CardAuthorizationNameValidationNameOnFileMatchFullNameUnverified:
+		return true
+	}
+	return false
 }
 
 // Where the cardholder received the service, when different from the card acceptor
