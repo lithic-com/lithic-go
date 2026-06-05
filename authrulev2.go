@@ -341,11 +341,9 @@ type AuthRuleCurrentVersionParameters struct {
 	// This field can have the runtime type of [Conditional3DSActionParametersAction],
 	// [ConditionalAuthorizationActionParametersAction],
 	// [ConditionalACHActionParametersAction],
-	// [ConditionalTokenizationActionParametersAction], [CardTransactionUpdateAction].
+	// [ConditionalTokenizationActionParametersAction], [CardTransactionUpdateAction],
+	// [ConditionalAuthorizationAdjustmentParametersAction].
 	Action interface{} `json:"action"`
-	// This field can have the runtime type of
-	// [ConditionalAuthorizationAdjustmentParametersAdjustment].
-	Adjustment interface{} `json:"adjustment"`
 	// The TypeScript source code of the rule. Must define a `rule()` function that
 	// accepts the declared features as positional arguments (in the same order as the
 	// `features` array) and returns an array of actions.
@@ -385,7 +383,6 @@ type AuthRuleCurrentVersionParameters struct {
 // [AuthRuleCurrentVersionParameters]
 type authRuleCurrentVersionParametersJSON struct {
 	Action      apijson.Field
-	Adjustment  apijson.Field
 	Code        apijson.Field
 	Conditions  apijson.Field
 	Features    apijson.Field
@@ -547,11 +544,9 @@ type AuthRuleDraftVersionParameters struct {
 	// This field can have the runtime type of [Conditional3DSActionParametersAction],
 	// [ConditionalAuthorizationActionParametersAction],
 	// [ConditionalACHActionParametersAction],
-	// [ConditionalTokenizationActionParametersAction], [CardTransactionUpdateAction].
+	// [ConditionalTokenizationActionParametersAction], [CardTransactionUpdateAction],
+	// [ConditionalAuthorizationAdjustmentParametersAction].
 	Action interface{} `json:"action"`
-	// This field can have the runtime type of
-	// [ConditionalAuthorizationAdjustmentParametersAdjustment].
-	Adjustment interface{} `json:"adjustment"`
 	// The TypeScript source code of the rule. Must define a `rule()` function that
 	// accepts the declared features as positional arguments (in the same order as the
 	// `features` array) and returns an array of actions.
@@ -591,7 +586,6 @@ type AuthRuleDraftVersionParameters struct {
 // [AuthRuleDraftVersionParameters]
 type authRuleDraftVersionParametersJSON struct {
 	Action      apijson.Field
-	Adjustment  apijson.Field
 	Code        apijson.Field
 	Conditions  apijson.Field
 	Features    apijson.Field
@@ -955,11 +949,9 @@ type AuthRuleVersionParameters struct {
 	// This field can have the runtime type of [Conditional3DSActionParametersAction],
 	// [ConditionalAuthorizationActionParametersAction],
 	// [ConditionalACHActionParametersAction],
-	// [ConditionalTokenizationActionParametersAction], [CardTransactionUpdateAction].
+	// [ConditionalTokenizationActionParametersAction], [CardTransactionUpdateAction],
+	// [ConditionalAuthorizationAdjustmentParametersAction].
 	Action interface{} `json:"action"`
-	// This field can have the runtime type of
-	// [ConditionalAuthorizationAdjustmentParametersAdjustment].
-	Adjustment interface{} `json:"adjustment"`
 	// The TypeScript source code of the rule. Must define a `rule()` function that
 	// accepts the declared features as positional arguments (in the same order as the
 	// `features` array) and returns an array of actions.
@@ -999,7 +991,6 @@ type AuthRuleVersionParameters struct {
 // [AuthRuleVersionParameters]
 type authRuleVersionParametersJSON struct {
 	Action      apijson.Field
-	Adjustment  apijson.Field
 	Code        apijson.Field
 	Conditions  apijson.Field
 	Features    apijson.Field
@@ -2633,8 +2624,8 @@ func (r ConditionalAuthorizationActionParametersConditionsParametersUnit) IsKnow
 }
 
 type ConditionalAuthorizationAdjustmentParameters struct {
-	// The hold adjustment to apply if the conditions are met
-	Adjustment ConditionalAuthorizationAdjustmentParametersAdjustment  `json:"adjustment" api:"required"`
+	// The hold adjustment to apply if the conditions are met.
+	Action     ConditionalAuthorizationAdjustmentParametersAction      `json:"action" api:"required"`
 	Conditions []ConditionalAuthorizationAdjustmentParametersCondition `json:"conditions" api:"required"`
 	JSON       conditionalAuthorizationAdjustmentParametersJSON        `json:"-"`
 }
@@ -2642,7 +2633,7 @@ type ConditionalAuthorizationAdjustmentParameters struct {
 // conditionalAuthorizationAdjustmentParametersJSON contains the JSON metadata for
 // the struct [ConditionalAuthorizationAdjustmentParameters]
 type conditionalAuthorizationAdjustmentParametersJSON struct {
-	Adjustment  apijson.Field
+	Action      apijson.Field
 	Conditions  apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
@@ -2662,25 +2653,25 @@ func (r ConditionalAuthorizationAdjustmentParameters) implementsAuthRuleDraftVer
 
 func (r ConditionalAuthorizationAdjustmentParameters) implementsAuthRuleVersionParameters() {}
 
-// The hold adjustment to apply if the conditions are met
-type ConditionalAuthorizationAdjustmentParametersAdjustment struct {
+// The hold adjustment to apply if the conditions are met.
+type ConditionalAuthorizationAdjustmentParametersAction struct {
 	// The mode of the hold adjustment, determining how the value is interpreted:
 	//
 	//   - `REPLACE_WITH_AMOUNT`: The value is the approved hold amount in cents.
 	//   - `ADD_PERCENTAGE`: The value adjusts the hold amount by a percentage. 1000
 	//     represents a 10% increase, 0 represents no change.
 	//   - `ADD_AMOUNT`: The value is added to the hold amount in cents.
-	Mode ConditionalAuthorizationAdjustmentParametersAdjustmentMode `json:"mode" api:"required"`
+	Mode ConditionalAuthorizationAdjustmentParametersActionMode `json:"mode" api:"required"`
 	// The type of adjustment to apply
-	Type ConditionalAuthorizationAdjustmentParametersAdjustmentType `json:"type" api:"required"`
+	Type ConditionalAuthorizationAdjustmentParametersActionType `json:"type" api:"required"`
 	// The value used for the hold adjustment, interpreted based on the mode
-	Value int64                                                      `json:"value" api:"required"`
-	JSON  conditionalAuthorizationAdjustmentParametersAdjustmentJSON `json:"-"`
+	Value int64                                                  `json:"value" api:"required"`
+	JSON  conditionalAuthorizationAdjustmentParametersActionJSON `json:"-"`
 }
 
-// conditionalAuthorizationAdjustmentParametersAdjustmentJSON contains the JSON
-// metadata for the struct [ConditionalAuthorizationAdjustmentParametersAdjustment]
-type conditionalAuthorizationAdjustmentParametersAdjustmentJSON struct {
+// conditionalAuthorizationAdjustmentParametersActionJSON contains the JSON
+// metadata for the struct [ConditionalAuthorizationAdjustmentParametersAction]
+type conditionalAuthorizationAdjustmentParametersActionJSON struct {
 	Mode        apijson.Field
 	Type        apijson.Field
 	Value       apijson.Field
@@ -2688,11 +2679,11 @@ type conditionalAuthorizationAdjustmentParametersAdjustmentJSON struct {
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *ConditionalAuthorizationAdjustmentParametersAdjustment) UnmarshalJSON(data []byte) (err error) {
+func (r *ConditionalAuthorizationAdjustmentParametersAction) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r conditionalAuthorizationAdjustmentParametersAdjustmentJSON) RawJSON() string {
+func (r conditionalAuthorizationAdjustmentParametersActionJSON) RawJSON() string {
 	return r.raw
 }
 
@@ -2702,32 +2693,32 @@ func (r conditionalAuthorizationAdjustmentParametersAdjustmentJSON) RawJSON() st
 //   - `ADD_PERCENTAGE`: The value adjusts the hold amount by a percentage. 1000
 //     represents a 10% increase, 0 represents no change.
 //   - `ADD_AMOUNT`: The value is added to the hold amount in cents.
-type ConditionalAuthorizationAdjustmentParametersAdjustmentMode string
+type ConditionalAuthorizationAdjustmentParametersActionMode string
 
 const (
-	ConditionalAuthorizationAdjustmentParametersAdjustmentModeReplaceWithAmount ConditionalAuthorizationAdjustmentParametersAdjustmentMode = "REPLACE_WITH_AMOUNT"
-	ConditionalAuthorizationAdjustmentParametersAdjustmentModeAddPercentage     ConditionalAuthorizationAdjustmentParametersAdjustmentMode = "ADD_PERCENTAGE"
-	ConditionalAuthorizationAdjustmentParametersAdjustmentModeAddAmount         ConditionalAuthorizationAdjustmentParametersAdjustmentMode = "ADD_AMOUNT"
+	ConditionalAuthorizationAdjustmentParametersActionModeReplaceWithAmount ConditionalAuthorizationAdjustmentParametersActionMode = "REPLACE_WITH_AMOUNT"
+	ConditionalAuthorizationAdjustmentParametersActionModeAddPercentage     ConditionalAuthorizationAdjustmentParametersActionMode = "ADD_PERCENTAGE"
+	ConditionalAuthorizationAdjustmentParametersActionModeAddAmount         ConditionalAuthorizationAdjustmentParametersActionMode = "ADD_AMOUNT"
 )
 
-func (r ConditionalAuthorizationAdjustmentParametersAdjustmentMode) IsKnown() bool {
+func (r ConditionalAuthorizationAdjustmentParametersActionMode) IsKnown() bool {
 	switch r {
-	case ConditionalAuthorizationAdjustmentParametersAdjustmentModeReplaceWithAmount, ConditionalAuthorizationAdjustmentParametersAdjustmentModeAddPercentage, ConditionalAuthorizationAdjustmentParametersAdjustmentModeAddAmount:
+	case ConditionalAuthorizationAdjustmentParametersActionModeReplaceWithAmount, ConditionalAuthorizationAdjustmentParametersActionModeAddPercentage, ConditionalAuthorizationAdjustmentParametersActionModeAddAmount:
 		return true
 	}
 	return false
 }
 
 // The type of adjustment to apply
-type ConditionalAuthorizationAdjustmentParametersAdjustmentType string
+type ConditionalAuthorizationAdjustmentParametersActionType string
 
 const (
-	ConditionalAuthorizationAdjustmentParametersAdjustmentTypeHoldAdjustment ConditionalAuthorizationAdjustmentParametersAdjustmentType = "HOLD_ADJUSTMENT"
+	ConditionalAuthorizationAdjustmentParametersActionTypeHoldAdjustment ConditionalAuthorizationAdjustmentParametersActionType = "HOLD_ADJUSTMENT"
 )
 
-func (r ConditionalAuthorizationAdjustmentParametersAdjustmentType) IsKnown() bool {
+func (r ConditionalAuthorizationAdjustmentParametersActionType) IsKnown() bool {
 	switch r {
-	case ConditionalAuthorizationAdjustmentParametersAdjustmentTypeHoldAdjustment:
+	case ConditionalAuthorizationAdjustmentParametersActionTypeHoldAdjustment:
 		return true
 	}
 	return false
@@ -8075,8 +8066,7 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRule) implementsAuthRuleV2NewParamsBo
 
 // Parameters for the Auth Rule
 type AuthRuleV2NewParamsBodyAccountLevelRuleParameters struct {
-	Action     param.Field[interface{}] `json:"action"`
-	Adjustment param.Field[interface{}] `json:"adjustment"`
+	Action param.Field[interface{}] `json:"action"`
 	// The TypeScript source code of the rule. Must define a `rule()` function that
 	// accepts the declared features as positional arguments (in the same order as the
 	// `features` array) and returns an array of actions.
@@ -8203,8 +8193,7 @@ func (r AuthRuleV2NewParamsBodyCardLevelRule) implementsAuthRuleV2NewParamsBodyU
 
 // Parameters for the Auth Rule
 type AuthRuleV2NewParamsBodyCardLevelRuleParameters struct {
-	Action     param.Field[interface{}] `json:"action"`
-	Adjustment param.Field[interface{}] `json:"adjustment"`
+	Action param.Field[interface{}] `json:"action"`
 	// The TypeScript source code of the rule. Must define a `rule()` function that
 	// accepts the declared features as positional arguments (in the same order as the
 	// `features` array) and returns an array of actions.
@@ -8337,8 +8326,7 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRule) implementsAuthRuleV2NewParamsBo
 
 // Parameters for the Auth Rule
 type AuthRuleV2NewParamsBodyProgramLevelRuleParameters struct {
-	Action     param.Field[interface{}] `json:"action"`
-	Adjustment param.Field[interface{}] `json:"adjustment"`
+	Action param.Field[interface{}] `json:"action"`
 	// The TypeScript source code of the rule. Must define a `rule()` function that
 	// accepts the declared features as positional arguments (in the same order as the
 	// `features` array) and returns an array of actions.
@@ -8708,8 +8696,7 @@ func (r AuthRuleV2DraftParams) MarshalJSON() (data []byte, err error) {
 
 // Parameters for the Auth Rule
 type AuthRuleV2DraftParamsParameters struct {
-	Action     param.Field[interface{}] `json:"action"`
-	Adjustment param.Field[interface{}] `json:"adjustment"`
+	Action param.Field[interface{}] `json:"action"`
 	// The TypeScript source code of the rule. Must define a `rule()` function that
 	// accepts the declared features as positional arguments (in the same order as the
 	// `features` array) and returns an array of actions.
