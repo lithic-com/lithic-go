@@ -4261,8 +4261,10 @@ type ParsedWebhookEvent struct {
 	// This field can have the runtime type of [[]FinancialAccountBalance].
 	Data interface{} `json:"data"`
 	// Date of transactions that this loan tape covers
-	Date      time.Time       `json:"date" format:"date"`
-	DayTotals StatementTotals `json:"day_totals"`
+	Date time.Time `json:"date" format:"date"`
+	// Day of the billing period that this loan tape covers, starting at 1
+	DayOfPeriod int64           `json:"day_of_period" api:"nullable"`
+	DayTotals   StatementTotals `json:"day_totals"`
 	// Number of days in the billing cycle
 	DaysInBillingCycle int64 `json:"days_in_billing_cycle"`
 	// Entity that made the authentication decision. This won't be set for
@@ -4771,6 +4773,7 @@ type parsedWebhookEventJSON struct {
 	Cycle                              apijson.Field
 	Data                               apijson.Field
 	Date                               apijson.Field
+	DayOfPeriod                        apijson.Field
 	DayTotals                          apijson.Field
 	DaysInBillingCycle                 apijson.Field
 	DecisionMadeBy                     apijson.Field

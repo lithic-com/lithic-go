@@ -144,6 +144,8 @@ type LoanTape struct {
 	// Version number of the loan tape. This starts at 1
 	Version   int64           `json:"version" api:"required"`
 	YtdTotals StatementTotals `json:"ytd_totals" api:"required"`
+	// Day of the billing period that this loan tape covers, starting at 1
+	DayOfPeriod int64 `json:"day_of_period" api:"nullable"`
 	// Interest tier to which this account belongs to
 	Tier string       `json:"tier" api:"nullable"`
 	JSON loanTapeJSON `json:"-"`
@@ -172,6 +174,7 @@ type loanTapeJSON struct {
 	Updated                  apijson.Field
 	Version                  apijson.Field
 	YtdTotals                apijson.Field
+	DayOfPeriod              apijson.Field
 	Tier                     apijson.Field
 	raw                      string
 	ExtraFields              map[string]apijson.Field
