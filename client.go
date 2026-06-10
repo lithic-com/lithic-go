@@ -21,6 +21,7 @@ type Client struct {
 	Accounts                *AccountService
 	AccountHolders          *AccountHolderService
 	AuthRules               *AuthRuleService
+	TransactionMonitoring   *TransactionMonitoringService
 	AuthStreamEnrollment    *AuthStreamEnrollmentService
 	TokenizationDecisioning *TokenizationDecisioningService
 	Tokenizations           *TokenizationService
@@ -92,6 +93,7 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.Accounts = NewAccountService(opts...)
 	r.AccountHolders = NewAccountHolderService(opts...)
 	r.AuthRules = NewAuthRuleService(opts...)
+	r.TransactionMonitoring = NewTransactionMonitoringService(opts...)
 	r.AuthStreamEnrollment = NewAuthStreamEnrollmentService(opts...)
 	r.TokenizationDecisioning = NewTokenizationDecisioningService(opts...)
 	r.Tokenizations = NewTokenizationService(opts...)
