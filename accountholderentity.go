@@ -89,7 +89,7 @@ type AccountHolderEntity struct {
 	// The status of the entity
 	Status AccountHolderEntityStatus `json:"status" api:"required"`
 	// The type of entity
-	Type AccountHolderEntityType `json:"type" api:"required"`
+	Type EntityType              `json:"type" api:"required"`
 	JSON accountHolderEntityJSON `json:"-"`
 }
 
@@ -172,22 +172,6 @@ const (
 func (r AccountHolderEntityStatus) IsKnown() bool {
 	switch r {
 	case AccountHolderEntityStatusAccepted, AccountHolderEntityStatusInactive, AccountHolderEntityStatusPendingReview, AccountHolderEntityStatusRejected:
-		return true
-	}
-	return false
-}
-
-// The type of entity
-type AccountHolderEntityType string
-
-const (
-	AccountHolderEntityTypeBeneficialOwnerIndividual AccountHolderEntityType = "BENEFICIAL_OWNER_INDIVIDUAL"
-	AccountHolderEntityTypeControlPerson             AccountHolderEntityType = "CONTROL_PERSON"
-)
-
-func (r AccountHolderEntityType) IsKnown() bool {
-	switch r {
-	case AccountHolderEntityTypeBeneficialOwnerIndividual, AccountHolderEntityTypeControlPerson:
 		return true
 	}
 	return false
@@ -309,7 +293,7 @@ type AccountHolderEntityNewParams struct {
 	// Individual's phone number, entered in E.164 format.
 	PhoneNumber param.Field[string] `json:"phone_number" api:"required"`
 	// The type of entity to create on the account holder
-	Type param.Field[AccountHolderEntityNewParamsType] `json:"type" api:"required"`
+	Type param.Field[EntityType] `json:"type" api:"required"`
 }
 
 func (r AccountHolderEntityNewParams) MarshalJSON() (data []byte, err error) {
@@ -338,20 +322,4 @@ type AccountHolderEntityNewParamsAddress struct {
 
 func (r AccountHolderEntityNewParamsAddress) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
-}
-
-// The type of entity to create on the account holder
-type AccountHolderEntityNewParamsType string
-
-const (
-	AccountHolderEntityNewParamsTypeBeneficialOwnerIndividual AccountHolderEntityNewParamsType = "BENEFICIAL_OWNER_INDIVIDUAL"
-	AccountHolderEntityNewParamsTypeControlPerson             AccountHolderEntityNewParamsType = "CONTROL_PERSON"
-)
-
-func (r AccountHolderEntityNewParamsType) IsKnown() bool {
-	switch r {
-	case AccountHolderEntityNewParamsTypeBeneficialOwnerIndividual, AccountHolderEntityNewParamsTypeControlPerson:
-		return true
-	}
-	return false
 }
