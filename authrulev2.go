@@ -3270,13 +3270,65 @@ type ConditionalCardTransactionUpdateActionParametersCondition struct {
 	//   - `SPEND_VELOCITY_AMOUNT`: The total spend amount (in cents) of transactions
 	//     matching the specified filters within the given period. Requires `parameters`
 	//     with `scope`, `period`, and optional `filters`. Use an integer value.
+	//   - `AMOUNT_Z_SCORE`: The z-score of the transaction amount relative to the
+	//     entity's transaction history. Null if fewer than 30 approved transactions in
+	//     the specified window. Requires `parameters.scope` and `parameters.interval`.
+	//     Use a decimal value.
+	//   - `AVG_TRANSACTION_AMOUNT`: The average approved transaction amount for the
+	//     entity over the specified window, in cents. Requires `parameters.scope` and
+	//     `parameters.interval`. Use a decimal value.
+	//   - `STDEV_TRANSACTION_AMOUNT`: The standard deviation of approved transaction
+	//     amounts for the entity over the specified window, in cents. Null if fewer than
+	//     30 approved transactions in the specified window. Requires `parameters.scope`
+	//     and `parameters.interval`. Use a decimal value.
+	//   - `IS_NEW_COUNTRY`: Whether the transaction's merchant country has not been seen
+	//     in the entity's transaction history. Valid values are `TRUE`, `FALSE`.
+	//     Requires `parameters.scope`.
+	//   - `IS_NEW_MCC`: Whether the transaction's MCC has not been seen in the entity's
+	//     transaction history. Valid values are `TRUE`, `FALSE`. Requires
+	//     `parameters.scope`.
+	//   - `IS_FIRST_TRANSACTION`: Whether this is the first transaction for the entity.
+	//     Valid values are `TRUE`, `FALSE`. Requires `parameters.scope`.
+	//   - `CONSECUTIVE_DECLINES`: The number of consecutive declined transactions for
+	//     the entity over the last 30 days (rolling). Requires `parameters.scope`. Use
+	//     an integer value.
+	//   - `TIME_SINCE_LAST_TRANSACTION`: The number of days since the last approved
+	//     transaction for the entity, rounded to the nearest whole day. Requires
+	//     `parameters.scope`. Use an integer value.
+	//   - `DISTINCT_COUNTRY_COUNT`: The number of distinct merchant countries seen in
+	//     the entity's transaction history. Requires `parameters.scope`. Use an integer
+	//     value.
+	//   - `IS_NEW_MERCHANT`: Whether the card acceptor ID has not been seen in the
+	//     card's approved transaction history (capped at the 1000 most recently seen
+	//     merchants). Valid values are `TRUE`, `FALSE`. Card-scoped only; no
+	//     `parameters` required.
+	//   - `THREE_DS_SUCCESS_RATE`: The 3DS authentication success rate for the card, as
+	//     a percentage from 0.0 to 100.0. Card-scoped only; no `parameters` required.
+	//     Use a decimal value.
+	//   - `TRAVEL_SPEED`: The estimated speed of travel derived from the distance
+	//     between the postal code centers of the last card-present transaction and the
+	//     current transaction, divided by the elapsed time. Null if there is no prior
+	//     card-present transaction, if either postal code cannot be geocoded, or if
+	//     elapsed time is zero. Requires `parameters.unit` set to `MPH` or `KPH`. Use a
+	//     decimal value.
+	//   - `DISTANCE_FROM_LAST_TRANSACTION`: The estimated distance between the postal
+	//     code centers of the last card-present transaction and the current transaction.
+	//     Null if there is no prior card-present transaction or if either postal code
+	//     cannot be geocoded. Requires `parameters.unit` set to `MILES` or `KILOMETERS`.
+	//     Use a decimal value.
 	Attribute ConditionalCardTransactionUpdateActionParametersConditionsAttribute `json:"attribute" api:"required"`
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation" api:"required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 	Value ConditionalValueUnion `json:"value" api:"required"`
-	// Additional parameters for spend velocity attributes. Required when `attribute`
-	// is `SPEND_VELOCITY_COUNT` or `SPEND_VELOCITY_AMOUNT`. Not used for other
+	// Additional parameters for certain attributes. Required when `attribute` is
+	// `SPEND_VELOCITY_COUNT` or `SPEND_VELOCITY_AMOUNT` (require `scope`, `period`,
+	// and optional `filters`); `AMOUNT_Z_SCORE`, `AVG_TRANSACTION_AMOUNT`,
+	// `STDEV_TRANSACTION_AMOUNT`, `IS_NEW_COUNTRY`, `IS_NEW_MCC`,
+	// `IS_FIRST_TRANSACTION`, `CONSECUTIVE_DECLINES`, `TIME_SINCE_LAST_TRANSACTION`,
+	// or `DISTINCT_COUNTRY_COUNT` (require `scope`, and additionally `interval` for
+	// the statistical attributes); or `TRAVEL_SPEED` or
+	// `DISTANCE_FROM_LAST_TRANSACTION` (require `unit`). Not used for other
 	// attributes.
 	Parameters ConditionalCardTransactionUpdateActionParametersConditionsParameters `json:"parameters"`
 	JSON       conditionalCardTransactionUpdateActionParametersConditionJSON        `json:"-"`
@@ -3356,45 +3408,122 @@ func (r conditionalCardTransactionUpdateActionParametersConditionJSON) RawJSON()
 //   - `SPEND_VELOCITY_AMOUNT`: The total spend amount (in cents) of transactions
 //     matching the specified filters within the given period. Requires `parameters`
 //     with `scope`, `period`, and optional `filters`. Use an integer value.
+//   - `AMOUNT_Z_SCORE`: The z-score of the transaction amount relative to the
+//     entity's transaction history. Null if fewer than 30 approved transactions in
+//     the specified window. Requires `parameters.scope` and `parameters.interval`.
+//     Use a decimal value.
+//   - `AVG_TRANSACTION_AMOUNT`: The average approved transaction amount for the
+//     entity over the specified window, in cents. Requires `parameters.scope` and
+//     `parameters.interval`. Use a decimal value.
+//   - `STDEV_TRANSACTION_AMOUNT`: The standard deviation of approved transaction
+//     amounts for the entity over the specified window, in cents. Null if fewer than
+//     30 approved transactions in the specified window. Requires `parameters.scope`
+//     and `parameters.interval`. Use a decimal value.
+//   - `IS_NEW_COUNTRY`: Whether the transaction's merchant country has not been seen
+//     in the entity's transaction history. Valid values are `TRUE`, `FALSE`.
+//     Requires `parameters.scope`.
+//   - `IS_NEW_MCC`: Whether the transaction's MCC has not been seen in the entity's
+//     transaction history. Valid values are `TRUE`, `FALSE`. Requires
+//     `parameters.scope`.
+//   - `IS_FIRST_TRANSACTION`: Whether this is the first transaction for the entity.
+//     Valid values are `TRUE`, `FALSE`. Requires `parameters.scope`.
+//   - `CONSECUTIVE_DECLINES`: The number of consecutive declined transactions for
+//     the entity over the last 30 days (rolling). Requires `parameters.scope`. Use
+//     an integer value.
+//   - `TIME_SINCE_LAST_TRANSACTION`: The number of days since the last approved
+//     transaction for the entity, rounded to the nearest whole day. Requires
+//     `parameters.scope`. Use an integer value.
+//   - `DISTINCT_COUNTRY_COUNT`: The number of distinct merchant countries seen in
+//     the entity's transaction history. Requires `parameters.scope`. Use an integer
+//     value.
+//   - `IS_NEW_MERCHANT`: Whether the card acceptor ID has not been seen in the
+//     card's approved transaction history (capped at the 1000 most recently seen
+//     merchants). Valid values are `TRUE`, `FALSE`. Card-scoped only; no
+//     `parameters` required.
+//   - `THREE_DS_SUCCESS_RATE`: The 3DS authentication success rate for the card, as
+//     a percentage from 0.0 to 100.0. Card-scoped only; no `parameters` required.
+//     Use a decimal value.
+//   - `TRAVEL_SPEED`: The estimated speed of travel derived from the distance
+//     between the postal code centers of the last card-present transaction and the
+//     current transaction, divided by the elapsed time. Null if there is no prior
+//     card-present transaction, if either postal code cannot be geocoded, or if
+//     elapsed time is zero. Requires `parameters.unit` set to `MPH` or `KPH`. Use a
+//     decimal value.
+//   - `DISTANCE_FROM_LAST_TRANSACTION`: The estimated distance between the postal
+//     code centers of the last card-present transaction and the current transaction.
+//     Null if there is no prior card-present transaction or if either postal code
+//     cannot be geocoded. Requires `parameters.unit` set to `MILES` or `KILOMETERS`.
+//     Use a decimal value.
 type ConditionalCardTransactionUpdateActionParametersConditionsAttribute string
 
 const (
-	ConditionalCardTransactionUpdateActionParametersConditionsAttributeMcc                 ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "MCC"
-	ConditionalCardTransactionUpdateActionParametersConditionsAttributeCountry             ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "COUNTRY"
-	ConditionalCardTransactionUpdateActionParametersConditionsAttributeCurrency            ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "CURRENCY"
-	ConditionalCardTransactionUpdateActionParametersConditionsAttributeMerchantID          ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "MERCHANT_ID"
-	ConditionalCardTransactionUpdateActionParametersConditionsAttributeDescriptor          ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "DESCRIPTOR"
-	ConditionalCardTransactionUpdateActionParametersConditionsAttributeTransactionAmount   ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	ConditionalCardTransactionUpdateActionParametersConditionsAttributeRiskScore           ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "RISK_SCORE"
-	ConditionalCardTransactionUpdateActionParametersConditionsAttributeTransactionStatus   ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "TRANSACTION_STATUS"
-	ConditionalCardTransactionUpdateActionParametersConditionsAttributeLastEventType       ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "LAST_EVENT_TYPE"
-	ConditionalCardTransactionUpdateActionParametersConditionsAttributeLiabilityShift      ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "LIABILITY_SHIFT"
-	ConditionalCardTransactionUpdateActionParametersConditionsAttributePanEntryMode        ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	ConditionalCardTransactionUpdateActionParametersConditionsAttributeWalletType          ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "WALLET_TYPE"
-	ConditionalCardTransactionUpdateActionParametersConditionsAttributeCardAge             ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "CARD_AGE"
-	ConditionalCardTransactionUpdateActionParametersConditionsAttributeAccountAge          ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "ACCOUNT_AGE"
-	ConditionalCardTransactionUpdateActionParametersConditionsAttributeSpendVelocityCount  ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "SPEND_VELOCITY_COUNT"
-	ConditionalCardTransactionUpdateActionParametersConditionsAttributeSpendVelocityAmount ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "SPEND_VELOCITY_AMOUNT"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeMcc                         ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "MCC"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeCountry                     ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "COUNTRY"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeCurrency                    ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "CURRENCY"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeMerchantID                  ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "MERCHANT_ID"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeDescriptor                  ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "DESCRIPTOR"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeTransactionAmount           ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeRiskScore                   ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "RISK_SCORE"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeTransactionStatus           ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "TRANSACTION_STATUS"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeLastEventType               ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "LAST_EVENT_TYPE"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeLiabilityShift              ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "LIABILITY_SHIFT"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributePanEntryMode                ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeWalletType                  ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "WALLET_TYPE"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeCardAge                     ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "CARD_AGE"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeAccountAge                  ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "ACCOUNT_AGE"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeSpendVelocityCount          ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "SPEND_VELOCITY_COUNT"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeSpendVelocityAmount         ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "SPEND_VELOCITY_AMOUNT"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeAmountZScore                ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "AMOUNT_Z_SCORE"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeAvgTransactionAmount        ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "AVG_TRANSACTION_AMOUNT"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeStdevTransactionAmount      ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "STDEV_TRANSACTION_AMOUNT"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeIsNewCountry                ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "IS_NEW_COUNTRY"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeIsNewMcc                    ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "IS_NEW_MCC"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeIsFirstTransaction          ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "IS_FIRST_TRANSACTION"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeConsecutiveDeclines         ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "CONSECUTIVE_DECLINES"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeTimeSinceLastTransaction    ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "TIME_SINCE_LAST_TRANSACTION"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeDistinctCountryCount        ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "DISTINCT_COUNTRY_COUNT"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeIsNewMerchant               ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "IS_NEW_MERCHANT"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeThreeDSSuccessRate          ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "THREE_DS_SUCCESS_RATE"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeTravelSpeed                 ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "TRAVEL_SPEED"
+	ConditionalCardTransactionUpdateActionParametersConditionsAttributeDistanceFromLastTransaction ConditionalCardTransactionUpdateActionParametersConditionsAttribute = "DISTANCE_FROM_LAST_TRANSACTION"
 )
 
 func (r ConditionalCardTransactionUpdateActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case ConditionalCardTransactionUpdateActionParametersConditionsAttributeMcc, ConditionalCardTransactionUpdateActionParametersConditionsAttributeCountry, ConditionalCardTransactionUpdateActionParametersConditionsAttributeCurrency, ConditionalCardTransactionUpdateActionParametersConditionsAttributeMerchantID, ConditionalCardTransactionUpdateActionParametersConditionsAttributeDescriptor, ConditionalCardTransactionUpdateActionParametersConditionsAttributeTransactionAmount, ConditionalCardTransactionUpdateActionParametersConditionsAttributeRiskScore, ConditionalCardTransactionUpdateActionParametersConditionsAttributeTransactionStatus, ConditionalCardTransactionUpdateActionParametersConditionsAttributeLastEventType, ConditionalCardTransactionUpdateActionParametersConditionsAttributeLiabilityShift, ConditionalCardTransactionUpdateActionParametersConditionsAttributePanEntryMode, ConditionalCardTransactionUpdateActionParametersConditionsAttributeWalletType, ConditionalCardTransactionUpdateActionParametersConditionsAttributeCardAge, ConditionalCardTransactionUpdateActionParametersConditionsAttributeAccountAge, ConditionalCardTransactionUpdateActionParametersConditionsAttributeSpendVelocityCount, ConditionalCardTransactionUpdateActionParametersConditionsAttributeSpendVelocityAmount:
+	case ConditionalCardTransactionUpdateActionParametersConditionsAttributeMcc, ConditionalCardTransactionUpdateActionParametersConditionsAttributeCountry, ConditionalCardTransactionUpdateActionParametersConditionsAttributeCurrency, ConditionalCardTransactionUpdateActionParametersConditionsAttributeMerchantID, ConditionalCardTransactionUpdateActionParametersConditionsAttributeDescriptor, ConditionalCardTransactionUpdateActionParametersConditionsAttributeTransactionAmount, ConditionalCardTransactionUpdateActionParametersConditionsAttributeRiskScore, ConditionalCardTransactionUpdateActionParametersConditionsAttributeTransactionStatus, ConditionalCardTransactionUpdateActionParametersConditionsAttributeLastEventType, ConditionalCardTransactionUpdateActionParametersConditionsAttributeLiabilityShift, ConditionalCardTransactionUpdateActionParametersConditionsAttributePanEntryMode, ConditionalCardTransactionUpdateActionParametersConditionsAttributeWalletType, ConditionalCardTransactionUpdateActionParametersConditionsAttributeCardAge, ConditionalCardTransactionUpdateActionParametersConditionsAttributeAccountAge, ConditionalCardTransactionUpdateActionParametersConditionsAttributeSpendVelocityCount, ConditionalCardTransactionUpdateActionParametersConditionsAttributeSpendVelocityAmount, ConditionalCardTransactionUpdateActionParametersConditionsAttributeAmountZScore, ConditionalCardTransactionUpdateActionParametersConditionsAttributeAvgTransactionAmount, ConditionalCardTransactionUpdateActionParametersConditionsAttributeStdevTransactionAmount, ConditionalCardTransactionUpdateActionParametersConditionsAttributeIsNewCountry, ConditionalCardTransactionUpdateActionParametersConditionsAttributeIsNewMcc, ConditionalCardTransactionUpdateActionParametersConditionsAttributeIsFirstTransaction, ConditionalCardTransactionUpdateActionParametersConditionsAttributeConsecutiveDeclines, ConditionalCardTransactionUpdateActionParametersConditionsAttributeTimeSinceLastTransaction, ConditionalCardTransactionUpdateActionParametersConditionsAttributeDistinctCountryCount, ConditionalCardTransactionUpdateActionParametersConditionsAttributeIsNewMerchant, ConditionalCardTransactionUpdateActionParametersConditionsAttributeThreeDSSuccessRate, ConditionalCardTransactionUpdateActionParametersConditionsAttributeTravelSpeed, ConditionalCardTransactionUpdateActionParametersConditionsAttributeDistanceFromLastTransaction:
 		return true
 	}
 	return false
 }
 
-// Additional parameters for spend velocity attributes. Required when `attribute`
-// is `SPEND_VELOCITY_COUNT` or `SPEND_VELOCITY_AMOUNT`. Not used for other
+// Additional parameters for certain attributes. Required when `attribute` is
+// `SPEND_VELOCITY_COUNT` or `SPEND_VELOCITY_AMOUNT` (require `scope`, `period`,
+// and optional `filters`); `AMOUNT_Z_SCORE`, `AVG_TRANSACTION_AMOUNT`,
+// `STDEV_TRANSACTION_AMOUNT`, `IS_NEW_COUNTRY`, `IS_NEW_MCC`,
+// `IS_FIRST_TRANSACTION`, `CONSECUTIVE_DECLINES`, `TIME_SINCE_LAST_TRANSACTION`,
+// or `DISTINCT_COUNTRY_COUNT` (require `scope`, and additionally `interval` for
+// the statistical attributes); or `TRAVEL_SPEED` or
+// `DISTANCE_FROM_LAST_TRANSACTION` (require `unit`). Not used for other
 // attributes.
 type ConditionalCardTransactionUpdateActionParametersConditionsParameters struct {
 	Filters SpendVelocityFilters `json:"filters"`
+	// The time window for statistical attributes (`AMOUNT_Z_SCORE`,
+	// `AVG_TRANSACTION_AMOUNT`, `STDEV_TRANSACTION_AMOUNT`). Use `LIFETIME` for
+	// all-time history or a specific window (`7D`, `30D`, `90D`).
+	Interval ConditionalCardTransactionUpdateActionParametersConditionsParametersInterval `json:"interval"`
 	// The time period over which to calculate the spend velocity.
 	Period VelocityLimitPeriod `json:"period"`
-	// The entity scope to evaluate the attribute against.
+	// The entity scope to evaluate the attribute against. `GLOBAL` is only valid for
+	// spend velocity attributes.
 	Scope ConditionalCardTransactionUpdateActionParametersConditionsParametersScope `json:"scope"`
-	JSON  conditionalCardTransactionUpdateActionParametersConditionsParametersJSON  `json:"-"`
+	// The unit for impossible travel attributes. Required when `attribute` is
+	// `TRAVEL_SPEED` or `DISTANCE_FROM_LAST_TRANSACTION`.
+	//
+	// For `TRAVEL_SPEED`: `MPH` (miles per hour) or `KPH` (kilometers per hour).
+	//
+	// For `DISTANCE_FROM_LAST_TRANSACTION`: `MILES` or `KILOMETERS`.
+	Unit ConditionalCardTransactionUpdateActionParametersConditionsParametersUnit `json:"unit"`
+	JSON conditionalCardTransactionUpdateActionParametersConditionsParametersJSON `json:"-"`
 }
 
 // conditionalCardTransactionUpdateActionParametersConditionsParametersJSON
@@ -3402,8 +3531,10 @@ type ConditionalCardTransactionUpdateActionParametersConditionsParameters struct
 // [ConditionalCardTransactionUpdateActionParametersConditionsParameters]
 type conditionalCardTransactionUpdateActionParametersConditionsParametersJSON struct {
 	Filters     apijson.Field
+	Interval    apijson.Field
 	Period      apijson.Field
 	Scope       apijson.Field
+	Unit        apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -3416,7 +3547,28 @@ func (r conditionalCardTransactionUpdateActionParametersConditionsParametersJSON
 	return r.raw
 }
 
-// The entity scope to evaluate the attribute against.
+// The time window for statistical attributes (`AMOUNT_Z_SCORE`,
+// `AVG_TRANSACTION_AMOUNT`, `STDEV_TRANSACTION_AMOUNT`). Use `LIFETIME` for
+// all-time history or a specific window (`7D`, `30D`, `90D`).
+type ConditionalCardTransactionUpdateActionParametersConditionsParametersInterval string
+
+const (
+	ConditionalCardTransactionUpdateActionParametersConditionsParametersIntervalLifetime ConditionalCardTransactionUpdateActionParametersConditionsParametersInterval = "LIFETIME"
+	ConditionalCardTransactionUpdateActionParametersConditionsParametersInterval7D       ConditionalCardTransactionUpdateActionParametersConditionsParametersInterval = "7D"
+	ConditionalCardTransactionUpdateActionParametersConditionsParametersInterval30D      ConditionalCardTransactionUpdateActionParametersConditionsParametersInterval = "30D"
+	ConditionalCardTransactionUpdateActionParametersConditionsParametersInterval90D      ConditionalCardTransactionUpdateActionParametersConditionsParametersInterval = "90D"
+)
+
+func (r ConditionalCardTransactionUpdateActionParametersConditionsParametersInterval) IsKnown() bool {
+	switch r {
+	case ConditionalCardTransactionUpdateActionParametersConditionsParametersIntervalLifetime, ConditionalCardTransactionUpdateActionParametersConditionsParametersInterval7D, ConditionalCardTransactionUpdateActionParametersConditionsParametersInterval30D, ConditionalCardTransactionUpdateActionParametersConditionsParametersInterval90D:
+		return true
+	}
+	return false
+}
+
+// The entity scope to evaluate the attribute against. `GLOBAL` is only valid for
+// spend velocity attributes.
 type ConditionalCardTransactionUpdateActionParametersConditionsParametersScope string
 
 const (
@@ -3428,6 +3580,29 @@ const (
 func (r ConditionalCardTransactionUpdateActionParametersConditionsParametersScope) IsKnown() bool {
 	switch r {
 	case ConditionalCardTransactionUpdateActionParametersConditionsParametersScopeCard, ConditionalCardTransactionUpdateActionParametersConditionsParametersScopeAccount, ConditionalCardTransactionUpdateActionParametersConditionsParametersScopeGlobal:
+		return true
+	}
+	return false
+}
+
+// The unit for impossible travel attributes. Required when `attribute` is
+// `TRAVEL_SPEED` or `DISTANCE_FROM_LAST_TRANSACTION`.
+//
+// For `TRAVEL_SPEED`: `MPH` (miles per hour) or `KPH` (kilometers per hour).
+//
+// For `DISTANCE_FROM_LAST_TRANSACTION`: `MILES` or `KILOMETERS`.
+type ConditionalCardTransactionUpdateActionParametersConditionsParametersUnit string
+
+const (
+	ConditionalCardTransactionUpdateActionParametersConditionsParametersUnitMph        ConditionalCardTransactionUpdateActionParametersConditionsParametersUnit = "MPH"
+	ConditionalCardTransactionUpdateActionParametersConditionsParametersUnitKph        ConditionalCardTransactionUpdateActionParametersConditionsParametersUnit = "KPH"
+	ConditionalCardTransactionUpdateActionParametersConditionsParametersUnitMiles      ConditionalCardTransactionUpdateActionParametersConditionsParametersUnit = "MILES"
+	ConditionalCardTransactionUpdateActionParametersConditionsParametersUnitKilometers ConditionalCardTransactionUpdateActionParametersConditionsParametersUnit = "KILOMETERS"
+)
+
+func (r ConditionalCardTransactionUpdateActionParametersConditionsParametersUnit) IsKnown() bool {
+	switch r {
+	case ConditionalCardTransactionUpdateActionParametersConditionsParametersUnitMph, ConditionalCardTransactionUpdateActionParametersConditionsParametersUnitKph, ConditionalCardTransactionUpdateActionParametersConditionsParametersUnitMiles, ConditionalCardTransactionUpdateActionParametersConditionsParametersUnitKilometers:
 		return true
 	}
 	return false
