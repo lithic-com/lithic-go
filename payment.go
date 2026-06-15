@@ -197,8 +197,11 @@ type Payment struct {
 	// Expected release date for the transaction
 	ExpectedReleaseDate time.Time `json:"expected_release_date" api:"nullable" format:"date"`
 	// External bank account token
-	ExternalBankAccountToken string      `json:"external_bank_account_token" api:"nullable" format:"uuid"`
-	Type                     PaymentType `json:"type"`
+	ExternalBankAccountToken string `json:"external_bank_account_token" api:"nullable" format:"uuid"`
+	// Key-value pairs for tagging resources. Tags allow you to associate arbitrary
+	// metadata with a resource for your own purposes.
+	Tags map[string]string `json:"tags"`
+	Type PaymentType       `json:"type"`
 	// User-defined identifier
 	UserDefinedID string      `json:"user_defined_id" api:"nullable"`
 	JSON          paymentJSON `json:"-"`
@@ -226,6 +229,7 @@ type paymentJSON struct {
 	Currency                 apijson.Field
 	ExpectedReleaseDate      apijson.Field
 	ExternalBankAccountToken apijson.Field
+	Tags                     apijson.Field
 	Type                     apijson.Field
 	UserDefinedID            apijson.Field
 	raw                      string
