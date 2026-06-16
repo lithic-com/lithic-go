@@ -270,7 +270,8 @@ type AuthRule struct {
 	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
 	//     stream.
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+	//     stream.
 	Type AuthRuleType `json:"type" api:"required"`
 	// Account tokens to which the Auth Rule does not apply.
 	ExcludedAccountTokens []string `json:"excluded_account_tokens" format:"uuid"`
@@ -755,7 +756,8 @@ func (r AuthRuleState) IsKnown() bool {
 //     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
 //     stream.
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+//     stream.
 type AuthRuleType string
 
 const (
@@ -5102,10 +5104,13 @@ func (r ReportStatsState) IsKnown() bool {
 //     TOKENIZATION event stream rules.
 //   - `ACH_RECEIPT`: The ACH receipt being evaluated. Only available for
 //     ACH_CREDIT_RECEIPT and ACH_DEBIT_RECEIPT event stream rules.
-//   - `CARD`: The card associated with the event. Available for AUTHORIZATION and
-//     THREE_DS_AUTHENTICATION event stream rules.
+//   - `CARD_TRANSACTION`: The card transaction being evaluated. Only available for
+//     CARD_TRANSACTION_UPDATE event stream rules.
+//   - `CARD`: The card associated with the event. Available for AUTHORIZATION,
+//     THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event stream rules.
 //   - `ACCOUNT_HOLDER`: The account holder associated with the card. Available for
-//     AUTHORIZATION and THREE_DS_AUTHENTICATION event stream rules.
+//     AUTHORIZATION, THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event
+//     stream rules.
 //   - `IP_METADATA`: IP address metadata for the request. Available for
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
@@ -5113,8 +5118,8 @@ func (r ReportStatsState) IsKnown() bool {
 //     calculation. Available for AUTHORIZATION event stream rules.
 //   - `TRANSACTION_HISTORY_SIGNALS`: Behavioral feature state derived from the
 //     entity's transaction history. Requires `scope` to specify whether to load
-//     card, account, or business account history. Available for AUTHORIZATION event
-//     stream rules.
+//     card, account, or business account history. Available for AUTHORIZATION and
+//     CARD_TRANSACTION_UPDATE event stream rules.
 type RuleFeature struct {
 	Type    RuleFeatureType      `json:"type" api:"required"`
 	Filters VelocityLimitFilters `json:"filters"`
@@ -5157,9 +5162,9 @@ func (r *RuleFeature) UnmarshalJSON(data []byte) (err error) {
 //
 // Possible runtime types of the union are [RuleFeatureAuthorizationFeature],
 // [RuleFeatureAuthenticationFeature], [RuleFeatureTokenizationFeature],
-// [RuleFeatureACHReceiptFeature], [RuleFeatureCardFeature],
-// [RuleFeatureAccountHolderFeature], [RuleFeatureIPMetadataFeature],
-// [RuleFeatureSpendVelocityFeature],
+// [RuleFeatureACHReceiptFeature], [RuleFeatureCardTransactionFeature],
+// [RuleFeatureCardFeature], [RuleFeatureAccountHolderFeature],
+// [RuleFeatureIPMetadataFeature], [RuleFeatureSpendVelocityFeature],
 // [RuleFeatureTransactionHistorySignalsFeature].
 func (r RuleFeature) AsUnion() RuleFeatureUnion {
 	return r.union
@@ -5177,10 +5182,13 @@ func (r RuleFeature) AsUnion() RuleFeatureUnion {
 //     TOKENIZATION event stream rules.
 //   - `ACH_RECEIPT`: The ACH receipt being evaluated. Only available for
 //     ACH_CREDIT_RECEIPT and ACH_DEBIT_RECEIPT event stream rules.
-//   - `CARD`: The card associated with the event. Available for AUTHORIZATION and
-//     THREE_DS_AUTHENTICATION event stream rules.
+//   - `CARD_TRANSACTION`: The card transaction being evaluated. Only available for
+//     CARD_TRANSACTION_UPDATE event stream rules.
+//   - `CARD`: The card associated with the event. Available for AUTHORIZATION,
+//     THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event stream rules.
 //   - `ACCOUNT_HOLDER`: The account holder associated with the card. Available for
-//     AUTHORIZATION and THREE_DS_AUTHENTICATION event stream rules.
+//     AUTHORIZATION, THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event
+//     stream rules.
 //   - `IP_METADATA`: IP address metadata for the request. Available for
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
@@ -5188,14 +5196,14 @@ func (r RuleFeature) AsUnion() RuleFeatureUnion {
 //     calculation. Available for AUTHORIZATION event stream rules.
 //   - `TRANSACTION_HISTORY_SIGNALS`: Behavioral feature state derived from the
 //     entity's transaction history. Requires `scope` to specify whether to load
-//     card, account, or business account history. Available for AUTHORIZATION event
-//     stream rules.
+//     card, account, or business account history. Available for AUTHORIZATION and
+//     CARD_TRANSACTION_UPDATE event stream rules.
 //
 // Union satisfied by [RuleFeatureAuthorizationFeature],
 // [RuleFeatureAuthenticationFeature], [RuleFeatureTokenizationFeature],
-// [RuleFeatureACHReceiptFeature], [RuleFeatureCardFeature],
-// [RuleFeatureAccountHolderFeature], [RuleFeatureIPMetadataFeature],
-// [RuleFeatureSpendVelocityFeature] or
+// [RuleFeatureACHReceiptFeature], [RuleFeatureCardTransactionFeature],
+// [RuleFeatureCardFeature], [RuleFeatureAccountHolderFeature],
+// [RuleFeatureIPMetadataFeature], [RuleFeatureSpendVelocityFeature] or
 // [RuleFeatureTransactionHistorySignalsFeature].
 type RuleFeatureUnion interface {
 	implementsRuleFeature()
@@ -5220,6 +5228,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(RuleFeatureACHReceiptFeature{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(RuleFeatureCardTransactionFeature{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -5399,6 +5411,46 @@ const (
 func (r RuleFeatureACHReceiptFeatureType) IsKnown() bool {
 	switch r {
 	case RuleFeatureACHReceiptFeatureTypeACHReceipt:
+		return true
+	}
+	return false
+}
+
+type RuleFeatureCardTransactionFeature struct {
+	Type RuleFeatureCardTransactionFeatureType `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name string                                `json:"name"`
+	JSON ruleFeatureCardTransactionFeatureJSON `json:"-"`
+}
+
+// ruleFeatureCardTransactionFeatureJSON contains the JSON metadata for the struct
+// [RuleFeatureCardTransactionFeature]
+type ruleFeatureCardTransactionFeatureJSON struct {
+	Type        apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *RuleFeatureCardTransactionFeature) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r ruleFeatureCardTransactionFeatureJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r RuleFeatureCardTransactionFeature) implementsRuleFeature() {}
+
+type RuleFeatureCardTransactionFeatureType string
+
+const (
+	RuleFeatureCardTransactionFeatureTypeCardTransaction RuleFeatureCardTransactionFeatureType = "CARD_TRANSACTION"
+)
+
+func (r RuleFeatureCardTransactionFeatureType) IsKnown() bool {
+	switch r {
+	case RuleFeatureCardTransactionFeatureTypeCardTransaction:
 		return true
 	}
 	return false
@@ -5655,6 +5707,7 @@ const (
 	RuleFeatureTypeAuthentication            RuleFeatureType = "AUTHENTICATION"
 	RuleFeatureTypeTokenization              RuleFeatureType = "TOKENIZATION"
 	RuleFeatureTypeACHReceipt                RuleFeatureType = "ACH_RECEIPT"
+	RuleFeatureTypeCardTransaction           RuleFeatureType = "CARD_TRANSACTION"
 	RuleFeatureTypeCard                      RuleFeatureType = "CARD"
 	RuleFeatureTypeAccountHolder             RuleFeatureType = "ACCOUNT_HOLDER"
 	RuleFeatureTypeIPMetadata                RuleFeatureType = "IP_METADATA"
@@ -5664,7 +5717,7 @@ const (
 
 func (r RuleFeatureType) IsKnown() bool {
 	switch r {
-	case RuleFeatureTypeAuthorization, RuleFeatureTypeAuthentication, RuleFeatureTypeTokenization, RuleFeatureTypeACHReceipt, RuleFeatureTypeCard, RuleFeatureTypeAccountHolder, RuleFeatureTypeIPMetadata, RuleFeatureTypeSpendVelocity, RuleFeatureTypeTransactionHistorySignals:
+	case RuleFeatureTypeAuthorization, RuleFeatureTypeAuthentication, RuleFeatureTypeTokenization, RuleFeatureTypeACHReceipt, RuleFeatureTypeCardTransaction, RuleFeatureTypeCard, RuleFeatureTypeAccountHolder, RuleFeatureTypeIPMetadata, RuleFeatureTypeSpendVelocity, RuleFeatureTypeTransactionHistorySignals:
 		return true
 	}
 	return false
@@ -5699,10 +5752,13 @@ func (r RuleFeatureScope) IsKnown() bool {
 //     TOKENIZATION event stream rules.
 //   - `ACH_RECEIPT`: The ACH receipt being evaluated. Only available for
 //     ACH_CREDIT_RECEIPT and ACH_DEBIT_RECEIPT event stream rules.
-//   - `CARD`: The card associated with the event. Available for AUTHORIZATION and
-//     THREE_DS_AUTHENTICATION event stream rules.
+//   - `CARD_TRANSACTION`: The card transaction being evaluated. Only available for
+//     CARD_TRANSACTION_UPDATE event stream rules.
+//   - `CARD`: The card associated with the event. Available for AUTHORIZATION,
+//     THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event stream rules.
 //   - `ACCOUNT_HOLDER`: The account holder associated with the card. Available for
-//     AUTHORIZATION and THREE_DS_AUTHENTICATION event stream rules.
+//     AUTHORIZATION, THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event
+//     stream rules.
 //   - `IP_METADATA`: IP address metadata for the request. Available for
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
@@ -5710,8 +5766,8 @@ func (r RuleFeatureScope) IsKnown() bool {
 //     calculation. Available for AUTHORIZATION event stream rules.
 //   - `TRANSACTION_HISTORY_SIGNALS`: Behavioral feature state derived from the
 //     entity's transaction history. Requires `scope` to specify whether to load
-//     card, account, or business account history. Available for AUTHORIZATION event
-//     stream rules.
+//     card, account, or business account history. Available for AUTHORIZATION and
+//     CARD_TRANSACTION_UPDATE event stream rules.
 type RuleFeatureParam struct {
 	Type    param.Field[RuleFeatureType]           `json:"type" api:"required"`
 	Filters param.Field[VelocityLimitFiltersParam] `json:"filters"`
@@ -5741,10 +5797,13 @@ func (r RuleFeatureParam) implementsRuleFeatureUnionParam() {}
 //     TOKENIZATION event stream rules.
 //   - `ACH_RECEIPT`: The ACH receipt being evaluated. Only available for
 //     ACH_CREDIT_RECEIPT and ACH_DEBIT_RECEIPT event stream rules.
-//   - `CARD`: The card associated with the event. Available for AUTHORIZATION and
-//     THREE_DS_AUTHENTICATION event stream rules.
+//   - `CARD_TRANSACTION`: The card transaction being evaluated. Only available for
+//     CARD_TRANSACTION_UPDATE event stream rules.
+//   - `CARD`: The card associated with the event. Available for AUTHORIZATION,
+//     THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event stream rules.
 //   - `ACCOUNT_HOLDER`: The account holder associated with the card. Available for
-//     AUTHORIZATION and THREE_DS_AUTHENTICATION event stream rules.
+//     AUTHORIZATION, THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event
+//     stream rules.
 //   - `IP_METADATA`: IP address metadata for the request. Available for
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
@@ -5752,14 +5811,14 @@ func (r RuleFeatureParam) implementsRuleFeatureUnionParam() {}
 //     calculation. Available for AUTHORIZATION event stream rules.
 //   - `TRANSACTION_HISTORY_SIGNALS`: Behavioral feature state derived from the
 //     entity's transaction history. Requires `scope` to specify whether to load
-//     card, account, or business account history. Available for AUTHORIZATION event
-//     stream rules.
+//     card, account, or business account history. Available for AUTHORIZATION and
+//     CARD_TRANSACTION_UPDATE event stream rules.
 //
 // Satisfied by [RuleFeatureAuthorizationFeatureParam],
 // [RuleFeatureAuthenticationFeatureParam], [RuleFeatureTokenizationFeatureParam],
-// [RuleFeatureACHReceiptFeatureParam], [RuleFeatureCardFeatureParam],
-// [RuleFeatureAccountHolderFeatureParam], [RuleFeatureIPMetadataFeatureParam],
-// [RuleFeatureSpendVelocityFeatureParam],
+// [RuleFeatureACHReceiptFeatureParam], [RuleFeatureCardTransactionFeatureParam],
+// [RuleFeatureCardFeatureParam], [RuleFeatureAccountHolderFeatureParam],
+// [RuleFeatureIPMetadataFeatureParam], [RuleFeatureSpendVelocityFeatureParam],
 // [RuleFeatureTransactionHistorySignalsFeatureParam], [RuleFeatureParam].
 type RuleFeatureUnionParam interface {
 	implementsRuleFeatureUnionParam()
@@ -5812,6 +5871,18 @@ func (r RuleFeatureACHReceiptFeatureParam) MarshalJSON() (data []byte, err error
 }
 
 func (r RuleFeatureACHReceiptFeatureParam) implementsRuleFeatureUnionParam() {}
+
+type RuleFeatureCardTransactionFeatureParam struct {
+	Type param.Field[RuleFeatureCardTransactionFeatureType] `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name param.Field[string] `json:"name"`
+}
+
+func (r RuleFeatureCardTransactionFeatureParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r RuleFeatureCardTransactionFeatureParam) implementsRuleFeatureUnionParam() {}
 
 type RuleFeatureCardFeatureParam struct {
 	Type param.Field[RuleFeatureCardFeatureType] `json:"type" api:"required"`
@@ -8176,7 +8247,8 @@ type AuthRuleV2NewParamsBody struct {
 	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
 	//     stream.
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+	//     stream.
 	Type                  param.Field[AuthRuleV2NewParamsBodyType] `json:"type" api:"required"`
 	AccountTokens         param.Field[interface{}]                 `json:"account_tokens"`
 	BusinessAccountTokens param.Field[interface{}]                 `json:"business_account_tokens"`
@@ -8221,7 +8293,8 @@ type AuthRuleV2NewParamsBodyAccountLevelRule struct {
 	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
 	//     stream.
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+	//     stream.
 	Type param.Field[AuthRuleV2NewParamsBodyAccountLevelRuleType] `json:"type" api:"required"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens param.Field[[]string] `json:"account_tokens" format:"uuid"`
@@ -8315,7 +8388,8 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRuleParametersScope) IsKnown() bool {
 //     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
 //     stream.
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+//     stream.
 type AuthRuleV2NewParamsBodyAccountLevelRuleType string
 
 const (
@@ -8352,7 +8426,8 @@ type AuthRuleV2NewParamsBodyCardLevelRule struct {
 	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
 	//     stream.
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+	//     stream.
 	Type param.Field[AuthRuleV2NewParamsBodyCardLevelRuleType] `json:"type" api:"required"`
 	// The event stream during which the rule will be evaluated.
 	EventStream param.Field[EventStream] `json:"event_stream"`
@@ -8442,7 +8517,8 @@ func (r AuthRuleV2NewParamsBodyCardLevelRuleParametersScope) IsKnown() bool {
 //     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
 //     stream.
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+//     stream.
 type AuthRuleV2NewParamsBodyCardLevelRuleType string
 
 const (
@@ -8479,7 +8555,8 @@ type AuthRuleV2NewParamsBodyProgramLevelRule struct {
 	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
 	//     stream.
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+	//     stream.
 	Type param.Field[AuthRuleV2NewParamsBodyProgramLevelRuleType] `json:"type" api:"required"`
 	// The event stream during which the rule will be evaluated.
 	EventStream param.Field[EventStream] `json:"event_stream"`
@@ -8575,7 +8652,8 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleParametersScope) IsKnown() bool {
 //     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
 //     stream.
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+//     stream.
 type AuthRuleV2NewParamsBodyProgramLevelRuleType string
 
 const (
@@ -8607,7 +8685,8 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleType) IsKnown() bool {
 //     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
 //     stream.
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, or ACH_DEBIT_RECEIPT event stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
+//     stream.
 type AuthRuleV2NewParamsBodyType string
 
 const (
