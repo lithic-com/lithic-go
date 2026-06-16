@@ -94,6 +94,20 @@ func (r *TransactionService) ExpireAuthorization(ctx context.Context, transactio
 	return err
 }
 
+// Route a card transaction to a financial account. Only available for select use
+// cases and programs.
+func (r *TransactionService) Route(ctx context.Context, transactionToken string, body TransactionRouteParams, opts ...option.RequestOption) (err error) {
+	opts = slices.Concat(r.Options, opts)
+	opts = append([]option.RequestOption{option.WithHeader("Accept", "*/*")}, opts...)
+	if transactionToken == "" {
+		err = errors.New("missing required transaction_token parameter")
+		return err
+	}
+	path := fmt.Sprintf("v1/transactions/%s/route", transactionToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, nil, opts...)
+	return err
+}
+
 // Simulates an authorization request from the card network as if it came from a
 // merchant acquirer. If you are configured for ASA, simulating authorizations
 // requires your ASA client to be set up properly, i.e. be able to respond to the
@@ -2002,6 +2016,15 @@ func (r TransactionListParamsStatus) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+type TransactionRouteParams struct {
+	// The token of the financial account to route the transaction to.
+	FinancialAccountToken param.Field[string] `json:"financial_account_token" api:"required" format:"uuid"`
+}
+
+func (r TransactionRouteParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }
 
 type TransactionSimulateAuthorizationParams struct {
