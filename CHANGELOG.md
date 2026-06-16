@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.112.0 (2026-06-16)
+
+Full Changelog: [v0.111.0...v0.112.0](https://github.com/lithic-com/lithic-go/compare/v0.111.0...v0.112.0)
+
+### Features
+
+* **api:** add 13 condition attributes, interval/unit params to auth rule v2 ([f627454](https://github.com/lithic-com/lithic-go/commit/f6274540cff64536d803cc60d6511b2e355e9ea7))
+* **api:** add CARD_TRANSACTION feature type to auth rule v2 ([322992b](https://github.com/lithic-com/lithic-go/commit/322992b48daa4e3bdaa070ddf6dec9d97cfdd448))
+* **api:** Add created field and make completed_at nullable in latest_challenge ([2a1a828](https://github.com/lithic-com/lithic-go/commit/2a1a828d217aea3383e9daca08456a5b18905f73))
+* **api:** add day_of_period field to LoanTape and ParsedWebhookEvent ([63733a6](https://github.com/lithic-com/lithic-go/commit/63733a6dfc4d88bf1f2619eaf0f61335bbf06750))
+* **api:** add hold adjustment action to auth rule parameters ([092f7cc](https://github.com/lithic-com/lithic-go/commit/092f7cc1009e5101101ccce9dbb91c021d1554c7))
+* **api:** add name_validation field to card authorizations and webhooks ([a397d3a](https://github.com/lithic-com/lithic-go/commit/a397d3a13e5f5189cc0437abaf4ec2506b117a7d))
+* **api:** add route method to transactions ([c200561](https://github.com/lithic-com/lithic-go/commit/c200561a9b82f457dc10e2ac66fed820beefa8e2))
+* **api:** add tags field to Payment model ([24443c8](https://github.com/lithic-com/lithic-go/commit/24443c88835e6a9715731f8443cec67a71ca0aa6))
+* **api:** add transaction monitoring cases/comments/files/queues endpoints, update types ([d0583ab](https://github.com/lithic-com/lithic-go/commit/d0583ab8b8b219235243d631a3957ff87cdbbb31))
+
+
+### Documentation
+
+* **api:** update support contact to support.lithic.com ([fefc28c](https://github.com/lithic-com/lithic-go/commit/fefc28c595c579a4f5c308906f7b951abec1f94d))
+
 ## 0.111.0 (2026-05-27)
 
 Full Changelog: [v0.110.0...v0.111.0](https://github.com/lithic-com/lithic-go/compare/v0.110.0...v0.111.0)
