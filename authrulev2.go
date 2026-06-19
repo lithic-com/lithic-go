@@ -235,6 +235,267 @@ func (r *AuthRuleV2Service) GetReport(ctx context.Context, authRuleToken string,
 	return res, err
 }
 
+type ACHPaymentUpdateAction struct {
+	// Tag the payment with key-value metadata
+	Type ACHPaymentUpdateActionType `json:"type" api:"required"`
+	// The key of the tag to apply to the payment
+	Key string `json:"key"`
+	// The token of the queue to create the case in
+	QueueToken string `json:"queue_token" format:"uuid"`
+	// The scope of the case to create
+	Scope ACHPaymentUpdateActionScope `json:"scope"`
+	// The value of the tag to apply to the payment
+	Value string                     `json:"value"`
+	JSON  achPaymentUpdateActionJSON `json:"-"`
+	union ACHPaymentUpdateActionUnion
+}
+
+// achPaymentUpdateActionJSON contains the JSON metadata for the struct
+// [ACHPaymentUpdateAction]
+type achPaymentUpdateActionJSON struct {
+	Type        apijson.Field
+	Key         apijson.Field
+	QueueToken  apijson.Field
+	Scope       apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r achPaymentUpdateActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r *ACHPaymentUpdateAction) UnmarshalJSON(data []byte) (err error) {
+	*r = ACHPaymentUpdateAction{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a [ACHPaymentUpdateActionUnion] interface which you can cast to
+// the specific types for more type safety.
+//
+// Possible runtime types of the union are [ACHPaymentUpdateActionTagAction],
+// [ACHPaymentUpdateActionCreateCaseAction].
+func (r ACHPaymentUpdateAction) AsUnion() ACHPaymentUpdateActionUnion {
+	return r.union
+}
+
+// Union satisfied by [ACHPaymentUpdateActionTagAction] or
+// [ACHPaymentUpdateActionCreateCaseAction].
+type ACHPaymentUpdateActionUnion interface {
+	implementsACHPaymentUpdateAction()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*ACHPaymentUpdateActionUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ACHPaymentUpdateActionTagAction{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ACHPaymentUpdateActionCreateCaseAction{}),
+		},
+	)
+}
+
+type ACHPaymentUpdateActionTagAction struct {
+	// The key of the tag to apply to the payment
+	Key string `json:"key" api:"required"`
+	// Tag the payment with key-value metadata
+	Type ACHPaymentUpdateActionTagActionType `json:"type" api:"required"`
+	// The value of the tag to apply to the payment
+	Value string                              `json:"value" api:"required"`
+	JSON  achPaymentUpdateActionTagActionJSON `json:"-"`
+}
+
+// achPaymentUpdateActionTagActionJSON contains the JSON metadata for the struct
+// [ACHPaymentUpdateActionTagAction]
+type achPaymentUpdateActionTagActionJSON struct {
+	Key         apijson.Field
+	Type        apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ACHPaymentUpdateActionTagAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r achPaymentUpdateActionTagActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ACHPaymentUpdateActionTagAction) implementsACHPaymentUpdateAction() {}
+
+// Tag the payment with key-value metadata
+type ACHPaymentUpdateActionTagActionType string
+
+const (
+	ACHPaymentUpdateActionTagActionTypeTag ACHPaymentUpdateActionTagActionType = "TAG"
+)
+
+func (r ACHPaymentUpdateActionTagActionType) IsKnown() bool {
+	switch r {
+	case ACHPaymentUpdateActionTagActionTypeTag:
+		return true
+	}
+	return false
+}
+
+type ACHPaymentUpdateActionCreateCaseAction struct {
+	// The token of the queue to create the case in
+	QueueToken string `json:"queue_token" api:"required" format:"uuid"`
+	// The scope of the case to create
+	Scope ACHPaymentUpdateActionCreateCaseActionScope `json:"scope" api:"required"`
+	// Create a case for the payment
+	Type ACHPaymentUpdateActionCreateCaseActionType `json:"type" api:"required"`
+	JSON achPaymentUpdateActionCreateCaseActionJSON `json:"-"`
+}
+
+// achPaymentUpdateActionCreateCaseActionJSON contains the JSON metadata for the
+// struct [ACHPaymentUpdateActionCreateCaseAction]
+type achPaymentUpdateActionCreateCaseActionJSON struct {
+	QueueToken  apijson.Field
+	Scope       apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ACHPaymentUpdateActionCreateCaseAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r achPaymentUpdateActionCreateCaseActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ACHPaymentUpdateActionCreateCaseAction) implementsACHPaymentUpdateAction() {}
+
+// The scope of the case to create
+type ACHPaymentUpdateActionCreateCaseActionScope string
+
+const (
+	ACHPaymentUpdateActionCreateCaseActionScopeFinancialAccount ACHPaymentUpdateActionCreateCaseActionScope = "FINANCIAL_ACCOUNT"
+)
+
+func (r ACHPaymentUpdateActionCreateCaseActionScope) IsKnown() bool {
+	switch r {
+	case ACHPaymentUpdateActionCreateCaseActionScopeFinancialAccount:
+		return true
+	}
+	return false
+}
+
+// Create a case for the payment
+type ACHPaymentUpdateActionCreateCaseActionType string
+
+const (
+	ACHPaymentUpdateActionCreateCaseActionTypeCreateCase ACHPaymentUpdateActionCreateCaseActionType = "CREATE_CASE"
+)
+
+func (r ACHPaymentUpdateActionCreateCaseActionType) IsKnown() bool {
+	switch r {
+	case ACHPaymentUpdateActionCreateCaseActionTypeCreateCase:
+		return true
+	}
+	return false
+}
+
+// Tag the payment with key-value metadata
+type ACHPaymentUpdateActionType string
+
+const (
+	ACHPaymentUpdateActionTypeTag        ACHPaymentUpdateActionType = "TAG"
+	ACHPaymentUpdateActionTypeCreateCase ACHPaymentUpdateActionType = "CREATE_CASE"
+)
+
+func (r ACHPaymentUpdateActionType) IsKnown() bool {
+	switch r {
+	case ACHPaymentUpdateActionTypeTag, ACHPaymentUpdateActionTypeCreateCase:
+		return true
+	}
+	return false
+}
+
+// The scope of the case to create
+type ACHPaymentUpdateActionScope string
+
+const (
+	ACHPaymentUpdateActionScopeFinancialAccount ACHPaymentUpdateActionScope = "FINANCIAL_ACCOUNT"
+)
+
+func (r ACHPaymentUpdateActionScope) IsKnown() bool {
+	switch r {
+	case ACHPaymentUpdateActionScopeFinancialAccount:
+		return true
+	}
+	return false
+}
+
+type ACHPaymentUpdateActionParam struct {
+	// Tag the payment with key-value metadata
+	Type param.Field[ACHPaymentUpdateActionType] `json:"type" api:"required"`
+	// The key of the tag to apply to the payment
+	Key param.Field[string] `json:"key"`
+	// The token of the queue to create the case in
+	QueueToken param.Field[string] `json:"queue_token" format:"uuid"`
+	// The scope of the case to create
+	Scope param.Field[ACHPaymentUpdateActionScope] `json:"scope"`
+	// The value of the tag to apply to the payment
+	Value param.Field[string] `json:"value"`
+}
+
+func (r ACHPaymentUpdateActionParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r ACHPaymentUpdateActionParam) implementsACHPaymentUpdateActionUnionParam() {}
+
+// Satisfied by [ACHPaymentUpdateActionTagActionParam],
+// [ACHPaymentUpdateActionCreateCaseActionParam], [ACHPaymentUpdateActionParam].
+type ACHPaymentUpdateActionUnionParam interface {
+	implementsACHPaymentUpdateActionUnionParam()
+}
+
+type ACHPaymentUpdateActionTagActionParam struct {
+	// The key of the tag to apply to the payment
+	Key param.Field[string] `json:"key" api:"required"`
+	// Tag the payment with key-value metadata
+	Type param.Field[ACHPaymentUpdateActionTagActionType] `json:"type" api:"required"`
+	// The value of the tag to apply to the payment
+	Value param.Field[string] `json:"value" api:"required"`
+}
+
+func (r ACHPaymentUpdateActionTagActionParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r ACHPaymentUpdateActionTagActionParam) implementsACHPaymentUpdateActionUnionParam() {}
+
+type ACHPaymentUpdateActionCreateCaseActionParam struct {
+	// The token of the queue to create the case in
+	QueueToken param.Field[string] `json:"queue_token" api:"required" format:"uuid"`
+	// The scope of the case to create
+	Scope param.Field[ACHPaymentUpdateActionCreateCaseActionScope] `json:"scope" api:"required"`
+	// Create a case for the payment
+	Type param.Field[ACHPaymentUpdateActionCreateCaseActionType] `json:"type" api:"required"`
+}
+
+func (r ACHPaymentUpdateActionCreateCaseActionParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r ACHPaymentUpdateActionCreateCaseActionParam) implementsACHPaymentUpdateActionUnionParam() {}
+
 type AuthRule struct {
 	// Auth Rule Token
 	Token string `json:"token" api:"required" format:"uuid"`
@@ -267,11 +528,11 @@ type AuthRule struct {
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-	//     stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+	//     ACH_PAYMENT_UPDATE event stream.
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-	//     stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+	//     ACH_PAYMENT_UPDATE event stream.
 	Type AuthRuleType `json:"type" api:"required"`
 	// Account tokens to which the Auth Rule does not apply.
 	ExcludedAccountTokens []string `json:"excluded_account_tokens" format:"uuid"`
@@ -343,7 +604,7 @@ type AuthRuleCurrentVersionParameters struct {
 	// [ConditionalAuthorizationActionParametersAction],
 	// [ConditionalACHActionParametersAction],
 	// [ConditionalTokenizationActionParametersAction], [CardTransactionUpdateAction],
-	// [ConditionalAuthorizationAdjustmentParametersAction].
+	// [ACHPaymentUpdateAction], [ConditionalAuthorizationAdjustmentParametersAction].
 	Action interface{} `json:"action"`
 	// The TypeScript source code of the rule. Must define a `rule()` function that
 	// accepts the declared features as positional arguments (in the same order as the
@@ -355,6 +616,7 @@ type AuthRuleCurrentVersionParameters struct {
 	// [[]ConditionalACHActionParametersCondition],
 	// [[]ConditionalTokenizationActionParametersCondition],
 	// [[]ConditionalCardTransactionUpdateActionParametersCondition],
+	// [[]ConditionalACHPaymentUpdateActionParametersCondition],
 	// [[]ConditionalAuthorizationAdjustmentParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [[]RuleFeature].
@@ -417,7 +679,8 @@ func (r *AuthRuleCurrentVersionParameters) UnmarshalJSON(data []byte) (err error
 // [VelocityLimitParams], [MerchantLockParameters],
 // [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
 // [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
-// [ConditionalCardTransactionUpdateActionParameters], [TypescriptCodeParameters],
+// [ConditionalCardTransactionUpdateActionParameters],
+// [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters],
 // [ConditionalAuthorizationAdjustmentParameters].
 func (r AuthRuleCurrentVersionParameters) AsUnion() AuthRuleCurrentVersionParametersUnion {
 	return r.union
@@ -429,8 +692,9 @@ func (r AuthRuleCurrentVersionParameters) AsUnion() AuthRuleCurrentVersionParame
 // [MerchantLockParameters], [Conditional3DSActionParameters],
 // [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
 // [ConditionalTokenizationActionParameters],
-// [ConditionalCardTransactionUpdateActionParameters], [TypescriptCodeParameters]
-// or [ConditionalAuthorizationAdjustmentParameters].
+// [ConditionalCardTransactionUpdateActionParameters],
+// [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters] or
+// [ConditionalAuthorizationAdjustmentParameters].
 type AuthRuleCurrentVersionParametersUnion interface {
 	implementsAuthRuleCurrentVersionParameters()
 }
@@ -470,6 +734,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalCardTransactionUpdateActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHPaymentUpdateActionParameters{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -546,7 +814,7 @@ type AuthRuleDraftVersionParameters struct {
 	// [ConditionalAuthorizationActionParametersAction],
 	// [ConditionalACHActionParametersAction],
 	// [ConditionalTokenizationActionParametersAction], [CardTransactionUpdateAction],
-	// [ConditionalAuthorizationAdjustmentParametersAction].
+	// [ACHPaymentUpdateAction], [ConditionalAuthorizationAdjustmentParametersAction].
 	Action interface{} `json:"action"`
 	// The TypeScript source code of the rule. Must define a `rule()` function that
 	// accepts the declared features as positional arguments (in the same order as the
@@ -558,6 +826,7 @@ type AuthRuleDraftVersionParameters struct {
 	// [[]ConditionalACHActionParametersCondition],
 	// [[]ConditionalTokenizationActionParametersCondition],
 	// [[]ConditionalCardTransactionUpdateActionParametersCondition],
+	// [[]ConditionalACHPaymentUpdateActionParametersCondition],
 	// [[]ConditionalAuthorizationAdjustmentParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [[]RuleFeature].
@@ -620,7 +889,8 @@ func (r *AuthRuleDraftVersionParameters) UnmarshalJSON(data []byte) (err error) 
 // [VelocityLimitParams], [MerchantLockParameters],
 // [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
 // [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
-// [ConditionalCardTransactionUpdateActionParameters], [TypescriptCodeParameters],
+// [ConditionalCardTransactionUpdateActionParameters],
+// [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters],
 // [ConditionalAuthorizationAdjustmentParameters].
 func (r AuthRuleDraftVersionParameters) AsUnion() AuthRuleDraftVersionParametersUnion {
 	return r.union
@@ -632,8 +902,9 @@ func (r AuthRuleDraftVersionParameters) AsUnion() AuthRuleDraftVersionParameters
 // [MerchantLockParameters], [Conditional3DSActionParameters],
 // [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
 // [ConditionalTokenizationActionParameters],
-// [ConditionalCardTransactionUpdateActionParameters], [TypescriptCodeParameters]
-// or [ConditionalAuthorizationAdjustmentParameters].
+// [ConditionalCardTransactionUpdateActionParameters],
+// [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters] or
+// [ConditionalAuthorizationAdjustmentParameters].
 type AuthRuleDraftVersionParametersUnion interface {
 	implementsAuthRuleDraftVersionParameters()
 }
@@ -673,6 +944,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalCardTransactionUpdateActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHPaymentUpdateActionParameters{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -753,11 +1028,11 @@ func (r AuthRuleState) IsKnown() bool {
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-//     stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+//     ACH_PAYMENT_UPDATE event stream.
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-//     stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+//     ACH_PAYMENT_UPDATE event stream.
 type AuthRuleType string
 
 const (
@@ -952,7 +1227,7 @@ type AuthRuleVersionParameters struct {
 	// [ConditionalAuthorizationActionParametersAction],
 	// [ConditionalACHActionParametersAction],
 	// [ConditionalTokenizationActionParametersAction], [CardTransactionUpdateAction],
-	// [ConditionalAuthorizationAdjustmentParametersAction].
+	// [ACHPaymentUpdateAction], [ConditionalAuthorizationAdjustmentParametersAction].
 	Action interface{} `json:"action"`
 	// The TypeScript source code of the rule. Must define a `rule()` function that
 	// accepts the declared features as positional arguments (in the same order as the
@@ -964,6 +1239,7 @@ type AuthRuleVersionParameters struct {
 	// [[]ConditionalACHActionParametersCondition],
 	// [[]ConditionalTokenizationActionParametersCondition],
 	// [[]ConditionalCardTransactionUpdateActionParametersCondition],
+	// [[]ConditionalACHPaymentUpdateActionParametersCondition],
 	// [[]ConditionalAuthorizationAdjustmentParametersCondition].
 	Conditions interface{} `json:"conditions"`
 	// This field can have the runtime type of [[]RuleFeature].
@@ -1026,7 +1302,8 @@ func (r *AuthRuleVersionParameters) UnmarshalJSON(data []byte) (err error) {
 // [VelocityLimitParams], [MerchantLockParameters],
 // [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
 // [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
-// [ConditionalCardTransactionUpdateActionParameters], [TypescriptCodeParameters],
+// [ConditionalCardTransactionUpdateActionParameters],
+// [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters],
 // [ConditionalAuthorizationAdjustmentParameters].
 func (r AuthRuleVersionParameters) AsUnion() AuthRuleVersionParametersUnion {
 	return r.union
@@ -1038,8 +1315,9 @@ func (r AuthRuleVersionParameters) AsUnion() AuthRuleVersionParametersUnion {
 // [MerchantLockParameters], [Conditional3DSActionParameters],
 // [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
 // [ConditionalTokenizationActionParameters],
-// [ConditionalCardTransactionUpdateActionParameters], [TypescriptCodeParameters]
-// or [ConditionalAuthorizationAdjustmentParameters].
+// [ConditionalCardTransactionUpdateActionParameters],
+// [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters] or
+// [ConditionalAuthorizationAdjustmentParameters].
 type AuthRuleVersionParametersUnion interface {
 	implementsAuthRuleVersionParameters()
 }
@@ -1079,6 +1357,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(ConditionalCardTransactionUpdateActionParameters{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ConditionalACHPaymentUpdateActionParameters{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -2065,6 +2347,136 @@ const (
 func (r ConditionalACHActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
 	case ConditionalACHActionParametersConditionsAttributeCompanyName, ConditionalACHActionParametersConditionsAttributeCompanyID, ConditionalACHActionParametersConditionsAttributeTimestamp, ConditionalACHActionParametersConditionsAttributeTransactionAmount, ConditionalACHActionParametersConditionsAttributeSecCode, ConditionalACHActionParametersConditionsAttributeMemo:
+		return true
+	}
+	return false
+}
+
+type ConditionalACHPaymentUpdateActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     ACHPaymentUpdateAction                                 `json:"action" api:"required"`
+	Conditions []ConditionalACHPaymentUpdateActionParametersCondition `json:"conditions" api:"required"`
+	JSON       conditionalACHPaymentUpdateActionParametersJSON        `json:"-"`
+}
+
+// conditionalACHPaymentUpdateActionParametersJSON contains the JSON metadata for
+// the struct [ConditionalACHPaymentUpdateActionParameters]
+type conditionalACHPaymentUpdateActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ConditionalACHPaymentUpdateActionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r conditionalACHPaymentUpdateActionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ConditionalACHPaymentUpdateActionParameters) implementsAuthRuleCurrentVersionParameters() {}
+
+func (r ConditionalACHPaymentUpdateActionParameters) implementsAuthRuleDraftVersionParameters() {}
+
+func (r ConditionalACHPaymentUpdateActionParameters) implementsAuthRuleVersionParameters() {}
+
+type ConditionalACHPaymentUpdateActionParametersCondition struct {
+	// The attribute to target.
+	//
+	// The following attributes may be targeted:
+	//
+	//   - `TRANSACTION_AMOUNT`: The total amount of the ACH payment in minor units
+	//     (cents), calculated as the sum of the settled and pending amounts. Use an
+	//     integer value.
+	//   - `SEC_CODE`: Standard Entry Class code indicating the type of ACH transaction.
+	//     Valid values include PPD (Prearranged Payment and Deposit Entry), CCD
+	//     (Corporate Credit or Debit Entry), WEB (Internet-Initiated/Mobile Entry), TEL
+	//     (Telephone-Initiated Entry), and others.
+	//   - `RETURN_REASON_CODE`: NACHA return reason code associated with the payment
+	//     (for example, `R01`).
+	//   - `ACCOUNT_AGE`: The age of the account in seconds at the time of the payment.
+	//     Use an integer value. For programs where Lithic does not manage or retain
+	//     account holder data, this attribute does not evaluate.
+	//   - `EXTERNAL_BANK_ACCOUNT_AGE`: The age of the external bank account in seconds
+	//     at the time of the payment. Use an integer value.
+	//   - `EXTERNAL_BANK_ACCOUNT_VERIFICATION_METHOD`: The method used to verify the
+	//     external bank account. Valid values are `MANUAL`, `MICRO_DEPOSIT`, `PRENOTE`,
+	//     `EXTERNALLY_VERIFIED`, or `UNVERIFIED`.
+	//   - `EXTERNAL_BANK_ACCOUNT_VERIFICATION_STATE`: The verification state of the
+	//     external bank account. Valid values are `PENDING`, `ENABLED`,
+	//     `FAILED_VERIFICATION`, or `INSUFFICIENT_FUNDS`.
+	//   - `EXTERNAL_BANK_ACCOUNT_OWNER_TYPE`: The owner type of the external bank
+	//     account. Valid values are `INDIVIDUAL` or `BUSINESS`.
+	Attribute ConditionalACHPaymentUpdateActionParametersConditionsAttribute `json:"attribute" api:"required"`
+	// The operation to apply to the attribute
+	Operation ConditionalOperation `json:"operation" api:"required"`
+	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
+	Value ConditionalValueUnion                                    `json:"value" api:"required"`
+	JSON  conditionalACHPaymentUpdateActionParametersConditionJSON `json:"-"`
+}
+
+// conditionalACHPaymentUpdateActionParametersConditionJSON contains the JSON
+// metadata for the struct [ConditionalACHPaymentUpdateActionParametersCondition]
+type conditionalACHPaymentUpdateActionParametersConditionJSON struct {
+	Attribute   apijson.Field
+	Operation   apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *ConditionalACHPaymentUpdateActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r conditionalACHPaymentUpdateActionParametersConditionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The attribute to target.
+//
+// The following attributes may be targeted:
+//
+//   - `TRANSACTION_AMOUNT`: The total amount of the ACH payment in minor units
+//     (cents), calculated as the sum of the settled and pending amounts. Use an
+//     integer value.
+//   - `SEC_CODE`: Standard Entry Class code indicating the type of ACH transaction.
+//     Valid values include PPD (Prearranged Payment and Deposit Entry), CCD
+//     (Corporate Credit or Debit Entry), WEB (Internet-Initiated/Mobile Entry), TEL
+//     (Telephone-Initiated Entry), and others.
+//   - `RETURN_REASON_CODE`: NACHA return reason code associated with the payment
+//     (for example, `R01`).
+//   - `ACCOUNT_AGE`: The age of the account in seconds at the time of the payment.
+//     Use an integer value. For programs where Lithic does not manage or retain
+//     account holder data, this attribute does not evaluate.
+//   - `EXTERNAL_BANK_ACCOUNT_AGE`: The age of the external bank account in seconds
+//     at the time of the payment. Use an integer value.
+//   - `EXTERNAL_BANK_ACCOUNT_VERIFICATION_METHOD`: The method used to verify the
+//     external bank account. Valid values are `MANUAL`, `MICRO_DEPOSIT`, `PRENOTE`,
+//     `EXTERNALLY_VERIFIED`, or `UNVERIFIED`.
+//   - `EXTERNAL_BANK_ACCOUNT_VERIFICATION_STATE`: The verification state of the
+//     external bank account. Valid values are `PENDING`, `ENABLED`,
+//     `FAILED_VERIFICATION`, or `INSUFFICIENT_FUNDS`.
+//   - `EXTERNAL_BANK_ACCOUNT_OWNER_TYPE`: The owner type of the external bank
+//     account. Valid values are `INDIVIDUAL` or `BUSINESS`.
+type ConditionalACHPaymentUpdateActionParametersConditionsAttribute string
+
+const (
+	ConditionalACHPaymentUpdateActionParametersConditionsAttributeTransactionAmount                     ConditionalACHPaymentUpdateActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
+	ConditionalACHPaymentUpdateActionParametersConditionsAttributeSecCode                               ConditionalACHPaymentUpdateActionParametersConditionsAttribute = "SEC_CODE"
+	ConditionalACHPaymentUpdateActionParametersConditionsAttributeReturnReasonCode                      ConditionalACHPaymentUpdateActionParametersConditionsAttribute = "RETURN_REASON_CODE"
+	ConditionalACHPaymentUpdateActionParametersConditionsAttributeAccountAge                            ConditionalACHPaymentUpdateActionParametersConditionsAttribute = "ACCOUNT_AGE"
+	ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountAge                ConditionalACHPaymentUpdateActionParametersConditionsAttribute = "EXTERNAL_BANK_ACCOUNT_AGE"
+	ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountVerificationMethod ConditionalACHPaymentUpdateActionParametersConditionsAttribute = "EXTERNAL_BANK_ACCOUNT_VERIFICATION_METHOD"
+	ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountVerificationState  ConditionalACHPaymentUpdateActionParametersConditionsAttribute = "EXTERNAL_BANK_ACCOUNT_VERIFICATION_STATE"
+	ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountOwnerType          ConditionalACHPaymentUpdateActionParametersConditionsAttribute = "EXTERNAL_BANK_ACCOUNT_OWNER_TYPE"
+)
+
+func (r ConditionalACHPaymentUpdateActionParametersConditionsAttribute) IsKnown() bool {
+	switch r {
+	case ConditionalACHPaymentUpdateActionParametersConditionsAttributeTransactionAmount, ConditionalACHPaymentUpdateActionParametersConditionsAttributeSecCode, ConditionalACHPaymentUpdateActionParametersConditionsAttributeReturnReasonCode, ConditionalACHPaymentUpdateActionParametersConditionsAttributeAccountAge, ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountAge, ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountVerificationMethod, ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountVerificationState, ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountOwnerType:
 		return true
 	}
 	return false
@@ -4143,11 +4555,12 @@ const (
 	EventStreamACHCreditReceipt      EventStream = "ACH_CREDIT_RECEIPT"
 	EventStreamACHDebitReceipt       EventStream = "ACH_DEBIT_RECEIPT"
 	EventStreamCardTransactionUpdate EventStream = "CARD_TRANSACTION_UPDATE"
+	EventStreamACHPaymentUpdate      EventStream = "ACH_PAYMENT_UPDATE"
 )
 
 func (r EventStream) IsKnown() bool {
 	switch r {
-	case EventStreamAuthorization, EventStreamThreeDSAuthentication, EventStreamTokenization, EventStreamACHCreditReceipt, EventStreamACHDebitReceipt, EventStreamCardTransactionUpdate:
+	case EventStreamAuthorization, EventStreamThreeDSAuthentication, EventStreamTokenization, EventStreamACHCreditReceipt, EventStreamACHDebitReceipt, EventStreamCardTransactionUpdate, EventStreamACHPaymentUpdate:
 		return true
 	}
 	return false
@@ -5106,11 +5519,13 @@ func (r ReportStatsState) IsKnown() bool {
 //     ACH_CREDIT_RECEIPT and ACH_DEBIT_RECEIPT event stream rules.
 //   - `CARD_TRANSACTION`: The card transaction being evaluated. Only available for
 //     CARD_TRANSACTION_UPDATE event stream rules.
+//   - `ACH_PAYMENT`: The ACH payment being evaluated. Only available for
+//     ACH_PAYMENT_UPDATE event stream rules.
 //   - `CARD`: The card associated with the event. Available for AUTHORIZATION,
 //     THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event stream rules.
-//   - `ACCOUNT_HOLDER`: The account holder associated with the card. Available for
-//     AUTHORIZATION, THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event
-//     stream rules.
+//   - `ACCOUNT_HOLDER`: The account holder associated with the event. Available for
+//     AUTHORIZATION, THREE_DS_AUTHENTICATION, CARD_TRANSACTION_UPDATE, and
+//     ACH_PAYMENT_UPDATE event stream rules.
 //   - `IP_METADATA`: IP address metadata for the request. Available for
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
@@ -5163,8 +5578,9 @@ func (r *RuleFeature) UnmarshalJSON(data []byte) (err error) {
 // Possible runtime types of the union are [RuleFeatureAuthorizationFeature],
 // [RuleFeatureAuthenticationFeature], [RuleFeatureTokenizationFeature],
 // [RuleFeatureACHReceiptFeature], [RuleFeatureCardTransactionFeature],
-// [RuleFeatureCardFeature], [RuleFeatureAccountHolderFeature],
-// [RuleFeatureIPMetadataFeature], [RuleFeatureSpendVelocityFeature],
+// [RuleFeatureACHPaymentFeature], [RuleFeatureCardFeature],
+// [RuleFeatureAccountHolderFeature], [RuleFeatureIPMetadataFeature],
+// [RuleFeatureSpendVelocityFeature],
 // [RuleFeatureTransactionHistorySignalsFeature].
 func (r RuleFeature) AsUnion() RuleFeatureUnion {
 	return r.union
@@ -5184,11 +5600,13 @@ func (r RuleFeature) AsUnion() RuleFeatureUnion {
 //     ACH_CREDIT_RECEIPT and ACH_DEBIT_RECEIPT event stream rules.
 //   - `CARD_TRANSACTION`: The card transaction being evaluated. Only available for
 //     CARD_TRANSACTION_UPDATE event stream rules.
+//   - `ACH_PAYMENT`: The ACH payment being evaluated. Only available for
+//     ACH_PAYMENT_UPDATE event stream rules.
 //   - `CARD`: The card associated with the event. Available for AUTHORIZATION,
 //     THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event stream rules.
-//   - `ACCOUNT_HOLDER`: The account holder associated with the card. Available for
-//     AUTHORIZATION, THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event
-//     stream rules.
+//   - `ACCOUNT_HOLDER`: The account holder associated with the event. Available for
+//     AUTHORIZATION, THREE_DS_AUTHENTICATION, CARD_TRANSACTION_UPDATE, and
+//     ACH_PAYMENT_UPDATE event stream rules.
 //   - `IP_METADATA`: IP address metadata for the request. Available for
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
@@ -5202,8 +5620,9 @@ func (r RuleFeature) AsUnion() RuleFeatureUnion {
 // Union satisfied by [RuleFeatureAuthorizationFeature],
 // [RuleFeatureAuthenticationFeature], [RuleFeatureTokenizationFeature],
 // [RuleFeatureACHReceiptFeature], [RuleFeatureCardTransactionFeature],
-// [RuleFeatureCardFeature], [RuleFeatureAccountHolderFeature],
-// [RuleFeatureIPMetadataFeature], [RuleFeatureSpendVelocityFeature] or
+// [RuleFeatureACHPaymentFeature], [RuleFeatureCardFeature],
+// [RuleFeatureAccountHolderFeature], [RuleFeatureIPMetadataFeature],
+// [RuleFeatureSpendVelocityFeature] or
 // [RuleFeatureTransactionHistorySignalsFeature].
 type RuleFeatureUnion interface {
 	implementsRuleFeature()
@@ -5232,6 +5651,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(RuleFeatureCardTransactionFeature{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(RuleFeatureACHPaymentFeature{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -5451,6 +5874,46 @@ const (
 func (r RuleFeatureCardTransactionFeatureType) IsKnown() bool {
 	switch r {
 	case RuleFeatureCardTransactionFeatureTypeCardTransaction:
+		return true
+	}
+	return false
+}
+
+type RuleFeatureACHPaymentFeature struct {
+	Type RuleFeatureACHPaymentFeatureType `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name string                           `json:"name"`
+	JSON ruleFeatureACHPaymentFeatureJSON `json:"-"`
+}
+
+// ruleFeatureACHPaymentFeatureJSON contains the JSON metadata for the struct
+// [RuleFeatureACHPaymentFeature]
+type ruleFeatureACHPaymentFeatureJSON struct {
+	Type        apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *RuleFeatureACHPaymentFeature) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r ruleFeatureACHPaymentFeatureJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r RuleFeatureACHPaymentFeature) implementsRuleFeature() {}
+
+type RuleFeatureACHPaymentFeatureType string
+
+const (
+	RuleFeatureACHPaymentFeatureTypeACHPayment RuleFeatureACHPaymentFeatureType = "ACH_PAYMENT"
+)
+
+func (r RuleFeatureACHPaymentFeatureType) IsKnown() bool {
+	switch r {
+	case RuleFeatureACHPaymentFeatureTypeACHPayment:
 		return true
 	}
 	return false
@@ -5708,6 +6171,7 @@ const (
 	RuleFeatureTypeTokenization              RuleFeatureType = "TOKENIZATION"
 	RuleFeatureTypeACHReceipt                RuleFeatureType = "ACH_RECEIPT"
 	RuleFeatureTypeCardTransaction           RuleFeatureType = "CARD_TRANSACTION"
+	RuleFeatureTypeACHPayment                RuleFeatureType = "ACH_PAYMENT"
 	RuleFeatureTypeCard                      RuleFeatureType = "CARD"
 	RuleFeatureTypeAccountHolder             RuleFeatureType = "ACCOUNT_HOLDER"
 	RuleFeatureTypeIPMetadata                RuleFeatureType = "IP_METADATA"
@@ -5717,7 +6181,7 @@ const (
 
 func (r RuleFeatureType) IsKnown() bool {
 	switch r {
-	case RuleFeatureTypeAuthorization, RuleFeatureTypeAuthentication, RuleFeatureTypeTokenization, RuleFeatureTypeACHReceipt, RuleFeatureTypeCardTransaction, RuleFeatureTypeCard, RuleFeatureTypeAccountHolder, RuleFeatureTypeIPMetadata, RuleFeatureTypeSpendVelocity, RuleFeatureTypeTransactionHistorySignals:
+	case RuleFeatureTypeAuthorization, RuleFeatureTypeAuthentication, RuleFeatureTypeTokenization, RuleFeatureTypeACHReceipt, RuleFeatureTypeCardTransaction, RuleFeatureTypeACHPayment, RuleFeatureTypeCard, RuleFeatureTypeAccountHolder, RuleFeatureTypeIPMetadata, RuleFeatureTypeSpendVelocity, RuleFeatureTypeTransactionHistorySignals:
 		return true
 	}
 	return false
@@ -5754,11 +6218,13 @@ func (r RuleFeatureScope) IsKnown() bool {
 //     ACH_CREDIT_RECEIPT and ACH_DEBIT_RECEIPT event stream rules.
 //   - `CARD_TRANSACTION`: The card transaction being evaluated. Only available for
 //     CARD_TRANSACTION_UPDATE event stream rules.
+//   - `ACH_PAYMENT`: The ACH payment being evaluated. Only available for
+//     ACH_PAYMENT_UPDATE event stream rules.
 //   - `CARD`: The card associated with the event. Available for AUTHORIZATION,
 //     THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event stream rules.
-//   - `ACCOUNT_HOLDER`: The account holder associated with the card. Available for
-//     AUTHORIZATION, THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event
-//     stream rules.
+//   - `ACCOUNT_HOLDER`: The account holder associated with the event. Available for
+//     AUTHORIZATION, THREE_DS_AUTHENTICATION, CARD_TRANSACTION_UPDATE, and
+//     ACH_PAYMENT_UPDATE event stream rules.
 //   - `IP_METADATA`: IP address metadata for the request. Available for
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
@@ -5799,11 +6265,13 @@ func (r RuleFeatureParam) implementsRuleFeatureUnionParam() {}
 //     ACH_CREDIT_RECEIPT and ACH_DEBIT_RECEIPT event stream rules.
 //   - `CARD_TRANSACTION`: The card transaction being evaluated. Only available for
 //     CARD_TRANSACTION_UPDATE event stream rules.
+//   - `ACH_PAYMENT`: The ACH payment being evaluated. Only available for
+//     ACH_PAYMENT_UPDATE event stream rules.
 //   - `CARD`: The card associated with the event. Available for AUTHORIZATION,
 //     THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event stream rules.
-//   - `ACCOUNT_HOLDER`: The account holder associated with the card. Available for
-//     AUTHORIZATION, THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event
-//     stream rules.
+//   - `ACCOUNT_HOLDER`: The account holder associated with the event. Available for
+//     AUTHORIZATION, THREE_DS_AUTHENTICATION, CARD_TRANSACTION_UPDATE, and
+//     ACH_PAYMENT_UPDATE event stream rules.
 //   - `IP_METADATA`: IP address metadata for the request. Available for
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
@@ -5817,8 +6285,9 @@ func (r RuleFeatureParam) implementsRuleFeatureUnionParam() {}
 // Satisfied by [RuleFeatureAuthorizationFeatureParam],
 // [RuleFeatureAuthenticationFeatureParam], [RuleFeatureTokenizationFeatureParam],
 // [RuleFeatureACHReceiptFeatureParam], [RuleFeatureCardTransactionFeatureParam],
-// [RuleFeatureCardFeatureParam], [RuleFeatureAccountHolderFeatureParam],
-// [RuleFeatureIPMetadataFeatureParam], [RuleFeatureSpendVelocityFeatureParam],
+// [RuleFeatureACHPaymentFeatureParam], [RuleFeatureCardFeatureParam],
+// [RuleFeatureAccountHolderFeatureParam], [RuleFeatureIPMetadataFeatureParam],
+// [RuleFeatureSpendVelocityFeatureParam],
 // [RuleFeatureTransactionHistorySignalsFeatureParam], [RuleFeatureParam].
 type RuleFeatureUnionParam interface {
 	implementsRuleFeatureUnionParam()
@@ -5883,6 +6352,18 @@ func (r RuleFeatureCardTransactionFeatureParam) MarshalJSON() (data []byte, err 
 }
 
 func (r RuleFeatureCardTransactionFeatureParam) implementsRuleFeatureUnionParam() {}
+
+type RuleFeatureACHPaymentFeatureParam struct {
+	Type param.Field[RuleFeatureACHPaymentFeatureType] `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name param.Field[string] `json:"name"`
+}
+
+func (r RuleFeatureACHPaymentFeatureParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r RuleFeatureACHPaymentFeatureParam) implementsRuleFeatureUnionParam() {}
 
 type RuleFeatureCardFeatureParam struct {
 	Type param.Field[RuleFeatureCardFeatureType] `json:"type" api:"required"`
@@ -6628,7 +7109,9 @@ type AuthRuleV2ListResultsResponse struct {
 	// [[]AuthRuleV2ListResultsResponseAuthorizationResultAction],
 	// [[]AuthRuleV2ListResultsResponseAuthentication3DsResultAction],
 	// [[]AuthRuleV2ListResultsResponseTokenizationResultAction],
-	// [[]AuthRuleV2ListResultsResponseACHResultAction].
+	// [[]AuthRuleV2ListResultsResponseACHResultAction],
+	// [[]AuthRuleV2ListResultsResponseCardTransactionUpdateResultAction],
+	// [[]AuthRuleV2ListResultsResponseACHPaymentUpdateResultAction].
 	Actions interface{} `json:"actions" api:"required"`
 	// The Auth Rule token
 	AuthRuleToken string `json:"auth_rule_token" api:"required" format:"uuid"`
@@ -6684,7 +7167,9 @@ func (r *AuthRuleV2ListResultsResponse) UnmarshalJSON(data []byte) (err error) {
 // [AuthRuleV2ListResultsResponseAuthorizationResult],
 // [AuthRuleV2ListResultsResponseAuthentication3DSResult],
 // [AuthRuleV2ListResultsResponseTokenizationResult],
-// [AuthRuleV2ListResultsResponseACHResult].
+// [AuthRuleV2ListResultsResponseACHResult],
+// [AuthRuleV2ListResultsResponseCardTransactionUpdateResult],
+// [AuthRuleV2ListResultsResponseACHPaymentUpdateResult].
 func (r AuthRuleV2ListResultsResponse) AsUnion() AuthRuleV2ListResultsResponseUnion {
 	return r.union
 }
@@ -6693,8 +7178,10 @@ func (r AuthRuleV2ListResultsResponse) AsUnion() AuthRuleV2ListResultsResponseUn
 //
 // Union satisfied by [AuthRuleV2ListResultsResponseAuthorizationResult],
 // [AuthRuleV2ListResultsResponseAuthentication3DSResult],
-// [AuthRuleV2ListResultsResponseTokenizationResult] or
-// [AuthRuleV2ListResultsResponseACHResult].
+// [AuthRuleV2ListResultsResponseTokenizationResult],
+// [AuthRuleV2ListResultsResponseACHResult],
+// [AuthRuleV2ListResultsResponseCardTransactionUpdateResult] or
+// [AuthRuleV2ListResultsResponseACHPaymentUpdateResult].
 type AuthRuleV2ListResultsResponseUnion interface {
 	implementsAuthRuleV2ListResultsResponse()
 }
@@ -6718,6 +7205,14 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseACHResult{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseCardTransactionUpdateResult{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseACHPaymentUpdateResult{}),
 		},
 	)
 }
@@ -8013,6 +8508,615 @@ func (r AuthRuleV2ListResultsResponseACHResultMode) IsKnown() bool {
 	return false
 }
 
+type AuthRuleV2ListResultsResponseCardTransactionUpdateResult struct {
+	// Globally unique identifier for the evaluation
+	Token string `json:"token" api:"required" format:"uuid"`
+	// Actions returned by the rule evaluation
+	Actions []AuthRuleV2ListResultsResponseCardTransactionUpdateResultAction `json:"actions" api:"required"`
+	// The Auth Rule token
+	AuthRuleToken string `json:"auth_rule_token" api:"required" format:"uuid"`
+	// Timestamp of the rule evaluation
+	EvaluationTime time.Time `json:"evaluation_time" api:"required" format:"date-time"`
+	// The event stream during which the rule was evaluated
+	EventStream AuthRuleV2ListResultsResponseCardTransactionUpdateResultEventStream `json:"event_stream" api:"required"`
+	// Token of the event that triggered the evaluation
+	EventToken string `json:"event_token" api:"required" format:"uuid"`
+	// The state of the Auth Rule
+	Mode AuthRuleV2ListResultsResponseCardTransactionUpdateResultMode `json:"mode" api:"required"`
+	// Version of the rule that was evaluated
+	RuleVersion int64 `json:"rule_version" api:"required"`
+	// The token of the transaction that triggered the rule evaluation
+	TransactionToken string                                                       `json:"transaction_token" api:"required,nullable" format:"uuid"`
+	JSON             authRuleV2ListResultsResponseCardTransactionUpdateResultJSON `json:"-"`
+}
+
+// authRuleV2ListResultsResponseCardTransactionUpdateResultJSON contains the JSON
+// metadata for the struct
+// [AuthRuleV2ListResultsResponseCardTransactionUpdateResult]
+type authRuleV2ListResultsResponseCardTransactionUpdateResultJSON struct {
+	Token            apijson.Field
+	Actions          apijson.Field
+	AuthRuleToken    apijson.Field
+	EvaluationTime   apijson.Field
+	EventStream      apijson.Field
+	EventToken       apijson.Field
+	Mode             apijson.Field
+	RuleVersion      apijson.Field
+	TransactionToken apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResultsResponseCardTransactionUpdateResult) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResultsResponseCardTransactionUpdateResultJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ListResultsResponseCardTransactionUpdateResult) implementsAuthRuleV2ListResultsResponse() {
+}
+
+type AuthRuleV2ListResultsResponseCardTransactionUpdateResultAction struct {
+	// Tag the transaction with key-value metadata
+	Type AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsType `json:"type" api:"required"`
+	// Optional explanation for why this action was taken
+	Explanation string `json:"explanation"`
+	// The key of the tag to apply to the transaction
+	Key string `json:"key"`
+	// The token of the queue to create the case in
+	QueueToken string `json:"queue_token" format:"uuid"`
+	// The scope of the case to create
+	Scope AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScope `json:"scope"`
+	// The value of the tag to apply to the transaction
+	Value string                                                             `json:"value"`
+	JSON  authRuleV2ListResultsResponseCardTransactionUpdateResultActionJSON `json:"-"`
+	union AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsUnion
+}
+
+// authRuleV2ListResultsResponseCardTransactionUpdateResultActionJSON contains the
+// JSON metadata for the struct
+// [AuthRuleV2ListResultsResponseCardTransactionUpdateResultAction]
+type authRuleV2ListResultsResponseCardTransactionUpdateResultActionJSON struct {
+	Type        apijson.Field
+	Explanation apijson.Field
+	Key         apijson.Field
+	QueueToken  apijson.Field
+	Scope       apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r authRuleV2ListResultsResponseCardTransactionUpdateResultActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r *AuthRuleV2ListResultsResponseCardTransactionUpdateResultAction) UnmarshalJSON(data []byte) (err error) {
+	*r = AuthRuleV2ListResultsResponseCardTransactionUpdateResultAction{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a
+// [AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsUnion] interface
+// which you can cast to the specific types for more type safety.
+//
+// Possible runtime types of the union are
+// [AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsTagAction],
+// [AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseAction].
+func (r AuthRuleV2ListResultsResponseCardTransactionUpdateResultAction) AsUnion() AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsUnion {
+	return r.union
+}
+
+// Union satisfied by
+// [AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsTagAction] or
+// [AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseAction].
+type AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsUnion interface {
+	implementsAuthRuleV2ListResultsResponseCardTransactionUpdateResultAction()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsTagAction{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseAction{}),
+		},
+	)
+}
+
+type AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsTagAction struct {
+	// The key of the tag to apply to the transaction
+	Key string `json:"key" api:"required"`
+	// Tag the transaction with key-value metadata
+	Type AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsTagActionType `json:"type" api:"required"`
+	// The value of the tag to apply to the transaction
+	Value string `json:"value" api:"required"`
+	// Optional explanation for why this action was taken
+	Explanation string                                                                       `json:"explanation"`
+	JSON        authRuleV2ListResultsResponseCardTransactionUpdateResultActionsTagActionJSON `json:"-"`
+}
+
+// authRuleV2ListResultsResponseCardTransactionUpdateResultActionsTagActionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsTagAction]
+type authRuleV2ListResultsResponseCardTransactionUpdateResultActionsTagActionJSON struct {
+	Key         apijson.Field
+	Type        apijson.Field
+	Value       apijson.Field
+	Explanation apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsTagAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResultsResponseCardTransactionUpdateResultActionsTagActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsTagAction) implementsAuthRuleV2ListResultsResponseCardTransactionUpdateResultAction() {
+}
+
+// Tag the transaction with key-value metadata
+type AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsTagActionType string
+
+const (
+	AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsTagActionTypeTag AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsTagActionType = "TAG"
+)
+
+func (r AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsTagActionType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsTagActionTypeTag:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseAction struct {
+	// The token of the queue to create the case in
+	QueueToken string `json:"queue_token" api:"required" format:"uuid"`
+	// The scope of the case to create
+	Scope AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScope `json:"scope" api:"required"`
+	// Create a case for the transaction
+	Type AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionType `json:"type" api:"required"`
+	// Optional explanation for why this action was taken
+	Explanation string                                                                              `json:"explanation"`
+	JSON        authRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionJSON `json:"-"`
+}
+
+// authRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseAction]
+type authRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionJSON struct {
+	QueueToken  apijson.Field
+	Scope       apijson.Field
+	Type        apijson.Field
+	Explanation apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseAction) implementsAuthRuleV2ListResultsResponseCardTransactionUpdateResultAction() {
+}
+
+// The scope of the case to create
+type AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScope string
+
+const (
+	AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScopeCard    AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScope = "CARD"
+	AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScopeAccount AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScope = "ACCOUNT"
+)
+
+func (r AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScope) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScopeCard, AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScopeAccount:
+		return true
+	}
+	return false
+}
+
+// Create a case for the transaction
+type AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionType string
+
+const (
+	AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionTypeCreateCase AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionType = "CREATE_CASE"
+)
+
+func (r AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionTypeCreateCase:
+		return true
+	}
+	return false
+}
+
+// Tag the transaction with key-value metadata
+type AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsType string
+
+const (
+	AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsTypeTag        AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsType = "TAG"
+	AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsTypeCreateCase AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsType = "CREATE_CASE"
+)
+
+func (r AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsTypeTag, AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsTypeCreateCase:
+		return true
+	}
+	return false
+}
+
+// The scope of the case to create
+type AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScope string
+
+const (
+	AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScopeCard    AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScope = "CARD"
+	AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScopeAccount AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScope = "ACCOUNT"
+)
+
+func (r AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScope) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScopeCard, AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScopeAccount:
+		return true
+	}
+	return false
+}
+
+// The event stream during which the rule was evaluated
+type AuthRuleV2ListResultsResponseCardTransactionUpdateResultEventStream string
+
+const (
+	AuthRuleV2ListResultsResponseCardTransactionUpdateResultEventStreamCardTransactionUpdate AuthRuleV2ListResultsResponseCardTransactionUpdateResultEventStream = "CARD_TRANSACTION_UPDATE"
+)
+
+func (r AuthRuleV2ListResultsResponseCardTransactionUpdateResultEventStream) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseCardTransactionUpdateResultEventStreamCardTransactionUpdate:
+		return true
+	}
+	return false
+}
+
+// The state of the Auth Rule
+type AuthRuleV2ListResultsResponseCardTransactionUpdateResultMode string
+
+const (
+	AuthRuleV2ListResultsResponseCardTransactionUpdateResultModeActive   AuthRuleV2ListResultsResponseCardTransactionUpdateResultMode = "ACTIVE"
+	AuthRuleV2ListResultsResponseCardTransactionUpdateResultModeInactive AuthRuleV2ListResultsResponseCardTransactionUpdateResultMode = "INACTIVE"
+)
+
+func (r AuthRuleV2ListResultsResponseCardTransactionUpdateResultMode) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseCardTransactionUpdateResultModeActive, AuthRuleV2ListResultsResponseCardTransactionUpdateResultModeInactive:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2ListResultsResponseACHPaymentUpdateResult struct {
+	// Globally unique identifier for the evaluation
+	Token string `json:"token" api:"required" format:"uuid"`
+	// Actions returned by the rule evaluation
+	Actions []AuthRuleV2ListResultsResponseACHPaymentUpdateResultAction `json:"actions" api:"required"`
+	// The Auth Rule token
+	AuthRuleToken string `json:"auth_rule_token" api:"required" format:"uuid"`
+	// Timestamp of the rule evaluation
+	EvaluationTime time.Time `json:"evaluation_time" api:"required" format:"date-time"`
+	// The event stream during which the rule was evaluated
+	EventStream AuthRuleV2ListResultsResponseACHPaymentUpdateResultEventStream `json:"event_stream" api:"required"`
+	// Token of the event that triggered the evaluation
+	EventToken string `json:"event_token" api:"required" format:"uuid"`
+	// The state of the Auth Rule
+	Mode AuthRuleV2ListResultsResponseACHPaymentUpdateResultMode `json:"mode" api:"required"`
+	// Version of the rule that was evaluated
+	RuleVersion int64 `json:"rule_version" api:"required"`
+	// The token of the transaction that triggered the rule evaluation
+	TransactionToken string                                                  `json:"transaction_token" api:"required,nullable" format:"uuid"`
+	JSON             authRuleV2ListResultsResponseACHPaymentUpdateResultJSON `json:"-"`
+}
+
+// authRuleV2ListResultsResponseACHPaymentUpdateResultJSON contains the JSON
+// metadata for the struct [AuthRuleV2ListResultsResponseACHPaymentUpdateResult]
+type authRuleV2ListResultsResponseACHPaymentUpdateResultJSON struct {
+	Token            apijson.Field
+	Actions          apijson.Field
+	AuthRuleToken    apijson.Field
+	EvaluationTime   apijson.Field
+	EventStream      apijson.Field
+	EventToken       apijson.Field
+	Mode             apijson.Field
+	RuleVersion      apijson.Field
+	TransactionToken apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResultsResponseACHPaymentUpdateResult) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResultsResponseACHPaymentUpdateResultJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ListResultsResponseACHPaymentUpdateResult) implementsAuthRuleV2ListResultsResponse() {
+}
+
+type AuthRuleV2ListResultsResponseACHPaymentUpdateResultAction struct {
+	// Tag the payment with key-value metadata
+	Type AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsType `json:"type" api:"required"`
+	// Optional explanation for why this action was taken
+	Explanation string `json:"explanation"`
+	// The key of the tag to apply to the payment
+	Key string `json:"key"`
+	// The token of the queue to create the case in
+	QueueToken string `json:"queue_token" format:"uuid"`
+	// The scope of the case to create
+	Scope AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsScope `json:"scope"`
+	// The value of the tag to apply to the payment
+	Value string                                                        `json:"value"`
+	JSON  authRuleV2ListResultsResponseACHPaymentUpdateResultActionJSON `json:"-"`
+	union AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsUnion
+}
+
+// authRuleV2ListResultsResponseACHPaymentUpdateResultActionJSON contains the JSON
+// metadata for the struct
+// [AuthRuleV2ListResultsResponseACHPaymentUpdateResultAction]
+type authRuleV2ListResultsResponseACHPaymentUpdateResultActionJSON struct {
+	Type        apijson.Field
+	Explanation apijson.Field
+	Key         apijson.Field
+	QueueToken  apijson.Field
+	Scope       apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r authRuleV2ListResultsResponseACHPaymentUpdateResultActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r *AuthRuleV2ListResultsResponseACHPaymentUpdateResultAction) UnmarshalJSON(data []byte) (err error) {
+	*r = AuthRuleV2ListResultsResponseACHPaymentUpdateResultAction{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a
+// [AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsUnion] interface
+// which you can cast to the specific types for more type safety.
+//
+// Possible runtime types of the union are
+// [AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsTagAction],
+// [AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseAction].
+func (r AuthRuleV2ListResultsResponseACHPaymentUpdateResultAction) AsUnion() AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsUnion {
+	return r.union
+}
+
+// Union satisfied by
+// [AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsTagAction] or
+// [AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseAction].
+type AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsUnion interface {
+	implementsAuthRuleV2ListResultsResponseACHPaymentUpdateResultAction()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsUnion)(nil)).Elem(),
+		"",
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsTagAction{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseAction{}),
+		},
+	)
+}
+
+type AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsTagAction struct {
+	// The key of the tag to apply to the payment
+	Key string `json:"key" api:"required"`
+	// Tag the payment with key-value metadata
+	Type AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsTagActionType `json:"type" api:"required"`
+	// The value of the tag to apply to the payment
+	Value string `json:"value" api:"required"`
+	// Optional explanation for why this action was taken
+	Explanation string                                                                  `json:"explanation"`
+	JSON        authRuleV2ListResultsResponseACHPaymentUpdateResultActionsTagActionJSON `json:"-"`
+}
+
+// authRuleV2ListResultsResponseACHPaymentUpdateResultActionsTagActionJSON contains
+// the JSON metadata for the struct
+// [AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsTagAction]
+type authRuleV2ListResultsResponseACHPaymentUpdateResultActionsTagActionJSON struct {
+	Key         apijson.Field
+	Type        apijson.Field
+	Value       apijson.Field
+	Explanation apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsTagAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResultsResponseACHPaymentUpdateResultActionsTagActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsTagAction) implementsAuthRuleV2ListResultsResponseACHPaymentUpdateResultAction() {
+}
+
+// Tag the payment with key-value metadata
+type AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsTagActionType string
+
+const (
+	AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsTagActionTypeTag AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsTagActionType = "TAG"
+)
+
+func (r AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsTagActionType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsTagActionTypeTag:
+		return true
+	}
+	return false
+}
+
+type AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseAction struct {
+	// The token of the queue to create the case in
+	QueueToken string `json:"queue_token" api:"required" format:"uuid"`
+	// The scope of the case to create
+	Scope AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionScope `json:"scope" api:"required"`
+	// Create a case for the payment
+	Type AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionType `json:"type" api:"required"`
+	// Optional explanation for why this action was taken
+	Explanation string                                                                         `json:"explanation"`
+	JSON        authRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionJSON `json:"-"`
+}
+
+// authRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionJSON
+// contains the JSON metadata for the struct
+// [AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseAction]
+type authRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionJSON struct {
+	QueueToken  apijson.Field
+	Scope       apijson.Field
+	Type        apijson.Field
+	Explanation apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseAction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseAction) implementsAuthRuleV2ListResultsResponseACHPaymentUpdateResultAction() {
+}
+
+// The scope of the case to create
+type AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionScope string
+
+const (
+	AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionScopeFinancialAccount AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionScope = "FINANCIAL_ACCOUNT"
+)
+
+func (r AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionScope) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionScopeFinancialAccount:
+		return true
+	}
+	return false
+}
+
+// Create a case for the payment
+type AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionType string
+
+const (
+	AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionTypeCreateCase AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionType = "CREATE_CASE"
+)
+
+func (r AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionTypeCreateCase:
+		return true
+	}
+	return false
+}
+
+// Tag the payment with key-value metadata
+type AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsType string
+
+const (
+	AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsTypeTag        AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsType = "TAG"
+	AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsTypeCreateCase AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsType = "CREATE_CASE"
+)
+
+func (r AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsTypeTag, AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsTypeCreateCase:
+		return true
+	}
+	return false
+}
+
+// The scope of the case to create
+type AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsScope string
+
+const (
+	AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsScopeFinancialAccount AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsScope = "FINANCIAL_ACCOUNT"
+)
+
+func (r AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsScope) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsScopeFinancialAccount:
+		return true
+	}
+	return false
+}
+
+// The event stream during which the rule was evaluated
+type AuthRuleV2ListResultsResponseACHPaymentUpdateResultEventStream string
+
+const (
+	AuthRuleV2ListResultsResponseACHPaymentUpdateResultEventStreamACHPaymentUpdate AuthRuleV2ListResultsResponseACHPaymentUpdateResultEventStream = "ACH_PAYMENT_UPDATE"
+)
+
+func (r AuthRuleV2ListResultsResponseACHPaymentUpdateResultEventStream) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseACHPaymentUpdateResultEventStreamACHPaymentUpdate:
+		return true
+	}
+	return false
+}
+
+// The state of the Auth Rule
+type AuthRuleV2ListResultsResponseACHPaymentUpdateResultMode string
+
+const (
+	AuthRuleV2ListResultsResponseACHPaymentUpdateResultModeActive   AuthRuleV2ListResultsResponseACHPaymentUpdateResultMode = "ACTIVE"
+	AuthRuleV2ListResultsResponseACHPaymentUpdateResultModeInactive AuthRuleV2ListResultsResponseACHPaymentUpdateResultMode = "INACTIVE"
+)
+
+func (r AuthRuleV2ListResultsResponseACHPaymentUpdateResultMode) IsKnown() bool {
+	switch r {
+	case AuthRuleV2ListResultsResponseACHPaymentUpdateResultModeActive, AuthRuleV2ListResultsResponseACHPaymentUpdateResultModeInactive:
+		return true
+	}
+	return false
+}
+
 // The event stream during which the rule was evaluated
 type AuthRuleV2ListResultsResponseEventStream string
 
@@ -8022,11 +9126,13 @@ const (
 	AuthRuleV2ListResultsResponseEventStreamTokenization          AuthRuleV2ListResultsResponseEventStream = "TOKENIZATION"
 	AuthRuleV2ListResultsResponseEventStreamACHCreditReceipt      AuthRuleV2ListResultsResponseEventStream = "ACH_CREDIT_RECEIPT"
 	AuthRuleV2ListResultsResponseEventStreamACHDebitReceipt       AuthRuleV2ListResultsResponseEventStream = "ACH_DEBIT_RECEIPT"
+	AuthRuleV2ListResultsResponseEventStreamCardTransactionUpdate AuthRuleV2ListResultsResponseEventStream = "CARD_TRANSACTION_UPDATE"
+	AuthRuleV2ListResultsResponseEventStreamACHPaymentUpdate      AuthRuleV2ListResultsResponseEventStream = "ACH_PAYMENT_UPDATE"
 )
 
 func (r AuthRuleV2ListResultsResponseEventStream) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResultsResponseEventStreamAuthorization, AuthRuleV2ListResultsResponseEventStreamThreeDSAuthentication, AuthRuleV2ListResultsResponseEventStreamTokenization, AuthRuleV2ListResultsResponseEventStreamACHCreditReceipt, AuthRuleV2ListResultsResponseEventStreamACHDebitReceipt:
+	case AuthRuleV2ListResultsResponseEventStreamAuthorization, AuthRuleV2ListResultsResponseEventStreamThreeDSAuthentication, AuthRuleV2ListResultsResponseEventStreamTokenization, AuthRuleV2ListResultsResponseEventStreamACHCreditReceipt, AuthRuleV2ListResultsResponseEventStreamACHDebitReceipt, AuthRuleV2ListResultsResponseEventStreamCardTransactionUpdate, AuthRuleV2ListResultsResponseEventStreamACHPaymentUpdate:
 		return true
 	}
 	return false
@@ -8244,11 +9350,11 @@ type AuthRuleV2NewParamsBody struct {
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-	//     stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+	//     ACH_PAYMENT_UPDATE event stream.
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-	//     stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+	//     ACH_PAYMENT_UPDATE event stream.
 	Type                  param.Field[AuthRuleV2NewParamsBodyType] `json:"type" api:"required"`
 	AccountTokens         param.Field[interface{}]                 `json:"account_tokens"`
 	BusinessAccountTokens param.Field[interface{}]                 `json:"business_account_tokens"`
@@ -8290,11 +9396,11 @@ type AuthRuleV2NewParamsBodyAccountLevelRule struct {
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-	//     stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+	//     ACH_PAYMENT_UPDATE event stream.
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-	//     stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+	//     ACH_PAYMENT_UPDATE event stream.
 	Type param.Field[AuthRuleV2NewParamsBodyAccountLevelRuleType] `json:"type" api:"required"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens param.Field[[]string] `json:"account_tokens" format:"uuid"`
@@ -8352,7 +9458,8 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRuleParameters) implementsAuthRuleV2N
 // [MerchantLockParameters], [Conditional3DSActionParameters],
 // [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
 // [ConditionalTokenizationActionParameters],
-// [ConditionalCardTransactionUpdateActionParameters], [TypescriptCodeParameters],
+// [ConditionalCardTransactionUpdateActionParameters],
+// [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters],
 // [ConditionalAuthorizationAdjustmentParameters],
 // [AuthRuleV2NewParamsBodyAccountLevelRuleParameters].
 type AuthRuleV2NewParamsBodyAccountLevelRuleParametersUnion interface {
@@ -8385,11 +9492,11 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRuleParametersScope) IsKnown() bool {
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-//     stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+//     ACH_PAYMENT_UPDATE event stream.
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-//     stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+//     ACH_PAYMENT_UPDATE event stream.
 type AuthRuleV2NewParamsBodyAccountLevelRuleType string
 
 const (
@@ -8423,11 +9530,11 @@ type AuthRuleV2NewParamsBodyCardLevelRule struct {
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-	//     stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+	//     ACH_PAYMENT_UPDATE event stream.
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-	//     stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+	//     ACH_PAYMENT_UPDATE event stream.
 	Type param.Field[AuthRuleV2NewParamsBodyCardLevelRuleType] `json:"type" api:"required"`
 	// The event stream during which the rule will be evaluated.
 	EventStream param.Field[EventStream] `json:"event_stream"`
@@ -8481,7 +9588,8 @@ func (r AuthRuleV2NewParamsBodyCardLevelRuleParameters) implementsAuthRuleV2NewP
 // [MerchantLockParameters], [Conditional3DSActionParameters],
 // [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
 // [ConditionalTokenizationActionParameters],
-// [ConditionalCardTransactionUpdateActionParameters], [TypescriptCodeParameters],
+// [ConditionalCardTransactionUpdateActionParameters],
+// [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters],
 // [ConditionalAuthorizationAdjustmentParameters],
 // [AuthRuleV2NewParamsBodyCardLevelRuleParameters].
 type AuthRuleV2NewParamsBodyCardLevelRuleParametersUnion interface {
@@ -8514,11 +9622,11 @@ func (r AuthRuleV2NewParamsBodyCardLevelRuleParametersScope) IsKnown() bool {
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-//     stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+//     ACH_PAYMENT_UPDATE event stream.
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-//     stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+//     ACH_PAYMENT_UPDATE event stream.
 type AuthRuleV2NewParamsBodyCardLevelRuleType string
 
 const (
@@ -8552,11 +9660,11 @@ type AuthRuleV2NewParamsBodyProgramLevelRule struct {
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-	//     stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+	//     ACH_PAYMENT_UPDATE event stream.
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-	//     stream.
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+	//     ACH_PAYMENT_UPDATE event stream.
 	Type param.Field[AuthRuleV2NewParamsBodyProgramLevelRuleType] `json:"type" api:"required"`
 	// The event stream during which the rule will be evaluated.
 	EventStream param.Field[EventStream] `json:"event_stream"`
@@ -8616,7 +9724,8 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleParameters) implementsAuthRuleV2N
 // [MerchantLockParameters], [Conditional3DSActionParameters],
 // [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
 // [ConditionalTokenizationActionParameters],
-// [ConditionalCardTransactionUpdateActionParameters], [TypescriptCodeParameters],
+// [ConditionalCardTransactionUpdateActionParameters],
+// [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters],
 // [ConditionalAuthorizationAdjustmentParameters],
 // [AuthRuleV2NewParamsBodyProgramLevelRuleParameters].
 type AuthRuleV2NewParamsBodyProgramLevelRuleParametersUnion interface {
@@ -8649,11 +9758,11 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleParametersScope) IsKnown() bool {
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-//     stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+//     ACH_PAYMENT_UPDATE event stream.
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-//     stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+//     ACH_PAYMENT_UPDATE event stream.
 type AuthRuleV2NewParamsBodyProgramLevelRuleType string
 
 const (
@@ -8682,11 +9791,11 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleType) IsKnown() bool {
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-//     stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+//     ACH_PAYMENT_UPDATE event stream.
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
-//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, or CARD_TRANSACTION_UPDATE event
-//     stream.
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+//     ACH_PAYMENT_UPDATE event stream.
 type AuthRuleV2NewParamsBodyType string
 
 const (
@@ -8987,7 +10096,8 @@ func (r AuthRuleV2DraftParamsParameters) implementsAuthRuleV2DraftParamsParamete
 // [MerchantLockParameters], [Conditional3DSActionParameters],
 // [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
 // [ConditionalTokenizationActionParameters],
-// [ConditionalCardTransactionUpdateActionParameters], [TypescriptCodeParameters],
+// [ConditionalCardTransactionUpdateActionParameters],
+// [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters],
 // [ConditionalAuthorizationAdjustmentParameters],
 // [AuthRuleV2DraftParamsParameters].
 type AuthRuleV2DraftParamsParametersUnion interface {
