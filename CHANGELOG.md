@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.113.0 (2026-06-22)
+
+Full Changelog: [v0.112.0...v0.113.0](https://github.com/lithic-com/lithic-go/compare/v0.112.0...v0.113.0)
+
+### Features
+
+* **api:** add ACH payment update actions, card transaction results, event streams ([8b3c55b](https://github.com/lithic-com/lithic-go/commit/8b3c55b05b721f5196536f828cce61741ad71249))
+* **api:** add ACH_EVENT_TYPE attribute to authrulev2 conditions ([f7e73f3](https://github.com/lithic-com/lithic-go/commit/f7e73f3252b3eea2671c358adffe0c3eb2db9077))
+
 ## 0.112.0 (2026-06-16)
 
 Full Changelog: [v0.111.0...v0.112.0](https://github.com/lithic-com/lithic-go/compare/v0.111.0...v0.112.0)
