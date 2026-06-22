@@ -2409,6 +2409,13 @@ type ConditionalACHPaymentUpdateActionParametersCondition struct {
 	//     `FAILED_VERIFICATION`, or `INSUFFICIENT_FUNDS`.
 	//   - `EXTERNAL_BANK_ACCOUNT_OWNER_TYPE`: The owner type of the external bank
 	//     account. Valid values are `INDIVIDUAL` or `BUSINESS`.
+	//   - `ACH_EVENT_TYPE`: The type of ACH payment event being evaluated. Valid values
+	//     include `ACH_ORIGINATION_INITIATED`, `ACH_ORIGINATION_REVIEWED`,
+	//     `ACH_ORIGINATION_CANCELLED`, `ACH_ORIGINATION_PROCESSED`,
+	//     `ACH_ORIGINATION_SETTLED`, `ACH_ORIGINATION_RELEASED`,
+	//     `ACH_ORIGINATION_REJECTED`, `ACH_RECEIPT_PROCESSED`, `ACH_RECEIPT_SETTLED`,
+	//     `ACH_RECEIPT_RELEASED`, `ACH_RECEIPT_RELEASED_EARLY`, `ACH_RETURN_INITIATED`,
+	//     `ACH_RETURN_PROCESSED`, `ACH_RETURN_SETTLED`, and `ACH_RETURN_REJECTED`.
 	Attribute ConditionalACHPaymentUpdateActionParametersConditionsAttribute `json:"attribute" api:"required"`
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation" api:"required"`
@@ -2461,6 +2468,13 @@ func (r conditionalACHPaymentUpdateActionParametersConditionJSON) RawJSON() stri
 //     `FAILED_VERIFICATION`, or `INSUFFICIENT_FUNDS`.
 //   - `EXTERNAL_BANK_ACCOUNT_OWNER_TYPE`: The owner type of the external bank
 //     account. Valid values are `INDIVIDUAL` or `BUSINESS`.
+//   - `ACH_EVENT_TYPE`: The type of ACH payment event being evaluated. Valid values
+//     include `ACH_ORIGINATION_INITIATED`, `ACH_ORIGINATION_REVIEWED`,
+//     `ACH_ORIGINATION_CANCELLED`, `ACH_ORIGINATION_PROCESSED`,
+//     `ACH_ORIGINATION_SETTLED`, `ACH_ORIGINATION_RELEASED`,
+//     `ACH_ORIGINATION_REJECTED`, `ACH_RECEIPT_PROCESSED`, `ACH_RECEIPT_SETTLED`,
+//     `ACH_RECEIPT_RELEASED`, `ACH_RECEIPT_RELEASED_EARLY`, `ACH_RETURN_INITIATED`,
+//     `ACH_RETURN_PROCESSED`, `ACH_RETURN_SETTLED`, and `ACH_RETURN_REJECTED`.
 type ConditionalACHPaymentUpdateActionParametersConditionsAttribute string
 
 const (
@@ -2472,11 +2486,12 @@ const (
 	ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountVerificationMethod ConditionalACHPaymentUpdateActionParametersConditionsAttribute = "EXTERNAL_BANK_ACCOUNT_VERIFICATION_METHOD"
 	ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountVerificationState  ConditionalACHPaymentUpdateActionParametersConditionsAttribute = "EXTERNAL_BANK_ACCOUNT_VERIFICATION_STATE"
 	ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountOwnerType          ConditionalACHPaymentUpdateActionParametersConditionsAttribute = "EXTERNAL_BANK_ACCOUNT_OWNER_TYPE"
+	ConditionalACHPaymentUpdateActionParametersConditionsAttributeACHEventType                          ConditionalACHPaymentUpdateActionParametersConditionsAttribute = "ACH_EVENT_TYPE"
 )
 
 func (r ConditionalACHPaymentUpdateActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case ConditionalACHPaymentUpdateActionParametersConditionsAttributeTransactionAmount, ConditionalACHPaymentUpdateActionParametersConditionsAttributeSecCode, ConditionalACHPaymentUpdateActionParametersConditionsAttributeReturnReasonCode, ConditionalACHPaymentUpdateActionParametersConditionsAttributeAccountAge, ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountAge, ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountVerificationMethod, ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountVerificationState, ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountOwnerType:
+	case ConditionalACHPaymentUpdateActionParametersConditionsAttributeTransactionAmount, ConditionalACHPaymentUpdateActionParametersConditionsAttributeSecCode, ConditionalACHPaymentUpdateActionParametersConditionsAttributeReturnReasonCode, ConditionalACHPaymentUpdateActionParametersConditionsAttributeAccountAge, ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountAge, ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountVerificationMethod, ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountVerificationState, ConditionalACHPaymentUpdateActionParametersConditionsAttributeExternalBankAccountOwnerType, ConditionalACHPaymentUpdateActionParametersConditionsAttributeACHEventType:
 		return true
 	}
 	return false
