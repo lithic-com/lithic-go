@@ -144,6 +144,15 @@ type Event struct {
 	//   - card.renewed: Occurs when a card is renewed.
 	//   - card.shipped: Occurs when a card is shipped.
 	//   - card.updated: Occurs when a card is updated.
+	//   - claim_document.accepted: Occurs when a claim document passes validation and is
+	//     accepted.
+	//   - claim_document.rejected: Occurs when a claim document fails validation and is
+	//     rejected.
+	//   - claim_document.uploaded: Occurs when a claim document is uploaded and begins
+	//     validation.
+	//   - claim.created: Occurs when a dispute intake claim is created.
+	//   - claim.updated: Occurs when a dispute intake claim is updated, such as a status
+	//     change or a change to its outstanding requirements.
 	//   - digital_wallet.tokenization_result: Occurs when a tokenization request
 	//     succeeded or failed.
 	//
@@ -271,6 +280,15 @@ func (r eventJSON) RawJSON() string {
 //   - card.renewed: Occurs when a card is renewed.
 //   - card.shipped: Occurs when a card is shipped.
 //   - card.updated: Occurs when a card is updated.
+//   - claim_document.accepted: Occurs when a claim document passes validation and is
+//     accepted.
+//   - claim_document.rejected: Occurs when a claim document fails validation and is
+//     rejected.
+//   - claim_document.uploaded: Occurs when a claim document is uploaded and begins
+//     validation.
+//   - claim.created: Occurs when a dispute intake claim is created.
+//   - claim.updated: Occurs when a dispute intake claim is updated, such as a status
+//     change or a change to its outstanding requirements.
 //   - digital_wallet.tokenization_result: Occurs when a tokenization request
 //     succeeded or failed.
 //
@@ -365,6 +383,11 @@ const (
 	EventEventTypeCardRenewed                                              EventEventType = "card.renewed"
 	EventEventTypeCardShipped                                              EventEventType = "card.shipped"
 	EventEventTypeCardUpdated                                              EventEventType = "card.updated"
+	EventEventTypeClaimDocumentAccepted                                    EventEventType = "claim_document.accepted"
+	EventEventTypeClaimDocumentRejected                                    EventEventType = "claim_document.rejected"
+	EventEventTypeClaimDocumentUploaded                                    EventEventType = "claim_document.uploaded"
+	EventEventTypeClaimCreated                                             EventEventType = "claim.created"
+	EventEventTypeClaimUpdated                                             EventEventType = "claim.updated"
 	EventEventTypeDigitalWalletTokenizationResult                          EventEventType = "digital_wallet.tokenization_result"
 	EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode     EventEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent EventEventType = "digital_wallet.tokenization_two_factor_authentication_code_sent"
@@ -404,7 +427,7 @@ const (
 
 func (r EventEventType) IsKnown() bool {
 	switch r {
-	case EventEventTypeAccountHolderDocumentUpdated, EventEventTypeAccountHolderCreated, EventEventTypeAccountHolderUpdated, EventEventTypeAccountHolderVerification, EventEventTypeAuthRulesBacktestReportCreated, EventEventTypeBalanceUpdated, EventEventTypeBookTransferTransactionCreated, EventEventTypeBookTransferTransactionUpdated, EventEventTypeCardAuthorizationChallenge, EventEventTypeCardAuthorizationChallengeResponse, EventEventTypeCardTransactionEnhancedDataCreated, EventEventTypeCardTransactionEnhancedDataUpdated, EventEventTypeCardTransactionUpdated, EventEventTypeCardConverted, EventEventTypeCardCreated, EventEventTypeCardReissued, EventEventTypeCardRenewed, EventEventTypeCardShipped, EventEventTypeCardUpdated, EventEventTypeDigitalWalletTokenizationResult, EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventEventTypeDigitalWalletTokenizationUpdated, EventEventTypeDisputeEvidenceUploadFailed, EventEventTypeDisputeTransactionCreated, EventEventTypeDisputeTransactionUpdated, EventEventTypeDisputeUpdated, EventEventTypeExternalBankAccountCreated, EventEventTypeExternalBankAccountUpdated, EventEventTypeExternalPaymentCreated, EventEventTypeExternalPaymentUpdated, EventEventTypeFinancialAccountCreated, EventEventTypeFinancialAccountUpdated, EventEventTypeFundingEventCreated, EventEventTypeInternalTransactionCreated, EventEventTypeInternalTransactionUpdated, EventEventTypeLoanTapeCreated, EventEventTypeLoanTapeUpdated, EventEventTypeManagementOperationCreated, EventEventTypeManagementOperationUpdated, EventEventTypeNetworkTotalCreated, EventEventTypeNetworkTotalUpdated, EventEventTypePaymentTransactionCreated, EventEventTypePaymentTransactionUpdated, EventEventTypeSettlementReportUpdated, EventEventTypeStatementsCreated, EventEventTypeThreeDSAuthenticationChallenge, EventEventTypeThreeDSAuthenticationCreated, EventEventTypeThreeDSAuthenticationUpdated, EventEventTypeTokenizationApprovalRequest, EventEventTypeTokenizationResult, EventEventTypeTokenizationTwoFactorAuthenticationCode, EventEventTypeTokenizationTwoFactorAuthenticationCodeSent, EventEventTypeTokenizationUpdated:
+	case EventEventTypeAccountHolderDocumentUpdated, EventEventTypeAccountHolderCreated, EventEventTypeAccountHolderUpdated, EventEventTypeAccountHolderVerification, EventEventTypeAuthRulesBacktestReportCreated, EventEventTypeBalanceUpdated, EventEventTypeBookTransferTransactionCreated, EventEventTypeBookTransferTransactionUpdated, EventEventTypeCardAuthorizationChallenge, EventEventTypeCardAuthorizationChallengeResponse, EventEventTypeCardTransactionEnhancedDataCreated, EventEventTypeCardTransactionEnhancedDataUpdated, EventEventTypeCardTransactionUpdated, EventEventTypeCardConverted, EventEventTypeCardCreated, EventEventTypeCardReissued, EventEventTypeCardRenewed, EventEventTypeCardShipped, EventEventTypeCardUpdated, EventEventTypeClaimDocumentAccepted, EventEventTypeClaimDocumentRejected, EventEventTypeClaimDocumentUploaded, EventEventTypeClaimCreated, EventEventTypeClaimUpdated, EventEventTypeDigitalWalletTokenizationResult, EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventEventTypeDigitalWalletTokenizationUpdated, EventEventTypeDisputeEvidenceUploadFailed, EventEventTypeDisputeTransactionCreated, EventEventTypeDisputeTransactionUpdated, EventEventTypeDisputeUpdated, EventEventTypeExternalBankAccountCreated, EventEventTypeExternalBankAccountUpdated, EventEventTypeExternalPaymentCreated, EventEventTypeExternalPaymentUpdated, EventEventTypeFinancialAccountCreated, EventEventTypeFinancialAccountUpdated, EventEventTypeFundingEventCreated, EventEventTypeInternalTransactionCreated, EventEventTypeInternalTransactionUpdated, EventEventTypeLoanTapeCreated, EventEventTypeLoanTapeUpdated, EventEventTypeManagementOperationCreated, EventEventTypeManagementOperationUpdated, EventEventTypeNetworkTotalCreated, EventEventTypeNetworkTotalUpdated, EventEventTypePaymentTransactionCreated, EventEventTypePaymentTransactionUpdated, EventEventTypeSettlementReportUpdated, EventEventTypeStatementsCreated, EventEventTypeThreeDSAuthenticationChallenge, EventEventTypeThreeDSAuthenticationCreated, EventEventTypeThreeDSAuthenticationUpdated, EventEventTypeTokenizationApprovalRequest, EventEventTypeTokenizationResult, EventEventTypeTokenizationTwoFactorAuthenticationCode, EventEventTypeTokenizationTwoFactorAuthenticationCodeSent, EventEventTypeTokenizationUpdated:
 		return true
 	}
 	return false
@@ -475,6 +498,15 @@ func (r eventSubscriptionJSON) RawJSON() string {
 //   - card.renewed: Occurs when a card is renewed.
 //   - card.shipped: Occurs when a card is shipped.
 //   - card.updated: Occurs when a card is updated.
+//   - claim_document.accepted: Occurs when a claim document passes validation and is
+//     accepted.
+//   - claim_document.rejected: Occurs when a claim document fails validation and is
+//     rejected.
+//   - claim_document.uploaded: Occurs when a claim document is uploaded and begins
+//     validation.
+//   - claim.created: Occurs when a dispute intake claim is created.
+//   - claim.updated: Occurs when a dispute intake claim is updated, such as a status
+//     change or a change to its outstanding requirements.
 //   - digital_wallet.tokenization_result: Occurs when a tokenization request
 //     succeeded or failed.
 //
@@ -569,6 +601,11 @@ const (
 	EventSubscriptionEventTypeCardRenewed                                              EventSubscriptionEventType = "card.renewed"
 	EventSubscriptionEventTypeCardShipped                                              EventSubscriptionEventType = "card.shipped"
 	EventSubscriptionEventTypeCardUpdated                                              EventSubscriptionEventType = "card.updated"
+	EventSubscriptionEventTypeClaimDocumentAccepted                                    EventSubscriptionEventType = "claim_document.accepted"
+	EventSubscriptionEventTypeClaimDocumentRejected                                    EventSubscriptionEventType = "claim_document.rejected"
+	EventSubscriptionEventTypeClaimDocumentUploaded                                    EventSubscriptionEventType = "claim_document.uploaded"
+	EventSubscriptionEventTypeClaimCreated                                             EventSubscriptionEventType = "claim.created"
+	EventSubscriptionEventTypeClaimUpdated                                             EventSubscriptionEventType = "claim.updated"
 	EventSubscriptionEventTypeDigitalWalletTokenizationResult                          EventSubscriptionEventType = "digital_wallet.tokenization_result"
 	EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode     EventSubscriptionEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent EventSubscriptionEventType = "digital_wallet.tokenization_two_factor_authentication_code_sent"
@@ -608,7 +645,7 @@ const (
 
 func (r EventSubscriptionEventType) IsKnown() bool {
 	switch r {
-	case EventSubscriptionEventTypeAccountHolderDocumentUpdated, EventSubscriptionEventTypeAccountHolderCreated, EventSubscriptionEventTypeAccountHolderUpdated, EventSubscriptionEventTypeAccountHolderVerification, EventSubscriptionEventTypeAuthRulesBacktestReportCreated, EventSubscriptionEventTypeBalanceUpdated, EventSubscriptionEventTypeBookTransferTransactionCreated, EventSubscriptionEventTypeBookTransferTransactionUpdated, EventSubscriptionEventTypeCardAuthorizationChallenge, EventSubscriptionEventTypeCardAuthorizationChallengeResponse, EventSubscriptionEventTypeCardTransactionEnhancedDataCreated, EventSubscriptionEventTypeCardTransactionEnhancedDataUpdated, EventSubscriptionEventTypeCardTransactionUpdated, EventSubscriptionEventTypeCardConverted, EventSubscriptionEventTypeCardCreated, EventSubscriptionEventTypeCardReissued, EventSubscriptionEventTypeCardRenewed, EventSubscriptionEventTypeCardShipped, EventSubscriptionEventTypeCardUpdated, EventSubscriptionEventTypeDigitalWalletTokenizationResult, EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionEventTypeDigitalWalletTokenizationUpdated, EventSubscriptionEventTypeDisputeEvidenceUploadFailed, EventSubscriptionEventTypeDisputeTransactionCreated, EventSubscriptionEventTypeDisputeTransactionUpdated, EventSubscriptionEventTypeDisputeUpdated, EventSubscriptionEventTypeExternalBankAccountCreated, EventSubscriptionEventTypeExternalBankAccountUpdated, EventSubscriptionEventTypeExternalPaymentCreated, EventSubscriptionEventTypeExternalPaymentUpdated, EventSubscriptionEventTypeFinancialAccountCreated, EventSubscriptionEventTypeFinancialAccountUpdated, EventSubscriptionEventTypeFundingEventCreated, EventSubscriptionEventTypeInternalTransactionCreated, EventSubscriptionEventTypeInternalTransactionUpdated, EventSubscriptionEventTypeLoanTapeCreated, EventSubscriptionEventTypeLoanTapeUpdated, EventSubscriptionEventTypeManagementOperationCreated, EventSubscriptionEventTypeManagementOperationUpdated, EventSubscriptionEventTypeNetworkTotalCreated, EventSubscriptionEventTypeNetworkTotalUpdated, EventSubscriptionEventTypePaymentTransactionCreated, EventSubscriptionEventTypePaymentTransactionUpdated, EventSubscriptionEventTypeSettlementReportUpdated, EventSubscriptionEventTypeStatementsCreated, EventSubscriptionEventTypeThreeDSAuthenticationChallenge, EventSubscriptionEventTypeThreeDSAuthenticationCreated, EventSubscriptionEventTypeThreeDSAuthenticationUpdated, EventSubscriptionEventTypeTokenizationApprovalRequest, EventSubscriptionEventTypeTokenizationResult, EventSubscriptionEventTypeTokenizationTwoFactorAuthenticationCode, EventSubscriptionEventTypeTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionEventTypeTokenizationUpdated:
+	case EventSubscriptionEventTypeAccountHolderDocumentUpdated, EventSubscriptionEventTypeAccountHolderCreated, EventSubscriptionEventTypeAccountHolderUpdated, EventSubscriptionEventTypeAccountHolderVerification, EventSubscriptionEventTypeAuthRulesBacktestReportCreated, EventSubscriptionEventTypeBalanceUpdated, EventSubscriptionEventTypeBookTransferTransactionCreated, EventSubscriptionEventTypeBookTransferTransactionUpdated, EventSubscriptionEventTypeCardAuthorizationChallenge, EventSubscriptionEventTypeCardAuthorizationChallengeResponse, EventSubscriptionEventTypeCardTransactionEnhancedDataCreated, EventSubscriptionEventTypeCardTransactionEnhancedDataUpdated, EventSubscriptionEventTypeCardTransactionUpdated, EventSubscriptionEventTypeCardConverted, EventSubscriptionEventTypeCardCreated, EventSubscriptionEventTypeCardReissued, EventSubscriptionEventTypeCardRenewed, EventSubscriptionEventTypeCardShipped, EventSubscriptionEventTypeCardUpdated, EventSubscriptionEventTypeClaimDocumentAccepted, EventSubscriptionEventTypeClaimDocumentRejected, EventSubscriptionEventTypeClaimDocumentUploaded, EventSubscriptionEventTypeClaimCreated, EventSubscriptionEventTypeClaimUpdated, EventSubscriptionEventTypeDigitalWalletTokenizationResult, EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventSubscriptionEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionEventTypeDigitalWalletTokenizationUpdated, EventSubscriptionEventTypeDisputeEvidenceUploadFailed, EventSubscriptionEventTypeDisputeTransactionCreated, EventSubscriptionEventTypeDisputeTransactionUpdated, EventSubscriptionEventTypeDisputeUpdated, EventSubscriptionEventTypeExternalBankAccountCreated, EventSubscriptionEventTypeExternalBankAccountUpdated, EventSubscriptionEventTypeExternalPaymentCreated, EventSubscriptionEventTypeExternalPaymentUpdated, EventSubscriptionEventTypeFinancialAccountCreated, EventSubscriptionEventTypeFinancialAccountUpdated, EventSubscriptionEventTypeFundingEventCreated, EventSubscriptionEventTypeInternalTransactionCreated, EventSubscriptionEventTypeInternalTransactionUpdated, EventSubscriptionEventTypeLoanTapeCreated, EventSubscriptionEventTypeLoanTapeUpdated, EventSubscriptionEventTypeManagementOperationCreated, EventSubscriptionEventTypeManagementOperationUpdated, EventSubscriptionEventTypeNetworkTotalCreated, EventSubscriptionEventTypeNetworkTotalUpdated, EventSubscriptionEventTypePaymentTransactionCreated, EventSubscriptionEventTypePaymentTransactionUpdated, EventSubscriptionEventTypeSettlementReportUpdated, EventSubscriptionEventTypeStatementsCreated, EventSubscriptionEventTypeThreeDSAuthenticationChallenge, EventSubscriptionEventTypeThreeDSAuthenticationCreated, EventSubscriptionEventTypeThreeDSAuthenticationUpdated, EventSubscriptionEventTypeTokenizationApprovalRequest, EventSubscriptionEventTypeTokenizationResult, EventSubscriptionEventTypeTokenizationTwoFactorAuthenticationCode, EventSubscriptionEventTypeTokenizationTwoFactorAuthenticationCodeSent, EventSubscriptionEventTypeTokenizationUpdated:
 		return true
 	}
 	return false
@@ -737,6 +774,15 @@ func (r EventListParams) URLQuery() (v url.Values) {
 //   - card.renewed: Occurs when a card is renewed.
 //   - card.shipped: Occurs when a card is shipped.
 //   - card.updated: Occurs when a card is updated.
+//   - claim_document.accepted: Occurs when a claim document passes validation and is
+//     accepted.
+//   - claim_document.rejected: Occurs when a claim document fails validation and is
+//     rejected.
+//   - claim_document.uploaded: Occurs when a claim document is uploaded and begins
+//     validation.
+//   - claim.created: Occurs when a dispute intake claim is created.
+//   - claim.updated: Occurs when a dispute intake claim is updated, such as a status
+//     change or a change to its outstanding requirements.
 //   - digital_wallet.tokenization_result: Occurs when a tokenization request
 //     succeeded or failed.
 //
@@ -831,6 +877,11 @@ const (
 	EventListParamsEventTypeCardRenewed                                              EventListParamsEventType = "card.renewed"
 	EventListParamsEventTypeCardShipped                                              EventListParamsEventType = "card.shipped"
 	EventListParamsEventTypeCardUpdated                                              EventListParamsEventType = "card.updated"
+	EventListParamsEventTypeClaimDocumentAccepted                                    EventListParamsEventType = "claim_document.accepted"
+	EventListParamsEventTypeClaimDocumentRejected                                    EventListParamsEventType = "claim_document.rejected"
+	EventListParamsEventTypeClaimDocumentUploaded                                    EventListParamsEventType = "claim_document.uploaded"
+	EventListParamsEventTypeClaimCreated                                             EventListParamsEventType = "claim.created"
+	EventListParamsEventTypeClaimUpdated                                             EventListParamsEventType = "claim.updated"
 	EventListParamsEventTypeDigitalWalletTokenizationResult                          EventListParamsEventType = "digital_wallet.tokenization_result"
 	EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode     EventListParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code"
 	EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent EventListParamsEventType = "digital_wallet.tokenization_two_factor_authentication_code_sent"
@@ -870,7 +921,7 @@ const (
 
 func (r EventListParamsEventType) IsKnown() bool {
 	switch r {
-	case EventListParamsEventTypeAccountHolderDocumentUpdated, EventListParamsEventTypeAccountHolderCreated, EventListParamsEventTypeAccountHolderUpdated, EventListParamsEventTypeAccountHolderVerification, EventListParamsEventTypeAuthRulesBacktestReportCreated, EventListParamsEventTypeBalanceUpdated, EventListParamsEventTypeBookTransferTransactionCreated, EventListParamsEventTypeBookTransferTransactionUpdated, EventListParamsEventTypeCardAuthorizationChallenge, EventListParamsEventTypeCardAuthorizationChallengeResponse, EventListParamsEventTypeCardTransactionEnhancedDataCreated, EventListParamsEventTypeCardTransactionEnhancedDataUpdated, EventListParamsEventTypeCardTransactionUpdated, EventListParamsEventTypeCardConverted, EventListParamsEventTypeCardCreated, EventListParamsEventTypeCardReissued, EventListParamsEventTypeCardRenewed, EventListParamsEventTypeCardShipped, EventListParamsEventTypeCardUpdated, EventListParamsEventTypeDigitalWalletTokenizationResult, EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventListParamsEventTypeDigitalWalletTokenizationUpdated, EventListParamsEventTypeDisputeEvidenceUploadFailed, EventListParamsEventTypeDisputeTransactionCreated, EventListParamsEventTypeDisputeTransactionUpdated, EventListParamsEventTypeDisputeUpdated, EventListParamsEventTypeExternalBankAccountCreated, EventListParamsEventTypeExternalBankAccountUpdated, EventListParamsEventTypeExternalPaymentCreated, EventListParamsEventTypeExternalPaymentUpdated, EventListParamsEventTypeFinancialAccountCreated, EventListParamsEventTypeFinancialAccountUpdated, EventListParamsEventTypeFundingEventCreated, EventListParamsEventTypeInternalTransactionCreated, EventListParamsEventTypeInternalTransactionUpdated, EventListParamsEventTypeLoanTapeCreated, EventListParamsEventTypeLoanTapeUpdated, EventListParamsEventTypeManagementOperationCreated, EventListParamsEventTypeManagementOperationUpdated, EventListParamsEventTypeNetworkTotalCreated, EventListParamsEventTypeNetworkTotalUpdated, EventListParamsEventTypePaymentTransactionCreated, EventListParamsEventTypePaymentTransactionUpdated, EventListParamsEventTypeSettlementReportUpdated, EventListParamsEventTypeStatementsCreated, EventListParamsEventTypeThreeDSAuthenticationChallenge, EventListParamsEventTypeThreeDSAuthenticationCreated, EventListParamsEventTypeThreeDSAuthenticationUpdated, EventListParamsEventTypeTokenizationApprovalRequest, EventListParamsEventTypeTokenizationResult, EventListParamsEventTypeTokenizationTwoFactorAuthenticationCode, EventListParamsEventTypeTokenizationTwoFactorAuthenticationCodeSent, EventListParamsEventTypeTokenizationUpdated:
+	case EventListParamsEventTypeAccountHolderDocumentUpdated, EventListParamsEventTypeAccountHolderCreated, EventListParamsEventTypeAccountHolderUpdated, EventListParamsEventTypeAccountHolderVerification, EventListParamsEventTypeAuthRulesBacktestReportCreated, EventListParamsEventTypeBalanceUpdated, EventListParamsEventTypeBookTransferTransactionCreated, EventListParamsEventTypeBookTransferTransactionUpdated, EventListParamsEventTypeCardAuthorizationChallenge, EventListParamsEventTypeCardAuthorizationChallengeResponse, EventListParamsEventTypeCardTransactionEnhancedDataCreated, EventListParamsEventTypeCardTransactionEnhancedDataUpdated, EventListParamsEventTypeCardTransactionUpdated, EventListParamsEventTypeCardConverted, EventListParamsEventTypeCardCreated, EventListParamsEventTypeCardReissued, EventListParamsEventTypeCardRenewed, EventListParamsEventTypeCardShipped, EventListParamsEventTypeCardUpdated, EventListParamsEventTypeClaimDocumentAccepted, EventListParamsEventTypeClaimDocumentRejected, EventListParamsEventTypeClaimDocumentUploaded, EventListParamsEventTypeClaimCreated, EventListParamsEventTypeClaimUpdated, EventListParamsEventTypeDigitalWalletTokenizationResult, EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, EventListParamsEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, EventListParamsEventTypeDigitalWalletTokenizationUpdated, EventListParamsEventTypeDisputeEvidenceUploadFailed, EventListParamsEventTypeDisputeTransactionCreated, EventListParamsEventTypeDisputeTransactionUpdated, EventListParamsEventTypeDisputeUpdated, EventListParamsEventTypeExternalBankAccountCreated, EventListParamsEventTypeExternalBankAccountUpdated, EventListParamsEventTypeExternalPaymentCreated, EventListParamsEventTypeExternalPaymentUpdated, EventListParamsEventTypeFinancialAccountCreated, EventListParamsEventTypeFinancialAccountUpdated, EventListParamsEventTypeFundingEventCreated, EventListParamsEventTypeInternalTransactionCreated, EventListParamsEventTypeInternalTransactionUpdated, EventListParamsEventTypeLoanTapeCreated, EventListParamsEventTypeLoanTapeUpdated, EventListParamsEventTypeManagementOperationCreated, EventListParamsEventTypeManagementOperationUpdated, EventListParamsEventTypeNetworkTotalCreated, EventListParamsEventTypeNetworkTotalUpdated, EventListParamsEventTypePaymentTransactionCreated, EventListParamsEventTypePaymentTransactionUpdated, EventListParamsEventTypeSettlementReportUpdated, EventListParamsEventTypeStatementsCreated, EventListParamsEventTypeThreeDSAuthenticationChallenge, EventListParamsEventTypeThreeDSAuthenticationCreated, EventListParamsEventTypeThreeDSAuthenticationUpdated, EventListParamsEventTypeTokenizationApprovalRequest, EventListParamsEventTypeTokenizationResult, EventListParamsEventTypeTokenizationTwoFactorAuthenticationCode, EventListParamsEventTypeTokenizationTwoFactorAuthenticationCodeSent, EventListParamsEventTypeTokenizationUpdated:
 		return true
 	}
 	return false

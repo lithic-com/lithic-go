@@ -1806,6 +1806,765 @@ func (r CardTransactionEnhancedDataUpdatedWebhookEventEventType) IsKnown() bool 
 	return false
 }
 
+type ClaimCreatedWebhookEvent struct {
+	// Unique identifier for the claim, in UUID format
+	Token string `json:"token" api:"required" format:"uuid"`
+	// Token for the account holder that filed the claim
+	AccountHolderToken string `json:"account_holder_token" api:"required,nullable" format:"uuid"`
+	// Token for the account associated with the claim
+	AccountToken string `json:"account_token" api:"required,nullable" format:"uuid"`
+	// Tokens for the cards associated with the disputed transactions
+	CardTokens []string `json:"card_tokens" api:"required" format:"uuid"`
+	// When the claim was created
+	Created time.Time `json:"created" api:"required" format:"date-time"`
+	// Transactions included in this claim
+	DisputedTransactions []ClaimCreatedWebhookEventDisputedTransaction `json:"disputed_transactions" api:"required"`
+	// The type of event that occurred.
+	EventType ClaimCreatedWebhookEventEventType `json:"event_type" api:"required"`
+	// Requirements that must be fulfilled before the claim can be submitted
+	OutstandingRequirements []ClaimCreatedWebhookEventOutstandingRequirement `json:"outstanding_requirements" api:"required"`
+	// Dispute reason code provided when creating the claim
+	Reason ClaimCreatedWebhookEventReason `json:"reason" api:"required"`
+	// Current lifecycle status of the claim
+	Status ClaimCreatedWebhookEventStatus `json:"status" api:"required"`
+	// When the claim was submitted. Null until the claim reaches `SUBMITTED` status
+	Submitted time.Time `json:"submitted" api:"required,nullable" format:"date-time"`
+	// When the claim was last updated
+	Updated time.Time                    `json:"updated" api:"required" format:"date-time"`
+	JSON    claimCreatedWebhookEventJSON `json:"-"`
+}
+
+// claimCreatedWebhookEventJSON contains the JSON metadata for the struct
+// [ClaimCreatedWebhookEvent]
+type claimCreatedWebhookEventJSON struct {
+	Token                   apijson.Field
+	AccountHolderToken      apijson.Field
+	AccountToken            apijson.Field
+	CardTokens              apijson.Field
+	Created                 apijson.Field
+	DisputedTransactions    apijson.Field
+	EventType               apijson.Field
+	OutstandingRequirements apijson.Field
+	Reason                  apijson.Field
+	Status                  apijson.Field
+	Submitted               apijson.Field
+	Updated                 apijson.Field
+	raw                     string
+	ExtraFields             map[string]apijson.Field
+}
+
+func (r *ClaimCreatedWebhookEvent) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r claimCreatedWebhookEventJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ClaimCreatedWebhookEvent) implementsParsedWebhookEvent() {}
+
+// A transaction included in a claim, along with the specific events being
+// disputed.
+type ClaimCreatedWebhookEventDisputedTransaction struct {
+	// Tokens for the specific events within the transaction being disputed. Lithic
+	// creates one dispute per event token
+	EventTokens []string `json:"event_tokens" api:"required" format:"uuid"`
+	// Token for the transaction being disputed, in UUID format
+	TransactionToken string                                          `json:"transaction_token" api:"required" format:"uuid"`
+	JSON             claimCreatedWebhookEventDisputedTransactionJSON `json:"-"`
+}
+
+// claimCreatedWebhookEventDisputedTransactionJSON contains the JSON metadata for
+// the struct [ClaimCreatedWebhookEventDisputedTransaction]
+type claimCreatedWebhookEventDisputedTransactionJSON struct {
+	EventTokens      apijson.Field
+	TransactionToken apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
+}
+
+func (r *ClaimCreatedWebhookEventDisputedTransaction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r claimCreatedWebhookEventDisputedTransactionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The type of event that occurred.
+type ClaimCreatedWebhookEventEventType string
+
+const (
+	ClaimCreatedWebhookEventEventTypeClaimCreated ClaimCreatedWebhookEventEventType = "claim.created"
+)
+
+func (r ClaimCreatedWebhookEventEventType) IsKnown() bool {
+	switch r {
+	case ClaimCreatedWebhookEventEventTypeClaimCreated:
+		return true
+	}
+	return false
+}
+
+type ClaimCreatedWebhookEventOutstandingRequirement string
+
+const (
+	ClaimCreatedWebhookEventOutstandingRequirementQuestionnaire ClaimCreatedWebhookEventOutstandingRequirement = "QUESTIONNAIRE"
+	ClaimCreatedWebhookEventOutstandingRequirementDocuments     ClaimCreatedWebhookEventOutstandingRequirement = "DOCUMENTS"
+)
+
+func (r ClaimCreatedWebhookEventOutstandingRequirement) IsKnown() bool {
+	switch r {
+	case ClaimCreatedWebhookEventOutstandingRequirementQuestionnaire, ClaimCreatedWebhookEventOutstandingRequirementDocuments:
+		return true
+	}
+	return false
+}
+
+// Dispute reason code provided when creating the claim
+type ClaimCreatedWebhookEventReason string
+
+const (
+	ClaimCreatedWebhookEventReasonCardNotPresent           ClaimCreatedWebhookEventReason = "CARD_NOT_PRESENT"
+	ClaimCreatedWebhookEventReasonCardLost                 ClaimCreatedWebhookEventReason = "CARD_LOST"
+	ClaimCreatedWebhookEventReasonCardStolen               ClaimCreatedWebhookEventReason = "CARD_STOLEN"
+	ClaimCreatedWebhookEventReasonCardNeverReceived        ClaimCreatedWebhookEventReason = "CARD_NEVER_RECEIVED"
+	ClaimCreatedWebhookEventReasonCounterfeit              ClaimCreatedWebhookEventReason = "COUNTERFEIT"
+	ClaimCreatedWebhookEventReasonAccountTakeover          ClaimCreatedWebhookEventReason = "ACCOUNT_TAKEOVER"
+	ClaimCreatedWebhookEventReasonProductNotReceived       ClaimCreatedWebhookEventReason = "PRODUCT_NOT_RECEIVED"
+	ClaimCreatedWebhookEventReasonNotAsDescribed           ClaimCreatedWebhookEventReason = "NOT_AS_DESCRIBED"
+	ClaimCreatedWebhookEventReasonCreditNotProcessed       ClaimCreatedWebhookEventReason = "CREDIT_NOT_PROCESSED"
+	ClaimCreatedWebhookEventReasonCancelledRecurring       ClaimCreatedWebhookEventReason = "CANCELLED_RECURRING"
+	ClaimCreatedWebhookEventReasonPaidByOtherMeans         ClaimCreatedWebhookEventReason = "PAID_BY_OTHER_MEANS"
+	ClaimCreatedWebhookEventReasonDuplicateCharge          ClaimCreatedWebhookEventReason = "DUPLICATE_CHARGE"
+	ClaimCreatedWebhookEventReasonLatePresentment          ClaimCreatedWebhookEventReason = "LATE_PRESENTMENT"
+	ClaimCreatedWebhookEventReasonIncorrectTransactionCode ClaimCreatedWebhookEventReason = "INCORRECT_TRANSACTION_CODE"
+	ClaimCreatedWebhookEventReasonNoAuthorization          ClaimCreatedWebhookEventReason = "NO_AUTHORIZATION"
+	ClaimCreatedWebhookEventReasonDeclined                 ClaimCreatedWebhookEventReason = "DECLINED"
+	ClaimCreatedWebhookEventReasonIncorrectAmount          ClaimCreatedWebhookEventReason = "INCORRECT_AMOUNT"
+	ClaimCreatedWebhookEventReasonAtmCashNotDispensed      ClaimCreatedWebhookEventReason = "ATM_CASH_NOT_DISPENSED"
+	ClaimCreatedWebhookEventReasonAtmDepositWrongAmount    ClaimCreatedWebhookEventReason = "ATM_DEPOSIT_WRONG_AMOUNT"
+	ClaimCreatedWebhookEventReasonAtmDepositMissing        ClaimCreatedWebhookEventReason = "ATM_DEPOSIT_MISSING"
+)
+
+func (r ClaimCreatedWebhookEventReason) IsKnown() bool {
+	switch r {
+	case ClaimCreatedWebhookEventReasonCardNotPresent, ClaimCreatedWebhookEventReasonCardLost, ClaimCreatedWebhookEventReasonCardStolen, ClaimCreatedWebhookEventReasonCardNeverReceived, ClaimCreatedWebhookEventReasonCounterfeit, ClaimCreatedWebhookEventReasonAccountTakeover, ClaimCreatedWebhookEventReasonProductNotReceived, ClaimCreatedWebhookEventReasonNotAsDescribed, ClaimCreatedWebhookEventReasonCreditNotProcessed, ClaimCreatedWebhookEventReasonCancelledRecurring, ClaimCreatedWebhookEventReasonPaidByOtherMeans, ClaimCreatedWebhookEventReasonDuplicateCharge, ClaimCreatedWebhookEventReasonLatePresentment, ClaimCreatedWebhookEventReasonIncorrectTransactionCode, ClaimCreatedWebhookEventReasonNoAuthorization, ClaimCreatedWebhookEventReasonDeclined, ClaimCreatedWebhookEventReasonIncorrectAmount, ClaimCreatedWebhookEventReasonAtmCashNotDispensed, ClaimCreatedWebhookEventReasonAtmDepositWrongAmount, ClaimCreatedWebhookEventReasonAtmDepositMissing:
+		return true
+	}
+	return false
+}
+
+// Current lifecycle status of the claim
+type ClaimCreatedWebhookEventStatus string
+
+const (
+	ClaimCreatedWebhookEventStatusInitializing ClaimCreatedWebhookEventStatus = "INITIALIZING"
+	ClaimCreatedWebhookEventStatusAwaitingInfo ClaimCreatedWebhookEventStatus = "AWAITING_INFO"
+	ClaimCreatedWebhookEventStatusSubmitted    ClaimCreatedWebhookEventStatus = "SUBMITTED"
+	ClaimCreatedWebhookEventStatusResolved     ClaimCreatedWebhookEventStatus = "RESOLVED"
+	ClaimCreatedWebhookEventStatusAbandoned    ClaimCreatedWebhookEventStatus = "ABANDONED"
+)
+
+func (r ClaimCreatedWebhookEventStatus) IsKnown() bool {
+	switch r {
+	case ClaimCreatedWebhookEventStatusInitializing, ClaimCreatedWebhookEventStatusAwaitingInfo, ClaimCreatedWebhookEventStatusSubmitted, ClaimCreatedWebhookEventStatusResolved, ClaimCreatedWebhookEventStatusAbandoned:
+		return true
+	}
+	return false
+}
+
+type ClaimUpdatedWebhookEvent struct {
+	// Unique identifier for the claim, in UUID format
+	Token string `json:"token" api:"required" format:"uuid"`
+	// Token for the account holder that filed the claim
+	AccountHolderToken string `json:"account_holder_token" api:"required,nullable" format:"uuid"`
+	// Token for the account associated with the claim
+	AccountToken string `json:"account_token" api:"required,nullable" format:"uuid"`
+	// Tokens for the cards associated with the disputed transactions
+	CardTokens []string `json:"card_tokens" api:"required" format:"uuid"`
+	// When the claim was created
+	Created time.Time `json:"created" api:"required" format:"date-time"`
+	// Transactions included in this claim
+	DisputedTransactions []ClaimUpdatedWebhookEventDisputedTransaction `json:"disputed_transactions" api:"required"`
+	// The type of event that occurred.
+	EventType ClaimUpdatedWebhookEventEventType `json:"event_type" api:"required"`
+	// Requirements that must be fulfilled before the claim can be submitted
+	OutstandingRequirements []ClaimUpdatedWebhookEventOutstandingRequirement `json:"outstanding_requirements" api:"required"`
+	// Dispute reason code provided when creating the claim
+	Reason ClaimUpdatedWebhookEventReason `json:"reason" api:"required"`
+	// Current lifecycle status of the claim
+	Status ClaimUpdatedWebhookEventStatus `json:"status" api:"required"`
+	// When the claim was submitted. Null until the claim reaches `SUBMITTED` status
+	Submitted time.Time `json:"submitted" api:"required,nullable" format:"date-time"`
+	// When the claim was last updated
+	Updated time.Time                    `json:"updated" api:"required" format:"date-time"`
+	JSON    claimUpdatedWebhookEventJSON `json:"-"`
+}
+
+// claimUpdatedWebhookEventJSON contains the JSON metadata for the struct
+// [ClaimUpdatedWebhookEvent]
+type claimUpdatedWebhookEventJSON struct {
+	Token                   apijson.Field
+	AccountHolderToken      apijson.Field
+	AccountToken            apijson.Field
+	CardTokens              apijson.Field
+	Created                 apijson.Field
+	DisputedTransactions    apijson.Field
+	EventType               apijson.Field
+	OutstandingRequirements apijson.Field
+	Reason                  apijson.Field
+	Status                  apijson.Field
+	Submitted               apijson.Field
+	Updated                 apijson.Field
+	raw                     string
+	ExtraFields             map[string]apijson.Field
+}
+
+func (r *ClaimUpdatedWebhookEvent) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r claimUpdatedWebhookEventJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ClaimUpdatedWebhookEvent) implementsParsedWebhookEvent() {}
+
+// A transaction included in a claim, along with the specific events being
+// disputed.
+type ClaimUpdatedWebhookEventDisputedTransaction struct {
+	// Tokens for the specific events within the transaction being disputed. Lithic
+	// creates one dispute per event token
+	EventTokens []string `json:"event_tokens" api:"required" format:"uuid"`
+	// Token for the transaction being disputed, in UUID format
+	TransactionToken string                                          `json:"transaction_token" api:"required" format:"uuid"`
+	JSON             claimUpdatedWebhookEventDisputedTransactionJSON `json:"-"`
+}
+
+// claimUpdatedWebhookEventDisputedTransactionJSON contains the JSON metadata for
+// the struct [ClaimUpdatedWebhookEventDisputedTransaction]
+type claimUpdatedWebhookEventDisputedTransactionJSON struct {
+	EventTokens      apijson.Field
+	TransactionToken apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
+}
+
+func (r *ClaimUpdatedWebhookEventDisputedTransaction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r claimUpdatedWebhookEventDisputedTransactionJSON) RawJSON() string {
+	return r.raw
+}
+
+// The type of event that occurred.
+type ClaimUpdatedWebhookEventEventType string
+
+const (
+	ClaimUpdatedWebhookEventEventTypeClaimUpdated ClaimUpdatedWebhookEventEventType = "claim.updated"
+)
+
+func (r ClaimUpdatedWebhookEventEventType) IsKnown() bool {
+	switch r {
+	case ClaimUpdatedWebhookEventEventTypeClaimUpdated:
+		return true
+	}
+	return false
+}
+
+type ClaimUpdatedWebhookEventOutstandingRequirement string
+
+const (
+	ClaimUpdatedWebhookEventOutstandingRequirementQuestionnaire ClaimUpdatedWebhookEventOutstandingRequirement = "QUESTIONNAIRE"
+	ClaimUpdatedWebhookEventOutstandingRequirementDocuments     ClaimUpdatedWebhookEventOutstandingRequirement = "DOCUMENTS"
+)
+
+func (r ClaimUpdatedWebhookEventOutstandingRequirement) IsKnown() bool {
+	switch r {
+	case ClaimUpdatedWebhookEventOutstandingRequirementQuestionnaire, ClaimUpdatedWebhookEventOutstandingRequirementDocuments:
+		return true
+	}
+	return false
+}
+
+// Dispute reason code provided when creating the claim
+type ClaimUpdatedWebhookEventReason string
+
+const (
+	ClaimUpdatedWebhookEventReasonCardNotPresent           ClaimUpdatedWebhookEventReason = "CARD_NOT_PRESENT"
+	ClaimUpdatedWebhookEventReasonCardLost                 ClaimUpdatedWebhookEventReason = "CARD_LOST"
+	ClaimUpdatedWebhookEventReasonCardStolen               ClaimUpdatedWebhookEventReason = "CARD_STOLEN"
+	ClaimUpdatedWebhookEventReasonCardNeverReceived        ClaimUpdatedWebhookEventReason = "CARD_NEVER_RECEIVED"
+	ClaimUpdatedWebhookEventReasonCounterfeit              ClaimUpdatedWebhookEventReason = "COUNTERFEIT"
+	ClaimUpdatedWebhookEventReasonAccountTakeover          ClaimUpdatedWebhookEventReason = "ACCOUNT_TAKEOVER"
+	ClaimUpdatedWebhookEventReasonProductNotReceived       ClaimUpdatedWebhookEventReason = "PRODUCT_NOT_RECEIVED"
+	ClaimUpdatedWebhookEventReasonNotAsDescribed           ClaimUpdatedWebhookEventReason = "NOT_AS_DESCRIBED"
+	ClaimUpdatedWebhookEventReasonCreditNotProcessed       ClaimUpdatedWebhookEventReason = "CREDIT_NOT_PROCESSED"
+	ClaimUpdatedWebhookEventReasonCancelledRecurring       ClaimUpdatedWebhookEventReason = "CANCELLED_RECURRING"
+	ClaimUpdatedWebhookEventReasonPaidByOtherMeans         ClaimUpdatedWebhookEventReason = "PAID_BY_OTHER_MEANS"
+	ClaimUpdatedWebhookEventReasonDuplicateCharge          ClaimUpdatedWebhookEventReason = "DUPLICATE_CHARGE"
+	ClaimUpdatedWebhookEventReasonLatePresentment          ClaimUpdatedWebhookEventReason = "LATE_PRESENTMENT"
+	ClaimUpdatedWebhookEventReasonIncorrectTransactionCode ClaimUpdatedWebhookEventReason = "INCORRECT_TRANSACTION_CODE"
+	ClaimUpdatedWebhookEventReasonNoAuthorization          ClaimUpdatedWebhookEventReason = "NO_AUTHORIZATION"
+	ClaimUpdatedWebhookEventReasonDeclined                 ClaimUpdatedWebhookEventReason = "DECLINED"
+	ClaimUpdatedWebhookEventReasonIncorrectAmount          ClaimUpdatedWebhookEventReason = "INCORRECT_AMOUNT"
+	ClaimUpdatedWebhookEventReasonAtmCashNotDispensed      ClaimUpdatedWebhookEventReason = "ATM_CASH_NOT_DISPENSED"
+	ClaimUpdatedWebhookEventReasonAtmDepositWrongAmount    ClaimUpdatedWebhookEventReason = "ATM_DEPOSIT_WRONG_AMOUNT"
+	ClaimUpdatedWebhookEventReasonAtmDepositMissing        ClaimUpdatedWebhookEventReason = "ATM_DEPOSIT_MISSING"
+)
+
+func (r ClaimUpdatedWebhookEventReason) IsKnown() bool {
+	switch r {
+	case ClaimUpdatedWebhookEventReasonCardNotPresent, ClaimUpdatedWebhookEventReasonCardLost, ClaimUpdatedWebhookEventReasonCardStolen, ClaimUpdatedWebhookEventReasonCardNeverReceived, ClaimUpdatedWebhookEventReasonCounterfeit, ClaimUpdatedWebhookEventReasonAccountTakeover, ClaimUpdatedWebhookEventReasonProductNotReceived, ClaimUpdatedWebhookEventReasonNotAsDescribed, ClaimUpdatedWebhookEventReasonCreditNotProcessed, ClaimUpdatedWebhookEventReasonCancelledRecurring, ClaimUpdatedWebhookEventReasonPaidByOtherMeans, ClaimUpdatedWebhookEventReasonDuplicateCharge, ClaimUpdatedWebhookEventReasonLatePresentment, ClaimUpdatedWebhookEventReasonIncorrectTransactionCode, ClaimUpdatedWebhookEventReasonNoAuthorization, ClaimUpdatedWebhookEventReasonDeclined, ClaimUpdatedWebhookEventReasonIncorrectAmount, ClaimUpdatedWebhookEventReasonAtmCashNotDispensed, ClaimUpdatedWebhookEventReasonAtmDepositWrongAmount, ClaimUpdatedWebhookEventReasonAtmDepositMissing:
+		return true
+	}
+	return false
+}
+
+// Current lifecycle status of the claim
+type ClaimUpdatedWebhookEventStatus string
+
+const (
+	ClaimUpdatedWebhookEventStatusInitializing ClaimUpdatedWebhookEventStatus = "INITIALIZING"
+	ClaimUpdatedWebhookEventStatusAwaitingInfo ClaimUpdatedWebhookEventStatus = "AWAITING_INFO"
+	ClaimUpdatedWebhookEventStatusSubmitted    ClaimUpdatedWebhookEventStatus = "SUBMITTED"
+	ClaimUpdatedWebhookEventStatusResolved     ClaimUpdatedWebhookEventStatus = "RESOLVED"
+	ClaimUpdatedWebhookEventStatusAbandoned    ClaimUpdatedWebhookEventStatus = "ABANDONED"
+)
+
+func (r ClaimUpdatedWebhookEventStatus) IsKnown() bool {
+	switch r {
+	case ClaimUpdatedWebhookEventStatusInitializing, ClaimUpdatedWebhookEventStatusAwaitingInfo, ClaimUpdatedWebhookEventStatusSubmitted, ClaimUpdatedWebhookEventStatusResolved, ClaimUpdatedWebhookEventStatusAbandoned:
+		return true
+	}
+	return false
+}
+
+type ClaimDocumentUploadedWebhookEvent struct {
+	// Unique identifier for the document, in UUID format
+	Token string `json:"token" api:"required" format:"uuid"`
+	// When the document was created
+	Created time.Time `json:"created" api:"required" format:"date-time"`
+	// Presigned URL for downloading the uploaded document. Available once the document
+	// is being validated or has been accepted (`VALIDATING` or `ACCEPTED`)
+	DownloadURL string `json:"download_url" api:"required,nullable"`
+	// When the download URL expires
+	DownloadURLExpiresAt time.Time `json:"download_url_expires_at" api:"required,nullable" format:"date-time"`
+	// The type of event that occurred.
+	EventType ClaimDocumentUploadedWebhookEventEventType `json:"event_type" api:"required"`
+	// Reason the document failed validation. Null unless `status` is `REJECTED`
+	FailureReason ClaimDocumentUploadedWebhookEventFailureReason `json:"failure_reason" api:"required,nullable"`
+	// Name provided when the upload intent was created
+	Name string `json:"name" api:"required"`
+	// Identifier of the document requirement this document satisfies. Null for
+	// supplemental documents not tied to a specific requirement
+	RequirementID string `json:"requirement_id" api:"required,nullable"`
+	// Current validation status of the document
+	Status ClaimDocumentUploadedWebhookEventStatus `json:"status" api:"required"`
+	// When the document was last updated
+	Updated time.Time `json:"updated" api:"required" format:"date-time"`
+	// Constraints that an uploaded file must satisfy.
+	UploadConstraints ClaimDocumentUploadedWebhookEventUploadConstraints `json:"upload_constraints" api:"required,nullable"`
+	// Presigned URL for uploading the file via HTTP PUT. Null after the upload window
+	// expires or after the document has been validated
+	UploadURL string `json:"upload_url" api:"required,nullable"`
+	// When the upload URL expires
+	UploadURLExpiresAt time.Time                             `json:"upload_url_expires_at" api:"required,nullable" format:"date-time"`
+	JSON               claimDocumentUploadedWebhookEventJSON `json:"-"`
+}
+
+// claimDocumentUploadedWebhookEventJSON contains the JSON metadata for the struct
+// [ClaimDocumentUploadedWebhookEvent]
+type claimDocumentUploadedWebhookEventJSON struct {
+	Token                apijson.Field
+	Created              apijson.Field
+	DownloadURL          apijson.Field
+	DownloadURLExpiresAt apijson.Field
+	EventType            apijson.Field
+	FailureReason        apijson.Field
+	Name                 apijson.Field
+	RequirementID        apijson.Field
+	Status               apijson.Field
+	Updated              apijson.Field
+	UploadConstraints    apijson.Field
+	UploadURL            apijson.Field
+	UploadURLExpiresAt   apijson.Field
+	raw                  string
+	ExtraFields          map[string]apijson.Field
+}
+
+func (r *ClaimDocumentUploadedWebhookEvent) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r claimDocumentUploadedWebhookEventJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ClaimDocumentUploadedWebhookEvent) implementsParsedWebhookEvent() {}
+
+// The type of event that occurred.
+type ClaimDocumentUploadedWebhookEventEventType string
+
+const (
+	ClaimDocumentUploadedWebhookEventEventTypeClaimDocumentUploaded ClaimDocumentUploadedWebhookEventEventType = "claim_document.uploaded"
+)
+
+func (r ClaimDocumentUploadedWebhookEventEventType) IsKnown() bool {
+	switch r {
+	case ClaimDocumentUploadedWebhookEventEventTypeClaimDocumentUploaded:
+		return true
+	}
+	return false
+}
+
+// Reason the document failed validation. Null unless `status` is `REJECTED`
+type ClaimDocumentUploadedWebhookEventFailureReason string
+
+const (
+	ClaimDocumentUploadedWebhookEventFailureReasonInvalidMimeType ClaimDocumentUploadedWebhookEventFailureReason = "INVALID_MIME_TYPE"
+	ClaimDocumentUploadedWebhookEventFailureReasonFileTooLarge    ClaimDocumentUploadedWebhookEventFailureReason = "FILE_TOO_LARGE"
+	ClaimDocumentUploadedWebhookEventFailureReasonFileEmpty       ClaimDocumentUploadedWebhookEventFailureReason = "FILE_EMPTY"
+	ClaimDocumentUploadedWebhookEventFailureReasonCorruptFile     ClaimDocumentUploadedWebhookEventFailureReason = "CORRUPT_FILE"
+	ClaimDocumentUploadedWebhookEventFailureReasonOther           ClaimDocumentUploadedWebhookEventFailureReason = "OTHER"
+)
+
+func (r ClaimDocumentUploadedWebhookEventFailureReason) IsKnown() bool {
+	switch r {
+	case ClaimDocumentUploadedWebhookEventFailureReasonInvalidMimeType, ClaimDocumentUploadedWebhookEventFailureReasonFileTooLarge, ClaimDocumentUploadedWebhookEventFailureReasonFileEmpty, ClaimDocumentUploadedWebhookEventFailureReasonCorruptFile, ClaimDocumentUploadedWebhookEventFailureReasonOther:
+		return true
+	}
+	return false
+}
+
+// Current validation status of the document
+type ClaimDocumentUploadedWebhookEventStatus string
+
+const (
+	ClaimDocumentUploadedWebhookEventStatusPending    ClaimDocumentUploadedWebhookEventStatus = "PENDING"
+	ClaimDocumentUploadedWebhookEventStatusValidating ClaimDocumentUploadedWebhookEventStatus = "VALIDATING"
+	ClaimDocumentUploadedWebhookEventStatusAccepted   ClaimDocumentUploadedWebhookEventStatus = "ACCEPTED"
+	ClaimDocumentUploadedWebhookEventStatusRejected   ClaimDocumentUploadedWebhookEventStatus = "REJECTED"
+)
+
+func (r ClaimDocumentUploadedWebhookEventStatus) IsKnown() bool {
+	switch r {
+	case ClaimDocumentUploadedWebhookEventStatusPending, ClaimDocumentUploadedWebhookEventStatusValidating, ClaimDocumentUploadedWebhookEventStatusAccepted, ClaimDocumentUploadedWebhookEventStatusRejected:
+		return true
+	}
+	return false
+}
+
+// Constraints that an uploaded file must satisfy.
+type ClaimDocumentUploadedWebhookEventUploadConstraints struct {
+	// MIME types accepted for upload
+	AcceptedMimeTypes []string `json:"accepted_mime_types" api:"required"`
+	// Maximum file size in bytes. Null if there is no enforced size limit
+	MaxSizeBytes int64                                                  `json:"max_size_bytes" api:"required,nullable"`
+	JSON         claimDocumentUploadedWebhookEventUploadConstraintsJSON `json:"-"`
+}
+
+// claimDocumentUploadedWebhookEventUploadConstraintsJSON contains the JSON
+// metadata for the struct [ClaimDocumentUploadedWebhookEventUploadConstraints]
+type claimDocumentUploadedWebhookEventUploadConstraintsJSON struct {
+	AcceptedMimeTypes apijson.Field
+	MaxSizeBytes      apijson.Field
+	raw               string
+	ExtraFields       map[string]apijson.Field
+}
+
+func (r *ClaimDocumentUploadedWebhookEventUploadConstraints) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r claimDocumentUploadedWebhookEventUploadConstraintsJSON) RawJSON() string {
+	return r.raw
+}
+
+type ClaimDocumentAcceptedWebhookEvent struct {
+	// Unique identifier for the document, in UUID format
+	Token string `json:"token" api:"required" format:"uuid"`
+	// When the document was created
+	Created time.Time `json:"created" api:"required" format:"date-time"`
+	// Presigned URL for downloading the uploaded document. Available once the document
+	// is being validated or has been accepted (`VALIDATING` or `ACCEPTED`)
+	DownloadURL string `json:"download_url" api:"required,nullable"`
+	// When the download URL expires
+	DownloadURLExpiresAt time.Time `json:"download_url_expires_at" api:"required,nullable" format:"date-time"`
+	// The type of event that occurred.
+	EventType ClaimDocumentAcceptedWebhookEventEventType `json:"event_type" api:"required"`
+	// Reason the document failed validation. Null unless `status` is `REJECTED`
+	FailureReason ClaimDocumentAcceptedWebhookEventFailureReason `json:"failure_reason" api:"required,nullable"`
+	// Name provided when the upload intent was created
+	Name string `json:"name" api:"required"`
+	// Identifier of the document requirement this document satisfies. Null for
+	// supplemental documents not tied to a specific requirement
+	RequirementID string `json:"requirement_id" api:"required,nullable"`
+	// Current validation status of the document
+	Status ClaimDocumentAcceptedWebhookEventStatus `json:"status" api:"required"`
+	// When the document was last updated
+	Updated time.Time `json:"updated" api:"required" format:"date-time"`
+	// Constraints that an uploaded file must satisfy.
+	UploadConstraints ClaimDocumentAcceptedWebhookEventUploadConstraints `json:"upload_constraints" api:"required,nullable"`
+	// Presigned URL for uploading the file via HTTP PUT. Null after the upload window
+	// expires or after the document has been validated
+	UploadURL string `json:"upload_url" api:"required,nullable"`
+	// When the upload URL expires
+	UploadURLExpiresAt time.Time                             `json:"upload_url_expires_at" api:"required,nullable" format:"date-time"`
+	JSON               claimDocumentAcceptedWebhookEventJSON `json:"-"`
+}
+
+// claimDocumentAcceptedWebhookEventJSON contains the JSON metadata for the struct
+// [ClaimDocumentAcceptedWebhookEvent]
+type claimDocumentAcceptedWebhookEventJSON struct {
+	Token                apijson.Field
+	Created              apijson.Field
+	DownloadURL          apijson.Field
+	DownloadURLExpiresAt apijson.Field
+	EventType            apijson.Field
+	FailureReason        apijson.Field
+	Name                 apijson.Field
+	RequirementID        apijson.Field
+	Status               apijson.Field
+	Updated              apijson.Field
+	UploadConstraints    apijson.Field
+	UploadURL            apijson.Field
+	UploadURLExpiresAt   apijson.Field
+	raw                  string
+	ExtraFields          map[string]apijson.Field
+}
+
+func (r *ClaimDocumentAcceptedWebhookEvent) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r claimDocumentAcceptedWebhookEventJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ClaimDocumentAcceptedWebhookEvent) implementsParsedWebhookEvent() {}
+
+// The type of event that occurred.
+type ClaimDocumentAcceptedWebhookEventEventType string
+
+const (
+	ClaimDocumentAcceptedWebhookEventEventTypeClaimDocumentAccepted ClaimDocumentAcceptedWebhookEventEventType = "claim_document.accepted"
+)
+
+func (r ClaimDocumentAcceptedWebhookEventEventType) IsKnown() bool {
+	switch r {
+	case ClaimDocumentAcceptedWebhookEventEventTypeClaimDocumentAccepted:
+		return true
+	}
+	return false
+}
+
+// Reason the document failed validation. Null unless `status` is `REJECTED`
+type ClaimDocumentAcceptedWebhookEventFailureReason string
+
+const (
+	ClaimDocumentAcceptedWebhookEventFailureReasonInvalidMimeType ClaimDocumentAcceptedWebhookEventFailureReason = "INVALID_MIME_TYPE"
+	ClaimDocumentAcceptedWebhookEventFailureReasonFileTooLarge    ClaimDocumentAcceptedWebhookEventFailureReason = "FILE_TOO_LARGE"
+	ClaimDocumentAcceptedWebhookEventFailureReasonFileEmpty       ClaimDocumentAcceptedWebhookEventFailureReason = "FILE_EMPTY"
+	ClaimDocumentAcceptedWebhookEventFailureReasonCorruptFile     ClaimDocumentAcceptedWebhookEventFailureReason = "CORRUPT_FILE"
+	ClaimDocumentAcceptedWebhookEventFailureReasonOther           ClaimDocumentAcceptedWebhookEventFailureReason = "OTHER"
+)
+
+func (r ClaimDocumentAcceptedWebhookEventFailureReason) IsKnown() bool {
+	switch r {
+	case ClaimDocumentAcceptedWebhookEventFailureReasonInvalidMimeType, ClaimDocumentAcceptedWebhookEventFailureReasonFileTooLarge, ClaimDocumentAcceptedWebhookEventFailureReasonFileEmpty, ClaimDocumentAcceptedWebhookEventFailureReasonCorruptFile, ClaimDocumentAcceptedWebhookEventFailureReasonOther:
+		return true
+	}
+	return false
+}
+
+// Current validation status of the document
+type ClaimDocumentAcceptedWebhookEventStatus string
+
+const (
+	ClaimDocumentAcceptedWebhookEventStatusPending    ClaimDocumentAcceptedWebhookEventStatus = "PENDING"
+	ClaimDocumentAcceptedWebhookEventStatusValidating ClaimDocumentAcceptedWebhookEventStatus = "VALIDATING"
+	ClaimDocumentAcceptedWebhookEventStatusAccepted   ClaimDocumentAcceptedWebhookEventStatus = "ACCEPTED"
+	ClaimDocumentAcceptedWebhookEventStatusRejected   ClaimDocumentAcceptedWebhookEventStatus = "REJECTED"
+)
+
+func (r ClaimDocumentAcceptedWebhookEventStatus) IsKnown() bool {
+	switch r {
+	case ClaimDocumentAcceptedWebhookEventStatusPending, ClaimDocumentAcceptedWebhookEventStatusValidating, ClaimDocumentAcceptedWebhookEventStatusAccepted, ClaimDocumentAcceptedWebhookEventStatusRejected:
+		return true
+	}
+	return false
+}
+
+// Constraints that an uploaded file must satisfy.
+type ClaimDocumentAcceptedWebhookEventUploadConstraints struct {
+	// MIME types accepted for upload
+	AcceptedMimeTypes []string `json:"accepted_mime_types" api:"required"`
+	// Maximum file size in bytes. Null if there is no enforced size limit
+	MaxSizeBytes int64                                                  `json:"max_size_bytes" api:"required,nullable"`
+	JSON         claimDocumentAcceptedWebhookEventUploadConstraintsJSON `json:"-"`
+}
+
+// claimDocumentAcceptedWebhookEventUploadConstraintsJSON contains the JSON
+// metadata for the struct [ClaimDocumentAcceptedWebhookEventUploadConstraints]
+type claimDocumentAcceptedWebhookEventUploadConstraintsJSON struct {
+	AcceptedMimeTypes apijson.Field
+	MaxSizeBytes      apijson.Field
+	raw               string
+	ExtraFields       map[string]apijson.Field
+}
+
+func (r *ClaimDocumentAcceptedWebhookEventUploadConstraints) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r claimDocumentAcceptedWebhookEventUploadConstraintsJSON) RawJSON() string {
+	return r.raw
+}
+
+type ClaimDocumentRejectedWebhookEvent struct {
+	// Unique identifier for the document, in UUID format
+	Token string `json:"token" api:"required" format:"uuid"`
+	// When the document was created
+	Created time.Time `json:"created" api:"required" format:"date-time"`
+	// Presigned URL for downloading the uploaded document. Available once the document
+	// is being validated or has been accepted (`VALIDATING` or `ACCEPTED`)
+	DownloadURL string `json:"download_url" api:"required,nullable"`
+	// When the download URL expires
+	DownloadURLExpiresAt time.Time `json:"download_url_expires_at" api:"required,nullable" format:"date-time"`
+	// The type of event that occurred.
+	EventType ClaimDocumentRejectedWebhookEventEventType `json:"event_type" api:"required"`
+	// Reason the document failed validation. Null unless `status` is `REJECTED`
+	FailureReason ClaimDocumentRejectedWebhookEventFailureReason `json:"failure_reason" api:"required,nullable"`
+	// Name provided when the upload intent was created
+	Name string `json:"name" api:"required"`
+	// Identifier of the document requirement this document satisfies. Null for
+	// supplemental documents not tied to a specific requirement
+	RequirementID string `json:"requirement_id" api:"required,nullable"`
+	// Current validation status of the document
+	Status ClaimDocumentRejectedWebhookEventStatus `json:"status" api:"required"`
+	// When the document was last updated
+	Updated time.Time `json:"updated" api:"required" format:"date-time"`
+	// Constraints that an uploaded file must satisfy.
+	UploadConstraints ClaimDocumentRejectedWebhookEventUploadConstraints `json:"upload_constraints" api:"required,nullable"`
+	// Presigned URL for uploading the file via HTTP PUT. Null after the upload window
+	// expires or after the document has been validated
+	UploadURL string `json:"upload_url" api:"required,nullable"`
+	// When the upload URL expires
+	UploadURLExpiresAt time.Time                             `json:"upload_url_expires_at" api:"required,nullable" format:"date-time"`
+	JSON               claimDocumentRejectedWebhookEventJSON `json:"-"`
+}
+
+// claimDocumentRejectedWebhookEventJSON contains the JSON metadata for the struct
+// [ClaimDocumentRejectedWebhookEvent]
+type claimDocumentRejectedWebhookEventJSON struct {
+	Token                apijson.Field
+	Created              apijson.Field
+	DownloadURL          apijson.Field
+	DownloadURLExpiresAt apijson.Field
+	EventType            apijson.Field
+	FailureReason        apijson.Field
+	Name                 apijson.Field
+	RequirementID        apijson.Field
+	Status               apijson.Field
+	Updated              apijson.Field
+	UploadConstraints    apijson.Field
+	UploadURL            apijson.Field
+	UploadURLExpiresAt   apijson.Field
+	raw                  string
+	ExtraFields          map[string]apijson.Field
+}
+
+func (r *ClaimDocumentRejectedWebhookEvent) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r claimDocumentRejectedWebhookEventJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r ClaimDocumentRejectedWebhookEvent) implementsParsedWebhookEvent() {}
+
+// The type of event that occurred.
+type ClaimDocumentRejectedWebhookEventEventType string
+
+const (
+	ClaimDocumentRejectedWebhookEventEventTypeClaimDocumentRejected ClaimDocumentRejectedWebhookEventEventType = "claim_document.rejected"
+)
+
+func (r ClaimDocumentRejectedWebhookEventEventType) IsKnown() bool {
+	switch r {
+	case ClaimDocumentRejectedWebhookEventEventTypeClaimDocumentRejected:
+		return true
+	}
+	return false
+}
+
+// Reason the document failed validation. Null unless `status` is `REJECTED`
+type ClaimDocumentRejectedWebhookEventFailureReason string
+
+const (
+	ClaimDocumentRejectedWebhookEventFailureReasonInvalidMimeType ClaimDocumentRejectedWebhookEventFailureReason = "INVALID_MIME_TYPE"
+	ClaimDocumentRejectedWebhookEventFailureReasonFileTooLarge    ClaimDocumentRejectedWebhookEventFailureReason = "FILE_TOO_LARGE"
+	ClaimDocumentRejectedWebhookEventFailureReasonFileEmpty       ClaimDocumentRejectedWebhookEventFailureReason = "FILE_EMPTY"
+	ClaimDocumentRejectedWebhookEventFailureReasonCorruptFile     ClaimDocumentRejectedWebhookEventFailureReason = "CORRUPT_FILE"
+	ClaimDocumentRejectedWebhookEventFailureReasonOther           ClaimDocumentRejectedWebhookEventFailureReason = "OTHER"
+)
+
+func (r ClaimDocumentRejectedWebhookEventFailureReason) IsKnown() bool {
+	switch r {
+	case ClaimDocumentRejectedWebhookEventFailureReasonInvalidMimeType, ClaimDocumentRejectedWebhookEventFailureReasonFileTooLarge, ClaimDocumentRejectedWebhookEventFailureReasonFileEmpty, ClaimDocumentRejectedWebhookEventFailureReasonCorruptFile, ClaimDocumentRejectedWebhookEventFailureReasonOther:
+		return true
+	}
+	return false
+}
+
+// Current validation status of the document
+type ClaimDocumentRejectedWebhookEventStatus string
+
+const (
+	ClaimDocumentRejectedWebhookEventStatusPending    ClaimDocumentRejectedWebhookEventStatus = "PENDING"
+	ClaimDocumentRejectedWebhookEventStatusValidating ClaimDocumentRejectedWebhookEventStatus = "VALIDATING"
+	ClaimDocumentRejectedWebhookEventStatusAccepted   ClaimDocumentRejectedWebhookEventStatus = "ACCEPTED"
+	ClaimDocumentRejectedWebhookEventStatusRejected   ClaimDocumentRejectedWebhookEventStatus = "REJECTED"
+)
+
+func (r ClaimDocumentRejectedWebhookEventStatus) IsKnown() bool {
+	switch r {
+	case ClaimDocumentRejectedWebhookEventStatusPending, ClaimDocumentRejectedWebhookEventStatusValidating, ClaimDocumentRejectedWebhookEventStatusAccepted, ClaimDocumentRejectedWebhookEventStatusRejected:
+		return true
+	}
+	return false
+}
+
+// Constraints that an uploaded file must satisfy.
+type ClaimDocumentRejectedWebhookEventUploadConstraints struct {
+	// MIME types accepted for upload
+	AcceptedMimeTypes []string `json:"accepted_mime_types" api:"required"`
+	// Maximum file size in bytes. Null if there is no enforced size limit
+	MaxSizeBytes int64                                                  `json:"max_size_bytes" api:"required,nullable"`
+	JSON         claimDocumentRejectedWebhookEventUploadConstraintsJSON `json:"-"`
+}
+
+// claimDocumentRejectedWebhookEventUploadConstraintsJSON contains the JSON
+// metadata for the struct [ClaimDocumentRejectedWebhookEventUploadConstraints]
+type claimDocumentRejectedWebhookEventUploadConstraintsJSON struct {
+	AcceptedMimeTypes apijson.Field
+	MaxSizeBytes      apijson.Field
+	raw               string
+	ExtraFields       map[string]apijson.Field
+}
+
+func (r *ClaimDocumentRejectedWebhookEventUploadConstraints) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r claimDocumentRejectedWebhookEventUploadConstraintsJSON) RawJSON() string {
+	return r.raw
+}
+
 // Payload for digital wallet tokenization approval requests. Used for both the
 // decisioning responder request (sent to the customer's endpoint for a real-time
 // decision) and the subsequent webhook event (sent after the decision is made).
@@ -4091,7 +4850,7 @@ type ParsedWebhookEvent struct {
 	// The token of the account_holder that was created.
 	Token string `json:"token" format:"uuid"`
 	// The token of the account_holder that the document belongs to
-	AccountHolderToken string `json:"account_holder_token" format:"uuid"`
+	AccountHolderToken string `json:"account_holder_token" api:"nullable" format:"uuid"`
 	AccountNumber      string `json:"account_number" api:"nullable"`
 	// This field can have the runtime type of [LoanTapeAccountStanding],
 	// [StatementAccountStanding].
@@ -4178,6 +4937,8 @@ type ParsedWebhookEvent struct {
 	CardExpiryCheck ParsedWebhookEventCardExpiryCheck `json:"card_expiry_check"`
 	// The token of the card associated with the challenge
 	CardToken string `json:"card_token" api:"nullable" format:"uuid"`
+	// This field can have the runtime type of [[]string].
+	CardTokens interface{} `json:"card_tokens"`
 	// This field can have the runtime type of [ThreeDSAuthenticationCardholder].
 	Cardholder               interface{}              `json:"cardholder"`
 	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication" api:"nullable"`
@@ -4282,6 +5043,10 @@ type ParsedWebhookEvent struct {
 	Disposition ParsedWebhookEventDisposition `json:"disposition" api:"nullable"`
 	// Dispute token evidence is attached to.
 	DisputeToken string `json:"dispute_token" format:"uuid"`
+	// This field can have the runtime type of
+	// [[]ClaimCreatedWebhookEventDisputedTransaction],
+	// [[]ClaimUpdatedWebhookEventDisputedTransaction].
+	DisputedTransactions interface{} `json:"disputed_transactions"`
 	// The total gross amount of disputes settlements. (This field is deprecated and
 	// will be removed in a future version of the API. To compute total amounts, Lithic
 	// recommends that customers sum the relevant settlement amounts found within
@@ -4295,8 +5060,11 @@ type ParsedWebhookEvent struct {
 	DocumentType ParsedWebhookEventDocumentType `json:"document_type"`
 	// Doing Business As
 	DoingBusinessAs string `json:"doing_business_as" api:"nullable"`
-	// URL to download evidence. Only shown when `upload_status` is `UPLOADED`.
-	DownloadURL string `json:"download_url"`
+	// Presigned URL for downloading the uploaded document. Available once the document
+	// is being validated or has been accepted (`VALIDATING` or `ACCEPTED`)
+	DownloadURL string `json:"download_url" api:"nullable"`
+	// When the download URL expires
+	DownloadURLExpiresAt time.Time `json:"download_url_expires_at" api:"nullable" format:"date-time"`
 	// If updated, the newly updated email associated with the account_holder otherwise
 	// the existing email is provided.
 	Email string `json:"email"`
@@ -4331,6 +5099,8 @@ type ParsedWebhookEvent struct {
 	ExternalID string `json:"external_id" api:"nullable"`
 	// External resource associated with the management operation
 	ExternalResource ExternalResource `json:"external_resource" api:"nullable"`
+	// Reason the document failed validation. Null unless `status` is `REJECTED`
+	FailureReason ParsedWebhookEventFailureReason `json:"failure_reason" api:"nullable"`
 	// TRANSFER - Book Transfer Transaction
 	Family ParsedWebhookEventFamily `json:"family"`
 	// File name of evidence. Recommended to give the dispute evidence a human-readable
@@ -4412,7 +5182,7 @@ type ParsedWebhookEvent struct {
 	// 6-digit North American Industry Classification System (NAICS) code for the
 	// business. Only present if naics_code was included in the update request.
 	NaicsCode string `json:"naics_code"`
-	// The nickname for this External Bank Account
+	// Name provided when the upload intent was created
 	Name string `json:"name" api:"nullable"`
 	// This field can have the runtime type of [CardAuthorizationNameValidation].
 	NameValidation interface{} `json:"name_validation"`
@@ -4451,6 +5221,10 @@ type ParsedWebhookEvent struct {
 	//
 	// Deprecated: deprecated
 	OtherFeesGrossAmount int64 `json:"other_fees_gross_amount"`
+	// This field can have the runtime type of
+	// [[]ClaimCreatedWebhookEventOutstandingRequirement],
+	// [[]ClaimUpdatedWebhookEventOutstandingRequirement].
+	OutstandingRequirements interface{} `json:"outstanding_requirements"`
 	// Legal Name of the business or individual who owns the external account. This
 	// will appear in statements
 	Owner string `json:"owner"`
@@ -4491,25 +5265,7 @@ type ParsedWebhookEvent struct {
 	// Unique identifier for the dispute from the network. If there are multiple, this
 	// will be the first claim id set by the network
 	PrimaryClaimID string `json:"primary_claim_id" api:"nullable"`
-	// Dispute reason:
-	//
-	//   - `ATM_CASH_MISDISPENSE`: ATM cash misdispense.
-	//   - `CANCELLED`: Transaction was cancelled by the customer.
-	//   - `DUPLICATED`: The transaction was a duplicate.
-	//   - `FRAUD_CARD_NOT_PRESENT`: Fraudulent transaction, card not present.
-	//   - `FRAUD_CARD_PRESENT`: Fraudulent transaction, card present.
-	//   - `FRAUD_OTHER`: Fraudulent transaction, other types such as questionable
-	//     merchant activity.
-	//   - `GOODS_SERVICES_NOT_AS_DESCRIBED`: The goods or services were not as
-	//     described.
-	//   - `GOODS_SERVICES_NOT_RECEIVED`: The goods or services were not received.
-	//   - `INCORRECT_AMOUNT`: The transaction amount was incorrect.
-	//   - `MISSING_AUTH`: The transaction was missing authorization.
-	//   - `OTHER`: Other reason.
-	//   - `PROCESSING_ERROR`: Processing error.
-	//   - `REFUND_NOT_PROCESSED`: The refund was not processed.
-	//   - `RECURRING_TRANSACTION_NOT_CANCELLED`: The recurring transaction was not
-	//     cancelled.
+	// Dispute reason code provided when creating the claim
 	Reason ParsedWebhookEventReason `json:"reason"`
 	// This field can have the runtime type of [PaymentRelatedAccountTokens].
 	RelatedAccountTokens interface{} `json:"related_account_tokens"`
@@ -4524,6 +5280,9 @@ type ParsedWebhookEvent struct {
 	RequiredDocumentUploads interface{} `json:"required_document_uploads"`
 	// This field can have the runtime type of [[]RequiredDocument].
 	RequiredDocuments interface{} `json:"required_documents"`
+	// Identifier of the document requirement this document satisfies. Null for
+	// supplemental documents not tied to a specific requirement
+	RequirementID string `json:"requirement_id" api:"nullable"`
 	// Date that the dispute was resolved.
 	ResolutionDate time.Time `json:"resolution_date" api:"nullable" format:"date-time"`
 	// Note by Dispute team on the case resolution.
@@ -4600,6 +5359,8 @@ type ParsedWebhookEvent struct {
 	StatusReason interface{} `json:"status_reason"`
 	// This field can have the runtime type of [[]string].
 	StatusReasons interface{} `json:"status_reasons"`
+	// When the claim was submitted. Null until the claim reaches `SUBMITTED` status
+	Submitted time.Time `json:"submitted" api:"nullable" format:"date-time"`
 	// Substatus for the financial account
 	Substatus ParsedWebhookEventSubstatus `json:"substatus" api:"nullable"`
 	// This field can have the runtime type of [map[string]string].
@@ -4673,6 +5434,11 @@ type ParsedWebhookEvent struct {
 	UpdateRequest interface{} `json:"update_request"`
 	// ISO 8601 timestamp of when the transaction was last updated
 	Updated time.Time `json:"updated" format:"date-time"`
+	// This field can have the runtime type of
+	// [ClaimDocumentUploadedWebhookEventUploadConstraints],
+	// [ClaimDocumentAcceptedWebhookEventUploadConstraints],
+	// [ClaimDocumentRejectedWebhookEventUploadConstraints].
+	UploadConstraints interface{} `json:"upload_constraints"`
 	// Upload status types:
 	//
 	// - `DELETED` - Evidence was deleted.
@@ -4681,8 +5447,11 @@ type ParsedWebhookEvent struct {
 	// - `REJECTED` - Evidence was rejected.
 	// - `UPLOADED` - Evidence was uploaded.
 	UploadStatus ParsedWebhookEventUploadStatus `json:"upload_status"`
-	// URL to upload evidence. Only shown when `upload_status` is `PENDING`.
-	UploadURL string `json:"upload_url"`
+	// Presigned URL for uploading the file via HTTP PUT. Null after the upload window
+	// expires or after the document has been validated
+	UploadURL string `json:"upload_url" api:"nullable"`
+	// When the upload URL expires
+	UploadURLExpiresAt time.Time `json:"upload_url_expires_at" api:"nullable" format:"date-time"`
 	// User Defined ID
 	UserDefinedID string `json:"user_defined_id" api:"nullable"`
 	// User-defined status for the financial account
@@ -4743,6 +5512,7 @@ type parsedWebhookEventJSON struct {
 	Card                               apijson.Field
 	CardExpiryCheck                    apijson.Field
 	CardToken                          apijson.Field
+	CardTokens                         apijson.Field
 	Cardholder                         apijson.Field
 	CardholderAuthentication           apijson.Field
 	CardholderCurrency                 apijson.Field
@@ -4784,11 +5554,13 @@ type parsedWebhookEventJSON struct {
 	Direction                          apijson.Field
 	Disposition                        apijson.Field
 	DisputeToken                       apijson.Field
+	DisputedTransactions               apijson.Field
 	DisputesGrossAmount                apijson.Field
 	Dob                                apijson.Field
 	DocumentType                       apijson.Field
 	DoingBusinessAs                    apijson.Field
 	DownloadURL                        apijson.Field
+	DownloadURLExpiresAt               apijson.Field
 	Email                              apijson.Field
 	EndingBalance                      apijson.Field
 	EntityToken                        apijson.Field
@@ -4802,6 +5574,7 @@ type parsedWebhookEventJSON struct {
 	ExternalBankAccountToken           apijson.Field
 	ExternalID                         apijson.Field
 	ExternalResource                   apijson.Field
+	FailureReason                      apijson.Field
 	Family                             apijson.Field
 	Filename                           apijson.Field
 	FinancialAccountToken              apijson.Field
@@ -4844,6 +5617,7 @@ type parsedWebhookEventJSON struct {
 	NextStatementEndDate               apijson.Field
 	Nickname                           apijson.Field
 	OtherFeesGrossAmount               apijson.Field
+	OutstandingRequirements            apijson.Field
 	Owner                              apijson.Field
 	OwnerType                          apijson.Field
 	PaymentAllocation                  apijson.Field
@@ -4868,6 +5642,7 @@ type parsedWebhookEventJSON struct {
 	RepresentmentDate                  apijson.Field
 	RequiredDocumentUploads            apijson.Field
 	RequiredDocuments                  apijson.Field
+	RequirementID                      apijson.Field
 	ResolutionDate                     apijson.Field
 	ResolutionNote                     apijson.Field
 	ResolutionReason                   apijson.Field
@@ -4893,6 +5668,7 @@ type parsedWebhookEventJSON struct {
 	Status                             apijson.Field
 	StatusReason                       apijson.Field
 	StatusReasons                      apijson.Field
+	Submitted                          apijson.Field
 	Substatus                          apijson.Field
 	Tags                               apijson.Field
 	ThreeDSRequestorChallengeIndicator apijson.Field
@@ -4918,8 +5694,10 @@ type parsedWebhookEventJSON struct {
 	Type                               apijson.Field
 	UpdateRequest                      apijson.Field
 	Updated                            apijson.Field
+	UploadConstraints                  apijson.Field
 	UploadStatus                       apijson.Field
 	UploadURL                          apijson.Field
+	UploadURLExpiresAt                 apijson.Field
 	UserDefinedID                      apijson.Field
 	UserDefinedStatus                  apijson.Field
 	VerificationAttempts               apijson.Field
@@ -4964,7 +5742,9 @@ func (r *ParsedWebhookEvent) UnmarshalJSON(data []byte) (err error) {
 // [CardReissuedWebhookEvent], [CardShippedWebhookEvent],
 // [CardUpdatedWebhookEvent], [CardTransactionUpdatedWebhookEvent],
 // [CardTransactionEnhancedDataCreatedWebhookEvent],
-// [CardTransactionEnhancedDataUpdatedWebhookEvent],
+// [CardTransactionEnhancedDataUpdatedWebhookEvent], [ClaimCreatedWebhookEvent],
+// [ClaimUpdatedWebhookEvent], [ClaimDocumentUploadedWebhookEvent],
+// [ClaimDocumentAcceptedWebhookEvent], [ClaimDocumentRejectedWebhookEvent],
 // [DigitalWalletTokenizationApprovalRequestWebhookEvent],
 // [DigitalWalletTokenizationResultWebhookEvent],
 // [DigitalWalletTokenizationTwoFactorAuthenticationCodeWebhookEvent],
@@ -5012,7 +5792,9 @@ func (r ParsedWebhookEvent) AsUnion() ParsedWebhookEventUnion {
 // [CardReissuedWebhookEvent], [CardShippedWebhookEvent],
 // [CardUpdatedWebhookEvent], [CardTransactionUpdatedWebhookEvent],
 // [CardTransactionEnhancedDataCreatedWebhookEvent],
-// [CardTransactionEnhancedDataUpdatedWebhookEvent],
+// [CardTransactionEnhancedDataUpdatedWebhookEvent], [ClaimCreatedWebhookEvent],
+// [ClaimUpdatedWebhookEvent], [ClaimDocumentUploadedWebhookEvent],
+// [ClaimDocumentAcceptedWebhookEvent], [ClaimDocumentRejectedWebhookEvent],
 // [DigitalWalletTokenizationApprovalRequestWebhookEvent],
 // [DigitalWalletTokenizationResultWebhookEvent],
 // [DigitalWalletTokenizationTwoFactorAuthenticationCodeWebhookEvent],
@@ -5135,6 +5917,26 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(CardTransactionEnhancedDataUpdatedWebhookEvent{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ClaimCreatedWebhookEvent{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ClaimUpdatedWebhookEvent{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ClaimDocumentUploadedWebhookEvent{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ClaimDocumentAcceptedWebhookEvent{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(ClaimDocumentRejectedWebhookEvent{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -6091,6 +6893,11 @@ const (
 	ParsedWebhookEventEventTypeCardTransactionUpdated                                   ParsedWebhookEventEventType = "card_transaction.updated"
 	ParsedWebhookEventEventTypeCardTransactionEnhancedDataCreated                       ParsedWebhookEventEventType = "card_transaction.enhanced_data.created"
 	ParsedWebhookEventEventTypeCardTransactionEnhancedDataUpdated                       ParsedWebhookEventEventType = "card_transaction.enhanced_data.updated"
+	ParsedWebhookEventEventTypeClaimCreated                                             ParsedWebhookEventEventType = "claim.created"
+	ParsedWebhookEventEventTypeClaimUpdated                                             ParsedWebhookEventEventType = "claim.updated"
+	ParsedWebhookEventEventTypeClaimDocumentUploaded                                    ParsedWebhookEventEventType = "claim_document.uploaded"
+	ParsedWebhookEventEventTypeClaimDocumentAccepted                                    ParsedWebhookEventEventType = "claim_document.accepted"
+	ParsedWebhookEventEventTypeClaimDocumentRejected                                    ParsedWebhookEventEventType = "claim_document.rejected"
 	ParsedWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest                 ParsedWebhookEventEventType = "digital_wallet.tokenization_approval_request"
 	ParsedWebhookEventEventTypeDigitalWalletTokenizationResult                          ParsedWebhookEventEventType = "digital_wallet.tokenization_result"
 	ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode     ParsedWebhookEventEventType = "digital_wallet.tokenization_two_factor_authentication_code"
@@ -6132,7 +6939,26 @@ const (
 
 func (r ParsedWebhookEventEventType) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventEventTypeAccountHolderCreated, ParsedWebhookEventEventTypeAccountHolderUpdated, ParsedWebhookEventEventTypeAccountHolderVerification, ParsedWebhookEventEventTypeAccountHolderDocumentUpdated, ParsedWebhookEventEventTypeCardAuthorizationApprovalRequest, ParsedWebhookEventEventTypeCardAuthorizationChallenge, ParsedWebhookEventEventTypeCardAuthorizationChallengeResponse, ParsedWebhookEventEventTypeAuthRulesBacktestReportCreated, ParsedWebhookEventEventTypeBalanceUpdated, ParsedWebhookEventEventTypeBookTransferTransactionCreated, ParsedWebhookEventEventTypeBookTransferTransactionUpdated, ParsedWebhookEventEventTypeCardCreated, ParsedWebhookEventEventTypeCardConverted, ParsedWebhookEventEventTypeCardRenewed, ParsedWebhookEventEventTypeCardReissued, ParsedWebhookEventEventTypeCardShipped, ParsedWebhookEventEventTypeCardUpdated, ParsedWebhookEventEventTypeCardTransactionUpdated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataCreated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataUpdated, ParsedWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest, ParsedWebhookEventEventTypeDigitalWalletTokenizationResult, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeDigitalWalletTokenizationUpdated, ParsedWebhookEventEventTypeDisputeUpdated, ParsedWebhookEventEventTypeDisputeEvidenceUploadFailed, ParsedWebhookEventEventTypeExternalBankAccountCreated, ParsedWebhookEventEventTypeExternalBankAccountUpdated, ParsedWebhookEventEventTypeExternalPaymentCreated, ParsedWebhookEventEventTypeExternalPaymentUpdated, ParsedWebhookEventEventTypeFinancialAccountCreated, ParsedWebhookEventEventTypeFinancialAccountUpdated, ParsedWebhookEventEventTypeFundingEventCreated, ParsedWebhookEventEventTypeLoanTapeCreated, ParsedWebhookEventEventTypeLoanTapeUpdated, ParsedWebhookEventEventTypeManagementOperationCreated, ParsedWebhookEventEventTypeManagementOperationUpdated, ParsedWebhookEventEventTypeInternalTransactionCreated, ParsedWebhookEventEventTypeInternalTransactionUpdated, ParsedWebhookEventEventTypeNetworkTotalCreated, ParsedWebhookEventEventTypeNetworkTotalUpdated, ParsedWebhookEventEventTypePaymentTransactionCreated, ParsedWebhookEventEventTypePaymentTransactionUpdated, ParsedWebhookEventEventTypeSettlementReportUpdated, ParsedWebhookEventEventTypeStatementsCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationChallenge, ParsedWebhookEventEventTypeTokenizationApprovalRequest, ParsedWebhookEventEventTypeTokenizationResult, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeTokenizationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationApprovalRequest, ParsedWebhookEventEventTypeDisputeTransactionCreated, ParsedWebhookEventEventTypeDisputeTransactionUpdated:
+	case ParsedWebhookEventEventTypeAccountHolderCreated, ParsedWebhookEventEventTypeAccountHolderUpdated, ParsedWebhookEventEventTypeAccountHolderVerification, ParsedWebhookEventEventTypeAccountHolderDocumentUpdated, ParsedWebhookEventEventTypeCardAuthorizationApprovalRequest, ParsedWebhookEventEventTypeCardAuthorizationChallenge, ParsedWebhookEventEventTypeCardAuthorizationChallengeResponse, ParsedWebhookEventEventTypeAuthRulesBacktestReportCreated, ParsedWebhookEventEventTypeBalanceUpdated, ParsedWebhookEventEventTypeBookTransferTransactionCreated, ParsedWebhookEventEventTypeBookTransferTransactionUpdated, ParsedWebhookEventEventTypeCardCreated, ParsedWebhookEventEventTypeCardConverted, ParsedWebhookEventEventTypeCardRenewed, ParsedWebhookEventEventTypeCardReissued, ParsedWebhookEventEventTypeCardShipped, ParsedWebhookEventEventTypeCardUpdated, ParsedWebhookEventEventTypeCardTransactionUpdated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataCreated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataUpdated, ParsedWebhookEventEventTypeClaimCreated, ParsedWebhookEventEventTypeClaimUpdated, ParsedWebhookEventEventTypeClaimDocumentUploaded, ParsedWebhookEventEventTypeClaimDocumentAccepted, ParsedWebhookEventEventTypeClaimDocumentRejected, ParsedWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest, ParsedWebhookEventEventTypeDigitalWalletTokenizationResult, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeDigitalWalletTokenizationUpdated, ParsedWebhookEventEventTypeDisputeUpdated, ParsedWebhookEventEventTypeDisputeEvidenceUploadFailed, ParsedWebhookEventEventTypeExternalBankAccountCreated, ParsedWebhookEventEventTypeExternalBankAccountUpdated, ParsedWebhookEventEventTypeExternalPaymentCreated, ParsedWebhookEventEventTypeExternalPaymentUpdated, ParsedWebhookEventEventTypeFinancialAccountCreated, ParsedWebhookEventEventTypeFinancialAccountUpdated, ParsedWebhookEventEventTypeFundingEventCreated, ParsedWebhookEventEventTypeLoanTapeCreated, ParsedWebhookEventEventTypeLoanTapeUpdated, ParsedWebhookEventEventTypeManagementOperationCreated, ParsedWebhookEventEventTypeManagementOperationUpdated, ParsedWebhookEventEventTypeInternalTransactionCreated, ParsedWebhookEventEventTypeInternalTransactionUpdated, ParsedWebhookEventEventTypeNetworkTotalCreated, ParsedWebhookEventEventTypeNetworkTotalUpdated, ParsedWebhookEventEventTypePaymentTransactionCreated, ParsedWebhookEventEventTypePaymentTransactionUpdated, ParsedWebhookEventEventTypeSettlementReportUpdated, ParsedWebhookEventEventTypeStatementsCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationChallenge, ParsedWebhookEventEventTypeTokenizationApprovalRequest, ParsedWebhookEventEventTypeTokenizationResult, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeTokenizationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationApprovalRequest, ParsedWebhookEventEventTypeDisputeTransactionCreated, ParsedWebhookEventEventTypeDisputeTransactionUpdated:
+		return true
+	}
+	return false
+}
+
+// Reason the document failed validation. Null unless `status` is `REJECTED`
+type ParsedWebhookEventFailureReason string
+
+const (
+	ParsedWebhookEventFailureReasonInvalidMimeType ParsedWebhookEventFailureReason = "INVALID_MIME_TYPE"
+	ParsedWebhookEventFailureReasonFileTooLarge    ParsedWebhookEventFailureReason = "FILE_TOO_LARGE"
+	ParsedWebhookEventFailureReasonFileEmpty       ParsedWebhookEventFailureReason = "FILE_EMPTY"
+	ParsedWebhookEventFailureReasonCorruptFile     ParsedWebhookEventFailureReason = "CORRUPT_FILE"
+	ParsedWebhookEventFailureReasonOther           ParsedWebhookEventFailureReason = "OTHER"
+)
+
+func (r ParsedWebhookEventFailureReason) IsKnown() bool {
+	switch r {
+	case ParsedWebhookEventFailureReasonInvalidMimeType, ParsedWebhookEventFailureReasonFileTooLarge, ParsedWebhookEventFailureReasonFileEmpty, ParsedWebhookEventFailureReasonCorruptFile, ParsedWebhookEventFailureReasonOther:
 		return true
 	}
 	return false
@@ -6244,28 +7070,30 @@ func (r ParsedWebhookEventPaymentType) IsKnown() bool {
 	return false
 }
 
-// Dispute reason:
-//
-//   - `ATM_CASH_MISDISPENSE`: ATM cash misdispense.
-//   - `CANCELLED`: Transaction was cancelled by the customer.
-//   - `DUPLICATED`: The transaction was a duplicate.
-//   - `FRAUD_CARD_NOT_PRESENT`: Fraudulent transaction, card not present.
-//   - `FRAUD_CARD_PRESENT`: Fraudulent transaction, card present.
-//   - `FRAUD_OTHER`: Fraudulent transaction, other types such as questionable
-//     merchant activity.
-//   - `GOODS_SERVICES_NOT_AS_DESCRIBED`: The goods or services were not as
-//     described.
-//   - `GOODS_SERVICES_NOT_RECEIVED`: The goods or services were not received.
-//   - `INCORRECT_AMOUNT`: The transaction amount was incorrect.
-//   - `MISSING_AUTH`: The transaction was missing authorization.
-//   - `OTHER`: Other reason.
-//   - `PROCESSING_ERROR`: Processing error.
-//   - `REFUND_NOT_PROCESSED`: The refund was not processed.
-//   - `RECURRING_TRANSACTION_NOT_CANCELLED`: The recurring transaction was not
-//     cancelled.
+// Dispute reason code provided when creating the claim
 type ParsedWebhookEventReason string
 
 const (
+	ParsedWebhookEventReasonCardNotPresent                   ParsedWebhookEventReason = "CARD_NOT_PRESENT"
+	ParsedWebhookEventReasonCardLost                         ParsedWebhookEventReason = "CARD_LOST"
+	ParsedWebhookEventReasonCardStolen                       ParsedWebhookEventReason = "CARD_STOLEN"
+	ParsedWebhookEventReasonCardNeverReceived                ParsedWebhookEventReason = "CARD_NEVER_RECEIVED"
+	ParsedWebhookEventReasonCounterfeit                      ParsedWebhookEventReason = "COUNTERFEIT"
+	ParsedWebhookEventReasonAccountTakeover                  ParsedWebhookEventReason = "ACCOUNT_TAKEOVER"
+	ParsedWebhookEventReasonProductNotReceived               ParsedWebhookEventReason = "PRODUCT_NOT_RECEIVED"
+	ParsedWebhookEventReasonNotAsDescribed                   ParsedWebhookEventReason = "NOT_AS_DESCRIBED"
+	ParsedWebhookEventReasonCreditNotProcessed               ParsedWebhookEventReason = "CREDIT_NOT_PROCESSED"
+	ParsedWebhookEventReasonCancelledRecurring               ParsedWebhookEventReason = "CANCELLED_RECURRING"
+	ParsedWebhookEventReasonPaidByOtherMeans                 ParsedWebhookEventReason = "PAID_BY_OTHER_MEANS"
+	ParsedWebhookEventReasonDuplicateCharge                  ParsedWebhookEventReason = "DUPLICATE_CHARGE"
+	ParsedWebhookEventReasonLatePresentment                  ParsedWebhookEventReason = "LATE_PRESENTMENT"
+	ParsedWebhookEventReasonIncorrectTransactionCode         ParsedWebhookEventReason = "INCORRECT_TRANSACTION_CODE"
+	ParsedWebhookEventReasonNoAuthorization                  ParsedWebhookEventReason = "NO_AUTHORIZATION"
+	ParsedWebhookEventReasonDeclined                         ParsedWebhookEventReason = "DECLINED"
+	ParsedWebhookEventReasonIncorrectAmount                  ParsedWebhookEventReason = "INCORRECT_AMOUNT"
+	ParsedWebhookEventReasonAtmCashNotDispensed              ParsedWebhookEventReason = "ATM_CASH_NOT_DISPENSED"
+	ParsedWebhookEventReasonAtmDepositWrongAmount            ParsedWebhookEventReason = "ATM_DEPOSIT_WRONG_AMOUNT"
+	ParsedWebhookEventReasonAtmDepositMissing                ParsedWebhookEventReason = "ATM_DEPOSIT_MISSING"
 	ParsedWebhookEventReasonAtmCashMisdispense               ParsedWebhookEventReason = "ATM_CASH_MISDISPENSE"
 	ParsedWebhookEventReasonCancelled                        ParsedWebhookEventReason = "CANCELLED"
 	ParsedWebhookEventReasonDuplicated                       ParsedWebhookEventReason = "DUPLICATED"
@@ -6274,7 +7102,6 @@ const (
 	ParsedWebhookEventReasonFraudOther                       ParsedWebhookEventReason = "FRAUD_OTHER"
 	ParsedWebhookEventReasonGoodsServicesNotAsDescribed      ParsedWebhookEventReason = "GOODS_SERVICES_NOT_AS_DESCRIBED"
 	ParsedWebhookEventReasonGoodsServicesNotReceived         ParsedWebhookEventReason = "GOODS_SERVICES_NOT_RECEIVED"
-	ParsedWebhookEventReasonIncorrectAmount                  ParsedWebhookEventReason = "INCORRECT_AMOUNT"
 	ParsedWebhookEventReasonMissingAuth                      ParsedWebhookEventReason = "MISSING_AUTH"
 	ParsedWebhookEventReasonOther                            ParsedWebhookEventReason = "OTHER"
 	ParsedWebhookEventReasonProcessingError                  ParsedWebhookEventReason = "PROCESSING_ERROR"
@@ -6284,7 +7111,7 @@ const (
 
 func (r ParsedWebhookEventReason) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventReasonAtmCashMisdispense, ParsedWebhookEventReasonCancelled, ParsedWebhookEventReasonDuplicated, ParsedWebhookEventReasonFraudCardNotPresent, ParsedWebhookEventReasonFraudCardPresent, ParsedWebhookEventReasonFraudOther, ParsedWebhookEventReasonGoodsServicesNotAsDescribed, ParsedWebhookEventReasonGoodsServicesNotReceived, ParsedWebhookEventReasonIncorrectAmount, ParsedWebhookEventReasonMissingAuth, ParsedWebhookEventReasonOther, ParsedWebhookEventReasonProcessingError, ParsedWebhookEventReasonRecurringTransactionNotCancelled, ParsedWebhookEventReasonRefundNotProcessed:
+	case ParsedWebhookEventReasonCardNotPresent, ParsedWebhookEventReasonCardLost, ParsedWebhookEventReasonCardStolen, ParsedWebhookEventReasonCardNeverReceived, ParsedWebhookEventReasonCounterfeit, ParsedWebhookEventReasonAccountTakeover, ParsedWebhookEventReasonProductNotReceived, ParsedWebhookEventReasonNotAsDescribed, ParsedWebhookEventReasonCreditNotProcessed, ParsedWebhookEventReasonCancelledRecurring, ParsedWebhookEventReasonPaidByOtherMeans, ParsedWebhookEventReasonDuplicateCharge, ParsedWebhookEventReasonLatePresentment, ParsedWebhookEventReasonIncorrectTransactionCode, ParsedWebhookEventReasonNoAuthorization, ParsedWebhookEventReasonDeclined, ParsedWebhookEventReasonIncorrectAmount, ParsedWebhookEventReasonAtmCashNotDispensed, ParsedWebhookEventReasonAtmDepositWrongAmount, ParsedWebhookEventReasonAtmDepositMissing, ParsedWebhookEventReasonAtmCashMisdispense, ParsedWebhookEventReasonCancelled, ParsedWebhookEventReasonDuplicated, ParsedWebhookEventReasonFraudCardNotPresent, ParsedWebhookEventReasonFraudCardPresent, ParsedWebhookEventReasonFraudOther, ParsedWebhookEventReasonGoodsServicesNotAsDescribed, ParsedWebhookEventReasonGoodsServicesNotReceived, ParsedWebhookEventReasonMissingAuth, ParsedWebhookEventReasonOther, ParsedWebhookEventReasonProcessingError, ParsedWebhookEventReasonRecurringTransactionNotCancelled, ParsedWebhookEventReasonRefundNotProcessed:
 		return true
 	}
 	return false
@@ -6471,6 +7298,12 @@ const (
 	ParsedWebhookEventStatusReturned                     ParsedWebhookEventStatus = "RETURNED"
 	ParsedWebhookEventStatusExpired                      ParsedWebhookEventStatus = "EXPIRED"
 	ParsedWebhookEventStatusVoided                       ParsedWebhookEventStatus = "VOIDED"
+	ParsedWebhookEventStatusInitializing                 ParsedWebhookEventStatus = "INITIALIZING"
+	ParsedWebhookEventStatusAwaitingInfo                 ParsedWebhookEventStatus = "AWAITING_INFO"
+	ParsedWebhookEventStatusSubmitted                    ParsedWebhookEventStatus = "SUBMITTED"
+	ParsedWebhookEventStatusResolved                     ParsedWebhookEventStatus = "RESOLVED"
+	ParsedWebhookEventStatusAbandoned                    ParsedWebhookEventStatus = "ABANDONED"
+	ParsedWebhookEventStatusValidating                   ParsedWebhookEventStatus = "VALIDATING"
 	ParsedWebhookEventStatusArbitration                  ParsedWebhookEventStatus = "ARBITRATION"
 	ParsedWebhookEventStatusCaseClosed                   ParsedWebhookEventStatus = "CASE_CLOSED"
 	ParsedWebhookEventStatusCaseWon                      ParsedWebhookEventStatus = "CASE_WON"
@@ -6478,7 +7311,6 @@ const (
 	ParsedWebhookEventStatusPendingCustomer              ParsedWebhookEventStatus = "PENDING_CUSTOMER"
 	ParsedWebhookEventStatusPrearbitration               ParsedWebhookEventStatus = "PREARBITRATION"
 	ParsedWebhookEventStatusRepresentment                ParsedWebhookEventStatus = "REPRESENTMENT"
-	ParsedWebhookEventStatusSubmitted                    ParsedWebhookEventStatus = "SUBMITTED"
 	ParsedWebhookEventStatusOpen                         ParsedWebhookEventStatus = "OPEN"
 	ParsedWebhookEventStatusClosed                       ParsedWebhookEventStatus = "CLOSED"
 	ParsedWebhookEventStatusSuspended                    ParsedWebhookEventStatus = "SUSPENDED"
@@ -6486,7 +7318,7 @@ const (
 
 func (r ParsedWebhookEventStatus) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventStatusAccepted, ParsedWebhookEventStatusPendingReview, ParsedWebhookEventStatusRejected, ParsedWebhookEventStatusAuthorization, ParsedWebhookEventStatusCreditAuthorization, ParsedWebhookEventStatusFinancialAuthorization, ParsedWebhookEventStatusFinancialCreditAuthorization, ParsedWebhookEventStatusBalanceInquiry, ParsedWebhookEventStatusPending, ParsedWebhookEventStatusSettled, ParsedWebhookEventStatusDeclined, ParsedWebhookEventStatusReversed, ParsedWebhookEventStatusCanceled, ParsedWebhookEventStatusReturned, ParsedWebhookEventStatusExpired, ParsedWebhookEventStatusVoided, ParsedWebhookEventStatusArbitration, ParsedWebhookEventStatusCaseClosed, ParsedWebhookEventStatusCaseWon, ParsedWebhookEventStatusNew, ParsedWebhookEventStatusPendingCustomer, ParsedWebhookEventStatusPrearbitration, ParsedWebhookEventStatusRepresentment, ParsedWebhookEventStatusSubmitted, ParsedWebhookEventStatusOpen, ParsedWebhookEventStatusClosed, ParsedWebhookEventStatusSuspended:
+	case ParsedWebhookEventStatusAccepted, ParsedWebhookEventStatusPendingReview, ParsedWebhookEventStatusRejected, ParsedWebhookEventStatusAuthorization, ParsedWebhookEventStatusCreditAuthorization, ParsedWebhookEventStatusFinancialAuthorization, ParsedWebhookEventStatusFinancialCreditAuthorization, ParsedWebhookEventStatusBalanceInquiry, ParsedWebhookEventStatusPending, ParsedWebhookEventStatusSettled, ParsedWebhookEventStatusDeclined, ParsedWebhookEventStatusReversed, ParsedWebhookEventStatusCanceled, ParsedWebhookEventStatusReturned, ParsedWebhookEventStatusExpired, ParsedWebhookEventStatusVoided, ParsedWebhookEventStatusInitializing, ParsedWebhookEventStatusAwaitingInfo, ParsedWebhookEventStatusSubmitted, ParsedWebhookEventStatusResolved, ParsedWebhookEventStatusAbandoned, ParsedWebhookEventStatusValidating, ParsedWebhookEventStatusArbitration, ParsedWebhookEventStatusCaseClosed, ParsedWebhookEventStatusCaseWon, ParsedWebhookEventStatusNew, ParsedWebhookEventStatusPendingCustomer, ParsedWebhookEventStatusPrearbitration, ParsedWebhookEventStatusRepresentment, ParsedWebhookEventStatusOpen, ParsedWebhookEventStatusClosed, ParsedWebhookEventStatusSuspended:
 		return true
 	}
 	return false
