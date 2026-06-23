@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.114.0 (2026-06-23)
+
+Full Changelog: [v0.113.0...v0.114.0](https://github.com/lithic-com/lithic-go/compare/v0.113.0...v0.114.0)
+
+### Features
+
+* **api:** add claim and claim_document webhook event types ([a58fbfc](https://github.com/lithic-com/lithic-go/commit/a58fbfc5ec55a1db3e82b877c527c380548aca1e))
+* **api:** add external_bank_account/payment_velocity/consecutive_declines/ach_history to authrulev2 ([43b6b1e](https://github.com/lithic-com/lithic-go/commit/43b6b1e4832465c89bb5ebc1b59daa0c92733331))
+
 ## 0.113.0 (2026-06-22)
 
 Full Changelog: [v0.112.0...v0.113.0](https://github.com/lithic-com/lithic-go/compare/v0.112.0...v0.113.0)
