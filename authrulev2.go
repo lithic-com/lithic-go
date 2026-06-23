@@ -5536,6 +5536,8 @@ func (r ReportStatsState) IsKnown() bool {
 //     CARD_TRANSACTION_UPDATE event stream rules.
 //   - `ACH_PAYMENT`: The ACH payment being evaluated. Only available for
 //     ACH_PAYMENT_UPDATE event stream rules.
+//   - `EXTERNAL_BANK_ACCOUNT`: The external bank account tied to the ACH payment
+//     being evaluated. Only available for ACH_PAYMENT_UPDATE event stream rules.
 //   - `CARD`: The card associated with the event. Available for AUTHORIZATION,
 //     THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event stream rules.
 //   - `ACCOUNT_HOLDER`: The account holder associated with the event. Available for
@@ -5545,14 +5547,26 @@ func (r ReportStatsState) IsKnown() bool {
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
 //     `scope`, `period`, and optionally `filters` to configure the velocity
-//     calculation. Available for AUTHORIZATION event stream rules.
+//     calculation. Available for AUTHORIZATION and CARD_TRANSACTION_UPDATE event
+//     stream rules.
+//   - `PAYMENT_VELOCITY`: ACH payment velocity data, aggregated over the given
+//     scope. Requires `scope`, `period`, and optionally `filters` to configure the
+//     velocity calculation. Available for ACH_PAYMENT_UPDATE event stream rules.
+//   - `CONSECUTIVE_DECLINES`: The number of consecutive declined transactions since
+//     the last approval for the card or account. Requires `scope`. Available for
+//     AUTHORIZATION and CARD_TRANSACTION_UPDATE event stream rules.
+//   - `ACH_PAYMENT_HISTORY`: Windowed settled-amount statistics derived from the
+//     financial account's ACH payment history. Requires `scope`. Available for
+//     ACH_PAYMENT_UPDATE event stream rules.
 //   - `TRANSACTION_HISTORY_SIGNALS`: Behavioral feature state derived from the
 //     entity's transaction history. Requires `scope` to specify whether to load
 //     card, account, or business account history. Available for AUTHORIZATION and
 //     CARD_TRANSACTION_UPDATE event stream rules.
 type RuleFeature struct {
-	Type    RuleFeatureType      `json:"type" api:"required"`
-	Filters VelocityLimitFilters `json:"filters"`
+	Type RuleFeatureType `json:"type" api:"required"`
+	// This field can have the runtime type of [VelocityLimitFilters],
+	// [RuleFeaturePaymentVelocityFeatureFilters].
+	Filters interface{} `json:"filters"`
 	// The variable name for this feature in the rule function signature
 	Name string `json:"name"`
 	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
@@ -5593,10 +5607,12 @@ func (r *RuleFeature) UnmarshalJSON(data []byte) (err error) {
 // Possible runtime types of the union are [RuleFeatureAuthorizationFeature],
 // [RuleFeatureAuthenticationFeature], [RuleFeatureTokenizationFeature],
 // [RuleFeatureACHReceiptFeature], [RuleFeatureCardTransactionFeature],
-// [RuleFeatureACHPaymentFeature], [RuleFeatureCardFeature],
-// [RuleFeatureAccountHolderFeature], [RuleFeatureIPMetadataFeature],
-// [RuleFeatureSpendVelocityFeature],
-// [RuleFeatureTransactionHistorySignalsFeature].
+// [RuleFeatureACHPaymentFeature], [RuleFeatureExternalBankAccountFeature],
+// [RuleFeatureCardFeature], [RuleFeatureAccountHolderFeature],
+// [RuleFeatureIPMetadataFeature], [RuleFeatureSpendVelocityFeature],
+// [RuleFeaturePaymentVelocityFeature],
+// [RuleFeatureTransactionHistorySignalsFeature],
+// [RuleFeatureConsecutiveDeclinesFeature], [RuleFeatureACHPaymentHistoryFeature].
 func (r RuleFeature) AsUnion() RuleFeatureUnion {
 	return r.union
 }
@@ -5617,6 +5633,8 @@ func (r RuleFeature) AsUnion() RuleFeatureUnion {
 //     CARD_TRANSACTION_UPDATE event stream rules.
 //   - `ACH_PAYMENT`: The ACH payment being evaluated. Only available for
 //     ACH_PAYMENT_UPDATE event stream rules.
+//   - `EXTERNAL_BANK_ACCOUNT`: The external bank account tied to the ACH payment
+//     being evaluated. Only available for ACH_PAYMENT_UPDATE event stream rules.
 //   - `CARD`: The card associated with the event. Available for AUTHORIZATION,
 //     THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event stream rules.
 //   - `ACCOUNT_HOLDER`: The account holder associated with the event. Available for
@@ -5626,7 +5644,17 @@ func (r RuleFeature) AsUnion() RuleFeatureUnion {
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
 //     `scope`, `period`, and optionally `filters` to configure the velocity
-//     calculation. Available for AUTHORIZATION event stream rules.
+//     calculation. Available for AUTHORIZATION and CARD_TRANSACTION_UPDATE event
+//     stream rules.
+//   - `PAYMENT_VELOCITY`: ACH payment velocity data, aggregated over the given
+//     scope. Requires `scope`, `period`, and optionally `filters` to configure the
+//     velocity calculation. Available for ACH_PAYMENT_UPDATE event stream rules.
+//   - `CONSECUTIVE_DECLINES`: The number of consecutive declined transactions since
+//     the last approval for the card or account. Requires `scope`. Available for
+//     AUTHORIZATION and CARD_TRANSACTION_UPDATE event stream rules.
+//   - `ACH_PAYMENT_HISTORY`: Windowed settled-amount statistics derived from the
+//     financial account's ACH payment history. Requires `scope`. Available for
+//     ACH_PAYMENT_UPDATE event stream rules.
 //   - `TRANSACTION_HISTORY_SIGNALS`: Behavioral feature state derived from the
 //     entity's transaction history. Requires `scope` to specify whether to load
 //     card, account, or business account history. Available for AUTHORIZATION and
@@ -5635,10 +5663,13 @@ func (r RuleFeature) AsUnion() RuleFeatureUnion {
 // Union satisfied by [RuleFeatureAuthorizationFeature],
 // [RuleFeatureAuthenticationFeature], [RuleFeatureTokenizationFeature],
 // [RuleFeatureACHReceiptFeature], [RuleFeatureCardTransactionFeature],
-// [RuleFeatureACHPaymentFeature], [RuleFeatureCardFeature],
-// [RuleFeatureAccountHolderFeature], [RuleFeatureIPMetadataFeature],
-// [RuleFeatureSpendVelocityFeature] or
-// [RuleFeatureTransactionHistorySignalsFeature].
+// [RuleFeatureACHPaymentFeature], [RuleFeatureExternalBankAccountFeature],
+// [RuleFeatureCardFeature], [RuleFeatureAccountHolderFeature],
+// [RuleFeatureIPMetadataFeature], [RuleFeatureSpendVelocityFeature],
+// [RuleFeaturePaymentVelocityFeature],
+// [RuleFeatureTransactionHistorySignalsFeature],
+// [RuleFeatureConsecutiveDeclinesFeature] or
+// [RuleFeatureACHPaymentHistoryFeature].
 type RuleFeatureUnion interface {
 	implementsRuleFeature()
 }
@@ -5673,6 +5704,10 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(RuleFeatureExternalBankAccountFeature{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(RuleFeatureCardFeature{}),
 		},
 		apijson.UnionVariant{
@@ -5689,7 +5724,19 @@ func init() {
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(RuleFeaturePaymentVelocityFeature{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(RuleFeatureTransactionHistorySignalsFeature{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(RuleFeatureConsecutiveDeclinesFeature{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(RuleFeatureACHPaymentHistoryFeature{}),
 		},
 	)
 }
@@ -5934,6 +5981,46 @@ func (r RuleFeatureACHPaymentFeatureType) IsKnown() bool {
 	return false
 }
 
+type RuleFeatureExternalBankAccountFeature struct {
+	Type RuleFeatureExternalBankAccountFeatureType `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name string                                    `json:"name"`
+	JSON ruleFeatureExternalBankAccountFeatureJSON `json:"-"`
+}
+
+// ruleFeatureExternalBankAccountFeatureJSON contains the JSON metadata for the
+// struct [RuleFeatureExternalBankAccountFeature]
+type ruleFeatureExternalBankAccountFeatureJSON struct {
+	Type        apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *RuleFeatureExternalBankAccountFeature) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r ruleFeatureExternalBankAccountFeatureJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r RuleFeatureExternalBankAccountFeature) implementsRuleFeature() {}
+
+type RuleFeatureExternalBankAccountFeatureType string
+
+const (
+	RuleFeatureExternalBankAccountFeatureTypeExternalBankAccount RuleFeatureExternalBankAccountFeatureType = "EXTERNAL_BANK_ACCOUNT"
+)
+
+func (r RuleFeatureExternalBankAccountFeatureType) IsKnown() bool {
+	switch r {
+	case RuleFeatureExternalBankAccountFeatureTypeExternalBankAccount:
+		return true
+	}
+	return false
+}
+
 type RuleFeatureCardFeature struct {
 	Type RuleFeatureCardFeatureType `json:"type" api:"required"`
 	// The variable name for this feature in the rule function signature
@@ -6118,6 +6205,176 @@ func (r RuleFeatureSpendVelocityFeatureType) IsKnown() bool {
 	return false
 }
 
+type RuleFeaturePaymentVelocityFeature struct {
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period VelocityLimitPeriod `json:"period" api:"required"`
+	// The scope over which the ACH payment velocity is aggregated.
+	Scope RuleFeaturePaymentVelocityFeatureScope `json:"scope" api:"required"`
+	Type  RuleFeaturePaymentVelocityFeatureType  `json:"type" api:"required"`
+	// Optional filters applied when aggregating ACH payment velocity. Payments not
+	// matching the provided filters are excluded from the calculated velocity.
+	Filters RuleFeaturePaymentVelocityFeatureFilters `json:"filters"`
+	// The variable name for this feature in the rule function signature
+	Name string                                `json:"name"`
+	JSON ruleFeaturePaymentVelocityFeatureJSON `json:"-"`
+}
+
+// ruleFeaturePaymentVelocityFeatureJSON contains the JSON metadata for the struct
+// [RuleFeaturePaymentVelocityFeature]
+type ruleFeaturePaymentVelocityFeatureJSON struct {
+	Period      apijson.Field
+	Scope       apijson.Field
+	Type        apijson.Field
+	Filters     apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *RuleFeaturePaymentVelocityFeature) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r ruleFeaturePaymentVelocityFeatureJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r RuleFeaturePaymentVelocityFeature) implementsRuleFeature() {}
+
+// The scope over which the ACH payment velocity is aggregated.
+type RuleFeaturePaymentVelocityFeatureScope string
+
+const (
+	RuleFeaturePaymentVelocityFeatureScopeFinancialAccount RuleFeaturePaymentVelocityFeatureScope = "FINANCIAL_ACCOUNT"
+	RuleFeaturePaymentVelocityFeatureScopeGlobal           RuleFeaturePaymentVelocityFeatureScope = "GLOBAL"
+)
+
+func (r RuleFeaturePaymentVelocityFeatureScope) IsKnown() bool {
+	switch r {
+	case RuleFeaturePaymentVelocityFeatureScopeFinancialAccount, RuleFeaturePaymentVelocityFeatureScopeGlobal:
+		return true
+	}
+	return false
+}
+
+type RuleFeaturePaymentVelocityFeatureType string
+
+const (
+	RuleFeaturePaymentVelocityFeatureTypePaymentVelocity RuleFeaturePaymentVelocityFeatureType = "PAYMENT_VELOCITY"
+)
+
+func (r RuleFeaturePaymentVelocityFeatureType) IsKnown() bool {
+	switch r {
+	case RuleFeaturePaymentVelocityFeatureTypePaymentVelocity:
+		return true
+	}
+	return false
+}
+
+// Optional filters applied when aggregating ACH payment velocity. Payments not
+// matching the provided filters are excluded from the calculated velocity.
+type RuleFeaturePaymentVelocityFeatureFilters struct {
+	// Exclude payments matching any of the provided tag key-value pairs.
+	ExcludeTags map[string]string `json:"exclude_tags" api:"nullable"`
+	// Payment types to include in the velocity calculation.
+	IncludePaymentTypes []RuleFeaturePaymentVelocityFeatureFiltersIncludePaymentType `json:"include_payment_types" api:"nullable"`
+	// Payment polarities to include in the velocity calculation.
+	IncludePolarities []RuleFeaturePaymentVelocityFeatureFiltersIncludePolarity `json:"include_polarities" api:"nullable"`
+	// Payment statuses to include in the velocity calculation.
+	IncludeStatuses []RuleFeaturePaymentVelocityFeatureFiltersIncludeStatus `json:"include_statuses" api:"nullable"`
+	// Only include payments matching all of the provided tag key-value pairs.
+	IncludeTags map[string]string `json:"include_tags" api:"nullable"`
+	// Only include payments with the given result.
+	Result RuleFeaturePaymentVelocityFeatureFiltersResult `json:"result"`
+	JSON   ruleFeaturePaymentVelocityFeatureFiltersJSON   `json:"-"`
+}
+
+// ruleFeaturePaymentVelocityFeatureFiltersJSON contains the JSON metadata for the
+// struct [RuleFeaturePaymentVelocityFeatureFilters]
+type ruleFeaturePaymentVelocityFeatureFiltersJSON struct {
+	ExcludeTags         apijson.Field
+	IncludePaymentTypes apijson.Field
+	IncludePolarities   apijson.Field
+	IncludeStatuses     apijson.Field
+	IncludeTags         apijson.Field
+	Result              apijson.Field
+	raw                 string
+	ExtraFields         map[string]apijson.Field
+}
+
+func (r *RuleFeaturePaymentVelocityFeatureFilters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r ruleFeaturePaymentVelocityFeatureFiltersJSON) RawJSON() string {
+	return r.raw
+}
+
+type RuleFeaturePaymentVelocityFeatureFiltersIncludePaymentType string
+
+const (
+	RuleFeaturePaymentVelocityFeatureFiltersIncludePaymentTypeOrigination RuleFeaturePaymentVelocityFeatureFiltersIncludePaymentType = "ORIGINATION"
+	RuleFeaturePaymentVelocityFeatureFiltersIncludePaymentTypeReceipt     RuleFeaturePaymentVelocityFeatureFiltersIncludePaymentType = "RECEIPT"
+)
+
+func (r RuleFeaturePaymentVelocityFeatureFiltersIncludePaymentType) IsKnown() bool {
+	switch r {
+	case RuleFeaturePaymentVelocityFeatureFiltersIncludePaymentTypeOrigination, RuleFeaturePaymentVelocityFeatureFiltersIncludePaymentTypeReceipt:
+		return true
+	}
+	return false
+}
+
+type RuleFeaturePaymentVelocityFeatureFiltersIncludePolarity string
+
+const (
+	RuleFeaturePaymentVelocityFeatureFiltersIncludePolarityCredit RuleFeaturePaymentVelocityFeatureFiltersIncludePolarity = "CREDIT"
+	RuleFeaturePaymentVelocityFeatureFiltersIncludePolarityDebit  RuleFeaturePaymentVelocityFeatureFiltersIncludePolarity = "DEBIT"
+)
+
+func (r RuleFeaturePaymentVelocityFeatureFiltersIncludePolarity) IsKnown() bool {
+	switch r {
+	case RuleFeaturePaymentVelocityFeatureFiltersIncludePolarityCredit, RuleFeaturePaymentVelocityFeatureFiltersIncludePolarityDebit:
+		return true
+	}
+	return false
+}
+
+type RuleFeaturePaymentVelocityFeatureFiltersIncludeStatus string
+
+const (
+	RuleFeaturePaymentVelocityFeatureFiltersIncludeStatusPending  RuleFeaturePaymentVelocityFeatureFiltersIncludeStatus = "PENDING"
+	RuleFeaturePaymentVelocityFeatureFiltersIncludeStatusSettled  RuleFeaturePaymentVelocityFeatureFiltersIncludeStatus = "SETTLED"
+	RuleFeaturePaymentVelocityFeatureFiltersIncludeStatusDeclined RuleFeaturePaymentVelocityFeatureFiltersIncludeStatus = "DECLINED"
+	RuleFeaturePaymentVelocityFeatureFiltersIncludeStatusReversed RuleFeaturePaymentVelocityFeatureFiltersIncludeStatus = "REVERSED"
+	RuleFeaturePaymentVelocityFeatureFiltersIncludeStatusCanceled RuleFeaturePaymentVelocityFeatureFiltersIncludeStatus = "CANCELED"
+	RuleFeaturePaymentVelocityFeatureFiltersIncludeStatusReturned RuleFeaturePaymentVelocityFeatureFiltersIncludeStatus = "RETURNED"
+)
+
+func (r RuleFeaturePaymentVelocityFeatureFiltersIncludeStatus) IsKnown() bool {
+	switch r {
+	case RuleFeaturePaymentVelocityFeatureFiltersIncludeStatusPending, RuleFeaturePaymentVelocityFeatureFiltersIncludeStatusSettled, RuleFeaturePaymentVelocityFeatureFiltersIncludeStatusDeclined, RuleFeaturePaymentVelocityFeatureFiltersIncludeStatusReversed, RuleFeaturePaymentVelocityFeatureFiltersIncludeStatusCanceled, RuleFeaturePaymentVelocityFeatureFiltersIncludeStatusReturned:
+		return true
+	}
+	return false
+}
+
+// Only include payments with the given result.
+type RuleFeaturePaymentVelocityFeatureFiltersResult string
+
+const (
+	RuleFeaturePaymentVelocityFeatureFiltersResultApproved RuleFeaturePaymentVelocityFeatureFiltersResult = "APPROVED"
+	RuleFeaturePaymentVelocityFeatureFiltersResultDeclined RuleFeaturePaymentVelocityFeatureFiltersResult = "DECLINED"
+)
+
+func (r RuleFeaturePaymentVelocityFeatureFiltersResult) IsKnown() bool {
+	switch r {
+	case RuleFeaturePaymentVelocityFeatureFiltersResultApproved, RuleFeaturePaymentVelocityFeatureFiltersResultDeclined:
+		return true
+	}
+	return false
+}
+
 type RuleFeatureTransactionHistorySignalsFeature struct {
 	// The entity scope to load transaction history signals for.
 	Scope RuleFeatureTransactionHistorySignalsFeatureScope `json:"scope" api:"required"`
@@ -6178,6 +6435,123 @@ func (r RuleFeatureTransactionHistorySignalsFeatureType) IsKnown() bool {
 	return false
 }
 
+type RuleFeatureConsecutiveDeclinesFeature struct {
+	// The entity scope to count consecutive declines for.
+	Scope RuleFeatureConsecutiveDeclinesFeatureScope `json:"scope" api:"required"`
+	Type  RuleFeatureConsecutiveDeclinesFeatureType  `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name string                                    `json:"name"`
+	JSON ruleFeatureConsecutiveDeclinesFeatureJSON `json:"-"`
+}
+
+// ruleFeatureConsecutiveDeclinesFeatureJSON contains the JSON metadata for the
+// struct [RuleFeatureConsecutiveDeclinesFeature]
+type ruleFeatureConsecutiveDeclinesFeatureJSON struct {
+	Scope       apijson.Field
+	Type        apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *RuleFeatureConsecutiveDeclinesFeature) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r ruleFeatureConsecutiveDeclinesFeatureJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r RuleFeatureConsecutiveDeclinesFeature) implementsRuleFeature() {}
+
+// The entity scope to count consecutive declines for.
+type RuleFeatureConsecutiveDeclinesFeatureScope string
+
+const (
+	RuleFeatureConsecutiveDeclinesFeatureScopeCard    RuleFeatureConsecutiveDeclinesFeatureScope = "CARD"
+	RuleFeatureConsecutiveDeclinesFeatureScopeAccount RuleFeatureConsecutiveDeclinesFeatureScope = "ACCOUNT"
+)
+
+func (r RuleFeatureConsecutiveDeclinesFeatureScope) IsKnown() bool {
+	switch r {
+	case RuleFeatureConsecutiveDeclinesFeatureScopeCard, RuleFeatureConsecutiveDeclinesFeatureScopeAccount:
+		return true
+	}
+	return false
+}
+
+type RuleFeatureConsecutiveDeclinesFeatureType string
+
+const (
+	RuleFeatureConsecutiveDeclinesFeatureTypeConsecutiveDeclines RuleFeatureConsecutiveDeclinesFeatureType = "CONSECUTIVE_DECLINES"
+)
+
+func (r RuleFeatureConsecutiveDeclinesFeatureType) IsKnown() bool {
+	switch r {
+	case RuleFeatureConsecutiveDeclinesFeatureTypeConsecutiveDeclines:
+		return true
+	}
+	return false
+}
+
+type RuleFeatureACHPaymentHistoryFeature struct {
+	// The entity scope to load ACH payment history for.
+	Scope RuleFeatureACHPaymentHistoryFeatureScope `json:"scope" api:"required"`
+	Type  RuleFeatureACHPaymentHistoryFeatureType  `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name string                                  `json:"name"`
+	JSON ruleFeatureACHPaymentHistoryFeatureJSON `json:"-"`
+}
+
+// ruleFeatureACHPaymentHistoryFeatureJSON contains the JSON metadata for the
+// struct [RuleFeatureACHPaymentHistoryFeature]
+type ruleFeatureACHPaymentHistoryFeatureJSON struct {
+	Scope       apijson.Field
+	Type        apijson.Field
+	Name        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *RuleFeatureACHPaymentHistoryFeature) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r ruleFeatureACHPaymentHistoryFeatureJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r RuleFeatureACHPaymentHistoryFeature) implementsRuleFeature() {}
+
+// The entity scope to load ACH payment history for.
+type RuleFeatureACHPaymentHistoryFeatureScope string
+
+const (
+	RuleFeatureACHPaymentHistoryFeatureScopeFinancialAccount RuleFeatureACHPaymentHistoryFeatureScope = "FINANCIAL_ACCOUNT"
+)
+
+func (r RuleFeatureACHPaymentHistoryFeatureScope) IsKnown() bool {
+	switch r {
+	case RuleFeatureACHPaymentHistoryFeatureScopeFinancialAccount:
+		return true
+	}
+	return false
+}
+
+type RuleFeatureACHPaymentHistoryFeatureType string
+
+const (
+	RuleFeatureACHPaymentHistoryFeatureTypeACHPaymentHistory RuleFeatureACHPaymentHistoryFeatureType = "ACH_PAYMENT_HISTORY"
+)
+
+func (r RuleFeatureACHPaymentHistoryFeatureType) IsKnown() bool {
+	switch r {
+	case RuleFeatureACHPaymentHistoryFeatureTypeACHPaymentHistory:
+		return true
+	}
+	return false
+}
+
 type RuleFeatureType string
 
 const (
@@ -6187,16 +6561,20 @@ const (
 	RuleFeatureTypeACHReceipt                RuleFeatureType = "ACH_RECEIPT"
 	RuleFeatureTypeCardTransaction           RuleFeatureType = "CARD_TRANSACTION"
 	RuleFeatureTypeACHPayment                RuleFeatureType = "ACH_PAYMENT"
+	RuleFeatureTypeExternalBankAccount       RuleFeatureType = "EXTERNAL_BANK_ACCOUNT"
 	RuleFeatureTypeCard                      RuleFeatureType = "CARD"
 	RuleFeatureTypeAccountHolder             RuleFeatureType = "ACCOUNT_HOLDER"
 	RuleFeatureTypeIPMetadata                RuleFeatureType = "IP_METADATA"
 	RuleFeatureTypeSpendVelocity             RuleFeatureType = "SPEND_VELOCITY"
+	RuleFeatureTypePaymentVelocity           RuleFeatureType = "PAYMENT_VELOCITY"
 	RuleFeatureTypeTransactionHistorySignals RuleFeatureType = "TRANSACTION_HISTORY_SIGNALS"
+	RuleFeatureTypeConsecutiveDeclines       RuleFeatureType = "CONSECUTIVE_DECLINES"
+	RuleFeatureTypeACHPaymentHistory         RuleFeatureType = "ACH_PAYMENT_HISTORY"
 )
 
 func (r RuleFeatureType) IsKnown() bool {
 	switch r {
-	case RuleFeatureTypeAuthorization, RuleFeatureTypeAuthentication, RuleFeatureTypeTokenization, RuleFeatureTypeACHReceipt, RuleFeatureTypeCardTransaction, RuleFeatureTypeACHPayment, RuleFeatureTypeCard, RuleFeatureTypeAccountHolder, RuleFeatureTypeIPMetadata, RuleFeatureTypeSpendVelocity, RuleFeatureTypeTransactionHistorySignals:
+	case RuleFeatureTypeAuthorization, RuleFeatureTypeAuthentication, RuleFeatureTypeTokenization, RuleFeatureTypeACHReceipt, RuleFeatureTypeCardTransaction, RuleFeatureTypeACHPayment, RuleFeatureTypeExternalBankAccount, RuleFeatureTypeCard, RuleFeatureTypeAccountHolder, RuleFeatureTypeIPMetadata, RuleFeatureTypeSpendVelocity, RuleFeatureTypePaymentVelocity, RuleFeatureTypeTransactionHistorySignals, RuleFeatureTypeConsecutiveDeclines, RuleFeatureTypeACHPaymentHistory:
 		return true
 	}
 	return false
@@ -6206,14 +6584,16 @@ func (r RuleFeatureType) IsKnown() bool {
 type RuleFeatureScope string
 
 const (
-	RuleFeatureScopeCard            RuleFeatureScope = "CARD"
-	RuleFeatureScopeAccount         RuleFeatureScope = "ACCOUNT"
-	RuleFeatureScopeBusinessAccount RuleFeatureScope = "BUSINESS_ACCOUNT"
+	RuleFeatureScopeCard             RuleFeatureScope = "CARD"
+	RuleFeatureScopeAccount          RuleFeatureScope = "ACCOUNT"
+	RuleFeatureScopeFinancialAccount RuleFeatureScope = "FINANCIAL_ACCOUNT"
+	RuleFeatureScopeGlobal           RuleFeatureScope = "GLOBAL"
+	RuleFeatureScopeBusinessAccount  RuleFeatureScope = "BUSINESS_ACCOUNT"
 )
 
 func (r RuleFeatureScope) IsKnown() bool {
 	switch r {
-	case RuleFeatureScopeCard, RuleFeatureScopeAccount, RuleFeatureScopeBusinessAccount:
+	case RuleFeatureScopeCard, RuleFeatureScopeAccount, RuleFeatureScopeFinancialAccount, RuleFeatureScopeGlobal, RuleFeatureScopeBusinessAccount:
 		return true
 	}
 	return false
@@ -6235,6 +6615,8 @@ func (r RuleFeatureScope) IsKnown() bool {
 //     CARD_TRANSACTION_UPDATE event stream rules.
 //   - `ACH_PAYMENT`: The ACH payment being evaluated. Only available for
 //     ACH_PAYMENT_UPDATE event stream rules.
+//   - `EXTERNAL_BANK_ACCOUNT`: The external bank account tied to the ACH payment
+//     being evaluated. Only available for ACH_PAYMENT_UPDATE event stream rules.
 //   - `CARD`: The card associated with the event. Available for AUTHORIZATION,
 //     THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event stream rules.
 //   - `ACCOUNT_HOLDER`: The account holder associated with the event. Available for
@@ -6244,14 +6626,24 @@ func (r RuleFeatureScope) IsKnown() bool {
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
 //     `scope`, `period`, and optionally `filters` to configure the velocity
-//     calculation. Available for AUTHORIZATION event stream rules.
+//     calculation. Available for AUTHORIZATION and CARD_TRANSACTION_UPDATE event
+//     stream rules.
+//   - `PAYMENT_VELOCITY`: ACH payment velocity data, aggregated over the given
+//     scope. Requires `scope`, `period`, and optionally `filters` to configure the
+//     velocity calculation. Available for ACH_PAYMENT_UPDATE event stream rules.
+//   - `CONSECUTIVE_DECLINES`: The number of consecutive declined transactions since
+//     the last approval for the card or account. Requires `scope`. Available for
+//     AUTHORIZATION and CARD_TRANSACTION_UPDATE event stream rules.
+//   - `ACH_PAYMENT_HISTORY`: Windowed settled-amount statistics derived from the
+//     financial account's ACH payment history. Requires `scope`. Available for
+//     ACH_PAYMENT_UPDATE event stream rules.
 //   - `TRANSACTION_HISTORY_SIGNALS`: Behavioral feature state derived from the
 //     entity's transaction history. Requires `scope` to specify whether to load
 //     card, account, or business account history. Available for AUTHORIZATION and
 //     CARD_TRANSACTION_UPDATE event stream rules.
 type RuleFeatureParam struct {
-	Type    param.Field[RuleFeatureType]           `json:"type" api:"required"`
-	Filters param.Field[VelocityLimitFiltersParam] `json:"filters"`
+	Type    param.Field[RuleFeatureType] `json:"type" api:"required"`
+	Filters param.Field[interface{}]     `json:"filters"`
 	// The variable name for this feature in the rule function signature
 	Name param.Field[string] `json:"name"`
 	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
@@ -6282,6 +6674,8 @@ func (r RuleFeatureParam) implementsRuleFeatureUnionParam() {}
 //     CARD_TRANSACTION_UPDATE event stream rules.
 //   - `ACH_PAYMENT`: The ACH payment being evaluated. Only available for
 //     ACH_PAYMENT_UPDATE event stream rules.
+//   - `EXTERNAL_BANK_ACCOUNT`: The external bank account tied to the ACH payment
+//     being evaluated. Only available for ACH_PAYMENT_UPDATE event stream rules.
 //   - `CARD`: The card associated with the event. Available for AUTHORIZATION,
 //     THREE_DS_AUTHENTICATION, and CARD_TRANSACTION_UPDATE event stream rules.
 //   - `ACCOUNT_HOLDER`: The account holder associated with the event. Available for
@@ -6291,7 +6685,17 @@ func (r RuleFeatureParam) implementsRuleFeatureUnionParam() {}
 //     THREE_DS_AUTHENTICATION event stream rules.
 //   - `SPEND_VELOCITY`: Spend velocity data for the card or account. Requires
 //     `scope`, `period`, and optionally `filters` to configure the velocity
-//     calculation. Available for AUTHORIZATION event stream rules.
+//     calculation. Available for AUTHORIZATION and CARD_TRANSACTION_UPDATE event
+//     stream rules.
+//   - `PAYMENT_VELOCITY`: ACH payment velocity data, aggregated over the given
+//     scope. Requires `scope`, `period`, and optionally `filters` to configure the
+//     velocity calculation. Available for ACH_PAYMENT_UPDATE event stream rules.
+//   - `CONSECUTIVE_DECLINES`: The number of consecutive declined transactions since
+//     the last approval for the card or account. Requires `scope`. Available for
+//     AUTHORIZATION and CARD_TRANSACTION_UPDATE event stream rules.
+//   - `ACH_PAYMENT_HISTORY`: Windowed settled-amount statistics derived from the
+//     financial account's ACH payment history. Requires `scope`. Available for
+//     ACH_PAYMENT_UPDATE event stream rules.
 //   - `TRANSACTION_HISTORY_SIGNALS`: Behavioral feature state derived from the
 //     entity's transaction history. Requires `scope` to specify whether to load
 //     card, account, or business account history. Available for AUTHORIZATION and
@@ -6300,10 +6704,14 @@ func (r RuleFeatureParam) implementsRuleFeatureUnionParam() {}
 // Satisfied by [RuleFeatureAuthorizationFeatureParam],
 // [RuleFeatureAuthenticationFeatureParam], [RuleFeatureTokenizationFeatureParam],
 // [RuleFeatureACHReceiptFeatureParam], [RuleFeatureCardTransactionFeatureParam],
-// [RuleFeatureACHPaymentFeatureParam], [RuleFeatureCardFeatureParam],
+// [RuleFeatureACHPaymentFeatureParam],
+// [RuleFeatureExternalBankAccountFeatureParam], [RuleFeatureCardFeatureParam],
 // [RuleFeatureAccountHolderFeatureParam], [RuleFeatureIPMetadataFeatureParam],
 // [RuleFeatureSpendVelocityFeatureParam],
-// [RuleFeatureTransactionHistorySignalsFeatureParam], [RuleFeatureParam].
+// [RuleFeaturePaymentVelocityFeatureParam],
+// [RuleFeatureTransactionHistorySignalsFeatureParam],
+// [RuleFeatureConsecutiveDeclinesFeatureParam],
+// [RuleFeatureACHPaymentHistoryFeatureParam], [RuleFeatureParam].
 type RuleFeatureUnionParam interface {
 	implementsRuleFeatureUnionParam()
 }
@@ -6380,6 +6788,18 @@ func (r RuleFeatureACHPaymentFeatureParam) MarshalJSON() (data []byte, err error
 
 func (r RuleFeatureACHPaymentFeatureParam) implementsRuleFeatureUnionParam() {}
 
+type RuleFeatureExternalBankAccountFeatureParam struct {
+	Type param.Field[RuleFeatureExternalBankAccountFeatureType] `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name param.Field[string] `json:"name"`
+}
+
+func (r RuleFeatureExternalBankAccountFeatureParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r RuleFeatureExternalBankAccountFeatureParam) implementsRuleFeatureUnionParam() {}
+
 type RuleFeatureCardFeatureParam struct {
 	Type param.Field[RuleFeatureCardFeatureType] `json:"type" api:"required"`
 	// The variable name for this feature in the rule function signature
@@ -6433,6 +6853,46 @@ func (r RuleFeatureSpendVelocityFeatureParam) MarshalJSON() (data []byte, err er
 
 func (r RuleFeatureSpendVelocityFeatureParam) implementsRuleFeatureUnionParam() {}
 
+type RuleFeaturePaymentVelocityFeatureParam struct {
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period param.Field[VelocityLimitPeriodUnionParam] `json:"period" api:"required"`
+	// The scope over which the ACH payment velocity is aggregated.
+	Scope param.Field[RuleFeaturePaymentVelocityFeatureScope] `json:"scope" api:"required"`
+	Type  param.Field[RuleFeaturePaymentVelocityFeatureType]  `json:"type" api:"required"`
+	// Optional filters applied when aggregating ACH payment velocity. Payments not
+	// matching the provided filters are excluded from the calculated velocity.
+	Filters param.Field[RuleFeaturePaymentVelocityFeatureFiltersParam] `json:"filters"`
+	// The variable name for this feature in the rule function signature
+	Name param.Field[string] `json:"name"`
+}
+
+func (r RuleFeaturePaymentVelocityFeatureParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r RuleFeaturePaymentVelocityFeatureParam) implementsRuleFeatureUnionParam() {}
+
+// Optional filters applied when aggregating ACH payment velocity. Payments not
+// matching the provided filters are excluded from the calculated velocity.
+type RuleFeaturePaymentVelocityFeatureFiltersParam struct {
+	// Exclude payments matching any of the provided tag key-value pairs.
+	ExcludeTags param.Field[map[string]string] `json:"exclude_tags"`
+	// Payment types to include in the velocity calculation.
+	IncludePaymentTypes param.Field[[]RuleFeaturePaymentVelocityFeatureFiltersIncludePaymentType] `json:"include_payment_types"`
+	// Payment polarities to include in the velocity calculation.
+	IncludePolarities param.Field[[]RuleFeaturePaymentVelocityFeatureFiltersIncludePolarity] `json:"include_polarities"`
+	// Payment statuses to include in the velocity calculation.
+	IncludeStatuses param.Field[[]RuleFeaturePaymentVelocityFeatureFiltersIncludeStatus] `json:"include_statuses"`
+	// Only include payments matching all of the provided tag key-value pairs.
+	IncludeTags param.Field[map[string]string] `json:"include_tags"`
+	// Only include payments with the given result.
+	Result param.Field[RuleFeaturePaymentVelocityFeatureFiltersResult] `json:"result"`
+}
+
+func (r RuleFeaturePaymentVelocityFeatureFiltersParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
 type RuleFeatureTransactionHistorySignalsFeatureParam struct {
 	// The entity scope to load transaction history signals for.
 	Scope param.Field[RuleFeatureTransactionHistorySignalsFeatureScope] `json:"scope" api:"required"`
@@ -6446,6 +6906,34 @@ func (r RuleFeatureTransactionHistorySignalsFeatureParam) MarshalJSON() (data []
 }
 
 func (r RuleFeatureTransactionHistorySignalsFeatureParam) implementsRuleFeatureUnionParam() {}
+
+type RuleFeatureConsecutiveDeclinesFeatureParam struct {
+	// The entity scope to count consecutive declines for.
+	Scope param.Field[RuleFeatureConsecutiveDeclinesFeatureScope] `json:"scope" api:"required"`
+	Type  param.Field[RuleFeatureConsecutiveDeclinesFeatureType]  `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name param.Field[string] `json:"name"`
+}
+
+func (r RuleFeatureConsecutiveDeclinesFeatureParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r RuleFeatureConsecutiveDeclinesFeatureParam) implementsRuleFeatureUnionParam() {}
+
+type RuleFeatureACHPaymentHistoryFeatureParam struct {
+	// The entity scope to load ACH payment history for.
+	Scope param.Field[RuleFeatureACHPaymentHistoryFeatureScope] `json:"scope" api:"required"`
+	Type  param.Field[RuleFeatureACHPaymentHistoryFeatureType]  `json:"type" api:"required"`
+	// The variable name for this feature in the rule function signature
+	Name param.Field[string] `json:"name"`
+}
+
+func (r RuleFeatureACHPaymentHistoryFeatureParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r RuleFeatureACHPaymentHistoryFeatureParam) implementsRuleFeatureUnionParam() {}
 
 type SpendVelocityFilters struct {
 	// Tag key-value pairs to exclude from the velocity calculation. Transactions
