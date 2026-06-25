@@ -4964,12 +4964,13 @@ type ParsedWebhookEvent struct {
 	CardholderCurrency string `json:"cardholder_currency"`
 	// Identifier assigned by the network for this dispute.
 	CaseID string `json:"case_id" api:"nullable"`
-	// The portion of the transaction requested as cash back by the cardholder, and
-	// does not include any acquirer fees. The amount field includes the purchase
-	// amount, the requested cash back amount, and any acquirer fees.
+	// The amount of cash requested by the cardholder, in the cardholder billing
+	// currency's smallest unit. For purchase-with-cashback transactions this is the
+	// cashback portion only; for ATM transactions this is the full amount. This amount
+	// includes all acquirer fees.
 	//
-	// If no cash back was requested, the value of this field will be 0, and the field
-	// will always be present.
+	// If no cash was requested, the value of this field will be 0, and the field will
+	// always be present.
 	CashAmount int64 `json:"cash_amount"`
 	// Deprecated, use `cash_amount`.
 	Cashback int64                      `json:"cashback"`
