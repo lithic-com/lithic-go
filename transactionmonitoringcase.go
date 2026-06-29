@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"reflect"
 	"slices"
 	"time"
 
@@ -17,6 +18,7 @@ import (
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/option"
 	"github.com/lithic-com/lithic-go/packages/pagination"
+	"github.com/tidwall/gjson"
 )
 
 // TransactionMonitoringCaseService contains methods and other services that help
@@ -386,38 +388,206 @@ func (r CaseStatus) IsKnown() bool {
 	return false
 }
 
-// A single transaction associated with a case
+// A single transaction associated with a case. The `category` field identifies
+// whether this is a card transaction or a payment transaction.
 type CaseTransaction struct {
-	// Globally unique identifier for the transaction
+	// Globally unique identifier for the card transaction
+	Token string `json:"token" api:"required" format:"uuid"`
+	// Date and time at which the transaction was added to the case
+	AddedAt  time.Time               `json:"added_at" api:"required" format:"date-time"`
+	Category CaseTransactionCategory `json:"category" api:"required"`
+	// Date and time at which the transaction was created
+	TransactionCreatedAt time.Time `json:"transaction_created_at" api:"required" format:"date-time"`
+	// Token of the account the transaction belongs to
+	AccountToken string `json:"account_token" format:"uuid"`
+	// Token of the card the transaction was made on
+	CardToken string `json:"card_token" format:"uuid"`
+	// Token of the financial account the payment belongs to
+	FinancialAccountToken string              `json:"financial_account_token" format:"uuid"`
+	JSON                  caseTransactionJSON `json:"-"`
+	union                 CaseTransactionUnion
+}
+
+// caseTransactionJSON contains the JSON metadata for the struct [CaseTransaction]
+type caseTransactionJSON struct {
+	Token                 apijson.Field
+	AddedAt               apijson.Field
+	Category              apijson.Field
+	TransactionCreatedAt  apijson.Field
+	AccountToken          apijson.Field
+	CardToken             apijson.Field
+	FinancialAccountToken apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
+}
+
+func (r caseTransactionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r *CaseTransaction) UnmarshalJSON(data []byte) (err error) {
+	*r = CaseTransaction{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a [CaseTransactionUnion] interface which you can cast to the
+// specific types for more type safety.
+//
+// Possible runtime types of the union are [CaseTransactionCardCaseTransaction],
+// [CaseTransactionPaymentCaseTransaction].
+func (r CaseTransaction) AsUnion() CaseTransactionUnion {
+	return r.union
+}
+
+// A single transaction associated with a case. The `category` field identifies
+// whether this is a card transaction or a payment transaction.
+//
+// Union satisfied by [CaseTransactionCardCaseTransaction] or
+// [CaseTransactionPaymentCaseTransaction].
+type CaseTransactionUnion interface {
+	implementsCaseTransaction()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*CaseTransactionUnion)(nil)).Elem(),
+		"category",
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CaseTransactionCardCaseTransaction{}),
+			DiscriminatorValue: "CARD",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(CaseTransactionPaymentCaseTransaction{}),
+			DiscriminatorValue: "PAYMENT",
+		},
+	)
+}
+
+// A card transaction associated with a case
+type CaseTransactionCardCaseTransaction struct {
+	// Globally unique identifier for the card transaction
 	Token string `json:"token" api:"required" format:"uuid"`
 	// Token of the account the transaction belongs to
 	AccountToken string `json:"account_token" api:"required" format:"uuid"`
 	// Date and time at which the transaction was added to the case
 	AddedAt time.Time `json:"added_at" api:"required" format:"date-time"`
 	// Token of the card the transaction was made on
-	CardToken string `json:"card_token" api:"required" format:"uuid"`
+	CardToken string                                     `json:"card_token" api:"required" format:"uuid"`
+	Category  CaseTransactionCardCaseTransactionCategory `json:"category" api:"required"`
 	// Date and time at which the transaction was created
-	TransactionCreatedAt time.Time           `json:"transaction_created_at" api:"required" format:"date-time"`
-	JSON                 caseTransactionJSON `json:"-"`
+	TransactionCreatedAt time.Time                              `json:"transaction_created_at" api:"required" format:"date-time"`
+	JSON                 caseTransactionCardCaseTransactionJSON `json:"-"`
 }
 
-// caseTransactionJSON contains the JSON metadata for the struct [CaseTransaction]
-type caseTransactionJSON struct {
+// caseTransactionCardCaseTransactionJSON contains the JSON metadata for the struct
+// [CaseTransactionCardCaseTransaction]
+type caseTransactionCardCaseTransactionJSON struct {
 	Token                apijson.Field
 	AccountToken         apijson.Field
 	AddedAt              apijson.Field
 	CardToken            apijson.Field
+	Category             apijson.Field
 	TransactionCreatedAt apijson.Field
 	raw                  string
 	ExtraFields          map[string]apijson.Field
 }
 
-func (r *CaseTransaction) UnmarshalJSON(data []byte) (err error) {
+func (r *CaseTransactionCardCaseTransaction) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r caseTransactionJSON) RawJSON() string {
+func (r caseTransactionCardCaseTransactionJSON) RawJSON() string {
 	return r.raw
+}
+
+func (r CaseTransactionCardCaseTransaction) implementsCaseTransaction() {}
+
+type CaseTransactionCardCaseTransactionCategory string
+
+const (
+	CaseTransactionCardCaseTransactionCategoryCard CaseTransactionCardCaseTransactionCategory = "CARD"
+)
+
+func (r CaseTransactionCardCaseTransactionCategory) IsKnown() bool {
+	switch r {
+	case CaseTransactionCardCaseTransactionCategoryCard:
+		return true
+	}
+	return false
+}
+
+// A payment (ACH) transaction associated with a case
+type CaseTransactionPaymentCaseTransaction struct {
+	// Globally unique identifier for the payment transaction
+	Token string `json:"token" api:"required" format:"uuid"`
+	// Date and time at which the transaction was added to the case
+	AddedAt  time.Time                                     `json:"added_at" api:"required" format:"date-time"`
+	Category CaseTransactionPaymentCaseTransactionCategory `json:"category" api:"required"`
+	// Token of the financial account the payment belongs to
+	FinancialAccountToken string `json:"financial_account_token" api:"required" format:"uuid"`
+	// Date and time at which the transaction was created
+	TransactionCreatedAt time.Time `json:"transaction_created_at" api:"required" format:"date-time"`
+	// Token of the account the payment belongs to, if applicable
+	AccountToken string                                    `json:"account_token" format:"uuid"`
+	JSON         caseTransactionPaymentCaseTransactionJSON `json:"-"`
+}
+
+// caseTransactionPaymentCaseTransactionJSON contains the JSON metadata for the
+// struct [CaseTransactionPaymentCaseTransaction]
+type caseTransactionPaymentCaseTransactionJSON struct {
+	Token                 apijson.Field
+	AddedAt               apijson.Field
+	Category              apijson.Field
+	FinancialAccountToken apijson.Field
+	TransactionCreatedAt  apijson.Field
+	AccountToken          apijson.Field
+	raw                   string
+	ExtraFields           map[string]apijson.Field
+}
+
+func (r *CaseTransactionPaymentCaseTransaction) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r caseTransactionPaymentCaseTransactionJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r CaseTransactionPaymentCaseTransaction) implementsCaseTransaction() {}
+
+type CaseTransactionPaymentCaseTransactionCategory string
+
+const (
+	CaseTransactionPaymentCaseTransactionCategoryPayment CaseTransactionPaymentCaseTransactionCategory = "PAYMENT"
+)
+
+func (r CaseTransactionPaymentCaseTransactionCategory) IsKnown() bool {
+	switch r {
+	case CaseTransactionPaymentCaseTransactionCategoryPayment:
+		return true
+	}
+	return false
+}
+
+type CaseTransactionCategory string
+
+const (
+	CaseTransactionCategoryCard    CaseTransactionCategory = "CARD"
+	CaseTransactionCategoryPayment CaseTransactionCategory = "PAYMENT"
+)
+
+func (r CaseTransactionCategory) IsKnown() bool {
+	switch r {
+	case CaseTransactionCategoryCard, CaseTransactionCategoryPayment:
+		return true
+	}
+	return false
 }
 
 // The type of entity associated with an account holder
