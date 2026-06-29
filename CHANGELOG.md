@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.115.0 (2026-06-29)
+
+Full Changelog: [v0.114.0...v0.115.0](https://github.com/lithic-com/lithic-go/compare/v0.114.0...v0.115.0)
+
+### Features
+
+* **api:** add payment transaction support to transaction monitoring case ([706a898](https://github.com/lithic-com/lithic-go/commit/706a898b5124ed67def02b716fe5392ea94f7a50))
+
+
+### Documentation
+
+* **api:** update CashAmount field description in card authorization and webhook models ([cabb80f](https://github.com/lithic-com/lithic-go/commit/cabb80f04037cb6a886ec84f82d1388546c3151d))
+
 ## 0.114.0 (2026-06-23)
 
 Full Changelog: [v0.113.0...v0.114.0](https://github.com/lithic-com/lithic-go/compare/v0.113.0...v0.114.0)
