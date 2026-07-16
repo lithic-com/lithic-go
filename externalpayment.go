@@ -448,7 +448,7 @@ type ExternalPaymentListParams struct {
 	// will be included. UTC time zone.
 	Begin                param.Field[time.Time] `query:"begin" format:"date-time"`
 	BusinessAccountToken param.Field[string]    `query:"business_account_token" format:"uuid"`
-	// External Payment category to be returned.
+	// The external rail the funds moved on
 	Category param.Field[ExternalPaymentListParamsCategory] `query:"category"`
 	// Date string in RFC 3339 format. Only entries created before the specified time
 	// will be included. UTC time zone.
@@ -479,7 +479,7 @@ func (r ExternalPaymentListParams) URLQuery() (v url.Values) {
 	})
 }
 
-// External Payment category to be returned.
+// The external rail the funds moved on
 type ExternalPaymentListParamsCategory string
 
 const (
