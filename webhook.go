@@ -3238,6 +3238,194 @@ func (r DisputeEvidenceUploadFailedWebhookEventEventType) IsKnown() bool {
 	return false
 }
 
+type EmbedSessionGeneratedWebhookEvent struct {
+	// The token of the account associated with the card
+	AccountToken string `json:"account_token" api:"required" format:"uuid"`
+	// The token of the card associated with the embed session
+	CardToken string `json:"card_token" api:"required" format:"uuid"`
+	// Details about the request that generated the embed session
+	DeviceDetails EmbedSessionGeneratedWebhookEventDeviceDetails `json:"device_details" api:"required"`
+	// The type of event
+	EventType EmbedSessionGeneratedWebhookEventEventType `json:"event_type" api:"required"`
+	// The identifier shared by webhook events for the same embed session.
+	SessionID string `json:"session_id" api:"required" format:"uuid"`
+	// The type of embed session that was generated
+	SessionType EmbedSessionGeneratedWebhookEventSessionType `json:"session_type" api:"required"`
+	JSON        embedSessionGeneratedWebhookEventJSON        `json:"-"`
+}
+
+// embedSessionGeneratedWebhookEventJSON contains the JSON metadata for the struct
+// [EmbedSessionGeneratedWebhookEvent]
+type embedSessionGeneratedWebhookEventJSON struct {
+	AccountToken  apijson.Field
+	CardToken     apijson.Field
+	DeviceDetails apijson.Field
+	EventType     apijson.Field
+	SessionID     apijson.Field
+	SessionType   apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
+}
+
+func (r *EmbedSessionGeneratedWebhookEvent) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r embedSessionGeneratedWebhookEventJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r EmbedSessionGeneratedWebhookEvent) implementsParsedWebhookEvent() {}
+
+// Details about the request that generated the embed session
+type EmbedSessionGeneratedWebhookEventDeviceDetails struct {
+	// The IP address recorded for the request that generated the event
+	IPAddress string                                             `json:"ip_address" api:"required"`
+	JSON      embedSessionGeneratedWebhookEventDeviceDetailsJSON `json:"-"`
+}
+
+// embedSessionGeneratedWebhookEventDeviceDetailsJSON contains the JSON metadata
+// for the struct [EmbedSessionGeneratedWebhookEventDeviceDetails]
+type embedSessionGeneratedWebhookEventDeviceDetailsJSON struct {
+	IPAddress   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *EmbedSessionGeneratedWebhookEventDeviceDetails) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r embedSessionGeneratedWebhookEventDeviceDetailsJSON) RawJSON() string {
+	return r.raw
+}
+
+// The type of event
+type EmbedSessionGeneratedWebhookEventEventType string
+
+const (
+	EmbedSessionGeneratedWebhookEventEventTypeEmbedSessionGenerated EmbedSessionGeneratedWebhookEventEventType = "embed.session_generated"
+)
+
+func (r EmbedSessionGeneratedWebhookEventEventType) IsKnown() bool {
+	switch r {
+	case EmbedSessionGeneratedWebhookEventEventTypeEmbedSessionGenerated:
+		return true
+	}
+	return false
+}
+
+// The type of embed session that was generated
+type EmbedSessionGeneratedWebhookEventSessionType string
+
+const (
+	EmbedSessionGeneratedWebhookEventSessionTypeCardEmbed       EmbedSessionGeneratedWebhookEventSessionType = "CARD_EMBED"
+	EmbedSessionGeneratedWebhookEventSessionTypePinSettingEmbed EmbedSessionGeneratedWebhookEventSessionType = "PIN_SETTING_EMBED"
+)
+
+func (r EmbedSessionGeneratedWebhookEventSessionType) IsKnown() bool {
+	switch r {
+	case EmbedSessionGeneratedWebhookEventSessionTypeCardEmbed, EmbedSessionGeneratedWebhookEventSessionTypePinSettingEmbed:
+		return true
+	}
+	return false
+}
+
+type EmbedViewedWebhookEvent struct {
+	// The token of the account associated with the card
+	AccountToken string `json:"account_token" api:"required" format:"uuid"`
+	// The token of the card whose details were revealed
+	CardToken string `json:"card_token" api:"required" format:"uuid"`
+	// Details about the request that revealed the card detail
+	DeviceDetails EmbedViewedWebhookEventDeviceDetails `json:"device_details" api:"required"`
+	// The type of card detail that was revealed
+	EmbedType EmbedViewedWebhookEventEmbedType `json:"embed_type" api:"required"`
+	// The type of event
+	EventType EmbedViewedWebhookEventEventType `json:"event_type" api:"required"`
+	// The identifier shared by webhook events for the same embed session.
+	SessionID string                      `json:"session_id" api:"required" format:"uuid"`
+	JSON      embedViewedWebhookEventJSON `json:"-"`
+}
+
+// embedViewedWebhookEventJSON contains the JSON metadata for the struct
+// [EmbedViewedWebhookEvent]
+type embedViewedWebhookEventJSON struct {
+	AccountToken  apijson.Field
+	CardToken     apijson.Field
+	DeviceDetails apijson.Field
+	EmbedType     apijson.Field
+	EventType     apijson.Field
+	SessionID     apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
+}
+
+func (r *EmbedViewedWebhookEvent) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r embedViewedWebhookEventJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r EmbedViewedWebhookEvent) implementsParsedWebhookEvent() {}
+
+// Details about the request that revealed the card detail
+type EmbedViewedWebhookEventDeviceDetails struct {
+	// The IP address recorded for the request that generated the event
+	IPAddress string                                   `json:"ip_address" api:"required"`
+	JSON      embedViewedWebhookEventDeviceDetailsJSON `json:"-"`
+}
+
+// embedViewedWebhookEventDeviceDetailsJSON contains the JSON metadata for the
+// struct [EmbedViewedWebhookEventDeviceDetails]
+type embedViewedWebhookEventDeviceDetailsJSON struct {
+	IPAddress   apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *EmbedViewedWebhookEventDeviceDetails) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r embedViewedWebhookEventDeviceDetailsJSON) RawJSON() string {
+	return r.raw
+}
+
+// The type of card detail that was revealed
+type EmbedViewedWebhookEventEmbedType string
+
+const (
+	EmbedViewedWebhookEventEmbedTypePan      EmbedViewedWebhookEventEmbedType = "PAN"
+	EmbedViewedWebhookEventEmbedTypeCvv      EmbedViewedWebhookEventEmbedType = "CVV"
+	EmbedViewedWebhookEventEmbedTypeExpMonth EmbedViewedWebhookEventEmbedType = "EXP_MONTH"
+	EmbedViewedWebhookEventEmbedTypeExpYear  EmbedViewedWebhookEventEmbedType = "EXP_YEAR"
+)
+
+func (r EmbedViewedWebhookEventEmbedType) IsKnown() bool {
+	switch r {
+	case EmbedViewedWebhookEventEmbedTypePan, EmbedViewedWebhookEventEmbedTypeCvv, EmbedViewedWebhookEventEmbedTypeExpMonth, EmbedViewedWebhookEventEmbedTypeExpYear:
+		return true
+	}
+	return false
+}
+
+// The type of event
+type EmbedViewedWebhookEventEventType string
+
+const (
+	EmbedViewedWebhookEventEventTypeEmbedViewed EmbedViewedWebhookEventEventType = "embed.viewed"
+)
+
+func (r EmbedViewedWebhookEventEventType) IsKnown() bool {
+	switch r {
+	case EmbedViewedWebhookEventEventTypeEmbedViewed:
+		return true
+	}
+	return false
+}
+
 type ExternalBankAccountCreatedWebhookEvent struct {
 	// The type of event that occurred.
 	EventType ExternalBankAccountCreatedWebhookEventEventType `json:"event_type" api:"required"`
@@ -5052,6 +5240,10 @@ type ParsedWebhookEvent struct {
 	// This field can have the runtime type of [[]SettlementSummaryDetails].
 	Details interface{} `json:"details"`
 	Device  Device      `json:"device"`
+	// This field can have the runtime type of
+	// [EmbedSessionGeneratedWebhookEventDeviceDetails],
+	// [EmbedViewedWebhookEventDeviceDetails].
+	DeviceDetails interface{} `json:"device_details"`
 	// Contains the metadata for the digital wallet being tokenized.
 	DigitalWalletTokenMetadata TokenMetadata               `json:"digital_wallet_token_metadata"`
 	Direction                  ParsedWebhookEventDirection `json:"direction"`
@@ -5084,6 +5276,8 @@ type ParsedWebhookEvent struct {
 	// If updated, the newly updated email associated with the account_holder otherwise
 	// the existing email is provided.
 	Email string `json:"email"`
+	// The type of card detail that was revealed
+	EmbedType ParsedWebhookEventEmbedType `json:"embed_type"`
 	// Balance at the end of the day
 	EndingBalance int64 `json:"ending_balance"`
 	// The token of the entity that the document belongs to
@@ -5335,6 +5529,10 @@ type ParsedWebhookEvent struct {
 	// This field can have the runtime type of [CardAuthorizationServiceLocation],
 	// [TransactionServiceLocation].
 	ServiceLocation interface{} `json:"service_location"`
+	// The identifier shared by webhook events for the same embed session.
+	SessionID string `json:"session_id" format:"uuid"`
+	// The type of embed session that was generated
+	SessionType ParsedWebhookEventSessionType `json:"session_type"`
 	// Deprecated, use `amounts`. Amount (in cents) of the transaction that has been
 	// settled, including any acquirer fees.
 	//
@@ -5566,6 +5764,7 @@ type parsedWebhookEventJSON struct {
 	Descriptor                         apijson.Field
 	Details                            apijson.Field
 	Device                             apijson.Field
+	DeviceDetails                      apijson.Field
 	DigitalWalletTokenMetadata         apijson.Field
 	Direction                          apijson.Field
 	Disposition                        apijson.Field
@@ -5578,6 +5777,7 @@ type parsedWebhookEventJSON struct {
 	DownloadURL                        apijson.Field
 	DownloadURLExpiresAt               apijson.Field
 	Email                              apijson.Field
+	EmbedType                          apijson.Field
 	EndingBalance                      apijson.Field
 	EntityToken                        apijson.Field
 	EventToken                         apijson.Field
@@ -5668,6 +5868,8 @@ type parsedWebhookEventJSON struct {
 	RoutingNumber                      apijson.Field
 	RuleResults                        apijson.Field
 	ServiceLocation                    apijson.Field
+	SessionID                          apijson.Field
+	SessionType                        apijson.Field
 	SettledAmount                      apijson.Field
 	SettledNetAmount                   apijson.Field
 	SettlementInstitutionID            apijson.Field
@@ -5766,8 +5968,8 @@ func (r *ParsedWebhookEvent) UnmarshalJSON(data []byte) (err error) {
 // [DigitalWalletTokenizationTwoFactorAuthenticationCodeWebhookEvent],
 // [DigitalWalletTokenizationTwoFactorAuthenticationCodeSentWebhookEvent],
 // [DigitalWalletTokenizationUpdatedWebhookEvent], [DisputeUpdatedWebhookEvent],
-// [DisputeEvidenceUploadFailedWebhookEvent],
-// [ExternalBankAccountCreatedWebhookEvent],
+// [DisputeEvidenceUploadFailedWebhookEvent], [EmbedSessionGeneratedWebhookEvent],
+// [EmbedViewedWebhookEvent], [ExternalBankAccountCreatedWebhookEvent],
 // [ExternalBankAccountUpdatedWebhookEvent], [ExternalPaymentCreatedWebhookEvent],
 // [ExternalPaymentUpdatedWebhookEvent], [FinancialAccountCreatedWebhookEvent],
 // [FinancialAccountUpdatedWebhookEvent], [FundingEventCreatedWebhookEvent],
@@ -5816,8 +6018,8 @@ func (r ParsedWebhookEvent) AsUnion() ParsedWebhookEventUnion {
 // [DigitalWalletTokenizationTwoFactorAuthenticationCodeWebhookEvent],
 // [DigitalWalletTokenizationTwoFactorAuthenticationCodeSentWebhookEvent],
 // [DigitalWalletTokenizationUpdatedWebhookEvent], [DisputeUpdatedWebhookEvent],
-// [DisputeEvidenceUploadFailedWebhookEvent],
-// [ExternalBankAccountCreatedWebhookEvent],
+// [DisputeEvidenceUploadFailedWebhookEvent], [EmbedSessionGeneratedWebhookEvent],
+// [EmbedViewedWebhookEvent], [ExternalBankAccountCreatedWebhookEvent],
 // [ExternalBankAccountUpdatedWebhookEvent], [ExternalPaymentCreatedWebhookEvent],
 // [ExternalPaymentUpdatedWebhookEvent], [FinancialAccountCreatedWebhookEvent],
 // [FinancialAccountUpdatedWebhookEvent], [FundingEventCreatedWebhookEvent],
@@ -5981,6 +6183,14 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(DisputeEvidenceUploadFailedWebhookEvent{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(EmbedSessionGeneratedWebhookEvent{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(EmbedViewedWebhookEvent{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -6885,6 +7095,24 @@ func (r ParsedWebhookEventDocumentType) IsKnown() bool {
 	return false
 }
 
+// The type of card detail that was revealed
+type ParsedWebhookEventEmbedType string
+
+const (
+	ParsedWebhookEventEmbedTypePan      ParsedWebhookEventEmbedType = "PAN"
+	ParsedWebhookEventEmbedTypeCvv      ParsedWebhookEventEmbedType = "CVV"
+	ParsedWebhookEventEmbedTypeExpMonth ParsedWebhookEventEmbedType = "EXP_MONTH"
+	ParsedWebhookEventEmbedTypeExpYear  ParsedWebhookEventEmbedType = "EXP_YEAR"
+)
+
+func (r ParsedWebhookEventEmbedType) IsKnown() bool {
+	switch r {
+	case ParsedWebhookEventEmbedTypePan, ParsedWebhookEventEmbedTypeCvv, ParsedWebhookEventEmbedTypeExpMonth, ParsedWebhookEventEmbedTypeExpYear:
+		return true
+	}
+	return false
+}
+
 // The type of event that occurred.
 type ParsedWebhookEventEventType string
 
@@ -6921,6 +7149,8 @@ const (
 	ParsedWebhookEventEventTypeDigitalWalletTokenizationUpdated                         ParsedWebhookEventEventType = "digital_wallet.tokenization_updated"
 	ParsedWebhookEventEventTypeDisputeUpdated                                           ParsedWebhookEventEventType = "dispute.updated"
 	ParsedWebhookEventEventTypeDisputeEvidenceUploadFailed                              ParsedWebhookEventEventType = "dispute_evidence.upload_failed"
+	ParsedWebhookEventEventTypeEmbedSessionGenerated                                    ParsedWebhookEventEventType = "embed.session_generated"
+	ParsedWebhookEventEventTypeEmbedViewed                                              ParsedWebhookEventEventType = "embed.viewed"
 	ParsedWebhookEventEventTypeExternalBankAccountCreated                               ParsedWebhookEventEventType = "external_bank_account.created"
 	ParsedWebhookEventEventTypeExternalBankAccountUpdated                               ParsedWebhookEventEventType = "external_bank_account.updated"
 	ParsedWebhookEventEventTypeExternalPaymentCreated                                   ParsedWebhookEventEventType = "external_payment.created"
@@ -6955,7 +7185,7 @@ const (
 
 func (r ParsedWebhookEventEventType) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventEventTypeAccountHolderCreated, ParsedWebhookEventEventTypeAccountHolderUpdated, ParsedWebhookEventEventTypeAccountHolderVerification, ParsedWebhookEventEventTypeAccountHolderDocumentUpdated, ParsedWebhookEventEventTypeCardAuthorizationApprovalRequest, ParsedWebhookEventEventTypeCardAuthorizationChallenge, ParsedWebhookEventEventTypeCardAuthorizationChallengeResponse, ParsedWebhookEventEventTypeAuthRulesBacktestReportCreated, ParsedWebhookEventEventTypeBalanceUpdated, ParsedWebhookEventEventTypeBookTransferTransactionCreated, ParsedWebhookEventEventTypeBookTransferTransactionUpdated, ParsedWebhookEventEventTypeCardCreated, ParsedWebhookEventEventTypeCardConverted, ParsedWebhookEventEventTypeCardRenewed, ParsedWebhookEventEventTypeCardReissued, ParsedWebhookEventEventTypeCardShipped, ParsedWebhookEventEventTypeCardUpdated, ParsedWebhookEventEventTypeCardTransactionUpdated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataCreated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataUpdated, ParsedWebhookEventEventTypeClaimCreated, ParsedWebhookEventEventTypeClaimUpdated, ParsedWebhookEventEventTypeClaimDocumentUploaded, ParsedWebhookEventEventTypeClaimDocumentAccepted, ParsedWebhookEventEventTypeClaimDocumentRejected, ParsedWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest, ParsedWebhookEventEventTypeDigitalWalletTokenizationResult, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeDigitalWalletTokenizationUpdated, ParsedWebhookEventEventTypeDisputeUpdated, ParsedWebhookEventEventTypeDisputeEvidenceUploadFailed, ParsedWebhookEventEventTypeExternalBankAccountCreated, ParsedWebhookEventEventTypeExternalBankAccountUpdated, ParsedWebhookEventEventTypeExternalPaymentCreated, ParsedWebhookEventEventTypeExternalPaymentUpdated, ParsedWebhookEventEventTypeFinancialAccountCreated, ParsedWebhookEventEventTypeFinancialAccountUpdated, ParsedWebhookEventEventTypeFundingEventCreated, ParsedWebhookEventEventTypeLoanTapeCreated, ParsedWebhookEventEventTypeLoanTapeUpdated, ParsedWebhookEventEventTypeManagementOperationCreated, ParsedWebhookEventEventTypeManagementOperationUpdated, ParsedWebhookEventEventTypeInternalTransactionCreated, ParsedWebhookEventEventTypeInternalTransactionUpdated, ParsedWebhookEventEventTypeNetworkTotalCreated, ParsedWebhookEventEventTypeNetworkTotalUpdated, ParsedWebhookEventEventTypePaymentTransactionCreated, ParsedWebhookEventEventTypePaymentTransactionUpdated, ParsedWebhookEventEventTypeSettlementReportUpdated, ParsedWebhookEventEventTypeStatementsCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationChallenge, ParsedWebhookEventEventTypeTokenizationApprovalRequest, ParsedWebhookEventEventTypeTokenizationResult, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeTokenizationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationApprovalRequest, ParsedWebhookEventEventTypeDisputeTransactionCreated, ParsedWebhookEventEventTypeDisputeTransactionUpdated:
+	case ParsedWebhookEventEventTypeAccountHolderCreated, ParsedWebhookEventEventTypeAccountHolderUpdated, ParsedWebhookEventEventTypeAccountHolderVerification, ParsedWebhookEventEventTypeAccountHolderDocumentUpdated, ParsedWebhookEventEventTypeCardAuthorizationApprovalRequest, ParsedWebhookEventEventTypeCardAuthorizationChallenge, ParsedWebhookEventEventTypeCardAuthorizationChallengeResponse, ParsedWebhookEventEventTypeAuthRulesBacktestReportCreated, ParsedWebhookEventEventTypeBalanceUpdated, ParsedWebhookEventEventTypeBookTransferTransactionCreated, ParsedWebhookEventEventTypeBookTransferTransactionUpdated, ParsedWebhookEventEventTypeCardCreated, ParsedWebhookEventEventTypeCardConverted, ParsedWebhookEventEventTypeCardRenewed, ParsedWebhookEventEventTypeCardReissued, ParsedWebhookEventEventTypeCardShipped, ParsedWebhookEventEventTypeCardUpdated, ParsedWebhookEventEventTypeCardTransactionUpdated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataCreated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataUpdated, ParsedWebhookEventEventTypeClaimCreated, ParsedWebhookEventEventTypeClaimUpdated, ParsedWebhookEventEventTypeClaimDocumentUploaded, ParsedWebhookEventEventTypeClaimDocumentAccepted, ParsedWebhookEventEventTypeClaimDocumentRejected, ParsedWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest, ParsedWebhookEventEventTypeDigitalWalletTokenizationResult, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeDigitalWalletTokenizationUpdated, ParsedWebhookEventEventTypeDisputeUpdated, ParsedWebhookEventEventTypeDisputeEvidenceUploadFailed, ParsedWebhookEventEventTypeEmbedSessionGenerated, ParsedWebhookEventEventTypeEmbedViewed, ParsedWebhookEventEventTypeExternalBankAccountCreated, ParsedWebhookEventEventTypeExternalBankAccountUpdated, ParsedWebhookEventEventTypeExternalPaymentCreated, ParsedWebhookEventEventTypeExternalPaymentUpdated, ParsedWebhookEventEventTypeFinancialAccountCreated, ParsedWebhookEventEventTypeFinancialAccountUpdated, ParsedWebhookEventEventTypeFundingEventCreated, ParsedWebhookEventEventTypeLoanTapeCreated, ParsedWebhookEventEventTypeLoanTapeUpdated, ParsedWebhookEventEventTypeManagementOperationCreated, ParsedWebhookEventEventTypeManagementOperationUpdated, ParsedWebhookEventEventTypeInternalTransactionCreated, ParsedWebhookEventEventTypeInternalTransactionUpdated, ParsedWebhookEventEventTypeNetworkTotalCreated, ParsedWebhookEventEventTypeNetworkTotalUpdated, ParsedWebhookEventEventTypePaymentTransactionCreated, ParsedWebhookEventEventTypePaymentTransactionUpdated, ParsedWebhookEventEventTypeSettlementReportUpdated, ParsedWebhookEventEventTypeStatementsCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationChallenge, ParsedWebhookEventEventTypeTokenizationApprovalRequest, ParsedWebhookEventEventTypeTokenizationResult, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeTokenizationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationApprovalRequest, ParsedWebhookEventEventTypeDisputeTransactionCreated, ParsedWebhookEventEventTypeDisputeTransactionUpdated:
 		return true
 	}
 	return false
@@ -7231,6 +7461,22 @@ const (
 func (r ParsedWebhookEventResult) IsKnown() bool {
 	switch r {
 	case ParsedWebhookEventResultApproved, ParsedWebhookEventResultDeclined, ParsedWebhookEventResultAccountPaused, ParsedWebhookEventResultAccountStateTransactionFail, ParsedWebhookEventResultBankConnectionError, ParsedWebhookEventResultBankNotVerified, ParsedWebhookEventResultCardClosed, ParsedWebhookEventResultCardPaused, ParsedWebhookEventResultFraudAdvice, ParsedWebhookEventResultIgnoredTtlExpiry, ParsedWebhookEventResultSuspectedFraud, ParsedWebhookEventResultInactiveAccount, ParsedWebhookEventResultIncorrectPin, ParsedWebhookEventResultInvalidCardDetails, ParsedWebhookEventResultInsufficientFunds, ParsedWebhookEventResultInsufficientFundsPreload, ParsedWebhookEventResultInvalidTransaction, ParsedWebhookEventResultMerchantBlacklist, ParsedWebhookEventResultOriginalNotFound, ParsedWebhookEventResultPreviouslyCompleted, ParsedWebhookEventResultSingleUseRecharged, ParsedWebhookEventResultSwitchInoperativeAdvice, ParsedWebhookEventResultUnauthorizedMerchant, ParsedWebhookEventResultUnknownHostTimeout, ParsedWebhookEventResultUserTransactionLimit:
+		return true
+	}
+	return false
+}
+
+// The type of embed session that was generated
+type ParsedWebhookEventSessionType string
+
+const (
+	ParsedWebhookEventSessionTypeCardEmbed       ParsedWebhookEventSessionType = "CARD_EMBED"
+	ParsedWebhookEventSessionTypePinSettingEmbed ParsedWebhookEventSessionType = "PIN_SETTING_EMBED"
+)
+
+func (r ParsedWebhookEventSessionType) IsKnown() bool {
+	switch r {
+	case ParsedWebhookEventSessionTypeCardEmbed, ParsedWebhookEventSessionTypePinSettingEmbed:
 		return true
 	}
 	return false

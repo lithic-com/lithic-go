@@ -966,6 +966,8 @@ Response Types:
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DigitalWalletTokenizationUpdatedWebhookEvent">DigitalWalletTokenizationUpdatedWebhookEvent</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DisputeUpdatedWebhookEvent">DisputeUpdatedWebhookEvent</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#DisputeEvidenceUploadFailedWebhookEvent">DisputeEvidenceUploadFailedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#EmbedSessionGeneratedWebhookEvent">EmbedSessionGeneratedWebhookEvent</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#EmbedViewedWebhookEvent">EmbedViewedWebhookEvent</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountCreatedWebhookEvent">ExternalBankAccountCreatedWebhookEvent</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountUpdatedWebhookEvent">ExternalBankAccountUpdatedWebhookEvent</a>
 - <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalPaymentCreatedWebhookEvent">ExternalPaymentCreatedWebhookEvent</a>
