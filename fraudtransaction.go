@@ -81,9 +81,9 @@ type FraudTransactionGetResponse struct {
 	// reported.
 	TransactionToken string `json:"transaction_token" api:"required" format:"uuid"`
 	// Provides additional context or details about the fraud report.
-	Comment string `json:"comment"`
+	Comment string `json:"comment" api:"nullable"`
 	// Timestamp representing when the fraud report was created.
-	CreatedAt time.Time `json:"created_at" format:"date-time"`
+	CreatedAt time.Time `json:"created_at" api:"nullable" format:"date-time"`
 	// Specifies the type or category of fraud that the transaction is suspected or
 	// confirmed to involve, string (enum) supporting the following values:
 	//
@@ -105,9 +105,9 @@ type FraudTransactionGetResponse struct {
 	//   - `CARDHOLDER_MANIPULATION`: This type of fraud occurs when a fraudster
 	//     manipulates or coerces a legitimate cardholder into unauthorized transactions,
 	//     often through social engineering tactics.
-	FraudType FraudTransactionGetResponseFraudType `json:"fraud_type"`
+	FraudType FraudTransactionGetResponseFraudType `json:"fraud_type" api:"nullable"`
 	// Timestamp representing the last update to the fraud report.
-	UpdatedAt time.Time                       `json:"updated_at" format:"date-time"`
+	UpdatedAt time.Time                       `json:"updated_at" api:"nullable" format:"date-time"`
 	JSON      fraudTransactionGetResponseJSON `json:"-"`
 }
 
@@ -222,9 +222,9 @@ type FraudTransactionReportResponse struct {
 	// reported.
 	TransactionToken string `json:"transaction_token" api:"required" format:"uuid"`
 	// Provides additional context or details about the fraud report.
-	Comment string `json:"comment"`
+	Comment string `json:"comment" api:"nullable"`
 	// Timestamp representing when the fraud report was created.
-	CreatedAt time.Time `json:"created_at" format:"date-time"`
+	CreatedAt time.Time `json:"created_at" api:"nullable" format:"date-time"`
 	// Specifies the type or category of fraud that the transaction is suspected or
 	// confirmed to involve, string (enum) supporting the following values:
 	//
@@ -246,9 +246,9 @@ type FraudTransactionReportResponse struct {
 	//   - `CARDHOLDER_MANIPULATION`: This type of fraud occurs when a fraudster
 	//     manipulates or coerces a legitimate cardholder into unauthorized transactions,
 	//     often through social engineering tactics.
-	FraudType FraudTransactionReportResponseFraudType `json:"fraud_type"`
+	FraudType FraudTransactionReportResponseFraudType `json:"fraud_type" api:"nullable"`
 	// Timestamp representing the last update to the fraud report.
-	UpdatedAt time.Time                          `json:"updated_at" format:"date-time"`
+	UpdatedAt time.Time                          `json:"updated_at" api:"nullable" format:"date-time"`
 	JSON      fraudTransactionReportResponseJSON `json:"-"`
 }
 
