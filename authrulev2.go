@@ -7180,7 +7180,7 @@ type VelocityLimitPeriod struct {
 	// 7 is Sunday. Defaults to Monday if not specified.
 	DayOfWeek int64 `json:"day_of_week"`
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	// minimum value is 10 seconds, and the maximum value is 7776000 seconds (90 days).
 	Duration int64 `json:"duration"`
 	// The month to start from. 1 is January and 12 is December. Defaults to January if
 	// not specified.
@@ -7263,7 +7263,7 @@ func init() {
 
 type VelocityLimitPeriodTrailingWindowObject struct {
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	// minimum value is 10 seconds, and the maximum value is 7776000 seconds (90 days).
 	Duration int64                                       `json:"duration" api:"required"`
 	Type     VelocityLimitPeriodTrailingWindowObjectType `json:"type" api:"required"`
 	JSON     velocityLimitPeriodTrailingWindowObjectJSON `json:"-"`
@@ -7505,7 +7505,7 @@ type VelocityLimitPeriodParam struct {
 	// 7 is Sunday. Defaults to Monday if not specified.
 	DayOfWeek param.Field[int64] `json:"day_of_week"`
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	// minimum value is 10 seconds, and the maximum value is 7776000 seconds (90 days).
 	Duration param.Field[int64] `json:"duration"`
 	// The month to start from. 1 is January and 12 is December. Defaults to January if
 	// not specified.
@@ -7531,7 +7531,7 @@ type VelocityLimitPeriodUnionParam interface {
 
 type VelocityLimitPeriodTrailingWindowObjectParam struct {
 	// The size of the trailing window to calculate Spend Velocity over in seconds. The
-	// minimum value is 10 seconds, and the maximum value is 2678400 seconds (31 days).
+	// minimum value is 10 seconds, and the maximum value is 7776000 seconds (90 days).
 	Duration param.Field[int64]                                       `json:"duration" api:"required"`
 	Type     param.Field[VelocityLimitPeriodTrailingWindowObjectType] `json:"type" api:"required"`
 }
