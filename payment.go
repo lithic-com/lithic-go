@@ -1299,12 +1299,13 @@ const (
 	PaymentListParamsStatusDeclined PaymentListParamsStatus = "DECLINED"
 	PaymentListParamsStatusPending  PaymentListParamsStatus = "PENDING"
 	PaymentListParamsStatusReturned PaymentListParamsStatus = "RETURNED"
+	PaymentListParamsStatusReversed PaymentListParamsStatus = "REVERSED"
 	PaymentListParamsStatusSettled  PaymentListParamsStatus = "SETTLED"
 )
 
 func (r PaymentListParamsStatus) IsKnown() bool {
 	switch r {
-	case PaymentListParamsStatusDeclined, PaymentListParamsStatusPending, PaymentListParamsStatusReturned, PaymentListParamsStatusSettled:
+	case PaymentListParamsStatusDeclined, PaymentListParamsStatusPending, PaymentListParamsStatusReturned, PaymentListParamsStatusReversed, PaymentListParamsStatusSettled:
 		return true
 	}
 	return false
