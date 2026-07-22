@@ -573,6 +573,8 @@ type PaymentMethodAttributes struct {
 	OverrideCompanyName string `json:"override_company_name" api:"nullable"`
 	// Receipt routing number
 	ReceiptRoutingNumber string `json:"receipt_routing_number" api:"nullable"`
+	// Name of the recipient on ACH receipts. Reflects the originating bank's record
+	RecipientName string `json:"recipient_name" api:"nullable"`
 	// Payment details or invoice reference
 	RemittanceInformation string `json:"remittance_information" api:"nullable"`
 	// Number of retries attempted
@@ -602,6 +604,7 @@ type paymentMethodAttributesJSON struct {
 	MessageID             apijson.Field
 	OverrideCompanyName   apijson.Field
 	ReceiptRoutingNumber  apijson.Field
+	RecipientName         apijson.Field
 	RemittanceInformation apijson.Field
 	Retries               apijson.Field
 	ReturnReasonCode      apijson.Field
@@ -673,6 +676,8 @@ type PaymentMethodAttributesACHMethodAttributes struct {
 	OverrideCompanyName string `json:"override_company_name" api:"nullable"`
 	// Receipt routing number
 	ReceiptRoutingNumber string `json:"receipt_routing_number" api:"nullable"`
+	// Name of the recipient on ACH receipts. Reflects the originating bank's record
+	RecipientName string `json:"recipient_name" api:"nullable"`
 	// Number of retries attempted
 	Retries int64 `json:"retries" api:"nullable"`
 	// Return reason code if the transaction was returned
@@ -691,6 +696,7 @@ type paymentMethodAttributesACHMethodAttributesJSON struct {
 	CompanyID            apijson.Field
 	OverrideCompanyName  apijson.Field
 	ReceiptRoutingNumber apijson.Field
+	RecipientName        apijson.Field
 	Retries              apijson.Field
 	ReturnReasonCode     apijson.Field
 	TraceNumbers         apijson.Field
