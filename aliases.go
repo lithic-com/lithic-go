@@ -440,6 +440,12 @@ const FinancialEventTypeReturnedPaymentReversal = shared.FinancialEventTypeRetur
 const FinancialEventTypeLithicNetworkPayment = shared.FinancialEventTypeLithicNetworkPayment
 
 // This is an alias to an internal value.
+const FinancialEventTypeLithicProgramTransfer = shared.FinancialEventTypeLithicProgramTransfer
+
+// This is an alias to an internal value.
+const FinancialEventTypeBankProgramTransfer = shared.FinancialEventTypeBankProgramTransfer
+
+// This is an alias to an internal value.
 const FinancialEventTypeAnnual = shared.FinancialEventTypeAnnual
 
 // This is an alias to an internal value.

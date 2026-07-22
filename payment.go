@@ -274,11 +274,12 @@ const (
 	PaymentCategoryManagementDisbursement PaymentCategory = "MANAGEMENT_DISBURSEMENT"
 	PaymentCategoryHold                   PaymentCategory = "HOLD"
 	PaymentCategoryProgramFunding         PaymentCategory = "PROGRAM_FUNDING"
+	PaymentCategoryProgramTransfer        PaymentCategory = "PROGRAM_TRANSFER"
 )
 
 func (r PaymentCategory) IsKnown() bool {
 	switch r {
-	case PaymentCategoryACH, PaymentCategoryWire, PaymentCategoryBalanceOrFunding, PaymentCategoryFee, PaymentCategoryReward, PaymentCategoryAdjustment, PaymentCategoryDerecognition, PaymentCategoryDispute, PaymentCategoryCard, PaymentCategoryExternalACH, PaymentCategoryExternalCheck, PaymentCategoryExternalFednow, PaymentCategoryExternalRtp, PaymentCategoryExternalTransfer, PaymentCategoryExternalWire, PaymentCategoryManagementAdjustment, PaymentCategoryManagementDispute, PaymentCategoryManagementFee, PaymentCategoryManagementReward, PaymentCategoryManagementDisbursement, PaymentCategoryHold, PaymentCategoryProgramFunding:
+	case PaymentCategoryACH, PaymentCategoryWire, PaymentCategoryBalanceOrFunding, PaymentCategoryFee, PaymentCategoryReward, PaymentCategoryAdjustment, PaymentCategoryDerecognition, PaymentCategoryDispute, PaymentCategoryCard, PaymentCategoryExternalACH, PaymentCategoryExternalCheck, PaymentCategoryExternalFednow, PaymentCategoryExternalRtp, PaymentCategoryExternalTransfer, PaymentCategoryExternalWire, PaymentCategoryManagementAdjustment, PaymentCategoryManagementDispute, PaymentCategoryManagementFee, PaymentCategoryManagementReward, PaymentCategoryManagementDisbursement, PaymentCategoryHold, PaymentCategoryProgramFunding, PaymentCategoryProgramTransfer:
 		return true
 	}
 	return false
