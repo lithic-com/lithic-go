@@ -6926,13 +6926,14 @@ const (
 	ParsedWebhookEventCategoryManagementDisbursement ParsedWebhookEventCategory = "MANAGEMENT_DISBURSEMENT"
 	ParsedWebhookEventCategoryACH                    ParsedWebhookEventCategory = "ACH"
 	ParsedWebhookEventCategoryWire                   ParsedWebhookEventCategory = "WIRE"
+	ParsedWebhookEventCategoryStablecoin             ParsedWebhookEventCategory = "STABLECOIN"
 	ParsedWebhookEventCategoryCard                   ParsedWebhookEventCategory = "CARD"
 	ParsedWebhookEventCategoryHold                   ParsedWebhookEventCategory = "HOLD"
 )
 
 func (r ParsedWebhookEventCategory) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventCategoryAdjustment, ParsedWebhookEventCategoryBalanceOrFunding, ParsedWebhookEventCategoryDerecognition, ParsedWebhookEventCategoryDispute, ParsedWebhookEventCategoryFee, ParsedWebhookEventCategoryInternal, ParsedWebhookEventCategoryReward, ParsedWebhookEventCategoryProgramFunding, ParsedWebhookEventCategoryProgramTransfer, ParsedWebhookEventCategoryTransfer, ParsedWebhookEventCategoryExternalWire, ParsedWebhookEventCategoryExternalACH, ParsedWebhookEventCategoryExternalCheck, ParsedWebhookEventCategoryExternalFednow, ParsedWebhookEventCategoryExternalRtp, ParsedWebhookEventCategoryExternalTransfer, ParsedWebhookEventCategoryManagementFee, ParsedWebhookEventCategoryManagementDispute, ParsedWebhookEventCategoryManagementReward, ParsedWebhookEventCategoryManagementAdjustment, ParsedWebhookEventCategoryManagementDisbursement, ParsedWebhookEventCategoryACH, ParsedWebhookEventCategoryWire, ParsedWebhookEventCategoryCard, ParsedWebhookEventCategoryHold:
+	case ParsedWebhookEventCategoryAdjustment, ParsedWebhookEventCategoryBalanceOrFunding, ParsedWebhookEventCategoryDerecognition, ParsedWebhookEventCategoryDispute, ParsedWebhookEventCategoryFee, ParsedWebhookEventCategoryInternal, ParsedWebhookEventCategoryReward, ParsedWebhookEventCategoryProgramFunding, ParsedWebhookEventCategoryProgramTransfer, ParsedWebhookEventCategoryTransfer, ParsedWebhookEventCategoryExternalWire, ParsedWebhookEventCategoryExternalACH, ParsedWebhookEventCategoryExternalCheck, ParsedWebhookEventCategoryExternalFednow, ParsedWebhookEventCategoryExternalRtp, ParsedWebhookEventCategoryExternalTransfer, ParsedWebhookEventCategoryManagementFee, ParsedWebhookEventCategoryManagementDispute, ParsedWebhookEventCategoryManagementReward, ParsedWebhookEventCategoryManagementAdjustment, ParsedWebhookEventCategoryManagementDisbursement, ParsedWebhookEventCategoryACH, ParsedWebhookEventCategoryWire, ParsedWebhookEventCategoryStablecoin, ParsedWebhookEventCategoryCard, ParsedWebhookEventCategoryHold:
 		return true
 	}
 	return false

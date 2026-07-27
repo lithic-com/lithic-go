@@ -254,6 +254,7 @@ type PaymentCategory string
 const (
 	PaymentCategoryACH                    PaymentCategory = "ACH"
 	PaymentCategoryWire                   PaymentCategory = "WIRE"
+	PaymentCategoryStablecoin             PaymentCategory = "STABLECOIN"
 	PaymentCategoryBalanceOrFunding       PaymentCategory = "BALANCE_OR_FUNDING"
 	PaymentCategoryFee                    PaymentCategory = "FEE"
 	PaymentCategoryReward                 PaymentCategory = "REWARD"
@@ -279,7 +280,7 @@ const (
 
 func (r PaymentCategory) IsKnown() bool {
 	switch r {
-	case PaymentCategoryACH, PaymentCategoryWire, PaymentCategoryBalanceOrFunding, PaymentCategoryFee, PaymentCategoryReward, PaymentCategoryAdjustment, PaymentCategoryDerecognition, PaymentCategoryDispute, PaymentCategoryCard, PaymentCategoryExternalACH, PaymentCategoryExternalCheck, PaymentCategoryExternalFednow, PaymentCategoryExternalRtp, PaymentCategoryExternalTransfer, PaymentCategoryExternalWire, PaymentCategoryManagementAdjustment, PaymentCategoryManagementDispute, PaymentCategoryManagementFee, PaymentCategoryManagementReward, PaymentCategoryManagementDisbursement, PaymentCategoryHold, PaymentCategoryProgramFunding, PaymentCategoryProgramTransfer:
+	case PaymentCategoryACH, PaymentCategoryWire, PaymentCategoryStablecoin, PaymentCategoryBalanceOrFunding, PaymentCategoryFee, PaymentCategoryReward, PaymentCategoryAdjustment, PaymentCategoryDerecognition, PaymentCategoryDispute, PaymentCategoryCard, PaymentCategoryExternalACH, PaymentCategoryExternalCheck, PaymentCategoryExternalFednow, PaymentCategoryExternalRtp, PaymentCategoryExternalTransfer, PaymentCategoryExternalWire, PaymentCategoryManagementAdjustment, PaymentCategoryManagementDispute, PaymentCategoryManagementFee, PaymentCategoryManagementReward, PaymentCategoryManagementDisbursement, PaymentCategoryHold, PaymentCategoryProgramFunding, PaymentCategoryProgramTransfer:
 		return true
 	}
 	return false
@@ -369,6 +370,13 @@ type PaymentEvent struct {
 	//     Reserve and funds returned to sender.
 	//   - `WIRE_RETURN_OUTBOUND_REJECTED` - Outbound wire return rejected by the Federal
 	//     Reserve.
+	//
+	// Stablecoin events:
+	//
+	//   - `STABLECOIN_RECEIVED` - Stablecoin pay-in received on-chain and pending
+	//     release to available balance.
+	//   - `STABLECOIN_REVIEWED` - Stablecoin pay-in has completed the review process.
+	//   - `STABLECOIN_SETTLED` - Stablecoin pay-in funds released to available balance.
 	Type PaymentEventsType `json:"type" api:"required"`
 	// More detailed reasons for the event
 	DetailedResults []PaymentEventsDetailedResult `json:"detailed_results"`
@@ -469,6 +477,13 @@ func (r PaymentEventsResult) IsKnown() bool {
 //     Reserve and funds returned to sender.
 //   - `WIRE_RETURN_OUTBOUND_REJECTED` - Outbound wire return rejected by the Federal
 //     Reserve.
+//
+// Stablecoin events:
+//
+//   - `STABLECOIN_RECEIVED` - Stablecoin pay-in received on-chain and pending
+//     release to available balance.
+//   - `STABLECOIN_REVIEWED` - Stablecoin pay-in has completed the review process.
+//   - `STABLECOIN_SETTLED` - Stablecoin pay-in funds released to available balance.
 type PaymentEventsType string
 
 const (
@@ -494,11 +509,14 @@ const (
 	PaymentEventsTypeWireReturnOutboundSent      PaymentEventsType = "WIRE_RETURN_OUTBOUND_SENT"
 	PaymentEventsTypeWireReturnOutboundSettled   PaymentEventsType = "WIRE_RETURN_OUTBOUND_SETTLED"
 	PaymentEventsTypeWireReturnOutboundRejected  PaymentEventsType = "WIRE_RETURN_OUTBOUND_REJECTED"
+	PaymentEventsTypeStablecoinReceived          PaymentEventsType = "STABLECOIN_RECEIVED"
+	PaymentEventsTypeStablecoinReviewed          PaymentEventsType = "STABLECOIN_REVIEWED"
+	PaymentEventsTypeStablecoinSettled           PaymentEventsType = "STABLECOIN_SETTLED"
 )
 
 func (r PaymentEventsType) IsKnown() bool {
 	switch r {
-	case PaymentEventsTypeACHOriginationCancelled, PaymentEventsTypeACHOriginationInitiated, PaymentEventsTypeACHOriginationProcessed, PaymentEventsTypeACHOriginationRejected, PaymentEventsTypeACHOriginationReleased, PaymentEventsTypeACHOriginationReviewed, PaymentEventsTypeACHOriginationSettled, PaymentEventsTypeACHReceiptProcessed, PaymentEventsTypeACHReceiptReleased, PaymentEventsTypeACHReceiptReleasedEarly, PaymentEventsTypeACHReceiptSettled, PaymentEventsTypeACHReturnInitiated, PaymentEventsTypeACHReturnProcessed, PaymentEventsTypeACHReturnRejected, PaymentEventsTypeACHReturnSettled, PaymentEventsTypeWireTransferInboundReceived, PaymentEventsTypeWireTransferInboundSettled, PaymentEventsTypeWireTransferInboundBlocked, PaymentEventsTypeWireReturnOutboundInitiated, PaymentEventsTypeWireReturnOutboundSent, PaymentEventsTypeWireReturnOutboundSettled, PaymentEventsTypeWireReturnOutboundRejected:
+	case PaymentEventsTypeACHOriginationCancelled, PaymentEventsTypeACHOriginationInitiated, PaymentEventsTypeACHOriginationProcessed, PaymentEventsTypeACHOriginationRejected, PaymentEventsTypeACHOriginationReleased, PaymentEventsTypeACHOriginationReviewed, PaymentEventsTypeACHOriginationSettled, PaymentEventsTypeACHReceiptProcessed, PaymentEventsTypeACHReceiptReleased, PaymentEventsTypeACHReceiptReleasedEarly, PaymentEventsTypeACHReceiptSettled, PaymentEventsTypeACHReturnInitiated, PaymentEventsTypeACHReturnProcessed, PaymentEventsTypeACHReturnRejected, PaymentEventsTypeACHReturnSettled, PaymentEventsTypeWireTransferInboundReceived, PaymentEventsTypeWireTransferInboundSettled, PaymentEventsTypeWireTransferInboundBlocked, PaymentEventsTypeWireReturnOutboundInitiated, PaymentEventsTypeWireReturnOutboundSent, PaymentEventsTypeWireReturnOutboundSettled, PaymentEventsTypeWireReturnOutboundRejected, PaymentEventsTypeStablecoinReceived, PaymentEventsTypeStablecoinReviewed, PaymentEventsTypeStablecoinSettled:
 		return true
 	}
 	return false
