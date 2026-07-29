@@ -55,7 +55,7 @@ func TestTransactionMonitoringCaseUpdateWithOptionalParams(t *testing.T) {
 			ActorToken:      lithic.F("actor_token"),
 			Assignee:        lithic.F("assignee"),
 			Priority:        lithic.F(lithic.CasePriorityLow),
-			Resolution:      lithic.F(lithic.ResolutionOutcomeConfirmedFraud),
+			Resolution:      lithic.F("resolution"),
 			ResolutionNotes: lithic.F("resolution_notes"),
 			SlaDeadline:     lithic.F(time.Now()),
 			Status:          lithic.F(lithic.CaseStatusOpen),

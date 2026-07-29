@@ -26,8 +26,9 @@ func TestTransactionMonitoringQueueNewWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.TransactionMonitoring.Queues.New(context.TODO(), lithic.TransactionMonitoringQueueNewParams{
-		Name:        lithic.F("name"),
-		Description: lithic.F("description"),
+		Name:               lithic.F("name"),
+		AllowedResolutions: lithic.F([]string{"x"}),
+		Description:        lithic.F("description"),
 	})
 	if err != nil {
 		var apierr *lithic.Error
@@ -76,8 +77,9 @@ func TestTransactionMonitoringQueueUpdateWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.TransactionMonitoringQueueUpdateParams{
-			Description: lithic.F("description"),
-			Name:        lithic.F("name"),
+			AllowedResolutions: lithic.F([]string{"x"}),
+			Description:        lithic.F("description"),
+			Name:               lithic.F("name"),
 		},
 	)
 	if err != nil {

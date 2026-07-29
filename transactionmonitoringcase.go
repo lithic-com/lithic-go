@@ -624,15 +624,9 @@ type MonitoringCase struct {
 	Priority CasePriority `json:"priority" api:"required"`
 	// Token of the queue the case belongs to
 	QueueToken string `json:"queue_token" api:"required" format:"uuid"`
-	// Outcome recorded when a case is resolved:
-	//
-	//   - `CONFIRMED_FRAUD` - The reviewed activity was confirmed to be fraudulent
-	//   - `SUSPICIOUS_ACTIVITY` - The activity is suspicious but not confirmed fraud
-	//   - `FALSE_POSITIVE` - The activity was legitimate and the alert was a false
-	//     positive
-	//   - `NO_ACTION_REQUIRED` - No further action is required
-	//   - `ESCALATED_EXTERNAL` - The case was escalated to an external party
-	Resolution ResolutionOutcome `json:"resolution" api:"required,nullable"`
+	// Outcome recorded when the case was resolved, from the `allowed_resolutions`
+	// configured on the case's queue
+	Resolution string `json:"resolution" api:"required,nullable"`
 	// Free-form notes describing the resolution
 	ResolutionNotes string `json:"resolution_notes" api:"required,nullable"`
 	// Date and time at which the case was resolved
@@ -692,32 +686,6 @@ func (r monitoringCaseJSON) RawJSON() string {
 	return r.raw
 }
 
-// Outcome recorded when a case is resolved:
-//
-//   - `CONFIRMED_FRAUD` - The reviewed activity was confirmed to be fraudulent
-//   - `SUSPICIOUS_ACTIVITY` - The activity is suspicious but not confirmed fraud
-//   - `FALSE_POSITIVE` - The activity was legitimate and the alert was a false
-//     positive
-//   - `NO_ACTION_REQUIRED` - No further action is required
-//   - `ESCALATED_EXTERNAL` - The case was escalated to an external party
-type ResolutionOutcome string
-
-const (
-	ResolutionOutcomeConfirmedFraud     ResolutionOutcome = "CONFIRMED_FRAUD"
-	ResolutionOutcomeSuspiciousActivity ResolutionOutcome = "SUSPICIOUS_ACTIVITY"
-	ResolutionOutcomeFalsePositive      ResolutionOutcome = "FALSE_POSITIVE"
-	ResolutionOutcomeNoActionRequired   ResolutionOutcome = "NO_ACTION_REQUIRED"
-	ResolutionOutcomeEscalatedExternal  ResolutionOutcome = "ESCALATED_EXTERNAL"
-)
-
-func (r ResolutionOutcome) IsKnown() bool {
-	switch r {
-	case ResolutionOutcomeConfirmedFraud, ResolutionOutcomeSuspiciousActivity, ResolutionOutcomeFalsePositive, ResolutionOutcomeNoActionRequired, ResolutionOutcomeEscalatedExternal:
-		return true
-	}
-	return false
-}
-
 type TransactionMonitoringCaseUpdateParams struct {
 	// Optional client-provided identifier for the actor performing this action,
 	// recorded on the resulting activity entry. This value is supplied by the client
@@ -727,15 +695,9 @@ type TransactionMonitoringCaseUpdateParams struct {
 	Assignee param.Field[string] `json:"assignee"`
 	// Priority level of a case, controlling queue ordering and SLA urgency
 	Priority param.Field[CasePriority] `json:"priority"`
-	// Outcome recorded when a case is resolved:
-	//
-	//   - `CONFIRMED_FRAUD` - The reviewed activity was confirmed to be fraudulent
-	//   - `SUSPICIOUS_ACTIVITY` - The activity is suspicious but not confirmed fraud
-	//   - `FALSE_POSITIVE` - The activity was legitimate and the alert was a false
-	//     positive
-	//   - `NO_ACTION_REQUIRED` - No further action is required
-	//   - `ESCALATED_EXTERNAL` - The case was escalated to an external party
-	Resolution param.Field[ResolutionOutcome] `json:"resolution"`
+	// Resolution to record on the case. Must be one of the `allowed_resolutions`
+	// configured on the case's queue, otherwise the request is rejected with a `400`
+	Resolution param.Field[string] `json:"resolution"`
 	// Notes describing the resolution
 	ResolutionNotes param.Field[string] `json:"resolution_notes"`
 	// New SLA deadline for the case, or `null` to clear it
