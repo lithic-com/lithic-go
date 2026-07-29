@@ -110,6 +110,9 @@ func (r *TransactionMonitoringQueueService) Delete(ctx context.Context, queueTok
 type Queue struct {
 	// Globally unique identifier for the queue
 	Token string `json:"token" api:"required" format:"uuid"`
+	// Resolutions that can be recorded on cases in this queue. Always the effective
+	// list: the queue's own values when it defines them, otherwise the default list
+	AllowedResolutions []string `json:"allowed_resolutions" api:"required"`
 	// Number of cases in the queue, broken down by status. A status is omitted when
 	// the queue has no cases in that status
 	CaseCounts QueueCaseCounts `json:"case_counts" api:"required"`
@@ -126,14 +129,15 @@ type Queue struct {
 
 // queueJSON contains the JSON metadata for the struct [Queue]
 type queueJSON struct {
-	Token       apijson.Field
-	CaseCounts  apijson.Field
-	Created     apijson.Field
-	Description apijson.Field
-	Name        apijson.Field
-	Updated     apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+	Token              apijson.Field
+	AllowedResolutions apijson.Field
+	CaseCounts         apijson.Field
+	Created            apijson.Field
+	Description        apijson.Field
+	Name               apijson.Field
+	Updated            apijson.Field
+	raw                string
+	ExtraFields        map[string]apijson.Field
 }
 
 func (r *Queue) UnmarshalJSON(data []byte) (err error) {
@@ -185,6 +189,10 @@ func (r queueCaseCountsJSON) RawJSON() string {
 type TransactionMonitoringQueueNewParams struct {
 	// Human-readable name of the queue
 	Name param.Field[string] `json:"name" api:"required"`
+	// Resolutions that can be recorded on cases in this queue. Omit or send `null` to
+	// use the default list. Values are free-form labels and must be non-empty and
+	// unique
+	AllowedResolutions param.Field[[]string] `json:"allowed_resolutions"`
 	// Optional description of the queue
 	Description param.Field[string] `json:"description"`
 }
@@ -194,6 +202,11 @@ func (r TransactionMonitoringQueueNewParams) MarshalJSON() (data []byte, err err
 }
 
 type TransactionMonitoringQueueUpdateParams struct {
+	// New list of resolutions that can be recorded on cases in this queue, or `null`
+	// to revert to the default list. Values are free-form labels and must be non-empty
+	// and unique. Changing the list only affects what is selectable going forward; the
+	// `resolution` already stored on a case is preserved as-is
+	AllowedResolutions param.Field[[]string] `json:"allowed_resolutions"`
 	// New description for the queue, or `null` to clear it
 	Description param.Field[string] `json:"description"`
 	// New name for the queue
