@@ -1,5 +1,35 @@
 # Changelog
 
+## 0.116.0 (2026-07-30)
+
+Full Changelog: [v0.115.0...v0.116.0](https://github.com/lithic-com/lithic-go/compare/v0.115.0...v0.116.0)
+
+### Features
+
+* **api:** add disposition_reasons to queues, change resolution to string in cases ([9ea480f](https://github.com/lithic-com/lithic-go/commit/9ea480fddc7d1d2ebd3bc34b78938ed050b74567))
+* **api:** add embed.session_generated and embed.viewed webhook event types ([8390f53](https://github.com/lithic-com/lithic-go/commit/8390f539f5b3a7318b3f383a4e4427f71f0ac8c1))
+* **api:** add PAYMENT event type to book transfers ([030f8d1](https://github.com/lithic-com/lithic-go/commit/030f8d1641d8f3885039f2e597d97553c398ff96))
+* **api:** add PROGRAM_TRANSFER category and event types to financial transaction types ([4f41a62](https://github.com/lithic-com/lithic-go/commit/4f41a62df97ba7b41f2db2a06e0182cb3d399e97))
+* **api:** add RECIPIENT_NAME attribute to auth rule v2 ACH conditions ([a4cc7bd](https://github.com/lithic-com/lithic-go/commit/a4cc7bd5bd1f87df30c9af5590dc6885b7f4d835))
+* **api:** add recipient_name field to payment method attributes ([8e7e6da](https://github.com/lithic-com/lithic-go/commit/8e7e6dabd2b9dbef32ad087cfa630803a7bbbd3c))
+* **api:** add REVERSED status to payment list parameters ([778117c](https://github.com/lithic-com/lithic-go/commit/778117c555bbed242991722481bb8c2ed1637db7))
+* **api:** add stablecoin category and events to activity/payments/statements/webhooks ([94db1b5](https://github.com/lithic-com/lithic-go/commit/94db1b548cee626a1f33b5cc5c85c20f923f5e61))
+* **stlc:** configurable CI runner and private-production-repo support in workflow templates ([38d2c5f](https://github.com/lithic-com/lithic-go/commit/38d2c5fe79e876071fce56f643988b5df2cd1c91))
+
+
+### Bug Fixes
+
+* **types:** make comment/created_at/fraud_type/updated_at nullable in fraud_transaction ([93e72ca](https://github.com/lithic-com/lithic-go/commit/93e72caa416a97b8b97bc333ae9b945794553144))
+
+
+### Documentation
+
+* **api:** clarify last_transaction_event_token behavior in financial account balance ([183ac4a](https://github.com/lithic-com/lithic-go/commit/183ac4a4b870642e43e6385eb874faefd78e4bb8))
+* **api:** clarify SimulateClearing supports multiple calls ([be5af7c](https://github.com/lithic-com/lithic-go/commit/be5af7c05e9876ca298bd5f7557960a63aa18d58))
+* **api:** update category parameter description in external payment list ([b140a08](https://github.com/lithic-com/lithic-go/commit/b140a0824b51b1a08b28fd257457387fd93cc418))
+* **api:** update max duration for velocity limit period in auth rule v2 ([7ceb706](https://github.com/lithic-com/lithic-go/commit/7ceb7065bc83e6f5c9413def796b4cdd76b8da63))
+* **types:** clarify dispute event type descriptions ([0d4a3b0](https://github.com/lithic-com/lithic-go/commit/0d4a3b07a2c3d4c421411249326972cb75e83e61))
+
 ## 0.115.0 (2026-06-29)
 
 Full Changelog: [v0.114.0...v0.115.0](https://github.com/lithic-com/lithic-go/compare/v0.114.0...v0.115.0)
