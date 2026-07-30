@@ -2292,6 +2292,7 @@ type ConditionalACHActionParametersCondition struct {
 	//     (Corporate Credit or Debit Entry), WEB (Internet-Initiated/Mobile Entry), TEL
 	//     (Telephone-Initiated Entry), and others.
 	//   - `MEMO`: Optional memo or description field included with the ACH transaction.
+	//   - `RECIPIENT_NAME`: The name of the recipient of the ACH transaction.
 	Attribute ConditionalACHActionParametersConditionsAttribute `json:"attribute" api:"required"`
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation" api:"required"`
@@ -2333,6 +2334,7 @@ func (r conditionalACHActionParametersConditionJSON) RawJSON() string {
 //     (Corporate Credit or Debit Entry), WEB (Internet-Initiated/Mobile Entry), TEL
 //     (Telephone-Initiated Entry), and others.
 //   - `MEMO`: Optional memo or description field included with the ACH transaction.
+//   - `RECIPIENT_NAME`: The name of the recipient of the ACH transaction.
 type ConditionalACHActionParametersConditionsAttribute string
 
 const (
@@ -2342,11 +2344,12 @@ const (
 	ConditionalACHActionParametersConditionsAttributeTransactionAmount ConditionalACHActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
 	ConditionalACHActionParametersConditionsAttributeSecCode           ConditionalACHActionParametersConditionsAttribute = "SEC_CODE"
 	ConditionalACHActionParametersConditionsAttributeMemo              ConditionalACHActionParametersConditionsAttribute = "MEMO"
+	ConditionalACHActionParametersConditionsAttributeRecipientName     ConditionalACHActionParametersConditionsAttribute = "RECIPIENT_NAME"
 )
 
 func (r ConditionalACHActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case ConditionalACHActionParametersConditionsAttributeCompanyName, ConditionalACHActionParametersConditionsAttributeCompanyID, ConditionalACHActionParametersConditionsAttributeTimestamp, ConditionalACHActionParametersConditionsAttributeTransactionAmount, ConditionalACHActionParametersConditionsAttributeSecCode, ConditionalACHActionParametersConditionsAttributeMemo:
+	case ConditionalACHActionParametersConditionsAttributeCompanyName, ConditionalACHActionParametersConditionsAttributeCompanyID, ConditionalACHActionParametersConditionsAttributeTimestamp, ConditionalACHActionParametersConditionsAttributeTransactionAmount, ConditionalACHActionParametersConditionsAttributeSecCode, ConditionalACHActionParametersConditionsAttributeMemo, ConditionalACHActionParametersConditionsAttributeRecipientName:
 		return true
 	}
 	return false
