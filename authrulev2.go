@@ -626,6 +626,17 @@ type AuthRuleCurrentVersionParameters struct {
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
 	LimitAmount int64 `json:"limit_amount" api:"nullable"`
+	// The maximum amount of cash spend velocity allowed in the period in minor units
+	// (the smallest unit of a currency, e.g. cents for USD). Cash spend covers ATM
+	// withdrawals, cash disbursements, and purchases with cashback. Transactions
+	// exceeding this limit will be declined.
+	LimitCashAmount int64 `json:"limit_cash_amount" api:"nullable"`
+	// The number of cash spend velocity impacting transactions may not exceed this
+	// limit in the period. Transactions exceeding this limit will be declined. A cash
+	// velocity impacting transaction is an ATM withdrawal, cash disbursement, or
+	// purchase with cashback that has been authorized, and optionally settled, or a
+	// force post (a transaction that settled without prior authorization).
+	LimitCashCount int64 `json:"limit_cash_count" api:"nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
@@ -645,18 +656,20 @@ type AuthRuleCurrentVersionParameters struct {
 // authRuleCurrentVersionParametersJSON contains the JSON metadata for the struct
 // [AuthRuleCurrentVersionParameters]
 type authRuleCurrentVersionParametersJSON struct {
-	Action      apijson.Field
-	Code        apijson.Field
-	Conditions  apijson.Field
-	Features    apijson.Field
-	Filters     apijson.Field
-	LimitAmount apijson.Field
-	LimitCount  apijson.Field
-	Merchants   apijson.Field
-	Period      apijson.Field
-	Scope       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+	Action          apijson.Field
+	Code            apijson.Field
+	Conditions      apijson.Field
+	Features        apijson.Field
+	Filters         apijson.Field
+	LimitAmount     apijson.Field
+	LimitCashAmount apijson.Field
+	LimitCashCount  apijson.Field
+	LimitCount      apijson.Field
+	Merchants       apijson.Field
+	Period          apijson.Field
+	Scope           apijson.Field
+	raw             string
+	ExtraFields     map[string]apijson.Field
 }
 
 func (r authRuleCurrentVersionParametersJSON) RawJSON() string {
@@ -836,6 +849,17 @@ type AuthRuleDraftVersionParameters struct {
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
 	LimitAmount int64 `json:"limit_amount" api:"nullable"`
+	// The maximum amount of cash spend velocity allowed in the period in minor units
+	// (the smallest unit of a currency, e.g. cents for USD). Cash spend covers ATM
+	// withdrawals, cash disbursements, and purchases with cashback. Transactions
+	// exceeding this limit will be declined.
+	LimitCashAmount int64 `json:"limit_cash_amount" api:"nullable"`
+	// The number of cash spend velocity impacting transactions may not exceed this
+	// limit in the period. Transactions exceeding this limit will be declined. A cash
+	// velocity impacting transaction is an ATM withdrawal, cash disbursement, or
+	// purchase with cashback that has been authorized, and optionally settled, or a
+	// force post (a transaction that settled without prior authorization).
+	LimitCashCount int64 `json:"limit_cash_count" api:"nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
@@ -855,18 +879,20 @@ type AuthRuleDraftVersionParameters struct {
 // authRuleDraftVersionParametersJSON contains the JSON metadata for the struct
 // [AuthRuleDraftVersionParameters]
 type authRuleDraftVersionParametersJSON struct {
-	Action      apijson.Field
-	Code        apijson.Field
-	Conditions  apijson.Field
-	Features    apijson.Field
-	Filters     apijson.Field
-	LimitAmount apijson.Field
-	LimitCount  apijson.Field
-	Merchants   apijson.Field
-	Period      apijson.Field
-	Scope       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+	Action          apijson.Field
+	Code            apijson.Field
+	Conditions      apijson.Field
+	Features        apijson.Field
+	Filters         apijson.Field
+	LimitAmount     apijson.Field
+	LimitCashAmount apijson.Field
+	LimitCashCount  apijson.Field
+	LimitCount      apijson.Field
+	Merchants       apijson.Field
+	Period          apijson.Field
+	Scope           apijson.Field
+	raw             string
+	ExtraFields     map[string]apijson.Field
 }
 
 func (r authRuleDraftVersionParametersJSON) RawJSON() string {
@@ -1249,6 +1275,17 @@ type AuthRuleVersionParameters struct {
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
 	LimitAmount int64 `json:"limit_amount" api:"nullable"`
+	// The maximum amount of cash spend velocity allowed in the period in minor units
+	// (the smallest unit of a currency, e.g. cents for USD). Cash spend covers ATM
+	// withdrawals, cash disbursements, and purchases with cashback. Transactions
+	// exceeding this limit will be declined.
+	LimitCashAmount int64 `json:"limit_cash_amount" api:"nullable"`
+	// The number of cash spend velocity impacting transactions may not exceed this
+	// limit in the period. Transactions exceeding this limit will be declined. A cash
+	// velocity impacting transaction is an ATM withdrawal, cash disbursement, or
+	// purchase with cashback that has been authorized, and optionally settled, or a
+	// force post (a transaction that settled without prior authorization).
+	LimitCashCount int64 `json:"limit_cash_count" api:"nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
@@ -1268,18 +1305,20 @@ type AuthRuleVersionParameters struct {
 // authRuleVersionParametersJSON contains the JSON metadata for the struct
 // [AuthRuleVersionParameters]
 type authRuleVersionParametersJSON struct {
-	Action      apijson.Field
-	Code        apijson.Field
-	Conditions  apijson.Field
-	Features    apijson.Field
-	Filters     apijson.Field
-	LimitAmount apijson.Field
-	LimitCount  apijson.Field
-	Merchants   apijson.Field
-	Period      apijson.Field
-	Scope       apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+	Action          apijson.Field
+	Code            apijson.Field
+	Conditions      apijson.Field
+	Features        apijson.Field
+	Filters         apijson.Field
+	LimitAmount     apijson.Field
+	LimitCashAmount apijson.Field
+	LimitCashCount  apijson.Field
+	LimitCount      apijson.Field
+	Merchants       apijson.Field
+	Period          apijson.Field
+	Scope           apijson.Field
+	raw             string
+	ExtraFields     map[string]apijson.Field
 }
 
 func (r authRuleVersionParametersJSON) RawJSON() string {
@@ -7121,6 +7160,17 @@ type VelocityLimitParams struct {
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
 	LimitAmount int64 `json:"limit_amount" api:"nullable"`
+	// The maximum amount of cash spend velocity allowed in the period in minor units
+	// (the smallest unit of a currency, e.g. cents for USD). Cash spend covers ATM
+	// withdrawals, cash disbursements, and purchases with cashback. Transactions
+	// exceeding this limit will be declined.
+	LimitCashAmount int64 `json:"limit_cash_amount" api:"nullable"`
+	// The number of cash spend velocity impacting transactions may not exceed this
+	// limit in the period. Transactions exceeding this limit will be declined. A cash
+	// velocity impacting transaction is an ATM withdrawal, cash disbursement, or
+	// purchase with cashback that has been authorized, and optionally settled, or a
+	// force post (a transaction that settled without prior authorization).
+	LimitCashCount int64 `json:"limit_cash_count" api:"nullable"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
@@ -7133,13 +7183,15 @@ type VelocityLimitParams struct {
 // velocityLimitParamsJSON contains the JSON metadata for the struct
 // [VelocityLimitParams]
 type velocityLimitParamsJSON struct {
-	Period      apijson.Field
-	Scope       apijson.Field
-	Filters     apijson.Field
-	LimitAmount apijson.Field
-	LimitCount  apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+	Period          apijson.Field
+	Scope           apijson.Field
+	Filters         apijson.Field
+	LimitAmount     apijson.Field
+	LimitCashAmount apijson.Field
+	LimitCashCount  apijson.Field
+	LimitCount      apijson.Field
+	raw             string
+	ExtraFields     map[string]apijson.Field
 }
 
 func (r *VelocityLimitParams) UnmarshalJSON(data []byte) (err error) {
@@ -9938,6 +9990,17 @@ type AuthRuleV2NewParamsBodyAccountLevelRuleParameters struct {
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
 	LimitAmount param.Field[int64] `json:"limit_amount"`
+	// The maximum amount of cash spend velocity allowed in the period in minor units
+	// (the smallest unit of a currency, e.g. cents for USD). Cash spend covers ATM
+	// withdrawals, cash disbursements, and purchases with cashback. Transactions
+	// exceeding this limit will be declined.
+	LimitCashAmount param.Field[int64] `json:"limit_cash_amount"`
+	// The number of cash spend velocity impacting transactions may not exceed this
+	// limit in the period. Transactions exceeding this limit will be declined. A cash
+	// velocity impacting transaction is an ATM withdrawal, cash disbursement, or
+	// purchase with cashback that has been authorized, and optionally settled, or a
+	// force post (a transaction that settled without prior authorization).
+	LimitCashCount param.Field[int64] `json:"limit_cash_count"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
@@ -10068,6 +10131,17 @@ type AuthRuleV2NewParamsBodyCardLevelRuleParameters struct {
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
 	LimitAmount param.Field[int64] `json:"limit_amount"`
+	// The maximum amount of cash spend velocity allowed in the period in minor units
+	// (the smallest unit of a currency, e.g. cents for USD). Cash spend covers ATM
+	// withdrawals, cash disbursements, and purchases with cashback. Transactions
+	// exceeding this limit will be declined.
+	LimitCashAmount param.Field[int64] `json:"limit_cash_amount"`
+	// The number of cash spend velocity impacting transactions may not exceed this
+	// limit in the period. Transactions exceeding this limit will be declined. A cash
+	// velocity impacting transaction is an ATM withdrawal, cash disbursement, or
+	// purchase with cashback that has been authorized, and optionally settled, or a
+	// force post (a transaction that settled without prior authorization).
+	LimitCashCount param.Field[int64] `json:"limit_cash_count"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
@@ -10204,6 +10278,17 @@ type AuthRuleV2NewParamsBodyProgramLevelRuleParameters struct {
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
 	LimitAmount param.Field[int64] `json:"limit_amount"`
+	// The maximum amount of cash spend velocity allowed in the period in minor units
+	// (the smallest unit of a currency, e.g. cents for USD). Cash spend covers ATM
+	// withdrawals, cash disbursements, and purchases with cashback. Transactions
+	// exceeding this limit will be declined.
+	LimitCashAmount param.Field[int64] `json:"limit_cash_amount"`
+	// The number of cash spend velocity impacting transactions may not exceed this
+	// limit in the period. Transactions exceeding this limit will be declined. A cash
+	// velocity impacting transaction is an ATM withdrawal, cash disbursement, or
+	// purchase with cashback that has been authorized, and optionally settled, or a
+	// force post (a transaction that settled without prior authorization).
+	LimitCashCount param.Field[int64] `json:"limit_cash_count"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
@@ -10577,6 +10662,17 @@ type AuthRuleV2DraftParamsParameters struct {
 	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
 	// limit will be declined.
 	LimitAmount param.Field[int64] `json:"limit_amount"`
+	// The maximum amount of cash spend velocity allowed in the period in minor units
+	// (the smallest unit of a currency, e.g. cents for USD). Cash spend covers ATM
+	// withdrawals, cash disbursements, and purchases with cashback. Transactions
+	// exceeding this limit will be declined.
+	LimitCashAmount param.Field[int64] `json:"limit_cash_amount"`
+	// The number of cash spend velocity impacting transactions may not exceed this
+	// limit in the period. Transactions exceeding this limit will be declined. A cash
+	// velocity impacting transaction is an ATM withdrawal, cash disbursement, or
+	// purchase with cashback that has been authorized, and optionally settled, or a
+	// force post (a transaction that settled without prior authorization).
+	LimitCashCount param.Field[int64] `json:"limit_cash_count"`
 	// The number of spend velocity impacting transactions may not exceed this limit in
 	// the period. Transactions exceeding this limit will be declined. A spend velocity
 	// impacting transaction is a transaction that has been authorized, and optionally
