@@ -178,10 +178,13 @@ type FinancialAccount struct {
 	Type      FinancialAccountType      `json:"type" api:"required"`
 	Updated   time.Time                 `json:"updated" api:"required" format:"date-time"`
 	// User-defined status for the financial account
-	UserDefinedStatus string               `json:"user_defined_status" api:"required,nullable"`
-	AccountNumber     string               `json:"account_number" api:"nullable"`
-	RoutingNumber     string               `json:"routing_number" api:"nullable"`
-	JSON              financialAccountJSON `json:"-"`
+	UserDefinedStatus string `json:"user_defined_status" api:"required,nullable"`
+	AccountNumber     string `json:"account_number" api:"nullable"`
+	// Provisioned blockchain deposit addresses for this financial account, keyed by
+	// the blockchain network that each address belongs to
+	BlockchainAddresses map[string]string    `json:"blockchain_addresses" api:"nullable"`
+	RoutingNumber       string               `json:"routing_number" api:"nullable"`
+	JSON                financialAccountJSON `json:"-"`
 }
 
 // financialAccountJSON contains the JSON metadata for the struct
@@ -199,6 +202,7 @@ type financialAccountJSON struct {
 	Updated             apijson.Field
 	UserDefinedStatus   apijson.Field
 	AccountNumber       apijson.Field
+	BlockchainAddresses apijson.Field
 	RoutingNumber       apijson.Field
 	raw                 string
 	ExtraFields         map[string]apijson.Field
