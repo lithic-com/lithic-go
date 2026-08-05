@@ -784,7 +784,7 @@ func (r TokenizationResendActivationCodeParamsActivationMethodType) IsKnown() bo
 }
 
 type TokenizationSimulateParams struct {
-	// The three digit cvv for the card.
+	// The three or four digit CVV for the card. AMEX cards use four digit CVVs.
 	Cvv param.Field[string] `json:"cvv" api:"required"`
 	// The expiration date of the card in 'MM/YY' format.
 	ExpirationDate param.Field[string] `json:"expiration_date" api:"required"`
