@@ -373,7 +373,7 @@ func (r *CardService) WebProvision(ctx context.Context, cardToken string, body C
 
 // Card details with potentially PCI sensitive information for Enterprise customers
 type Card struct {
-	// Three digit cvv printed on the back of the card.
+	// Three or four digit CVV printed on the card. Amex cards use four digit CVVs
 	Cvv string `json:"cvv"`
 	// Primary Account Number (PAN) (i.e. the card number). Customers must be PCI
 	// compliant to have PAN returned as a field in production. Please contact
