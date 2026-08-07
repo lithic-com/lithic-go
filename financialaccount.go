@@ -181,7 +181,8 @@ type FinancialAccount struct {
 	UserDefinedStatus string `json:"user_defined_status" api:"required,nullable"`
 	AccountNumber     string `json:"account_number" api:"nullable"`
 	// Provisioned blockchain deposit addresses for this financial account, keyed by
-	// the blockchain network that each address belongs to
+	// the full name of the blockchain network that each address belongs to (e.g.
+	// `ETHEREUM`)
 	BlockchainAddresses map[string]string    `json:"blockchain_addresses" api:"nullable"`
 	RoutingNumber       string               `json:"routing_number" api:"nullable"`
 	JSON                financialAccountJSON `json:"-"`
