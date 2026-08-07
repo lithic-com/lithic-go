@@ -375,14 +375,24 @@ type PaymentEvent struct {
 	//
 	//   - `STABLECOIN_RECEIVED` - Stablecoin pay-in received on-chain and pending
 	//     release to available balance.
-	//   - `STABLECOIN_REVIEWED` - Stablecoin pay-in has completed the review process.
-	//   - `STABLECOIN_SETTLED` - Stablecoin pay-in funds released to available balance.
+	//   - `STABLECOIN_INITIATED` - Stablecoin withdrawal initiated, with the funds
+	//     placed on hold.
+	//   - `STABLECOIN_REVIEWED` - Stablecoin pay-in or withdrawal has completed the
+	//     review process.
+	//   - `STABLECOIN_SENT` - Stablecoin withdrawal accepted for on-chain submission to
+	//     the destination address, and pending confirmation.
+	//   - `STABLECOIN_SETTLED` - Stablecoin pay-in funds released to available balance,
+	//     or stablecoin withdrawal confirmed on-chain.
+	//   - `STABLECOIN_REJECTED` - Stablecoin withdrawal failed and the hold placed at
+	//     initiation has been reversed.
 	Type PaymentEventsType `json:"type" api:"required"`
 	// More detailed reasons for the event
 	DetailedResults []PaymentEventsDetailedResult `json:"detailed_results"`
 	// Payment event external ID. For ACH transactions, this is the ACH trace number.
 	// For inbound wire transfers, this is the IMAD (Input Message Accountability
-	// Data).
+	// Data). For stablecoin payments, this is the on-chain transaction hash of the
+	// transfer; it is present on events that reflect on-chain activity and null on
+	// internal lifecycle events.
 	ExternalID string           `json:"external_id" api:"nullable"`
 	JSON       paymentEventJSON `json:"-"`
 }
@@ -482,8 +492,16 @@ func (r PaymentEventsResult) IsKnown() bool {
 //
 //   - `STABLECOIN_RECEIVED` - Stablecoin pay-in received on-chain and pending
 //     release to available balance.
-//   - `STABLECOIN_REVIEWED` - Stablecoin pay-in has completed the review process.
-//   - `STABLECOIN_SETTLED` - Stablecoin pay-in funds released to available balance.
+//   - `STABLECOIN_INITIATED` - Stablecoin withdrawal initiated, with the funds
+//     placed on hold.
+//   - `STABLECOIN_REVIEWED` - Stablecoin pay-in or withdrawal has completed the
+//     review process.
+//   - `STABLECOIN_SENT` - Stablecoin withdrawal accepted for on-chain submission to
+//     the destination address, and pending confirmation.
+//   - `STABLECOIN_SETTLED` - Stablecoin pay-in funds released to available balance,
+//     or stablecoin withdrawal confirmed on-chain.
+//   - `STABLECOIN_REJECTED` - Stablecoin withdrawal failed and the hold placed at
+//     initiation has been reversed.
 type PaymentEventsType string
 
 const (
@@ -510,13 +528,16 @@ const (
 	PaymentEventsTypeWireReturnOutboundSettled   PaymentEventsType = "WIRE_RETURN_OUTBOUND_SETTLED"
 	PaymentEventsTypeWireReturnOutboundRejected  PaymentEventsType = "WIRE_RETURN_OUTBOUND_REJECTED"
 	PaymentEventsTypeStablecoinReceived          PaymentEventsType = "STABLECOIN_RECEIVED"
+	PaymentEventsTypeStablecoinInitiated         PaymentEventsType = "STABLECOIN_INITIATED"
 	PaymentEventsTypeStablecoinReviewed          PaymentEventsType = "STABLECOIN_REVIEWED"
+	PaymentEventsTypeStablecoinSent              PaymentEventsType = "STABLECOIN_SENT"
 	PaymentEventsTypeStablecoinSettled           PaymentEventsType = "STABLECOIN_SETTLED"
+	PaymentEventsTypeStablecoinRejected          PaymentEventsType = "STABLECOIN_REJECTED"
 )
 
 func (r PaymentEventsType) IsKnown() bool {
 	switch r {
-	case PaymentEventsTypeACHOriginationCancelled, PaymentEventsTypeACHOriginationInitiated, PaymentEventsTypeACHOriginationProcessed, PaymentEventsTypeACHOriginationRejected, PaymentEventsTypeACHOriginationReleased, PaymentEventsTypeACHOriginationReviewed, PaymentEventsTypeACHOriginationSettled, PaymentEventsTypeACHReceiptProcessed, PaymentEventsTypeACHReceiptReleased, PaymentEventsTypeACHReceiptReleasedEarly, PaymentEventsTypeACHReceiptSettled, PaymentEventsTypeACHReturnInitiated, PaymentEventsTypeACHReturnProcessed, PaymentEventsTypeACHReturnRejected, PaymentEventsTypeACHReturnSettled, PaymentEventsTypeWireTransferInboundReceived, PaymentEventsTypeWireTransferInboundSettled, PaymentEventsTypeWireTransferInboundBlocked, PaymentEventsTypeWireReturnOutboundInitiated, PaymentEventsTypeWireReturnOutboundSent, PaymentEventsTypeWireReturnOutboundSettled, PaymentEventsTypeWireReturnOutboundRejected, PaymentEventsTypeStablecoinReceived, PaymentEventsTypeStablecoinReviewed, PaymentEventsTypeStablecoinSettled:
+	case PaymentEventsTypeACHOriginationCancelled, PaymentEventsTypeACHOriginationInitiated, PaymentEventsTypeACHOriginationProcessed, PaymentEventsTypeACHOriginationRejected, PaymentEventsTypeACHOriginationReleased, PaymentEventsTypeACHOriginationReviewed, PaymentEventsTypeACHOriginationSettled, PaymentEventsTypeACHReceiptProcessed, PaymentEventsTypeACHReceiptReleased, PaymentEventsTypeACHReceiptReleasedEarly, PaymentEventsTypeACHReceiptSettled, PaymentEventsTypeACHReturnInitiated, PaymentEventsTypeACHReturnProcessed, PaymentEventsTypeACHReturnRejected, PaymentEventsTypeACHReturnSettled, PaymentEventsTypeWireTransferInboundReceived, PaymentEventsTypeWireTransferInboundSettled, PaymentEventsTypeWireTransferInboundBlocked, PaymentEventsTypeWireReturnOutboundInitiated, PaymentEventsTypeWireReturnOutboundSent, PaymentEventsTypeWireReturnOutboundSettled, PaymentEventsTypeWireReturnOutboundRejected, PaymentEventsTypeStablecoinReceived, PaymentEventsTypeStablecoinInitiated, PaymentEventsTypeStablecoinReviewed, PaymentEventsTypeStablecoinSent, PaymentEventsTypeStablecoinSettled, PaymentEventsTypeStablecoinRejected:
 		return true
 	}
 	return false
