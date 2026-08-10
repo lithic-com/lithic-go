@@ -385,11 +385,12 @@ type ACHPaymentUpdateActionCreateCaseActionScope string
 
 const (
 	ACHPaymentUpdateActionCreateCaseActionScopeFinancialAccount ACHPaymentUpdateActionCreateCaseActionScope = "FINANCIAL_ACCOUNT"
+	ACHPaymentUpdateActionCreateCaseActionScopeProgram          ACHPaymentUpdateActionCreateCaseActionScope = "PROGRAM"
 )
 
 func (r ACHPaymentUpdateActionCreateCaseActionScope) IsKnown() bool {
 	switch r {
-	case ACHPaymentUpdateActionCreateCaseActionScopeFinancialAccount:
+	case ACHPaymentUpdateActionCreateCaseActionScopeFinancialAccount, ACHPaymentUpdateActionCreateCaseActionScopeProgram:
 		return true
 	}
 	return false
@@ -431,11 +432,12 @@ type ACHPaymentUpdateActionScope string
 
 const (
 	ACHPaymentUpdateActionScopeFinancialAccount ACHPaymentUpdateActionScope = "FINANCIAL_ACCOUNT"
+	ACHPaymentUpdateActionScopeProgram          ACHPaymentUpdateActionScope = "PROGRAM"
 )
 
 func (r ACHPaymentUpdateActionScope) IsKnown() bool {
 	switch r {
-	case ACHPaymentUpdateActionScopeFinancialAccount:
+	case ACHPaymentUpdateActionScopeFinancialAccount, ACHPaymentUpdateActionScopeProgram:
 		return true
 	}
 	return false
@@ -1685,11 +1687,12 @@ type CardTransactionUpdateActionCreateCaseActionScope string
 const (
 	CardTransactionUpdateActionCreateCaseActionScopeCard    CardTransactionUpdateActionCreateCaseActionScope = "CARD"
 	CardTransactionUpdateActionCreateCaseActionScopeAccount CardTransactionUpdateActionCreateCaseActionScope = "ACCOUNT"
+	CardTransactionUpdateActionCreateCaseActionScopeProgram CardTransactionUpdateActionCreateCaseActionScope = "PROGRAM"
 )
 
 func (r CardTransactionUpdateActionCreateCaseActionScope) IsKnown() bool {
 	switch r {
-	case CardTransactionUpdateActionCreateCaseActionScopeCard, CardTransactionUpdateActionCreateCaseActionScopeAccount:
+	case CardTransactionUpdateActionCreateCaseActionScopeCard, CardTransactionUpdateActionCreateCaseActionScopeAccount, CardTransactionUpdateActionCreateCaseActionScopeProgram:
 		return true
 	}
 	return false
@@ -1732,11 +1735,12 @@ type CardTransactionUpdateActionScope string
 const (
 	CardTransactionUpdateActionScopeCard    CardTransactionUpdateActionScope = "CARD"
 	CardTransactionUpdateActionScopeAccount CardTransactionUpdateActionScope = "ACCOUNT"
+	CardTransactionUpdateActionScopeProgram CardTransactionUpdateActionScope = "PROGRAM"
 )
 
 func (r CardTransactionUpdateActionScope) IsKnown() bool {
 	switch r {
-	case CardTransactionUpdateActionScopeCard, CardTransactionUpdateActionScopeAccount:
+	case CardTransactionUpdateActionScopeCard, CardTransactionUpdateActionScopeAccount, CardTransactionUpdateActionScopeProgram:
 		return true
 	}
 	return false
@@ -9284,11 +9288,12 @@ type AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseAc
 const (
 	AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScopeCard    AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScope = "CARD"
 	AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScopeAccount AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScope = "ACCOUNT"
+	AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScopeProgram AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScope = "PROGRAM"
 )
 
 func (r AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScope) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScopeCard, AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScopeAccount:
+	case AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScopeCard, AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScopeAccount, AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsCreateCaseActionScopeProgram:
 		return true
 	}
 	return false
@@ -9331,11 +9336,12 @@ type AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScope string
 const (
 	AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScopeCard    AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScope = "CARD"
 	AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScopeAccount AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScope = "ACCOUNT"
+	AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScopeProgram AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScope = "PROGRAM"
 )
 
 func (r AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScope) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScopeCard, AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScopeAccount:
+	case AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScopeCard, AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScopeAccount, AuthRuleV2ListResultsResponseCardTransactionUpdateResultActionsScopeProgram:
 		return true
 	}
 	return false
@@ -9588,11 +9594,12 @@ type AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionS
 
 const (
 	AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionScopeFinancialAccount AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionScope = "FINANCIAL_ACCOUNT"
+	AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionScopeProgram          AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionScope = "PROGRAM"
 )
 
 func (r AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionScope) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionScopeFinancialAccount:
+	case AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionScopeFinancialAccount, AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsCreateCaseActionScopeProgram:
 		return true
 	}
 	return false
@@ -9634,11 +9641,12 @@ type AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsScope string
 
 const (
 	AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsScopeFinancialAccount AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsScope = "FINANCIAL_ACCOUNT"
+	AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsScopeProgram          AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsScope = "PROGRAM"
 )
 
 func (r AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsScope) IsKnown() bool {
 	switch r {
-	case AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsScopeFinancialAccount:
+	case AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsScopeFinancialAccount, AuthRuleV2ListResultsResponseACHPaymentUpdateResultActionsScopeProgram:
 		return true
 	}
 	return false
