@@ -955,11 +955,12 @@ const (
 	PaymentTypeWireOutboundPayment        PaymentType = "WIRE_OUTBOUND_PAYMENT"
 	PaymentTypeWireOutboundAdmin          PaymentType = "WIRE_OUTBOUND_ADMIN"
 	PaymentTypeWireInboundDrawdownRequest PaymentType = "WIRE_INBOUND_DRAWDOWN_REQUEST"
+	PaymentTypeStablecoin                 PaymentType = "STABLECOIN"
 )
 
 func (r PaymentType) IsKnown() bool {
 	switch r {
-	case PaymentTypeOriginationCredit, PaymentTypeOriginationDebit, PaymentTypeReceiptCredit, PaymentTypeReceiptDebit, PaymentTypeWireInboundPayment, PaymentTypeWireInboundAdmin, PaymentTypeWireOutboundPayment, PaymentTypeWireOutboundAdmin, PaymentTypeWireInboundDrawdownRequest:
+	case PaymentTypeOriginationCredit, PaymentTypeOriginationDebit, PaymentTypeReceiptCredit, PaymentTypeReceiptDebit, PaymentTypeWireInboundPayment, PaymentTypeWireInboundAdmin, PaymentTypeWireOutboundPayment, PaymentTypeWireOutboundAdmin, PaymentTypeWireInboundDrawdownRequest, PaymentTypeStablecoin:
 		return true
 	}
 	return false
