@@ -675,6 +675,16 @@ Methods:
 
 - <code title="post /v1/external_bank_accounts/{external_bank_account_token}/micro_deposits">client.ExternalBankAccounts.MicroDeposits.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountMicroDepositService.New">New</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, externalBankAccountToken <a href="https://pkg.go.dev/builtin#string">string</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountMicroDepositNewParams">ExternalBankAccountMicroDepositNewParams</a>) (\*<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ExternalBankAccountMicroDepositNewResponse">ExternalBankAccountMicroDepositNewResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 
+# BlockchainRecipients
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#BlockchainRecipient">BlockchainRecipient</a>
+
+Methods:
+
+- <code title="post /v1/blockchain_recipients">client.BlockchainRecipients.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#BlockchainRecipientService.New">New</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#BlockchainRecipientNewParams">BlockchainRecipientNewParams</a>) (\*<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#BlockchainRecipient">BlockchainRecipient</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
 # Payments
 
 Response Types:
