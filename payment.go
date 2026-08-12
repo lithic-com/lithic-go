@@ -585,11 +585,12 @@ const (
 	PaymentMethodACHNextDay PaymentMethod = "ACH_NEXT_DAY"
 	PaymentMethodACHSameDay PaymentMethod = "ACH_SAME_DAY"
 	PaymentMethodWire       PaymentMethod = "WIRE"
+	PaymentMethodStablecoin PaymentMethod = "STABLECOIN"
 )
 
 func (r PaymentMethod) IsKnown() bool {
 	switch r {
-	case PaymentMethodACHNextDay, PaymentMethodACHSameDay, PaymentMethodWire:
+	case PaymentMethodACHNextDay, PaymentMethodACHSameDay, PaymentMethodWire, PaymentMethodStablecoin:
 		return true
 	}
 	return false
@@ -601,6 +602,8 @@ type PaymentMethodAttributes struct {
 	ACHHoldPeriod int64 `json:"ach_hold_period" api:"nullable"`
 	// Addenda information
 	Addenda string `json:"addenda" api:"nullable"`
+	// Blockchain the stablecoin transfer settled on
+	Chain string `json:"chain"`
 	// Company ID for the ACH transaction
 	CompanyID string           `json:"company_id" api:"nullable"`
 	Creditor  WirePartyDetails `json:"creditor"`
@@ -625,6 +628,9 @@ type PaymentMethodAttributes struct {
 	SecCode PaymentMethodAttributesSecCode `json:"sec_code"`
 	// This field can have the runtime type of [[]string].
 	TraceNumbers interface{} `json:"trace_numbers"`
+	// On-chain transaction hash of the transfer. Null until the transfer has settled
+	// on chain
+	TransactionHash string `json:"transaction_hash" api:"nullable"`
 	// Type of wire message
 	WireMessageType string `json:"wire_message_type" api:"nullable"`
 	// Type of wire transfer
@@ -638,6 +644,7 @@ type PaymentMethodAttributes struct {
 type paymentMethodAttributesJSON struct {
 	ACHHoldPeriod         apijson.Field
 	Addenda               apijson.Field
+	Chain                 apijson.Field
 	CompanyID             apijson.Field
 	Creditor              apijson.Field
 	Debtor                apijson.Field
@@ -650,6 +657,7 @@ type paymentMethodAttributesJSON struct {
 	ReturnReasonCode      apijson.Field
 	SecCode               apijson.Field
 	TraceNumbers          apijson.Field
+	TransactionHash       apijson.Field
 	WireMessageType       apijson.Field
 	WireNetwork           apijson.Field
 	raw                   string
@@ -674,15 +682,17 @@ func (r *PaymentMethodAttributes) UnmarshalJSON(data []byte) (err error) {
 //
 // Possible runtime types of the union are
 // [PaymentMethodAttributesACHMethodAttributes],
-// [PaymentMethodAttributesWireMethodAttributes].
+// [PaymentMethodAttributesWireMethodAttributes],
+// [PaymentMethodAttributesStablecoinMethodAttributes].
 func (r PaymentMethodAttributes) AsUnion() PaymentMethodAttributesUnion {
 	return r.union
 }
 
 // Method-specific attributes
 //
-// Union satisfied by [PaymentMethodAttributesACHMethodAttributes] or
-// [PaymentMethodAttributesWireMethodAttributes].
+// Union satisfied by [PaymentMethodAttributesACHMethodAttributes],
+// [PaymentMethodAttributesWireMethodAttributes] or
+// [PaymentMethodAttributesStablecoinMethodAttributes].
 type PaymentMethodAttributesUnion interface {
 	implementsPaymentMethodAttributes()
 }
@@ -698,6 +708,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(PaymentMethodAttributesWireMethodAttributes{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(PaymentMethodAttributesStablecoinMethodAttributes{}),
 		},
 	)
 }
@@ -827,6 +841,34 @@ func (r PaymentMethodAttributesWireMethodAttributesWireNetwork) IsKnown() bool {
 	}
 	return false
 }
+
+type PaymentMethodAttributesStablecoinMethodAttributes struct {
+	// Blockchain the stablecoin transfer settled on
+	Chain string `json:"chain" api:"required"`
+	// On-chain transaction hash of the transfer. Null until the transfer has settled
+	// on chain
+	TransactionHash string                                                `json:"transaction_hash" api:"nullable"`
+	JSON            paymentMethodAttributesStablecoinMethodAttributesJSON `json:"-"`
+}
+
+// paymentMethodAttributesStablecoinMethodAttributesJSON contains the JSON metadata
+// for the struct [PaymentMethodAttributesStablecoinMethodAttributes]
+type paymentMethodAttributesStablecoinMethodAttributesJSON struct {
+	Chain           apijson.Field
+	TransactionHash apijson.Field
+	raw             string
+	ExtraFields     map[string]apijson.Field
+}
+
+func (r *PaymentMethodAttributesStablecoinMethodAttributes) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r paymentMethodAttributesStablecoinMethodAttributesJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r PaymentMethodAttributesStablecoinMethodAttributes) implementsPaymentMethodAttributes() {}
 
 // SEC code for ACH transaction
 type PaymentMethodAttributesSecCode string

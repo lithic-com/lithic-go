@@ -7276,11 +7276,12 @@ const (
 	ParsedWebhookEventMethodACHNextDay ParsedWebhookEventMethod = "ACH_NEXT_DAY"
 	ParsedWebhookEventMethodACHSameDay ParsedWebhookEventMethod = "ACH_SAME_DAY"
 	ParsedWebhookEventMethodWire       ParsedWebhookEventMethod = "WIRE"
+	ParsedWebhookEventMethodStablecoin ParsedWebhookEventMethod = "STABLECOIN"
 )
 
 func (r ParsedWebhookEventMethod) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventMethodACHNextDay, ParsedWebhookEventMethodACHSameDay, ParsedWebhookEventMethodWire:
+	case ParsedWebhookEventMethodACHNextDay, ParsedWebhookEventMethodACHSameDay, ParsedWebhookEventMethodWire, ParsedWebhookEventMethodStablecoin:
 		return true
 	}
 	return false
