@@ -708,11 +708,12 @@ const (
 	AccountActivityListResponseMethodACHNextDay AccountActivityListResponseMethod = "ACH_NEXT_DAY"
 	AccountActivityListResponseMethodACHSameDay AccountActivityListResponseMethod = "ACH_SAME_DAY"
 	AccountActivityListResponseMethodWire       AccountActivityListResponseMethod = "WIRE"
+	AccountActivityListResponseMethodStablecoin AccountActivityListResponseMethod = "STABLECOIN"
 )
 
 func (r AccountActivityListResponseMethod) IsKnown() bool {
 	switch r {
-	case AccountActivityListResponseMethodACHNextDay, AccountActivityListResponseMethodACHSameDay, AccountActivityListResponseMethodWire:
+	case AccountActivityListResponseMethodACHNextDay, AccountActivityListResponseMethodACHSameDay, AccountActivityListResponseMethodWire, AccountActivityListResponseMethodStablecoin:
 		return true
 	}
 	return false
@@ -1437,11 +1438,12 @@ const (
 	AccountActivityGetTransactionResponseMethodACHNextDay AccountActivityGetTransactionResponseMethod = "ACH_NEXT_DAY"
 	AccountActivityGetTransactionResponseMethodACHSameDay AccountActivityGetTransactionResponseMethod = "ACH_SAME_DAY"
 	AccountActivityGetTransactionResponseMethodWire       AccountActivityGetTransactionResponseMethod = "WIRE"
+	AccountActivityGetTransactionResponseMethodStablecoin AccountActivityGetTransactionResponseMethod = "STABLECOIN"
 )
 
 func (r AccountActivityGetTransactionResponseMethod) IsKnown() bool {
 	switch r {
-	case AccountActivityGetTransactionResponseMethodACHNextDay, AccountActivityGetTransactionResponseMethodACHSameDay, AccountActivityGetTransactionResponseMethodWire:
+	case AccountActivityGetTransactionResponseMethodACHNextDay, AccountActivityGetTransactionResponseMethodACHSameDay, AccountActivityGetTransactionResponseMethodWire, AccountActivityGetTransactionResponseMethodStablecoin:
 		return true
 	}
 	return false
