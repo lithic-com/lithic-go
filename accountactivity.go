@@ -152,6 +152,8 @@ type AccountActivityListResponse struct {
 	AuthorizationCode string `json:"authorization_code" api:"nullable"`
 	// This field can have the runtime type of [TransactionAvs].
 	Avs interface{} `json:"avs"`
+	// Token of the blockchain recipient the payout is sent to
+	BlockchainRecipientToken string `json:"blockchain_recipient_token" api:"nullable" format:"uuid"`
 	// Token for the card used in this transaction.
 	CardToken                string                   `json:"card_token" format:"uuid"`
 	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication" api:"nullable"`
@@ -258,6 +260,7 @@ type accountActivityListResponseJSON struct {
 	AuthorizationAmount         apijson.Field
 	AuthorizationCode           apijson.Field
 	Avs                         apijson.Field
+	BlockchainRecipientToken    apijson.Field
 	CardToken                   apijson.Field
 	CardholderAuthentication    apijson.Field
 	Category                    apijson.Field
@@ -879,6 +882,8 @@ type AccountActivityGetTransactionResponse struct {
 	AuthorizationCode string `json:"authorization_code" api:"nullable"`
 	// This field can have the runtime type of [TransactionAvs].
 	Avs interface{} `json:"avs"`
+	// Token of the blockchain recipient the payout is sent to
+	BlockchainRecipientToken string `json:"blockchain_recipient_token" api:"nullable" format:"uuid"`
 	// Token for the card used in this transaction.
 	CardToken                string                   `json:"card_token" format:"uuid"`
 	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication" api:"nullable"`
@@ -985,6 +990,7 @@ type accountActivityGetTransactionResponseJSON struct {
 	AuthorizationAmount         apijson.Field
 	AuthorizationCode           apijson.Field
 	Avs                         apijson.Field
+	BlockchainRecipientToken    apijson.Field
 	CardToken                   apijson.Field
 	CardholderAuthentication    apijson.Field
 	Category                    apijson.Field
