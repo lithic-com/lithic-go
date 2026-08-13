@@ -192,6 +192,8 @@ type Payment struct {
 	Status PaymentStatus `json:"status" api:"required"`
 	// ISO 8601 timestamp of when the transaction was last updated
 	Updated time.Time `json:"updated" api:"required" format:"date-time"`
+	// Token of the blockchain recipient the payout is sent to
+	BlockchainRecipientToken string `json:"blockchain_recipient_token" api:"nullable" format:"uuid"`
 	// Currency of the transaction in ISO 4217 format
 	Currency string `json:"currency"`
 	// Expected release date for the transaction
@@ -226,6 +228,7 @@ type paymentJSON struct {
 	Source                   apijson.Field
 	Status                   apijson.Field
 	Updated                  apijson.Field
+	BlockchainRecipientToken apijson.Field
 	Currency                 apijson.Field
 	ExpectedReleaseDate      apijson.Field
 	ExternalBankAccountToken apijson.Field

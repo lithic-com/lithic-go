@@ -5113,6 +5113,8 @@ type ParsedWebhookEvent struct {
 	Balances interface{} `json:"balances"`
 	// This field can have the runtime type of [map[string]string].
 	BlockchainAddresses interface{} `json:"blockchain_addresses"`
+	// Token of the blockchain recipient the payout is sent to
+	BlockchainRecipientToken string `json:"blockchain_recipient_token" api:"nullable" format:"uuid"`
 	// This field can have the runtime type of [ThreeDSAuthenticationBrowser].
 	Browser interface{} `json:"browser"`
 	// The token of the bulk order associated with this card shipment, if applicable.
@@ -5708,6 +5710,7 @@ type parsedWebhookEventJSON struct {
 	BacktestToken                      apijson.Field
 	Balances                           apijson.Field
 	BlockchainAddresses                apijson.Field
+	BlockchainRecipientToken           apijson.Field
 	Browser                            apijson.Field
 	BulkOrderToken                     apijson.Field
 	BusinessAccountToken               apijson.Field
