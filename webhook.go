@@ -5168,6 +5168,9 @@ type ParsedWebhookEvent struct {
 	// Channel in which the authentication occurs. Maps to EMV 3DS field
 	// `deviceChannel`.
 	Channel ParsedWebhookEventChannel `json:"channel"`
+	// Token for the claim this dispute was filed under, in UUID format. Null for
+	// disputes not initiated through the Dispute Intake API.
+	ClaimToken string `json:"claim_token" api:"nullable" format:"uuid"`
 	// Collection resource type
 	CollectionResourceType ParsedWebhookEventCollectionResourceType `json:"collection_resource_type"`
 	// This field can have the runtime type of [[]string].
@@ -5730,6 +5733,7 @@ type parsedWebhookEventJSON struct {
 	ChallengeMethod                    apijson.Field
 	ChallengeOrchestratedBy            apijson.Field
 	Channel                            apijson.Field
+	ClaimToken                         apijson.Field
 	CollectionResourceType             apijson.Field
 	CollectionTokens                   apijson.Field
 	Common                             apijson.Field
