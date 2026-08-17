@@ -269,12 +269,17 @@ func (r caseCardJSON) RawJSON() string {
 
 // The entity a case is associated with
 type CaseEntity struct {
-	// Globally unique identifier for the associated entity
-	EntityToken string `json:"entity_token" api:"required" format:"uuid"`
+	// Globally unique identifier for the associated entity: the card token for `CARD`,
+	// the account token for `ACCOUNT`, and the financial account token for
+	// `FINANCIAL_ACCOUNT`. Null for `PROGRAM`, which is not scoped to an individual
+	// entity
+	EntityToken string `json:"entity_token" api:"required,nullable" format:"uuid"`
 	// The type of entity a case is associated with:
 	//
 	// - `CARD` - The case is associated with a card
 	// - `ACCOUNT` - The case is associated with an account
+	// - `FINANCIAL_ACCOUNT` - The case is associated with a financial account
+	// - `PROGRAM` - The case is associated with the whole program
 	EntityType CaseEntityEntityType `json:"entity_type" api:"required"`
 	JSON       caseEntityJSON       `json:"-"`
 }
@@ -299,16 +304,20 @@ func (r caseEntityJSON) RawJSON() string {
 //
 // - `CARD` - The case is associated with a card
 // - `ACCOUNT` - The case is associated with an account
+// - `FINANCIAL_ACCOUNT` - The case is associated with a financial account
+// - `PROGRAM` - The case is associated with the whole program
 type CaseEntityEntityType string
 
 const (
-	CaseEntityEntityTypeCard    CaseEntityEntityType = "CARD"
-	CaseEntityEntityTypeAccount CaseEntityEntityType = "ACCOUNT"
+	CaseEntityEntityTypeCard             CaseEntityEntityType = "CARD"
+	CaseEntityEntityTypeAccount          CaseEntityEntityType = "ACCOUNT"
+	CaseEntityEntityTypeFinancialAccount CaseEntityEntityType = "FINANCIAL_ACCOUNT"
+	CaseEntityEntityTypeProgram          CaseEntityEntityType = "PROGRAM"
 )
 
 func (r CaseEntityEntityType) IsKnown() bool {
 	switch r {
-	case CaseEntityEntityTypeCard, CaseEntityEntityTypeAccount:
+	case CaseEntityEntityTypeCard, CaseEntityEntityTypeAccount, CaseEntityEntityTypeFinancialAccount, CaseEntityEntityTypeProgram:
 		return true
 	}
 	return false
@@ -740,7 +749,9 @@ type TransactionMonitoringCaseListParams struct {
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string] `query:"ending_before" format:"uuid"`
-	// Only return cases associated with the provided entity.
+	// Only return cases associated with the provided entity. Accepts a card, account,
+	// or financial account token. Cases with a `PROGRAM` entity have no entity token
+	// and are never returned by this filter.
 	EntityToken param.Field[string] `query:"entity_token" format:"uuid"`
 	// Page size (for pagination).
 	PageSize param.Field[int64] `query:"page_size"`

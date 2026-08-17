@@ -86,6 +86,9 @@ type DisputeV2 struct {
 	CardToken string `json:"card_token" api:"required" format:"uuid"`
 	// Identifier assigned by the network for this dispute.
 	CaseID string `json:"case_id" api:"required,nullable"`
+	// Token for the claim this dispute was filed under, in UUID format. Null for
+	// disputes not initiated through the Dispute Intake API.
+	ClaimToken string `json:"claim_token" api:"required,nullable" format:"uuid"`
 	// When the dispute was created.
 	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Three-letter ISO 4217 currency code.
@@ -115,6 +118,7 @@ type disputeV2JSON struct {
 	AccountToken        apijson.Field
 	CardToken           apijson.Field
 	CaseID              apijson.Field
+	ClaimToken          apijson.Field
 	Created             apijson.Field
 	Currency            apijson.Field
 	Disposition         apijson.Field
@@ -504,11 +508,12 @@ const (
 	DisputeV2EventsDataCardholderLiabilityActionProvisionalCreditGranted  DisputeV2EventsDataCardholderLiabilityAction = "PROVISIONAL_CREDIT_GRANTED"
 	DisputeV2EventsDataCardholderLiabilityActionProvisionalCreditReversed DisputeV2EventsDataCardholderLiabilityAction = "PROVISIONAL_CREDIT_REVERSED"
 	DisputeV2EventsDataCardholderLiabilityActionWrittenOff                DisputeV2EventsDataCardholderLiabilityAction = "WRITTEN_OFF"
+	DisputeV2EventsDataCardholderLiabilityActionWriteOffReversed          DisputeV2EventsDataCardholderLiabilityAction = "WRITE_OFF_REVERSED"
 )
 
 func (r DisputeV2EventsDataCardholderLiabilityAction) IsKnown() bool {
 	switch r {
-	case DisputeV2EventsDataCardholderLiabilityActionProvisionalCreditGranted, DisputeV2EventsDataCardholderLiabilityActionProvisionalCreditReversed, DisputeV2EventsDataCardholderLiabilityActionWrittenOff:
+	case DisputeV2EventsDataCardholderLiabilityActionProvisionalCreditGranted, DisputeV2EventsDataCardholderLiabilityActionProvisionalCreditReversed, DisputeV2EventsDataCardholderLiabilityActionWrittenOff, DisputeV2EventsDataCardholderLiabilityActionWriteOffReversed:
 		return true
 	}
 	return false
@@ -556,11 +561,12 @@ const (
 	DisputeV2EventsDataActionProvisionalCreditGranted  DisputeV2EventsDataAction = "PROVISIONAL_CREDIT_GRANTED"
 	DisputeV2EventsDataActionProvisionalCreditReversed DisputeV2EventsDataAction = "PROVISIONAL_CREDIT_REVERSED"
 	DisputeV2EventsDataActionWrittenOff                DisputeV2EventsDataAction = "WRITTEN_OFF"
+	DisputeV2EventsDataActionWriteOffReversed          DisputeV2EventsDataAction = "WRITE_OFF_REVERSED"
 )
 
 func (r DisputeV2EventsDataAction) IsKnown() bool {
 	switch r {
-	case DisputeV2EventsDataActionOpened, DisputeV2EventsDataActionClosed, DisputeV2EventsDataActionReopened, DisputeV2EventsDataActionProvisionalCreditGranted, DisputeV2EventsDataActionProvisionalCreditReversed, DisputeV2EventsDataActionWrittenOff:
+	case DisputeV2EventsDataActionOpened, DisputeV2EventsDataActionClosed, DisputeV2EventsDataActionReopened, DisputeV2EventsDataActionProvisionalCreditGranted, DisputeV2EventsDataActionProvisionalCreditReversed, DisputeV2EventsDataActionWrittenOff, DisputeV2EventsDataActionWriteOffReversed:
 		return true
 	}
 	return false
@@ -761,6 +767,9 @@ type DisputesV2ListParams struct {
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Filter by card token.
 	CardToken param.Field[string] `query:"card_token" format:"uuid"`
+	// Filter by the token of the claim the dispute was filed under. Returns the
+	// disputes created from that claim's disputed transaction events.
+	ClaimToken param.Field[string] `query:"claim_token" format:"uuid"`
 	// Filter by the token of the transaction being disputed. Corresponds with
 	// transaction_series.related_transaction_token in the Dispute.
 	DisputedTransactionToken param.Field[string] `query:"disputed_transaction_token" format:"uuid"`

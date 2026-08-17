@@ -12,6 +12,7 @@ import (
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/option"
+	"github.com/lithic-com/lithic-go/shared"
 	standardwebhooks "github.com/standard-webhooks/standard-webhooks/libraries/go"
 	"github.com/tidwall/gjson"
 )
@@ -5128,6 +5129,8 @@ type ParsedWebhookEvent struct {
 	Balances interface{} `json:"balances"`
 	// This field can have the runtime type of [map[string]string].
 	BlockchainAddresses interface{} `json:"blockchain_addresses"`
+	// Token of the blockchain recipient the payout is sent to
+	BlockchainRecipientToken string `json:"blockchain_recipient_token" api:"nullable" format:"uuid"`
 	// This field can have the runtime type of [ThreeDSAuthenticationBrowser].
 	Browser interface{} `json:"browser"`
 	// The token of the bulk order associated with this card shipment, if applicable.
@@ -5181,6 +5184,9 @@ type ParsedWebhookEvent struct {
 	// Channel in which the authentication occurs. Maps to EMV 3DS field
 	// `deviceChannel`.
 	Channel ParsedWebhookEventChannel `json:"channel"`
+	// Token for the claim this dispute was filed under, in UUID format. Null for
+	// disputes not initiated through the Dispute Intake API.
+	ClaimToken string `json:"claim_token" api:"nullable" format:"uuid"`
 	// Collection resource type
 	CollectionResourceType ParsedWebhookEventCollectionResourceType `json:"collection_resource_type"`
 	// This field can have the runtime type of [[]string].
@@ -5723,6 +5729,7 @@ type parsedWebhookEventJSON struct {
 	BacktestToken                      apijson.Field
 	Balances                           apijson.Field
 	BlockchainAddresses                apijson.Field
+	BlockchainRecipientToken           apijson.Field
 	Browser                            apijson.Field
 	BulkOrderToken                     apijson.Field
 	BusinessAccountToken               apijson.Field
@@ -5742,6 +5749,7 @@ type parsedWebhookEventJSON struct {
 	ChallengeMethod                    apijson.Field
 	ChallengeOrchestratedBy            apijson.Field
 	Channel                            apijson.Field
+	ClaimToken                         apijson.Field
 	CollectionResourceType             apijson.Field
 	CollectionTokens                   apijson.Field
 	Common                             apijson.Field
@@ -7276,11 +7284,12 @@ const (
 	ParsedWebhookEventMethodACHNextDay ParsedWebhookEventMethod = "ACH_NEXT_DAY"
 	ParsedWebhookEventMethodACHSameDay ParsedWebhookEventMethod = "ACH_SAME_DAY"
 	ParsedWebhookEventMethodWire       ParsedWebhookEventMethod = "WIRE"
+	ParsedWebhookEventMethodStablecoin ParsedWebhookEventMethod = "STABLECOIN"
 )
 
 func (r ParsedWebhookEventMethod) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventMethodACHNextDay, ParsedWebhookEventMethodACHSameDay, ParsedWebhookEventMethodWire:
+	case ParsedWebhookEventMethodACHNextDay, ParsedWebhookEventMethodACHSameDay, ParsedWebhookEventMethodWire, ParsedWebhookEventMethodStablecoin:
 		return true
 	}
 	return false
@@ -7755,11 +7764,12 @@ const (
 	ParsedWebhookEventTypeWireOutboundPayment        ParsedWebhookEventType = "WIRE_OUTBOUND_PAYMENT"
 	ParsedWebhookEventTypeWireOutboundAdmin          ParsedWebhookEventType = "WIRE_OUTBOUND_ADMIN"
 	ParsedWebhookEventTypeWireInboundDrawdownRequest ParsedWebhookEventType = "WIRE_INBOUND_DRAWDOWN_REQUEST"
+	ParsedWebhookEventTypeStablecoin                 ParsedWebhookEventType = "STABLECOIN"
 )
 
 func (r ParsedWebhookEventType) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventTypeChecking, ParsedWebhookEventTypeSavings, ParsedWebhookEventTypeIssuing, ParsedWebhookEventTypeReserve, ParsedWebhookEventTypeOperating, ParsedWebhookEventTypeChargedOffFees, ParsedWebhookEventTypeChargedOffInterest, ParsedWebhookEventTypeChargedOffPrincipal, ParsedWebhookEventTypeSecurity, ParsedWebhookEventTypeProgramReceivables, ParsedWebhookEventTypeCollection, ParsedWebhookEventTypeProgramBankAccountsPayable, ParsedWebhookEventTypeEarlyDirectDepositFloat, ParsedWebhookEventTypeProvisionalCreditAccount, ParsedWebhookEventTypeOriginationCredit, ParsedWebhookEventTypeOriginationDebit, ParsedWebhookEventTypeReceiptCredit, ParsedWebhookEventTypeReceiptDebit, ParsedWebhookEventTypeWireInboundPayment, ParsedWebhookEventTypeWireInboundAdmin, ParsedWebhookEventTypeWireOutboundPayment, ParsedWebhookEventTypeWireOutboundAdmin, ParsedWebhookEventTypeWireInboundDrawdownRequest:
+	case ParsedWebhookEventTypeChecking, ParsedWebhookEventTypeSavings, ParsedWebhookEventTypeIssuing, ParsedWebhookEventTypeReserve, ParsedWebhookEventTypeOperating, ParsedWebhookEventTypeChargedOffFees, ParsedWebhookEventTypeChargedOffInterest, ParsedWebhookEventTypeChargedOffPrincipal, ParsedWebhookEventTypeSecurity, ParsedWebhookEventTypeProgramReceivables, ParsedWebhookEventTypeCollection, ParsedWebhookEventTypeProgramBankAccountsPayable, ParsedWebhookEventTypeEarlyDirectDepositFloat, ParsedWebhookEventTypeProvisionalCreditAccount, ParsedWebhookEventTypeOriginationCredit, ParsedWebhookEventTypeOriginationDebit, ParsedWebhookEventTypeReceiptCredit, ParsedWebhookEventTypeReceiptDebit, ParsedWebhookEventTypeWireInboundPayment, ParsedWebhookEventTypeWireInboundAdmin, ParsedWebhookEventTypeWireOutboundPayment, ParsedWebhookEventTypeWireOutboundAdmin, ParsedWebhookEventTypeWireInboundDrawdownRequest, ParsedWebhookEventTypeStablecoin:
 		return true
 	}
 	return false

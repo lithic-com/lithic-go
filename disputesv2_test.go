@@ -52,6 +52,7 @@ func TestDisputesV2ListWithOptionalParams(t *testing.T) {
 		AccountToken:             lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		Begin:                    lithic.F(time.Now()),
 		CardToken:                lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		ClaimToken:               lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		DisputedTransactionToken: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
 		End:                      lithic.F(time.Now()),
 		EndingBefore:             lithic.F("ending_before"),
