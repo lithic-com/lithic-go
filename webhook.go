@@ -12,7 +12,6 @@ import (
 	"github.com/lithic-com/lithic-go/internal/apijson"
 	"github.com/lithic-com/lithic-go/internal/requestconfig"
 	"github.com/lithic-com/lithic-go/option"
-	"github.com/lithic-com/lithic-go/shared"
 	standardwebhooks "github.com/standard-webhooks/standard-webhooks/libraries/go"
 	"github.com/tidwall/gjson"
 )
