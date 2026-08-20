@@ -331,8 +331,8 @@ func TestCardProvisionWithOptionalParams(t *testing.T) {
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.CardProvisionParams{
 			Certificate:           lithic.F("U3RhaW5sZXNzIHJvY2tz"),
-			ClientDeviceID:        lithic.F("client_device_id"),
-			ClientWalletAccountID: lithic.F("client_wallet_account_id"),
+			ClientDeviceID:        lithic.F("d3538acf-e5df-4446-8ce6-588fa4472ac1"),
+			ClientWalletAccountID: lithic.F("d3538acf-e5df-4446-8ce6-588fa4472ac1"),
 			DigitalWallet:         lithic.F(lithic.CardProvisionParamsDigitalWalletGooglePay),
 			Nonce:                 lithic.F("U3RhaW5sZXNzIHJvY2tz"),
 			NonceSignature:        lithic.F("U3RhaW5sZXNzIHJvY2tz"),
