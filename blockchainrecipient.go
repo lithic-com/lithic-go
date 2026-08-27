@@ -50,8 +50,9 @@ func (r *BlockchainRecipientService) New(ctx context.Context, body BlockchainRec
 type BlockchainRecipient struct {
 	// A globally unique identifier for this blockchain recipient
 	Token string `json:"token" api:"required" format:"uuid"`
-	// The financial account the blockchain recipient belongs to
-	AccountToken string `json:"account_token" api:"required" format:"uuid"`
+	// The financial account the blockchain recipient belongs to, or null when the
+	// recipient is registered against the program rather than a financial account
+	AccountToken string `json:"account_token" api:"required,nullable" format:"uuid"`
 	// An optional tag or memo used by some chains to identify the destination of a
 	// transfer within a shared address
 	AddressTag string `json:"address_tag" api:"required,nullable"`
