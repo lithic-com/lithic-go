@@ -274,6 +274,21 @@ func (r *CardService) Provision(ctx context.Context, cardToken string, body Card
 	return res, err
 }
 
+// Reassigns a card to another account. The card must be in an `OPEN` or `PAUSED`
+// state, and the destination account must be in an `ACTIVE` state.
+//
+// Clients must contact their Lithic account manager for access to this endpoint.
+func (r *CardService) ReassignAccount(ctx context.Context, cardToken string, body CardReassignAccountParams, opts ...option.RequestOption) (res *Card, err error) {
+	opts = slices.Concat(r.Options, opts)
+	if cardToken == "" {
+		err = errors.New("missing required card_token parameter")
+		return nil, err
+	}
+	path := fmt.Sprintf("v1/cards/%s/reassign_account", cardToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+	return res, err
+}
+
 // Initiate print and shipment of a duplicate physical card (e.g. card is
 // physically damaged). The PAN, expiry, and CVC2 will remain the same and the
 // original card can continue to be used until the new card is activated. Only
@@ -1878,6 +1893,15 @@ func (r CardProvisionParamsDigitalWallet) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+type CardReassignAccountParams struct {
+	// Globally unique identifier for the account to associate with the card
+	NewAccountToken param.Field[string] `json:"new_account_token" api:"required" format:"uuid"`
+}
+
+func (r CardReassignAccountParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }
 
 type CardReissueParams struct {
