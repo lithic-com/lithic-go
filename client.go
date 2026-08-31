@@ -37,6 +37,7 @@ type Client struct {
 	Transactions            *TransactionService
 	ResponderEndpoints      *ResponderEndpointService
 	ExternalBankAccounts    *ExternalBankAccountService
+	BlockchainRecipients    *BlockchainRecipientService
 	Payments                *PaymentService
 	ThreeDS                 *ThreeDSService
 	Reports                 *ReportService
@@ -109,6 +110,7 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.Transactions = NewTransactionService(opts...)
 	r.ResponderEndpoints = NewResponderEndpointService(opts...)
 	r.ExternalBankAccounts = NewExternalBankAccountService(opts...)
+	r.BlockchainRecipients = NewBlockchainRecipientService(opts...)
 	r.Payments = NewPaymentService(opts...)
 	r.ThreeDS = NewThreeDSService(opts...)
 	r.Reports = NewReportService(opts...)

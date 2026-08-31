@@ -152,6 +152,8 @@ type AccountActivityListResponse struct {
 	AuthorizationCode string `json:"authorization_code" api:"nullable"`
 	// This field can have the runtime type of [TransactionAvs].
 	Avs interface{} `json:"avs"`
+	// Token of the blockchain recipient the payout is sent to
+	BlockchainRecipientToken string `json:"blockchain_recipient_token" api:"nullable" format:"uuid"`
 	// Token for the card used in this transaction.
 	CardToken                string                   `json:"card_token" format:"uuid"`
 	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication" api:"nullable"`
@@ -258,6 +260,7 @@ type accountActivityListResponseJSON struct {
 	AuthorizationAmount         apijson.Field
 	AuthorizationCode           apijson.Field
 	Avs                         apijson.Field
+	BlockchainRecipientToken    apijson.Field
 	CardToken                   apijson.Field
 	CardholderAuthentication    apijson.Field
 	Category                    apijson.Field
@@ -708,11 +711,12 @@ const (
 	AccountActivityListResponseMethodACHNextDay AccountActivityListResponseMethod = "ACH_NEXT_DAY"
 	AccountActivityListResponseMethodACHSameDay AccountActivityListResponseMethod = "ACH_SAME_DAY"
 	AccountActivityListResponseMethodWire       AccountActivityListResponseMethod = "WIRE"
+	AccountActivityListResponseMethodStablecoin AccountActivityListResponseMethod = "STABLECOIN"
 )
 
 func (r AccountActivityListResponseMethod) IsKnown() bool {
 	switch r {
-	case AccountActivityListResponseMethodACHNextDay, AccountActivityListResponseMethodACHSameDay, AccountActivityListResponseMethodWire:
+	case AccountActivityListResponseMethodACHNextDay, AccountActivityListResponseMethodACHSameDay, AccountActivityListResponseMethodWire, AccountActivityListResponseMethodStablecoin:
 		return true
 	}
 	return false
@@ -822,12 +826,13 @@ const (
 	AccountActivityListResponseTypeWireOutboundPayment        AccountActivityListResponseType = "WIRE_OUTBOUND_PAYMENT"
 	AccountActivityListResponseTypeWireOutboundAdmin          AccountActivityListResponseType = "WIRE_OUTBOUND_ADMIN"
 	AccountActivityListResponseTypeWireInboundDrawdownRequest AccountActivityListResponseType = "WIRE_INBOUND_DRAWDOWN_REQUEST"
-	AccountActivityListResponseTypeStablecoin                 AccountActivityListResponseType = "STABLECOIN"
+	AccountActivityListResponseTypeStablecoinInbound          AccountActivityListResponseType = "STABLECOIN_INBOUND"
+	AccountActivityListResponseTypeStablecoinOutbound         AccountActivityListResponseType = "STABLECOIN_OUTBOUND"
 )
 
 func (r AccountActivityListResponseType) IsKnown() bool {
 	switch r {
-	case AccountActivityListResponseTypeOriginationCredit, AccountActivityListResponseTypeOriginationDebit, AccountActivityListResponseTypeReceiptCredit, AccountActivityListResponseTypeReceiptDebit, AccountActivityListResponseTypeWireInboundPayment, AccountActivityListResponseTypeWireInboundAdmin, AccountActivityListResponseTypeWireOutboundPayment, AccountActivityListResponseTypeWireOutboundAdmin, AccountActivityListResponseTypeWireInboundDrawdownRequest, AccountActivityListResponseTypeStablecoin:
+	case AccountActivityListResponseTypeOriginationCredit, AccountActivityListResponseTypeOriginationDebit, AccountActivityListResponseTypeReceiptCredit, AccountActivityListResponseTypeReceiptDebit, AccountActivityListResponseTypeWireInboundPayment, AccountActivityListResponseTypeWireInboundAdmin, AccountActivityListResponseTypeWireOutboundPayment, AccountActivityListResponseTypeWireOutboundAdmin, AccountActivityListResponseTypeWireInboundDrawdownRequest, AccountActivityListResponseTypeStablecoinInbound, AccountActivityListResponseTypeStablecoinOutbound:
 		return true
 	}
 	return false
@@ -878,6 +883,8 @@ type AccountActivityGetTransactionResponse struct {
 	AuthorizationCode string `json:"authorization_code" api:"nullable"`
 	// This field can have the runtime type of [TransactionAvs].
 	Avs interface{} `json:"avs"`
+	// Token of the blockchain recipient the payout is sent to
+	BlockchainRecipientToken string `json:"blockchain_recipient_token" api:"nullable" format:"uuid"`
 	// Token for the card used in this transaction.
 	CardToken                string                   `json:"card_token" format:"uuid"`
 	CardholderAuthentication CardholderAuthentication `json:"cardholder_authentication" api:"nullable"`
@@ -984,6 +991,7 @@ type accountActivityGetTransactionResponseJSON struct {
 	AuthorizationAmount         apijson.Field
 	AuthorizationCode           apijson.Field
 	Avs                         apijson.Field
+	BlockchainRecipientToken    apijson.Field
 	CardToken                   apijson.Field
 	CardholderAuthentication    apijson.Field
 	Category                    apijson.Field
@@ -1437,11 +1445,12 @@ const (
 	AccountActivityGetTransactionResponseMethodACHNextDay AccountActivityGetTransactionResponseMethod = "ACH_NEXT_DAY"
 	AccountActivityGetTransactionResponseMethodACHSameDay AccountActivityGetTransactionResponseMethod = "ACH_SAME_DAY"
 	AccountActivityGetTransactionResponseMethodWire       AccountActivityGetTransactionResponseMethod = "WIRE"
+	AccountActivityGetTransactionResponseMethodStablecoin AccountActivityGetTransactionResponseMethod = "STABLECOIN"
 )
 
 func (r AccountActivityGetTransactionResponseMethod) IsKnown() bool {
 	switch r {
-	case AccountActivityGetTransactionResponseMethodACHNextDay, AccountActivityGetTransactionResponseMethodACHSameDay, AccountActivityGetTransactionResponseMethodWire:
+	case AccountActivityGetTransactionResponseMethodACHNextDay, AccountActivityGetTransactionResponseMethodACHSameDay, AccountActivityGetTransactionResponseMethodWire, AccountActivityGetTransactionResponseMethodStablecoin:
 		return true
 	}
 	return false
@@ -1551,12 +1560,13 @@ const (
 	AccountActivityGetTransactionResponseTypeWireOutboundPayment        AccountActivityGetTransactionResponseType = "WIRE_OUTBOUND_PAYMENT"
 	AccountActivityGetTransactionResponseTypeWireOutboundAdmin          AccountActivityGetTransactionResponseType = "WIRE_OUTBOUND_ADMIN"
 	AccountActivityGetTransactionResponseTypeWireInboundDrawdownRequest AccountActivityGetTransactionResponseType = "WIRE_INBOUND_DRAWDOWN_REQUEST"
-	AccountActivityGetTransactionResponseTypeStablecoin                 AccountActivityGetTransactionResponseType = "STABLECOIN"
+	AccountActivityGetTransactionResponseTypeStablecoinInbound          AccountActivityGetTransactionResponseType = "STABLECOIN_INBOUND"
+	AccountActivityGetTransactionResponseTypeStablecoinOutbound         AccountActivityGetTransactionResponseType = "STABLECOIN_OUTBOUND"
 )
 
 func (r AccountActivityGetTransactionResponseType) IsKnown() bool {
 	switch r {
-	case AccountActivityGetTransactionResponseTypeOriginationCredit, AccountActivityGetTransactionResponseTypeOriginationDebit, AccountActivityGetTransactionResponseTypeReceiptCredit, AccountActivityGetTransactionResponseTypeReceiptDebit, AccountActivityGetTransactionResponseTypeWireInboundPayment, AccountActivityGetTransactionResponseTypeWireInboundAdmin, AccountActivityGetTransactionResponseTypeWireOutboundPayment, AccountActivityGetTransactionResponseTypeWireOutboundAdmin, AccountActivityGetTransactionResponseTypeWireInboundDrawdownRequest, AccountActivityGetTransactionResponseTypeStablecoin:
+	case AccountActivityGetTransactionResponseTypeOriginationCredit, AccountActivityGetTransactionResponseTypeOriginationDebit, AccountActivityGetTransactionResponseTypeReceiptCredit, AccountActivityGetTransactionResponseTypeReceiptDebit, AccountActivityGetTransactionResponseTypeWireInboundPayment, AccountActivityGetTransactionResponseTypeWireInboundAdmin, AccountActivityGetTransactionResponseTypeWireOutboundPayment, AccountActivityGetTransactionResponseTypeWireOutboundAdmin, AccountActivityGetTransactionResponseTypeWireInboundDrawdownRequest, AccountActivityGetTransactionResponseTypeStablecoinInbound, AccountActivityGetTransactionResponseTypeStablecoinOutbound:
 		return true
 	}
 	return false
