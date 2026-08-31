@@ -1,5 +1,41 @@
 # Changelog
 
+## 0.117.0 (2026-08-31)
+
+Full Changelog: [v0.116.0...v0.117.0](https://github.com/lithic-com/lithic-go/compare/v0.116.0...v0.117.0)
+
+### Features
+
+* **api:** add blockchain recipients endpoint ([d6d07cc](https://github.com/lithic-com/lithic-go/commit/d6d07cc1cc1578bd3c2448626bc5d2f228ca72f6))
+* **api:** add blockchain_addresses to FinancialAccount and webhook event ([d647ca4](https://github.com/lithic-com/lithic-go/commit/d647ca49d9c721f00aee52ebeea79b2d83df5afe))
+* **api:** add claim_token to disputes/webhooks, write_off_reversed enum values ([db3ba6d](https://github.com/lithic-com/lithic-go/commit/db3ba6d342056027b982b020acb341e7da59b3c2))
+* **api:** add limit_cash_amount and limit_cash_count parameters to auth rules ([ae63a9b](https://github.com/lithic-com/lithic-go/commit/ae63a9b5fad02577f69d6d8c4b257103b139fe8f))
+* **api:** add PROGRAM scope to authrulev2 actions, FINANCIAL_ACCOUNT/PROGRAM to case entity ([27fda38](https://github.com/lithic-com/lithic-go/commit/27fda3896678f764af41b881792aefc66607777a))
+* **api:** add reassign_account method to cards ([68b8cc3](https://github.com/lithic-com/lithic-go/commit/68b8cc3880bab6daf84c0d6d5aa1d975b841c9ab))
+* **api:** add stablecoin event types to payment/financial/statement line item events ([08a6294](https://github.com/lithic-com/lithic-go/commit/08a62944700290841046fd7e50ccfbb7083b38d4))
+* **api:** add STABLECOIN method, make payment method_attributes nullable ([0ce0f5a](https://github.com/lithic-com/lithic-go/commit/0ce0f5a891a344c78972ee84c832907c50ee5910))
+* **api:** add stablecoin payment method to accountactivity/payment/webhook ([f8e18c6](https://github.com/lithic-com/lithic-go/commit/f8e18c6e266d956aad37126a80c2a4d6e12c3e3c))
+* **api:** add STABLECOIN type to accountactivity/payment/webhook ([d639b8c](https://github.com/lithic-com/lithic-go/commit/d639b8ca0d9eab8978cf9c9e2f66272d62250305))
+* **api:** add stablecoin_inbound/outbound enum values to activity/payment/webhook types ([198ac3d](https://github.com/lithic-com/lithic-go/commit/198ac3db5a391d27807bd542b94aefbb32774318))
+* Make blockchain recipient account_token nullable ([893458a](https://github.com/lithic-com/lithic-go/commit/893458a964e9b2a0dcdefcb071404b9265b270bd))
+* Remove stablecoin transfer type ([98b08de](https://github.com/lithic-com/lithic-go/commit/98b08de9e549f87db095c808865370062b4fed0c))
+
+
+### Bug Fixes
+
+* **types:** remove Type discriminator, rename dispute v2 event data types ([6706593](https://github.com/lithic-com/lithic-go/commit/6706593bf093fd06933bc690568a786ab1686e66))
+
+
+### Chores
+
+* **internal:** allow the mock server port to be set with STAINLESS_MOCK_PORT ([f840e22](https://github.com/lithic-com/lithic-go/commit/f840e222302668b543ccf1fc161f5fbeef1a9383))
+
+
+### Documentation
+
+* **api:** clarify client_device_id and client_wallet_account_id in card provision ([4962538](https://github.com/lithic-com/lithic-go/commit/4962538010c59086514d139ebebb29e1bc00f076))
+* **api:** update CVV descriptions in Card and TokenizationSimulateParams ([d49bff1](https://github.com/lithic-com/lithic-go/commit/d49bff1336f239c50b34ea497231e50d4a0a46ed))
+
 ## 0.116.0 (2026-07-30)
 
 Full Changelog: [v0.115.0...v0.116.0](https://github.com/lithic-com/lithic-go/compare/v0.115.0...v0.116.0)
