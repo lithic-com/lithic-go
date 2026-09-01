@@ -535,6 +535,8 @@ type AuthRule struct {
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
 	//     ACH_PAYMENT_UPDATE event stream.
+	//   - `OTHER`: A rule whose type is not exposed through this API. Rules of this type
+	//     are read-only; `OTHER` cannot be used when creating a rule.
 	Type AuthRuleType `json:"type" api:"required"`
 	// Account tokens to which the Auth Rule does not apply.
 	ExcludedAccountTokens []string `json:"excluded_account_tokens" format:"uuid"`
@@ -1061,6 +1063,8 @@ func (r AuthRuleState) IsKnown() bool {
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 //     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
 //     ACH_PAYMENT_UPDATE event stream.
+//   - `OTHER`: A rule whose type is not exposed through this API. Rules of this type
+//     are read-only; `OTHER` cannot be used when creating a rule.
 type AuthRuleType string
 
 const (
@@ -1069,11 +1073,12 @@ const (
 	AuthRuleTypeMerchantLock      AuthRuleType = "MERCHANT_LOCK"
 	AuthRuleTypeConditionalAction AuthRuleType = "CONDITIONAL_ACTION"
 	AuthRuleTypeTypescriptCode    AuthRuleType = "TYPESCRIPT_CODE"
+	AuthRuleTypeOther             AuthRuleType = "OTHER"
 )
 
 func (r AuthRuleType) IsKnown() bool {
 	switch r {
-	case AuthRuleTypeConditionalBlock, AuthRuleTypeVelocityLimit, AuthRuleTypeMerchantLock, AuthRuleTypeConditionalAction, AuthRuleTypeTypescriptCode:
+	case AuthRuleTypeConditionalBlock, AuthRuleTypeVelocityLimit, AuthRuleTypeMerchantLock, AuthRuleTypeConditionalAction, AuthRuleTypeTypescriptCode, AuthRuleTypeOther:
 		return true
 	}
 	return false
@@ -9921,6 +9926,8 @@ type AuthRuleV2NewParamsBody struct {
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
 	//     ACH_PAYMENT_UPDATE event stream.
+	//   - `OTHER`: A rule whose type is not exposed through this API. Rules of this type
+	//     are read-only; `OTHER` cannot be used when creating a rule.
 	Type                  param.Field[AuthRuleV2NewParamsBodyType] `json:"type" api:"required"`
 	AccountTokens         param.Field[interface{}]                 `json:"account_tokens"`
 	BusinessAccountTokens param.Field[interface{}]                 `json:"business_account_tokens"`
@@ -9967,6 +9974,8 @@ type AuthRuleV2NewParamsBodyAccountLevelRule struct {
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
 	//     ACH_PAYMENT_UPDATE event stream.
+	//   - `OTHER`: A rule whose type is not exposed through this API. Rules of this type
+	//     are read-only; `OTHER` cannot be used when creating a rule.
 	Type param.Field[AuthRuleV2NewParamsBodyAccountLevelRuleType] `json:"type" api:"required"`
 	// Account tokens to which the Auth Rule applies.
 	AccountTokens param.Field[[]string] `json:"account_tokens" format:"uuid"`
@@ -10074,6 +10083,8 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRuleParametersScope) IsKnown() bool {
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 //     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
 //     ACH_PAYMENT_UPDATE event stream.
+//   - `OTHER`: A rule whose type is not exposed through this API. Rules of this type
+//     are read-only; `OTHER` cannot be used when creating a rule.
 type AuthRuleV2NewParamsBodyAccountLevelRuleType string
 
 const (
@@ -10082,11 +10093,12 @@ const (
 	AuthRuleV2NewParamsBodyAccountLevelRuleTypeMerchantLock      AuthRuleV2NewParamsBodyAccountLevelRuleType = "MERCHANT_LOCK"
 	AuthRuleV2NewParamsBodyAccountLevelRuleTypeConditionalAction AuthRuleV2NewParamsBodyAccountLevelRuleType = "CONDITIONAL_ACTION"
 	AuthRuleV2NewParamsBodyAccountLevelRuleTypeTypescriptCode    AuthRuleV2NewParamsBodyAccountLevelRuleType = "TYPESCRIPT_CODE"
+	AuthRuleV2NewParamsBodyAccountLevelRuleTypeOther             AuthRuleV2NewParamsBodyAccountLevelRuleType = "OTHER"
 )
 
 func (r AuthRuleV2NewParamsBodyAccountLevelRuleType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyAccountLevelRuleTypeConditionalBlock, AuthRuleV2NewParamsBodyAccountLevelRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyAccountLevelRuleTypeMerchantLock, AuthRuleV2NewParamsBodyAccountLevelRuleTypeConditionalAction, AuthRuleV2NewParamsBodyAccountLevelRuleTypeTypescriptCode:
+	case AuthRuleV2NewParamsBodyAccountLevelRuleTypeConditionalBlock, AuthRuleV2NewParamsBodyAccountLevelRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyAccountLevelRuleTypeMerchantLock, AuthRuleV2NewParamsBodyAccountLevelRuleTypeConditionalAction, AuthRuleV2NewParamsBodyAccountLevelRuleTypeTypescriptCode, AuthRuleV2NewParamsBodyAccountLevelRuleTypeOther:
 		return true
 	}
 	return false
@@ -10112,6 +10124,8 @@ type AuthRuleV2NewParamsBodyCardLevelRule struct {
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
 	//     ACH_PAYMENT_UPDATE event stream.
+	//   - `OTHER`: A rule whose type is not exposed through this API. Rules of this type
+	//     are read-only; `OTHER` cannot be used when creating a rule.
 	Type param.Field[AuthRuleV2NewParamsBodyCardLevelRuleType] `json:"type" api:"required"`
 	// The event stream during which the rule will be evaluated.
 	EventStream param.Field[EventStream] `json:"event_stream"`
@@ -10215,6 +10229,8 @@ func (r AuthRuleV2NewParamsBodyCardLevelRuleParametersScope) IsKnown() bool {
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 //     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
 //     ACH_PAYMENT_UPDATE event stream.
+//   - `OTHER`: A rule whose type is not exposed through this API. Rules of this type
+//     are read-only; `OTHER` cannot be used when creating a rule.
 type AuthRuleV2NewParamsBodyCardLevelRuleType string
 
 const (
@@ -10223,11 +10239,12 @@ const (
 	AuthRuleV2NewParamsBodyCardLevelRuleTypeMerchantLock      AuthRuleV2NewParamsBodyCardLevelRuleType = "MERCHANT_LOCK"
 	AuthRuleV2NewParamsBodyCardLevelRuleTypeConditionalAction AuthRuleV2NewParamsBodyCardLevelRuleType = "CONDITIONAL_ACTION"
 	AuthRuleV2NewParamsBodyCardLevelRuleTypeTypescriptCode    AuthRuleV2NewParamsBodyCardLevelRuleType = "TYPESCRIPT_CODE"
+	AuthRuleV2NewParamsBodyCardLevelRuleTypeOther             AuthRuleV2NewParamsBodyCardLevelRuleType = "OTHER"
 )
 
 func (r AuthRuleV2NewParamsBodyCardLevelRuleType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCardLevelRuleTypeConditionalBlock, AuthRuleV2NewParamsBodyCardLevelRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyCardLevelRuleTypeMerchantLock, AuthRuleV2NewParamsBodyCardLevelRuleTypeConditionalAction, AuthRuleV2NewParamsBodyCardLevelRuleTypeTypescriptCode:
+	case AuthRuleV2NewParamsBodyCardLevelRuleTypeConditionalBlock, AuthRuleV2NewParamsBodyCardLevelRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyCardLevelRuleTypeMerchantLock, AuthRuleV2NewParamsBodyCardLevelRuleTypeConditionalAction, AuthRuleV2NewParamsBodyCardLevelRuleTypeTypescriptCode, AuthRuleV2NewParamsBodyCardLevelRuleTypeOther:
 		return true
 	}
 	return false
@@ -10253,6 +10270,8 @@ type AuthRuleV2NewParamsBodyProgramLevelRule struct {
 	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
 	//     ACH_PAYMENT_UPDATE event stream.
+	//   - `OTHER`: A rule whose type is not exposed through this API. Rules of this type
+	//     are read-only; `OTHER` cannot be used when creating a rule.
 	Type param.Field[AuthRuleV2NewParamsBodyProgramLevelRuleType] `json:"type" api:"required"`
 	// The event stream during which the rule will be evaluated.
 	EventStream param.Field[EventStream] `json:"event_stream"`
@@ -10362,6 +10381,8 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleParametersScope) IsKnown() bool {
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 //     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
 //     ACH_PAYMENT_UPDATE event stream.
+//   - `OTHER`: A rule whose type is not exposed through this API. Rules of this type
+//     are read-only; `OTHER` cannot be used when creating a rule.
 type AuthRuleV2NewParamsBodyProgramLevelRuleType string
 
 const (
@@ -10370,11 +10391,12 @@ const (
 	AuthRuleV2NewParamsBodyProgramLevelRuleTypeMerchantLock      AuthRuleV2NewParamsBodyProgramLevelRuleType = "MERCHANT_LOCK"
 	AuthRuleV2NewParamsBodyProgramLevelRuleTypeConditionalAction AuthRuleV2NewParamsBodyProgramLevelRuleType = "CONDITIONAL_ACTION"
 	AuthRuleV2NewParamsBodyProgramLevelRuleTypeTypescriptCode    AuthRuleV2NewParamsBodyProgramLevelRuleType = "TYPESCRIPT_CODE"
+	AuthRuleV2NewParamsBodyProgramLevelRuleTypeOther             AuthRuleV2NewParamsBodyProgramLevelRuleType = "OTHER"
 )
 
 func (r AuthRuleV2NewParamsBodyProgramLevelRuleType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyProgramLevelRuleTypeConditionalBlock, AuthRuleV2NewParamsBodyProgramLevelRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyProgramLevelRuleTypeMerchantLock, AuthRuleV2NewParamsBodyProgramLevelRuleTypeConditionalAction, AuthRuleV2NewParamsBodyProgramLevelRuleTypeTypescriptCode:
+	case AuthRuleV2NewParamsBodyProgramLevelRuleTypeConditionalBlock, AuthRuleV2NewParamsBodyProgramLevelRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyProgramLevelRuleTypeMerchantLock, AuthRuleV2NewParamsBodyProgramLevelRuleTypeConditionalAction, AuthRuleV2NewParamsBodyProgramLevelRuleTypeTypescriptCode, AuthRuleV2NewParamsBodyProgramLevelRuleTypeOther:
 		return true
 	}
 	return false
@@ -10395,6 +10417,8 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleType) IsKnown() bool {
 //   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
 //     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
 //     ACH_PAYMENT_UPDATE event stream.
+//   - `OTHER`: A rule whose type is not exposed through this API. Rules of this type
+//     are read-only; `OTHER` cannot be used when creating a rule.
 type AuthRuleV2NewParamsBodyType string
 
 const (
@@ -10403,11 +10427,12 @@ const (
 	AuthRuleV2NewParamsBodyTypeMerchantLock      AuthRuleV2NewParamsBodyType = "MERCHANT_LOCK"
 	AuthRuleV2NewParamsBodyTypeConditionalAction AuthRuleV2NewParamsBodyType = "CONDITIONAL_ACTION"
 	AuthRuleV2NewParamsBodyTypeTypescriptCode    AuthRuleV2NewParamsBodyType = "TYPESCRIPT_CODE"
+	AuthRuleV2NewParamsBodyTypeOther             AuthRuleV2NewParamsBodyType = "OTHER"
 )
 
 func (r AuthRuleV2NewParamsBodyType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyTypeConditionalBlock, AuthRuleV2NewParamsBodyTypeVelocityLimit, AuthRuleV2NewParamsBodyTypeMerchantLock, AuthRuleV2NewParamsBodyTypeConditionalAction, AuthRuleV2NewParamsBodyTypeTypescriptCode:
+	case AuthRuleV2NewParamsBodyTypeConditionalBlock, AuthRuleV2NewParamsBodyTypeVelocityLimit, AuthRuleV2NewParamsBodyTypeMerchantLock, AuthRuleV2NewParamsBodyTypeConditionalAction, AuthRuleV2NewParamsBodyTypeTypescriptCode, AuthRuleV2NewParamsBodyTypeOther:
 		return true
 	}
 	return false
