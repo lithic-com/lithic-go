@@ -269,6 +269,7 @@ const (
 	PaymentCategoryExternalCheck          PaymentCategory = "EXTERNAL_CHECK"
 	PaymentCategoryExternalFednow         PaymentCategory = "EXTERNAL_FEDNOW"
 	PaymentCategoryExternalRtp            PaymentCategory = "EXTERNAL_RTP"
+	PaymentCategoryExternalStablecoin     PaymentCategory = "EXTERNAL_STABLECOIN"
 	PaymentCategoryExternalTransfer       PaymentCategory = "EXTERNAL_TRANSFER"
 	PaymentCategoryExternalWire           PaymentCategory = "EXTERNAL_WIRE"
 	PaymentCategoryManagementAdjustment   PaymentCategory = "MANAGEMENT_ADJUSTMENT"
@@ -283,7 +284,7 @@ const (
 
 func (r PaymentCategory) IsKnown() bool {
 	switch r {
-	case PaymentCategoryACH, PaymentCategoryWire, PaymentCategoryStablecoin, PaymentCategoryBalanceOrFunding, PaymentCategoryFee, PaymentCategoryReward, PaymentCategoryAdjustment, PaymentCategoryDerecognition, PaymentCategoryDispute, PaymentCategoryCard, PaymentCategoryExternalACH, PaymentCategoryExternalCheck, PaymentCategoryExternalFednow, PaymentCategoryExternalRtp, PaymentCategoryExternalTransfer, PaymentCategoryExternalWire, PaymentCategoryManagementAdjustment, PaymentCategoryManagementDispute, PaymentCategoryManagementFee, PaymentCategoryManagementReward, PaymentCategoryManagementDisbursement, PaymentCategoryHold, PaymentCategoryProgramFunding, PaymentCategoryProgramTransfer:
+	case PaymentCategoryACH, PaymentCategoryWire, PaymentCategoryStablecoin, PaymentCategoryBalanceOrFunding, PaymentCategoryFee, PaymentCategoryReward, PaymentCategoryAdjustment, PaymentCategoryDerecognition, PaymentCategoryDispute, PaymentCategoryCard, PaymentCategoryExternalACH, PaymentCategoryExternalCheck, PaymentCategoryExternalFednow, PaymentCategoryExternalRtp, PaymentCategoryExternalStablecoin, PaymentCategoryExternalTransfer, PaymentCategoryExternalWire, PaymentCategoryManagementAdjustment, PaymentCategoryManagementDispute, PaymentCategoryManagementFee, PaymentCategoryManagementReward, PaymentCategoryManagementDisbursement, PaymentCategoryHold, PaymentCategoryProgramFunding, PaymentCategoryProgramTransfer:
 		return true
 	}
 	return false

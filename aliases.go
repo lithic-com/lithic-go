@@ -356,6 +356,21 @@ const FinancialEventTypeExternalRtpReversed = shared.FinancialEventTypeExternalR
 const FinancialEventTypeExternalRtpSettled = shared.FinancialEventTypeExternalRtpSettled
 
 // This is an alias to an internal value.
+const FinancialEventTypeExternalStablecoinCanceled = shared.FinancialEventTypeExternalStablecoinCanceled
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalStablecoinInitiated = shared.FinancialEventTypeExternalStablecoinInitiated
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalStablecoinReleased = shared.FinancialEventTypeExternalStablecoinReleased
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalStablecoinReversed = shared.FinancialEventTypeExternalStablecoinReversed
+
+// This is an alias to an internal value.
+const FinancialEventTypeExternalStablecoinSettled = shared.FinancialEventTypeExternalStablecoinSettled
+
+// This is an alias to an internal value.
 const FinancialEventTypeExternalTransferCanceled = shared.FinancialEventTypeExternalTransferCanceled
 
 // This is an alias to an internal value.
