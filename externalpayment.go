@@ -207,17 +207,18 @@ func (r ExternalPaymentStatus) IsKnown() bool {
 type ExternalPaymentCategory string
 
 const (
-	ExternalPaymentCategoryExternalWire     ExternalPaymentCategory = "EXTERNAL_WIRE"
-	ExternalPaymentCategoryExternalACH      ExternalPaymentCategory = "EXTERNAL_ACH"
-	ExternalPaymentCategoryExternalCheck    ExternalPaymentCategory = "EXTERNAL_CHECK"
-	ExternalPaymentCategoryExternalFednow   ExternalPaymentCategory = "EXTERNAL_FEDNOW"
-	ExternalPaymentCategoryExternalRtp      ExternalPaymentCategory = "EXTERNAL_RTP"
-	ExternalPaymentCategoryExternalTransfer ExternalPaymentCategory = "EXTERNAL_TRANSFER"
+	ExternalPaymentCategoryExternalWire       ExternalPaymentCategory = "EXTERNAL_WIRE"
+	ExternalPaymentCategoryExternalACH        ExternalPaymentCategory = "EXTERNAL_ACH"
+	ExternalPaymentCategoryExternalCheck      ExternalPaymentCategory = "EXTERNAL_CHECK"
+	ExternalPaymentCategoryExternalFednow     ExternalPaymentCategory = "EXTERNAL_FEDNOW"
+	ExternalPaymentCategoryExternalRtp        ExternalPaymentCategory = "EXTERNAL_RTP"
+	ExternalPaymentCategoryExternalStablecoin ExternalPaymentCategory = "EXTERNAL_STABLECOIN"
+	ExternalPaymentCategoryExternalTransfer   ExternalPaymentCategory = "EXTERNAL_TRANSFER"
 )
 
 func (r ExternalPaymentCategory) IsKnown() bool {
 	switch r {
-	case ExternalPaymentCategoryExternalWire, ExternalPaymentCategoryExternalACH, ExternalPaymentCategoryExternalCheck, ExternalPaymentCategoryExternalFednow, ExternalPaymentCategoryExternalRtp, ExternalPaymentCategoryExternalTransfer:
+	case ExternalPaymentCategoryExternalWire, ExternalPaymentCategoryExternalACH, ExternalPaymentCategoryExternalCheck, ExternalPaymentCategoryExternalFednow, ExternalPaymentCategoryExternalRtp, ExternalPaymentCategoryExternalStablecoin, ExternalPaymentCategoryExternalTransfer:
 		return true
 	}
 	return false
@@ -291,41 +292,46 @@ func (r ExternalPaymentEventsResult) IsKnown() bool {
 type ExternalPaymentEventsType string
 
 const (
-	ExternalPaymentEventsTypeExternalWireInitiated     ExternalPaymentEventsType = "EXTERNAL_WIRE_INITIATED"
-	ExternalPaymentEventsTypeExternalWireCanceled      ExternalPaymentEventsType = "EXTERNAL_WIRE_CANCELED"
-	ExternalPaymentEventsTypeExternalWireSettled       ExternalPaymentEventsType = "EXTERNAL_WIRE_SETTLED"
-	ExternalPaymentEventsTypeExternalWireReversed      ExternalPaymentEventsType = "EXTERNAL_WIRE_REVERSED"
-	ExternalPaymentEventsTypeExternalWireReleased      ExternalPaymentEventsType = "EXTERNAL_WIRE_RELEASED"
-	ExternalPaymentEventsTypeExternalACHInitiated      ExternalPaymentEventsType = "EXTERNAL_ACH_INITIATED"
-	ExternalPaymentEventsTypeExternalACHCanceled       ExternalPaymentEventsType = "EXTERNAL_ACH_CANCELED"
-	ExternalPaymentEventsTypeExternalACHSettled        ExternalPaymentEventsType = "EXTERNAL_ACH_SETTLED"
-	ExternalPaymentEventsTypeExternalACHReversed       ExternalPaymentEventsType = "EXTERNAL_ACH_REVERSED"
-	ExternalPaymentEventsTypeExternalACHReleased       ExternalPaymentEventsType = "EXTERNAL_ACH_RELEASED"
-	ExternalPaymentEventsTypeExternalTransferInitiated ExternalPaymentEventsType = "EXTERNAL_TRANSFER_INITIATED"
-	ExternalPaymentEventsTypeExternalTransferCanceled  ExternalPaymentEventsType = "EXTERNAL_TRANSFER_CANCELED"
-	ExternalPaymentEventsTypeExternalTransferSettled   ExternalPaymentEventsType = "EXTERNAL_TRANSFER_SETTLED"
-	ExternalPaymentEventsTypeExternalTransferReversed  ExternalPaymentEventsType = "EXTERNAL_TRANSFER_REVERSED"
-	ExternalPaymentEventsTypeExternalTransferReleased  ExternalPaymentEventsType = "EXTERNAL_TRANSFER_RELEASED"
-	ExternalPaymentEventsTypeExternalCheckInitiated    ExternalPaymentEventsType = "EXTERNAL_CHECK_INITIATED"
-	ExternalPaymentEventsTypeExternalCheckCanceled     ExternalPaymentEventsType = "EXTERNAL_CHECK_CANCELED"
-	ExternalPaymentEventsTypeExternalCheckSettled      ExternalPaymentEventsType = "EXTERNAL_CHECK_SETTLED"
-	ExternalPaymentEventsTypeExternalCheckReversed     ExternalPaymentEventsType = "EXTERNAL_CHECK_REVERSED"
-	ExternalPaymentEventsTypeExternalCheckReleased     ExternalPaymentEventsType = "EXTERNAL_CHECK_RELEASED"
-	ExternalPaymentEventsTypeExternalFednowInitiated   ExternalPaymentEventsType = "EXTERNAL_FEDNOW_INITIATED"
-	ExternalPaymentEventsTypeExternalFednowCanceled    ExternalPaymentEventsType = "EXTERNAL_FEDNOW_CANCELED"
-	ExternalPaymentEventsTypeExternalFednowSettled     ExternalPaymentEventsType = "EXTERNAL_FEDNOW_SETTLED"
-	ExternalPaymentEventsTypeExternalFednowReversed    ExternalPaymentEventsType = "EXTERNAL_FEDNOW_REVERSED"
-	ExternalPaymentEventsTypeExternalFednowReleased    ExternalPaymentEventsType = "EXTERNAL_FEDNOW_RELEASED"
-	ExternalPaymentEventsTypeExternalRtpInitiated      ExternalPaymentEventsType = "EXTERNAL_RTP_INITIATED"
-	ExternalPaymentEventsTypeExternalRtpCanceled       ExternalPaymentEventsType = "EXTERNAL_RTP_CANCELED"
-	ExternalPaymentEventsTypeExternalRtpSettled        ExternalPaymentEventsType = "EXTERNAL_RTP_SETTLED"
-	ExternalPaymentEventsTypeExternalRtpReversed       ExternalPaymentEventsType = "EXTERNAL_RTP_REVERSED"
-	ExternalPaymentEventsTypeExternalRtpReleased       ExternalPaymentEventsType = "EXTERNAL_RTP_RELEASED"
+	ExternalPaymentEventsTypeExternalWireInitiated       ExternalPaymentEventsType = "EXTERNAL_WIRE_INITIATED"
+	ExternalPaymentEventsTypeExternalWireCanceled        ExternalPaymentEventsType = "EXTERNAL_WIRE_CANCELED"
+	ExternalPaymentEventsTypeExternalWireSettled         ExternalPaymentEventsType = "EXTERNAL_WIRE_SETTLED"
+	ExternalPaymentEventsTypeExternalWireReversed        ExternalPaymentEventsType = "EXTERNAL_WIRE_REVERSED"
+	ExternalPaymentEventsTypeExternalWireReleased        ExternalPaymentEventsType = "EXTERNAL_WIRE_RELEASED"
+	ExternalPaymentEventsTypeExternalACHInitiated        ExternalPaymentEventsType = "EXTERNAL_ACH_INITIATED"
+	ExternalPaymentEventsTypeExternalACHCanceled         ExternalPaymentEventsType = "EXTERNAL_ACH_CANCELED"
+	ExternalPaymentEventsTypeExternalACHSettled          ExternalPaymentEventsType = "EXTERNAL_ACH_SETTLED"
+	ExternalPaymentEventsTypeExternalACHReversed         ExternalPaymentEventsType = "EXTERNAL_ACH_REVERSED"
+	ExternalPaymentEventsTypeExternalACHReleased         ExternalPaymentEventsType = "EXTERNAL_ACH_RELEASED"
+	ExternalPaymentEventsTypeExternalTransferInitiated   ExternalPaymentEventsType = "EXTERNAL_TRANSFER_INITIATED"
+	ExternalPaymentEventsTypeExternalTransferCanceled    ExternalPaymentEventsType = "EXTERNAL_TRANSFER_CANCELED"
+	ExternalPaymentEventsTypeExternalTransferSettled     ExternalPaymentEventsType = "EXTERNAL_TRANSFER_SETTLED"
+	ExternalPaymentEventsTypeExternalTransferReversed    ExternalPaymentEventsType = "EXTERNAL_TRANSFER_REVERSED"
+	ExternalPaymentEventsTypeExternalTransferReleased    ExternalPaymentEventsType = "EXTERNAL_TRANSFER_RELEASED"
+	ExternalPaymentEventsTypeExternalCheckInitiated      ExternalPaymentEventsType = "EXTERNAL_CHECK_INITIATED"
+	ExternalPaymentEventsTypeExternalCheckCanceled       ExternalPaymentEventsType = "EXTERNAL_CHECK_CANCELED"
+	ExternalPaymentEventsTypeExternalCheckSettled        ExternalPaymentEventsType = "EXTERNAL_CHECK_SETTLED"
+	ExternalPaymentEventsTypeExternalCheckReversed       ExternalPaymentEventsType = "EXTERNAL_CHECK_REVERSED"
+	ExternalPaymentEventsTypeExternalCheckReleased       ExternalPaymentEventsType = "EXTERNAL_CHECK_RELEASED"
+	ExternalPaymentEventsTypeExternalFednowInitiated     ExternalPaymentEventsType = "EXTERNAL_FEDNOW_INITIATED"
+	ExternalPaymentEventsTypeExternalFednowCanceled      ExternalPaymentEventsType = "EXTERNAL_FEDNOW_CANCELED"
+	ExternalPaymentEventsTypeExternalFednowSettled       ExternalPaymentEventsType = "EXTERNAL_FEDNOW_SETTLED"
+	ExternalPaymentEventsTypeExternalFednowReversed      ExternalPaymentEventsType = "EXTERNAL_FEDNOW_REVERSED"
+	ExternalPaymentEventsTypeExternalFednowReleased      ExternalPaymentEventsType = "EXTERNAL_FEDNOW_RELEASED"
+	ExternalPaymentEventsTypeExternalRtpInitiated        ExternalPaymentEventsType = "EXTERNAL_RTP_INITIATED"
+	ExternalPaymentEventsTypeExternalRtpCanceled         ExternalPaymentEventsType = "EXTERNAL_RTP_CANCELED"
+	ExternalPaymentEventsTypeExternalRtpSettled          ExternalPaymentEventsType = "EXTERNAL_RTP_SETTLED"
+	ExternalPaymentEventsTypeExternalRtpReversed         ExternalPaymentEventsType = "EXTERNAL_RTP_REVERSED"
+	ExternalPaymentEventsTypeExternalRtpReleased         ExternalPaymentEventsType = "EXTERNAL_RTP_RELEASED"
+	ExternalPaymentEventsTypeExternalStablecoinInitiated ExternalPaymentEventsType = "EXTERNAL_STABLECOIN_INITIATED"
+	ExternalPaymentEventsTypeExternalStablecoinCanceled  ExternalPaymentEventsType = "EXTERNAL_STABLECOIN_CANCELED"
+	ExternalPaymentEventsTypeExternalStablecoinSettled   ExternalPaymentEventsType = "EXTERNAL_STABLECOIN_SETTLED"
+	ExternalPaymentEventsTypeExternalStablecoinReversed  ExternalPaymentEventsType = "EXTERNAL_STABLECOIN_REVERSED"
+	ExternalPaymentEventsTypeExternalStablecoinReleased  ExternalPaymentEventsType = "EXTERNAL_STABLECOIN_RELEASED"
 )
 
 func (r ExternalPaymentEventsType) IsKnown() bool {
 	switch r {
-	case ExternalPaymentEventsTypeExternalWireInitiated, ExternalPaymentEventsTypeExternalWireCanceled, ExternalPaymentEventsTypeExternalWireSettled, ExternalPaymentEventsTypeExternalWireReversed, ExternalPaymentEventsTypeExternalWireReleased, ExternalPaymentEventsTypeExternalACHInitiated, ExternalPaymentEventsTypeExternalACHCanceled, ExternalPaymentEventsTypeExternalACHSettled, ExternalPaymentEventsTypeExternalACHReversed, ExternalPaymentEventsTypeExternalACHReleased, ExternalPaymentEventsTypeExternalTransferInitiated, ExternalPaymentEventsTypeExternalTransferCanceled, ExternalPaymentEventsTypeExternalTransferSettled, ExternalPaymentEventsTypeExternalTransferReversed, ExternalPaymentEventsTypeExternalTransferReleased, ExternalPaymentEventsTypeExternalCheckInitiated, ExternalPaymentEventsTypeExternalCheckCanceled, ExternalPaymentEventsTypeExternalCheckSettled, ExternalPaymentEventsTypeExternalCheckReversed, ExternalPaymentEventsTypeExternalCheckReleased, ExternalPaymentEventsTypeExternalFednowInitiated, ExternalPaymentEventsTypeExternalFednowCanceled, ExternalPaymentEventsTypeExternalFednowSettled, ExternalPaymentEventsTypeExternalFednowReversed, ExternalPaymentEventsTypeExternalFednowReleased, ExternalPaymentEventsTypeExternalRtpInitiated, ExternalPaymentEventsTypeExternalRtpCanceled, ExternalPaymentEventsTypeExternalRtpSettled, ExternalPaymentEventsTypeExternalRtpReversed, ExternalPaymentEventsTypeExternalRtpReleased:
+	case ExternalPaymentEventsTypeExternalWireInitiated, ExternalPaymentEventsTypeExternalWireCanceled, ExternalPaymentEventsTypeExternalWireSettled, ExternalPaymentEventsTypeExternalWireReversed, ExternalPaymentEventsTypeExternalWireReleased, ExternalPaymentEventsTypeExternalACHInitiated, ExternalPaymentEventsTypeExternalACHCanceled, ExternalPaymentEventsTypeExternalACHSettled, ExternalPaymentEventsTypeExternalACHReversed, ExternalPaymentEventsTypeExternalACHReleased, ExternalPaymentEventsTypeExternalTransferInitiated, ExternalPaymentEventsTypeExternalTransferCanceled, ExternalPaymentEventsTypeExternalTransferSettled, ExternalPaymentEventsTypeExternalTransferReversed, ExternalPaymentEventsTypeExternalTransferReleased, ExternalPaymentEventsTypeExternalCheckInitiated, ExternalPaymentEventsTypeExternalCheckCanceled, ExternalPaymentEventsTypeExternalCheckSettled, ExternalPaymentEventsTypeExternalCheckReversed, ExternalPaymentEventsTypeExternalCheckReleased, ExternalPaymentEventsTypeExternalFednowInitiated, ExternalPaymentEventsTypeExternalFednowCanceled, ExternalPaymentEventsTypeExternalFednowSettled, ExternalPaymentEventsTypeExternalFednowReversed, ExternalPaymentEventsTypeExternalFednowReleased, ExternalPaymentEventsTypeExternalRtpInitiated, ExternalPaymentEventsTypeExternalRtpCanceled, ExternalPaymentEventsTypeExternalRtpSettled, ExternalPaymentEventsTypeExternalRtpReversed, ExternalPaymentEventsTypeExternalRtpReleased, ExternalPaymentEventsTypeExternalStablecoinInitiated, ExternalPaymentEventsTypeExternalStablecoinCanceled, ExternalPaymentEventsTypeExternalStablecoinSettled, ExternalPaymentEventsTypeExternalStablecoinReversed, ExternalPaymentEventsTypeExternalStablecoinReleased:
 		return true
 	}
 	return false
@@ -397,17 +403,18 @@ func (r ExternalPaymentNewParams) MarshalJSON() (data []byte, err error) {
 type ExternalPaymentNewParamsCategory string
 
 const (
-	ExternalPaymentNewParamsCategoryExternalWire     ExternalPaymentNewParamsCategory = "EXTERNAL_WIRE"
-	ExternalPaymentNewParamsCategoryExternalACH      ExternalPaymentNewParamsCategory = "EXTERNAL_ACH"
-	ExternalPaymentNewParamsCategoryExternalCheck    ExternalPaymentNewParamsCategory = "EXTERNAL_CHECK"
-	ExternalPaymentNewParamsCategoryExternalFednow   ExternalPaymentNewParamsCategory = "EXTERNAL_FEDNOW"
-	ExternalPaymentNewParamsCategoryExternalRtp      ExternalPaymentNewParamsCategory = "EXTERNAL_RTP"
-	ExternalPaymentNewParamsCategoryExternalTransfer ExternalPaymentNewParamsCategory = "EXTERNAL_TRANSFER"
+	ExternalPaymentNewParamsCategoryExternalWire       ExternalPaymentNewParamsCategory = "EXTERNAL_WIRE"
+	ExternalPaymentNewParamsCategoryExternalACH        ExternalPaymentNewParamsCategory = "EXTERNAL_ACH"
+	ExternalPaymentNewParamsCategoryExternalCheck      ExternalPaymentNewParamsCategory = "EXTERNAL_CHECK"
+	ExternalPaymentNewParamsCategoryExternalFednow     ExternalPaymentNewParamsCategory = "EXTERNAL_FEDNOW"
+	ExternalPaymentNewParamsCategoryExternalRtp        ExternalPaymentNewParamsCategory = "EXTERNAL_RTP"
+	ExternalPaymentNewParamsCategoryExternalStablecoin ExternalPaymentNewParamsCategory = "EXTERNAL_STABLECOIN"
+	ExternalPaymentNewParamsCategoryExternalTransfer   ExternalPaymentNewParamsCategory = "EXTERNAL_TRANSFER"
 )
 
 func (r ExternalPaymentNewParamsCategory) IsKnown() bool {
 	switch r {
-	case ExternalPaymentNewParamsCategoryExternalWire, ExternalPaymentNewParamsCategoryExternalACH, ExternalPaymentNewParamsCategoryExternalCheck, ExternalPaymentNewParamsCategoryExternalFednow, ExternalPaymentNewParamsCategoryExternalRtp, ExternalPaymentNewParamsCategoryExternalTransfer:
+	case ExternalPaymentNewParamsCategoryExternalWire, ExternalPaymentNewParamsCategoryExternalACH, ExternalPaymentNewParamsCategoryExternalCheck, ExternalPaymentNewParamsCategoryExternalFednow, ExternalPaymentNewParamsCategoryExternalRtp, ExternalPaymentNewParamsCategoryExternalStablecoin, ExternalPaymentNewParamsCategoryExternalTransfer:
 		return true
 	}
 	return false
@@ -483,17 +490,18 @@ func (r ExternalPaymentListParams) URLQuery() (v url.Values) {
 type ExternalPaymentListParamsCategory string
 
 const (
-	ExternalPaymentListParamsCategoryExternalWire     ExternalPaymentListParamsCategory = "EXTERNAL_WIRE"
-	ExternalPaymentListParamsCategoryExternalACH      ExternalPaymentListParamsCategory = "EXTERNAL_ACH"
-	ExternalPaymentListParamsCategoryExternalCheck    ExternalPaymentListParamsCategory = "EXTERNAL_CHECK"
-	ExternalPaymentListParamsCategoryExternalFednow   ExternalPaymentListParamsCategory = "EXTERNAL_FEDNOW"
-	ExternalPaymentListParamsCategoryExternalRtp      ExternalPaymentListParamsCategory = "EXTERNAL_RTP"
-	ExternalPaymentListParamsCategoryExternalTransfer ExternalPaymentListParamsCategory = "EXTERNAL_TRANSFER"
+	ExternalPaymentListParamsCategoryExternalWire       ExternalPaymentListParamsCategory = "EXTERNAL_WIRE"
+	ExternalPaymentListParamsCategoryExternalACH        ExternalPaymentListParamsCategory = "EXTERNAL_ACH"
+	ExternalPaymentListParamsCategoryExternalCheck      ExternalPaymentListParamsCategory = "EXTERNAL_CHECK"
+	ExternalPaymentListParamsCategoryExternalFednow     ExternalPaymentListParamsCategory = "EXTERNAL_FEDNOW"
+	ExternalPaymentListParamsCategoryExternalRtp        ExternalPaymentListParamsCategory = "EXTERNAL_RTP"
+	ExternalPaymentListParamsCategoryExternalStablecoin ExternalPaymentListParamsCategory = "EXTERNAL_STABLECOIN"
+	ExternalPaymentListParamsCategoryExternalTransfer   ExternalPaymentListParamsCategory = "EXTERNAL_TRANSFER"
 )
 
 func (r ExternalPaymentListParamsCategory) IsKnown() bool {
 	switch r {
-	case ExternalPaymentListParamsCategoryExternalWire, ExternalPaymentListParamsCategoryExternalACH, ExternalPaymentListParamsCategoryExternalCheck, ExternalPaymentListParamsCategoryExternalFednow, ExternalPaymentListParamsCategoryExternalRtp, ExternalPaymentListParamsCategoryExternalTransfer:
+	case ExternalPaymentListParamsCategoryExternalWire, ExternalPaymentListParamsCategoryExternalACH, ExternalPaymentListParamsCategoryExternalCheck, ExternalPaymentListParamsCategoryExternalFednow, ExternalPaymentListParamsCategoryExternalRtp, ExternalPaymentListParamsCategoryExternalStablecoin, ExternalPaymentListParamsCategoryExternalTransfer:
 		return true
 	}
 	return false
