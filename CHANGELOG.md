@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.118.0 (2026-09-03)
+
+Full Changelog: [v0.117.0...v0.118.0](https://github.com/lithic-com/lithic-go/compare/v0.117.0...v0.118.0)
+
+### Features
+
+* **api:** add EXTERNAL_STABLECOIN category and event types to payments/webhooks/statements ([0576509](https://github.com/lithic-com/lithic-go/commit/05765090cd4afd5035f23255290ea1e133a602c6))
+* **api:** add OTHER enum value to auth rule types ([2cec1ac](https://github.com/lithic-com/lithic-go/commit/2cec1ac01cc96c6cbfe3803019f54206edf3bd1d))
+
 ## 0.117.0 (2026-08-31)
 
 Full Changelog: [v0.116.0...v0.117.0](https://github.com/lithic-com/lithic-go/compare/v0.116.0...v0.117.0)
