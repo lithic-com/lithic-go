@@ -407,6 +407,12 @@ const FinancialEventTypeFinancialAuthorization = shared.FinancialEventTypeFinanc
 const FinancialEventTypeFinancialCreditAuthorization = shared.FinancialEventTypeFinancialCreditAuthorization
 
 // This is an alias to an internal value.
+const FinancialEventTypeInstallmentFee = shared.FinancialEventTypeInstallmentFee
+
+// This is an alias to an internal value.
+const FinancialEventTypeInstallmentFeeReversal = shared.FinancialEventTypeInstallmentFeeReversal
+
+// This is an alias to an internal value.
 const FinancialEventTypeInterest = shared.FinancialEventTypeInterest
 
 // This is an alias to an internal value.
