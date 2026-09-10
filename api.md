@@ -685,6 +685,7 @@ Response Types:
 Methods:
 
 - <code title="post /v1/blockchain_recipients">client.BlockchainRecipients.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#BlockchainRecipientService.New">New</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#BlockchainRecipientNewParams">BlockchainRecipientNewParams</a>) (\*<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#BlockchainRecipient">BlockchainRecipient</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+- <code title="get /v1/blockchain_recipients/{blockchain_recipient_token}">client.BlockchainRecipients.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#BlockchainRecipientService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, blockchainRecipientToken <a href="https://pkg.go.dev/builtin#string">string</a>) (\*<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#BlockchainRecipient">BlockchainRecipient</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 
 # Payments
 
