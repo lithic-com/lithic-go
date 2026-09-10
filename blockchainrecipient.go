@@ -4,6 +4,8 @@ package lithic
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"net/http"
 	"slices"
 	"time"
@@ -44,6 +46,22 @@ func (r *BlockchainRecipientService) New(ctx context.Context, body BlockchainRec
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/blockchain_recipients"
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+	return res, err
+}
+
+// Get a blockchain recipient by token
+//
+// Use this to poll the `verification_state` after registering an address: a
+// recipient cannot receive a payout until screening completes and moves it out of
+// `PENDING`
+func (r *BlockchainRecipientService) Get(ctx context.Context, blockchainRecipientToken string, opts ...option.RequestOption) (res *BlockchainRecipient, err error) {
+	opts = slices.Concat(r.Options, opts)
+	if blockchainRecipientToken == "" {
+		err = errors.New("missing required blockchain_recipient_token parameter")
+		return nil, err
+	}
+	path := fmt.Sprintf("v1/blockchain_recipients/%s", blockchainRecipientToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, nil, &res, opts...)
 	return res, err
 }
 
