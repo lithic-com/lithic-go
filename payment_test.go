@@ -110,6 +110,38 @@ func TestPaymentListWithOptionalParams(t *testing.T) {
 	}
 }
 
+func TestPaymentNewStablecoinWithOptionalParams(t *testing.T) {
+	baseURL := "http://localhost:4010"
+	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+		baseURL = envURL
+	}
+	if !testutil.CheckTestServer(t, baseURL) {
+		return
+	}
+	client := lithic.NewClient(
+		option.WithBaseURL(baseURL),
+		option.WithAPIKey("My Lithic API Key"),
+	)
+	_, err := client.Payments.NewStablecoin(context.TODO(), lithic.PaymentNewStablecoinParams{
+		Amount:                   lithic.F(int64(1588)),
+		BlockchainRecipientToken: lithic.F("1e3fdb71-4b52-4a30-a7a9-52c85e26a1d9"),
+		FinancialAccountToken:    lithic.F("35b0c466-a3e3-519a-9549-ead6a6a2277d"),
+		Type:                     lithic.F(lithic.PaymentNewStablecoinParamsTypePayment),
+		Token:                    lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		Hold: lithic.F(lithic.PaymentNewStablecoinParamsHold{
+			Token: lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		}),
+		Memo: lithic.F("Vendor payout"),
+	})
+	if err != nil {
+		var apierr *lithic.Error
+		if errors.As(err, &apierr) {
+			t.Log(string(apierr.DumpRequest(true)))
+		}
+		t.Fatalf("err should be nil: %s", err.Error())
+	}
+}
+
 func TestPaymentRetry(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
