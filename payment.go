@@ -40,7 +40,14 @@ func NewPaymentService(opts ...option.RequestOption) (r *PaymentService) {
 	return
 }
 
-// Initiates a payment between a financial account and an external bank account.
+// Initiates an ACH payment between a financial account and an external bank
+// account.
+//
+// This endpoint originates on the ACH rail only. To send a stablecoin payout, use
+// the
+// [Create stablecoin payment](https://docs.lithic.com/reference/createstablecoinpayment)
+// endpoint. Payments on every rail are read back through
+// [List payments](https://docs.lithic.com/reference/searchpayments).
 func (r *PaymentService) New(ctx context.Context, body PaymentNewParams, opts ...option.RequestOption) (res *PaymentNewResponse, err error) {
 	opts = slices.Concat(r.Options, opts)
 	path := "v1/payments"
@@ -81,6 +88,30 @@ func (r *PaymentService) List(ctx context.Context, query PaymentListParams, opts
 // List all the payments for the provided search criteria.
 func (r *PaymentService) ListAutoPaging(ctx context.Context, query PaymentListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[Payment] {
 	return pagination.NewCursorPageAutoPager(r.List(ctx, query, opts...))
+}
+
+// Initiates a stablecoin payout from a financial account to a registered
+// blockchain recipient.
+//
+// The recipient must have been registered with
+// [Create blockchain recipient](https://docs.lithic.com/reference/createblockchainrecipient)
+// and have completed address screening — only a recipient in the `ENABLED`
+// verification state can receive a payout. The destination address and chain come
+// from the recipient, so they are not supplied here.
+//
+// Only payouts are initiated through this endpoint. Stablecoin pay-ins are
+// credited from on-chain deposits to a financial account's deposit address and are
+// not created through the API. Funds are placed on hold when the payout is
+// initiated, and a payout that fails on chain reverses that hold. A payout cannot
+// be cancelled once it has been submitted on chain.
+//
+// This endpoint is only available to stablecoin-enabled programs. Contact your
+// customer success manager to learn more.
+func (r *PaymentService) NewStablecoin(ctx context.Context, body PaymentNewStablecoinParams, opts ...option.RequestOption) (res *PaymentNewStablecoinResponse, err error) {
+	opts = slices.Concat(r.Options, opts)
+	path := "v1/payments/stablecoin"
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
+	return res, err
 }
 
 // Retry an origination which has been returned.
@@ -1038,6 +1069,30 @@ func (r paymentNewResponseJSON) RawJSON() string {
 }
 
 // Payment transaction
+type PaymentNewStablecoinResponse struct {
+	// Balance
+	Balance Balance                          `json:"balance"`
+	JSON    paymentNewStablecoinResponseJSON `json:"-"`
+	Payment
+}
+
+// paymentNewStablecoinResponseJSON contains the JSON metadata for the struct
+// [PaymentNewStablecoinResponse]
+type paymentNewStablecoinResponseJSON struct {
+	Balance     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *PaymentNewStablecoinResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r paymentNewStablecoinResponseJSON) RawJSON() string {
+	return r.raw
+}
+
+// Payment transaction
 type PaymentRetryResponse struct {
 	// Balance
 	Balance Balance                  `json:"balance"`
@@ -1361,12 +1416,13 @@ func (r PaymentListParams) URLQuery() (v url.Values) {
 type PaymentListParamsCategory string
 
 const (
-	PaymentListParamsCategoryACH PaymentListParamsCategory = "ACH"
+	PaymentListParamsCategoryACH        PaymentListParamsCategory = "ACH"
+	PaymentListParamsCategoryStablecoin PaymentListParamsCategory = "STABLECOIN"
 )
 
 func (r PaymentListParamsCategory) IsKnown() bool {
 	switch r {
-	case PaymentListParamsCategoryACH:
+	case PaymentListParamsCategoryACH, PaymentListParamsCategoryStablecoin:
 		return true
 	}
 	return false
@@ -1403,6 +1459,55 @@ func (r PaymentListParamsStatus) IsKnown() bool {
 		return true
 	}
 	return false
+}
+
+type PaymentNewStablecoinParams struct {
+	// Payout amount in cents
+	Amount param.Field[int64] `json:"amount" api:"required"`
+	// Token of the blockchain recipient to send the payout to. The recipient must be
+	// in the `ENABLED` verification state
+	BlockchainRecipientToken param.Field[string] `json:"blockchain_recipient_token" api:"required" format:"uuid"`
+	// Token of the financial account the payout is funded from
+	FinancialAccountToken param.Field[string] `json:"financial_account_token" api:"required" format:"uuid"`
+	// Direction of the payment. Stablecoin supports payouts only
+	Type param.Field[PaymentNewStablecoinParamsType] `json:"type" api:"required"`
+	// Customer-provided token that will serve as an idempotency token. This token will
+	// become the transaction token
+	Token param.Field[string] `json:"token" format:"uuid"`
+	// Optional hold to settle when this payout is initiated
+	Hold param.Field[PaymentNewStablecoinParamsHold] `json:"hold"`
+	// Memo recorded on the payout. Defaults to `Stablecoin payout on <chain>` when
+	// omitted
+	Memo param.Field[string] `json:"memo"`
+}
+
+func (r PaymentNewStablecoinParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// Direction of the payment. Stablecoin supports payouts only
+type PaymentNewStablecoinParamsType string
+
+const (
+	PaymentNewStablecoinParamsTypePayment PaymentNewStablecoinParamsType = "PAYMENT"
+)
+
+func (r PaymentNewStablecoinParamsType) IsKnown() bool {
+	switch r {
+	case PaymentNewStablecoinParamsTypePayment:
+		return true
+	}
+	return false
+}
+
+// Optional hold to settle when this payout is initiated
+type PaymentNewStablecoinParamsHold struct {
+	// Token of the hold to settle when this payout is initiated
+	Token param.Field[string] `json:"token" api:"required" format:"uuid"`
+}
+
+func (r PaymentNewStablecoinParamsHold) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }
 
 type PaymentReturnParams struct {
