@@ -1465,6 +1465,104 @@ func (r CardConvertedWebhookEventEventType) IsKnown() bool {
 	return false
 }
 
+type CardPinUpdatedWebhookEvent struct {
+	// The token of the card whose PIN or PIN status was updated
+	CardToken string `json:"card_token" api:"required" format:"uuid"`
+	// The type of event that occurred.
+	EventType CardPinUpdatedWebhookEventEventType `json:"event_type" api:"required"`
+	// The card's PIN status after the update
+	PinStatus CardPinUpdatedWebhookEventPinStatus `json:"pin_status" api:"required"`
+	// The reason for the PIN update:
+	//
+	//   - `PIN_SET` - The PIN was set for the first time; `pin_status` is `OK`
+	//   - `PIN_CHANGED` - The PIN was changed, including when changing a blocked PIN;
+	//     `pin_status` is `OK`
+	//   - `PIN_UNBLOCKED` - The PIN was unblocked without changing it; `pin_status` is
+	//     `OK`
+	//   - `EXCESSIVE_PIN_ATTEMPTS` - The PIN was blocked due to excessive incorrect PIN
+	//     attempts; `pin_status` is `BLOCKED`
+	StatusReason CardPinUpdatedWebhookEventStatusReason `json:"status_reason" api:"required"`
+	JSON         cardPinUpdatedWebhookEventJSON         `json:"-"`
+}
+
+// cardPinUpdatedWebhookEventJSON contains the JSON metadata for the struct
+// [CardPinUpdatedWebhookEvent]
+type cardPinUpdatedWebhookEventJSON struct {
+	CardToken    apijson.Field
+	EventType    apijson.Field
+	PinStatus    apijson.Field
+	StatusReason apijson.Field
+	raw          string
+	ExtraFields  map[string]apijson.Field
+}
+
+func (r *CardPinUpdatedWebhookEvent) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r cardPinUpdatedWebhookEventJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r CardPinUpdatedWebhookEvent) implementsParsedWebhookEvent() {}
+
+// The type of event that occurred.
+type CardPinUpdatedWebhookEventEventType string
+
+const (
+	CardPinUpdatedWebhookEventEventTypeCardPinUpdated CardPinUpdatedWebhookEventEventType = "card.pin_updated"
+)
+
+func (r CardPinUpdatedWebhookEventEventType) IsKnown() bool {
+	switch r {
+	case CardPinUpdatedWebhookEventEventTypeCardPinUpdated:
+		return true
+	}
+	return false
+}
+
+// The card's PIN status after the update
+type CardPinUpdatedWebhookEventPinStatus string
+
+const (
+	CardPinUpdatedWebhookEventPinStatusOk      CardPinUpdatedWebhookEventPinStatus = "OK"
+	CardPinUpdatedWebhookEventPinStatusBlocked CardPinUpdatedWebhookEventPinStatus = "BLOCKED"
+)
+
+func (r CardPinUpdatedWebhookEventPinStatus) IsKnown() bool {
+	switch r {
+	case CardPinUpdatedWebhookEventPinStatusOk, CardPinUpdatedWebhookEventPinStatusBlocked:
+		return true
+	}
+	return false
+}
+
+// The reason for the PIN update:
+//
+//   - `PIN_SET` - The PIN was set for the first time; `pin_status` is `OK`
+//   - `PIN_CHANGED` - The PIN was changed, including when changing a blocked PIN;
+//     `pin_status` is `OK`
+//   - `PIN_UNBLOCKED` - The PIN was unblocked without changing it; `pin_status` is
+//     `OK`
+//   - `EXCESSIVE_PIN_ATTEMPTS` - The PIN was blocked due to excessive incorrect PIN
+//     attempts; `pin_status` is `BLOCKED`
+type CardPinUpdatedWebhookEventStatusReason string
+
+const (
+	CardPinUpdatedWebhookEventStatusReasonPinSet               CardPinUpdatedWebhookEventStatusReason = "PIN_SET"
+	CardPinUpdatedWebhookEventStatusReasonPinChanged           CardPinUpdatedWebhookEventStatusReason = "PIN_CHANGED"
+	CardPinUpdatedWebhookEventStatusReasonPinUnblocked         CardPinUpdatedWebhookEventStatusReason = "PIN_UNBLOCKED"
+	CardPinUpdatedWebhookEventStatusReasonExcessivePinAttempts CardPinUpdatedWebhookEventStatusReason = "EXCESSIVE_PIN_ATTEMPTS"
+)
+
+func (r CardPinUpdatedWebhookEventStatusReason) IsKnown() bool {
+	switch r {
+	case CardPinUpdatedWebhookEventStatusReasonPinSet, CardPinUpdatedWebhookEventStatusReasonPinChanged, CardPinUpdatedWebhookEventStatusReasonPinUnblocked, CardPinUpdatedWebhookEventStatusReasonExcessivePinAttempts:
+		return true
+	}
+	return false
+}
+
 type CardRenewedWebhookEvent struct {
 	// The type of event that occurred.
 	EventType CardRenewedWebhookEventEventType `json:"event_type" api:"required"`
@@ -5448,6 +5546,8 @@ type ParsedWebhookEvent struct {
 	// If updated, the newly updated phone_number associated with the account_holder
 	// otherwise the existing phone_number is provided.
 	PhoneNumber string `json:"phone_number"`
+	// The card's PIN status after the update
+	PinStatus ParsedWebhookEventPinStatus `json:"pin_status"`
 	// This field can have the runtime type of [CardAuthorizationPos],
 	// [TransactionPos].
 	Pos interface{} `json:"pos"`
@@ -5560,7 +5660,8 @@ type ParsedWebhookEvent struct {
 	StatementType      ParsedWebhookEventStatementType `json:"statement_type"`
 	// The status of the account_holder that was created.
 	Status ParsedWebhookEventStatus `json:"status" api:"nullable"`
-	// This field can have the runtime type of [[]string].
+	// This field can have the runtime type of [[]string],
+	// [CardPinUpdatedWebhookEventStatusReason].
 	StatusReason interface{} `json:"status_reason"`
 	// This field can have the runtime type of [[]string].
 	StatusReasons interface{} `json:"status_reasons"`
@@ -5837,6 +5938,7 @@ type parsedWebhookEventJSON struct {
 	PendingAmount                      apijson.Field
 	PeriodTotals                       apijson.Field
 	PhoneNumber                        apijson.Field
+	PinStatus                          apijson.Field
 	Pos                                apijson.Field
 	PrearbitrationDate                 apijson.Field
 	PreviousExpMonth                   apijson.Field
@@ -5950,9 +6052,10 @@ func (r *ParsedWebhookEvent) UnmarshalJSON(data []byte) (err error) {
 // [AuthRulesBacktestReportCreatedWebhookEvent], [BalanceUpdatedWebhookEvent],
 // [BookTransferTransactionCreatedWebhookEvent],
 // [BookTransferTransactionUpdatedWebhookEvent], [CardCreatedWebhookEvent],
-// [CardConvertedWebhookEvent], [CardRenewedWebhookEvent],
-// [CardReissuedWebhookEvent], [CardShippedWebhookEvent],
-// [CardUpdatedWebhookEvent], [CardTransactionUpdatedWebhookEvent],
+// [CardConvertedWebhookEvent], [CardPinUpdatedWebhookEvent],
+// [CardRenewedWebhookEvent], [CardReissuedWebhookEvent],
+// [CardShippedWebhookEvent], [CardUpdatedWebhookEvent],
+// [CardTransactionUpdatedWebhookEvent],
 // [CardTransactionEnhancedDataCreatedWebhookEvent],
 // [CardTransactionEnhancedDataUpdatedWebhookEvent], [ClaimCreatedWebhookEvent],
 // [ClaimUpdatedWebhookEvent], [ClaimDocumentUploadedWebhookEvent],
@@ -6000,9 +6103,10 @@ func (r ParsedWebhookEvent) AsUnion() ParsedWebhookEventUnion {
 // [AuthRulesBacktestReportCreatedWebhookEvent], [BalanceUpdatedWebhookEvent],
 // [BookTransferTransactionCreatedWebhookEvent],
 // [BookTransferTransactionUpdatedWebhookEvent], [CardCreatedWebhookEvent],
-// [CardConvertedWebhookEvent], [CardRenewedWebhookEvent],
-// [CardReissuedWebhookEvent], [CardShippedWebhookEvent],
-// [CardUpdatedWebhookEvent], [CardTransactionUpdatedWebhookEvent],
+// [CardConvertedWebhookEvent], [CardPinUpdatedWebhookEvent],
+// [CardRenewedWebhookEvent], [CardReissuedWebhookEvent],
+// [CardShippedWebhookEvent], [CardUpdatedWebhookEvent],
+// [CardTransactionUpdatedWebhookEvent],
 // [CardTransactionEnhancedDataCreatedWebhookEvent],
 // [CardTransactionEnhancedDataUpdatedWebhookEvent], [ClaimCreatedWebhookEvent],
 // [ClaimUpdatedWebhookEvent], [ClaimDocumentUploadedWebhookEvent],
@@ -6101,6 +6205,10 @@ func init() {
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(CardConvertedWebhookEvent{}),
+		},
+		apijson.UnionVariant{
+			TypeFilter: gjson.JSON,
+			Type:       reflect.TypeOf(CardPinUpdatedWebhookEvent{}),
 		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
@@ -7127,6 +7235,7 @@ const (
 	ParsedWebhookEventEventTypeBookTransferTransactionUpdated                           ParsedWebhookEventEventType = "book_transfer_transaction.updated"
 	ParsedWebhookEventEventTypeCardCreated                                              ParsedWebhookEventEventType = "card.created"
 	ParsedWebhookEventEventTypeCardConverted                                            ParsedWebhookEventEventType = "card.converted"
+	ParsedWebhookEventEventTypeCardPinUpdated                                           ParsedWebhookEventEventType = "card.pin_updated"
 	ParsedWebhookEventEventTypeCardRenewed                                              ParsedWebhookEventEventType = "card.renewed"
 	ParsedWebhookEventEventTypeCardReissued                                             ParsedWebhookEventEventType = "card.reissued"
 	ParsedWebhookEventEventTypeCardShipped                                              ParsedWebhookEventEventType = "card.shipped"
@@ -7182,7 +7291,7 @@ const (
 
 func (r ParsedWebhookEventEventType) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventEventTypeAccountHolderCreated, ParsedWebhookEventEventTypeAccountHolderUpdated, ParsedWebhookEventEventTypeAccountHolderVerification, ParsedWebhookEventEventTypeAccountHolderDocumentUpdated, ParsedWebhookEventEventTypeCardAuthorizationApprovalRequest, ParsedWebhookEventEventTypeCardAuthorizationChallenge, ParsedWebhookEventEventTypeCardAuthorizationChallengeResponse, ParsedWebhookEventEventTypeAuthRulesBacktestReportCreated, ParsedWebhookEventEventTypeBalanceUpdated, ParsedWebhookEventEventTypeBookTransferTransactionCreated, ParsedWebhookEventEventTypeBookTransferTransactionUpdated, ParsedWebhookEventEventTypeCardCreated, ParsedWebhookEventEventTypeCardConverted, ParsedWebhookEventEventTypeCardRenewed, ParsedWebhookEventEventTypeCardReissued, ParsedWebhookEventEventTypeCardShipped, ParsedWebhookEventEventTypeCardUpdated, ParsedWebhookEventEventTypeCardTransactionUpdated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataCreated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataUpdated, ParsedWebhookEventEventTypeClaimCreated, ParsedWebhookEventEventTypeClaimUpdated, ParsedWebhookEventEventTypeClaimDocumentUploaded, ParsedWebhookEventEventTypeClaimDocumentAccepted, ParsedWebhookEventEventTypeClaimDocumentRejected, ParsedWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest, ParsedWebhookEventEventTypeDigitalWalletTokenizationResult, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeDigitalWalletTokenizationUpdated, ParsedWebhookEventEventTypeDisputeUpdated, ParsedWebhookEventEventTypeDisputeEvidenceUploadFailed, ParsedWebhookEventEventTypeEmbedSessionGenerated, ParsedWebhookEventEventTypeEmbedViewed, ParsedWebhookEventEventTypeExternalBankAccountCreated, ParsedWebhookEventEventTypeExternalBankAccountUpdated, ParsedWebhookEventEventTypeExternalPaymentCreated, ParsedWebhookEventEventTypeExternalPaymentUpdated, ParsedWebhookEventEventTypeFinancialAccountCreated, ParsedWebhookEventEventTypeFinancialAccountUpdated, ParsedWebhookEventEventTypeFundingEventCreated, ParsedWebhookEventEventTypeLoanTapeCreated, ParsedWebhookEventEventTypeLoanTapeUpdated, ParsedWebhookEventEventTypeManagementOperationCreated, ParsedWebhookEventEventTypeManagementOperationUpdated, ParsedWebhookEventEventTypeInternalTransactionCreated, ParsedWebhookEventEventTypeInternalTransactionUpdated, ParsedWebhookEventEventTypeNetworkTotalCreated, ParsedWebhookEventEventTypeNetworkTotalUpdated, ParsedWebhookEventEventTypePaymentTransactionCreated, ParsedWebhookEventEventTypePaymentTransactionUpdated, ParsedWebhookEventEventTypeSettlementReportUpdated, ParsedWebhookEventEventTypeStatementsCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationChallenge, ParsedWebhookEventEventTypeTokenizationApprovalRequest, ParsedWebhookEventEventTypeTokenizationResult, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeTokenizationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationApprovalRequest, ParsedWebhookEventEventTypeDisputeTransactionCreated, ParsedWebhookEventEventTypeDisputeTransactionUpdated:
+	case ParsedWebhookEventEventTypeAccountHolderCreated, ParsedWebhookEventEventTypeAccountHolderUpdated, ParsedWebhookEventEventTypeAccountHolderVerification, ParsedWebhookEventEventTypeAccountHolderDocumentUpdated, ParsedWebhookEventEventTypeCardAuthorizationApprovalRequest, ParsedWebhookEventEventTypeCardAuthorizationChallenge, ParsedWebhookEventEventTypeCardAuthorizationChallengeResponse, ParsedWebhookEventEventTypeAuthRulesBacktestReportCreated, ParsedWebhookEventEventTypeBalanceUpdated, ParsedWebhookEventEventTypeBookTransferTransactionCreated, ParsedWebhookEventEventTypeBookTransferTransactionUpdated, ParsedWebhookEventEventTypeCardCreated, ParsedWebhookEventEventTypeCardConverted, ParsedWebhookEventEventTypeCardPinUpdated, ParsedWebhookEventEventTypeCardRenewed, ParsedWebhookEventEventTypeCardReissued, ParsedWebhookEventEventTypeCardShipped, ParsedWebhookEventEventTypeCardUpdated, ParsedWebhookEventEventTypeCardTransactionUpdated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataCreated, ParsedWebhookEventEventTypeCardTransactionEnhancedDataUpdated, ParsedWebhookEventEventTypeClaimCreated, ParsedWebhookEventEventTypeClaimUpdated, ParsedWebhookEventEventTypeClaimDocumentUploaded, ParsedWebhookEventEventTypeClaimDocumentAccepted, ParsedWebhookEventEventTypeClaimDocumentRejected, ParsedWebhookEventEventTypeDigitalWalletTokenizationApprovalRequest, ParsedWebhookEventEventTypeDigitalWalletTokenizationResult, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeDigitalWalletTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeDigitalWalletTokenizationUpdated, ParsedWebhookEventEventTypeDisputeUpdated, ParsedWebhookEventEventTypeDisputeEvidenceUploadFailed, ParsedWebhookEventEventTypeEmbedSessionGenerated, ParsedWebhookEventEventTypeEmbedViewed, ParsedWebhookEventEventTypeExternalBankAccountCreated, ParsedWebhookEventEventTypeExternalBankAccountUpdated, ParsedWebhookEventEventTypeExternalPaymentCreated, ParsedWebhookEventEventTypeExternalPaymentUpdated, ParsedWebhookEventEventTypeFinancialAccountCreated, ParsedWebhookEventEventTypeFinancialAccountUpdated, ParsedWebhookEventEventTypeFundingEventCreated, ParsedWebhookEventEventTypeLoanTapeCreated, ParsedWebhookEventEventTypeLoanTapeUpdated, ParsedWebhookEventEventTypeManagementOperationCreated, ParsedWebhookEventEventTypeManagementOperationUpdated, ParsedWebhookEventEventTypeInternalTransactionCreated, ParsedWebhookEventEventTypeInternalTransactionUpdated, ParsedWebhookEventEventTypeNetworkTotalCreated, ParsedWebhookEventEventTypeNetworkTotalUpdated, ParsedWebhookEventEventTypePaymentTransactionCreated, ParsedWebhookEventEventTypePaymentTransactionUpdated, ParsedWebhookEventEventTypeSettlementReportUpdated, ParsedWebhookEventEventTypeStatementsCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationCreated, ParsedWebhookEventEventTypeThreeDSAuthenticationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationChallenge, ParsedWebhookEventEventTypeTokenizationApprovalRequest, ParsedWebhookEventEventTypeTokenizationResult, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCode, ParsedWebhookEventEventTypeTokenizationTwoFactorAuthenticationCodeSent, ParsedWebhookEventEventTypeTokenizationUpdated, ParsedWebhookEventEventTypeThreeDSAuthenticationApprovalRequest, ParsedWebhookEventEventTypeDisputeTransactionCreated, ParsedWebhookEventEventTypeDisputeTransactionUpdated:
 		return true
 	}
 	return false
@@ -7309,6 +7418,22 @@ const (
 func (r ParsedWebhookEventPaymentType) IsKnown() bool {
 	switch r {
 	case ParsedWebhookEventPaymentTypeDeposit, ParsedWebhookEventPaymentTypeWithdrawal:
+		return true
+	}
+	return false
+}
+
+// The card's PIN status after the update
+type ParsedWebhookEventPinStatus string
+
+const (
+	ParsedWebhookEventPinStatusOk      ParsedWebhookEventPinStatus = "OK"
+	ParsedWebhookEventPinStatusBlocked ParsedWebhookEventPinStatus = "BLOCKED"
+)
+
+func (r ParsedWebhookEventPinStatus) IsKnown() bool {
+	switch r {
+	case ParsedWebhookEventPinStatusOk, ParsedWebhookEventPinStatusBlocked:
 		return true
 	}
 	return false
