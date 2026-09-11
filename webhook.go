@@ -5582,6 +5582,8 @@ type ParsedWebhookEvent struct {
 	// Unique identifier for the dispute from the network. If there are multiple, this
 	// will be the first claim id set by the network
 	PrimaryClaimID string `json:"primary_claim_id" api:"nullable"`
+	// This field can have the runtime type of [ThreeDSAuthenticationPsd2Context].
+	Psd2Context interface{} `json:"psd2_context"`
 	// Dispute reason code provided when creating the claim
 	Reason ParsedWebhookEventReason `json:"reason"`
 	// This field can have the runtime type of [PaymentRelatedAccountTokens].
@@ -5963,6 +5965,7 @@ type parsedWebhookEventJSON struct {
 	PreviousHighWatermark              apijson.Field
 	PreviousStatementBalance           apijson.Field
 	PrimaryClaimID                     apijson.Field
+	Psd2Context                        apijson.Field
 	Reason                             apijson.Field
 	RelatedAccountTokens               apijson.Field
 	ReplacementFor                     apijson.Field

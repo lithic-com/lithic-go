@@ -99,6 +99,10 @@ type ThreeDSAuthentication struct {
 	// authentications for which a decision has not yet been made (e.g. in-flight
 	// customer decisioning request).
 	DecisionMadeBy ThreeDSAuthenticationDecisionMadeBy `json:"decision_made_by" api:"nullable"`
+	// PSD2/SCA context for EEA and UK transactions. Present when Lithic determines the
+	// transaction is in scope for PSD2 Strong Customer Authentication. Absent for
+	// out-of-scope transactions.
+	Psd2Context ThreeDSAuthenticationPsd2Context `json:"psd2_context" api:"nullable"`
 	// Type of 3DS Requestor Initiated (3RI) request — i.e., a 3DS authentication that
 	// takes place at the initiation of the merchant rather than the cardholder. The
 	// most common example of this is where a merchant is authenticating before billing
@@ -132,6 +136,7 @@ type threeDSAuthenticationJSON struct {
 	ChallengeMetadata                  apijson.Field
 	ChallengeOrchestratedBy            apijson.Field
 	DecisionMadeBy                     apijson.Field
+	Psd2Context                        apijson.Field
 	ThreeRiRequestType                 apijson.Field
 	Transaction                        apijson.Field
 	raw                                string
@@ -919,6 +924,127 @@ const (
 func (r ThreeDSAuthenticationDecisionMadeBy) IsKnown() bool {
 	switch r {
 	case ThreeDSAuthenticationDecisionMadeByLithicRules, ThreeDSAuthenticationDecisionMadeByLithicDefault, ThreeDSAuthenticationDecisionMadeByCustomerRules, ThreeDSAuthenticationDecisionMadeByCustomerEndpoint, ThreeDSAuthenticationDecisionMadeByNetwork, ThreeDSAuthenticationDecisionMadeByUnknown:
+		return true
+	}
+	return false
+}
+
+// PSD2/SCA context for EEA and UK transactions. Present when Lithic determines the
+// transaction is in scope for PSD2 Strong Customer Authentication. Absent for
+// out-of-scope transactions.
+type ThreeDSAuthenticationPsd2Context struct {
+	// SCA exemption declared by the acquirer in the 3DS authentication request.
+	//
+	//   - `NONE` - No exemption claimed
+	//   - `TRANSACTION_RISK_ANALYSIS` - Transaction Risk Analysis (TRA) exemption;
+	//     acquirer asserts low fraud risk
+	//   - `LOW_VALUE` - Low-value payment exemption; transaction is below the EUR 30
+	//     threshold
+	//   - `RECURRING_PAYMENT` - Recurring payment with a fixed amount to the same payee
+	//   - `MERCHANT_INITIATED_TRANSACTION` - Merchant-initiated transaction (MIT);
+	//     cardholder not present
+	//   - `TRUSTED_BENEFICIARY` - Trusted beneficiary; merchant is on cardholder's
+	//     whitelist
+	//   - `STRONG_CUSTOMER_AUTHENTICATION_DELEGATION` - SCA already performed by a
+	//     delegated third-party authenticator
+	//   - `SECURE_CORPORATE_PAYMENT` - Secure corporate payment using a dedicated
+	//     corporate card or process
+	//   - `AUTHENTICATION_OUTAGE_EXCEPTION` - Authentication outage exception;
+	//     scheme-level fallback during ACS downtime
+	//   - `BUNDLED` - Mastercard only; bundled exemption code where the exact exemption
+	//     type cannot be distinguished
+	AcquirerExemption ThreeDSAuthenticationPsd2ContextAcquirerExemption `json:"acquirer_exemption"`
+	// Lithic's validation of the acquirer-declared exemption. Absent when no acquirer
+	// exemption was declared.
+	//
+	//   - `ACCEPTED` - Lithic signals support the acquirer's claim
+	//   - `REJECTED` - Lithic signals contradict the claim, or a required signal is
+	//     missing
+	//   - `NOT_VALIDATED` - Exemption was declared but Lithic has no basis to evaluate
+	//     it; treated as `REJECTED` for challenge purposes
+	LithicExemptionValidation ThreeDSAuthenticationPsd2ContextLithicExemptionValidation `json:"lithic_exemption_validation"`
+	JSON                      threeDSAuthenticationPsd2ContextJSON                      `json:"-"`
+}
+
+// threeDSAuthenticationPsd2ContextJSON contains the JSON metadata for the struct
+// [ThreeDSAuthenticationPsd2Context]
+type threeDSAuthenticationPsd2ContextJSON struct {
+	AcquirerExemption         apijson.Field
+	LithicExemptionValidation apijson.Field
+	raw                       string
+	ExtraFields               map[string]apijson.Field
+}
+
+func (r *ThreeDSAuthenticationPsd2Context) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r threeDSAuthenticationPsd2ContextJSON) RawJSON() string {
+	return r.raw
+}
+
+// SCA exemption declared by the acquirer in the 3DS authentication request.
+//
+//   - `NONE` - No exemption claimed
+//   - `TRANSACTION_RISK_ANALYSIS` - Transaction Risk Analysis (TRA) exemption;
+//     acquirer asserts low fraud risk
+//   - `LOW_VALUE` - Low-value payment exemption; transaction is below the EUR 30
+//     threshold
+//   - `RECURRING_PAYMENT` - Recurring payment with a fixed amount to the same payee
+//   - `MERCHANT_INITIATED_TRANSACTION` - Merchant-initiated transaction (MIT);
+//     cardholder not present
+//   - `TRUSTED_BENEFICIARY` - Trusted beneficiary; merchant is on cardholder's
+//     whitelist
+//   - `STRONG_CUSTOMER_AUTHENTICATION_DELEGATION` - SCA already performed by a
+//     delegated third-party authenticator
+//   - `SECURE_CORPORATE_PAYMENT` - Secure corporate payment using a dedicated
+//     corporate card or process
+//   - `AUTHENTICATION_OUTAGE_EXCEPTION` - Authentication outage exception;
+//     scheme-level fallback during ACS downtime
+//   - `BUNDLED` - Mastercard only; bundled exemption code where the exact exemption
+//     type cannot be distinguished
+type ThreeDSAuthenticationPsd2ContextAcquirerExemption string
+
+const (
+	ThreeDSAuthenticationPsd2ContextAcquirerExemptionNone                                   ThreeDSAuthenticationPsd2ContextAcquirerExemption = "NONE"
+	ThreeDSAuthenticationPsd2ContextAcquirerExemptionTransactionRiskAnalysis                ThreeDSAuthenticationPsd2ContextAcquirerExemption = "TRANSACTION_RISK_ANALYSIS"
+	ThreeDSAuthenticationPsd2ContextAcquirerExemptionLowValue                               ThreeDSAuthenticationPsd2ContextAcquirerExemption = "LOW_VALUE"
+	ThreeDSAuthenticationPsd2ContextAcquirerExemptionRecurringPayment                       ThreeDSAuthenticationPsd2ContextAcquirerExemption = "RECURRING_PAYMENT"
+	ThreeDSAuthenticationPsd2ContextAcquirerExemptionMerchantInitiatedTransaction           ThreeDSAuthenticationPsd2ContextAcquirerExemption = "MERCHANT_INITIATED_TRANSACTION"
+	ThreeDSAuthenticationPsd2ContextAcquirerExemptionTrustedBeneficiary                     ThreeDSAuthenticationPsd2ContextAcquirerExemption = "TRUSTED_BENEFICIARY"
+	ThreeDSAuthenticationPsd2ContextAcquirerExemptionStrongCustomerAuthenticationDelegation ThreeDSAuthenticationPsd2ContextAcquirerExemption = "STRONG_CUSTOMER_AUTHENTICATION_DELEGATION"
+	ThreeDSAuthenticationPsd2ContextAcquirerExemptionSecureCorporatePayment                 ThreeDSAuthenticationPsd2ContextAcquirerExemption = "SECURE_CORPORATE_PAYMENT"
+	ThreeDSAuthenticationPsd2ContextAcquirerExemptionAuthenticationOutageException          ThreeDSAuthenticationPsd2ContextAcquirerExemption = "AUTHENTICATION_OUTAGE_EXCEPTION"
+	ThreeDSAuthenticationPsd2ContextAcquirerExemptionBundled                                ThreeDSAuthenticationPsd2ContextAcquirerExemption = "BUNDLED"
+)
+
+func (r ThreeDSAuthenticationPsd2ContextAcquirerExemption) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationPsd2ContextAcquirerExemptionNone, ThreeDSAuthenticationPsd2ContextAcquirerExemptionTransactionRiskAnalysis, ThreeDSAuthenticationPsd2ContextAcquirerExemptionLowValue, ThreeDSAuthenticationPsd2ContextAcquirerExemptionRecurringPayment, ThreeDSAuthenticationPsd2ContextAcquirerExemptionMerchantInitiatedTransaction, ThreeDSAuthenticationPsd2ContextAcquirerExemptionTrustedBeneficiary, ThreeDSAuthenticationPsd2ContextAcquirerExemptionStrongCustomerAuthenticationDelegation, ThreeDSAuthenticationPsd2ContextAcquirerExemptionSecureCorporatePayment, ThreeDSAuthenticationPsd2ContextAcquirerExemptionAuthenticationOutageException, ThreeDSAuthenticationPsd2ContextAcquirerExemptionBundled:
+		return true
+	}
+	return false
+}
+
+// Lithic's validation of the acquirer-declared exemption. Absent when no acquirer
+// exemption was declared.
+//
+//   - `ACCEPTED` - Lithic signals support the acquirer's claim
+//   - `REJECTED` - Lithic signals contradict the claim, or a required signal is
+//     missing
+//   - `NOT_VALIDATED` - Exemption was declared but Lithic has no basis to evaluate
+//     it; treated as `REJECTED` for challenge purposes
+type ThreeDSAuthenticationPsd2ContextLithicExemptionValidation string
+
+const (
+	ThreeDSAuthenticationPsd2ContextLithicExemptionValidationAccepted     ThreeDSAuthenticationPsd2ContextLithicExemptionValidation = "ACCEPTED"
+	ThreeDSAuthenticationPsd2ContextLithicExemptionValidationRejected     ThreeDSAuthenticationPsd2ContextLithicExemptionValidation = "REJECTED"
+	ThreeDSAuthenticationPsd2ContextLithicExemptionValidationNotValidated ThreeDSAuthenticationPsd2ContextLithicExemptionValidation = "NOT_VALIDATED"
+)
+
+func (r ThreeDSAuthenticationPsd2ContextLithicExemptionValidation) IsKnown() bool {
+	switch r {
+	case ThreeDSAuthenticationPsd2ContextLithicExemptionValidationAccepted, ThreeDSAuthenticationPsd2ContextLithicExemptionValidationRejected, ThreeDSAuthenticationPsd2ContextLithicExemptionValidationNotValidated:
 		return true
 	}
 	return false
