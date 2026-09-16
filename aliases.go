@@ -401,6 +401,12 @@ const FinancialEventTypeExternalWireReversed = shared.FinancialEventTypeExternal
 const FinancialEventTypeExternalWireSettled = shared.FinancialEventTypeExternalWireSettled
 
 // This is an alias to an internal value.
+const FinancialEventTypeFee = shared.FinancialEventTypeFee
+
+// This is an alias to an internal value.
+const FinancialEventTypeFeeReversal = shared.FinancialEventTypeFeeReversal
+
+// This is an alias to an internal value.
 const FinancialEventTypeFinancialAuthorization = shared.FinancialEventTypeFinancialAuthorization
 
 // This is an alias to an internal value.
