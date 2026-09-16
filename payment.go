@@ -115,14 +115,14 @@ func (r *PaymentService) NewStablecoin(ctx context.Context, body PaymentNewStabl
 }
 
 // Retry an origination which has been returned.
-func (r *PaymentService) Retry(ctx context.Context, paymentToken string, opts ...option.RequestOption) (res *PaymentRetryResponse, err error) {
+func (r *PaymentService) Retry(ctx context.Context, paymentToken string, body PaymentRetryParams, opts ...option.RequestOption) (res *PaymentRetryResponse, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if paymentToken == "" {
 		err = errors.New("missing required payment_token parameter")
 		return nil, err
 	}
 	path := fmt.Sprintf("v1/payments/%s/retry", paymentToken)
-	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, nil, &res, opts...)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPost, path, body, &res, opts...)
 	return res, err
 }
 
@@ -1508,6 +1508,35 @@ type PaymentNewStablecoinParamsHold struct {
 
 func (r PaymentNewStablecoinParamsHold) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
+}
+
+type PaymentRetryParams struct {
+	// Settlement speed to retry the payment at. Defaults to the original payment's
+	// method. An `ACH_SAME_DAY` retry is rejected if the payment is for $1,000,000.00
+	// or more, or if it is submitted after the same day ACH cutoff
+	Method param.Field[PaymentRetryParamsMethod] `json:"method"`
+}
+
+func (r PaymentRetryParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// Settlement speed to retry the payment at. Defaults to the original payment's
+// method. An `ACH_SAME_DAY` retry is rejected if the payment is for $1,000,000.00
+// or more, or if it is submitted after the same day ACH cutoff
+type PaymentRetryParamsMethod string
+
+const (
+	PaymentRetryParamsMethodACHNextDay PaymentRetryParamsMethod = "ACH_NEXT_DAY"
+	PaymentRetryParamsMethodACHSameDay PaymentRetryParamsMethod = "ACH_SAME_DAY"
+)
+
+func (r PaymentRetryParamsMethod) IsKnown() bool {
+	switch r {
+	case PaymentRetryParamsMethodACHNextDay, PaymentRetryParamsMethodACHSameDay:
+		return true
+	}
+	return false
 }
 
 type PaymentReturnParams struct {
