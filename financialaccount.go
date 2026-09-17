@@ -29,6 +29,7 @@ import (
 type FinancialAccountService struct {
 	Options               []option.RequestOption
 	Balances              *FinancialAccountBalanceService
+	OpenToBuy             *FinancialAccountOpenToBuyService
 	FinancialTransactions *FinancialAccountFinancialTransactionService
 	CreditConfiguration   *FinancialAccountCreditConfigurationService
 	Statements            *FinancialAccountStatementService
@@ -44,6 +45,7 @@ func NewFinancialAccountService(opts ...option.RequestOption) (r *FinancialAccou
 	r = &FinancialAccountService{}
 	r.Options = opts
 	r.Balances = NewFinancialAccountBalanceService(opts...)
+	r.OpenToBuy = NewFinancialAccountOpenToBuyService(opts...)
 	r.FinancialTransactions = NewFinancialAccountFinancialTransactionService(opts...)
 	r.CreditConfiguration = NewFinancialAccountCreditConfigurationService(opts...)
 	r.Statements = NewFinancialAccountStatementService(opts...)

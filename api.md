@@ -476,6 +476,17 @@ Methods:
 
 - <code title="get /v1/financial_accounts/{financial_account_token}/balances">client.FinancialAccounts.Balances.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#FinancialAccountBalanceService.List">List</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, financialAccountToken <a href="https://pkg.go.dev/builtin#string">string</a>, query <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#FinancialAccountBalanceListParams">FinancialAccountBalanceListParams</a>) (\*<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/packages/pagination">pagination</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go/packages/pagination#SinglePage">SinglePage</a>[<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#FinancialAccountBalance">FinancialAccountBalance</a>], <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 
+## OpenToBuy
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#OpenToBuy">OpenToBuy</a>
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#OpenToBuySummary">OpenToBuySummary</a>
+
+Methods:
+
+- <code title="get /v1/financial_accounts/{financial_account_token}/open_to_buy">client.FinancialAccounts.OpenToBuy.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#FinancialAccountOpenToBuyService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, financialAccountToken <a href="https://pkg.go.dev/builtin#string">string</a>) (\*<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#OpenToBuy">OpenToBuy</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
 ## FinancialTransactions
 
 Methods:
