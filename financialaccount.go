@@ -34,6 +34,7 @@ type FinancialAccountService struct {
 	CreditConfiguration   *FinancialAccountCreditConfigurationService
 	Statements            *FinancialAccountStatementService
 	LoanTapes             *FinancialAccountLoanTapeService
+	InstallmentPlans      *FinancialAccountInstallmentPlanService
 	LoanTapeConfiguration *FinancialAccountLoanTapeConfigurationService
 	InterestTierSchedule  *FinancialAccountInterestTierScheduleService
 }
@@ -50,6 +51,7 @@ func NewFinancialAccountService(opts ...option.RequestOption) (r *FinancialAccou
 	r.CreditConfiguration = NewFinancialAccountCreditConfigurationService(opts...)
 	r.Statements = NewFinancialAccountStatementService(opts...)
 	r.LoanTapes = NewFinancialAccountLoanTapeService(opts...)
+	r.InstallmentPlans = NewFinancialAccountInstallmentPlanService(opts...)
 	r.LoanTapeConfiguration = NewFinancialAccountLoanTapeConfigurationService(opts...)
 	r.InterestTierSchedule = NewFinancialAccountInterestTierScheduleService(opts...)
 	return
