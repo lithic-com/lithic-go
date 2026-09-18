@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.118.0 (2026-09-18)
+
+Full Changelog: [v0.117.0...v0.118.0](https://github.com/lithic-com/lithic-go/compare/v0.117.0...v0.118.0)
+
+### Features
+
+* [CARDS-5174] Add reiusse/renew 409 error ([48d546d](https://github.com/lithic-com/lithic-go/commit/48d546d3a2a493ac3d0f1a30541e88cdfa9c5dde))
+* [TRE-14464] Update /retry payments endpoint to accept method ([70c69ae](https://github.com/lithic-com/lithic-go/commit/70c69ae4504a7429408bcbb8d956ee489069c30c))
+* [TRE-14524] Add Open to buy API spec ([063e2e0](https://github.com/lithic-com/lithic-go/commit/063e2e0f070cb673deb7d756cad3cff928d80b10))
+* Add missing blockchain/stablecoin endpoints to the spec ([28e0230](https://github.com/lithic-com/lithic-go/commit/28e023027c762068680c43a19d74eace0d681ed7))
+* **api:** add card.pin_updated webhook event ([420da88](https://github.com/lithic-com/lithic-go/commit/420da8892d29f92f03382db44b39f31b81839b92))
+* **api:** add EXTERNAL_STABLECOIN category and event types to payments/webhooks/statements ([0576509](https://github.com/lithic-com/lithic-go/commit/05765090cd4afd5035f23255290ea1e133a602c6))
+* **api:** add FEE/FEE_REVERSAL event types to financial/statement/management types ([ba2a30a](https://github.com/lithic-com/lithic-go/commit/ba2a30a8164c6fd109cae3a489b5338d39c528e0))
+* **api:** add get/list methods to financial accounts installment plans ([41b32bb](https://github.com/lithic-com/lithic-go/commit/41b32bb96eade22d85fd84d358056fd34966486e))
+* **api:** add OTHER enum value to auth rule types ([2cec1ac](https://github.com/lithic-com/lithic-go/commit/2cec1ac01cc96c6cbfe3803019f54206edf3bd1d))
+* **api:** add psd2_context field to threeds and webhook responses ([c4d25e5](https://github.com/lithic-com/lithic-go/commit/c4d25e5df257a661005fc42d72920928345f7ff1))
+* **api:** add STABLECOIN_REVIEWED event type to payment simulate_action ([f08f552](https://github.com/lithic-com/lithic-go/commit/f08f552e884089e7b29a3e23f9c31f5db0368bed))
+* AUTH-3759: Add DECLINE_SCA_REQUIRED and SCA_REQUIRED enum entries ([0fe4b78](https://github.com/lithic-com/lithic-go/commit/0fe4b78612e7a47ab9f352595dd382bcf505a80e))
+* TRE-14349: add installment plan management operation event types ([79bba6d](https://github.com/lithic-com/lithic-go/commit/79bba6d013fa8d234851e2e6def70aba7c318029))
+* TRE-14429: Document the stablecoin payments endpoint ([bab1551](https://github.com/lithic-com/lithic-go/commit/bab1551ce4606670997e98842224bf10b24aac57))
+
 ## 0.117.0 (2026-08-31)
 
 Full Changelog: [v0.116.0...v0.117.0](https://github.com/lithic-com/lithic-go/compare/v0.116.0...v0.117.0)
