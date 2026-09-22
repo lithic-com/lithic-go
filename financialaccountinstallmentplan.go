@@ -26,7 +26,8 @@ import (
 // automatically. You should not instantiate this service directly, and instead use
 // the [NewFinancialAccountInstallmentPlanService] method instead.
 type FinancialAccountInstallmentPlanService struct {
-	Options []option.RequestOption
+	Options    []option.RequestOption
+	Statements *FinancialAccountInstallmentPlanStatementService
 }
 
 // NewFinancialAccountInstallmentPlanService generates a new service that applies
@@ -35,6 +36,7 @@ type FinancialAccountInstallmentPlanService struct {
 func NewFinancialAccountInstallmentPlanService(opts ...option.RequestOption) (r *FinancialAccountInstallmentPlanService) {
 	r = &FinancialAccountInstallmentPlanService{}
 	r.Options = opts
+	r.Statements = NewFinancialAccountInstallmentPlanStatementService(opts...)
 	return
 }
 
