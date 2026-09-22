@@ -124,18 +124,34 @@ type AccountHolderEntityAddress struct {
 	Address1 string `json:"address1" api:"required"`
 	// Name of city.
 	City string `json:"city" api:"required"`
-	// Valid country code. Only USA is currently supported, entered in uppercase ISO
-	// 3166-1 alpha-3 three-character format.
+	// Valid country code, entered in uppercase ISO 3166-1 alpha-3 three-character
+	// format. Supported countries depend on the onboarding workflow used for the
+	// account holder.
 	Country string `json:"country" api:"required"`
-	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
-	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode string `json:"postal_code" api:"required"`
-	// Valid state code. Only USA state codes are currently supported, entered in
-	// uppercase ISO 3166-2 two-character format.
-	State string `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
-	Address2 string                         `json:"address2"`
-	JSON     accountHolderEntityAddressJSON `json:"-"`
+	Address2 string `json:"address2"`
+	// Valid postal code. For USA addresses, enter either a five-digit postal code or a
+	// nine-digit postal code (ZIP+4) using the format 12345-1234. Required for all
+	// countries except the following, which do not use postal codes: ABW, AGO, ARE,
+	// ATG, BDI, BEN, BFA, BHS, BLZ, BOL, BWA, CIV, CMR, COD, COG, COK, COM, DJI, DMA,
+	// ERI, FJI, GAB, GMB, GNQ, GRD, GUY, HKG, KIR, MAC, MLI, MRT, NIU, NRU, QAT, RWA,
+	// SLB, SLE, SSD, SUR, SXM, SYC, TGO, TKL, TLS, TON, TUV, UGA, VUT, YEM, ZWE
+	PostalCode string `json:"postal_code" api:"nullable"`
+	// Valid state, province, or subdivision code, entered as the uppercase ISO 3166-2
+	// code for the country without the country prefix. For example, `CA` for
+	// California. Optional unless the address is in one of the following countries,
+	// where it is required:
+	//
+	// - `USA`
+	// - `CAN`
+	// - `AUS`
+	// - `CHN`
+	// - `KOR`
+	// - `MEX`
+	// - `MYS`
+	// - `NZL`
+	State string                         `json:"state" api:"nullable"`
+	JSON  accountHolderEntityAddressJSON `json:"-"`
 }
 
 // accountHolderEntityAddressJSON contains the JSON metadata for the struct
@@ -144,9 +160,9 @@ type accountHolderEntityAddressJSON struct {
 	Address1    apijson.Field
 	City        apijson.Field
 	Country     apijson.Field
+	Address2    apijson.Field
 	PostalCode  apijson.Field
 	State       apijson.Field
-	Address2    apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -274,7 +290,8 @@ func (r AccountHolderEntityNewResponseStatusReason) IsKnown() bool {
 
 type AccountHolderEntityNewParams struct {
 	// Individual's current address - PO boxes, UPS drops, and FedEx drops are not
-	// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
+	// acceptable; APO/FPO are acceptable. Only USA addresses are supported for the KYB
+	// and KYC workflows.
 	Address param.Field[AccountHolderEntityNewParamsAddress] `json:"address" api:"required"`
 	// Individual's date of birth, as an RFC 3339 date.
 	Dob param.Field[string] `json:"dob" api:"required"`
@@ -301,23 +318,40 @@ func (r AccountHolderEntityNewParams) MarshalJSON() (data []byte, err error) {
 }
 
 // Individual's current address - PO boxes, UPS drops, and FedEx drops are not
-// acceptable; APO/FPO are acceptable. Only USA addresses are currently supported.
+// acceptable; APO/FPO are acceptable. Only USA addresses are supported for the KYB
+// and KYC workflows.
 type AccountHolderEntityNewParamsAddress struct {
 	// Valid deliverable address (no PO boxes).
 	Address1 param.Field[string] `json:"address1" api:"required"`
 	// Name of city.
 	City param.Field[string] `json:"city" api:"required"`
-	// Valid country code. Only USA is currently supported, entered in uppercase ISO
-	// 3166-1 alpha-3 three-character format.
+	// Valid country code, entered in uppercase ISO 3166-1 alpha-3 three-character
+	// format. Supported countries depend on the onboarding workflow used for the
+	// account holder.
 	Country param.Field[string] `json:"country" api:"required"`
-	// Valid postal code. Only USA ZIP codes are currently supported, entered as a
-	// five-digit ZIP or nine-digit ZIP+4.
-	PostalCode param.Field[string] `json:"postal_code" api:"required"`
-	// Valid state code. Only USA state codes are currently supported, entered in
-	// uppercase ISO 3166-2 two-character format.
-	State param.Field[string] `json:"state" api:"required"`
 	// Unit or apartment number (if applicable).
 	Address2 param.Field[string] `json:"address2"`
+	// Valid postal code. For USA addresses, enter either a five-digit postal code or a
+	// nine-digit postal code (ZIP+4) using the format 12345-1234. Required for all
+	// countries except the following, which do not use postal codes: ABW, AGO, ARE,
+	// ATG, BDI, BEN, BFA, BHS, BLZ, BOL, BWA, CIV, CMR, COD, COG, COK, COM, DJI, DMA,
+	// ERI, FJI, GAB, GMB, GNQ, GRD, GUY, HKG, KIR, MAC, MLI, MRT, NIU, NRU, QAT, RWA,
+	// SLB, SLE, SSD, SUR, SXM, SYC, TGO, TKL, TLS, TON, TUV, UGA, VUT, YEM, ZWE
+	PostalCode param.Field[string] `json:"postal_code"`
+	// Valid state, province, or subdivision code, entered as the uppercase ISO 3166-2
+	// code for the country without the country prefix. For example, `CA` for
+	// California. Optional unless the address is in one of the following countries,
+	// where it is required:
+	//
+	// - `USA`
+	// - `CAN`
+	// - `AUS`
+	// - `CHN`
+	// - `KOR`
+	// - `MEX`
+	// - `MYS`
+	// - `NZL`
+	State param.Field[string] `json:"state"`
 }
 
 func (r AccountHolderEntityNewParamsAddress) MarshalJSON() (data []byte, err error) {
