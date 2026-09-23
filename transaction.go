@@ -2041,6 +2041,10 @@ type TransactionSimulateAuthorizationParams struct {
 	Descriptor param.Field[string] `json:"descriptor" api:"required"`
 	// Sixteen digit card number.
 	Pan param.Field[string] `json:"pan" api:"required"`
+	// 3-character alphabetic ISO 4217 currency code for the cardholder billing amount.
+	// Permitted values are USD, GBP, EUR and CAD, and any other ISO 4217 code returns
+	// a 422. Defaults to USD
+	BillingCurrency param.Field[string] `json:"billing_currency"`
 	// Merchant category code for the transaction to be simulated. A four-digit number
 	// listed in ISO 18245. Supported merchant category codes can be found
 	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
@@ -2056,8 +2060,10 @@ type TransactionSimulateAuthorizationParams struct {
 	// Amount of the transaction to be simulated in currency specified in
 	// merchant_currency, including any acquirer fees.
 	MerchantAmount param.Field[int64] `json:"merchant_amount"`
-	// 3-character alphabetic ISO 4217 currency code. Note: Simulator only accepts USD,
-	// GBP, EUR and defaults to GBP if another ISO 4217 code is provided
+	// 3-character alphabetic ISO 4217 currency code for the merchant amount. Only used
+	// when merchant_amount is set, and defaults to GBP in that case. Without
+	// merchant_amount, the merchant amount uses the billing currency. Permitted values
+	// are USD, GBP, EUR and CAD, and any other ISO 4217 code returns a 422
 	MerchantCurrency param.Field[string] `json:"merchant_currency"`
 	// Set to true if the terminal is capable of partial approval otherwise false.
 	// Partial approval is when part of a transaction is approved and another payment
@@ -2065,6 +2071,12 @@ type TransactionSimulateAuthorizationParams struct {
 	PartialApprovalCapable param.Field[bool] `json:"partial_approval_capable"`
 	// Simulate entering a PIN. If omitted, PIN check will not be performed.
 	Pin param.Field[string] `json:"pin"`
+	// 3-character alphabetic ISO 4217 currency code for the settlement amount.
+	// Permitted values are USD, GBP, EUR and CAD, and any other ISO 4217 code returns
+	// a 422. Defaults to the value of billing_currency. Only single message
+	// (financial) authorizations carry a settlement amount, and the value is ignored
+	// for dual message authorizations
+	SettlementCurrency param.Field[string] `json:"settlement_currency"`
 	// Type of event to simulate.
 	//
 	//   - `AUTHORIZATION` is a dual message purchase authorization, meaning a subsequent
@@ -2163,6 +2175,10 @@ type TransactionSimulateCreditAuthorizationParams struct {
 	Descriptor param.Field[string] `json:"descriptor" api:"required"`
 	// Sixteen digit card number.
 	Pan param.Field[string] `json:"pan" api:"required"`
+	// 3-character alphabetic ISO 4217 currency code for the cardholder billing amount.
+	// Permitted values are USD, GBP, EUR and CAD, and any other ISO 4217 code returns
+	// a 422. Defaults to USD
+	BillingCurrency param.Field[string] `json:"billing_currency"`
 	// Merchant category code for the transaction to be simulated. A four-digit number
 	// listed in ISO 18245. Supported merchant category codes can be found
 	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
@@ -2190,6 +2206,10 @@ type TransactionSimulateCreditAuthorizationAdviceParams struct {
 	Descriptor param.Field[string] `json:"descriptor" api:"required"`
 	// Sixteen digit card number.
 	Pan param.Field[string] `json:"pan" api:"required"`
+	// 3-character alphabetic ISO 4217 currency code for the cardholder billing amount.
+	// Permitted values are USD, GBP, EUR and CAD, and any other ISO 4217 code returns
+	// a 422. Defaults to USD
+	BillingCurrency param.Field[string] `json:"billing_currency"`
 	// Merchant category code for the transaction to be simulated. A four-digit number
 	// listed in ISO 18245. Supported merchant category codes can be found
 	// [here](https://docs.lithic.com/docs/transactions#merchant-category-codes-mccs).
@@ -2215,6 +2235,14 @@ type TransactionSimulateReturnParams struct {
 	Descriptor param.Field[string] `json:"descriptor" api:"required"`
 	// Sixteen digit card number.
 	Pan param.Field[string] `json:"pan" api:"required"`
+	// 3-character alphabetic ISO 4217 currency code for the cardholder billing amount.
+	// Permitted values are USD, GBP, EUR and CAD, and any other ISO 4217 code returns
+	// a 422. Defaults to USD
+	BillingCurrency param.Field[string] `json:"billing_currency"`
+	// 3-character alphabetic ISO 4217 currency code for the settlement amount.
+	// Permitted values are USD, GBP, EUR and CAD, and any other ISO 4217 code returns
+	// a 422. Defaults to the value of billing_currency
+	SettlementCurrency param.Field[string] `json:"settlement_currency"`
 }
 
 func (r TransactionSimulateReturnParams) MarshalJSON() (data []byte, err error) {

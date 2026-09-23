@@ -134,6 +134,7 @@ func TestTransactionSimulateAuthorizationWithOptionalParams(t *testing.T) {
 		Amount:                  lithic.F(int64(3831)),
 		Descriptor:              lithic.F("COFFEE SHOP"),
 		Pan:                     lithic.F("4111111289144142"),
+		BillingCurrency:         lithic.F("CAD"),
 		Mcc:                     lithic.F("5812"),
 		MerchantAcceptorCity:    lithic.F("LOS ANGELES"),
 		MerchantAcceptorCountry: lithic.F("USA"),
@@ -143,6 +144,7 @@ func TestTransactionSimulateAuthorizationWithOptionalParams(t *testing.T) {
 		MerchantCurrency:        lithic.F("GBP"),
 		PartialApprovalCapable:  lithic.F(true),
 		Pin:                     lithic.F("1234"),
+		SettlementCurrency:      lithic.F("CAD"),
 		Status:                  lithic.F(lithic.TransactionSimulateAuthorizationParamsStatusAuthorization),
 	})
 	if err != nil {
@@ -220,6 +222,7 @@ func TestTransactionSimulateCreditAuthorizationWithOptionalParams(t *testing.T) 
 		Amount:                  lithic.F(int64(3831)),
 		Descriptor:              lithic.F("COFFEE SHOP"),
 		Pan:                     lithic.F("4111111289144142"),
+		BillingCurrency:         lithic.F("CAD"),
 		Mcc:                     lithic.F("5812"),
 		MerchantAcceptorCity:    lithic.F("SEATTLE"),
 		MerchantAcceptorCountry: lithic.F("USA"),
@@ -251,6 +254,7 @@ func TestTransactionSimulateCreditAuthorizationAdviceWithOptionalParams(t *testi
 		Amount:                  lithic.F(int64(3831)),
 		Descriptor:              lithic.F("COFFEE SHOP"),
 		Pan:                     lithic.F("4111111289144142"),
+		BillingCurrency:         lithic.F("CAD"),
 		Mcc:                     lithic.F("5812"),
 		MerchantAcceptorCity:    lithic.F("SEATTLE"),
 		MerchantAcceptorCountry: lithic.F("USA"),
@@ -266,7 +270,7 @@ func TestTransactionSimulateCreditAuthorizationAdviceWithOptionalParams(t *testi
 	}
 }
 
-func TestTransactionSimulateReturn(t *testing.T) {
+func TestTransactionSimulateReturnWithOptionalParams(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -279,9 +283,11 @@ func TestTransactionSimulateReturn(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.Transactions.SimulateReturn(context.TODO(), lithic.TransactionSimulateReturnParams{
-		Amount:     lithic.F(int64(3831)),
-		Descriptor: lithic.F("COFFEE SHOP"),
-		Pan:        lithic.F("4111111289144142"),
+		Amount:             lithic.F(int64(3831)),
+		Descriptor:         lithic.F("COFFEE SHOP"),
+		Pan:                lithic.F("4111111289144142"),
+		BillingCurrency:    lithic.F("CAD"),
+		SettlementCurrency: lithic.F("CAD"),
 	})
 	if err != nil {
 		var apierr *lithic.Error
