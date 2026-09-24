@@ -647,6 +647,8 @@ type AuthRuleCurrentVersionParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount int64 `json:"limit_count" api:"nullable"`
+	// Timestamp of when the merchant lock was created
+	LockedAt time.Time `json:"locked_at" format:"date-time"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
 	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
@@ -669,6 +671,7 @@ type authRuleCurrentVersionParametersJSON struct {
 	LimitCashAmount apijson.Field
 	LimitCashCount  apijson.Field
 	LimitCount      apijson.Field
+	LockedAt        apijson.Field
 	Merchants       apijson.Field
 	Period          apijson.Field
 	Scope           apijson.Field
@@ -870,6 +873,8 @@ type AuthRuleDraftVersionParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount int64 `json:"limit_count" api:"nullable"`
+	// Timestamp of when the merchant lock was created
+	LockedAt time.Time `json:"locked_at" format:"date-time"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
 	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
@@ -892,6 +897,7 @@ type authRuleDraftVersionParametersJSON struct {
 	LimitCashAmount apijson.Field
 	LimitCashCount  apijson.Field
 	LimitCount      apijson.Field
+	LockedAt        apijson.Field
 	Merchants       apijson.Field
 	Period          apijson.Field
 	Scope           apijson.Field
@@ -1299,6 +1305,8 @@ type AuthRuleVersionParameters struct {
 	// settled, or a force post (a transaction that settled without prior
 	// authorization).
 	LimitCount int64 `json:"limit_count" api:"nullable"`
+	// Timestamp of when the merchant lock was created
+	LockedAt time.Time `json:"locked_at" format:"date-time"`
 	// This field can have the runtime type of [[]MerchantLockParametersMerchant].
 	Merchants interface{} `json:"merchants"`
 	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
@@ -1321,6 +1329,7 @@ type authRuleVersionParametersJSON struct {
 	LimitCashAmount apijson.Field
 	LimitCashCount  apijson.Field
 	LimitCount      apijson.Field
+	LockedAt        apijson.Field
 	Merchants       apijson.Field
 	Period          apijson.Field
 	Scope           apijson.Field
@@ -4636,13 +4645,16 @@ type MerchantLockParameters struct {
 	// A list of merchant locks defining specific merchants or groups of merchants
 	// (based on descriptors or IDs) that the lock applies to.
 	Merchants []MerchantLockParametersMerchant `json:"merchants" api:"required"`
-	JSON      merchantLockParametersJSON       `json:"-"`
+	// Timestamp of when the merchant lock was created
+	LockedAt time.Time                  `json:"locked_at" format:"date-time"`
+	JSON     merchantLockParametersJSON `json:"-"`
 }
 
 // merchantLockParametersJSON contains the JSON metadata for the struct
 // [MerchantLockParameters]
 type merchantLockParametersJSON struct {
 	Merchants   apijson.Field
+	LockedAt    apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
