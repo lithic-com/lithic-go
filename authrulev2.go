@@ -198,7 +198,7 @@ func (r *AuthRuleV2Service) Promote(ctx context.Context, authRuleToken string, o
 //   - VelocityLimit Rules calculates the current Velocity Feature data. This
 //     requires a `card_token` or `account_token` matching what the rule is Scoped
 //     to.
-//   - ConditionalBlock Rules calculates the CARD*TRANSACTION_COUNT*\* attributes on
+//   - ConditionalAction Rules calculates the CARD*TRANSACTION_COUNT*\* attributes on
 //     the rule. This requires a `card_token`
 func (r *AuthRuleV2Service) GetFeatures(ctx context.Context, authRuleToken string, query AuthRuleV2GetFeaturesParams, opts ...option.RequestOption) (res *AuthRuleV2GetFeaturesResponse, err error) {
 	opts = slices.Concat(r.Options, opts)
@@ -525,8 +525,6 @@ type AuthRule struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
-	//     AUTHORIZATION event stream.
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -614,9 +612,8 @@ type AuthRuleCurrentVersionParameters struct {
 	// accepts the declared features as positional arguments (in the same order as the
 	// `features` array) and returns an array of actions.
 	Code string `json:"code"`
-	// This field can have the runtime type of [[]AuthRuleCondition],
-	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition],
+	// This field can have the runtime type of
+	// [[]Conditional3DsActionParametersCondition], [[]AuthRuleCondition],
 	// [[]ConditionalACHActionParametersCondition],
 	// [[]ConditionalTokenizationActionParametersCondition],
 	// [[]ConditionalCardTransactionUpdateActionParametersCondition],
@@ -695,10 +692,10 @@ func (r *AuthRuleCurrentVersionParameters) UnmarshalJSON(data []byte) (err error
 // AsUnion returns a [AuthRuleCurrentVersionParametersUnion] interface which you
 // can cast to the specific types for more type safety.
 //
-// Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
-// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
+// Possible runtime types of the union are [VelocityLimitParams],
+// [MerchantLockParameters], [Conditional3DSActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
+// [ConditionalTokenizationActionParameters],
 // [ConditionalCardTransactionUpdateActionParameters],
 // [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters],
 // [ConditionalAuthorizationAdjustmentParameters].
@@ -708,10 +705,9 @@ func (r AuthRuleCurrentVersionParameters) AsUnion() AuthRuleCurrentVersionParame
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
-// [ConditionalTokenizationActionParameters],
+// Union satisfied by [VelocityLimitParams], [MerchantLockParameters],
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
 // [ConditionalCardTransactionUpdateActionParameters],
 // [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters] or
 // [ConditionalAuthorizationAdjustmentParameters].
@@ -723,10 +719,6 @@ func init() {
 	apijson.RegisterUnion(
 		reflect.TypeOf((*AuthRuleCurrentVersionParametersUnion)(nil)).Elem(),
 		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
-		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParams{}),
@@ -840,9 +832,8 @@ type AuthRuleDraftVersionParameters struct {
 	// accepts the declared features as positional arguments (in the same order as the
 	// `features` array) and returns an array of actions.
 	Code string `json:"code"`
-	// This field can have the runtime type of [[]AuthRuleCondition],
-	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition],
+	// This field can have the runtime type of
+	// [[]Conditional3DsActionParametersCondition], [[]AuthRuleCondition],
 	// [[]ConditionalACHActionParametersCondition],
 	// [[]ConditionalTokenizationActionParametersCondition],
 	// [[]ConditionalCardTransactionUpdateActionParametersCondition],
@@ -921,10 +912,10 @@ func (r *AuthRuleDraftVersionParameters) UnmarshalJSON(data []byte) (err error) 
 // AsUnion returns a [AuthRuleDraftVersionParametersUnion] interface which you can
 // cast to the specific types for more type safety.
 //
-// Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
-// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
+// Possible runtime types of the union are [VelocityLimitParams],
+// [MerchantLockParameters], [Conditional3DSActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
+// [ConditionalTokenizationActionParameters],
 // [ConditionalCardTransactionUpdateActionParameters],
 // [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters],
 // [ConditionalAuthorizationAdjustmentParameters].
@@ -934,10 +925,9 @@ func (r AuthRuleDraftVersionParameters) AsUnion() AuthRuleDraftVersionParameters
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
-// [ConditionalTokenizationActionParameters],
+// Union satisfied by [VelocityLimitParams], [MerchantLockParameters],
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
 // [ConditionalCardTransactionUpdateActionParameters],
 // [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters] or
 // [ConditionalAuthorizationAdjustmentParameters].
@@ -949,10 +939,6 @@ func init() {
 	apijson.RegisterUnion(
 		reflect.TypeOf((*AuthRuleDraftVersionParametersUnion)(nil)).Elem(),
 		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
-		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParams{}),
@@ -1059,8 +1045,6 @@ func (r AuthRuleState) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
-//     AUTHORIZATION event stream.
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -1074,7 +1058,6 @@ func (r AuthRuleState) IsKnown() bool {
 type AuthRuleType string
 
 const (
-	AuthRuleTypeConditionalBlock  AuthRuleType = "CONDITIONAL_BLOCK"
 	AuthRuleTypeVelocityLimit     AuthRuleType = "VELOCITY_LIMIT"
 	AuthRuleTypeMerchantLock      AuthRuleType = "MERCHANT_LOCK"
 	AuthRuleTypeConditionalAction AuthRuleType = "CONDITIONAL_ACTION"
@@ -1084,7 +1067,7 @@ const (
 
 func (r AuthRuleType) IsKnown() bool {
 	switch r {
-	case AuthRuleTypeConditionalBlock, AuthRuleTypeVelocityLimit, AuthRuleTypeMerchantLock, AuthRuleTypeConditionalAction, AuthRuleTypeTypescriptCode, AuthRuleTypeOther:
+	case AuthRuleTypeVelocityLimit, AuthRuleTypeMerchantLock, AuthRuleTypeConditionalAction, AuthRuleTypeTypescriptCode, AuthRuleTypeOther:
 		return true
 	}
 	return false
@@ -1116,18 +1099,27 @@ type AuthRuleCondition struct {
 	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
-	//     fee on behalf of the cardholder.
+	//     fee on behalf of the cardholder. Use an integer value.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced. Use an integer
+	//     value.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
-	//     multiplying the raw score by 10x.
+	//     multiplying the raw score by 10x. Use an integer value.
 	//   - `CARD_TRANSACTION_COUNT_15M`: The number of transactions on the card in the
-	//     trailing 15 minutes before the authorization.
+	//     trailing 15 minutes before the authorization. Use an integer value.
 	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
-	//     trailing hour up and until the authorization.
+	//     trailing hour up and until the authorization. Use an integer value.
 	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
-	//     trailing 24 hours up and until the authorization.
+	//     trailing 24 hours up and until the authorization. Use an integer value.
+	//   - `CARD_DECLINE_COUNT_15M`: The number of declined transactions on the card in
+	//     the trailing 15 minutes before the authorization. Use an integer value.
+	//   - `CARD_DECLINE_COUNT_1H`: The number of declined transactions on the card in
+	//     the trailing hour up and until the authorization. Use an integer value.
+	//   - `CARD_DECLINE_COUNT_24H`: The number of declined transactions on the card in
+	//     the trailing 24 hours up and until the authorization. Use an integer value.
 	//   - `CARD_STATE`: The current state of the card associated with the transaction.
 	//     Valid values are `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`,
 	//     `PENDING_FULFILLMENT`.
@@ -1138,15 +1130,83 @@ type AuthRuleCondition struct {
 	//   - `WALLET_TYPE`: For transactions using a digital wallet token, indicates the
 	//     source of the token. Valid values are `APPLE_PAY`, `GOOGLE_PAY`,
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
+	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
+	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
 	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
 	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
 	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
+	//   - `SERVICE_LOCATION_STATE`: The state/province code (ISO 3166-2) where the
+	//     cardholder received the service, e.g. "NY". When a service location is present
+	//     in the network data, the service location state is used. Otherwise, falls back
+	//     to the card acceptor state.
+	//   - `SERVICE_LOCATION_POSTAL_CODE`: The postal code where the cardholder received
+	//     the service, e.g. "10001". When a service location is present in the network
+	//     data, the service location postal code is used. Otherwise, falls back to the
+	//     card acceptor postal code.
+	//   - `CARD_AGE`: The age of the card in seconds at the time of the authorization.
+	//     Use an integer value.
+	//   - `ACCOUNT_AGE`: The age of the account holder's account in seconds at the time
+	//     of the authorization. Use an integer value. For programs where Lithic does not
+	//     manage or retain account holder data, this attribute does not evaluate.
+	//   - `AMOUNT_Z_SCORE`: The z-score of the transaction amount relative to the
+	//     entity's transaction history. Null if fewer than 30 approved transactions in
+	//     the specified window. Requires `parameters.scope` and `parameters.interval`.
+	//     Use a decimal value.
+	//   - `AVG_TRANSACTION_AMOUNT`: The average approved transaction amount for the
+	//     entity over the specified window, in cents. Requires `parameters.scope` and
+	//     `parameters.interval`. Use a decimal value.
+	//   - `STDEV_TRANSACTION_AMOUNT`: The standard deviation of approved transaction
+	//     amounts for the entity over the specified window, in cents. Null if fewer than
+	//     30 approved transactions in the specified window. Requires `parameters.scope`
+	//     and `parameters.interval`. Use a decimal value.
+	//   - `IS_NEW_COUNTRY`: Whether the transaction's merchant country has not been seen
+	//     in the entity's transaction history. Valid values are `TRUE`, `FALSE`.
+	//     Requires `parameters.scope`.
+	//   - `IS_NEW_MCC`: Whether the transaction's MCC has not been seen in the entity's
+	//     transaction history. Valid values are `TRUE`, `FALSE`. Requires
+	//     `parameters.scope`.
+	//   - `IS_FIRST_TRANSACTION`: Whether this is the first transaction for the entity.
+	//     Valid values are `TRUE`, `FALSE`. Requires `parameters.scope`.
+	//   - `CONSECUTIVE_DECLINES`: The number of consecutive declined transactions for
+	//     the entity over the last 30 days (rolling). Requires `parameters.scope`. Not
+	//     supported for `BUSINESS_ACCOUNT` scope. Use an integer value.
+	//   - `TIME_SINCE_LAST_TRANSACTION`: The number of days since the last approved
+	//     transaction for the entity, rounded to the nearest whole day. Requires
+	//     `parameters.scope`. Use an integer value.
+	//   - `DISTINCT_COUNTRY_COUNT`: The number of distinct merchant countries seen in
+	//     the entity's transaction history. Requires `parameters.scope`. Use an integer
+	//     value.
+	//   - `IS_NEW_MERCHANT`: Whether the card acceptor ID has not been seen in the
+	//     card's approved transaction history (capped at the 1000 most recently seen
+	//     merchants). Valid values are `TRUE`, `FALSE`. Card-scoped only; no
+	//     `parameters` required.
+	//   - `THREE_DS_SUCCESS_RATE`: The 3DS authentication success rate for the card, as
+	//     a percentage from 0.0 to 100.0. Card-scoped only; no `parameters` required.
+	//     Use a decimal value.
+	//   - `TRAVEL_SPEED`: The estimated speed of travel derived from the distance
+	//     between the postal code centers of the last card-present transaction and the
+	//     current transaction, divided by the elapsed time. Null if there is no prior
+	//     card-present transaction, if either postal code cannot be geocoded, or if
+	//     elapsed time is zero. Requires `parameters.unit` set to `MPH` or `KPH`. Use a
+	//     decimal value.
+	//   - `DISTANCE_FROM_LAST_TRANSACTION`: The estimated distance between the postal
+	//     code centers of the last card-present transaction and the current transaction.
+	//     Null if there is no prior card-present transaction or if either postal code
+	//     cannot be geocoded. Requires `parameters.unit` set to `MILES` or `KILOMETERS`.
+	//     Use a decimal value.
 	Attribute ConditionalAttribute `json:"attribute" api:"required"`
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation" api:"required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 	Value ConditionalValueUnion `json:"value" api:"required"`
-	JSON  authRuleConditionJSON `json:"-"`
+	// Additional parameters for certain attributes. Required when `attribute` is one
+	// of `AMOUNT_Z_SCORE`, `AVG_TRANSACTION_AMOUNT`, `STDEV_TRANSACTION_AMOUNT`,
+	// `IS_NEW_COUNTRY`, `IS_NEW_MCC`, `IS_FIRST_TRANSACTION`, `CONSECUTIVE_DECLINES`,
+	// `TIME_SINCE_LAST_TRANSACTION`, or `DISTINCT_COUNTRY_COUNT` (require `scope`); or
+	// `TRAVEL_SPEED` or `DISTANCE_FROM_LAST_TRANSACTION` (require `unit`). Not used
+	// for other attributes.
+	Parameters AuthRuleConditionParameters `json:"parameters"`
+	JSON       authRuleConditionJSON       `json:"-"`
 }
 
 // authRuleConditionJSON contains the JSON metadata for the struct
@@ -1155,6 +1215,7 @@ type authRuleConditionJSON struct {
 	Attribute   apijson.Field
 	Operation   apijson.Field
 	Value       apijson.Field
+	Parameters  apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
@@ -1165,6 +1226,107 @@ func (r *AuthRuleCondition) UnmarshalJSON(data []byte) (err error) {
 
 func (r authRuleConditionJSON) RawJSON() string {
 	return r.raw
+}
+
+// Additional parameters for certain attributes. Required when `attribute` is one
+// of `AMOUNT_Z_SCORE`, `AVG_TRANSACTION_AMOUNT`, `STDEV_TRANSACTION_AMOUNT`,
+// `IS_NEW_COUNTRY`, `IS_NEW_MCC`, `IS_FIRST_TRANSACTION`, `CONSECUTIVE_DECLINES`,
+// `TIME_SINCE_LAST_TRANSACTION`, or `DISTINCT_COUNTRY_COUNT` (require `scope`); or
+// `TRAVEL_SPEED` or `DISTANCE_FROM_LAST_TRANSACTION` (require `unit`). Not used
+// for other attributes.
+type AuthRuleConditionParameters struct {
+	// The time window for statistical attributes (`AMOUNT_Z_SCORE`,
+	// `AVG_TRANSACTION_AMOUNT`, `STDEV_TRANSACTION_AMOUNT`). Use `LIFETIME` for
+	// all-time history or a specific window (`7D`, `30D`, `90D`).
+	Interval AuthRuleConditionParametersInterval `json:"interval"`
+	// The entity scope to evaluate the attribute against.
+	Scope AuthRuleConditionParametersScope `json:"scope"`
+	// The unit for impossible travel attributes. Required when `attribute` is
+	// `TRAVEL_SPEED` or `DISTANCE_FROM_LAST_TRANSACTION`.
+	//
+	// For `TRAVEL_SPEED`: `MPH` (miles per hour) or `KPH` (kilometers per hour).
+	//
+	// For `DISTANCE_FROM_LAST_TRANSACTION`: `MILES` or `KILOMETERS`.
+	Unit AuthRuleConditionParametersUnit `json:"unit"`
+	JSON authRuleConditionParametersJSON `json:"-"`
+}
+
+// authRuleConditionParametersJSON contains the JSON metadata for the struct
+// [AuthRuleConditionParameters]
+type authRuleConditionParametersJSON struct {
+	Interval    apijson.Field
+	Scope       apijson.Field
+	Unit        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleConditionParameters) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleConditionParametersJSON) RawJSON() string {
+	return r.raw
+}
+
+// The time window for statistical attributes (`AMOUNT_Z_SCORE`,
+// `AVG_TRANSACTION_AMOUNT`, `STDEV_TRANSACTION_AMOUNT`). Use `LIFETIME` for
+// all-time history or a specific window (`7D`, `30D`, `90D`).
+type AuthRuleConditionParametersInterval string
+
+const (
+	AuthRuleConditionParametersIntervalLifetime AuthRuleConditionParametersInterval = "LIFETIME"
+	AuthRuleConditionParametersInterval7D       AuthRuleConditionParametersInterval = "7D"
+	AuthRuleConditionParametersInterval30D      AuthRuleConditionParametersInterval = "30D"
+	AuthRuleConditionParametersInterval90D      AuthRuleConditionParametersInterval = "90D"
+)
+
+func (r AuthRuleConditionParametersInterval) IsKnown() bool {
+	switch r {
+	case AuthRuleConditionParametersIntervalLifetime, AuthRuleConditionParametersInterval7D, AuthRuleConditionParametersInterval30D, AuthRuleConditionParametersInterval90D:
+		return true
+	}
+	return false
+}
+
+// The entity scope to evaluate the attribute against.
+type AuthRuleConditionParametersScope string
+
+const (
+	AuthRuleConditionParametersScopeCard            AuthRuleConditionParametersScope = "CARD"
+	AuthRuleConditionParametersScopeAccount         AuthRuleConditionParametersScope = "ACCOUNT"
+	AuthRuleConditionParametersScopeBusinessAccount AuthRuleConditionParametersScope = "BUSINESS_ACCOUNT"
+)
+
+func (r AuthRuleConditionParametersScope) IsKnown() bool {
+	switch r {
+	case AuthRuleConditionParametersScopeCard, AuthRuleConditionParametersScopeAccount, AuthRuleConditionParametersScopeBusinessAccount:
+		return true
+	}
+	return false
+}
+
+// The unit for impossible travel attributes. Required when `attribute` is
+// `TRAVEL_SPEED` or `DISTANCE_FROM_LAST_TRANSACTION`.
+//
+// For `TRAVEL_SPEED`: `MPH` (miles per hour) or `KPH` (kilometers per hour).
+//
+// For `DISTANCE_FROM_LAST_TRANSACTION`: `MILES` or `KILOMETERS`.
+type AuthRuleConditionParametersUnit string
+
+const (
+	AuthRuleConditionParametersUnitMph        AuthRuleConditionParametersUnit = "MPH"
+	AuthRuleConditionParametersUnitKph        AuthRuleConditionParametersUnit = "KPH"
+	AuthRuleConditionParametersUnitMiles      AuthRuleConditionParametersUnit = "MILES"
+	AuthRuleConditionParametersUnitKilometers AuthRuleConditionParametersUnit = "KILOMETERS"
+)
+
+func (r AuthRuleConditionParametersUnit) IsKnown() bool {
+	switch r {
+	case AuthRuleConditionParametersUnitMph, AuthRuleConditionParametersUnitKph, AuthRuleConditionParametersUnitMiles, AuthRuleConditionParametersUnitKilometers:
+		return true
+	}
+	return false
 }
 
 type AuthRuleConditionParam struct {
@@ -1193,18 +1355,27 @@ type AuthRuleConditionParam struct {
 	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
-	//     fee on behalf of the cardholder.
+	//     fee on behalf of the cardholder. Use an integer value.
+	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
+	//     represents the amount of cash being withdrawn or advanced. Use an integer
+	//     value.
 	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
 	//     given authorization. Scores are on a range of 0-999, with 0 representing the
 	//     lowest risk and 999 representing the highest risk. For Visa transactions,
 	//     where the raw score has a range of 0-99, Lithic will normalize the score by
-	//     multiplying the raw score by 10x.
+	//     multiplying the raw score by 10x. Use an integer value.
 	//   - `CARD_TRANSACTION_COUNT_15M`: The number of transactions on the card in the
-	//     trailing 15 minutes before the authorization.
+	//     trailing 15 minutes before the authorization. Use an integer value.
 	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
-	//     trailing hour up and until the authorization.
+	//     trailing hour up and until the authorization. Use an integer value.
 	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
-	//     trailing 24 hours up and until the authorization.
+	//     trailing 24 hours up and until the authorization. Use an integer value.
+	//   - `CARD_DECLINE_COUNT_15M`: The number of declined transactions on the card in
+	//     the trailing 15 minutes before the authorization. Use an integer value.
+	//   - `CARD_DECLINE_COUNT_1H`: The number of declined transactions on the card in
+	//     the trailing hour up and until the authorization. Use an integer value.
+	//   - `CARD_DECLINE_COUNT_24H`: The number of declined transactions on the card in
+	//     the trailing 24 hours up and until the authorization. Use an integer value.
 	//   - `CARD_STATE`: The current state of the card associated with the transaction.
 	//     Valid values are `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`,
 	//     `PENDING_FULFILLMENT`.
@@ -1215,17 +1386,111 @@ type AuthRuleConditionParam struct {
 	//   - `WALLET_TYPE`: For transactions using a digital wallet token, indicates the
 	//     source of the token. Valid values are `APPLE_PAY`, `GOOGLE_PAY`,
 	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
+	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
+	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
 	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
 	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
 	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
+	//   - `SERVICE_LOCATION_STATE`: The state/province code (ISO 3166-2) where the
+	//     cardholder received the service, e.g. "NY". When a service location is present
+	//     in the network data, the service location state is used. Otherwise, falls back
+	//     to the card acceptor state.
+	//   - `SERVICE_LOCATION_POSTAL_CODE`: The postal code where the cardholder received
+	//     the service, e.g. "10001". When a service location is present in the network
+	//     data, the service location postal code is used. Otherwise, falls back to the
+	//     card acceptor postal code.
+	//   - `CARD_AGE`: The age of the card in seconds at the time of the authorization.
+	//     Use an integer value.
+	//   - `ACCOUNT_AGE`: The age of the account holder's account in seconds at the time
+	//     of the authorization. Use an integer value. For programs where Lithic does not
+	//     manage or retain account holder data, this attribute does not evaluate.
+	//   - `AMOUNT_Z_SCORE`: The z-score of the transaction amount relative to the
+	//     entity's transaction history. Null if fewer than 30 approved transactions in
+	//     the specified window. Requires `parameters.scope` and `parameters.interval`.
+	//     Use a decimal value.
+	//   - `AVG_TRANSACTION_AMOUNT`: The average approved transaction amount for the
+	//     entity over the specified window, in cents. Requires `parameters.scope` and
+	//     `parameters.interval`. Use a decimal value.
+	//   - `STDEV_TRANSACTION_AMOUNT`: The standard deviation of approved transaction
+	//     amounts for the entity over the specified window, in cents. Null if fewer than
+	//     30 approved transactions in the specified window. Requires `parameters.scope`
+	//     and `parameters.interval`. Use a decimal value.
+	//   - `IS_NEW_COUNTRY`: Whether the transaction's merchant country has not been seen
+	//     in the entity's transaction history. Valid values are `TRUE`, `FALSE`.
+	//     Requires `parameters.scope`.
+	//   - `IS_NEW_MCC`: Whether the transaction's MCC has not been seen in the entity's
+	//     transaction history. Valid values are `TRUE`, `FALSE`. Requires
+	//     `parameters.scope`.
+	//   - `IS_FIRST_TRANSACTION`: Whether this is the first transaction for the entity.
+	//     Valid values are `TRUE`, `FALSE`. Requires `parameters.scope`.
+	//   - `CONSECUTIVE_DECLINES`: The number of consecutive declined transactions for
+	//     the entity over the last 30 days (rolling). Requires `parameters.scope`. Not
+	//     supported for `BUSINESS_ACCOUNT` scope. Use an integer value.
+	//   - `TIME_SINCE_LAST_TRANSACTION`: The number of days since the last approved
+	//     transaction for the entity, rounded to the nearest whole day. Requires
+	//     `parameters.scope`. Use an integer value.
+	//   - `DISTINCT_COUNTRY_COUNT`: The number of distinct merchant countries seen in
+	//     the entity's transaction history. Requires `parameters.scope`. Use an integer
+	//     value.
+	//   - `IS_NEW_MERCHANT`: Whether the card acceptor ID has not been seen in the
+	//     card's approved transaction history (capped at the 1000 most recently seen
+	//     merchants). Valid values are `TRUE`, `FALSE`. Card-scoped only; no
+	//     `parameters` required.
+	//   - `THREE_DS_SUCCESS_RATE`: The 3DS authentication success rate for the card, as
+	//     a percentage from 0.0 to 100.0. Card-scoped only; no `parameters` required.
+	//     Use a decimal value.
+	//   - `TRAVEL_SPEED`: The estimated speed of travel derived from the distance
+	//     between the postal code centers of the last card-present transaction and the
+	//     current transaction, divided by the elapsed time. Null if there is no prior
+	//     card-present transaction, if either postal code cannot be geocoded, or if
+	//     elapsed time is zero. Requires `parameters.unit` set to `MPH` or `KPH`. Use a
+	//     decimal value.
+	//   - `DISTANCE_FROM_LAST_TRANSACTION`: The estimated distance between the postal
+	//     code centers of the last card-present transaction and the current transaction.
+	//     Null if there is no prior card-present transaction or if either postal code
+	//     cannot be geocoded. Requires `parameters.unit` set to `MILES` or `KILOMETERS`.
+	//     Use a decimal value.
 	Attribute param.Field[ConditionalAttribute] `json:"attribute" api:"required"`
 	// The operation to apply to the attribute
 	Operation param.Field[ConditionalOperation] `json:"operation" api:"required"`
 	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
 	Value param.Field[ConditionalValueUnionParam] `json:"value" api:"required"`
+	// Additional parameters for certain attributes. Required when `attribute` is one
+	// of `AMOUNT_Z_SCORE`, `AVG_TRANSACTION_AMOUNT`, `STDEV_TRANSACTION_AMOUNT`,
+	// `IS_NEW_COUNTRY`, `IS_NEW_MCC`, `IS_FIRST_TRANSACTION`, `CONSECUTIVE_DECLINES`,
+	// `TIME_SINCE_LAST_TRANSACTION`, or `DISTINCT_COUNTRY_COUNT` (require `scope`); or
+	// `TRAVEL_SPEED` or `DISTANCE_FROM_LAST_TRANSACTION` (require `unit`). Not used
+	// for other attributes.
+	Parameters param.Field[AuthRuleConditionParametersParam] `json:"parameters"`
 }
 
 func (r AuthRuleConditionParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// Additional parameters for certain attributes. Required when `attribute` is one
+// of `AMOUNT_Z_SCORE`, `AVG_TRANSACTION_AMOUNT`, `STDEV_TRANSACTION_AMOUNT`,
+// `IS_NEW_COUNTRY`, `IS_NEW_MCC`, `IS_FIRST_TRANSACTION`, `CONSECUTIVE_DECLINES`,
+// `TIME_SINCE_LAST_TRANSACTION`, or `DISTINCT_COUNTRY_COUNT` (require `scope`); or
+// `TRAVEL_SPEED` or `DISTANCE_FROM_LAST_TRANSACTION` (require `unit`). Not used
+// for other attributes.
+type AuthRuleConditionParametersParam struct {
+	// The time window for statistical attributes (`AMOUNT_Z_SCORE`,
+	// `AVG_TRANSACTION_AMOUNT`, `STDEV_TRANSACTION_AMOUNT`). Use `LIFETIME` for
+	// all-time history or a specific window (`7D`, `30D`, `90D`).
+	Interval param.Field[AuthRuleConditionParametersInterval] `json:"interval"`
+	// The entity scope to evaluate the attribute against.
+	Scope param.Field[AuthRuleConditionParametersScope] `json:"scope"`
+	// The unit for impossible travel attributes. Required when `attribute` is
+	// `TRAVEL_SPEED` or `DISTANCE_FROM_LAST_TRANSACTION`.
+	//
+	// For `TRAVEL_SPEED`: `MPH` (miles per hour) or `KPH` (kilometers per hour).
+	//
+	// For `DISTANCE_FROM_LAST_TRANSACTION`: `MILES` or `KILOMETERS`.
+	Unit param.Field[AuthRuleConditionParametersUnit] `json:"unit"`
+}
+
+func (r AuthRuleConditionParametersParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
 
@@ -1272,9 +1537,8 @@ type AuthRuleVersionParameters struct {
 	// accepts the declared features as positional arguments (in the same order as the
 	// `features` array) and returns an array of actions.
 	Code string `json:"code"`
-	// This field can have the runtime type of [[]AuthRuleCondition],
-	// [[]Conditional3DsActionParametersCondition],
-	// [[]ConditionalAuthorizationActionParametersCondition],
+	// This field can have the runtime type of
+	// [[]Conditional3DsActionParametersCondition], [[]AuthRuleCondition],
 	// [[]ConditionalACHActionParametersCondition],
 	// [[]ConditionalTokenizationActionParametersCondition],
 	// [[]ConditionalCardTransactionUpdateActionParametersCondition],
@@ -1353,10 +1617,10 @@ func (r *AuthRuleVersionParameters) UnmarshalJSON(data []byte) (err error) {
 // AsUnion returns a [AuthRuleVersionParametersUnion] interface which you can cast
 // to the specific types for more type safety.
 //
-// Possible runtime types of the union are [ConditionalBlockParameters],
-// [VelocityLimitParams], [MerchantLockParameters],
-// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
-// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
+// Possible runtime types of the union are [VelocityLimitParams],
+// [MerchantLockParameters], [Conditional3DSActionParameters],
+// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
+// [ConditionalTokenizationActionParameters],
 // [ConditionalCardTransactionUpdateActionParameters],
 // [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters],
 // [ConditionalAuthorizationAdjustmentParameters].
@@ -1366,10 +1630,9 @@ func (r AuthRuleVersionParameters) AsUnion() AuthRuleVersionParametersUnion {
 
 // Parameters for the Auth Rule
 //
-// Union satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
-// [ConditionalTokenizationActionParameters],
+// Union satisfied by [VelocityLimitParams], [MerchantLockParameters],
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
 // [ConditionalCardTransactionUpdateActionParameters],
 // [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters] or
 // [ConditionalAuthorizationAdjustmentParameters].
@@ -1381,10 +1644,6 @@ func init() {
 	apijson.RegisterUnion(
 		reflect.TypeOf((*AuthRuleVersionParametersUnion)(nil)).Elem(),
 		"",
-		apijson.UnionVariant{
-			TypeFilter: gjson.JSON,
-			Type:       reflect.TypeOf(ConditionalBlockParameters{}),
-		},
 		apijson.UnionVariant{
 			TypeFilter: gjson.JSON,
 			Type:       reflect.TypeOf(VelocityLimitParams{}),
@@ -2582,287 +2841,6 @@ func (r ConditionalACHPaymentUpdateActionParametersConditionsAttribute) IsKnown(
 //   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
-//     fee on behalf of the cardholder.
-//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
-//     given authorization. Scores are on a range of 0-999, with 0 representing the
-//     lowest risk and 999 representing the highest risk. For Visa transactions,
-//     where the raw score has a range of 0-99, Lithic will normalize the score by
-//     multiplying the raw score by 10x.
-//   - `CARD_TRANSACTION_COUNT_15M`: The number of transactions on the card in the
-//     trailing 15 minutes before the authorization.
-//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
-//     trailing hour up and until the authorization.
-//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
-//     trailing 24 hours up and until the authorization.
-//   - `CARD_STATE`: The current state of the card associated with the transaction.
-//     Valid values are `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`,
-//     `PENDING_FULFILLMENT`.
-//   - `PIN_ENTERED`: Indicates whether a PIN was entered during the transaction.
-//     Valid values are `TRUE`, `FALSE`.
-//   - `PIN_STATUS`: The current state of card's PIN. Valid values are `NOT_SET`,
-//     `OK`, `BLOCKED`.
-//   - `WALLET_TYPE`: For transactions using a digital wallet token, indicates the
-//     source of the token. Valid values are `APPLE_PAY`, `GOOGLE_PAY`,
-//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
-//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
-//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
-//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
-type ConditionalAttribute string
-
-const (
-	ConditionalAttributeMcc                     ConditionalAttribute = "MCC"
-	ConditionalAttributeCountry                 ConditionalAttribute = "COUNTRY"
-	ConditionalAttributeCurrency                ConditionalAttribute = "CURRENCY"
-	ConditionalAttributeMerchantID              ConditionalAttribute = "MERCHANT_ID"
-	ConditionalAttributeDescriptor              ConditionalAttribute = "DESCRIPTOR"
-	ConditionalAttributeLiabilityShift          ConditionalAttribute = "LIABILITY_SHIFT"
-	ConditionalAttributePanEntryMode            ConditionalAttribute = "PAN_ENTRY_MODE"
-	ConditionalAttributeTransactionAmount       ConditionalAttribute = "TRANSACTION_AMOUNT"
-	ConditionalAttributeRiskScore               ConditionalAttribute = "RISK_SCORE"
-	ConditionalAttributeCardTransactionCount15M ConditionalAttribute = "CARD_TRANSACTION_COUNT_15M"
-	ConditionalAttributeCardTransactionCount1H  ConditionalAttribute = "CARD_TRANSACTION_COUNT_1H"
-	ConditionalAttributeCardTransactionCount24H ConditionalAttribute = "CARD_TRANSACTION_COUNT_24H"
-	ConditionalAttributeCardState               ConditionalAttribute = "CARD_STATE"
-	ConditionalAttributePinEntered              ConditionalAttribute = "PIN_ENTERED"
-	ConditionalAttributePinStatus               ConditionalAttribute = "PIN_STATUS"
-	ConditionalAttributeWalletType              ConditionalAttribute = "WALLET_TYPE"
-	ConditionalAttributeAddressMatch            ConditionalAttribute = "ADDRESS_MATCH"
-)
-
-func (r ConditionalAttribute) IsKnown() bool {
-	switch r {
-	case ConditionalAttributeMcc, ConditionalAttributeCountry, ConditionalAttributeCurrency, ConditionalAttributeMerchantID, ConditionalAttributeDescriptor, ConditionalAttributeLiabilityShift, ConditionalAttributePanEntryMode, ConditionalAttributeTransactionAmount, ConditionalAttributeRiskScore, ConditionalAttributeCardTransactionCount15M, ConditionalAttributeCardTransactionCount1H, ConditionalAttributeCardTransactionCount24H, ConditionalAttributeCardState, ConditionalAttributePinEntered, ConditionalAttributePinStatus, ConditionalAttributeWalletType, ConditionalAttributeAddressMatch:
-		return true
-	}
-	return false
-}
-
-type ConditionalAuthorizationActionParameters struct {
-	// The action to take if the conditions are met.
-	Action     ConditionalAuthorizationActionParametersAction      `json:"action" api:"required"`
-	Conditions []ConditionalAuthorizationActionParametersCondition `json:"conditions" api:"required"`
-	JSON       conditionalAuthorizationActionParametersJSON        `json:"-"`
-}
-
-// conditionalAuthorizationActionParametersJSON contains the JSON metadata for the
-// struct [ConditionalAuthorizationActionParameters]
-type conditionalAuthorizationActionParametersJSON struct {
-	Action      apijson.Field
-	Conditions  apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *ConditionalAuthorizationActionParameters) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r conditionalAuthorizationActionParametersJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r ConditionalAuthorizationActionParameters) implementsAuthRuleCurrentVersionParameters() {}
-
-func (r ConditionalAuthorizationActionParameters) implementsAuthRuleDraftVersionParameters() {}
-
-func (r ConditionalAuthorizationActionParameters) implementsAuthRuleVersionParameters() {}
-
-// The action to take if the conditions are met.
-type ConditionalAuthorizationActionParametersAction string
-
-const (
-	ConditionalAuthorizationActionParametersActionDecline   ConditionalAuthorizationActionParametersAction = "DECLINE"
-	ConditionalAuthorizationActionParametersActionChallenge ConditionalAuthorizationActionParametersAction = "CHALLENGE"
-)
-
-func (r ConditionalAuthorizationActionParametersAction) IsKnown() bool {
-	switch r {
-	case ConditionalAuthorizationActionParametersActionDecline, ConditionalAuthorizationActionParametersActionChallenge:
-		return true
-	}
-	return false
-}
-
-type ConditionalAuthorizationActionParametersCondition struct {
-	// The attribute to target.
-	//
-	// The following attributes may be targeted:
-	//
-	//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
-	//     business by the types of goods or services it provides.
-	//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
-	//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
-	//     Netherlands Antilles.
-	//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
-	//     the transaction.
-	//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
-	//     (merchant).
-	//   - `DESCRIPTOR`: Short description of card acceptor.
-	//   - `LIABILITY_SHIFT`: Indicates whether chargeback liability shift to the issuer
-	//     applies to the transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
-	//     `TOKEN_AUTHENTICATED`.
-	//   - `PAN_ENTRY_MODE`: The method by which the cardholder's primary account number
-	//     (PAN) was entered. Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`,
-	//     `ECOMMERCE`, `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`,
-	//     `MAGNETIC_STRIPE`, `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`,
-	//     `UNKNOWN`, `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
-	//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
-	//     fee field in the settlement/cardholder billing currency. This is the amount
-	//     the issuer should authorize against unless the issuer is paying the acquirer
-	//     fee on behalf of the cardholder. Use an integer value.
-	//   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
-	//     represents the amount of cash being withdrawn or advanced. Use an integer
-	//     value.
-	//   - `RISK_SCORE`: Network-provided score assessing risk level associated with a
-	//     given authorization. Scores are on a range of 0-999, with 0 representing the
-	//     lowest risk and 999 representing the highest risk. For Visa transactions,
-	//     where the raw score has a range of 0-99, Lithic will normalize the score by
-	//     multiplying the raw score by 10x. Use an integer value.
-	//   - `CARD_TRANSACTION_COUNT_15M`: The number of transactions on the card in the
-	//     trailing 15 minutes before the authorization. Use an integer value.
-	//   - `CARD_TRANSACTION_COUNT_1H`: The number of transactions on the card in the
-	//     trailing hour up and until the authorization. Use an integer value.
-	//   - `CARD_TRANSACTION_COUNT_24H`: The number of transactions on the card in the
-	//     trailing 24 hours up and until the authorization. Use an integer value.
-	//   - `CARD_DECLINE_COUNT_15M`: The number of declined transactions on the card in
-	//     the trailing 15 minutes before the authorization. Use an integer value.
-	//   - `CARD_DECLINE_COUNT_1H`: The number of declined transactions on the card in
-	//     the trailing hour up and until the authorization. Use an integer value.
-	//   - `CARD_DECLINE_COUNT_24H`: The number of declined transactions on the card in
-	//     the trailing 24 hours up and until the authorization. Use an integer value.
-	//   - `CARD_STATE`: The current state of the card associated with the transaction.
-	//     Valid values are `CLOSED`, `OPEN`, `PAUSED`, `PENDING_ACTIVATION`,
-	//     `PENDING_FULFILLMENT`.
-	//   - `PIN_ENTERED`: Indicates whether a PIN was entered during the transaction.
-	//     Valid values are `TRUE`, `FALSE`.
-	//   - `PIN_STATUS`: The current state of card's PIN. Valid values are `NOT_SET`,
-	//     `OK`, `BLOCKED`.
-	//   - `WALLET_TYPE`: For transactions using a digital wallet token, indicates the
-	//     source of the token. Valid values are `APPLE_PAY`, `GOOGLE_PAY`,
-	//     `SAMSUNG_PAY`, `MASTERPASS`, `MERCHANT`, `OTHER`, `NONE`.
-	//   - `TRANSACTION_INITIATOR`: The entity that initiated the transaction indicates
-	//     the source of the token. Valid values are `CARDHOLDER`, `MERCHANT`, `UNKNOWN`.
-	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
-	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
-	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
-	//   - `SERVICE_LOCATION_STATE`: The state/province code (ISO 3166-2) where the
-	//     cardholder received the service, e.g. "NY". When a service location is present
-	//     in the network data, the service location state is used. Otherwise, falls back
-	//     to the card acceptor state.
-	//   - `SERVICE_LOCATION_POSTAL_CODE`: The postal code where the cardholder received
-	//     the service, e.g. "10001". When a service location is present in the network
-	//     data, the service location postal code is used. Otherwise, falls back to the
-	//     card acceptor postal code.
-	//   - `CARD_AGE`: The age of the card in seconds at the time of the authorization.
-	//     Use an integer value.
-	//   - `ACCOUNT_AGE`: The age of the account holder's account in seconds at the time
-	//     of the authorization. Use an integer value. For programs where Lithic does not
-	//     manage or retain account holder data, this attribute does not evaluate.
-	//   - `AMOUNT_Z_SCORE`: The z-score of the transaction amount relative to the
-	//     entity's transaction history. Null if fewer than 30 approved transactions in
-	//     the specified window. Requires `parameters.scope` and `parameters.interval`.
-	//     Use a decimal value.
-	//   - `AVG_TRANSACTION_AMOUNT`: The average approved transaction amount for the
-	//     entity over the specified window, in cents. Requires `parameters.scope` and
-	//     `parameters.interval`. Use a decimal value.
-	//   - `STDEV_TRANSACTION_AMOUNT`: The standard deviation of approved transaction
-	//     amounts for the entity over the specified window, in cents. Null if fewer than
-	//     30 approved transactions in the specified window. Requires `parameters.scope`
-	//     and `parameters.interval`. Use a decimal value.
-	//   - `IS_NEW_COUNTRY`: Whether the transaction's merchant country has not been seen
-	//     in the entity's transaction history. Valid values are `TRUE`, `FALSE`.
-	//     Requires `parameters.scope`.
-	//   - `IS_NEW_MCC`: Whether the transaction's MCC has not been seen in the entity's
-	//     transaction history. Valid values are `TRUE`, `FALSE`. Requires
-	//     `parameters.scope`.
-	//   - `IS_FIRST_TRANSACTION`: Whether this is the first transaction for the entity.
-	//     Valid values are `TRUE`, `FALSE`. Requires `parameters.scope`.
-	//   - `CONSECUTIVE_DECLINES`: The number of consecutive declined transactions for
-	//     the entity over the last 30 days (rolling). Requires `parameters.scope`. Not
-	//     supported for `BUSINESS_ACCOUNT` scope. Use an integer value.
-	//   - `TIME_SINCE_LAST_TRANSACTION`: The number of days since the last approved
-	//     transaction for the entity, rounded to the nearest whole day. Requires
-	//     `parameters.scope`. Use an integer value.
-	//   - `DISTINCT_COUNTRY_COUNT`: The number of distinct merchant countries seen in
-	//     the entity's transaction history. Requires `parameters.scope`. Use an integer
-	//     value.
-	//   - `IS_NEW_MERCHANT`: Whether the card acceptor ID has not been seen in the
-	//     card's approved transaction history (capped at the 1000 most recently seen
-	//     merchants). Valid values are `TRUE`, `FALSE`. Card-scoped only; no
-	//     `parameters` required.
-	//   - `THREE_DS_SUCCESS_RATE`: The 3DS authentication success rate for the card, as
-	//     a percentage from 0.0 to 100.0. Card-scoped only; no `parameters` required.
-	//     Use a decimal value.
-	//   - `TRAVEL_SPEED`: The estimated speed of travel derived from the distance
-	//     between the postal code centers of the last card-present transaction and the
-	//     current transaction, divided by the elapsed time. Null if there is no prior
-	//     card-present transaction, if either postal code cannot be geocoded, or if
-	//     elapsed time is zero. Requires `parameters.unit` set to `MPH` or `KPH`. Use a
-	//     decimal value.
-	//   - `DISTANCE_FROM_LAST_TRANSACTION`: The estimated distance between the postal
-	//     code centers of the last card-present transaction and the current transaction.
-	//     Null if there is no prior card-present transaction or if either postal code
-	//     cannot be geocoded. Requires `parameters.unit` set to `MILES` or `KILOMETERS`.
-	//     Use a decimal value.
-	Attribute ConditionalAuthorizationActionParametersConditionsAttribute `json:"attribute" api:"required"`
-	// The operation to apply to the attribute
-	Operation ConditionalOperation `json:"operation" api:"required"`
-	// A regex string, to be used with `MATCHES` or `DOES_NOT_MATCH`
-	Value ConditionalValueUnion `json:"value" api:"required"`
-	// Additional parameters for certain attributes. Required when `attribute` is one
-	// of `AMOUNT_Z_SCORE`, `AVG_TRANSACTION_AMOUNT`, `STDEV_TRANSACTION_AMOUNT`,
-	// `IS_NEW_COUNTRY`, `IS_NEW_MCC`, `IS_FIRST_TRANSACTION`, `CONSECUTIVE_DECLINES`,
-	// `TIME_SINCE_LAST_TRANSACTION`, or `DISTINCT_COUNTRY_COUNT` (require `scope`); or
-	// `TRAVEL_SPEED` or `DISTANCE_FROM_LAST_TRANSACTION` (require `unit`). Not used
-	// for other attributes.
-	Parameters ConditionalAuthorizationActionParametersConditionsParameters `json:"parameters"`
-	JSON       conditionalAuthorizationActionParametersConditionJSON        `json:"-"`
-}
-
-// conditionalAuthorizationActionParametersConditionJSON contains the JSON metadata
-// for the struct [ConditionalAuthorizationActionParametersCondition]
-type conditionalAuthorizationActionParametersConditionJSON struct {
-	Attribute   apijson.Field
-	Operation   apijson.Field
-	Value       apijson.Field
-	Parameters  apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *ConditionalAuthorizationActionParametersCondition) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r conditionalAuthorizationActionParametersConditionJSON) RawJSON() string {
-	return r.raw
-}
-
-// The attribute to target.
-//
-// The following attributes may be targeted:
-//
-//   - `MCC`: A four-digit number listed in ISO 18245. An MCC is used to classify a
-//     business by the types of goods or services it provides.
-//   - `COUNTRY`: Country of entity of card acceptor. Possible values are: (1) all
-//     ISO 3166-1 alpha-3 country codes, (2) QZZ for Kosovo, and (3) ANT for
-//     Netherlands Antilles.
-//   - `CURRENCY`: 3-character alphabetic ISO 4217 code for the merchant currency of
-//     the transaction.
-//   - `MERCHANT_ID`: Unique alphanumeric identifier for the payment card acceptor
-//     (merchant).
-//   - `DESCRIPTOR`: Short description of card acceptor.
-//   - `LIABILITY_SHIFT`: Indicates whether chargeback liability shift to the issuer
-//     applies to the transaction. Valid values are `NONE`, `3DS_AUTHENTICATED`, or
-//     `TOKEN_AUTHENTICATED`.
-//   - `PAN_ENTRY_MODE`: The method by which the cardholder's primary account number
-//     (PAN) was entered. Valid values are `AUTO_ENTRY`, `BAR_CODE`, `CONTACTLESS`,
-//     `ECOMMERCE`, `ERROR_KEYED`, `ERROR_MAGNETIC_STRIPE`, `ICC`, `KEY_ENTERED`,
-//     `MAGNETIC_STRIPE`, `MANUAL`, `OCR`, `SECURE_CARDLESS`, `UNSPECIFIED`,
-//     `UNKNOWN`, `CREDENTIAL_ON_FILE`, or `ECOMMERCE`.
-//   - `TRANSACTION_AMOUNT`: The base transaction amount (in cents) plus the acquirer
-//     fee field in the settlement/cardholder billing currency. This is the amount
-//     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder. Use an integer value.
 //   - `CASH_AMOUNT`: The cash amount of the transaction in minor units (cents). This
 //     represents the amount of cash being withdrawn or advanced. Use an integer
@@ -2958,155 +2936,99 @@ func (r conditionalAuthorizationActionParametersConditionJSON) RawJSON() string 
 //     Null if there is no prior card-present transaction or if either postal code
 //     cannot be geocoded. Requires `parameters.unit` set to `MILES` or `KILOMETERS`.
 //     Use a decimal value.
-type ConditionalAuthorizationActionParametersConditionsAttribute string
+type ConditionalAttribute string
 
 const (
-	ConditionalAuthorizationActionParametersConditionsAttributeMcc                         ConditionalAuthorizationActionParametersConditionsAttribute = "MCC"
-	ConditionalAuthorizationActionParametersConditionsAttributeCountry                     ConditionalAuthorizationActionParametersConditionsAttribute = "COUNTRY"
-	ConditionalAuthorizationActionParametersConditionsAttributeCurrency                    ConditionalAuthorizationActionParametersConditionsAttribute = "CURRENCY"
-	ConditionalAuthorizationActionParametersConditionsAttributeMerchantID                  ConditionalAuthorizationActionParametersConditionsAttribute = "MERCHANT_ID"
-	ConditionalAuthorizationActionParametersConditionsAttributeDescriptor                  ConditionalAuthorizationActionParametersConditionsAttribute = "DESCRIPTOR"
-	ConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift              ConditionalAuthorizationActionParametersConditionsAttribute = "LIABILITY_SHIFT"
-	ConditionalAuthorizationActionParametersConditionsAttributePanEntryMode                ConditionalAuthorizationActionParametersConditionsAttribute = "PAN_ENTRY_MODE"
-	ConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount           ConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_AMOUNT"
-	ConditionalAuthorizationActionParametersConditionsAttributeCashAmount                  ConditionalAuthorizationActionParametersConditionsAttribute = "CASH_AMOUNT"
-	ConditionalAuthorizationActionParametersConditionsAttributeRiskScore                   ConditionalAuthorizationActionParametersConditionsAttribute = "RISK_SCORE"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M     ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_15M"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H      ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_1H"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H     ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_TRANSACTION_COUNT_24H"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount15M         ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_DECLINE_COUNT_15M"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount1H          ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_DECLINE_COUNT_1H"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount24H         ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_DECLINE_COUNT_24H"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardState                   ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_STATE"
-	ConditionalAuthorizationActionParametersConditionsAttributePinEntered                  ConditionalAuthorizationActionParametersConditionsAttribute = "PIN_ENTERED"
-	ConditionalAuthorizationActionParametersConditionsAttributePinStatus                   ConditionalAuthorizationActionParametersConditionsAttribute = "PIN_STATUS"
-	ConditionalAuthorizationActionParametersConditionsAttributeWalletType                  ConditionalAuthorizationActionParametersConditionsAttribute = "WALLET_TYPE"
-	ConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator        ConditionalAuthorizationActionParametersConditionsAttribute = "TRANSACTION_INITIATOR"
-	ConditionalAuthorizationActionParametersConditionsAttributeAddressMatch                ConditionalAuthorizationActionParametersConditionsAttribute = "ADDRESS_MATCH"
-	ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationState        ConditionalAuthorizationActionParametersConditionsAttribute = "SERVICE_LOCATION_STATE"
-	ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationPostalCode   ConditionalAuthorizationActionParametersConditionsAttribute = "SERVICE_LOCATION_POSTAL_CODE"
-	ConditionalAuthorizationActionParametersConditionsAttributeCardAge                     ConditionalAuthorizationActionParametersConditionsAttribute = "CARD_AGE"
-	ConditionalAuthorizationActionParametersConditionsAttributeAccountAge                  ConditionalAuthorizationActionParametersConditionsAttribute = "ACCOUNT_AGE"
-	ConditionalAuthorizationActionParametersConditionsAttributeAmountZScore                ConditionalAuthorizationActionParametersConditionsAttribute = "AMOUNT_Z_SCORE"
-	ConditionalAuthorizationActionParametersConditionsAttributeAvgTransactionAmount        ConditionalAuthorizationActionParametersConditionsAttribute = "AVG_TRANSACTION_AMOUNT"
-	ConditionalAuthorizationActionParametersConditionsAttributeStdevTransactionAmount      ConditionalAuthorizationActionParametersConditionsAttribute = "STDEV_TRANSACTION_AMOUNT"
-	ConditionalAuthorizationActionParametersConditionsAttributeIsNewCountry                ConditionalAuthorizationActionParametersConditionsAttribute = "IS_NEW_COUNTRY"
-	ConditionalAuthorizationActionParametersConditionsAttributeIsNewMcc                    ConditionalAuthorizationActionParametersConditionsAttribute = "IS_NEW_MCC"
-	ConditionalAuthorizationActionParametersConditionsAttributeIsFirstTransaction          ConditionalAuthorizationActionParametersConditionsAttribute = "IS_FIRST_TRANSACTION"
-	ConditionalAuthorizationActionParametersConditionsAttributeConsecutiveDeclines         ConditionalAuthorizationActionParametersConditionsAttribute = "CONSECUTIVE_DECLINES"
-	ConditionalAuthorizationActionParametersConditionsAttributeTimeSinceLastTransaction    ConditionalAuthorizationActionParametersConditionsAttribute = "TIME_SINCE_LAST_TRANSACTION"
-	ConditionalAuthorizationActionParametersConditionsAttributeDistinctCountryCount        ConditionalAuthorizationActionParametersConditionsAttribute = "DISTINCT_COUNTRY_COUNT"
-	ConditionalAuthorizationActionParametersConditionsAttributeIsNewMerchant               ConditionalAuthorizationActionParametersConditionsAttribute = "IS_NEW_MERCHANT"
-	ConditionalAuthorizationActionParametersConditionsAttributeThreeDSSuccessRate          ConditionalAuthorizationActionParametersConditionsAttribute = "THREE_DS_SUCCESS_RATE"
-	ConditionalAuthorizationActionParametersConditionsAttributeTravelSpeed                 ConditionalAuthorizationActionParametersConditionsAttribute = "TRAVEL_SPEED"
-	ConditionalAuthorizationActionParametersConditionsAttributeDistanceFromLastTransaction ConditionalAuthorizationActionParametersConditionsAttribute = "DISTANCE_FROM_LAST_TRANSACTION"
+	ConditionalAttributeMcc                         ConditionalAttribute = "MCC"
+	ConditionalAttributeCountry                     ConditionalAttribute = "COUNTRY"
+	ConditionalAttributeCurrency                    ConditionalAttribute = "CURRENCY"
+	ConditionalAttributeMerchantID                  ConditionalAttribute = "MERCHANT_ID"
+	ConditionalAttributeDescriptor                  ConditionalAttribute = "DESCRIPTOR"
+	ConditionalAttributeLiabilityShift              ConditionalAttribute = "LIABILITY_SHIFT"
+	ConditionalAttributePanEntryMode                ConditionalAttribute = "PAN_ENTRY_MODE"
+	ConditionalAttributeTransactionAmount           ConditionalAttribute = "TRANSACTION_AMOUNT"
+	ConditionalAttributeCashAmount                  ConditionalAttribute = "CASH_AMOUNT"
+	ConditionalAttributeRiskScore                   ConditionalAttribute = "RISK_SCORE"
+	ConditionalAttributeCardTransactionCount15M     ConditionalAttribute = "CARD_TRANSACTION_COUNT_15M"
+	ConditionalAttributeCardTransactionCount1H      ConditionalAttribute = "CARD_TRANSACTION_COUNT_1H"
+	ConditionalAttributeCardTransactionCount24H     ConditionalAttribute = "CARD_TRANSACTION_COUNT_24H"
+	ConditionalAttributeCardDeclineCount15M         ConditionalAttribute = "CARD_DECLINE_COUNT_15M"
+	ConditionalAttributeCardDeclineCount1H          ConditionalAttribute = "CARD_DECLINE_COUNT_1H"
+	ConditionalAttributeCardDeclineCount24H         ConditionalAttribute = "CARD_DECLINE_COUNT_24H"
+	ConditionalAttributeCardState                   ConditionalAttribute = "CARD_STATE"
+	ConditionalAttributePinEntered                  ConditionalAttribute = "PIN_ENTERED"
+	ConditionalAttributePinStatus                   ConditionalAttribute = "PIN_STATUS"
+	ConditionalAttributeWalletType                  ConditionalAttribute = "WALLET_TYPE"
+	ConditionalAttributeTransactionInitiator        ConditionalAttribute = "TRANSACTION_INITIATOR"
+	ConditionalAttributeAddressMatch                ConditionalAttribute = "ADDRESS_MATCH"
+	ConditionalAttributeServiceLocationState        ConditionalAttribute = "SERVICE_LOCATION_STATE"
+	ConditionalAttributeServiceLocationPostalCode   ConditionalAttribute = "SERVICE_LOCATION_POSTAL_CODE"
+	ConditionalAttributeCardAge                     ConditionalAttribute = "CARD_AGE"
+	ConditionalAttributeAccountAge                  ConditionalAttribute = "ACCOUNT_AGE"
+	ConditionalAttributeAmountZScore                ConditionalAttribute = "AMOUNT_Z_SCORE"
+	ConditionalAttributeAvgTransactionAmount        ConditionalAttribute = "AVG_TRANSACTION_AMOUNT"
+	ConditionalAttributeStdevTransactionAmount      ConditionalAttribute = "STDEV_TRANSACTION_AMOUNT"
+	ConditionalAttributeIsNewCountry                ConditionalAttribute = "IS_NEW_COUNTRY"
+	ConditionalAttributeIsNewMcc                    ConditionalAttribute = "IS_NEW_MCC"
+	ConditionalAttributeIsFirstTransaction          ConditionalAttribute = "IS_FIRST_TRANSACTION"
+	ConditionalAttributeConsecutiveDeclines         ConditionalAttribute = "CONSECUTIVE_DECLINES"
+	ConditionalAttributeTimeSinceLastTransaction    ConditionalAttribute = "TIME_SINCE_LAST_TRANSACTION"
+	ConditionalAttributeDistinctCountryCount        ConditionalAttribute = "DISTINCT_COUNTRY_COUNT"
+	ConditionalAttributeIsNewMerchant               ConditionalAttribute = "IS_NEW_MERCHANT"
+	ConditionalAttributeThreeDSSuccessRate          ConditionalAttribute = "THREE_DS_SUCCESS_RATE"
+	ConditionalAttributeTravelSpeed                 ConditionalAttribute = "TRAVEL_SPEED"
+	ConditionalAttributeDistanceFromLastTransaction ConditionalAttribute = "DISTANCE_FROM_LAST_TRANSACTION"
 )
 
-func (r ConditionalAuthorizationActionParametersConditionsAttribute) IsKnown() bool {
+func (r ConditionalAttribute) IsKnown() bool {
 	switch r {
-	case ConditionalAuthorizationActionParametersConditionsAttributeMcc, ConditionalAuthorizationActionParametersConditionsAttributeCountry, ConditionalAuthorizationActionParametersConditionsAttributeCurrency, ConditionalAuthorizationActionParametersConditionsAttributeMerchantID, ConditionalAuthorizationActionParametersConditionsAttributeDescriptor, ConditionalAuthorizationActionParametersConditionsAttributeLiabilityShift, ConditionalAuthorizationActionParametersConditionsAttributePanEntryMode, ConditionalAuthorizationActionParametersConditionsAttributeTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeCashAmount, ConditionalAuthorizationActionParametersConditionsAttributeRiskScore, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount15M, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount1H, ConditionalAuthorizationActionParametersConditionsAttributeCardTransactionCount24H, ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount15M, ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount1H, ConditionalAuthorizationActionParametersConditionsAttributeCardDeclineCount24H, ConditionalAuthorizationActionParametersConditionsAttributeCardState, ConditionalAuthorizationActionParametersConditionsAttributePinEntered, ConditionalAuthorizationActionParametersConditionsAttributePinStatus, ConditionalAuthorizationActionParametersConditionsAttributeWalletType, ConditionalAuthorizationActionParametersConditionsAttributeTransactionInitiator, ConditionalAuthorizationActionParametersConditionsAttributeAddressMatch, ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationState, ConditionalAuthorizationActionParametersConditionsAttributeServiceLocationPostalCode, ConditionalAuthorizationActionParametersConditionsAttributeCardAge, ConditionalAuthorizationActionParametersConditionsAttributeAccountAge, ConditionalAuthorizationActionParametersConditionsAttributeAmountZScore, ConditionalAuthorizationActionParametersConditionsAttributeAvgTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeStdevTransactionAmount, ConditionalAuthorizationActionParametersConditionsAttributeIsNewCountry, ConditionalAuthorizationActionParametersConditionsAttributeIsNewMcc, ConditionalAuthorizationActionParametersConditionsAttributeIsFirstTransaction, ConditionalAuthorizationActionParametersConditionsAttributeConsecutiveDeclines, ConditionalAuthorizationActionParametersConditionsAttributeTimeSinceLastTransaction, ConditionalAuthorizationActionParametersConditionsAttributeDistinctCountryCount, ConditionalAuthorizationActionParametersConditionsAttributeIsNewMerchant, ConditionalAuthorizationActionParametersConditionsAttributeThreeDSSuccessRate, ConditionalAuthorizationActionParametersConditionsAttributeTravelSpeed, ConditionalAuthorizationActionParametersConditionsAttributeDistanceFromLastTransaction:
+	case ConditionalAttributeMcc, ConditionalAttributeCountry, ConditionalAttributeCurrency, ConditionalAttributeMerchantID, ConditionalAttributeDescriptor, ConditionalAttributeLiabilityShift, ConditionalAttributePanEntryMode, ConditionalAttributeTransactionAmount, ConditionalAttributeCashAmount, ConditionalAttributeRiskScore, ConditionalAttributeCardTransactionCount15M, ConditionalAttributeCardTransactionCount1H, ConditionalAttributeCardTransactionCount24H, ConditionalAttributeCardDeclineCount15M, ConditionalAttributeCardDeclineCount1H, ConditionalAttributeCardDeclineCount24H, ConditionalAttributeCardState, ConditionalAttributePinEntered, ConditionalAttributePinStatus, ConditionalAttributeWalletType, ConditionalAttributeTransactionInitiator, ConditionalAttributeAddressMatch, ConditionalAttributeServiceLocationState, ConditionalAttributeServiceLocationPostalCode, ConditionalAttributeCardAge, ConditionalAttributeAccountAge, ConditionalAttributeAmountZScore, ConditionalAttributeAvgTransactionAmount, ConditionalAttributeStdevTransactionAmount, ConditionalAttributeIsNewCountry, ConditionalAttributeIsNewMcc, ConditionalAttributeIsFirstTransaction, ConditionalAttributeConsecutiveDeclines, ConditionalAttributeTimeSinceLastTransaction, ConditionalAttributeDistinctCountryCount, ConditionalAttributeIsNewMerchant, ConditionalAttributeThreeDSSuccessRate, ConditionalAttributeTravelSpeed, ConditionalAttributeDistanceFromLastTransaction:
 		return true
 	}
 	return false
 }
 
-// Additional parameters for certain attributes. Required when `attribute` is one
-// of `AMOUNT_Z_SCORE`, `AVG_TRANSACTION_AMOUNT`, `STDEV_TRANSACTION_AMOUNT`,
-// `IS_NEW_COUNTRY`, `IS_NEW_MCC`, `IS_FIRST_TRANSACTION`, `CONSECUTIVE_DECLINES`,
-// `TIME_SINCE_LAST_TRANSACTION`, or `DISTINCT_COUNTRY_COUNT` (require `scope`); or
-// `TRAVEL_SPEED` or `DISTANCE_FROM_LAST_TRANSACTION` (require `unit`). Not used
-// for other attributes.
-type ConditionalAuthorizationActionParametersConditionsParameters struct {
-	// The time window for statistical attributes (`AMOUNT_Z_SCORE`,
-	// `AVG_TRANSACTION_AMOUNT`, `STDEV_TRANSACTION_AMOUNT`). Use `LIFETIME` for
-	// all-time history or a specific window (`7D`, `30D`, `90D`).
-	Interval ConditionalAuthorizationActionParametersConditionsParametersInterval `json:"interval"`
-	// The entity scope to evaluate the attribute against.
-	Scope ConditionalAuthorizationActionParametersConditionsParametersScope `json:"scope"`
-	// The unit for impossible travel attributes. Required when `attribute` is
-	// `TRAVEL_SPEED` or `DISTANCE_FROM_LAST_TRANSACTION`.
-	//
-	// For `TRAVEL_SPEED`: `MPH` (miles per hour) or `KPH` (kilometers per hour).
-	//
-	// For `DISTANCE_FROM_LAST_TRANSACTION`: `MILES` or `KILOMETERS`.
-	Unit ConditionalAuthorizationActionParametersConditionsParametersUnit `json:"unit"`
-	JSON conditionalAuthorizationActionParametersConditionsParametersJSON `json:"-"`
+type ConditionalAuthorizationActionParameters struct {
+	// The action to take if the conditions are met.
+	Action     ConditionalAuthorizationActionParametersAction `json:"action" api:"required"`
+	Conditions []AuthRuleCondition                            `json:"conditions" api:"required"`
+	JSON       conditionalAuthorizationActionParametersJSON   `json:"-"`
 }
 
-// conditionalAuthorizationActionParametersConditionsParametersJSON contains the
-// JSON metadata for the struct
-// [ConditionalAuthorizationActionParametersConditionsParameters]
-type conditionalAuthorizationActionParametersConditionsParametersJSON struct {
-	Interval    apijson.Field
-	Scope       apijson.Field
-	Unit        apijson.Field
+// conditionalAuthorizationActionParametersJSON contains the JSON metadata for the
+// struct [ConditionalAuthorizationActionParameters]
+type conditionalAuthorizationActionParametersJSON struct {
+	Action      apijson.Field
+	Conditions  apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
 
-func (r *ConditionalAuthorizationActionParametersConditionsParameters) UnmarshalJSON(data []byte) (err error) {
+func (r *ConditionalAuthorizationActionParameters) UnmarshalJSON(data []byte) (err error) {
 	return apijson.UnmarshalRoot(data, r)
 }
 
-func (r conditionalAuthorizationActionParametersConditionsParametersJSON) RawJSON() string {
+func (r conditionalAuthorizationActionParametersJSON) RawJSON() string {
 	return r.raw
 }
 
-// The time window for statistical attributes (`AMOUNT_Z_SCORE`,
-// `AVG_TRANSACTION_AMOUNT`, `STDEV_TRANSACTION_AMOUNT`). Use `LIFETIME` for
-// all-time history or a specific window (`7D`, `30D`, `90D`).
-type ConditionalAuthorizationActionParametersConditionsParametersInterval string
+func (r ConditionalAuthorizationActionParameters) implementsAuthRuleCurrentVersionParameters() {}
+
+func (r ConditionalAuthorizationActionParameters) implementsAuthRuleDraftVersionParameters() {}
+
+func (r ConditionalAuthorizationActionParameters) implementsAuthRuleVersionParameters() {}
+
+// The action to take if the conditions are met.
+type ConditionalAuthorizationActionParametersAction string
 
 const (
-	ConditionalAuthorizationActionParametersConditionsParametersIntervalLifetime ConditionalAuthorizationActionParametersConditionsParametersInterval = "LIFETIME"
-	ConditionalAuthorizationActionParametersConditionsParametersInterval7D       ConditionalAuthorizationActionParametersConditionsParametersInterval = "7D"
-	ConditionalAuthorizationActionParametersConditionsParametersInterval30D      ConditionalAuthorizationActionParametersConditionsParametersInterval = "30D"
-	ConditionalAuthorizationActionParametersConditionsParametersInterval90D      ConditionalAuthorizationActionParametersConditionsParametersInterval = "90D"
+	ConditionalAuthorizationActionParametersActionDecline   ConditionalAuthorizationActionParametersAction = "DECLINE"
+	ConditionalAuthorizationActionParametersActionChallenge ConditionalAuthorizationActionParametersAction = "CHALLENGE"
 )
 
-func (r ConditionalAuthorizationActionParametersConditionsParametersInterval) IsKnown() bool {
+func (r ConditionalAuthorizationActionParametersAction) IsKnown() bool {
 	switch r {
-	case ConditionalAuthorizationActionParametersConditionsParametersIntervalLifetime, ConditionalAuthorizationActionParametersConditionsParametersInterval7D, ConditionalAuthorizationActionParametersConditionsParametersInterval30D, ConditionalAuthorizationActionParametersConditionsParametersInterval90D:
-		return true
-	}
-	return false
-}
-
-// The entity scope to evaluate the attribute against.
-type ConditionalAuthorizationActionParametersConditionsParametersScope string
-
-const (
-	ConditionalAuthorizationActionParametersConditionsParametersScopeCard            ConditionalAuthorizationActionParametersConditionsParametersScope = "CARD"
-	ConditionalAuthorizationActionParametersConditionsParametersScopeAccount         ConditionalAuthorizationActionParametersConditionsParametersScope = "ACCOUNT"
-	ConditionalAuthorizationActionParametersConditionsParametersScopeBusinessAccount ConditionalAuthorizationActionParametersConditionsParametersScope = "BUSINESS_ACCOUNT"
-)
-
-func (r ConditionalAuthorizationActionParametersConditionsParametersScope) IsKnown() bool {
-	switch r {
-	case ConditionalAuthorizationActionParametersConditionsParametersScopeCard, ConditionalAuthorizationActionParametersConditionsParametersScopeAccount, ConditionalAuthorizationActionParametersConditionsParametersScopeBusinessAccount:
-		return true
-	}
-	return false
-}
-
-// The unit for impossible travel attributes. Required when `attribute` is
-// `TRAVEL_SPEED` or `DISTANCE_FROM_LAST_TRANSACTION`.
-//
-// For `TRAVEL_SPEED`: `MPH` (miles per hour) or `KPH` (kilometers per hour).
-//
-// For `DISTANCE_FROM_LAST_TRANSACTION`: `MILES` or `KILOMETERS`.
-type ConditionalAuthorizationActionParametersConditionsParametersUnit string
-
-const (
-	ConditionalAuthorizationActionParametersConditionsParametersUnitMph        ConditionalAuthorizationActionParametersConditionsParametersUnit = "MPH"
-	ConditionalAuthorizationActionParametersConditionsParametersUnitKph        ConditionalAuthorizationActionParametersConditionsParametersUnit = "KPH"
-	ConditionalAuthorizationActionParametersConditionsParametersUnitMiles      ConditionalAuthorizationActionParametersConditionsParametersUnit = "MILES"
-	ConditionalAuthorizationActionParametersConditionsParametersUnitKilometers ConditionalAuthorizationActionParametersConditionsParametersUnit = "KILOMETERS"
-)
-
-func (r ConditionalAuthorizationActionParametersConditionsParametersUnit) IsKnown() bool {
-	switch r {
-	case ConditionalAuthorizationActionParametersConditionsParametersUnitMph, ConditionalAuthorizationActionParametersConditionsParametersUnitKph, ConditionalAuthorizationActionParametersConditionsParametersUnitMiles, ConditionalAuthorizationActionParametersConditionsParametersUnitKilometers:
+	case ConditionalAuthorizationActionParametersActionDecline, ConditionalAuthorizationActionParametersActionChallenge:
 		return true
 	}
 	return false
@@ -3641,36 +3563,6 @@ func (r ConditionalAuthorizationAdjustmentParametersConditionsParametersUnit) Is
 	}
 	return false
 }
-
-// Deprecated: Use CONDITIONAL_ACTION instead.
-//
-// Deprecated: deprecated
-type ConditionalBlockParameters struct {
-	Conditions []AuthRuleCondition            `json:"conditions" api:"required"`
-	JSON       conditionalBlockParametersJSON `json:"-"`
-}
-
-// conditionalBlockParametersJSON contains the JSON metadata for the struct
-// [ConditionalBlockParameters]
-type conditionalBlockParametersJSON struct {
-	Conditions  apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
-}
-
-func (r *ConditionalBlockParameters) UnmarshalJSON(data []byte) (err error) {
-	return apijson.UnmarshalRoot(data, r)
-}
-
-func (r conditionalBlockParametersJSON) RawJSON() string {
-	return r.raw
-}
-
-func (r ConditionalBlockParameters) implementsAuthRuleCurrentVersionParameters() {}
-
-func (r ConditionalBlockParameters) implementsAuthRuleDraftVersionParameters() {}
-
-func (r ConditionalBlockParameters) implementsAuthRuleVersionParameters() {}
 
 type ConditionalCardTransactionUpdateActionParameters struct {
 	// The action to take if the conditions are met.
@@ -9932,8 +9824,6 @@ type AuthRuleV2NewParamsBody struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
-	//     AUTHORIZATION event stream.
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -9980,8 +9870,6 @@ type AuthRuleV2NewParamsBodyAccountLevelRule struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
-	//     AUTHORIZATION event stream.
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -10056,10 +9944,9 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRuleParameters) implementsAuthRuleV2N
 
 // Parameters for the Auth Rule
 //
-// Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
-// [ConditionalTokenizationActionParameters],
+// Satisfied by [VelocityLimitParams], [MerchantLockParameters],
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
 // [ConditionalCardTransactionUpdateActionParameters],
 // [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters],
 // [ConditionalAuthorizationAdjustmentParameters],
@@ -10089,8 +9976,6 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRuleParametersScope) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
-//     AUTHORIZATION event stream.
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -10104,7 +9989,6 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRuleParametersScope) IsKnown() bool {
 type AuthRuleV2NewParamsBodyAccountLevelRuleType string
 
 const (
-	AuthRuleV2NewParamsBodyAccountLevelRuleTypeConditionalBlock  AuthRuleV2NewParamsBodyAccountLevelRuleType = "CONDITIONAL_BLOCK"
 	AuthRuleV2NewParamsBodyAccountLevelRuleTypeVelocityLimit     AuthRuleV2NewParamsBodyAccountLevelRuleType = "VELOCITY_LIMIT"
 	AuthRuleV2NewParamsBodyAccountLevelRuleTypeMerchantLock      AuthRuleV2NewParamsBodyAccountLevelRuleType = "MERCHANT_LOCK"
 	AuthRuleV2NewParamsBodyAccountLevelRuleTypeConditionalAction AuthRuleV2NewParamsBodyAccountLevelRuleType = "CONDITIONAL_ACTION"
@@ -10114,7 +9998,7 @@ const (
 
 func (r AuthRuleV2NewParamsBodyAccountLevelRuleType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyAccountLevelRuleTypeConditionalBlock, AuthRuleV2NewParamsBodyAccountLevelRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyAccountLevelRuleTypeMerchantLock, AuthRuleV2NewParamsBodyAccountLevelRuleTypeConditionalAction, AuthRuleV2NewParamsBodyAccountLevelRuleTypeTypescriptCode, AuthRuleV2NewParamsBodyAccountLevelRuleTypeOther:
+	case AuthRuleV2NewParamsBodyAccountLevelRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyAccountLevelRuleTypeMerchantLock, AuthRuleV2NewParamsBodyAccountLevelRuleTypeConditionalAction, AuthRuleV2NewParamsBodyAccountLevelRuleTypeTypescriptCode, AuthRuleV2NewParamsBodyAccountLevelRuleTypeOther:
 		return true
 	}
 	return false
@@ -10130,8 +10014,6 @@ type AuthRuleV2NewParamsBodyCardLevelRule struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
-	//     AUTHORIZATION event stream.
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -10202,10 +10084,9 @@ func (r AuthRuleV2NewParamsBodyCardLevelRuleParameters) implementsAuthRuleV2NewP
 
 // Parameters for the Auth Rule
 //
-// Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
-// [ConditionalTokenizationActionParameters],
+// Satisfied by [VelocityLimitParams], [MerchantLockParameters],
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
 // [ConditionalCardTransactionUpdateActionParameters],
 // [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters],
 // [ConditionalAuthorizationAdjustmentParameters],
@@ -10235,8 +10116,6 @@ func (r AuthRuleV2NewParamsBodyCardLevelRuleParametersScope) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
-//     AUTHORIZATION event stream.
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -10250,7 +10129,6 @@ func (r AuthRuleV2NewParamsBodyCardLevelRuleParametersScope) IsKnown() bool {
 type AuthRuleV2NewParamsBodyCardLevelRuleType string
 
 const (
-	AuthRuleV2NewParamsBodyCardLevelRuleTypeConditionalBlock  AuthRuleV2NewParamsBodyCardLevelRuleType = "CONDITIONAL_BLOCK"
 	AuthRuleV2NewParamsBodyCardLevelRuleTypeVelocityLimit     AuthRuleV2NewParamsBodyCardLevelRuleType = "VELOCITY_LIMIT"
 	AuthRuleV2NewParamsBodyCardLevelRuleTypeMerchantLock      AuthRuleV2NewParamsBodyCardLevelRuleType = "MERCHANT_LOCK"
 	AuthRuleV2NewParamsBodyCardLevelRuleTypeConditionalAction AuthRuleV2NewParamsBodyCardLevelRuleType = "CONDITIONAL_ACTION"
@@ -10260,7 +10138,7 @@ const (
 
 func (r AuthRuleV2NewParamsBodyCardLevelRuleType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyCardLevelRuleTypeConditionalBlock, AuthRuleV2NewParamsBodyCardLevelRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyCardLevelRuleTypeMerchantLock, AuthRuleV2NewParamsBodyCardLevelRuleTypeConditionalAction, AuthRuleV2NewParamsBodyCardLevelRuleTypeTypescriptCode, AuthRuleV2NewParamsBodyCardLevelRuleTypeOther:
+	case AuthRuleV2NewParamsBodyCardLevelRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyCardLevelRuleTypeMerchantLock, AuthRuleV2NewParamsBodyCardLevelRuleTypeConditionalAction, AuthRuleV2NewParamsBodyCardLevelRuleTypeTypescriptCode, AuthRuleV2NewParamsBodyCardLevelRuleTypeOther:
 		return true
 	}
 	return false
@@ -10276,8 +10154,6 @@ type AuthRuleV2NewParamsBodyProgramLevelRule struct {
 	// several event streams, the effective one is defined by the separate
 	// `event_stream` field.
 	//
-	//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
-	//     AUTHORIZATION event stream.
 	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -10354,10 +10230,9 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleParameters) implementsAuthRuleV2N
 
 // Parameters for the Auth Rule
 //
-// Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
-// [ConditionalTokenizationActionParameters],
+// Satisfied by [VelocityLimitParams], [MerchantLockParameters],
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
 // [ConditionalCardTransactionUpdateActionParameters],
 // [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters],
 // [ConditionalAuthorizationAdjustmentParameters],
@@ -10387,8 +10262,6 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleParametersScope) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
-//     AUTHORIZATION event stream.
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -10402,7 +10275,6 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleParametersScope) IsKnown() bool {
 type AuthRuleV2NewParamsBodyProgramLevelRuleType string
 
 const (
-	AuthRuleV2NewParamsBodyProgramLevelRuleTypeConditionalBlock  AuthRuleV2NewParamsBodyProgramLevelRuleType = "CONDITIONAL_BLOCK"
 	AuthRuleV2NewParamsBodyProgramLevelRuleTypeVelocityLimit     AuthRuleV2NewParamsBodyProgramLevelRuleType = "VELOCITY_LIMIT"
 	AuthRuleV2NewParamsBodyProgramLevelRuleTypeMerchantLock      AuthRuleV2NewParamsBodyProgramLevelRuleType = "MERCHANT_LOCK"
 	AuthRuleV2NewParamsBodyProgramLevelRuleTypeConditionalAction AuthRuleV2NewParamsBodyProgramLevelRuleType = "CONDITIONAL_ACTION"
@@ -10412,7 +10284,7 @@ const (
 
 func (r AuthRuleV2NewParamsBodyProgramLevelRuleType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyProgramLevelRuleTypeConditionalBlock, AuthRuleV2NewParamsBodyProgramLevelRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyProgramLevelRuleTypeMerchantLock, AuthRuleV2NewParamsBodyProgramLevelRuleTypeConditionalAction, AuthRuleV2NewParamsBodyProgramLevelRuleTypeTypescriptCode, AuthRuleV2NewParamsBodyProgramLevelRuleTypeOther:
+	case AuthRuleV2NewParamsBodyProgramLevelRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyProgramLevelRuleTypeMerchantLock, AuthRuleV2NewParamsBodyProgramLevelRuleTypeConditionalAction, AuthRuleV2NewParamsBodyProgramLevelRuleTypeTypescriptCode, AuthRuleV2NewParamsBodyProgramLevelRuleTypeOther:
 		return true
 	}
 	return false
@@ -10423,8 +10295,6 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleType) IsKnown() bool {
 // several event streams, the effective one is defined by the separate
 // `event_stream` field.
 //
-//   - `CONDITIONAL_BLOCK`: Deprecated. Use `CONDITIONAL_ACTION` instead.
-//     AUTHORIZATION event stream.
 //   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
 //   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
 //   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
@@ -10438,7 +10308,6 @@ func (r AuthRuleV2NewParamsBodyProgramLevelRuleType) IsKnown() bool {
 type AuthRuleV2NewParamsBodyType string
 
 const (
-	AuthRuleV2NewParamsBodyTypeConditionalBlock  AuthRuleV2NewParamsBodyType = "CONDITIONAL_BLOCK"
 	AuthRuleV2NewParamsBodyTypeVelocityLimit     AuthRuleV2NewParamsBodyType = "VELOCITY_LIMIT"
 	AuthRuleV2NewParamsBodyTypeMerchantLock      AuthRuleV2NewParamsBodyType = "MERCHANT_LOCK"
 	AuthRuleV2NewParamsBodyTypeConditionalAction AuthRuleV2NewParamsBodyType = "CONDITIONAL_ACTION"
@@ -10448,7 +10317,7 @@ const (
 
 func (r AuthRuleV2NewParamsBodyType) IsKnown() bool {
 	switch r {
-	case AuthRuleV2NewParamsBodyTypeConditionalBlock, AuthRuleV2NewParamsBodyTypeVelocityLimit, AuthRuleV2NewParamsBodyTypeMerchantLock, AuthRuleV2NewParamsBodyTypeConditionalAction, AuthRuleV2NewParamsBodyTypeTypescriptCode, AuthRuleV2NewParamsBodyTypeOther:
+	case AuthRuleV2NewParamsBodyTypeVelocityLimit, AuthRuleV2NewParamsBodyTypeMerchantLock, AuthRuleV2NewParamsBodyTypeConditionalAction, AuthRuleV2NewParamsBodyTypeTypescriptCode, AuthRuleV2NewParamsBodyTypeOther:
 		return true
 	}
 	return false
@@ -10743,10 +10612,9 @@ func (r AuthRuleV2DraftParamsParameters) implementsAuthRuleV2DraftParamsParamete
 
 // Parameters for the Auth Rule
 //
-// Satisfied by [ConditionalBlockParameters], [VelocityLimitParams],
-// [MerchantLockParameters], [Conditional3DSActionParameters],
-// [ConditionalAuthorizationActionParameters], [ConditionalACHActionParameters],
-// [ConditionalTokenizationActionParameters],
+// Satisfied by [VelocityLimitParams], [MerchantLockParameters],
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
 // [ConditionalCardTransactionUpdateActionParameters],
 // [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters],
 // [ConditionalAuthorizationAdjustmentParameters],

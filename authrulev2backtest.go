@@ -52,14 +52,14 @@ func NewAuthRuleV2BacktestService(opts ...option.RequestOption) (r *AuthRuleV2Ba
 // `/v2/auth_rules/{auth_rule_token}/backtests/{auth_rule_backtest_token}`
 // endpoint.
 //
-// Lithic currently supports backtesting for `CONDITIONAL_BLOCK` /
-// `CONDITIONAL_ACTION` rules. Backtesting for `VELOCITY_LIMIT` rules is generally
-// not supported. In specific cases (i.e. where Lithic has pre-calculated the
-// requested velocity metrics for historical transactions), a backtest may be
-// feasible. However, such cases are uncommon and customers should not anticipate
-// support for velocity backtests under most configurations. If a historical
-// transaction does not feature the required inputs to evaluate the rule, then it
-// will not be included in the final backtest report.
+// Lithic currently supports backtesting for `CONDITIONAL_ACTION` rules.
+// Backtesting for `VELOCITY_LIMIT` rules is generally not supported. In specific
+// cases (i.e. where Lithic has pre-calculated the requested velocity metrics for
+// historical transactions), a backtest may be feasible. However, such cases are
+// uncommon and customers should not anticipate support for velocity backtests
+// under most configurations. If a historical transaction does not feature the
+// required inputs to evaluate the rule, then it will not be included in the final
+// backtest report.
 func (r *AuthRuleV2BacktestService) New(ctx context.Context, authRuleToken string, body AuthRuleV2BacktestNewParams, opts ...option.RequestOption) (res *AuthRuleV2BacktestNewResponse, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
