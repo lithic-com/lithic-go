@@ -2142,13 +2142,24 @@ type Conditional3DsActionParametersCondition struct {
 	//     fee field in the settlement/cardholder billing currency. This is the amount
 	//     the issuer should authorize against unless the issuer is paying the acquirer
 	//     fee on behalf of the cardholder. Use an integer value.
-	//   - `RISK_SCORE`: Mastercard only: Assessment by the network of the authentication
-	//     risk level, with a higher value indicating a higher amount of risk. Use an
-	//     integer value.
+	//   - `RISK_SCORE`: Mastercard, and Visa in some markets: Assessment by the network
+	//     of the authentication risk level, with a higher value indicating a higher
+	//     amount of risk. Use an integer value.
 	//   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
 	//   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
 	//     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
 	//     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
+	//   - `CARD_STATE`: The current state of the card associated with the
+	//     authentication. Valid values are `CLOSED`, `OPEN`, `PAUSED`,
+	//     `PENDING_ACTIVATION`, `PENDING_FULFILLMENT`.
+	//   - `CARD_TYPE`: The type of the card associated with the authentication. Valid
+	//     values are `MERCHANT_LOCKED`, `PHYSICAL`, `SINGLE_USE`, `VIRTUAL`.
+	//   - `CARD_PROGRAM_FAMILY`: The program family of the card associated with the
+	//     authentication. Valid values are `CONSUMER`, `COMMERCIAL`.
+	//   - `PIN_STATUS`: The current state of card's PIN. Valid values are `NOT_SET`,
+	//     `OK`, `BLOCKED`.
+	//   - `CARD_AGE`: The age of the card in seconds at the time of the authentication.
+	//     Use an integer value.
 	Attribute Conditional3DSActionParametersConditionsAttribute `json:"attribute" api:"required"`
 	// The operation to apply to the attribute
 	Operation ConditionalOperation `json:"operation" api:"required"`
@@ -2193,13 +2204,24 @@ func (r conditional3DsActionParametersConditionJSON) RawJSON() string {
 //     fee field in the settlement/cardholder billing currency. This is the amount
 //     the issuer should authorize against unless the issuer is paying the acquirer
 //     fee on behalf of the cardholder. Use an integer value.
-//   - `RISK_SCORE`: Mastercard only: Assessment by the network of the authentication
-//     risk level, with a higher value indicating a higher amount of risk. Use an
-//     integer value.
+//   - `RISK_SCORE`: Mastercard, and Visa in some markets: Assessment by the network
+//     of the authentication risk level, with a higher value indicating a higher
+//     amount of risk. Use an integer value.
 //   - `MESSAGE_CATEGORY`: The category of the authentication being processed.
 //   - `ADDRESS_MATCH`: Lithic's evaluation result comparing transaction's address
 //     data with the cardholder KYC data if it exists. Valid values are `MATCH`,
 //     `MATCH_ADDRESS_ONLY`, `MATCH_ZIP_ONLY`,`MISMATCH`,`NOT_PRESENT`.
+//   - `CARD_STATE`: The current state of the card associated with the
+//     authentication. Valid values are `CLOSED`, `OPEN`, `PAUSED`,
+//     `PENDING_ACTIVATION`, `PENDING_FULFILLMENT`.
+//   - `CARD_TYPE`: The type of the card associated with the authentication. Valid
+//     values are `MERCHANT_LOCKED`, `PHYSICAL`, `SINGLE_USE`, `VIRTUAL`.
+//   - `CARD_PROGRAM_FAMILY`: The program family of the card associated with the
+//     authentication. Valid values are `CONSUMER`, `COMMERCIAL`.
+//   - `PIN_STATUS`: The current state of card's PIN. Valid values are `NOT_SET`,
+//     `OK`, `BLOCKED`.
+//   - `CARD_AGE`: The age of the card in seconds at the time of the authentication.
+//     Use an integer value.
 type Conditional3DSActionParametersConditionsAttribute string
 
 const (
@@ -2212,11 +2234,16 @@ const (
 	Conditional3DSActionParametersConditionsAttributeRiskScore         Conditional3DSActionParametersConditionsAttribute = "RISK_SCORE"
 	Conditional3DSActionParametersConditionsAttributeMessageCategory   Conditional3DSActionParametersConditionsAttribute = "MESSAGE_CATEGORY"
 	Conditional3DSActionParametersConditionsAttributeAddressMatch      Conditional3DSActionParametersConditionsAttribute = "ADDRESS_MATCH"
+	Conditional3DSActionParametersConditionsAttributeCardState         Conditional3DSActionParametersConditionsAttribute = "CARD_STATE"
+	Conditional3DSActionParametersConditionsAttributeCardType          Conditional3DSActionParametersConditionsAttribute = "CARD_TYPE"
+	Conditional3DSActionParametersConditionsAttributeCardProgramFamily Conditional3DSActionParametersConditionsAttribute = "CARD_PROGRAM_FAMILY"
+	Conditional3DSActionParametersConditionsAttributePinStatus         Conditional3DSActionParametersConditionsAttribute = "PIN_STATUS"
+	Conditional3DSActionParametersConditionsAttributeCardAge           Conditional3DSActionParametersConditionsAttribute = "CARD_AGE"
 )
 
 func (r Conditional3DSActionParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case Conditional3DSActionParametersConditionsAttributeMcc, Conditional3DSActionParametersConditionsAttributeCountry, Conditional3DSActionParametersConditionsAttributeCurrency, Conditional3DSActionParametersConditionsAttributeMerchantID, Conditional3DSActionParametersConditionsAttributeDescriptor, Conditional3DSActionParametersConditionsAttributeTransactionAmount, Conditional3DSActionParametersConditionsAttributeRiskScore, Conditional3DSActionParametersConditionsAttributeMessageCategory, Conditional3DSActionParametersConditionsAttributeAddressMatch:
+	case Conditional3DSActionParametersConditionsAttributeMcc, Conditional3DSActionParametersConditionsAttributeCountry, Conditional3DSActionParametersConditionsAttributeCurrency, Conditional3DSActionParametersConditionsAttributeMerchantID, Conditional3DSActionParametersConditionsAttributeDescriptor, Conditional3DSActionParametersConditionsAttributeTransactionAmount, Conditional3DSActionParametersConditionsAttributeRiskScore, Conditional3DSActionParametersConditionsAttributeMessageCategory, Conditional3DSActionParametersConditionsAttributeAddressMatch, Conditional3DSActionParametersConditionsAttributeCardState, Conditional3DSActionParametersConditionsAttributeCardType, Conditional3DSActionParametersConditionsAttributeCardProgramFamily, Conditional3DSActionParametersConditionsAttributePinStatus, Conditional3DSActionParametersConditionsAttributeCardAge:
 		return true
 	}
 	return false
