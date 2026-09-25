@@ -1,5 +1,62 @@
 # Changelog
 
+## 0.118.0 (2026-09-18)
+
+Full Changelog: [v0.117.0...v0.118.0](https://github.com/lithic-com/lithic-go/compare/v0.117.0...v0.118.0)
+
+### Features
+
+* [CARDS-5174] Add reiusse/renew 409 error ([48d546d](https://github.com/lithic-com/lithic-go/commit/48d546d3a2a493ac3d0f1a30541e88cdfa9c5dde))
+* [TRE-14464] Update /retry payments endpoint to accept method ([70c69ae](https://github.com/lithic-com/lithic-go/commit/70c69ae4504a7429408bcbb8d956ee489069c30c))
+* [TRE-14524] Add Open to buy API spec ([063e2e0](https://github.com/lithic-com/lithic-go/commit/063e2e0f070cb673deb7d756cad3cff928d80b10))
+* Add missing blockchain/stablecoin endpoints to the spec ([28e0230](https://github.com/lithic-com/lithic-go/commit/28e023027c762068680c43a19d74eace0d681ed7))
+* **api:** add card.pin_updated webhook event ([420da88](https://github.com/lithic-com/lithic-go/commit/420da8892d29f92f03382db44b39f31b81839b92))
+* **api:** add EXTERNAL_STABLECOIN category and event types to payments/webhooks/statements ([0576509](https://github.com/lithic-com/lithic-go/commit/05765090cd4afd5035f23255290ea1e133a602c6))
+* **api:** add FEE/FEE_REVERSAL event types to financial/statement/management types ([ba2a30a](https://github.com/lithic-com/lithic-go/commit/ba2a30a8164c6fd109cae3a489b5338d39c528e0))
+* **api:** add get/list methods to financial accounts installment plans ([41b32bb](https://github.com/lithic-com/lithic-go/commit/41b32bb96eade22d85fd84d358056fd34966486e))
+* **api:** add OTHER enum value to auth rule types ([2cec1ac](https://github.com/lithic-com/lithic-go/commit/2cec1ac01cc96c6cbfe3803019f54206edf3bd1d))
+* **api:** add psd2_context field to threeds and webhook responses ([c4d25e5](https://github.com/lithic-com/lithic-go/commit/c4d25e5df257a661005fc42d72920928345f7ff1))
+* **api:** add STABLECOIN_REVIEWED event type to payment simulate_action ([f08f552](https://github.com/lithic-com/lithic-go/commit/f08f552e884089e7b29a3e23f9c31f5db0368bed))
+* AUTH-3759: Add DECLINE_SCA_REQUIRED and SCA_REQUIRED enum entries ([0fe4b78](https://github.com/lithic-com/lithic-go/commit/0fe4b78612e7a47ab9f352595dd382bcf505a80e))
+* TRE-14349: add installment plan management operation event types ([79bba6d](https://github.com/lithic-com/lithic-go/commit/79bba6d013fa8d234851e2e6def70aba7c318029))
+* TRE-14429: Document the stablecoin payments endpoint ([bab1551](https://github.com/lithic-com/lithic-go/commit/bab1551ce4606670997e98842224bf10b24aac57))
+
+## 0.117.0 (2026-08-31)
+
+Full Changelog: [v0.116.0...v0.117.0](https://github.com/lithic-com/lithic-go/compare/v0.116.0...v0.117.0)
+
+### Features
+
+* **api:** add blockchain recipients endpoint ([d6d07cc](https://github.com/lithic-com/lithic-go/commit/d6d07cc1cc1578bd3c2448626bc5d2f228ca72f6))
+* **api:** add blockchain_addresses to FinancialAccount and webhook event ([d647ca4](https://github.com/lithic-com/lithic-go/commit/d647ca49d9c721f00aee52ebeea79b2d83df5afe))
+* **api:** add claim_token to disputes/webhooks, write_off_reversed enum values ([db3ba6d](https://github.com/lithic-com/lithic-go/commit/db3ba6d342056027b982b020acb341e7da59b3c2))
+* **api:** add limit_cash_amount and limit_cash_count parameters to auth rules ([ae63a9b](https://github.com/lithic-com/lithic-go/commit/ae63a9b5fad02577f69d6d8c4b257103b139fe8f))
+* **api:** add PROGRAM scope to authrulev2 actions, FINANCIAL_ACCOUNT/PROGRAM to case entity ([27fda38](https://github.com/lithic-com/lithic-go/commit/27fda3896678f764af41b881792aefc66607777a))
+* **api:** add reassign_account method to cards ([68b8cc3](https://github.com/lithic-com/lithic-go/commit/68b8cc3880bab6daf84c0d6d5aa1d975b841c9ab))
+* **api:** add stablecoin event types to payment/financial/statement line item events ([08a6294](https://github.com/lithic-com/lithic-go/commit/08a62944700290841046fd7e50ccfbb7083b38d4))
+* **api:** add STABLECOIN method, make payment method_attributes nullable ([0ce0f5a](https://github.com/lithic-com/lithic-go/commit/0ce0f5a891a344c78972ee84c832907c50ee5910))
+* **api:** add stablecoin payment method to accountactivity/payment/webhook ([f8e18c6](https://github.com/lithic-com/lithic-go/commit/f8e18c6e266d956aad37126a80c2a4d6e12c3e3c))
+* **api:** add STABLECOIN type to accountactivity/payment/webhook ([d639b8c](https://github.com/lithic-com/lithic-go/commit/d639b8ca0d9eab8978cf9c9e2f66272d62250305))
+* **api:** add stablecoin_inbound/outbound enum values to activity/payment/webhook types ([198ac3d](https://github.com/lithic-com/lithic-go/commit/198ac3db5a391d27807bd542b94aefbb32774318))
+* Make blockchain recipient account_token nullable ([893458a](https://github.com/lithic-com/lithic-go/commit/893458a964e9b2a0dcdefcb071404b9265b270bd))
+* Remove stablecoin transfer type ([98b08de](https://github.com/lithic-com/lithic-go/commit/98b08de9e549f87db095c808865370062b4fed0c))
+
+
+### Bug Fixes
+
+* **types:** remove Type discriminator, rename dispute v2 event data types ([6706593](https://github.com/lithic-com/lithic-go/commit/6706593bf093fd06933bc690568a786ab1686e66))
+
+
+### Chores
+
+* **internal:** allow the mock server port to be set with STAINLESS_MOCK_PORT ([f840e22](https://github.com/lithic-com/lithic-go/commit/f840e222302668b543ccf1fc161f5fbeef1a9383))
+
+
+### Documentation
+
+* **api:** clarify client_device_id and client_wallet_account_id in card provision ([4962538](https://github.com/lithic-com/lithic-go/commit/4962538010c59086514d139ebebb29e1bc00f076))
+* **api:** update CVV descriptions in Card and TokenizationSimulateParams ([d49bff1](https://github.com/lithic-com/lithic-go/commit/d49bff1336f239c50b34ea497231e50d4a0a46ed))
+
 ## 0.116.0 (2026-07-30)
 
 Full Changelog: [v0.115.0...v0.116.0](https://github.com/lithic-com/lithic-go/compare/v0.115.0...v0.116.0)
