@@ -131,10 +131,12 @@ type LoanTape struct {
 	// balances. An overpayment could land an account in this state
 	ExcessCredits int64 `json:"excess_credits" api:"required"`
 	// Globally unique identifier for a financial account
-	FinancialAccountToken    string                           `json:"financial_account_token" api:"required" format:"uuid"`
-	InterestDetails          LoanTapeInterestDetails          `json:"interest_details" api:"required,nullable"`
-	MinimumPaymentBalance    LoanTapeMinimumPaymentBalance    `json:"minimum_payment_balance" api:"required"`
-	PaymentAllocation        LoanTapePaymentAllocation        `json:"payment_allocation" api:"required"`
+	FinancialAccountToken string                        `json:"financial_account_token" api:"required" format:"uuid"`
+	InterestDetails       LoanTapeInterestDetails       `json:"interest_details" api:"required,nullable"`
+	MinimumPaymentBalance LoanTapeMinimumPaymentBalance `json:"minimum_payment_balance" api:"required"`
+	PaymentAllocation     LoanTapePaymentAllocation     `json:"payment_allocation" api:"required"`
+	// Allocation of payments only, excluding credits
+	PaymentOnlyAllocation    LoanTapePaymentOnlyAllocation    `json:"payment_only_allocation" api:"required,nullable"`
 	PeriodTotals             StatementTotals                  `json:"period_totals" api:"required"`
 	PreviousStatementBalance LoanTapePreviousStatementBalance `json:"previous_statement_balance" api:"required"`
 	// Balance at the start of the day
@@ -168,6 +170,7 @@ type loanTapeJSON struct {
 	InterestDetails          apijson.Field
 	MinimumPaymentBalance    apijson.Field
 	PaymentAllocation        apijson.Field
+	PaymentOnlyAllocation    apijson.Field
 	PeriodTotals             apijson.Field
 	PreviousStatementBalance apijson.Field
 	StartingBalance          apijson.Field
@@ -446,6 +449,41 @@ func (r *LoanTapePaymentAllocation) UnmarshalJSON(data []byte) (err error) {
 }
 
 func (r loanTapePaymentAllocationJSON) RawJSON() string {
+	return r.raw
+}
+
+// Allocation of payments only, excluding credits
+type LoanTapePaymentOnlyAllocation struct {
+	FeeDetails CategoryDetails `json:"fee_details" api:"required,nullable"`
+	// Amount allocated to fees in cents
+	Fees int64 `json:"fees" api:"required"`
+	// Amount allocated to interest in cents
+	Interest        int64           `json:"interest" api:"required"`
+	InterestDetails CategoryDetails `json:"interest_details" api:"required,nullable"`
+	// Amount allocated to principal in cents
+	Principal        int64                             `json:"principal" api:"required"`
+	PrincipalDetails CategoryDetails                   `json:"principal_details" api:"required,nullable"`
+	JSON             loanTapePaymentOnlyAllocationJSON `json:"-"`
+}
+
+// loanTapePaymentOnlyAllocationJSON contains the JSON metadata for the struct
+// [LoanTapePaymentOnlyAllocation]
+type loanTapePaymentOnlyAllocationJSON struct {
+	FeeDetails       apijson.Field
+	Fees             apijson.Field
+	Interest         apijson.Field
+	InterestDetails  apijson.Field
+	Principal        apijson.Field
+	PrincipalDetails apijson.Field
+	raw              string
+	ExtraFields      map[string]apijson.Field
+}
+
+func (r *LoanTapePaymentOnlyAllocation) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r loanTapePaymentOnlyAllocationJSON) RawJSON() string {
 	return r.raw
 }
 

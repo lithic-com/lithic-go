@@ -5602,8 +5602,10 @@ type ParsedWebhookEvent struct {
 	// This field can have the runtime type of [LoanTapePaymentAllocation].
 	PaymentAllocation interface{} `json:"payment_allocation"`
 	// Date when the payment is due
-	PaymentDueDate time.Time                     `json:"payment_due_date" api:"nullable" format:"date"`
-	PaymentType    ParsedWebhookEventPaymentType `json:"payment_type"`
+	PaymentDueDate time.Time `json:"payment_due_date" api:"nullable" format:"date"`
+	// This field can have the runtime type of [LoanTapePaymentOnlyAllocation].
+	PaymentOnlyAllocation interface{}                   `json:"payment_only_allocation"`
+	PaymentType           ParsedWebhookEventPaymentType `json:"payment_type"`
 	// This field can have the runtime type of [StatementPayoffDetails].
 	PayoffDetails interface{} `json:"payoff_details"`
 	// Pending amount of the transaction in the currency's smallest unit (e.g., cents),
@@ -6005,6 +6007,7 @@ type parsedWebhookEventJSON struct {
 	OwnerType                          apijson.Field
 	PaymentAllocation                  apijson.Field
 	PaymentDueDate                     apijson.Field
+	PaymentOnlyAllocation              apijson.Field
 	PaymentType                        apijson.Field
 	PayoffDetails                      apijson.Field
 	PendingAmount                      apijson.Field
