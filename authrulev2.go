@@ -1145,6 +1145,9 @@ type AuthRuleCondition struct {
 	//     card acceptor postal code.
 	//   - `CARD_AGE`: The age of the card in seconds at the time of the authorization.
 	//     Use an integer value.
+	//   - `IS_DOMESTIC`: Whether the merchant's country matches the card program's
+	//     issuing country. Valid values are `TRUE`, `FALSE`. For programs with no
+	//     issuing country configured, this attribute does not evaluate.
 	//   - `ACCOUNT_AGE`: The age of the account holder's account in seconds at the time
 	//     of the authorization. Use an integer value. For programs where Lithic does not
 	//     manage or retain account holder data, this attribute does not evaluate.
@@ -1401,6 +1404,9 @@ type AuthRuleConditionParam struct {
 	//     card acceptor postal code.
 	//   - `CARD_AGE`: The age of the card in seconds at the time of the authorization.
 	//     Use an integer value.
+	//   - `IS_DOMESTIC`: Whether the merchant's country matches the card program's
+	//     issuing country. Valid values are `TRUE`, `FALSE`. For programs with no
+	//     issuing country configured, this attribute does not evaluate.
 	//   - `ACCOUNT_AGE`: The age of the account holder's account in seconds at the time
 	//     of the authorization. Use an integer value. For programs where Lithic does not
 	//     manage or retain account holder data, this attribute does not evaluate.
@@ -2914,6 +2920,9 @@ func (r ConditionalACHPaymentUpdateActionParametersConditionsAttribute) IsKnown(
 //     card acceptor postal code.
 //   - `CARD_AGE`: The age of the card in seconds at the time of the authorization.
 //     Use an integer value.
+//   - `IS_DOMESTIC`: Whether the merchant's country matches the card program's
+//     issuing country. Valid values are `TRUE`, `FALSE`. For programs with no
+//     issuing country configured, this attribute does not evaluate.
 //   - `ACCOUNT_AGE`: The age of the account holder's account in seconds at the time
 //     of the authorization. Use an integer value. For programs where Lithic does not
 //     manage or retain account holder data, this attribute does not evaluate.
@@ -2991,6 +3000,7 @@ const (
 	ConditionalAttributeServiceLocationState        ConditionalAttribute = "SERVICE_LOCATION_STATE"
 	ConditionalAttributeServiceLocationPostalCode   ConditionalAttribute = "SERVICE_LOCATION_POSTAL_CODE"
 	ConditionalAttributeCardAge                     ConditionalAttribute = "CARD_AGE"
+	ConditionalAttributeIsDomestic                  ConditionalAttribute = "IS_DOMESTIC"
 	ConditionalAttributeAccountAge                  ConditionalAttribute = "ACCOUNT_AGE"
 	ConditionalAttributeAmountZScore                ConditionalAttribute = "AMOUNT_Z_SCORE"
 	ConditionalAttributeAvgTransactionAmount        ConditionalAttribute = "AVG_TRANSACTION_AMOUNT"
@@ -3009,7 +3019,7 @@ const (
 
 func (r ConditionalAttribute) IsKnown() bool {
 	switch r {
-	case ConditionalAttributeMcc, ConditionalAttributeCountry, ConditionalAttributeCurrency, ConditionalAttributeMerchantID, ConditionalAttributeDescriptor, ConditionalAttributeLiabilityShift, ConditionalAttributePanEntryMode, ConditionalAttributeTransactionAmount, ConditionalAttributeCashAmount, ConditionalAttributeRiskScore, ConditionalAttributeCardTransactionCount15M, ConditionalAttributeCardTransactionCount1H, ConditionalAttributeCardTransactionCount24H, ConditionalAttributeCardDeclineCount15M, ConditionalAttributeCardDeclineCount1H, ConditionalAttributeCardDeclineCount24H, ConditionalAttributeCardState, ConditionalAttributePinEntered, ConditionalAttributePinStatus, ConditionalAttributeWalletType, ConditionalAttributeTransactionInitiator, ConditionalAttributeAddressMatch, ConditionalAttributeServiceLocationState, ConditionalAttributeServiceLocationPostalCode, ConditionalAttributeCardAge, ConditionalAttributeAccountAge, ConditionalAttributeAmountZScore, ConditionalAttributeAvgTransactionAmount, ConditionalAttributeStdevTransactionAmount, ConditionalAttributeIsNewCountry, ConditionalAttributeIsNewMcc, ConditionalAttributeIsFirstTransaction, ConditionalAttributeConsecutiveDeclines, ConditionalAttributeTimeSinceLastTransaction, ConditionalAttributeDistinctCountryCount, ConditionalAttributeIsNewMerchant, ConditionalAttributeThreeDSSuccessRate, ConditionalAttributeTravelSpeed, ConditionalAttributeDistanceFromLastTransaction:
+	case ConditionalAttributeMcc, ConditionalAttributeCountry, ConditionalAttributeCurrency, ConditionalAttributeMerchantID, ConditionalAttributeDescriptor, ConditionalAttributeLiabilityShift, ConditionalAttributePanEntryMode, ConditionalAttributeTransactionAmount, ConditionalAttributeCashAmount, ConditionalAttributeRiskScore, ConditionalAttributeCardTransactionCount15M, ConditionalAttributeCardTransactionCount1H, ConditionalAttributeCardTransactionCount24H, ConditionalAttributeCardDeclineCount15M, ConditionalAttributeCardDeclineCount1H, ConditionalAttributeCardDeclineCount24H, ConditionalAttributeCardState, ConditionalAttributePinEntered, ConditionalAttributePinStatus, ConditionalAttributeWalletType, ConditionalAttributeTransactionInitiator, ConditionalAttributeAddressMatch, ConditionalAttributeServiceLocationState, ConditionalAttributeServiceLocationPostalCode, ConditionalAttributeCardAge, ConditionalAttributeIsDomestic, ConditionalAttributeAccountAge, ConditionalAttributeAmountZScore, ConditionalAttributeAvgTransactionAmount, ConditionalAttributeStdevTransactionAmount, ConditionalAttributeIsNewCountry, ConditionalAttributeIsNewMcc, ConditionalAttributeIsFirstTransaction, ConditionalAttributeConsecutiveDeclines, ConditionalAttributeTimeSinceLastTransaction, ConditionalAttributeDistinctCountryCount, ConditionalAttributeIsNewMerchant, ConditionalAttributeThreeDSSuccessRate, ConditionalAttributeTravelSpeed, ConditionalAttributeDistanceFromLastTransaction:
 		return true
 	}
 	return false
@@ -3234,6 +3244,9 @@ type ConditionalAuthorizationAdjustmentParametersCondition struct {
 	//     card acceptor postal code.
 	//   - `CARD_AGE`: The age of the card in seconds at the time of the authorization.
 	//     Use an integer value.
+	//   - `IS_DOMESTIC`: Whether the merchant's country matches the card program's
+	//     issuing country. Valid values are `TRUE`, `FALSE`. For programs with no
+	//     issuing country configured, this attribute does not evaluate.
 	//   - `ACCOUNT_AGE`: The age of the account holder's account in seconds at the time
 	//     of the authorization. Use an integer value. For programs where Lithic does not
 	//     manage or retain account holder data, this attribute does not evaluate.
@@ -3388,6 +3401,9 @@ func (r conditionalAuthorizationAdjustmentParametersConditionJSON) RawJSON() str
 //     card acceptor postal code.
 //   - `CARD_AGE`: The age of the card in seconds at the time of the authorization.
 //     Use an integer value.
+//   - `IS_DOMESTIC`: Whether the merchant's country matches the card program's
+//     issuing country. Valid values are `TRUE`, `FALSE`. For programs with no
+//     issuing country configured, this attribute does not evaluate.
 //   - `ACCOUNT_AGE`: The age of the account holder's account in seconds at the time
 //     of the authorization. Use an integer value. For programs where Lithic does not
 //     manage or retain account holder data, this attribute does not evaluate.
@@ -3465,6 +3481,7 @@ const (
 	ConditionalAuthorizationAdjustmentParametersConditionsAttributeServiceLocationState        ConditionalAuthorizationAdjustmentParametersConditionsAttribute = "SERVICE_LOCATION_STATE"
 	ConditionalAuthorizationAdjustmentParametersConditionsAttributeServiceLocationPostalCode   ConditionalAuthorizationAdjustmentParametersConditionsAttribute = "SERVICE_LOCATION_POSTAL_CODE"
 	ConditionalAuthorizationAdjustmentParametersConditionsAttributeCardAge                     ConditionalAuthorizationAdjustmentParametersConditionsAttribute = "CARD_AGE"
+	ConditionalAuthorizationAdjustmentParametersConditionsAttributeIsDomestic                  ConditionalAuthorizationAdjustmentParametersConditionsAttribute = "IS_DOMESTIC"
 	ConditionalAuthorizationAdjustmentParametersConditionsAttributeAccountAge                  ConditionalAuthorizationAdjustmentParametersConditionsAttribute = "ACCOUNT_AGE"
 	ConditionalAuthorizationAdjustmentParametersConditionsAttributeAmountZScore                ConditionalAuthorizationAdjustmentParametersConditionsAttribute = "AMOUNT_Z_SCORE"
 	ConditionalAuthorizationAdjustmentParametersConditionsAttributeAvgTransactionAmount        ConditionalAuthorizationAdjustmentParametersConditionsAttribute = "AVG_TRANSACTION_AMOUNT"
@@ -3483,7 +3500,7 @@ const (
 
 func (r ConditionalAuthorizationAdjustmentParametersConditionsAttribute) IsKnown() bool {
 	switch r {
-	case ConditionalAuthorizationAdjustmentParametersConditionsAttributeMcc, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCountry, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCurrency, ConditionalAuthorizationAdjustmentParametersConditionsAttributeMerchantID, ConditionalAuthorizationAdjustmentParametersConditionsAttributeDescriptor, ConditionalAuthorizationAdjustmentParametersConditionsAttributeLiabilityShift, ConditionalAuthorizationAdjustmentParametersConditionsAttributePanEntryMode, ConditionalAuthorizationAdjustmentParametersConditionsAttributeTransactionAmount, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCashAmount, ConditionalAuthorizationAdjustmentParametersConditionsAttributeRiskScore, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCardTransactionCount15M, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCardTransactionCount1H, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCardTransactionCount24H, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCardDeclineCount15M, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCardDeclineCount1H, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCardDeclineCount24H, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCardState, ConditionalAuthorizationAdjustmentParametersConditionsAttributePinEntered, ConditionalAuthorizationAdjustmentParametersConditionsAttributePinStatus, ConditionalAuthorizationAdjustmentParametersConditionsAttributeWalletType, ConditionalAuthorizationAdjustmentParametersConditionsAttributeTransactionInitiator, ConditionalAuthorizationAdjustmentParametersConditionsAttributeAddressMatch, ConditionalAuthorizationAdjustmentParametersConditionsAttributeServiceLocationState, ConditionalAuthorizationAdjustmentParametersConditionsAttributeServiceLocationPostalCode, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCardAge, ConditionalAuthorizationAdjustmentParametersConditionsAttributeAccountAge, ConditionalAuthorizationAdjustmentParametersConditionsAttributeAmountZScore, ConditionalAuthorizationAdjustmentParametersConditionsAttributeAvgTransactionAmount, ConditionalAuthorizationAdjustmentParametersConditionsAttributeStdevTransactionAmount, ConditionalAuthorizationAdjustmentParametersConditionsAttributeIsNewCountry, ConditionalAuthorizationAdjustmentParametersConditionsAttributeIsNewMcc, ConditionalAuthorizationAdjustmentParametersConditionsAttributeIsFirstTransaction, ConditionalAuthorizationAdjustmentParametersConditionsAttributeConsecutiveDeclines, ConditionalAuthorizationAdjustmentParametersConditionsAttributeTimeSinceLastTransaction, ConditionalAuthorizationAdjustmentParametersConditionsAttributeDistinctCountryCount, ConditionalAuthorizationAdjustmentParametersConditionsAttributeIsNewMerchant, ConditionalAuthorizationAdjustmentParametersConditionsAttributeThreeDSSuccessRate, ConditionalAuthorizationAdjustmentParametersConditionsAttributeTravelSpeed, ConditionalAuthorizationAdjustmentParametersConditionsAttributeDistanceFromLastTransaction:
+	case ConditionalAuthorizationAdjustmentParametersConditionsAttributeMcc, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCountry, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCurrency, ConditionalAuthorizationAdjustmentParametersConditionsAttributeMerchantID, ConditionalAuthorizationAdjustmentParametersConditionsAttributeDescriptor, ConditionalAuthorizationAdjustmentParametersConditionsAttributeLiabilityShift, ConditionalAuthorizationAdjustmentParametersConditionsAttributePanEntryMode, ConditionalAuthorizationAdjustmentParametersConditionsAttributeTransactionAmount, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCashAmount, ConditionalAuthorizationAdjustmentParametersConditionsAttributeRiskScore, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCardTransactionCount15M, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCardTransactionCount1H, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCardTransactionCount24H, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCardDeclineCount15M, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCardDeclineCount1H, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCardDeclineCount24H, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCardState, ConditionalAuthorizationAdjustmentParametersConditionsAttributePinEntered, ConditionalAuthorizationAdjustmentParametersConditionsAttributePinStatus, ConditionalAuthorizationAdjustmentParametersConditionsAttributeWalletType, ConditionalAuthorizationAdjustmentParametersConditionsAttributeTransactionInitiator, ConditionalAuthorizationAdjustmentParametersConditionsAttributeAddressMatch, ConditionalAuthorizationAdjustmentParametersConditionsAttributeServiceLocationState, ConditionalAuthorizationAdjustmentParametersConditionsAttributeServiceLocationPostalCode, ConditionalAuthorizationAdjustmentParametersConditionsAttributeCardAge, ConditionalAuthorizationAdjustmentParametersConditionsAttributeIsDomestic, ConditionalAuthorizationAdjustmentParametersConditionsAttributeAccountAge, ConditionalAuthorizationAdjustmentParametersConditionsAttributeAmountZScore, ConditionalAuthorizationAdjustmentParametersConditionsAttributeAvgTransactionAmount, ConditionalAuthorizationAdjustmentParametersConditionsAttributeStdevTransactionAmount, ConditionalAuthorizationAdjustmentParametersConditionsAttributeIsNewCountry, ConditionalAuthorizationAdjustmentParametersConditionsAttributeIsNewMcc, ConditionalAuthorizationAdjustmentParametersConditionsAttributeIsFirstTransaction, ConditionalAuthorizationAdjustmentParametersConditionsAttributeConsecutiveDeclines, ConditionalAuthorizationAdjustmentParametersConditionsAttributeTimeSinceLastTransaction, ConditionalAuthorizationAdjustmentParametersConditionsAttributeDistinctCountryCount, ConditionalAuthorizationAdjustmentParametersConditionsAttributeIsNewMerchant, ConditionalAuthorizationAdjustmentParametersConditionsAttributeThreeDSSuccessRate, ConditionalAuthorizationAdjustmentParametersConditionsAttributeTravelSpeed, ConditionalAuthorizationAdjustmentParametersConditionsAttributeDistanceFromLastTransaction:
 		return true
 	}
 	return false
