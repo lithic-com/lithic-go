@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.119.0](https://github.com/lithic-com/lithic-go/compare/v0.118.0...v0.119.0) (2026-10-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* **api:** the CONDITIONAL_BLOCK rule type and the ConditionalBlockParameters model are removed. All rules are now CONDITIONAL_ACTION.
+
+### Features
+
+* **api:** accept billing_currency and settlement_currency on transaction simulation endpoints ([852b46b](https://github.com/lithic-com/lithic-go/commit/852b46bbfc998cc5d76791454d23671d2f3b72c9))
+* **api:** add installment plan statement endpoints to financial accounts ([1a4ccff](https://github.com/lithic-com/lithic-go/commit/1a4ccff29b86687353f33425d156b4d8ba3239f3))
+* **api:** add payment-only allocation breakdown to the loan tape ([c57f684](https://github.com/lithic-com/lithic-go/commit/c57f684f0a7fb9002034328ec33523b40ed4d23e))
+* **api:** expose the full conditional attribute set for authorization rules ([42fab2c](https://github.com/lithic-com/lithic-go/commit/42fab2c56179d56630022c406169021510fc98c3))
+* **api:** remove CONDITIONAL_BLOCK from authorization rules ([1638473](https://github.com/lithic-com/lithic-go/commit/1638473822e5cf0768bb9a40dd7f438de3e61b1f))
+* **api:** support international addresses and address2 for KYB_DELEGATED and KYC_EXEMPT workflows ([683d3ee](https://github.com/lithic-com/lithic-go/commit/683d3ee624cc2e300e8e7da0ab7f32a9c9419972))
+
 ## 0.118.0 (2026-09-18)
 
 Full Changelog: [v0.117.0...v0.118.0](https://github.com/lithic-com/lithic-go/compare/v0.117.0...v0.118.0)
