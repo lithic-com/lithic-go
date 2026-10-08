@@ -62,7 +62,10 @@ func TestCardNewWithOptionalParams(t *testing.T) {
 		SpendLimit:         lithic.F(int64(1000)),
 		SpendLimitDuration: lithic.F(lithic.SpendLimitDurationTransaction),
 		State:              lithic.F(lithic.CardNewParamsStateOpen),
-		IdempotencyKey:     lithic.F("65a9dad4-1b60-4686-83fd-65b25078a4b4"),
+		Tags: lithic.F(map[string]string{
+			"risk-level": "high",
+		}),
+		IdempotencyKey: lithic.F("65a9dad4-1b60-4686-83fd-65b25078a4b4"),
 	})
 	if err != nil {
 		var apierr *lithic.Error
@@ -121,6 +124,9 @@ func TestCardUpdateWithOptionalParams(t *testing.T) {
 			SpendLimitDuration:  lithic.F(lithic.SpendLimitDurationForever),
 			State:               lithic.F(lithic.CardUpdateParamsStateOpen),
 			Substatus:           lithic.F(lithic.CardUpdateParamsSubstatusLost),
+			Tags: lithic.F(map[string]string{
+				"risk-level": "high",
+			}),
 		},
 	)
 	if err != nil {

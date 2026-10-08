@@ -232,7 +232,8 @@ type Payment struct {
 	// External bank account token
 	ExternalBankAccountToken string `json:"external_bank_account_token" api:"nullable" format:"uuid"`
 	// Key-value pairs for tagging resources. Tags allow you to associate arbitrary
-	// metadata with a resource for your own purposes.
+	// metadata with a resource for your own purposes. A resource can have at most 50
+	// tags, with keys up to 40 characters and values up to 500 characters
 	Tags map[string]string `json:"tags"`
 	Type PaymentType       `json:"type"`
 	// User-defined identifier

@@ -579,6 +579,10 @@ type NonPCICard struct {
 	// In sandbox, the same daily batch fulfillment occurs, but no cards are actually
 	// manufactured.
 	State NonPCICardState `json:"state" api:"required"`
+	// Key-value pairs for tagging resources. Tags allow you to associate arbitrary
+	// metadata with a resource for your own purposes. A resource can have at most 50
+	// tags, with keys up to 40 characters and values up to 500 characters
+	Tags map[string]string `json:"tags" api:"required"`
 	// Card types: _ `VIRTUAL` - Card will authorize at any merchant and can be added
 	// to a digital wallet like Apple Pay or Google Pay (if the card program is digital
 	// wallet-enabled). _ `PHYSICAL` - Manufactured and sent to the cardholder. We
@@ -666,6 +670,7 @@ type nonPCICardJSON struct {
 	SpendLimit          apijson.Field
 	SpendLimitDuration  apijson.Field
 	State               apijson.Field
+	Tags                apijson.Field
 	Type                apijson.Field
 	AuthRuleTokens      apijson.Field
 	BulkOrderToken      apijson.Field
@@ -1337,8 +1342,12 @@ type CardNewParams struct {
 	//     parameters).
 	//   - `PAUSED` - Card will decline authorizations, but can be resumed at a later
 	//     time.
-	State          param.Field[CardNewParamsState] `json:"state"`
-	IdempotencyKey param.Field[string]             `header:"Idempotency-Key" format:"uuid"`
+	State param.Field[CardNewParamsState] `json:"state"`
+	// Key-value pairs to tag the card with. A replacement card does not inherit tags
+	// from the card it replaces. A card can have at most 50 tags, with keys up to 40
+	// characters and values up to 500 characters
+	Tags           param.Field[map[string]string] `json:"tags"`
+	IdempotencyKey param.Field[string]            `header:"Idempotency-Key" format:"uuid"`
 }
 
 func (r CardNewParams) MarshalJSON() (data []byte, err error) {
@@ -1564,6 +1573,11 @@ type CardUpdateParams struct {
 	//   - `OTHER` - The reason for the status does not fall into any of the above
 	//     categories. A comment should be provided to specify the reason.
 	Substatus param.Field[CardUpdateParamsSubstatus] `json:"substatus"`
+	// Key-value pairs to merge into the card's tags. Supplied keys are added or
+	// overwritten, a key with a `null` value is removed, and omitted keys remain
+	// unchanged. A card can have at most 50 tags, with keys up to 40 characters and
+	// values up to 500 characters
+	Tags param.Field[map[string]string] `json:"tags"`
 }
 
 func (r CardUpdateParams) MarshalJSON() (data []byte, err error) {
