@@ -429,8 +429,12 @@ type CardAuthorizationCard struct {
 	// after the current calendar date one month prior.
 	SpendLimitDuration CardAuthorizationCardSpendLimitDuration `json:"spend_limit_duration" api:"required"`
 	State              CardAuthorizationCardState              `json:"state" api:"required"`
-	Type               CardAuthorizationCardType               `json:"type" api:"required"`
-	JSON               cardAuthorizationCardJSON               `json:"-"`
+	// Key-value pairs for tagging resources. Tags allow you to associate arbitrary
+	// metadata with a resource for your own purposes. A resource can have at most 50
+	// tags, with keys up to 40 characters and values up to 500 characters
+	Tags map[string]string         `json:"tags" api:"required"`
+	Type CardAuthorizationCardType `json:"type" api:"required"`
+	JSON cardAuthorizationCardJSON `json:"-"`
 }
 
 // cardAuthorizationCardJSON contains the JSON metadata for the struct
@@ -442,6 +446,7 @@ type cardAuthorizationCardJSON struct {
 	SpendLimit         apijson.Field
 	SpendLimitDuration apijson.Field
 	State              apijson.Field
+	Tags               apijson.Field
 	Type               apijson.Field
 	raw                string
 	ExtraFields        map[string]apijson.Field
