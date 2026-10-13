@@ -65,9 +65,9 @@ func (r *AuthRuleV2Service) Get(ctx context.Context, authRuleToken string, opts 
 
 // Updates a V2 Auth rule's properties
 //
-// If `account_tokens`, `card_tokens`, `program_level`, `excluded_card_tokens`,
-// `excluded_account_tokens`, or `excluded_business_account_tokens` is provided,
-// this will replace existing associations with the provided list of entities.
+// If `entities` is provided, this will replace the rule's existing entities with
+// the provided `include` and `exclude` lists. To change entities incrementally,
+// use `PATCH /v2/auth_rules/{auth_rule_token}/entities` instead.
 func (r *AuthRuleV2Service) Update(ctx context.Context, authRuleToken string, body AuthRuleV2UpdateParams, opts ...option.RequestOption) (res *AuthRule, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if authRuleToken == "" {
@@ -232,6 +232,22 @@ func (r *AuthRuleV2Service) GetReport(ctx context.Context, authRuleToken string,
 	}
 	path := fmt.Sprintf("v2/auth_rules/%s/report", authRuleToken)
 	err = requestconfig.ExecuteNewRequest(ctx, http.MethodGet, path, query, &res, opts...)
+	return res, err
+}
+
+// Adds entities to and removes entities from a V2 Auth rule's `include` and
+// `exclude` lists
+//
+// To replace all of the rule's entities at once, provide `entities` to
+// `PATCH /v2/auth_rules/{auth_rule_token}` instead.
+func (r *AuthRuleV2Service) UpdateEntities(ctx context.Context, authRuleToken string, body AuthRuleV2UpdateEntitiesParams, opts ...option.RequestOption) (res *AuthRule, err error) {
+	opts = slices.Concat(r.Options, opts)
+	if authRuleToken == "" {
+		err = errors.New("missing required auth_rule_token parameter")
+		return nil, err
+	}
+	path := fmt.Sprintf("v2/auth_rules/%s/entities", authRuleToken)
+	err = requestconfig.ExecuteNewRequest(ctx, http.MethodPatch, path, body, &res, opts...)
 	return res, err
 }
 
@@ -501,14 +517,30 @@ func (r ACHPaymentUpdateActionCreateCaseActionParam) implementsACHPaymentUpdateA
 type AuthRule struct {
 	// Auth Rule Token
 	Token string `json:"token" api:"required" format:"uuid"`
+	// Deprecated: Use `entities.include` with `ACCOUNT` entities instead.
+	//
 	// Account tokens to which the Auth Rule applies.
+	//
+	// Deprecated: deprecated
 	AccountTokens []string `json:"account_tokens" api:"required" format:"uuid"`
+	// Deprecated: Use `entities.include` with `BUSINESS_ACCOUNT` entities instead.
+	//
 	// Business Account tokens to which the Auth Rule applies.
+	//
+	// Deprecated: deprecated
 	BusinessAccountTokens []string `json:"business_account_tokens" api:"required" format:"uuid"`
-	// Card tokens to which the Auth Rule applies.
+	// Deprecated: Use `entities.include` with `CARD` entities instead.
+	//
+	// Card tokens to which the Auth Rule applies. Cards the rule applies to through a
+	// `CARD_TAG` entity are not listed.
+	//
+	// Deprecated: deprecated
 	CardTokens     []string               `json:"card_tokens" api:"required" format:"uuid"`
 	CurrentVersion AuthRuleCurrentVersion `json:"current_version" api:"required,nullable"`
 	DraftVersion   AuthRuleDraftVersion   `json:"draft_version" api:"required,nullable"`
+	// The entities the Auth Rule applies to (`include`) and does not apply to
+	// (`exclude`). An exclusion overrides an inclusion.
+	Entities AuthRuleEntitiesResponse `json:"entities" api:"required"`
 	// The event stream during which the rule will be evaluated.
 	EventStream EventStream `json:"event_stream" api:"required"`
 	// Indicates whether this auth rule is managed by Lithic. If true, the rule cannot
@@ -516,7 +548,11 @@ type AuthRule struct {
 	LithicManaged bool `json:"lithic_managed" api:"required"`
 	// Auth Rule Name
 	Name string `json:"name" api:"required,nullable"`
+	// Deprecated: Use `entities.include` with a `PROGRAM` entity instead.
+	//
 	// Whether the Auth Rule applies to all authorizations on the card program.
+	//
+	// Deprecated: deprecated
 	ProgramLevel bool `json:"program_level" api:"required"`
 	// The state of the Auth Rule
 	State AuthRuleState `json:"state" api:"required"`
@@ -536,11 +572,24 @@ type AuthRule struct {
 	//   - `OTHER`: A rule whose type is not exposed through this API. Rules of this type
 	//     are read-only; `OTHER` cannot be used when creating a rule.
 	Type AuthRuleType `json:"type" api:"required"`
+	// Deprecated: Use `entities.exclude` with `ACCOUNT` entities instead.
+	//
 	// Account tokens to which the Auth Rule does not apply.
+	//
+	// Deprecated: deprecated
 	ExcludedAccountTokens []string `json:"excluded_account_tokens" format:"uuid"`
+	// Deprecated: Use `entities.exclude` with `BUSINESS_ACCOUNT` entities instead.
+	//
 	// Business account tokens to which the Auth Rule does not apply.
+	//
+	// Deprecated: deprecated
 	ExcludedBusinessAccountTokens []string `json:"excluded_business_account_tokens" format:"uuid"`
-	// Card tokens to which the Auth Rule does not apply.
+	// Deprecated: Use `entities.exclude` with `CARD` entities instead.
+	//
+	// Card tokens to which the Auth Rule does not apply. Cards excluded through a
+	// `CARD_TAG` entity are not listed.
+	//
+	// Deprecated: deprecated
 	ExcludedCardTokens []string     `json:"excluded_card_tokens" format:"uuid"`
 	JSON               authRuleJSON `json:"-"`
 }
@@ -553,6 +602,7 @@ type authRuleJSON struct {
 	CardTokens                    apijson.Field
 	CurrentVersion                apijson.Field
 	DraftVersion                  apijson.Field
+	Entities                      apijson.Field
 	EventStream                   apijson.Field
 	LithicManaged                 apijson.Field
 	Name                          apijson.Field
@@ -1499,6 +1549,516 @@ type AuthRuleConditionParametersParam struct {
 func (r AuthRuleConditionParametersParam) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r)
 }
+
+// The entities an Auth Rule applies to (`include`) and does not apply to
+// (`exclude`). An exclusion overrides an inclusion, so a card excluded here is
+// skipped even when the program, its account or one of its tags is included.
+//
+// The rule's resulting entities must satisfy these constraints after any write:
+//
+//   - `include` must contain at least one entity.
+//   - If `PROGRAM` is included, it must be the only included entity.
+//   - `PROGRAM` cannot be excluded.
+//   - An entity cannot appear in both `include` and `exclude`, or twice in the same
+//     list.
+//   - A rule can have at most 1,000 entities across `include` and `exclude`, not
+//     counting `PROGRAM`.
+//   - Entity types must be valid for the rule's event stream.
+//   - `CARD`, `ACCOUNT` and `BUSINESS_ACCOUNT` tokens must belong to your program.
+type AuthRuleEntitiesParam struct {
+	// Entities the Auth Rule does not apply to. Defaults to an empty list in requests.
+	Exclude param.Field[[]AuthRuleEntityUnionParam] `json:"exclude"`
+	// Entities the Auth Rule applies to. Defaults to an empty list in requests.
+	Include param.Field[[]AuthRuleEntityUnionParam] `json:"include"`
+}
+
+func (r AuthRuleEntitiesParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+// The entities the Auth Rule applies to (`include`) and does not apply to
+// (`exclude`). An exclusion overrides an inclusion.
+type AuthRuleEntitiesResponse struct {
+	// Entities the Auth Rule does not apply to
+	Exclude []AuthRuleEntity `json:"exclude" api:"required"`
+	// Entities the Auth Rule applies to
+	Include []AuthRuleEntity             `json:"include" api:"required"`
+	JSON    authRuleEntitiesResponseJSON `json:"-"`
+}
+
+// authRuleEntitiesResponseJSON contains the JSON metadata for the struct
+// [AuthRuleEntitiesResponse]
+type authRuleEntitiesResponseJSON struct {
+	Exclude     apijson.Field
+	Include     apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleEntitiesResponse) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleEntitiesResponseJSON) RawJSON() string {
+	return r.raw
+}
+
+// An entity that an Auth Rule can apply to. The `type` field determines which
+// other fields are present.
+//
+// - `PROGRAM`: the entire card program.
+// - `CARD`: a single card.
+// - `ACCOUNT`: a single account.
+// - `BUSINESS_ACCOUNT`: a single business account.
+// - `CARD_TAG`: every card that carries the given tag (`key` and `value`).
+//
+// `CARD` and `CARD_TAG` entities can only be used with rules on the
+// `AUTHORIZATION`, `THREE_DS_AUTHENTICATION`, `TOKENIZATION` and
+// `CARD_TRANSACTION_UPDATE` event streams. Rules on the other event streams accept
+// `PROGRAM`, `ACCOUNT` and `BUSINESS_ACCOUNT` only.
+type AuthRuleEntity struct {
+	Type AuthRuleEntityType `json:"type" api:"required"`
+	// Token of the card
+	Token string `json:"token" format:"uuid"`
+	// Tag key. Keys starting with `lithic.` (case-insensitive) are reserved and
+	// rejected.
+	Key string `json:"key"`
+	// Tag value
+	Value string             `json:"value"`
+	JSON  authRuleEntityJSON `json:"-"`
+	union AuthRuleEntityUnion
+}
+
+// authRuleEntityJSON contains the JSON metadata for the struct [AuthRuleEntity]
+type authRuleEntityJSON struct {
+	Type        apijson.Field
+	Token       apijson.Field
+	Key         apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r authRuleEntityJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r *AuthRuleEntity) UnmarshalJSON(data []byte) (err error) {
+	*r = AuthRuleEntity{}
+	err = apijson.UnmarshalRoot(data, &r.union)
+	if err != nil {
+		return err
+	}
+	return apijson.Port(r.union, &r)
+}
+
+// AsUnion returns a [AuthRuleEntityUnion] interface which you can cast to the
+// specific types for more type safety.
+//
+// Possible runtime types of the union are [AuthRuleEntityAuthRuleProgramEntity],
+// [AuthRuleEntityAuthRuleCardEntity], [AuthRuleEntityAuthRuleAccountEntity],
+// [AuthRuleEntityAuthRuleBusinessAccountEntity],
+// [AuthRuleEntityAuthRuleCardTagEntity].
+func (r AuthRuleEntity) AsUnion() AuthRuleEntityUnion {
+	return r.union
+}
+
+// An entity that an Auth Rule can apply to. The `type` field determines which
+// other fields are present.
+//
+// - `PROGRAM`: the entire card program.
+// - `CARD`: a single card.
+// - `ACCOUNT`: a single account.
+// - `BUSINESS_ACCOUNT`: a single business account.
+// - `CARD_TAG`: every card that carries the given tag (`key` and `value`).
+//
+// `CARD` and `CARD_TAG` entities can only be used with rules on the
+// `AUTHORIZATION`, `THREE_DS_AUTHENTICATION`, `TOKENIZATION` and
+// `CARD_TRANSACTION_UPDATE` event streams. Rules on the other event streams accept
+// `PROGRAM`, `ACCOUNT` and `BUSINESS_ACCOUNT` only.
+//
+// Union satisfied by [AuthRuleEntityAuthRuleProgramEntity],
+// [AuthRuleEntityAuthRuleCardEntity], [AuthRuleEntityAuthRuleAccountEntity],
+// [AuthRuleEntityAuthRuleBusinessAccountEntity] or
+// [AuthRuleEntityAuthRuleCardTagEntity].
+type AuthRuleEntityUnion interface {
+	implementsAuthRuleEntity()
+}
+
+func init() {
+	apijson.RegisterUnion(
+		reflect.TypeOf((*AuthRuleEntityUnion)(nil)).Elem(),
+		"type",
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AuthRuleEntityAuthRuleProgramEntity{}),
+			DiscriminatorValue: "PROGRAM",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AuthRuleEntityAuthRuleCardEntity{}),
+			DiscriminatorValue: "CARD",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AuthRuleEntityAuthRuleAccountEntity{}),
+			DiscriminatorValue: "ACCOUNT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AuthRuleEntityAuthRuleBusinessAccountEntity{}),
+			DiscriminatorValue: "BUSINESS_ACCOUNT",
+		},
+		apijson.UnionVariant{
+			TypeFilter:         gjson.JSON,
+			Type:               reflect.TypeOf(AuthRuleEntityAuthRuleCardTagEntity{}),
+			DiscriminatorValue: "CARD_TAG",
+		},
+	)
+}
+
+// The entire card program. Takes no other fields.
+type AuthRuleEntityAuthRuleProgramEntity struct {
+	Type AuthRuleEntityAuthRuleProgramEntityType `json:"type" api:"required"`
+	JSON authRuleEntityAuthRuleProgramEntityJSON `json:"-"`
+}
+
+// authRuleEntityAuthRuleProgramEntityJSON contains the JSON metadata for the
+// struct [AuthRuleEntityAuthRuleProgramEntity]
+type authRuleEntityAuthRuleProgramEntityJSON struct {
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleEntityAuthRuleProgramEntity) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleEntityAuthRuleProgramEntityJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleEntityAuthRuleProgramEntity) implementsAuthRuleEntity() {}
+
+type AuthRuleEntityAuthRuleProgramEntityType string
+
+const (
+	AuthRuleEntityAuthRuleProgramEntityTypeProgram AuthRuleEntityAuthRuleProgramEntityType = "PROGRAM"
+)
+
+func (r AuthRuleEntityAuthRuleProgramEntityType) IsKnown() bool {
+	switch r {
+	case AuthRuleEntityAuthRuleProgramEntityTypeProgram:
+		return true
+	}
+	return false
+}
+
+// A single card.
+type AuthRuleEntityAuthRuleCardEntity struct {
+	// Token of the card
+	Token string                               `json:"token" api:"required" format:"uuid"`
+	Type  AuthRuleEntityAuthRuleCardEntityType `json:"type" api:"required"`
+	JSON  authRuleEntityAuthRuleCardEntityJSON `json:"-"`
+}
+
+// authRuleEntityAuthRuleCardEntityJSON contains the JSON metadata for the struct
+// [AuthRuleEntityAuthRuleCardEntity]
+type authRuleEntityAuthRuleCardEntityJSON struct {
+	Token       apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleEntityAuthRuleCardEntity) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleEntityAuthRuleCardEntityJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleEntityAuthRuleCardEntity) implementsAuthRuleEntity() {}
+
+type AuthRuleEntityAuthRuleCardEntityType string
+
+const (
+	AuthRuleEntityAuthRuleCardEntityTypeCard AuthRuleEntityAuthRuleCardEntityType = "CARD"
+)
+
+func (r AuthRuleEntityAuthRuleCardEntityType) IsKnown() bool {
+	switch r {
+	case AuthRuleEntityAuthRuleCardEntityTypeCard:
+		return true
+	}
+	return false
+}
+
+// A single account.
+type AuthRuleEntityAuthRuleAccountEntity struct {
+	// Token of the account
+	Token string                                  `json:"token" api:"required" format:"uuid"`
+	Type  AuthRuleEntityAuthRuleAccountEntityType `json:"type" api:"required"`
+	JSON  authRuleEntityAuthRuleAccountEntityJSON `json:"-"`
+}
+
+// authRuleEntityAuthRuleAccountEntityJSON contains the JSON metadata for the
+// struct [AuthRuleEntityAuthRuleAccountEntity]
+type authRuleEntityAuthRuleAccountEntityJSON struct {
+	Token       apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleEntityAuthRuleAccountEntity) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleEntityAuthRuleAccountEntityJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleEntityAuthRuleAccountEntity) implementsAuthRuleEntity() {}
+
+type AuthRuleEntityAuthRuleAccountEntityType string
+
+const (
+	AuthRuleEntityAuthRuleAccountEntityTypeAccount AuthRuleEntityAuthRuleAccountEntityType = "ACCOUNT"
+)
+
+func (r AuthRuleEntityAuthRuleAccountEntityType) IsKnown() bool {
+	switch r {
+	case AuthRuleEntityAuthRuleAccountEntityTypeAccount:
+		return true
+	}
+	return false
+}
+
+// A single business account.
+type AuthRuleEntityAuthRuleBusinessAccountEntity struct {
+	// Token of the business account
+	Token string                                          `json:"token" api:"required" format:"uuid"`
+	Type  AuthRuleEntityAuthRuleBusinessAccountEntityType `json:"type" api:"required"`
+	JSON  authRuleEntityAuthRuleBusinessAccountEntityJSON `json:"-"`
+}
+
+// authRuleEntityAuthRuleBusinessAccountEntityJSON contains the JSON metadata for
+// the struct [AuthRuleEntityAuthRuleBusinessAccountEntity]
+type authRuleEntityAuthRuleBusinessAccountEntityJSON struct {
+	Token       apijson.Field
+	Type        apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleEntityAuthRuleBusinessAccountEntity) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleEntityAuthRuleBusinessAccountEntityJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleEntityAuthRuleBusinessAccountEntity) implementsAuthRuleEntity() {}
+
+type AuthRuleEntityAuthRuleBusinessAccountEntityType string
+
+const (
+	AuthRuleEntityAuthRuleBusinessAccountEntityTypeBusinessAccount AuthRuleEntityAuthRuleBusinessAccountEntityType = "BUSINESS_ACCOUNT"
+)
+
+func (r AuthRuleEntityAuthRuleBusinessAccountEntityType) IsKnown() bool {
+	switch r {
+	case AuthRuleEntityAuthRuleBusinessAccountEntityTypeBusinessAccount:
+		return true
+	}
+	return false
+}
+
+// Every card whose `tags` contain `key` set to `value`.
+type AuthRuleEntityAuthRuleCardTagEntity struct {
+	// Tag key. Keys starting with `lithic.` (case-insensitive) are reserved and
+	// rejected.
+	Key  string                                  `json:"key" api:"required"`
+	Type AuthRuleEntityAuthRuleCardTagEntityType `json:"type" api:"required"`
+	// Tag value
+	Value string                                  `json:"value" api:"required"`
+	JSON  authRuleEntityAuthRuleCardTagEntityJSON `json:"-"`
+}
+
+// authRuleEntityAuthRuleCardTagEntityJSON contains the JSON metadata for the
+// struct [AuthRuleEntityAuthRuleCardTagEntity]
+type authRuleEntityAuthRuleCardTagEntityJSON struct {
+	Key         apijson.Field
+	Type        apijson.Field
+	Value       apijson.Field
+	raw         string
+	ExtraFields map[string]apijson.Field
+}
+
+func (r *AuthRuleEntityAuthRuleCardTagEntity) UnmarshalJSON(data []byte) (err error) {
+	return apijson.UnmarshalRoot(data, r)
+}
+
+func (r authRuleEntityAuthRuleCardTagEntityJSON) RawJSON() string {
+	return r.raw
+}
+
+func (r AuthRuleEntityAuthRuleCardTagEntity) implementsAuthRuleEntity() {}
+
+type AuthRuleEntityAuthRuleCardTagEntityType string
+
+const (
+	AuthRuleEntityAuthRuleCardTagEntityTypeCardTag AuthRuleEntityAuthRuleCardTagEntityType = "CARD_TAG"
+)
+
+func (r AuthRuleEntityAuthRuleCardTagEntityType) IsKnown() bool {
+	switch r {
+	case AuthRuleEntityAuthRuleCardTagEntityTypeCardTag:
+		return true
+	}
+	return false
+}
+
+type AuthRuleEntityType string
+
+const (
+	AuthRuleEntityTypeProgram         AuthRuleEntityType = "PROGRAM"
+	AuthRuleEntityTypeCard            AuthRuleEntityType = "CARD"
+	AuthRuleEntityTypeAccount         AuthRuleEntityType = "ACCOUNT"
+	AuthRuleEntityTypeBusinessAccount AuthRuleEntityType = "BUSINESS_ACCOUNT"
+	AuthRuleEntityTypeCardTag         AuthRuleEntityType = "CARD_TAG"
+)
+
+func (r AuthRuleEntityType) IsKnown() bool {
+	switch r {
+	case AuthRuleEntityTypeProgram, AuthRuleEntityTypeCard, AuthRuleEntityTypeAccount, AuthRuleEntityTypeBusinessAccount, AuthRuleEntityTypeCardTag:
+		return true
+	}
+	return false
+}
+
+// An entity that an Auth Rule can apply to. The `type` field determines which
+// other fields are present.
+//
+// - `PROGRAM`: the entire card program.
+// - `CARD`: a single card.
+// - `ACCOUNT`: a single account.
+// - `BUSINESS_ACCOUNT`: a single business account.
+// - `CARD_TAG`: every card that carries the given tag (`key` and `value`).
+//
+// `CARD` and `CARD_TAG` entities can only be used with rules on the
+// `AUTHORIZATION`, `THREE_DS_AUTHENTICATION`, `TOKENIZATION` and
+// `CARD_TRANSACTION_UPDATE` event streams. Rules on the other event streams accept
+// `PROGRAM`, `ACCOUNT` and `BUSINESS_ACCOUNT` only.
+type AuthRuleEntityParam struct {
+	Type param.Field[AuthRuleEntityType] `json:"type" api:"required"`
+	// Token of the card
+	Token param.Field[string] `json:"token" format:"uuid"`
+	// Tag key. Keys starting with `lithic.` (case-insensitive) are reserved and
+	// rejected.
+	Key param.Field[string] `json:"key"`
+	// Tag value
+	Value param.Field[string] `json:"value"`
+}
+
+func (r AuthRuleEntityParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleEntityParam) implementsAuthRuleEntityUnionParam() {}
+
+// An entity that an Auth Rule can apply to. The `type` field determines which
+// other fields are present.
+//
+// - `PROGRAM`: the entire card program.
+// - `CARD`: a single card.
+// - `ACCOUNT`: a single account.
+// - `BUSINESS_ACCOUNT`: a single business account.
+// - `CARD_TAG`: every card that carries the given tag (`key` and `value`).
+//
+// `CARD` and `CARD_TAG` entities can only be used with rules on the
+// `AUTHORIZATION`, `THREE_DS_AUTHENTICATION`, `TOKENIZATION` and
+// `CARD_TRANSACTION_UPDATE` event streams. Rules on the other event streams accept
+// `PROGRAM`, `ACCOUNT` and `BUSINESS_ACCOUNT` only.
+//
+// Satisfied by [AuthRuleEntityAuthRuleProgramEntityParam],
+// [AuthRuleEntityAuthRuleCardEntityParam],
+// [AuthRuleEntityAuthRuleAccountEntityParam],
+// [AuthRuleEntityAuthRuleBusinessAccountEntityParam],
+// [AuthRuleEntityAuthRuleCardTagEntityParam], [AuthRuleEntityParam].
+type AuthRuleEntityUnionParam interface {
+	implementsAuthRuleEntityUnionParam()
+}
+
+// The entire card program. Takes no other fields.
+type AuthRuleEntityAuthRuleProgramEntityParam struct {
+	Type param.Field[AuthRuleEntityAuthRuleProgramEntityType] `json:"type" api:"required"`
+}
+
+func (r AuthRuleEntityAuthRuleProgramEntityParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleEntityAuthRuleProgramEntityParam) implementsAuthRuleEntityUnionParam() {}
+
+// A single card.
+type AuthRuleEntityAuthRuleCardEntityParam struct {
+	// Token of the card
+	Token param.Field[string]                               `json:"token" api:"required" format:"uuid"`
+	Type  param.Field[AuthRuleEntityAuthRuleCardEntityType] `json:"type" api:"required"`
+}
+
+func (r AuthRuleEntityAuthRuleCardEntityParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleEntityAuthRuleCardEntityParam) implementsAuthRuleEntityUnionParam() {}
+
+// A single account.
+type AuthRuleEntityAuthRuleAccountEntityParam struct {
+	// Token of the account
+	Token param.Field[string]                                  `json:"token" api:"required" format:"uuid"`
+	Type  param.Field[AuthRuleEntityAuthRuleAccountEntityType] `json:"type" api:"required"`
+}
+
+func (r AuthRuleEntityAuthRuleAccountEntityParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleEntityAuthRuleAccountEntityParam) implementsAuthRuleEntityUnionParam() {}
+
+// A single business account.
+type AuthRuleEntityAuthRuleBusinessAccountEntityParam struct {
+	// Token of the business account
+	Token param.Field[string]                                          `json:"token" api:"required" format:"uuid"`
+	Type  param.Field[AuthRuleEntityAuthRuleBusinessAccountEntityType] `json:"type" api:"required"`
+}
+
+func (r AuthRuleEntityAuthRuleBusinessAccountEntityParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleEntityAuthRuleBusinessAccountEntityParam) implementsAuthRuleEntityUnionParam() {}
+
+// Every card whose `tags` contain `key` set to `value`.
+type AuthRuleEntityAuthRuleCardTagEntityParam struct {
+	// Tag key. Keys starting with `lithic.` (case-insensitive) are reserved and
+	// rejected.
+	Key  param.Field[string]                                  `json:"key" api:"required"`
+	Type param.Field[AuthRuleEntityAuthRuleCardTagEntityType] `json:"type" api:"required"`
+	// Tag value
+	Value param.Field[string] `json:"value" api:"required"`
+}
+
+func (r AuthRuleEntityAuthRuleCardTagEntityParam) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleEntityAuthRuleCardTagEntityParam) implementsAuthRuleEntityUnionParam() {}
 
 type AuthRuleVersion struct {
 	// Timestamp of when this version was created.
@@ -9854,6 +10414,7 @@ func (r authRuleV2GetReportResponseDailyStatisticJSON) RawJSON() string {
 }
 
 type AuthRuleV2NewParams struct {
+	// Deprecated: Use `entities` instead. Cannot be combined with `entities`.
 	Body AuthRuleV2NewParamsBodyUnion `json:"body" api:"required"`
 }
 
@@ -9861,6 +10422,7 @@ func (r AuthRuleV2NewParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r.Body)
 }
 
+// Deprecated: Use `entities` instead. Cannot be combined with `entities`.
 type AuthRuleV2NewParamsBody struct {
 	Parameters param.Field[interface{}] `json:"parameters" api:"required"`
 	// The type of Auth Rule. For certain rule types, this determines the event stream
@@ -9882,6 +10444,22 @@ type AuthRuleV2NewParamsBody struct {
 	AccountTokens         param.Field[interface{}]                 `json:"account_tokens"`
 	BusinessAccountTokens param.Field[interface{}]                 `json:"business_account_tokens"`
 	CardTokens            param.Field[interface{}]                 `json:"card_tokens"`
+	// The entities an Auth Rule applies to (`include`) and does not apply to
+	// (`exclude`). An exclusion overrides an inclusion, so a card excluded here is
+	// skipped even when the program, its account or one of its tags is included.
+	//
+	// The rule's resulting entities must satisfy these constraints after any write:
+	//
+	//   - `include` must contain at least one entity.
+	//   - If `PROGRAM` is included, it must be the only included entity.
+	//   - `PROGRAM` cannot be excluded.
+	//   - An entity cannot appear in both `include` and `exclude`, or twice in the same
+	//     list.
+	//   - A rule can have at most 1,000 entities across `include` and `exclude`, not
+	//     counting `PROGRAM`.
+	//   - Entity types must be valid for the rule's event stream.
+	//   - `CARD`, `ACCOUNT` and `BUSINESS_ACCOUNT` tokens must belong to your program.
+	Entities param.Field[AuthRuleEntitiesParam] `json:"entities"`
 	// The event stream during which the rule will be evaluated.
 	EventStream                   param.Field[EventStream] `json:"event_stream"`
 	ExcludedAccountTokens         param.Field[interface{}] `json:"excluded_account_tokens"`
@@ -9889,7 +10467,11 @@ type AuthRuleV2NewParamsBody struct {
 	ExcludedCardTokens            param.Field[interface{}] `json:"excluded_card_tokens"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
+	// Deprecated: Use `entities.include` with a `PROGRAM` entity instead.
+	//
 	// Whether the Auth Rule applies to all authorizations on the card program.
+	//
+	// Deprecated: deprecated
 	ProgramLevel param.Field[bool] `json:"program_level"`
 }
 
@@ -9899,13 +10481,173 @@ func (r AuthRuleV2NewParamsBody) MarshalJSON() (data []byte, err error) {
 
 func (r AuthRuleV2NewParamsBody) implementsAuthRuleV2NewParamsBodyUnion() {}
 
-// Satisfied by [AuthRuleV2NewParamsBodyAccountLevelRule],
+// Deprecated: Use `entities` instead. Cannot be combined with `entities`.
+//
+// Satisfied by [AuthRuleV2NewParamsBodyRule],
+// [AuthRuleV2NewParamsBodyAccountLevelRule],
 // [AuthRuleV2NewParamsBodyCardLevelRule],
 // [AuthRuleV2NewParamsBodyProgramLevelRule], [AuthRuleV2NewParamsBody].
 type AuthRuleV2NewParamsBodyUnion interface {
 	implementsAuthRuleV2NewParamsBodyUnion()
 }
 
+type AuthRuleV2NewParamsBodyRule struct {
+	// The entities an Auth Rule applies to (`include`) and does not apply to
+	// (`exclude`). An exclusion overrides an inclusion, so a card excluded here is
+	// skipped even when the program, its account or one of its tags is included.
+	//
+	// The rule's resulting entities must satisfy these constraints after any write:
+	//
+	//   - `include` must contain at least one entity.
+	//   - If `PROGRAM` is included, it must be the only included entity.
+	//   - `PROGRAM` cannot be excluded.
+	//   - An entity cannot appear in both `include` and `exclude`, or twice in the same
+	//     list.
+	//   - A rule can have at most 1,000 entities across `include` and `exclude`, not
+	//     counting `PROGRAM`.
+	//   - Entity types must be valid for the rule's event stream.
+	//   - `CARD`, `ACCOUNT` and `BUSINESS_ACCOUNT` tokens must belong to your program.
+	Entities param.Field[AuthRuleEntitiesParam] `json:"entities" api:"required"`
+	// Parameters for the Auth Rule
+	Parameters param.Field[AuthRuleV2NewParamsBodyRuleParametersUnion] `json:"parameters" api:"required"`
+	// The type of Auth Rule. For certain rule types, this determines the event stream
+	// during which it will be evaluated. For rules that can be applied to one of
+	// several event streams, the effective one is defined by the separate
+	// `event_stream` field.
+	//
+	//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+	//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+	//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+	//     ACH_PAYMENT_UPDATE event stream.
+	//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+	//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+	//     ACH_PAYMENT_UPDATE event stream.
+	//   - `OTHER`: A rule whose type is not exposed through this API. Rules of this type
+	//     are read-only; `OTHER` cannot be used when creating a rule.
+	Type param.Field[AuthRuleV2NewParamsBodyRuleType] `json:"type" api:"required"`
+	// The event stream during which the rule will be evaluated.
+	EventStream param.Field[EventStream] `json:"event_stream"`
+	// Auth Rule Name
+	Name param.Field[string] `json:"name"`
+}
+
+func (r AuthRuleV2NewParamsBodyRule) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleV2NewParamsBodyRule) implementsAuthRuleV2NewParamsBodyUnion() {}
+
+// Parameters for the Auth Rule
+type AuthRuleV2NewParamsBodyRuleParameters struct {
+	Action param.Field[interface{}] `json:"action"`
+	// The TypeScript source code of the rule. Must define a `rule()` function that
+	// accepts the declared features as positional arguments (in the same order as the
+	// `features` array) and returns an array of actions.
+	Code       param.Field[string]                    `json:"code"`
+	Conditions param.Field[interface{}]               `json:"conditions"`
+	Features   param.Field[interface{}]               `json:"features"`
+	Filters    param.Field[VelocityLimitFiltersParam] `json:"filters"`
+	// The maximum amount of spend velocity allowed in the period in minor units (the
+	// smallest unit of a currency, e.g. cents for USD). Transactions exceeding this
+	// limit will be declined.
+	LimitAmount param.Field[int64] `json:"limit_amount"`
+	// The maximum amount of cash spend velocity allowed in the period in minor units
+	// (the smallest unit of a currency, e.g. cents for USD). Cash spend covers ATM
+	// withdrawals, cash disbursements, and purchases with cashback. Transactions
+	// exceeding this limit will be declined.
+	LimitCashAmount param.Field[int64] `json:"limit_cash_amount"`
+	// The number of cash spend velocity impacting transactions may not exceed this
+	// limit in the period. Transactions exceeding this limit will be declined. A cash
+	// velocity impacting transaction is an ATM withdrawal, cash disbursement, or
+	// purchase with cashback that has been authorized, and optionally settled, or a
+	// force post (a transaction that settled without prior authorization).
+	LimitCashCount param.Field[int64] `json:"limit_cash_count"`
+	// The number of spend velocity impacting transactions may not exceed this limit in
+	// the period. Transactions exceeding this limit will be declined. A spend velocity
+	// impacting transaction is a transaction that has been authorized, and optionally
+	// settled, or a force post (a transaction that settled without prior
+	// authorization).
+	LimitCount param.Field[int64]       `json:"limit_count"`
+	Merchants  param.Field[interface{}] `json:"merchants"`
+	// Velocity over the current day since 00:00 / 12 AM in Eastern Time
+	Period param.Field[VelocityLimitPeriodUnionParam] `json:"period"`
+	// The scope the velocity is calculated for
+	Scope param.Field[AuthRuleV2NewParamsBodyRuleParametersScope] `json:"scope"`
+}
+
+func (r AuthRuleV2NewParamsBodyRuleParameters) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleV2NewParamsBodyRuleParameters) implementsAuthRuleV2NewParamsBodyRuleParametersUnion() {
+}
+
+// Parameters for the Auth Rule
+//
+// Satisfied by [VelocityLimitParams], [MerchantLockParameters],
+// [Conditional3DSActionParameters], [ConditionalAuthorizationActionParameters],
+// [ConditionalACHActionParameters], [ConditionalTokenizationActionParameters],
+// [ConditionalCardTransactionUpdateActionParameters],
+// [ConditionalACHPaymentUpdateActionParameters], [TypescriptCodeParameters],
+// [ConditionalAuthorizationAdjustmentParameters],
+// [AuthRuleV2NewParamsBodyRuleParameters].
+type AuthRuleV2NewParamsBodyRuleParametersUnion interface {
+	implementsAuthRuleV2NewParamsBodyRuleParametersUnion()
+}
+
+// The scope the velocity is calculated for
+type AuthRuleV2NewParamsBodyRuleParametersScope string
+
+const (
+	AuthRuleV2NewParamsBodyRuleParametersScopeCard    AuthRuleV2NewParamsBodyRuleParametersScope = "CARD"
+	AuthRuleV2NewParamsBodyRuleParametersScopeAccount AuthRuleV2NewParamsBodyRuleParametersScope = "ACCOUNT"
+)
+
+func (r AuthRuleV2NewParamsBodyRuleParametersScope) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewParamsBodyRuleParametersScopeCard, AuthRuleV2NewParamsBodyRuleParametersScopeAccount:
+		return true
+	}
+	return false
+}
+
+// The type of Auth Rule. For certain rule types, this determines the event stream
+// during which it will be evaluated. For rules that can be applied to one of
+// several event streams, the effective one is defined by the separate
+// `event_stream` field.
+//
+//   - `VELOCITY_LIMIT`: AUTHORIZATION event stream.
+//   - `MERCHANT_LOCK`: AUTHORIZATION event stream.
+//   - `CONDITIONAL_ACTION`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+//     ACH_PAYMENT_UPDATE event stream.
+//   - `TYPESCRIPT_CODE`: AUTHORIZATION, THREE_DS_AUTHENTICATION, TOKENIZATION,
+//     ACH_CREDIT_RECEIPT, ACH_DEBIT_RECEIPT, CARD_TRANSACTION_UPDATE, or
+//     ACH_PAYMENT_UPDATE event stream.
+//   - `OTHER`: A rule whose type is not exposed through this API. Rules of this type
+//     are read-only; `OTHER` cannot be used when creating a rule.
+type AuthRuleV2NewParamsBodyRuleType string
+
+const (
+	AuthRuleV2NewParamsBodyRuleTypeVelocityLimit     AuthRuleV2NewParamsBodyRuleType = "VELOCITY_LIMIT"
+	AuthRuleV2NewParamsBodyRuleTypeMerchantLock      AuthRuleV2NewParamsBodyRuleType = "MERCHANT_LOCK"
+	AuthRuleV2NewParamsBodyRuleTypeConditionalAction AuthRuleV2NewParamsBodyRuleType = "CONDITIONAL_ACTION"
+	AuthRuleV2NewParamsBodyRuleTypeTypescriptCode    AuthRuleV2NewParamsBodyRuleType = "TYPESCRIPT_CODE"
+	AuthRuleV2NewParamsBodyRuleTypeOther             AuthRuleV2NewParamsBodyRuleType = "OTHER"
+)
+
+func (r AuthRuleV2NewParamsBodyRuleType) IsKnown() bool {
+	switch r {
+	case AuthRuleV2NewParamsBodyRuleTypeVelocityLimit, AuthRuleV2NewParamsBodyRuleTypeMerchantLock, AuthRuleV2NewParamsBodyRuleTypeConditionalAction, AuthRuleV2NewParamsBodyRuleTypeTypescriptCode, AuthRuleV2NewParamsBodyRuleTypeOther:
+		return true
+	}
+	return false
+}
+
+// Deprecated: Use `entities` instead. Cannot be combined with `entities`.
+//
+// Deprecated: deprecated
 type AuthRuleV2NewParamsBodyAccountLevelRule struct {
 	// Parameters for the Auth Rule
 	Parameters param.Field[AuthRuleV2NewParamsBodyAccountLevelRuleParametersUnion] `json:"parameters" api:"required"`
@@ -9925,9 +10667,17 @@ type AuthRuleV2NewParamsBodyAccountLevelRule struct {
 	//   - `OTHER`: A rule whose type is not exposed through this API. Rules of this type
 	//     are read-only; `OTHER` cannot be used when creating a rule.
 	Type param.Field[AuthRuleV2NewParamsBodyAccountLevelRuleType] `json:"type" api:"required"`
+	// Deprecated: Use `entities.include` with `ACCOUNT` entities instead.
+	//
 	// Account tokens to which the Auth Rule applies.
+	//
+	// Deprecated: deprecated
 	AccountTokens param.Field[[]string] `json:"account_tokens" format:"uuid"`
+	// Deprecated: Use `entities.include` with `BUSINESS_ACCOUNT` entities instead.
+	//
 	// Business Account tokens to which the Auth Rule applies.
+	//
+	// Deprecated: deprecated
 	BusinessAccountTokens param.Field[[]string] `json:"business_account_tokens" format:"uuid"`
 	// The event stream during which the rule will be evaluated.
 	EventStream param.Field[EventStream] `json:"event_stream"`
@@ -10048,8 +10798,16 @@ func (r AuthRuleV2NewParamsBodyAccountLevelRuleType) IsKnown() bool {
 	return false
 }
 
+// Deprecated: Use `entities` instead. Cannot be combined with `entities`.
+//
+// Deprecated: deprecated
 type AuthRuleV2NewParamsBodyCardLevelRule struct {
-	// Card tokens to which the Auth Rule applies.
+	// Deprecated: Use `entities.include` with `CARD` entities instead.
+	//
+	// Card tokens to which the Auth Rule applies. Cards the rule applies to through a
+	// `CARD_TAG` entity are not listed.
+	//
+	// Deprecated: deprecated
 	CardTokens param.Field[[]string] `json:"card_tokens" api:"required" format:"uuid"`
 	// Parameters for the Auth Rule
 	Parameters param.Field[AuthRuleV2NewParamsBodyCardLevelRuleParametersUnion] `json:"parameters" api:"required"`
@@ -10188,10 +10946,17 @@ func (r AuthRuleV2NewParamsBodyCardLevelRuleType) IsKnown() bool {
 	return false
 }
 
+// Deprecated: Use `entities` instead. Cannot be combined with `entities`.
+//
+// Deprecated: deprecated
 type AuthRuleV2NewParamsBodyProgramLevelRule struct {
 	// Parameters for the Auth Rule
 	Parameters param.Field[AuthRuleV2NewParamsBodyProgramLevelRuleParametersUnion] `json:"parameters" api:"required"`
+	// Deprecated: Use `entities.include` with a `PROGRAM` entity instead.
+	//
 	// Whether the Auth Rule applies to all authorizations on the card program.
+	//
+	// Deprecated: deprecated
 	ProgramLevel param.Field[bool] `json:"program_level" api:"required"`
 	// The type of Auth Rule. For certain rule types, this determines the event stream
 	// during which it will be evaluated. For rules that can be applied to one of
@@ -10211,11 +10976,24 @@ type AuthRuleV2NewParamsBodyProgramLevelRule struct {
 	Type param.Field[AuthRuleV2NewParamsBodyProgramLevelRuleType] `json:"type" api:"required"`
 	// The event stream during which the rule will be evaluated.
 	EventStream param.Field[EventStream] `json:"event_stream"`
+	// Deprecated: Use `entities.exclude` with `ACCOUNT` entities instead.
+	//
 	// Account tokens to which the Auth Rule does not apply.
+	//
+	// Deprecated: deprecated
 	ExcludedAccountTokens param.Field[[]string] `json:"excluded_account_tokens" format:"uuid"`
+	// Deprecated: Use `entities.exclude` with `BUSINESS_ACCOUNT` entities instead.
+	//
 	// Business account tokens to which the Auth Rule does not apply.
+	//
+	// Deprecated: deprecated
 	ExcludedBusinessAccountTokens param.Field[[]string] `json:"excluded_business_account_tokens" format:"uuid"`
-	// Card tokens to which the Auth Rule does not apply.
+	// Deprecated: Use `entities.exclude` with `CARD` entities instead.
+	//
+	// Card tokens to which the Auth Rule does not apply. Cards excluded through a
+	// `CARD_TAG` entity are not listed.
+	//
+	// Deprecated: deprecated
 	ExcludedCardTokens param.Field[[]string] `json:"excluded_card_tokens" format:"uuid"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
@@ -10368,6 +11146,8 @@ func (r AuthRuleV2NewParamsBodyType) IsKnown() bool {
 }
 
 type AuthRuleV2UpdateParams struct {
+	// Replaces the rule's existing entities with the provided `include` and `exclude`
+	// lists. A missing list is treated as empty, so `include` must always be provided.
 	Body AuthRuleV2UpdateParamsBodyUnion `json:"body" api:"required"`
 }
 
@@ -10375,16 +11155,38 @@ func (r AuthRuleV2UpdateParams) MarshalJSON() (data []byte, err error) {
 	return apijson.MarshalRoot(r.Body)
 }
 
+// Replaces the rule's existing entities with the provided `include` and `exclude`
+// lists. A missing list is treated as empty, so `include` must always be provided.
 type AuthRuleV2UpdateParamsBody struct {
-	AccountTokens                 param.Field[interface{}] `json:"account_tokens"`
-	BusinessAccountTokens         param.Field[interface{}] `json:"business_account_tokens"`
-	CardTokens                    param.Field[interface{}] `json:"card_tokens"`
-	ExcludedAccountTokens         param.Field[interface{}] `json:"excluded_account_tokens"`
-	ExcludedBusinessAccountTokens param.Field[interface{}] `json:"excluded_business_account_tokens"`
-	ExcludedCardTokens            param.Field[interface{}] `json:"excluded_card_tokens"`
+	AccountTokens         param.Field[interface{}] `json:"account_tokens"`
+	BusinessAccountTokens param.Field[interface{}] `json:"business_account_tokens"`
+	CardTokens            param.Field[interface{}] `json:"card_tokens"`
+	// The entities an Auth Rule applies to (`include`) and does not apply to
+	// (`exclude`). An exclusion overrides an inclusion, so a card excluded here is
+	// skipped even when the program, its account or one of its tags is included.
+	//
+	// The rule's resulting entities must satisfy these constraints after any write:
+	//
+	//   - `include` must contain at least one entity.
+	//   - If `PROGRAM` is included, it must be the only included entity.
+	//   - `PROGRAM` cannot be excluded.
+	//   - An entity cannot appear in both `include` and `exclude`, or twice in the same
+	//     list.
+	//   - A rule can have at most 1,000 entities across `include` and `exclude`, not
+	//     counting `PROGRAM`.
+	//   - Entity types must be valid for the rule's event stream.
+	//   - `CARD`, `ACCOUNT` and `BUSINESS_ACCOUNT` tokens must belong to your program.
+	Entities                      param.Field[AuthRuleEntitiesParam] `json:"entities"`
+	ExcludedAccountTokens         param.Field[interface{}]           `json:"excluded_account_tokens"`
+	ExcludedBusinessAccountTokens param.Field[interface{}]           `json:"excluded_business_account_tokens"`
+	ExcludedCardTokens            param.Field[interface{}]           `json:"excluded_card_tokens"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
+	// Deprecated: Use `entities.include` with a `PROGRAM` entity instead.
+	//
 	// Whether the Auth Rule applies to all authorizations on the card program.
+	//
+	// Deprecated: deprecated
 	ProgramLevel param.Field[bool] `json:"program_level"`
 	// The desired state of the Auth Rule.
 	//
@@ -10400,17 +11202,86 @@ func (r AuthRuleV2UpdateParamsBody) MarshalJSON() (data []byte, err error) {
 
 func (r AuthRuleV2UpdateParamsBody) implementsAuthRuleV2UpdateParamsBodyUnion() {}
 
-// Satisfied by [AuthRuleV2UpdateParamsBodyAccountLevelRule],
+// Replaces the rule's existing entities with the provided `include` and `exclude`
+// lists. A missing list is treated as empty, so `include` must always be provided.
+//
+// Satisfied by [AuthRuleV2UpdateParamsBodyRule],
+// [AuthRuleV2UpdateParamsBodyAccountLevelRule],
 // [AuthRuleV2UpdateParamsBodyCardLevelRule],
 // [AuthRuleV2UpdateParamsBodyProgramLevelRule], [AuthRuleV2UpdateParamsBody].
 type AuthRuleV2UpdateParamsBodyUnion interface {
 	implementsAuthRuleV2UpdateParamsBodyUnion()
 }
 
+// Replaces the rule's existing entities with the provided `include` and `exclude`
+// lists. A missing list is treated as empty, so `include` must always be provided.
+type AuthRuleV2UpdateParamsBodyRule struct {
+	// The entities an Auth Rule applies to (`include`) and does not apply to
+	// (`exclude`). An exclusion overrides an inclusion, so a card excluded here is
+	// skipped even when the program, its account or one of its tags is included.
+	//
+	// The rule's resulting entities must satisfy these constraints after any write:
+	//
+	//   - `include` must contain at least one entity.
+	//   - If `PROGRAM` is included, it must be the only included entity.
+	//   - `PROGRAM` cannot be excluded.
+	//   - An entity cannot appear in both `include` and `exclude`, or twice in the same
+	//     list.
+	//   - A rule can have at most 1,000 entities across `include` and `exclude`, not
+	//     counting `PROGRAM`.
+	//   - Entity types must be valid for the rule's event stream.
+	//   - `CARD`, `ACCOUNT` and `BUSINESS_ACCOUNT` tokens must belong to your program.
+	Entities param.Field[AuthRuleEntitiesParam] `json:"entities"`
+	// Auth Rule Name
+	Name param.Field[string] `json:"name"`
+	// The desired state of the Auth Rule.
+	//
+	// Note that only deactivating an Auth Rule through this endpoint is supported at
+	// this time. If you need to (re-)activate an Auth Rule the /promote endpoint
+	// should be used to promote a draft to the currently active version.
+	State param.Field[AuthRuleV2UpdateParamsBodyRuleState] `json:"state"`
+}
+
+func (r AuthRuleV2UpdateParamsBodyRule) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
+}
+
+func (r AuthRuleV2UpdateParamsBodyRule) implementsAuthRuleV2UpdateParamsBodyUnion() {}
+
+// The desired state of the Auth Rule.
+//
+// Note that only deactivating an Auth Rule through this endpoint is supported at
+// this time. If you need to (re-)activate an Auth Rule the /promote endpoint
+// should be used to promote a draft to the currently active version.
+type AuthRuleV2UpdateParamsBodyRuleState string
+
+const (
+	AuthRuleV2UpdateParamsBodyRuleStateInactive AuthRuleV2UpdateParamsBodyRuleState = "INACTIVE"
+)
+
+func (r AuthRuleV2UpdateParamsBodyRuleState) IsKnown() bool {
+	switch r {
+	case AuthRuleV2UpdateParamsBodyRuleStateInactive:
+		return true
+	}
+	return false
+}
+
+// Deprecated: Use `entities` instead. Cannot be combined with `entities`.
+//
+// Deprecated: deprecated
 type AuthRuleV2UpdateParamsBodyAccountLevelRule struct {
+	// Deprecated: Use `entities.include` with `ACCOUNT` entities instead.
+	//
 	// Account tokens to which the Auth Rule applies.
+	//
+	// Deprecated: deprecated
 	AccountTokens param.Field[[]string] `json:"account_tokens" format:"uuid"`
+	// Deprecated: Use `entities.include` with `BUSINESS_ACCOUNT` entities instead.
+	//
 	// Business Account tokens to which the Auth Rule applies.
+	//
+	// Deprecated: deprecated
 	BusinessAccountTokens param.Field[[]string] `json:"business_account_tokens" format:"uuid"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
@@ -10447,8 +11318,16 @@ func (r AuthRuleV2UpdateParamsBodyAccountLevelRuleState) IsKnown() bool {
 	return false
 }
 
+// Deprecated: Use `entities` instead. Cannot be combined with `entities`.
+//
+// Deprecated: deprecated
 type AuthRuleV2UpdateParamsBodyCardLevelRule struct {
-	// Card tokens to which the Auth Rule applies.
+	// Deprecated: Use `entities.include` with `CARD` entities instead.
+	//
+	// Card tokens to which the Auth Rule applies. Cards the rule applies to through a
+	// `CARD_TAG` entity are not listed.
+	//
+	// Deprecated: deprecated
 	CardTokens param.Field[[]string] `json:"card_tokens" format:"uuid"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
@@ -10485,16 +11364,36 @@ func (r AuthRuleV2UpdateParamsBodyCardLevelRuleState) IsKnown() bool {
 	return false
 }
 
+// Deprecated: Use `entities` instead. Cannot be combined with `entities`.
+//
+// Deprecated: deprecated
 type AuthRuleV2UpdateParamsBodyProgramLevelRule struct {
+	// Deprecated: Use `entities.exclude` with `ACCOUNT` entities instead.
+	//
 	// Account tokens to which the Auth Rule does not apply.
+	//
+	// Deprecated: deprecated
 	ExcludedAccountTokens param.Field[[]string] `json:"excluded_account_tokens" format:"uuid"`
+	// Deprecated: Use `entities.exclude` with `BUSINESS_ACCOUNT` entities instead.
+	//
 	// Business account tokens to which the Auth Rule does not apply.
+	//
+	// Deprecated: deprecated
 	ExcludedBusinessAccountTokens param.Field[[]string] `json:"excluded_business_account_tokens" format:"uuid"`
-	// Card tokens to which the Auth Rule does not apply.
+	// Deprecated: Use `entities.exclude` with `CARD` entities instead.
+	//
+	// Card tokens to which the Auth Rule does not apply. Cards excluded through a
+	// `CARD_TAG` entity are not listed.
+	//
+	// Deprecated: deprecated
 	ExcludedCardTokens param.Field[[]string] `json:"excluded_card_tokens" format:"uuid"`
 	// Auth Rule Name
 	Name param.Field[string] `json:"name"`
+	// Deprecated: Use `entities.include` with a `PROGRAM` entity instead.
+	//
 	// Whether the Auth Rule applies to all authorizations on the card program.
+	//
+	// Deprecated: deprecated
 	ProgramLevel param.Field[bool] `json:"program_level"`
 	// The desired state of the Auth Rule.
 	//
@@ -10567,7 +11466,8 @@ type AuthRuleV2ListParams struct {
 	EventStreams param.Field[[]EventStream] `query:"event_streams"`
 	// Page size (for pagination).
 	PageSize param.Field[int64] `query:"page_size"`
-	// Only return Auth Rules that are bound to the provided scope.
+	// Only return Auth Rules that are bound to the provided scope. When no token is
+	// provided, `CARD` also returns Auth Rules that include a `CARD_TAG` entity.
 	Scope param.Field[AuthRuleV2ListParamsScope] `query:"scope"`
 	// A cursor representing an item's token after which a page of results should
 	// begin. Used to retrieve the next page of results after this item.
@@ -10582,7 +11482,8 @@ func (r AuthRuleV2ListParams) URLQuery() (v url.Values) {
 	})
 }
 
-// Only return Auth Rules that are bound to the provided scope.
+// Only return Auth Rules that are bound to the provided scope. When no token is
+// provided, `CARD` also returns Auth Rules that include a `CARD_TAG` entity.
 type AuthRuleV2ListParamsScope string
 
 const (
@@ -10744,4 +11645,15 @@ func (r AuthRuleV2GetReportParams) URLQuery() (v url.Values) {
 		ArrayFormat:  apiquery.ArrayQueryFormatComma,
 		NestedFormat: apiquery.NestedQueryFormatBrackets,
 	})
+}
+
+type AuthRuleV2UpdateEntitiesParams struct {
+	// Entities to add to the rule's `include` and `exclude` lists
+	Add param.Field[AuthRuleEntitiesParam] `json:"add"`
+	// Entities to remove from the rule's `include` and `exclude` lists
+	Remove param.Field[AuthRuleEntitiesParam] `json:"remove"`
+}
+
+func (r AuthRuleV2UpdateEntitiesParams) MarshalJSON() (data []byte, err error) {
+	return apijson.MarshalRoot(r)
 }

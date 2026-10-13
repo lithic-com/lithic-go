@@ -52,11 +52,17 @@ func TestAuthRuleV2UpdateWithOptionalParams(t *testing.T) {
 		context.TODO(),
 		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
 		lithic.AuthRuleV2UpdateParams{
-			Body: lithic.AuthRuleV2UpdateParamsBodyAccountLevelRule{
-				AccountTokens:         lithic.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
-				BusinessAccountTokens: lithic.F([]string{"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"}),
-				Name:                  lithic.F("name"),
-				State:                 lithic.F(lithic.AuthRuleV2UpdateParamsBodyAccountLevelRuleStateInactive),
+			Body: lithic.AuthRuleV2UpdateParamsBodyRule{
+				Entities: lithic.F(lithic.AuthRuleEntitiesParam{
+					Exclude: lithic.F([]lithic.AuthRuleEntityUnionParam{lithic.AuthRuleEntityAuthRuleProgramEntityParam{
+						Type: lithic.F(lithic.AuthRuleEntityAuthRuleProgramEntityTypeProgram),
+					}}),
+					Include: lithic.F([]lithic.AuthRuleEntityUnionParam{lithic.AuthRuleEntityAuthRuleProgramEntityParam{
+						Type: lithic.F(lithic.AuthRuleEntityAuthRuleProgramEntityTypeProgram),
+					}}),
+				}),
+				Name:  lithic.F("name"),
+				State: lithic.F(lithic.AuthRuleV2UpdateParamsBodyRuleStateInactive),
 			},
 		},
 	)
@@ -245,6 +251,49 @@ func TestAuthRuleV2GetReport(t *testing.T) {
 		lithic.AuthRuleV2GetReportParams{
 			Begin: lithic.F(time.Now()),
 			End:   lithic.F(time.Now()),
+		},
+	)
+	if err != nil {
+		var apierr *lithic.Error
+		if errors.As(err, &apierr) {
+			t.Log(string(apierr.DumpRequest(true)))
+		}
+		t.Fatalf("err should be nil: %s", err.Error())
+	}
+}
+
+func TestAuthRuleV2UpdateEntitiesWithOptionalParams(t *testing.T) {
+	baseURL := "http://localhost:4010"
+	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
+		baseURL = envURL
+	}
+	if !testutil.CheckTestServer(t, baseURL) {
+		return
+	}
+	client := lithic.NewClient(
+		option.WithBaseURL(baseURL),
+		option.WithAPIKey("My Lithic API Key"),
+	)
+	_, err := client.AuthRules.V2.UpdateEntities(
+		context.TODO(),
+		"182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e",
+		lithic.AuthRuleV2UpdateEntitiesParams{
+			Add: lithic.F(lithic.AuthRuleEntitiesParam{
+				Exclude: lithic.F([]lithic.AuthRuleEntityUnionParam{lithic.AuthRuleEntityAuthRuleProgramEntityParam{
+					Type: lithic.F(lithic.AuthRuleEntityAuthRuleProgramEntityTypeProgram),
+				}}),
+				Include: lithic.F([]lithic.AuthRuleEntityUnionParam{lithic.AuthRuleEntityAuthRuleProgramEntityParam{
+					Type: lithic.F(lithic.AuthRuleEntityAuthRuleProgramEntityTypeProgram),
+				}}),
+			}),
+			Remove: lithic.F(lithic.AuthRuleEntitiesParam{
+				Exclude: lithic.F([]lithic.AuthRuleEntityUnionParam{lithic.AuthRuleEntityAuthRuleProgramEntityParam{
+					Type: lithic.F(lithic.AuthRuleEntityAuthRuleProgramEntityTypeProgram),
+				}}),
+				Include: lithic.F([]lithic.AuthRuleEntityUnionParam{lithic.AuthRuleEntityAuthRuleProgramEntityParam{
+					Type: lithic.F(lithic.AuthRuleEntityAuthRuleProgramEntityTypeProgram),
+				}}),
+			}),
 		},
 	)
 	if err != nil {
