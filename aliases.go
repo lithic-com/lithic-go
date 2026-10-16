@@ -511,6 +511,9 @@ const FinancialEventTypeStablecoinSettled = shared.FinancialEventTypeStablecoinS
 // This is an alias to an internal value.
 const FinancialEventTypeStablecoinRejected = shared.FinancialEventTypeStablecoinRejected
 
+// This is an alias to an internal value.
+const FinancialEventTypeInstanceToInstance = shared.FinancialEventTypeInstanceToInstance
+
 // Type of instance financial account
 //
 // This is an alias to an internal type.
