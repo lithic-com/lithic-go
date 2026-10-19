@@ -113,15 +113,23 @@ func (r enhancedDataCommonJSON) RawJSON() string {
 
 // An L2/L3 enhanced commercial data line item.
 type EnhancedDataCommonLineItem struct {
-	// The price of the item purchased in merchant currency.
+	// Deprecated: Use unit_amount instead. The price of the item purchased in merchant
+	// currency.
+	//
+	// Deprecated: deprecated
 	Amount string `json:"amount" api:"nullable"`
 	// A human-readable description of the item.
 	Description string `json:"description" api:"nullable"`
 	// An identifier for the item purchased.
 	ProductCode string `json:"product_code" api:"nullable"`
 	// The quantity of the item purchased.
-	Quantity string                         `json:"quantity" api:"nullable"`
-	JSON     enhancedDataCommonLineItemJSON `json:"-"`
+	Quantity string `json:"quantity" api:"nullable"`
+	// The total cost for the line item in merchant currency, covering all units
+	// purchased.
+	TotalAmount string `json:"total_amount" api:"nullable"`
+	// The price per individual unit in merchant currency.
+	UnitAmount string                         `json:"unit_amount" api:"nullable"`
+	JSON       enhancedDataCommonLineItemJSON `json:"-"`
 }
 
 // enhancedDataCommonLineItemJSON contains the JSON metadata for the struct
@@ -131,6 +139,8 @@ type enhancedDataCommonLineItemJSON struct {
 	Description apijson.Field
 	ProductCode apijson.Field
 	Quantity    apijson.Field
+	TotalAmount apijson.Field
+	UnitAmount  apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
 }
