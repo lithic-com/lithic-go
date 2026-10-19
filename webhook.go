@@ -1992,6 +1992,11 @@ type ClaimCreatedWebhookEvent struct {
 	OutstandingRequirements []ClaimCreatedWebhookEventOutstandingRequirement `json:"outstanding_requirements" api:"required"`
 	// Dispute reason code provided when creating the claim
 	Reason ClaimCreatedWebhookEventReason `json:"reason" api:"required"`
+	// Identifier for the claim as displayed in the Lithic dashboard. Populated
+	// depending on your program's setup, null otherwise. Use it to match claims
+	// received through the API and webhooks to the dashboard. This is not the claim
+	// `token`, which is the identifier to use in API requests
+	ReferenceID string `json:"reference_id" api:"required,nullable"`
 	// Current lifecycle status of the claim
 	Status ClaimCreatedWebhookEventStatus `json:"status" api:"required"`
 	// When the claim was submitted. Null until the claim reaches `SUBMITTED` status
@@ -2013,6 +2018,7 @@ type claimCreatedWebhookEventJSON struct {
 	EventType               apijson.Field
 	OutstandingRequirements apijson.Field
 	Reason                  apijson.Field
+	ReferenceID             apijson.Field
 	Status                  apijson.Field
 	Submitted               apijson.Field
 	Updated                 apijson.Field
@@ -2160,6 +2166,11 @@ type ClaimUpdatedWebhookEvent struct {
 	OutstandingRequirements []ClaimUpdatedWebhookEventOutstandingRequirement `json:"outstanding_requirements" api:"required"`
 	// Dispute reason code provided when creating the claim
 	Reason ClaimUpdatedWebhookEventReason `json:"reason" api:"required"`
+	// Identifier for the claim as displayed in the Lithic dashboard. Populated
+	// depending on your program's setup, null otherwise. Use it to match claims
+	// received through the API and webhooks to the dashboard. This is not the claim
+	// `token`, which is the identifier to use in API requests
+	ReferenceID string `json:"reference_id" api:"required,nullable"`
 	// Current lifecycle status of the claim
 	Status ClaimUpdatedWebhookEventStatus `json:"status" api:"required"`
 	// When the claim was submitted. Null until the claim reaches `SUBMITTED` status
@@ -2181,6 +2192,7 @@ type claimUpdatedWebhookEventJSON struct {
 	EventType               apijson.Field
 	OutstandingRequirements apijson.Field
 	Reason                  apijson.Field
+	ReferenceID             apijson.Field
 	Status                  apijson.Field
 	Submitted               apijson.Field
 	Updated                 apijson.Field
@@ -5642,6 +5654,11 @@ type ParsedWebhookEvent struct {
 	Psd2Context interface{} `json:"psd2_context"`
 	// Dispute reason code provided when creating the claim
 	Reason ParsedWebhookEventReason `json:"reason"`
+	// Identifier for the claim as displayed in the Lithic dashboard. Populated
+	// depending on your program's setup, null otherwise. Use it to match claims
+	// received through the API and webhooks to the dashboard. This is not the claim
+	// `token`, which is the identifier to use in API requests
+	ReferenceID string `json:"reference_id" api:"nullable"`
 	// This field can have the runtime type of [PaymentRelatedAccountTokens].
 	RelatedAccountTokens interface{} `json:"related_account_tokens"`
 	// The token of the card that was replaced, if the new card is a replacement card.
@@ -6024,6 +6041,7 @@ type parsedWebhookEventJSON struct {
 	PrimaryClaimID                     apijson.Field
 	Psd2Context                        apijson.Field
 	Reason                             apijson.Field
+	ReferenceID                        apijson.Field
 	RelatedAccountTokens               apijson.Field
 	ReplacementFor                     apijson.Field
 	ReportDate                         apijson.Field
