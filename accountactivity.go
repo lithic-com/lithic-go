@@ -729,6 +729,7 @@ func (r AccountActivityListResponseMethod) IsKnown() bool {
 type AccountActivityListResponseNetwork string
 
 const (
+	AccountActivityListResponseNetworkAllpoint   AccountActivityListResponseNetwork = "ALLPOINT"
 	AccountActivityListResponseNetworkAmex       AccountActivityListResponseNetwork = "AMEX"
 	AccountActivityListResponseNetworkInterlink  AccountActivityListResponseNetwork = "INTERLINK"
 	AccountActivityListResponseNetworkMaestro    AccountActivityListResponseNetwork = "MAESTRO"
@@ -739,7 +740,7 @@ const (
 
 func (r AccountActivityListResponseNetwork) IsKnown() bool {
 	switch r {
-	case AccountActivityListResponseNetworkAmex, AccountActivityListResponseNetworkInterlink, AccountActivityListResponseNetworkMaestro, AccountActivityListResponseNetworkMastercard, AccountActivityListResponseNetworkUnknown, AccountActivityListResponseNetworkVisa:
+	case AccountActivityListResponseNetworkAllpoint, AccountActivityListResponseNetworkAmex, AccountActivityListResponseNetworkInterlink, AccountActivityListResponseNetworkMaestro, AccountActivityListResponseNetworkMastercard, AccountActivityListResponseNetworkUnknown, AccountActivityListResponseNetworkVisa:
 		return true
 	}
 	return false
@@ -1465,6 +1466,7 @@ func (r AccountActivityGetTransactionResponseMethod) IsKnown() bool {
 type AccountActivityGetTransactionResponseNetwork string
 
 const (
+	AccountActivityGetTransactionResponseNetworkAllpoint   AccountActivityGetTransactionResponseNetwork = "ALLPOINT"
 	AccountActivityGetTransactionResponseNetworkAmex       AccountActivityGetTransactionResponseNetwork = "AMEX"
 	AccountActivityGetTransactionResponseNetworkInterlink  AccountActivityGetTransactionResponseNetwork = "INTERLINK"
 	AccountActivityGetTransactionResponseNetworkMaestro    AccountActivityGetTransactionResponseNetwork = "MAESTRO"
@@ -1475,7 +1477,7 @@ const (
 
 func (r AccountActivityGetTransactionResponseNetwork) IsKnown() bool {
 	switch r {
-	case AccountActivityGetTransactionResponseNetworkAmex, AccountActivityGetTransactionResponseNetworkInterlink, AccountActivityGetTransactionResponseNetworkMaestro, AccountActivityGetTransactionResponseNetworkMastercard, AccountActivityGetTransactionResponseNetworkUnknown, AccountActivityGetTransactionResponseNetworkVisa:
+	case AccountActivityGetTransactionResponseNetworkAllpoint, AccountActivityGetTransactionResponseNetworkAmex, AccountActivityGetTransactionResponseNetworkInterlink, AccountActivityGetTransactionResponseNetworkMaestro, AccountActivityGetTransactionResponseNetworkMastercard, AccountActivityGetTransactionResponseNetworkUnknown, AccountActivityGetTransactionResponseNetworkVisa:
 		return true
 	}
 	return false

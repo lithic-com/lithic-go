@@ -688,6 +688,7 @@ func (r transactionMerchantJSON) RawJSON() string {
 type TransactionNetwork string
 
 const (
+	TransactionNetworkAllpoint   TransactionNetwork = "ALLPOINT"
 	TransactionNetworkAmex       TransactionNetwork = "AMEX"
 	TransactionNetworkInterlink  TransactionNetwork = "INTERLINK"
 	TransactionNetworkMaestro    TransactionNetwork = "MAESTRO"
@@ -698,7 +699,7 @@ const (
 
 func (r TransactionNetwork) IsKnown() bool {
 	switch r {
-	case TransactionNetworkAmex, TransactionNetworkInterlink, TransactionNetworkMaestro, TransactionNetworkMastercard, TransactionNetworkUnknown, TransactionNetworkVisa:
+	case TransactionNetworkAllpoint, TransactionNetworkAmex, TransactionNetworkInterlink, TransactionNetworkMaestro, TransactionNetworkMastercard, TransactionNetworkUnknown, TransactionNetworkVisa:
 		return true
 	}
 	return false

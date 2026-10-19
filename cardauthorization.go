@@ -906,6 +906,7 @@ func (r CardAuthorizationLatestChallengeStatus) IsKnown() bool {
 type CardAuthorizationNetwork string
 
 const (
+	CardAuthorizationNetworkAllpoint   CardAuthorizationNetwork = "ALLPOINT"
 	CardAuthorizationNetworkAmex       CardAuthorizationNetwork = "AMEX"
 	CardAuthorizationNetworkInterlink  CardAuthorizationNetwork = "INTERLINK"
 	CardAuthorizationNetworkMaestro    CardAuthorizationNetwork = "MAESTRO"
@@ -916,7 +917,7 @@ const (
 
 func (r CardAuthorizationNetwork) IsKnown() bool {
 	switch r {
-	case CardAuthorizationNetworkAmex, CardAuthorizationNetworkInterlink, CardAuthorizationNetworkMaestro, CardAuthorizationNetworkMastercard, CardAuthorizationNetworkUnknown, CardAuthorizationNetworkVisa:
+	case CardAuthorizationNetworkAllpoint, CardAuthorizationNetworkAmex, CardAuthorizationNetworkInterlink, CardAuthorizationNetworkMaestro, CardAuthorizationNetworkMastercard, CardAuthorizationNetworkUnknown, CardAuthorizationNetworkVisa:
 		return true
 	}
 	return false

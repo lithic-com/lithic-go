@@ -7522,6 +7522,7 @@ func (r ParsedWebhookEventMethod) IsKnown() bool {
 type ParsedWebhookEventNetwork string
 
 const (
+	ParsedWebhookEventNetworkAllpoint   ParsedWebhookEventNetwork = "ALLPOINT"
 	ParsedWebhookEventNetworkAmex       ParsedWebhookEventNetwork = "AMEX"
 	ParsedWebhookEventNetworkInterlink  ParsedWebhookEventNetwork = "INTERLINK"
 	ParsedWebhookEventNetworkMaestro    ParsedWebhookEventNetwork = "MAESTRO"
@@ -7532,7 +7533,7 @@ const (
 
 func (r ParsedWebhookEventNetwork) IsKnown() bool {
 	switch r {
-	case ParsedWebhookEventNetworkAmex, ParsedWebhookEventNetworkInterlink, ParsedWebhookEventNetworkMaestro, ParsedWebhookEventNetworkMastercard, ParsedWebhookEventNetworkUnknown, ParsedWebhookEventNetworkVisa:
+	case ParsedWebhookEventNetworkAllpoint, ParsedWebhookEventNetworkAmex, ParsedWebhookEventNetworkInterlink, ParsedWebhookEventNetworkMaestro, ParsedWebhookEventNetworkMastercard, ParsedWebhookEventNetworkUnknown, ParsedWebhookEventNetworkVisa:
 		return true
 	}
 	return false
