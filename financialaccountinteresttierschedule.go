@@ -155,12 +155,12 @@ type InterestTierSchedule struct {
 	// Date the tier should be effective in YYYY-MM-DD format
 	EffectiveDate time.Time `json:"effective_date" api:"required" format:"date"`
 	// Custom rates per category for penalties
-	PenaltyRates interface{} `json:"penalty_rates"`
+	PenaltyRates interface{} `json:"penalty_rates" api:"nullable"`
 	// Name of a tier contained in the credit product. Mutually exclusive with
 	// tier_rates
-	TierName string `json:"tier_name"`
+	TierName string `json:"tier_name" api:"nullable"`
 	// Custom rates per category. Mutually exclusive with tier_name
-	TierRates interface{}              `json:"tier_rates"`
+	TierRates interface{}              `json:"tier_rates" api:"nullable"`
 	JSON      interestTierScheduleJSON `json:"-"`
 }
 
