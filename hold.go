@@ -113,8 +113,6 @@ type Hold struct {
 	Token string `json:"token" api:"required" format:"uuid"`
 	// ISO 8601 timestamp of when the transaction was created
 	Created time.Time `json:"created" api:"required" format:"date-time"`
-	// Status of a hold transaction
-	Status HoldStatus `json:"status" api:"required"`
 	// ISO 8601 timestamp of when the transaction was last updated
 	Updated  time.Time   `json:"updated" api:"required" format:"date-time"`
 	Currency string      `json:"currency"`
@@ -127,6 +125,8 @@ type Hold struct {
 	// Current pending amount (0 when resolved)
 	PendingAmount int64      `json:"pending_amount"`
 	Result        HoldResult `json:"result"`
+	// Status of a hold transaction
+	Status        HoldStatus `json:"status"`
 	UserDefinedID string     `json:"user_defined_id" api:"nullable"`
 	JSON          holdJSON   `json:"-"`
 }
@@ -135,7 +135,6 @@ type Hold struct {
 type holdJSON struct {
 	Token                 apijson.Field
 	Created               apijson.Field
-	Status                apijson.Field
 	Updated               apijson.Field
 	Currency              apijson.Field
 	Events                apijson.Field
@@ -144,6 +143,7 @@ type holdJSON struct {
 	FinancialAccountToken apijson.Field
 	PendingAmount         apijson.Field
 	Result                apijson.Field
+	Status                apijson.Field
 	UserDefinedID         apijson.Field
 	raw                   string
 	ExtraFields           map[string]apijson.Field
@@ -160,28 +160,6 @@ func (r holdJSON) RawJSON() string {
 func (r Hold) implementsAccountActivityListResponse() {}
 
 func (r Hold) implementsAccountActivityGetTransactionResponse() {}
-
-// Status of a hold transaction
-type HoldStatus string
-
-const (
-	HoldStatusPending  HoldStatus = "PENDING"
-	HoldStatusSettled  HoldStatus = "SETTLED"
-	HoldStatusExpired  HoldStatus = "EXPIRED"
-	HoldStatusVoided   HoldStatus = "VOIDED"
-	HoldStatusDeclined HoldStatus = "DECLINED"
-	HoldStatusReversed HoldStatus = "REVERSED"
-	HoldStatusCanceled HoldStatus = "CANCELED"
-	HoldStatusReturned HoldStatus = "RETURNED"
-)
-
-func (r HoldStatus) IsKnown() bool {
-	switch r {
-	case HoldStatusPending, HoldStatusSettled, HoldStatusExpired, HoldStatusVoided, HoldStatusDeclined, HoldStatusReversed, HoldStatusCanceled, HoldStatusReturned:
-		return true
-	}
-	return false
-}
 
 // HOLD - Hold Transaction
 type HoldFamily string
@@ -208,6 +186,24 @@ const (
 func (r HoldResult) IsKnown() bool {
 	switch r {
 	case HoldResultApproved, HoldResultDeclined:
+		return true
+	}
+	return false
+}
+
+// Status of a hold transaction
+type HoldStatus string
+
+const (
+	HoldStatusPending HoldStatus = "PENDING"
+	HoldStatusSettled HoldStatus = "SETTLED"
+	HoldStatusExpired HoldStatus = "EXPIRED"
+	HoldStatusVoided  HoldStatus = "VOIDED"
+)
+
+func (r HoldStatus) IsKnown() bool {
+	switch r {
+	case HoldStatusPending, HoldStatusSettled, HoldStatusExpired, HoldStatusVoided:
 		return true
 	}
 	return false

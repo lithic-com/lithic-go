@@ -118,8 +118,6 @@ type AccountActivityListResponse struct {
 	Token string `json:"token" api:"required" format:"uuid"`
 	// ISO 8601 timestamp of when the transaction was created
 	Created time.Time `json:"created" api:"required" format:"date-time"`
-	// The status of the transaction
-	Status AccountActivityListResponseStatus `json:"status" api:"required"`
 	// ISO 8601 timestamp of when the transaction was last updated
 	Updated time.Time `json:"updated" api:"required" format:"date-time"`
 	// The token for the account associated with this transaction.
@@ -229,6 +227,8 @@ type AccountActivityListResponse struct {
 	SettledAmount int64 `json:"settled_amount"`
 	// Transaction source
 	Source AccountActivityListResponseSource `json:"source"`
+	// The status of the transaction
+	Status AccountActivityListResponseStatus `json:"status"`
 	// This field can have the runtime type of [map[string]string].
 	Tags interface{} `json:"tags"`
 	// Globally unique identifier for the financial account or card that will receive
@@ -250,7 +250,6 @@ type AccountActivityListResponse struct {
 type accountActivityListResponseJSON struct {
 	Token                       apijson.Field
 	Created                     apijson.Field
-	Status                      apijson.Field
 	Updated                     apijson.Field
 	AccountToken                apijson.Field
 	AcquirerFee                 apijson.Field
@@ -292,6 +291,7 @@ type accountActivityListResponseJSON struct {
 	ServiceLocation             apijson.Field
 	SettledAmount               apijson.Field
 	Source                      apijson.Field
+	Status                      apijson.Field
 	Tags                        apijson.Field
 	ToFinancialAccountToken     apijson.Field
 	TokenInfo                   apijson.Field
@@ -542,8 +542,6 @@ type AccountActivityListResponseCardTransaction struct {
 	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// CARD - Card Transaction
 	Family AccountActivityListResponseCardTransactionFamily `json:"family" api:"required"`
-	// The status of the transaction
-	Status AccountActivityListResponseCardTransactionStatus `json:"status" api:"required"`
 	// ISO 8601 timestamp of when the transaction was last updated
 	Updated time.Time                                      `json:"updated" api:"required" format:"date-time"`
 	JSON    accountActivityListResponseCardTransactionJSON `json:"-"`
@@ -556,7 +554,6 @@ type accountActivityListResponseCardTransactionJSON struct {
 	Token       apijson.Field
 	Created     apijson.Field
 	Family      apijson.Field
-	Status      apijson.Field
 	Updated     apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
@@ -582,48 +579,6 @@ const (
 func (r AccountActivityListResponseCardTransactionFamily) IsKnown() bool {
 	switch r {
 	case AccountActivityListResponseCardTransactionFamilyCard:
-		return true
-	}
-	return false
-}
-
-// The status of the transaction
-type AccountActivityListResponseCardTransactionStatus string
-
-const (
-	AccountActivityListResponseCardTransactionStatusPending  AccountActivityListResponseCardTransactionStatus = "PENDING"
-	AccountActivityListResponseCardTransactionStatusSettled  AccountActivityListResponseCardTransactionStatus = "SETTLED"
-	AccountActivityListResponseCardTransactionStatusDeclined AccountActivityListResponseCardTransactionStatus = "DECLINED"
-	AccountActivityListResponseCardTransactionStatusReversed AccountActivityListResponseCardTransactionStatus = "REVERSED"
-	AccountActivityListResponseCardTransactionStatusCanceled AccountActivityListResponseCardTransactionStatus = "CANCELED"
-	AccountActivityListResponseCardTransactionStatusReturned AccountActivityListResponseCardTransactionStatus = "RETURNED"
-)
-
-func (r AccountActivityListResponseCardTransactionStatus) IsKnown() bool {
-	switch r {
-	case AccountActivityListResponseCardTransactionStatusPending, AccountActivityListResponseCardTransactionStatusSettled, AccountActivityListResponseCardTransactionStatusDeclined, AccountActivityListResponseCardTransactionStatusReversed, AccountActivityListResponseCardTransactionStatusCanceled, AccountActivityListResponseCardTransactionStatusReturned:
-		return true
-	}
-	return false
-}
-
-// The status of the transaction
-type AccountActivityListResponseStatus string
-
-const (
-	AccountActivityListResponseStatusPending  AccountActivityListResponseStatus = "PENDING"
-	AccountActivityListResponseStatusSettled  AccountActivityListResponseStatus = "SETTLED"
-	AccountActivityListResponseStatusDeclined AccountActivityListResponseStatus = "DECLINED"
-	AccountActivityListResponseStatusReversed AccountActivityListResponseStatus = "REVERSED"
-	AccountActivityListResponseStatusCanceled AccountActivityListResponseStatus = "CANCELED"
-	AccountActivityListResponseStatusReturned AccountActivityListResponseStatus = "RETURNED"
-	AccountActivityListResponseStatusExpired  AccountActivityListResponseStatus = "EXPIRED"
-	AccountActivityListResponseStatusVoided   AccountActivityListResponseStatus = "VOIDED"
-)
-
-func (r AccountActivityListResponseStatus) IsKnown() bool {
-	switch r {
-	case AccountActivityListResponseStatusPending, AccountActivityListResponseStatusSettled, AccountActivityListResponseStatusDeclined, AccountActivityListResponseStatusReversed, AccountActivityListResponseStatusCanceled, AccountActivityListResponseStatusReturned, AccountActivityListResponseStatusExpired, AccountActivityListResponseStatusVoided:
 		return true
 	}
 	return false
@@ -819,6 +774,28 @@ func (r AccountActivityListResponseSource) IsKnown() bool {
 	return false
 }
 
+// The status of the transaction
+type AccountActivityListResponseStatus string
+
+const (
+	AccountActivityListResponseStatusPending  AccountActivityListResponseStatus = "PENDING"
+	AccountActivityListResponseStatusSettled  AccountActivityListResponseStatus = "SETTLED"
+	AccountActivityListResponseStatusDeclined AccountActivityListResponseStatus = "DECLINED"
+	AccountActivityListResponseStatusReversed AccountActivityListResponseStatus = "REVERSED"
+	AccountActivityListResponseStatusCanceled AccountActivityListResponseStatus = "CANCELED"
+	AccountActivityListResponseStatusReturned AccountActivityListResponseStatus = "RETURNED"
+	AccountActivityListResponseStatusExpired  AccountActivityListResponseStatus = "EXPIRED"
+	AccountActivityListResponseStatusVoided   AccountActivityListResponseStatus = "VOIDED"
+)
+
+func (r AccountActivityListResponseStatus) IsKnown() bool {
+	switch r {
+	case AccountActivityListResponseStatusPending, AccountActivityListResponseStatusSettled, AccountActivityListResponseStatusDeclined, AccountActivityListResponseStatusReversed, AccountActivityListResponseStatusCanceled, AccountActivityListResponseStatusReturned, AccountActivityListResponseStatusExpired, AccountActivityListResponseStatusVoided:
+		return true
+	}
+	return false
+}
+
 type AccountActivityListResponseType string
 
 const (
@@ -854,8 +831,6 @@ type AccountActivityGetTransactionResponse struct {
 	Token string `json:"token" api:"required" format:"uuid"`
 	// ISO 8601 timestamp of when the transaction was created
 	Created time.Time `json:"created" api:"required" format:"date-time"`
-	// The status of the transaction
-	Status AccountActivityGetTransactionResponseStatus `json:"status" api:"required"`
 	// ISO 8601 timestamp of when the transaction was last updated
 	Updated time.Time `json:"updated" api:"required" format:"date-time"`
 	// The token for the account associated with this transaction.
@@ -965,6 +940,8 @@ type AccountActivityGetTransactionResponse struct {
 	SettledAmount int64 `json:"settled_amount"`
 	// Transaction source
 	Source AccountActivityGetTransactionResponseSource `json:"source"`
+	// The status of the transaction
+	Status AccountActivityGetTransactionResponseStatus `json:"status"`
 	// This field can have the runtime type of [map[string]string].
 	Tags interface{} `json:"tags"`
 	// Globally unique identifier for the financial account or card that will receive
@@ -986,7 +963,6 @@ type AccountActivityGetTransactionResponse struct {
 type accountActivityGetTransactionResponseJSON struct {
 	Token                       apijson.Field
 	Created                     apijson.Field
-	Status                      apijson.Field
 	Updated                     apijson.Field
 	AccountToken                apijson.Field
 	AcquirerFee                 apijson.Field
@@ -1028,6 +1004,7 @@ type accountActivityGetTransactionResponseJSON struct {
 	ServiceLocation             apijson.Field
 	SettledAmount               apijson.Field
 	Source                      apijson.Field
+	Status                      apijson.Field
 	Tags                        apijson.Field
 	ToFinancialAccountToken     apijson.Field
 	TokenInfo                   apijson.Field
@@ -1280,8 +1257,6 @@ type AccountActivityGetTransactionResponseCardTransaction struct {
 	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// CARD - Card Transaction
 	Family AccountActivityGetTransactionResponseCardTransactionFamily `json:"family" api:"required"`
-	// The status of the transaction
-	Status AccountActivityGetTransactionResponseCardTransactionStatus `json:"status" api:"required"`
 	// ISO 8601 timestamp of when the transaction was last updated
 	Updated time.Time                                                `json:"updated" api:"required" format:"date-time"`
 	JSON    accountActivityGetTransactionResponseCardTransactionJSON `json:"-"`
@@ -1294,7 +1269,6 @@ type accountActivityGetTransactionResponseCardTransactionJSON struct {
 	Token       apijson.Field
 	Created     apijson.Field
 	Family      apijson.Field
-	Status      apijson.Field
 	Updated     apijson.Field
 	raw         string
 	ExtraFields map[string]apijson.Field
@@ -1321,48 +1295,6 @@ const (
 func (r AccountActivityGetTransactionResponseCardTransactionFamily) IsKnown() bool {
 	switch r {
 	case AccountActivityGetTransactionResponseCardTransactionFamilyCard:
-		return true
-	}
-	return false
-}
-
-// The status of the transaction
-type AccountActivityGetTransactionResponseCardTransactionStatus string
-
-const (
-	AccountActivityGetTransactionResponseCardTransactionStatusPending  AccountActivityGetTransactionResponseCardTransactionStatus = "PENDING"
-	AccountActivityGetTransactionResponseCardTransactionStatusSettled  AccountActivityGetTransactionResponseCardTransactionStatus = "SETTLED"
-	AccountActivityGetTransactionResponseCardTransactionStatusDeclined AccountActivityGetTransactionResponseCardTransactionStatus = "DECLINED"
-	AccountActivityGetTransactionResponseCardTransactionStatusReversed AccountActivityGetTransactionResponseCardTransactionStatus = "REVERSED"
-	AccountActivityGetTransactionResponseCardTransactionStatusCanceled AccountActivityGetTransactionResponseCardTransactionStatus = "CANCELED"
-	AccountActivityGetTransactionResponseCardTransactionStatusReturned AccountActivityGetTransactionResponseCardTransactionStatus = "RETURNED"
-)
-
-func (r AccountActivityGetTransactionResponseCardTransactionStatus) IsKnown() bool {
-	switch r {
-	case AccountActivityGetTransactionResponseCardTransactionStatusPending, AccountActivityGetTransactionResponseCardTransactionStatusSettled, AccountActivityGetTransactionResponseCardTransactionStatusDeclined, AccountActivityGetTransactionResponseCardTransactionStatusReversed, AccountActivityGetTransactionResponseCardTransactionStatusCanceled, AccountActivityGetTransactionResponseCardTransactionStatusReturned:
-		return true
-	}
-	return false
-}
-
-// The status of the transaction
-type AccountActivityGetTransactionResponseStatus string
-
-const (
-	AccountActivityGetTransactionResponseStatusPending  AccountActivityGetTransactionResponseStatus = "PENDING"
-	AccountActivityGetTransactionResponseStatusSettled  AccountActivityGetTransactionResponseStatus = "SETTLED"
-	AccountActivityGetTransactionResponseStatusDeclined AccountActivityGetTransactionResponseStatus = "DECLINED"
-	AccountActivityGetTransactionResponseStatusReversed AccountActivityGetTransactionResponseStatus = "REVERSED"
-	AccountActivityGetTransactionResponseStatusCanceled AccountActivityGetTransactionResponseStatus = "CANCELED"
-	AccountActivityGetTransactionResponseStatusReturned AccountActivityGetTransactionResponseStatus = "RETURNED"
-	AccountActivityGetTransactionResponseStatusExpired  AccountActivityGetTransactionResponseStatus = "EXPIRED"
-	AccountActivityGetTransactionResponseStatusVoided   AccountActivityGetTransactionResponseStatus = "VOIDED"
-)
-
-func (r AccountActivityGetTransactionResponseStatus) IsKnown() bool {
-	switch r {
-	case AccountActivityGetTransactionResponseStatusPending, AccountActivityGetTransactionResponseStatusSettled, AccountActivityGetTransactionResponseStatusDeclined, AccountActivityGetTransactionResponseStatusReversed, AccountActivityGetTransactionResponseStatusCanceled, AccountActivityGetTransactionResponseStatusReturned, AccountActivityGetTransactionResponseStatusExpired, AccountActivityGetTransactionResponseStatusVoided:
 		return true
 	}
 	return false
@@ -1553,6 +1485,28 @@ const (
 func (r AccountActivityGetTransactionResponseSource) IsKnown() bool {
 	switch r {
 	case AccountActivityGetTransactionResponseSourceLithic, AccountActivityGetTransactionResponseSourceExternal, AccountActivityGetTransactionResponseSourceCustomer:
+		return true
+	}
+	return false
+}
+
+// The status of the transaction
+type AccountActivityGetTransactionResponseStatus string
+
+const (
+	AccountActivityGetTransactionResponseStatusPending  AccountActivityGetTransactionResponseStatus = "PENDING"
+	AccountActivityGetTransactionResponseStatusSettled  AccountActivityGetTransactionResponseStatus = "SETTLED"
+	AccountActivityGetTransactionResponseStatusDeclined AccountActivityGetTransactionResponseStatus = "DECLINED"
+	AccountActivityGetTransactionResponseStatusReversed AccountActivityGetTransactionResponseStatus = "REVERSED"
+	AccountActivityGetTransactionResponseStatusCanceled AccountActivityGetTransactionResponseStatus = "CANCELED"
+	AccountActivityGetTransactionResponseStatusReturned AccountActivityGetTransactionResponseStatus = "RETURNED"
+	AccountActivityGetTransactionResponseStatusExpired  AccountActivityGetTransactionResponseStatus = "EXPIRED"
+	AccountActivityGetTransactionResponseStatusVoided   AccountActivityGetTransactionResponseStatus = "VOIDED"
+)
+
+func (r AccountActivityGetTransactionResponseStatus) IsKnown() bool {
+	switch r {
+	case AccountActivityGetTransactionResponseStatusPending, AccountActivityGetTransactionResponseStatusSettled, AccountActivityGetTransactionResponseStatusDeclined, AccountActivityGetTransactionResponseStatusReversed, AccountActivityGetTransactionResponseStatusCanceled, AccountActivityGetTransactionResponseStatusReturned, AccountActivityGetTransactionResponseStatusExpired, AccountActivityGetTransactionResponseStatusVoided:
 		return true
 	}
 	return false
