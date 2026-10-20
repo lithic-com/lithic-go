@@ -428,6 +428,15 @@ const FinancialEventTypeInterestReversal = shared.FinancialEventTypeInterestReve
 const FinancialEventTypeInternalAdjustment = shared.FinancialEventTypeInternalAdjustment
 
 // This is an alias to an internal value.
+const FinancialEventTypeIntraBankCanceled = shared.FinancialEventTypeIntraBankCanceled
+
+// This is an alias to an internal value.
+const FinancialEventTypeIntraBankInitiated = shared.FinancialEventTypeIntraBankInitiated
+
+// This is an alias to an internal value.
+const FinancialEventTypeIntraBankSettled = shared.FinancialEventTypeIntraBankSettled
+
+// This is an alias to an internal value.
 const FinancialEventTypeLatePayment = shared.FinancialEventTypeLatePayment
 
 // This is an alias to an internal value.

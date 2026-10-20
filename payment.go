@@ -290,6 +290,7 @@ const (
 	PaymentCategoryACH                    PaymentCategory = "ACH"
 	PaymentCategoryWire                   PaymentCategory = "WIRE"
 	PaymentCategoryStablecoin             PaymentCategory = "STABLECOIN"
+	PaymentCategoryIntraBank              PaymentCategory = "INTRA_BANK"
 	PaymentCategoryBalanceOrFunding       PaymentCategory = "BALANCE_OR_FUNDING"
 	PaymentCategoryFee                    PaymentCategory = "FEE"
 	PaymentCategoryReward                 PaymentCategory = "REWARD"
@@ -316,7 +317,7 @@ const (
 
 func (r PaymentCategory) IsKnown() bool {
 	switch r {
-	case PaymentCategoryACH, PaymentCategoryWire, PaymentCategoryStablecoin, PaymentCategoryBalanceOrFunding, PaymentCategoryFee, PaymentCategoryReward, PaymentCategoryAdjustment, PaymentCategoryDerecognition, PaymentCategoryDispute, PaymentCategoryCard, PaymentCategoryExternalACH, PaymentCategoryExternalCheck, PaymentCategoryExternalFednow, PaymentCategoryExternalRtp, PaymentCategoryExternalStablecoin, PaymentCategoryExternalTransfer, PaymentCategoryExternalWire, PaymentCategoryManagementAdjustment, PaymentCategoryManagementDispute, PaymentCategoryManagementFee, PaymentCategoryManagementReward, PaymentCategoryManagementDisbursement, PaymentCategoryHold, PaymentCategoryProgramFunding, PaymentCategoryProgramTransfer:
+	case PaymentCategoryACH, PaymentCategoryWire, PaymentCategoryStablecoin, PaymentCategoryIntraBank, PaymentCategoryBalanceOrFunding, PaymentCategoryFee, PaymentCategoryReward, PaymentCategoryAdjustment, PaymentCategoryDerecognition, PaymentCategoryDispute, PaymentCategoryCard, PaymentCategoryExternalACH, PaymentCategoryExternalCheck, PaymentCategoryExternalFednow, PaymentCategoryExternalRtp, PaymentCategoryExternalStablecoin, PaymentCategoryExternalTransfer, PaymentCategoryExternalWire, PaymentCategoryManagementAdjustment, PaymentCategoryManagementDispute, PaymentCategoryManagementFee, PaymentCategoryManagementReward, PaymentCategoryManagementDisbursement, PaymentCategoryHold, PaymentCategoryProgramFunding, PaymentCategoryProgramTransfer:
 		return true
 	}
 	return false
