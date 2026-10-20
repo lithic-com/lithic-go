@@ -91,6 +91,8 @@ type TransferLimitsResponseData struct {
 	DailyLimit TransferLimitsResponseDataDailyLimit `json:"daily_limit" api:"required"`
 	// The date for the limit view (ISO format)
 	Date time.Time `json:"date" api:"required" format:"date"`
+	// Financial entity ID the limits are scoped to
+	FinancialEntityID string `json:"financial_entity_id" api:"required" format:"uuid"`
 	// Whether the company is a FBO; based on the company ID prefix
 	IsFbo bool `json:"is_fbo" api:"required"`
 	// Monthly limits with progress
@@ -106,6 +108,7 @@ type transferLimitsResponseDataJSON struct {
 	CompanyID                  apijson.Field
 	DailyLimit                 apijson.Field
 	Date                       apijson.Field
+	FinancialEntityID          apijson.Field
 	IsFbo                      apijson.Field
 	MonthlyLimit               apijson.Field
 	ProgramLimitPerTransaction apijson.Field
