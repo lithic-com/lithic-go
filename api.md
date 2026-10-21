@@ -665,6 +665,16 @@ Methods:
 - <code title="delete /v1/responder_endpoints">client.ResponderEndpoints.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ResponderEndpointService.Delete">Delete</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, body <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ResponderEndpointDeleteParams">ResponderEndpointDeleteParams</a>) <a href="https://pkg.go.dev/builtin#error">error</a></code>
 - <code title="get /v1/responder_endpoints">client.ResponderEndpoints.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ResponderEndpointService.CheckStatus">CheckStatus</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>, query <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ResponderEndpointCheckStatusParams">ResponderEndpointCheckStatusParams</a>) (\*<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#ResponderEndpointStatus">ResponderEndpointStatus</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
 
+# IPRanges
+
+Response Types:
+
+- <a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#IPRangeGetResponse">IPRangeGetResponse</a>
+
+Methods:
+
+- <code title="get /v1/ip_ranges">client.IPRanges.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#IPRangeService.Get">Get</a>(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>) (\*<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go">lithic</a>.<a href="https://pkg.go.dev/github.com/lithic-com/lithic-go#IPRangeGetResponse">IPRangeGetResponse</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)</code>
+
 # Webhooks
 
 Methods:

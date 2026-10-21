@@ -36,6 +36,7 @@ type Client struct {
 	FinancialAccounts       *FinancialAccountService
 	Transactions            *TransactionService
 	ResponderEndpoints      *ResponderEndpointService
+	IPRanges                *IPRangeService
 	ExternalBankAccounts    *ExternalBankAccountService
 	BlockchainRecipients    *BlockchainRecipientService
 	Payments                *PaymentService
@@ -109,6 +110,7 @@ func NewClient(opts ...option.RequestOption) (r *Client) {
 	r.FinancialAccounts = NewFinancialAccountService(opts...)
 	r.Transactions = NewTransactionService(opts...)
 	r.ResponderEndpoints = NewResponderEndpointService(opts...)
+	r.IPRanges = NewIPRangeService(opts...)
 	r.ExternalBankAccounts = NewExternalBankAccountService(opts...)
 	r.BlockchainRecipients = NewBlockchainRecipientService(opts...)
 	r.Payments = NewPaymentService(opts...)
