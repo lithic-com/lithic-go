@@ -431,9 +431,11 @@ type Transaction struct {
 	// risk and 999 representing the highest risk. For Visa transactions, where the raw
 	// score has a range of 0-99, Lithic will normalize the score by multiplying the
 	// raw score by 10x.
-	NetworkRiskScore int64             `json:"network_risk_score" api:"required,nullable"`
-	Pos              TransactionPos    `json:"pos" api:"required"`
-	Result           TransactionResult `json:"result" api:"required"`
+	NetworkRiskScore int64 `json:"network_risk_score" api:"required,nullable"`
+	// Point of sale data for the transaction. Null when no point of sale data is
+	// available, such as clearing-only records that never went through authorization
+	Pos    TransactionPos    `json:"pos" api:"required,nullable"`
+	Result TransactionResult `json:"result" api:"required"`
 	// Where the cardholder received the service, when different from the card acceptor
 	// location. This is populated from network data elements such as Mastercard DE-122
 	// SE1 SF9-14 and Visa F34 DS02.
@@ -705,6 +707,8 @@ func (r TransactionNetwork) IsKnown() bool {
 	return false
 }
 
+// Point of sale data for the transaction. Null when no point of sale data is
+// available, such as clearing-only records that never went through authorization
 type TransactionPos struct {
 	EntryMode TransactionPosEntryMode `json:"entry_mode" api:"required"`
 	Terminal  TransactionPosTerminal  `json:"terminal" api:"required"`
