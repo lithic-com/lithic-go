@@ -7,6 +7,7 @@ import (
 	"errors"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/lithic-com/lithic-go"
 	"github.com/lithic-com/lithic-go/internal/testutil"
@@ -48,9 +49,12 @@ func TestFundingEventListWithOptionalParams(t *testing.T) {
 		option.WithAPIKey("My Lithic API Key"),
 	)
 	_, err := client.FundingEvents.List(context.TODO(), lithic.FundingEventListParams{
-		EndingBefore:  lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
-		PageSize:      lithic.F(int64(1)),
-		StartingAfter: lithic.F("starting_after"),
+		Begin:                 lithic.F(time.Now()),
+		End:                   lithic.F(time.Now()),
+		EndingBefore:          lithic.F("182bd5e5-6e1a-4fe4-a799-aa6d9a6ab26e"),
+		NetworkSettlementDate: lithic.F(time.Now()),
+		PageSize:              lithic.F(int64(1)),
+		StartingAfter:         lithic.F("starting_after"),
 	})
 	if err != nil {
 		var apierr *lithic.Error

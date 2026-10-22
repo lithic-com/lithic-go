@@ -54,7 +54,7 @@ func (r *CardFinancialTransactionService) Get(ctx context.Context, cardToken str
 }
 
 // List the financial transactions for a given card.
-func (r *CardFinancialTransactionService) List(ctx context.Context, cardToken string, query CardFinancialTransactionListParams, opts ...option.RequestOption) (res *pagination.SinglePage[FinancialTransaction], err error) {
+func (r *CardFinancialTransactionService) List(ctx context.Context, cardToken string, query CardFinancialTransactionListParams, opts ...option.RequestOption) (res *pagination.CursorPage[FinancialTransaction], err error) {
 	var raw *http.Response
 	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -76,8 +76,8 @@ func (r *CardFinancialTransactionService) List(ctx context.Context, cardToken st
 }
 
 // List the financial transactions for a given card.
-func (r *CardFinancialTransactionService) ListAutoPaging(ctx context.Context, cardToken string, query CardFinancialTransactionListParams, opts ...option.RequestOption) *pagination.SinglePageAutoPager[FinancialTransaction] {
-	return pagination.NewSinglePageAutoPager(r.List(ctx, cardToken, query, opts...))
+func (r *CardFinancialTransactionService) ListAutoPaging(ctx context.Context, cardToken string, query CardFinancialTransactionListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[FinancialTransaction] {
+	return pagination.NewCursorPageAutoPager(r.List(ctx, cardToken, query, opts...))
 }
 
 type CardFinancialTransactionListParams struct {
@@ -92,6 +92,8 @@ type CardFinancialTransactionListParams struct {
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string] `query:"ending_before"`
+	// Page size (for pagination).
+	PageSize param.Field[int64] `query:"page_size"`
 	// Financial Transaction result to be returned.
 	Result param.Field[CardFinancialTransactionListParamsResult] `query:"result"`
 	// A cursor representing an item's token after which a page of results should

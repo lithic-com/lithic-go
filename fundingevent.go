@@ -196,9 +196,18 @@ func (r fundingEventGetDetailsResponseJSON) RawJSON() string {
 }
 
 type FundingEventListParams struct {
+	// Date string in RFC 3339 format. Only entries created after the specified time
+	// will be included. UTC time zone.
+	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
+	// Date string in RFC 3339 format. Only entries created before the specified time
+	// will be included. UTC time zone.
+	End param.Field[time.Time] `query:"end" format:"date-time"`
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string] `query:"ending_before" format:"uuid"`
+	// Only funding events with a settlement breakout for this network settlement date
+	// will be included.
+	NetworkSettlementDate param.Field[time.Time] `query:"network_settlement_date" format:"date"`
 	// Page size (for pagination).
 	PageSize param.Field[int64] `query:"page_size"`
 	// A cursor representing an item's token after which a page of results should

@@ -55,7 +55,7 @@ func (r *FinancialAccountFinancialTransactionService) Get(ctx context.Context, f
 }
 
 // List the financial transactions for a given financial account.
-func (r *FinancialAccountFinancialTransactionService) List(ctx context.Context, financialAccountToken string, query FinancialTransactionListParams, opts ...option.RequestOption) (res *pagination.SinglePage[FinancialTransaction], err error) {
+func (r *FinancialAccountFinancialTransactionService) List(ctx context.Context, financialAccountToken string, query FinancialTransactionListParams, opts ...option.RequestOption) (res *pagination.CursorPage[FinancialTransaction], err error) {
 	var raw *http.Response
 	opts = slices.Concat(r.Options, opts)
 	opts = append([]option.RequestOption{option.WithResponseInto(&raw)}, opts...)
@@ -77,8 +77,8 @@ func (r *FinancialAccountFinancialTransactionService) List(ctx context.Context, 
 }
 
 // List the financial transactions for a given financial account.
-func (r *FinancialAccountFinancialTransactionService) ListAutoPaging(ctx context.Context, financialAccountToken string, query FinancialTransactionListParams, opts ...option.RequestOption) *pagination.SinglePageAutoPager[FinancialTransaction] {
-	return pagination.NewSinglePageAutoPager(r.List(ctx, financialAccountToken, query, opts...))
+func (r *FinancialAccountFinancialTransactionService) ListAutoPaging(ctx context.Context, financialAccountToken string, query FinancialTransactionListParams, opts ...option.RequestOption) *pagination.CursorPageAutoPager[FinancialTransaction] {
+	return pagination.NewCursorPageAutoPager(r.List(ctx, financialAccountToken, query, opts...))
 }
 
 type FinancialTransactionListParams struct {
@@ -93,6 +93,8 @@ type FinancialTransactionListParams struct {
 	// A cursor representing an item's token before which a page of results should end.
 	// Used to retrieve the previous page of results before this item.
 	EndingBefore param.Field[string] `query:"ending_before"`
+	// Page size (for pagination).
+	PageSize param.Field[int64] `query:"page_size"`
 	// Financial Transaction result to be returned.
 	Result param.Field[FinancialTransactionListParamsResult] `query:"result"`
 	// A cursor representing an item's token after which a page of results should

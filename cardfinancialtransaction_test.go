@@ -60,6 +60,7 @@ func TestCardFinancialTransactionListWithOptionalParams(t *testing.T) {
 			Category:      lithic.F(lithic.CardFinancialTransactionListParamsCategoryCard),
 			End:           lithic.F(time.Now()),
 			EndingBefore:  lithic.F("ending_before"),
+			PageSize:      lithic.F(int64(1)),
 			Result:        lithic.F(lithic.CardFinancialTransactionListParamsResultApproved),
 			StartingAfter: lithic.F("starting_after"),
 			Status:        lithic.F(lithic.CardFinancialTransactionListParamsStatusDeclined),
