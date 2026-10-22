@@ -324,8 +324,10 @@ type LoanTapeBalances struct {
 	// Amount not paid off on previous due dates
 	PastDue CategoryBalances `json:"past_due" api:"required"`
 	// Amount due for the past billing cycles.
-	PastStatementsDue CategoryBalances     `json:"past_statements_due" api:"required"`
-	JSON              loanTapeBalancesJSON `json:"-"`
+	PastStatementsDue CategoryBalances `json:"past_statements_due" api:"required"`
+	// Amounts converted into installment plans
+	Installments CategoryBalances     `json:"installments" api:"nullable"`
+	JSON         loanTapeBalancesJSON `json:"-"`
 }
 
 // loanTapeBalancesJSON contains the JSON metadata for the struct
@@ -335,6 +337,7 @@ type loanTapeBalancesJSON struct {
 	NextStatementDue  apijson.Field
 	PastDue           apijson.Field
 	PastStatementsDue apijson.Field
+	Installments      apijson.Field
 	raw               string
 	ExtraFields       map[string]apijson.Field
 }
