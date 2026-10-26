@@ -350,10 +350,10 @@ type FinancialAccountBalance struct {
 	Currency string `json:"currency" api:"required"`
 	// Globally unique identifier for the last financial transaction event that
 	// impacted this balance.
-	LastTransactionEventToken string `json:"last_transaction_event_token" api:"required" format:"uuid"`
+	LastTransactionEventToken string `json:"last_transaction_event_token" api:"required,nullable" format:"uuid"`
 	// Globally unique identifier for the last financial transaction that impacted this
 	// balance.
-	LastTransactionToken string `json:"last_transaction_token" api:"required" format:"uuid"`
+	LastTransactionToken string `json:"last_transaction_token" api:"required,nullable" format:"uuid"`
 	// Funds not available for spend due to card authorizations or pending ACH release.
 	// Shown in the currency's smallest unit (e.g., cents for USD).
 	PendingAmount int64 `json:"pending_amount" api:"required"`
