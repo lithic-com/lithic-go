@@ -47,7 +47,10 @@ func (r *FinancialAccountCreditConfigurationService) Get(ctx context.Context, fi
 	return res, err
 }
 
-// Update an account's credit configuration
+// Update an account's credit configuration. A credit product can only be attached
+// while the financial account is in the `PENDING` state; once a credit product has
+// been assigned the account transitions to `OPEN` and `credit_product_token` can
+// no longer be changed
 func (r *FinancialAccountCreditConfigurationService) Update(ctx context.Context, financialAccountToken string, body FinancialAccountCreditConfigurationUpdateParams, opts ...option.RequestOption) (res *FinancialAccountCreditConfig, err error) {
 	opts = slices.Concat(r.Options, opts)
 	if financialAccountToken == "" {
@@ -119,7 +122,10 @@ func (r financialAccountCreditConfigAutoCollectionConfigurationJSON) RawJSON() s
 type FinancialAccountCreditConfigurationUpdateParams struct {
 	AutoCollectionConfiguration param.Field[FinancialAccountCreditConfigurationUpdateParamsAutoCollectionConfiguration] `json:"auto_collection_configuration"`
 	CreditLimit                 param.Field[int64]                                                                      `json:"credit_limit"`
-	// Globally unique identifier for the credit product
+	// Globally unique identifier for the credit product. This can only be set while
+	// the financial account is in the `PENDING` state. Because assigning a credit
+	// product transitions the account to `OPEN`, a credit product can be attached only
+	// once; updating it on an account in any other state returns a `403`
 	CreditProductToken       param.Field[string] `json:"credit_product_token"`
 	ExternalBankAccountToken param.Field[string] `json:"external_bank_account_token" format:"uuid"`
 	// Tier to assign to a financial account
