@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.120.0](https://github.com/lithic-com/lithic-go/compare/v0.119.0...v0.120.0) (2026-10-28)
+
+
+### Features
+
+* **api:** add ALLPOINT to card transaction and authorization network enums ([f0e9638](https://github.com/lithic-com/lithic-go/commit/f0e96387e8262d1fe1fae3e62cc1ee3eede36d77))
+* **api:** add financial_entity_id to transfer limits response items ([e4ece1b](https://github.com/lithic-com/lithic-go/commit/e4ece1b16c7dd637767ce93ab78770aa0f4414b6))
+* **api:** add installments balance to loan tape balances on financial accounts ([0838f5a](https://github.com/lithic-com/lithic-go/commit/0838f5a8e26cc1d604edcbf66c151d24adc40044))
+* **api:** add INSTANCE_TO_INSTANCE to book transfer type and financial event type enums ([f2cbecb](https://github.com/lithic-com/lithic-go/commit/f2cbecb0584f771482b2e4d4a85c5fe33d84123d))
+* **api:** add intra-bank transaction category and intra_bank financial event types ([63aceb1](https://github.com/lithic-com/lithic-go/commit/63aceb1489e1093f9b776dd3d9268e8f8e11b42a))
+* **api:** add page_size to financial transaction lists and date filters to funding events list ([06eac8e](https://github.com/lithic-com/lithic-go/commit/06eac8e5ceb7532d17109e9001ebc53725d43cd1))
+* **api:** add reference_id field to claims for matching with the dashboard ([9a3a863](https://github.com/lithic-com/lithic-go/commit/9a3a8631003244b40a4afea34082ae6f3bd0b097))
+* **api:** add unit_amount and total_amount to enhanced commercial data line items, deprecate amount ([0b3a7db](https://github.com/lithic-com/lithic-go/commit/0b3a7db2480c97e028ab2ffbc68f20176fc47d01))
+
+
+### Bug Fixes
+
+* **api:** correct status enum types on hold and card transaction models ([0c837c5](https://github.com/lithic-com/lithic-go/commit/0c837c5ebca39a1ab4898096c0fc982e2effec18))
+* **api:** financial account balance last transaction tokens are nullable (breaks java/kotlin types) ([b026f5d](https://github.com/lithic-com/lithic-go/commit/b026f5dd7db0f3d490da6ea66faff31f1646da23))
+* **api:** make tier_name, tier_rates, and penalty_rates nullable on account tier schedules ([aa66172](https://github.com/lithic-com/lithic-go/commit/aa661721e895f404cda8e24f578bf17c3b122a36))
+* **api:** mark transaction pos field as nullable when no point of sale data is available ([5827219](https://github.com/lithic-com/lithic-go/commit/5827219939357b64bb23b2953fd2e52931963f34))
+
+
+### Documentation
+
+* **api:** clarify credit product can only be assigned once to pending financial accounts ([abe8db0](https://github.com/lithic-com/lithic-go/commit/abe8db04da5a5967f8ea841da995dd9b0316ff01))
+
 ## [0.119.0](https://github.com/lithic-com/lithic-go/compare/v0.118.0...v0.119.0) (2026-10-13)
 
 
