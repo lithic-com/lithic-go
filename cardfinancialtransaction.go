@@ -81,8 +81,8 @@ func (r *CardFinancialTransactionService) ListAutoPaging(ctx context.Context, ca
 }
 
 type CardFinancialTransactionListParams struct {
-	// Date string in RFC 3339 format. Only entries created after the specified time
-	// will be included. UTC time zone.
+	// Date string in RFC 3339 format. Only entries created on or after the specified
+	// time will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Financial Transaction category to be returned.
 	Category param.Field[CardFinancialTransactionListParamsCategory] `query:"category"`

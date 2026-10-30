@@ -11587,8 +11587,8 @@ func (r AuthRuleV2DraftParamsParametersScope) IsKnown() bool {
 type AuthRuleV2ListResultsParams struct {
 	// Filter by Auth Rule token
 	AuthRuleToken param.Field[string] `query:"auth_rule_token" format:"uuid"`
-	// Date string in RFC 3339 format. Only events evaluated after the specified time
-	// will be included. UTC time zone.
+	// Date string in RFC 3339 format. Only events evaluated on or after the specified
+	// time will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Date string in RFC 3339 format. Only events evaluated before the specified time
 	// will be included. UTC time zone.

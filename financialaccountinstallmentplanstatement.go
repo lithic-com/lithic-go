@@ -301,8 +301,8 @@ func (r InstallmentPlanStatementState) IsKnown() bool {
 }
 
 type FinancialAccountInstallmentPlanStatementListParams struct {
-	// Date string in RFC 3339 format. Only entries created after the specified date
-	// will be included.
+	// Date string in RFC 3339 format. Only entries created on or after the specified
+	// date will be included.
 	Begin param.Field[time.Time] `query:"begin" format:"date"`
 	// Date string in RFC 3339 format. Only entries created before the specified date
 	// will be included.

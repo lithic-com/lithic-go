@@ -709,7 +709,7 @@ func (r walletDecisioningInfoJSON) RawJSON() string {
 type TokenizationListParams struct {
 	// Filters for tokenizations associated with a specific account.
 	AccountToken param.Field[string] `query:"account_token" format:"uuid"`
-	// Filter for tokenizations created after this date.
+	// Filter for tokenizations created on or after this date.
 	Begin param.Field[time.Time] `query:"begin" format:"date"`
 	// Filters for tokenizations associated with a specific card.
 	CardToken param.Field[string] `query:"card_token" format:"uuid"`

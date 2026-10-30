@@ -1539,8 +1539,8 @@ func (r AccountActivityGetTransactionResponseType) IsKnown() bool {
 type AccountActivityListParams struct {
 	// Filter by account token
 	AccountToken param.Field[string] `query:"account_token" format:"uuid"`
-	// Date string in RFC 3339 format. Only entries created after the specified time
-	// will be included. UTC time zone.
+	// Date string in RFC 3339 format. Only entries created on or after the specified
+	// time will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Filter by business account token
 	BusinessAccountToken param.Field[string] `query:"business_account_token" format:"uuid"`

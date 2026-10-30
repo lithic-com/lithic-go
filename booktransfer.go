@@ -539,8 +539,8 @@ func (r BookTransferNewParamsOnClosedAccount) IsKnown() bool {
 
 type BookTransferListParams struct {
 	AccountToken param.Field[string] `query:"account_token" format:"uuid"`
-	// Date string in RFC 3339 format. Only entries created after the specified time
-	// will be included. UTC time zone.
+	// Date string in RFC 3339 format. Only entries created on or after the specified
+	// time will be included. UTC time zone.
 	Begin                param.Field[time.Time] `query:"begin" format:"date-time"`
 	BusinessAccountToken param.Field[string]    `query:"business_account_token" format:"uuid"`
 	// Book Transfer category to be returned.

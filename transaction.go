@@ -1960,8 +1960,8 @@ func (r transactionSimulateVoidResponseJSON) RawJSON() string {
 type TransactionListParams struct {
 	// Filters for transactions associated with a specific account.
 	AccountToken param.Field[string] `query:"account_token" format:"uuid"`
-	// Date string in RFC 3339 format. Only entries created after the specified time
-	// will be included. UTC time zone.
+	// Date string in RFC 3339 format. Only entries created on or after the specified
+	// time will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Filters for transactions associated with a specific card.
 	CardToken param.Field[string] `query:"card_token" format:"uuid"`

@@ -451,8 +451,8 @@ func (r ExternalPaymentNewParamsProgressTo) IsKnown() bool {
 }
 
 type ExternalPaymentListParams struct {
-	// Date string in RFC 3339 format. Only entries created after the specified time
-	// will be included. UTC time zone.
+	// Date string in RFC 3339 format. Only entries created on or after the specified
+	// time will be included. UTC time zone.
 	Begin                param.Field[time.Time] `query:"begin" format:"date-time"`
 	BusinessAccountToken param.Field[string]    `query:"business_account_token" format:"uuid"`
 	// The external rail the funds moved on

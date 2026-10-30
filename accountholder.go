@@ -3374,8 +3374,8 @@ func (r AccountHolderUpdateParamsBodyPatchRequest) MarshalJSON() (data []byte, e
 func (r AccountHolderUpdateParamsBodyPatchRequest) implementsAccountHolderUpdateParamsBodyUnion() {}
 
 type AccountHolderListParams struct {
-	// Date string in RFC 3339 format. Only entries created after the specified time
-	// will be included. UTC time zone.
+	// Date string in RFC 3339 format. Only entries created on or after the specified
+	// time will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Email address of the account holder. The query must be an exact match, case
 	// insensitive.

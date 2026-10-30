@@ -738,8 +738,8 @@ type TransactionMonitoringCaseListParams struct {
 	// Only return cases assigned to the provided value. Pass an empty string to return
 	// only unassigned cases.
 	Assignee param.Field[string] `query:"assignee"`
-	// Date string in RFC 3339 format. Only entries created after the specified time
-	// will be included. UTC time zone.
+	// Date string in RFC 3339 format. Only entries created on or after the specified
+	// time will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Only return cases that include transactions on the provided card.
 	CardToken param.Field[string] `query:"card_token" format:"uuid"`

@@ -146,10 +146,10 @@ func (r *EventSubscriptionService) Recover(ctx context.Context, eventSubscriptio
 	return err
 }
 
-// Replays messages to the endpoint. Only messages that were created after `begin`
-// will be sent. Messages that were previously sent to the endpoint are not resent.
-// Message will be retried if endpoint responds with a non-2xx status code. See
-// [Retry Schedule](https://docs.lithic.com/docs/events-api#retry-schedule) for
+// Replays messages to the endpoint. Only messages that were created on or after
+// `begin` will be sent. Messages that were previously sent to the endpoint are not
+// resent. Message will be retried if endpoint responds with a non-2xx status code.
+// See [Retry Schedule](https://docs.lithic.com/docs/events-api#retry-schedule) for
 // details.
 func (r *EventSubscriptionService) ReplayMissing(ctx context.Context, eventSubscriptionToken string, body EventSubscriptionReplayMissingParams, opts ...option.RequestOption) (err error) {
 	opts = slices.Concat(r.Options, opts)
@@ -687,8 +687,8 @@ func (r EventSubscriptionListParams) URLQuery() (v url.Values) {
 }
 
 type EventSubscriptionListAttemptsParams struct {
-	// Date string in RFC 3339 format. Only entries created after the specified time
-	// will be included. UTC time zone.
+	// Date string in RFC 3339 format. Only entries created on or after the specified
+	// time will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Date string in RFC 3339 format. Only entries created before the specified time
 	// will be included. UTC time zone.
@@ -731,8 +731,8 @@ func (r EventSubscriptionListAttemptsParamsStatus) IsKnown() bool {
 }
 
 type EventSubscriptionRecoverParams struct {
-	// Date string in RFC 3339 format. Only entries created after the specified time
-	// will be included. UTC time zone.
+	// Date string in RFC 3339 format. Only entries created on or after the specified
+	// time will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Date string in RFC 3339 format. Only entries created before the specified time
 	// will be included. UTC time zone.
@@ -749,8 +749,8 @@ func (r EventSubscriptionRecoverParams) URLQuery() (v url.Values) {
 }
 
 type EventSubscriptionReplayMissingParams struct {
-	// Date string in RFC 3339 format. Only entries created after the specified time
-	// will be included. UTC time zone.
+	// Date string in RFC 3339 format. Only entries created on or after the specified
+	// time will be included. UTC time zone.
 	Begin param.Field[time.Time] `query:"begin" format:"date-time"`
 	// Date string in RFC 3339 format. Only entries created before the specified time
 	// will be included. UTC time zone.
