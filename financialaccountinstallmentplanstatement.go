@@ -99,8 +99,17 @@ type InstallmentPlanStatement struct {
 	// so the statement identifies the snapshot within the plan. Pass it as a
 	// pagination cursor
 	Token string `json:"token" api:"required"`
+	// Date the plan was paid off or cancelled, or null if it was still open as of this
+	// statement
+	ClosedAt time.Time `json:"closed_at" api:"required,nullable" format:"date"`
+	// Timestamp of when the installment plan was created
+	Created time.Time `json:"created" api:"required" format:"date-time"`
 	// Enrollment fee charged when the plan was created in cents
 	FeeAmount int64 `json:"fee_amount" api:"required"`
+	// Amount credited to this plan after the plan was recalculated, as of this
+	// statement. The plan amount is not changed, and this credit reduces the amount
+	// owed
+	InstallmentPlanAdjustment int64 `json:"installment_plan_adjustment" api:"required"`
 	// Globally unique identifier for the installment plan this snapshot is of
 	InstallmentPlanToken string `json:"installment_plan_token" api:"required"`
 	// Total owed on the plan in cents, the principal amount plus the enrollment fee
@@ -114,8 +123,14 @@ type InstallmentPlanStatement struct {
 	// Number of installments the plan is broken into
 	NumInstallments int64 `json:"num_installments" api:"required"`
 	// Balance the plan was opened on in cents, excluding the enrollment fee
-	PrincipalAmount int64                              `json:"principal_amount" api:"required"`
-	SourceType      InstallmentPlanStatementSourceType `json:"source_type" api:"required"`
+	PrincipalAmount int64 `json:"principal_amount" api:"required"`
+	// Balance the plan was opened on, broken out by category, or null if it was not
+	// recorded
+	SourceAmounts TransactionCategoryBalances `json:"source_amounts" api:"required,nullable"`
+	// Identifier of the record the plan was opened from, such as the closing statement
+	// for an unpaid balance
+	SourceID   string                             `json:"source_id" api:"required"`
+	SourceType InstallmentPlanStatementSourceType `json:"source_type" api:"required"`
 	// Date the plan was created
 	StartDate time.Time `json:"start_date" api:"required" format:"date"`
 	// State of the installment plan. A plan is REBUILD_IN_PROGRESS while its loan
@@ -123,28 +138,36 @@ type InstallmentPlanStatement struct {
 	// and should not be treated as final
 	State InstallmentPlanStatementState `json:"state" api:"required"`
 	// Amount paid towards the plan as of this statement in cents
-	TotalPaid int64                        `json:"total_paid" api:"required"`
-	JSON      installmentPlanStatementJSON `json:"-"`
+	TotalPaid int64 `json:"total_paid" api:"required"`
+	// Timestamp of when the installment plan was last updated as of this statement
+	Updated time.Time                    `json:"updated" api:"required" format:"date-time"`
+	JSON    installmentPlanStatementJSON `json:"-"`
 }
 
 // installmentPlanStatementJSON contains the JSON metadata for the struct
 // [InstallmentPlanStatement]
 type installmentPlanStatementJSON struct {
-	Token                   apijson.Field
-	FeeAmount               apijson.Field
-	InstallmentPlanToken    apijson.Field
-	InstallmentPlanTotal    apijson.Field
-	Installments            apijson.Field
-	InstallmentsOutstanding apijson.Field
-	InstallmentsPaid        apijson.Field
-	NumInstallments         apijson.Field
-	PrincipalAmount         apijson.Field
-	SourceType              apijson.Field
-	StartDate               apijson.Field
-	State                   apijson.Field
-	TotalPaid               apijson.Field
-	raw                     string
-	ExtraFields             map[string]apijson.Field
+	Token                     apijson.Field
+	ClosedAt                  apijson.Field
+	Created                   apijson.Field
+	FeeAmount                 apijson.Field
+	InstallmentPlanAdjustment apijson.Field
+	InstallmentPlanToken      apijson.Field
+	InstallmentPlanTotal      apijson.Field
+	Installments              apijson.Field
+	InstallmentsOutstanding   apijson.Field
+	InstallmentsPaid          apijson.Field
+	NumInstallments           apijson.Field
+	PrincipalAmount           apijson.Field
+	SourceAmounts             apijson.Field
+	SourceID                  apijson.Field
+	SourceType                apijson.Field
+	StartDate                 apijson.Field
+	State                     apijson.Field
+	TotalPaid                 apijson.Field
+	Updated                   apijson.Field
+	raw                       string
+	ExtraFields               map[string]apijson.Field
 }
 
 func (r *InstallmentPlanStatement) UnmarshalJSON(data []byte) (err error) {
@@ -155,19 +178,17 @@ func (r installmentPlanStatementJSON) RawJSON() string {
 	return r.raw
 }
 
-// One installment of a plan as of the statement. Amounts are totalled across
-// transaction categories rather than broken out by them, which the installment
-// plan endpoint does
+// One installment of a plan as of the statement
 type InstallmentPlanStatementInstallment struct {
 	// Amount the installment was opened for in cents
-	AmountDue        int64            `json:"amount_due" api:"required"`
-	AmountDueDetails CategoryBalances `json:"amount_due_details" api:"required"`
+	AmountDue        int64                       `json:"amount_due" api:"required"`
+	AmountDueDetails TransactionCategoryBalances `json:"amount_due_details" api:"required"`
 	// Amount still owed on the installment in cents
-	AmountOutstanding        int64            `json:"amount_outstanding" api:"required"`
-	AmountOutstandingDetails CategoryBalances `json:"amount_outstanding_details" api:"required"`
+	AmountOutstanding        int64                       `json:"amount_outstanding" api:"required"`
+	AmountOutstandingDetails TransactionCategoryBalances `json:"amount_outstanding_details" api:"required"`
 	// Amount paid towards the installment in cents
-	AmountPaid        int64            `json:"amount_paid" api:"required"`
-	AmountPaidDetails CategoryBalances `json:"amount_paid_details" api:"required"`
+	AmountPaid        int64                       `json:"amount_paid" api:"required"`
+	AmountPaidDetails TransactionCategoryBalances `json:"amount_paid_details" api:"required"`
 	// Date the installment was actually assessed onto the account, or null if it had
 	// not been assessed as of this statement
 	DateAssessed time.Time `json:"date_assessed" api:"required,nullable" format:"date"`
@@ -179,7 +200,10 @@ type InstallmentPlanStatementInstallment struct {
 	PaymentDueDate time.Time `json:"payment_due_date" api:"required" format:"date"`
 	// Payments applied to this installment, oldest first
 	Payments []InstallmentPlanStatementInstallmentsPayment `json:"payments" api:"required"`
-	JSON     installmentPlanStatementInstallmentJSON       `json:"-"`
+	// Amount from installment_plan_adjustment credited to this installment as of this
+	// statement
+	InstallmentAdjustment int64                                   `json:"installment_adjustment"`
+	JSON                  installmentPlanStatementInstallmentJSON `json:"-"`
 }
 
 // installmentPlanStatementInstallmentJSON contains the JSON metadata for the
@@ -196,6 +220,7 @@ type installmentPlanStatementInstallmentJSON struct {
 	InstallmentNum           apijson.Field
 	PaymentDueDate           apijson.Field
 	Payments                 apijson.Field
+	InstallmentAdjustment    apijson.Field
 	raw                      string
 	ExtraFields              map[string]apijson.Field
 }
@@ -210,19 +235,25 @@ func (r installmentPlanStatementInstallmentJSON) RawJSON() string {
 
 type InstallmentPlanStatementInstallmentsPayment struct {
 	// Amount applied to the installment in cents
-	Amount int64 `json:"amount" api:"required"`
+	Amount        int64                       `json:"amount" api:"required"`
+	AmountDetails TransactionCategoryBalances `json:"amount_details" api:"required"`
 	// Date the payment was applied to the installment
-	Date time.Time                                       `json:"date" api:"required" format:"date"`
-	JSON installmentPlanStatementInstallmentsPaymentJSON `json:"-"`
+	Date time.Time `json:"date" api:"required" format:"date"`
+	// True when the source of the payment is an adjustment of an underlying account or
+	// transaction
+	IsAdjustment bool                                            `json:"is_adjustment"`
+	JSON         installmentPlanStatementInstallmentsPaymentJSON `json:"-"`
 }
 
 // installmentPlanStatementInstallmentsPaymentJSON contains the JSON metadata for
 // the struct [InstallmentPlanStatementInstallmentsPayment]
 type installmentPlanStatementInstallmentsPaymentJSON struct {
-	Amount      apijson.Field
-	Date        apijson.Field
-	raw         string
-	ExtraFields map[string]apijson.Field
+	Amount        apijson.Field
+	AmountDetails apijson.Field
+	Date          apijson.Field
+	IsAdjustment  apijson.Field
+	raw           string
+	ExtraFields   map[string]apijson.Field
 }
 
 func (r *InstallmentPlanStatementInstallmentsPayment) UnmarshalJSON(data []byte) (err error) {
