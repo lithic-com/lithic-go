@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.121.0](https://github.com/lithic-com/lithic-go/compare/v0.120.0...v0.121.0) (2026-10-30)
+
+
+### Features
+
+* **api:** add source, adjustment, and timestamp fields to installment plan statements ([a8a2f6d](https://github.com/lithic-com/lithic-go/commit/a8a2f6ded0d6d5bd0e88b9a5b62f60826e286c72))
+
+
+### Chores
+
+* **ci:** Removing pre-release configuration ([ed9b4d4](https://github.com/lithic-com/lithic-go/commit/ed9b4d4a44e91e5d36d7488fbbb7a1278a3c512a))
+* **ci:** Removing pre-release configuration ([96cf015](https://github.com/lithic-com/lithic-go/commit/96cf015b837cd784a411d5ec768d23f1295cbd7c))
+
+
+### Documentation
+
+* **api:** clarify that begin filters on list endpoints are inclusive (on or after) ([72d8c3e](https://github.com/lithic-com/lithic-go/commit/72d8c3eca32845899ed7e724fb0c3282224a68a5))
+
 ## [0.120.0](https://github.com/lithic-com/lithic-go/compare/v0.119.0...v0.120.0) (2026-10-28)
 
 
