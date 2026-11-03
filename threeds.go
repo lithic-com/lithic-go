@@ -74,6 +74,11 @@ type ThreeDSAuthentication struct {
 	//   - `DATA_SHARE_ONLY` - No Challenge requested (Data Share Only)
 	//   - `OTHER` - Other indicators not captured by above. These are rarely used
 	ThreeDSRequestorChallengeIndicator ThreeDSAuthenticationThreeDSRequestorChallengeIndicator `json:"three_ds_requestor_challenge_indicator" api:"required"`
+	// Date and time when the authentication was last updated in Lithic's system. Equal
+	// to `created` until the authentication is updated (e.g. a challenge is
+	// completed). Permitted values: Date string in the ISO 8601 format
+	// yyyy-MM-dd'T'hh:mm:ssZ.
+	Updated time.Time `json:"updated" api:"required" format:"date-time"`
 	// Object containing additional data about the 3DS request that is beyond the EMV
 	// 3DS standard spec (e.g., specific fields that only certain card networks send
 	// but are not required across all 3DS requests).
@@ -129,6 +134,7 @@ type threeDSAuthenticationJSON struct {
 	Merchant                           apijson.Field
 	MessageCategory                    apijson.Field
 	ThreeDSRequestorChallengeIndicator apijson.Field
+	Updated                            apijson.Field
 	AdditionalData                     apijson.Field
 	App                                apijson.Field
 	AuthenticationRequestType          apijson.Field

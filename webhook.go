@@ -4439,6 +4439,9 @@ type ThreeDSAuthenticationChallengeWebhookEvent struct {
 	AuthenticationObject ThreeDSAuthentication `json:"authentication_object" api:"required"`
 	// Represents a challenge object for 3DS authentication
 	Challenge ThreeDSAuthenticationChallengeWebhookEventChallenge `json:"challenge" api:"required"`
+	// Date and time when the challenge event was emitted. Permitted values: Date
+	// string in the ISO 8601 format yyyy-MM-dd'T'hh:mm:ssZ.
+	Created   time.Time                                           `json:"created" api:"required" format:"date-time"`
 	EventType ThreeDSAuthenticationChallengeWebhookEventEventType `json:"event_type" api:"required"`
 	JSON      threeDSAuthenticationChallengeWebhookEventJSON      `json:"-"`
 }
@@ -4448,6 +4451,7 @@ type ThreeDSAuthenticationChallengeWebhookEvent struct {
 type threeDSAuthenticationChallengeWebhookEventJSON struct {
 	AuthenticationObject apijson.Field
 	Challenge            apijson.Field
+	Created              apijson.Field
 	EventType            apijson.Field
 	raw                  string
 	ExtraFields          map[string]apijson.Field
