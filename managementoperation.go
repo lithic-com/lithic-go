@@ -419,13 +419,15 @@ func (r managementOperationTransactionTransactionSeriesJSON) RawJSON() string {
 }
 
 type ManagementOperationNewParams struct {
-	Amount                param.Field[int64]                                 `json:"amount" api:"required"`
-	Category              param.Field[ManagementOperationNewParamsCategory]  `json:"category" api:"required"`
-	Direction             param.Field[ManagementOperationNewParamsDirection] `json:"direction" api:"required"`
-	EffectiveDate         param.Field[time.Time]                             `json:"effective_date" api:"required" format:"date"`
+	Amount        param.Field[int64]                                 `json:"amount" api:"required"`
+	Category      param.Field[ManagementOperationNewParamsCategory]  `json:"category" api:"required"`
+	Direction     param.Field[ManagementOperationNewParamsDirection] `json:"direction" api:"required"`
+	EffectiveDate param.Field[time.Time]                             `json:"effective_date" api:"required" format:"date"`
+	// Type of management operation to create. To reverse an existing management
+	// operation, use the reverse management operation endpoint
 	EventType             param.Field[ManagementOperationNewParamsEventType] `json:"event_type" api:"required"`
 	FinancialAccountToken param.Field[string]                                `json:"financial_account_token" api:"required" format:"uuid"`
-	// Customer-provided token that will serve as an idempotency token. This token will
+	// Client-provided token that will serve as an idempotency token. This token will
 	// become the transaction token.
 	Token param.Field[string] `json:"token" format:"uuid"`
 	Memo  param.Field[string] `json:"memo"`
@@ -472,43 +474,29 @@ func (r ManagementOperationNewParamsDirection) IsKnown() bool {
 	return false
 }
 
+// Type of management operation to create. To reverse an existing management
+// operation, use the reverse management operation endpoint
 type ManagementOperationNewParamsEventType string
 
 const (
-	ManagementOperationNewParamsEventTypeLossWriteOff               ManagementOperationNewParamsEventType = "LOSS_WRITE_OFF"
-	ManagementOperationNewParamsEventTypeCashBack                   ManagementOperationNewParamsEventType = "CASH_BACK"
-	ManagementOperationNewParamsEventTypeCashBackReversal           ManagementOperationNewParamsEventType = "CASH_BACK_REVERSAL"
-	ManagementOperationNewParamsEventTypeCurrencyConversion         ManagementOperationNewParamsEventType = "CURRENCY_CONVERSION"
-	ManagementOperationNewParamsEventTypeCurrencyConversionReversal ManagementOperationNewParamsEventType = "CURRENCY_CONVERSION_REVERSAL"
-	ManagementOperationNewParamsEventTypeInterest                   ManagementOperationNewParamsEventType = "INTEREST"
-	ManagementOperationNewParamsEventTypeInterestReversal           ManagementOperationNewParamsEventType = "INTEREST_REVERSAL"
-	ManagementOperationNewParamsEventTypeInstallmentFee             ManagementOperationNewParamsEventType = "INSTALLMENT_FEE"
-	ManagementOperationNewParamsEventTypeInstallmentFeeReversal     ManagementOperationNewParamsEventType = "INSTALLMENT_FEE_REVERSAL"
-	ManagementOperationNewParamsEventTypeLatePayment                ManagementOperationNewParamsEventType = "LATE_PAYMENT"
-	ManagementOperationNewParamsEventTypeLatePaymentReversal        ManagementOperationNewParamsEventType = "LATE_PAYMENT_REVERSAL"
-	ManagementOperationNewParamsEventTypeBillingError               ManagementOperationNewParamsEventType = "BILLING_ERROR"
-	ManagementOperationNewParamsEventTypeBillingErrorReversal       ManagementOperationNewParamsEventType = "BILLING_ERROR_REVERSAL"
-	ManagementOperationNewParamsEventTypeProvisionalCredit          ManagementOperationNewParamsEventType = "PROVISIONAL_CREDIT"
-	ManagementOperationNewParamsEventTypeProvisionalCreditReversal  ManagementOperationNewParamsEventType = "PROVISIONAL_CREDIT_REVERSAL"
-	ManagementOperationNewParamsEventTypeReturnedPayment            ManagementOperationNewParamsEventType = "RETURNED_PAYMENT"
-	ManagementOperationNewParamsEventTypeReturnedPaymentReversal    ManagementOperationNewParamsEventType = "RETURNED_PAYMENT_REVERSAL"
-	ManagementOperationNewParamsEventTypeDisputeWon                 ManagementOperationNewParamsEventType = "DISPUTE_WON"
-	ManagementOperationNewParamsEventTypeDisputeWonReversal         ManagementOperationNewParamsEventType = "DISPUTE_WON_REVERSAL"
-	ManagementOperationNewParamsEventTypeDisburse                   ManagementOperationNewParamsEventType = "DISBURSE"
-	ManagementOperationNewParamsEventTypeDisburseReversal           ManagementOperationNewParamsEventType = "DISBURSE_REVERSAL"
-	ManagementOperationNewParamsEventTypeAnnual                     ManagementOperationNewParamsEventType = "ANNUAL"
-	ManagementOperationNewParamsEventTypeAnnualReversal             ManagementOperationNewParamsEventType = "ANNUAL_REVERSAL"
-	ManagementOperationNewParamsEventTypeQuarterly                  ManagementOperationNewParamsEventType = "QUARTERLY"
-	ManagementOperationNewParamsEventTypeQuarterlyReversal          ManagementOperationNewParamsEventType = "QUARTERLY_REVERSAL"
-	ManagementOperationNewParamsEventTypeMonthly                    ManagementOperationNewParamsEventType = "MONTHLY"
-	ManagementOperationNewParamsEventTypeMonthlyReversal            ManagementOperationNewParamsEventType = "MONTHLY_REVERSAL"
-	ManagementOperationNewParamsEventTypeFee                        ManagementOperationNewParamsEventType = "FEE"
-	ManagementOperationNewParamsEventTypeFeeReversal                ManagementOperationNewParamsEventType = "FEE_REVERSAL"
+	ManagementOperationNewParamsEventTypeCashBack           ManagementOperationNewParamsEventType = "CASH_BACK"
+	ManagementOperationNewParamsEventTypeCurrencyConversion ManagementOperationNewParamsEventType = "CURRENCY_CONVERSION"
+	ManagementOperationNewParamsEventTypeInstallmentFee     ManagementOperationNewParamsEventType = "INSTALLMENT_FEE"
+	ManagementOperationNewParamsEventTypeLatePayment        ManagementOperationNewParamsEventType = "LATE_PAYMENT"
+	ManagementOperationNewParamsEventTypeBillingError       ManagementOperationNewParamsEventType = "BILLING_ERROR"
+	ManagementOperationNewParamsEventTypeProvisionalCredit  ManagementOperationNewParamsEventType = "PROVISIONAL_CREDIT"
+	ManagementOperationNewParamsEventTypeReturnedPayment    ManagementOperationNewParamsEventType = "RETURNED_PAYMENT"
+	ManagementOperationNewParamsEventTypeDisputeWon         ManagementOperationNewParamsEventType = "DISPUTE_WON"
+	ManagementOperationNewParamsEventTypeDisburse           ManagementOperationNewParamsEventType = "DISBURSE"
+	ManagementOperationNewParamsEventTypeAnnual             ManagementOperationNewParamsEventType = "ANNUAL"
+	ManagementOperationNewParamsEventTypeQuarterly          ManagementOperationNewParamsEventType = "QUARTERLY"
+	ManagementOperationNewParamsEventTypeMonthly            ManagementOperationNewParamsEventType = "MONTHLY"
+	ManagementOperationNewParamsEventTypeFee                ManagementOperationNewParamsEventType = "FEE"
 )
 
 func (r ManagementOperationNewParamsEventType) IsKnown() bool {
 	switch r {
-	case ManagementOperationNewParamsEventTypeLossWriteOff, ManagementOperationNewParamsEventTypeCashBack, ManagementOperationNewParamsEventTypeCashBackReversal, ManagementOperationNewParamsEventTypeCurrencyConversion, ManagementOperationNewParamsEventTypeCurrencyConversionReversal, ManagementOperationNewParamsEventTypeInterest, ManagementOperationNewParamsEventTypeInterestReversal, ManagementOperationNewParamsEventTypeInstallmentFee, ManagementOperationNewParamsEventTypeInstallmentFeeReversal, ManagementOperationNewParamsEventTypeLatePayment, ManagementOperationNewParamsEventTypeLatePaymentReversal, ManagementOperationNewParamsEventTypeBillingError, ManagementOperationNewParamsEventTypeBillingErrorReversal, ManagementOperationNewParamsEventTypeProvisionalCredit, ManagementOperationNewParamsEventTypeProvisionalCreditReversal, ManagementOperationNewParamsEventTypeReturnedPayment, ManagementOperationNewParamsEventTypeReturnedPaymentReversal, ManagementOperationNewParamsEventTypeDisputeWon, ManagementOperationNewParamsEventTypeDisputeWonReversal, ManagementOperationNewParamsEventTypeDisburse, ManagementOperationNewParamsEventTypeDisburseReversal, ManagementOperationNewParamsEventTypeAnnual, ManagementOperationNewParamsEventTypeAnnualReversal, ManagementOperationNewParamsEventTypeQuarterly, ManagementOperationNewParamsEventTypeQuarterlyReversal, ManagementOperationNewParamsEventTypeMonthly, ManagementOperationNewParamsEventTypeMonthlyReversal, ManagementOperationNewParamsEventTypeFee, ManagementOperationNewParamsEventTypeFeeReversal:
+	case ManagementOperationNewParamsEventTypeCashBack, ManagementOperationNewParamsEventTypeCurrencyConversion, ManagementOperationNewParamsEventTypeInstallmentFee, ManagementOperationNewParamsEventTypeLatePayment, ManagementOperationNewParamsEventTypeBillingError, ManagementOperationNewParamsEventTypeProvisionalCredit, ManagementOperationNewParamsEventTypeReturnedPayment, ManagementOperationNewParamsEventTypeDisputeWon, ManagementOperationNewParamsEventTypeDisburse, ManagementOperationNewParamsEventTypeAnnual, ManagementOperationNewParamsEventTypeQuarterly, ManagementOperationNewParamsEventTypeMonthly, ManagementOperationNewParamsEventTypeFee:
 		return true
 	}
 	return false
