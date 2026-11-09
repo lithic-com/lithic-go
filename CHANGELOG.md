@@ -6,7 +6,7 @@
 ### Features
 
 * **api:** add source, adjustment, and timestamp fields to installment plan statements ([a8a2f6d](https://github.com/lithic-com/lithic-go/commit/a8a2f6ded0d6d5bd0e88b9a5b62f60826e286c72))
-* **api:** add tokenization create, 2fa, and payment credentials endpoints to tokenizations ([e35ef0f](https://github.com/lithic-com/lithic-go/commit/e35ef0f4c6d84bd56503dfd9c90b56e342d0b0a1))
+* **api:** add AGENT_PAY tokenization channel and tfa_methods to tokenizations ([e35ef0f](https://github.com/lithic-com/lithic-go/commit/e35ef0f4c6d84bd56503dfd9c90b56e342d0b0a1))
 * **api:** add updated to 3DS authentications and created to backtests and challenge events ([8c3336e](https://github.com/lithic-com/lithic-go/commit/8c3336e083fb75dc8eab2f58b7ff3525e49aa9c9))
 * **api:** support hold adjustment actions in conditional authorization auth rule parameters ([4c2bc39](https://github.com/lithic-com/lithic-go/commit/4c2bc391c49bef477e50828964202dfa3e774089))
 
