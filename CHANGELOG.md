@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.121.0](https://github.com/lithic-com/lithic-go/compare/v0.120.0...v0.121.0) (2026-11-09)
+
+
+### Features
+
+* **api:** add source, adjustment, and timestamp fields to installment plan statements ([a8a2f6d](https://github.com/lithic-com/lithic-go/commit/a8a2f6ded0d6d5bd0e88b9a5b62f60826e286c72))
+* **api:** add AGENT_PAY tokenization channel and tfa_methods to tokenizations ([e35ef0f](https://github.com/lithic-com/lithic-go/commit/e35ef0f4c6d84bd56503dfd9c90b56e342d0b0a1))
+* **api:** add updated to 3DS authentications and created to backtests and challenge events ([8c3336e](https://github.com/lithic-com/lithic-go/commit/8c3336e083fb75dc8eab2f58b7ff3525e49aa9c9))
+* **api:** support hold adjustment actions in conditional authorization auth rule parameters ([4c2bc39](https://github.com/lithic-com/lithic-go/commit/4c2bc391c49bef477e50828964202dfa3e774089))
+
+
+### Bug Fixes
+
+* **api:** correct event_type on create management operation to creatable, non-reversal types ([0e92def](https://github.com/lithic-com/lithic-go/commit/0e92def41440d6909f7de65f36042a65f545d339))
+* **api:** remove incorrect defaults for daily and monthly spend limits on account update ([92e6c7e](https://github.com/lithic-com/lithic-go/commit/92e6c7eca8d3d69f8dd18ecf15ee66f1acbd122f))
+
+
+### Chores
+
+* **ci:** Removing pre-release configuration ([ed9b4d4](https://github.com/lithic-com/lithic-go/commit/ed9b4d4a44e91e5d36d7488fbbb7a1278a3c512a))
+* **ci:** Removing pre-release configuration ([96cf015](https://github.com/lithic-com/lithic-go/commit/96cf015b837cd784a411d5ec768d23f1295cbd7c))
+
+
+### Documentation
+
+* **api:** clarify that begin filters on list endpoints are inclusive (on or after) ([72d8c3e](https://github.com/lithic-com/lithic-go/commit/72d8c3eca32845899ed7e724fb0c3282224a68a5))
+* **api:** note naics_code is required for KYB_BASIC account holder enrollment ([0093a87](https://github.com/lithic-com/lithic-go/commit/0093a877586b07f5ff5e614297f8572656150f51))
+
 ## [0.120.0](https://github.com/lithic-com/lithic-go/compare/v0.119.0...v0.120.0) (2026-10-28)
 
 
