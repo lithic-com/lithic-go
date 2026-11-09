@@ -754,6 +754,8 @@ type KYBParam struct {
 	KYBPassedTimestamp param.Field[string] `json:"kyb_passed_timestamp"`
 	// 6-digit North American Industry Classification System (NAICS) code for the
 	// business.
+	//
+	// This parameter is required if workflow type is `KYB_BASIC`
 	NaicsCode param.Field[string] `json:"naics_code"`
 	// Company website URL.
 	WebsiteURL param.Field[string] `json:"website_url"`
@@ -2882,6 +2884,8 @@ type AccountHolderNewParamsBody struct {
 	LastName param.Field[string] `json:"last_name"`
 	// 6-digit North American Industry Classification System (NAICS) code for the
 	// business.
+	//
+	// This parameter is required if workflow type is `KYB_BASIC`
 	NaicsCode param.Field[string] `json:"naics_code"`
 	// Short description of the company's line of business (i.e., what does the company
 	// do?). Values longer than 255 characters will be truncated before KYB
