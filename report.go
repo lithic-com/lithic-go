@@ -45,8 +45,8 @@ type NetworkTotal struct {
 	// Indicates that all settlement records related to this Network Total are
 	// available in the details endpoint.
 	IsComplete bool `json:"is_complete" api:"required"`
-	// Card network where the transaction took place. AMEX, VISA, MASTERCARD, MAESTRO,
-	// or INTERLINK.
+	// Card network where the transaction took place. ALLPOINT, AMEX, VISA, MASTERCARD,
+	// MAESTRO, or INTERLINK.
 	Network NetworkTotalNetwork `json:"network" api:"required"`
 	// Date that the network total record applies to. YYYY-MM-DD format.
 	ReportDate time.Time `json:"report_date" api:"required" format:"date"`
@@ -121,11 +121,12 @@ func (r networkTotalAmountsJSON) RawJSON() string {
 	return r.raw
 }
 
-// Card network where the transaction took place. AMEX, VISA, MASTERCARD, MAESTRO,
-// or INTERLINK.
+// Card network where the transaction took place. ALLPOINT, AMEX, VISA, MASTERCARD,
+// MAESTRO, or INTERLINK.
 type NetworkTotalNetwork string
 
 const (
+	NetworkTotalNetworkAllpoint   NetworkTotalNetwork = "ALLPOINT"
 	NetworkTotalNetworkAmex       NetworkTotalNetwork = "AMEX"
 	NetworkTotalNetworkVisa       NetworkTotalNetwork = "VISA"
 	NetworkTotalNetworkMastercard NetworkTotalNetwork = "MASTERCARD"
@@ -135,7 +136,7 @@ const (
 
 func (r NetworkTotalNetwork) IsKnown() bool {
 	switch r {
-	case NetworkTotalNetworkAmex, NetworkTotalNetworkVisa, NetworkTotalNetworkMastercard, NetworkTotalNetworkMaestro, NetworkTotalNetworkInterlink:
+	case NetworkTotalNetworkAllpoint, NetworkTotalNetworkAmex, NetworkTotalNetworkVisa, NetworkTotalNetworkMastercard, NetworkTotalNetworkMaestro, NetworkTotalNetworkInterlink:
 		return true
 	}
 	return false
@@ -240,6 +241,7 @@ func (r settlementDetailJSON) RawJSON() string {
 type SettlementDetailNetwork string
 
 const (
+	SettlementDetailNetworkAllpoint   SettlementDetailNetwork = "ALLPOINT"
 	SettlementDetailNetworkAmex       SettlementDetailNetwork = "AMEX"
 	SettlementDetailNetworkInterlink  SettlementDetailNetwork = "INTERLINK"
 	SettlementDetailNetworkMaestro    SettlementDetailNetwork = "MAESTRO"
@@ -250,7 +252,7 @@ const (
 
 func (r SettlementDetailNetwork) IsKnown() bool {
 	switch r {
-	case SettlementDetailNetworkAmex, SettlementDetailNetworkInterlink, SettlementDetailNetworkMaestro, SettlementDetailNetworkMastercard, SettlementDetailNetworkUnknown, SettlementDetailNetworkVisa:
+	case SettlementDetailNetworkAllpoint, SettlementDetailNetworkAmex, SettlementDetailNetworkInterlink, SettlementDetailNetworkMaestro, SettlementDetailNetworkMastercard, SettlementDetailNetworkUnknown, SettlementDetailNetworkVisa:
 		return true
 	}
 	return false
@@ -430,6 +432,7 @@ func (r settlementSummaryDetailsJSON) RawJSON() string {
 type SettlementSummaryDetailsNetwork string
 
 const (
+	SettlementSummaryDetailsNetworkAllpoint   SettlementSummaryDetailsNetwork = "ALLPOINT"
 	SettlementSummaryDetailsNetworkAmex       SettlementSummaryDetailsNetwork = "AMEX"
 	SettlementSummaryDetailsNetworkInterlink  SettlementSummaryDetailsNetwork = "INTERLINK"
 	SettlementSummaryDetailsNetworkMaestro    SettlementSummaryDetailsNetwork = "MAESTRO"
@@ -440,7 +443,7 @@ const (
 
 func (r SettlementSummaryDetailsNetwork) IsKnown() bool {
 	switch r {
-	case SettlementSummaryDetailsNetworkAmex, SettlementSummaryDetailsNetworkInterlink, SettlementSummaryDetailsNetworkMaestro, SettlementSummaryDetailsNetworkMastercard, SettlementSummaryDetailsNetworkUnknown, SettlementSummaryDetailsNetworkVisa:
+	case SettlementSummaryDetailsNetworkAllpoint, SettlementSummaryDetailsNetworkAmex, SettlementSummaryDetailsNetworkInterlink, SettlementSummaryDetailsNetworkMaestro, SettlementSummaryDetailsNetworkMastercard, SettlementSummaryDetailsNetworkUnknown, SettlementSummaryDetailsNetworkVisa:
 		return true
 	}
 	return false
