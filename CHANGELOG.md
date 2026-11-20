@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.122.0](https://github.com/lithic-com/lithic-go/compare/v0.121.0...v0.122.0) (2026-11-20)
+
+
+### Features
+
+* **api:** Fix statement amount_due.amount description ([640c2b2](https://github.com/lithic-com/lithic-go/commit/640c2b2945b3826f54f710383d46b1438a83966a))
+
 ## [0.121.0](https://github.com/lithic-com/lithic-go/compare/v0.120.0...v0.121.0) (2026-11-09)
 
 
