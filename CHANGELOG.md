@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.122.0](https://github.com/lithic-com/lithic-go/compare/v0.121.0...v0.122.0) (2026-11-25)
+
+
+### Features
+
+* **api:** Document UTC end-of-month card expiry cutoff ([d7147d7](https://github.com/lithic-com/lithic-go/commit/d7147d700039ec45ca091e0230ff66a476cc9eef))
+* **api:** Fix statement amount_due.amount description ([640c2b2](https://github.com/lithic-com/lithic-go/commit/640c2b2945b3826f54f710383d46b1438a83966a))
+
+
+### Documentation
+
+* **api:** clarify auth rule draft version state and error cover dry run of typescript rules ([870f3c3](https://github.com/lithic-com/lithic-go/commit/870f3c3c3d6de078b42631ffc94a132b57c552ac))
+* **api:** clarify when dispute claims can be submitted in outstanding_requirements description ([f275af5](https://github.com/lithic-com/lithic-go/commit/f275af5f5dcee228ec59049bc86b76d3b592c0db))
+
 ## [0.121.0](https://github.com/lithic-com/lithic-go/compare/v0.120.0...v0.121.0) (2026-11-09)
 
 
