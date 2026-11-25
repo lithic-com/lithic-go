@@ -1988,7 +1988,9 @@ type ClaimCreatedWebhookEvent struct {
 	DisputedTransactions []ClaimCreatedWebhookEventDisputedTransaction `json:"disputed_transactions" api:"required"`
 	// The type of event that occurred.
 	EventType ClaimCreatedWebhookEventEventType `json:"event_type" api:"required"`
-	// Requirements that must be fulfilled before the claim can be submitted
+	// What the client still needs to provide for the claim. The claim can be submitted
+	// once `QUESTIONNAIRE` is no longer in the array. `DOCUMENTS` stays in the array,
+	// before and after submission, while any required document is still outstanding
 	OutstandingRequirements []ClaimCreatedWebhookEventOutstandingRequirement `json:"outstanding_requirements" api:"required"`
 	// Dispute reason code provided when creating the claim
 	Reason ClaimCreatedWebhookEventReason `json:"reason" api:"required"`
@@ -2162,7 +2164,9 @@ type ClaimUpdatedWebhookEvent struct {
 	DisputedTransactions []ClaimUpdatedWebhookEventDisputedTransaction `json:"disputed_transactions" api:"required"`
 	// The type of event that occurred.
 	EventType ClaimUpdatedWebhookEventEventType `json:"event_type" api:"required"`
-	// Requirements that must be fulfilled before the claim can be submitted
+	// What the client still needs to provide for the claim. The claim can be submitted
+	// once `QUESTIONNAIRE` is no longer in the array. `DOCUMENTS` stays in the array,
+	// before and after submission, while any required document is still outstanding
 	OutstandingRequirements []ClaimUpdatedWebhookEventOutstandingRequirement `json:"outstanding_requirements" api:"required"`
 	// Dispute reason code provided when creating the claim
 	Reason ClaimUpdatedWebhookEventReason `json:"reason" api:"required"`
